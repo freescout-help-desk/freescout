@@ -20,7 +20,7 @@ You can suggest features or vote for features [here](https://feedback.userreport
 
 ## Project Homepage
 
-[https://freescout.net](https://freescout.net)
+[https://github.com/freescout-helpdesk/freescout](https://github.com/freescout-helpdesk/freescout)
 
 ## Requirements
 
