@@ -53,4 +53,4 @@ FreeScout development rules and guidelines:
 
 ## Screenshots
 
-Coming soon
+![FreeScout](https://freescout-helpdesk.github.io/img/screenshots/freescout-login.png)
