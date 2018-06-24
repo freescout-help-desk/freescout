@@ -16,7 +16,7 @@
 
     <div class="card-list margin-top">
         @foreach ($users as $user)
-            <a href="{{ route('user.profile', ['id'=>$user->id]) }}" class="card">
+            <a href="{{ route('users.profile', ['id'=>$user->id]) }}" class="card">
                 @if ($user->photo_url)
                     <img src="{{ $user->photo_url }}" />
                 @else

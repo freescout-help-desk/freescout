@@ -52,7 +52,11 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    protected $fillable  = ['role', 'first_name', 'last_name', 'email', 'password'];
+    /**
+     * Attributes fillable using fill() method
+     * @var [type]
+     */
+    protected $fillable  = ['role', 'first_name', 'last_name', 'email', 'password', 'role', 'timezone', 'photo_url', 'type', 'emails', 'job_title', 'phone', 'time_format', 'enable_kb_shortcuts'];
 
     /**
      * Get user role
@@ -72,5 +76,14 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return ($this->role == self::ROLE_ADMIN);
+    }
+
+    /**
+     * Get user full name
+     * @return string
+     */
+    public function getFullName()
+    {
+        return $this->first_name . ' ' . $this->last_name;
     }
 }

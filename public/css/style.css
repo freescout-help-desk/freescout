@@ -253,6 +253,25 @@ select.form-control {
 .control-label {
     font-size: 13px;
 }
+.controls>.checkbox:first-child,
+.controls>.radio:first-child {
+    padding-top: 5px;
+}
+.checkbox.inline,
+.radio.inline {
+    display: inline-block;
+    margin-bottom: 0;
+    padding-top: 5px;
+    vertical-align: middle;
+    font-size: 13px;
+}
+.checkbox,
+.radio {
+    min-height: 18px;
+    padding-left: 22px;
+    padding-right: 7px;
+    position: relative;
+}
 
 /**
  * Cards
@@ -387,4 +406,10 @@ a h4 {
 .popover {
     color:#4f5d6b;
     font-size:13px
+}
+.help-block {
+    color: #93a1af;
+    display: block;
+    font-size: 13px;
+    margin: 4px 0 9px;
 }

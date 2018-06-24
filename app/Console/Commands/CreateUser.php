@@ -46,7 +46,7 @@ class CreateUser extends Command
             ) . '.model'
         );
         $user = new $class;
-        $fillables = $user->getFillable();
+        $fillables = ['role', 'first_name', 'last_name', 'email', 'password'];
         foreach($fillables as $key => $fillable) {
             if ($fillable == 'password') {
                 $user->password = \Hash::make($this->secret(($key+1) . "/" . count($fillables) . " User $fillable"));

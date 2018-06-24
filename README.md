@@ -24,8 +24,8 @@ You can suggest features or vote for features [here](https://feedback.userreport
 
 ## Requirements
 
-  * PHP >= 7.0.0
-  * MySQL/MariaDB >= 5.0
+  * PHP 7.0.0+
+  * MySQL/MariaDB 5.0+
 
 ## Installation Guide
 

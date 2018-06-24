@@ -16,5 +16,5 @@ Auth::routes();
 Route::get('/', 'SecureController@dashboard')->name('dashboard');
 
 Route::get('/users', 'UsersController@users')->name('users');
-Route::get('/users/profile/{id}', 'UsersController@profile')->name('user.profile');
+Route::get('/users/profile/{id}', 'UsersController@profile')->name('users.profile');
 Route::post('/users/profile/{id}', 'UsersController@profileSave');
