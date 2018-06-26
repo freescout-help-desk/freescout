@@ -9,8 +9,8 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'modified_at';
+    // const CREATED_AT = 'created_at';
+    // const UPDATED_AT = 'modified_at';
 
     /**
      * Roles
@@ -37,14 +37,14 @@ class User extends Authenticatable
     public static $roles = array(self::ROLE_ADMIN, self::ROLE_USER);
     
     /**
-     * The attributes that are mass assignable.
+     * The attributes that are not mass assignable.
      *
      * @var array
      */
     protected $guarded  = ['role'];
 
     /**
-     * The attributes that should be hidden for arrays.
+     * The attributes that should be hidden for arrays, excluded from the model's JSON form.
      *
      * @var array
      */

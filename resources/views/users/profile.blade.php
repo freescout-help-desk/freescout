@@ -43,7 +43,7 @@
                                 <option value="{{ App\User::ROLE_ADMIN }}" @if (old('role', $user->role) == App\User::ROLE_ADMIN)selected="selected"@endif>{{ __('Administrator') }}</option>
                             </select>
 
-                            <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="ture" data-title="{{ __('Roles') }}" data-content="{{ __('<strong>Administrators</strong> can create new users and have access to all mailboxes and settings <br><br><strong>Users</strong> have access to the mailbox(es) specified in their permissions') }}"></i>
+                            <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="ture" data-placement="left" data-title="{{ __('Roles') }}" data-content="{{ __('<strong>Administrators</strong> can create new users and have access to all mailboxes and settings <br><br><strong>Users</strong> have access to the mailbox(es) specified in their permissions') }}"></i>
 
                             @include('partials/field_error', ['field'=>'role'])
                         </div>
@@ -53,7 +53,7 @@
                         <label for="first_name" class="col-sm-2 control-label">{{ __('First Name') }}</label>
 
                         <div class="col-md-6">
-                            <input id="first_name" type="text" class="form-control input-sized" name="first_name" value="{{ old('first_name', $user->first_name) }}" maxlength="255" required autofocus>
+                            <input id="first_name" type="text" class="form-control input-sized" name="first_name" value="{{ old('first_name', $user->first_name) }}" maxlength="20" required autofocus>
 
                             @include('partials/field_error', ['field'=>'first_name'])
                         </div>
@@ -63,7 +63,7 @@
                         <label for="last_name" class="col-sm-2 control-label">{{ __('Last Name') }}</label>
 
                         <div class="col-md-6">
-                            <input id="last_name" type="text" class="form-control input-sized" name="last_name" value="{{ old('last_name', $user->last_name) }}" maxlength="255" required autofocus>
+                            <input id="last_name" type="text" class="form-control input-sized" name="last_name" value="{{ old('last_name', $user->last_name) }}" maxlength="30" required autofocus>
 
                             @include('partials/field_error', ['field'=>'last_name'])
                         </div>
@@ -73,7 +73,7 @@
                         <label for="email" class="col-sm-2 control-label">{{ __('Email') }}</label>
 
                         <div class="col-md-6">
-                            <input id="email" type="email" class="form-control input-sized" name="email" value="{{ old('email', $user->email) }}" maxlength="191" required autofocus>
+                            <input id="email" type="email" class="form-control input-sized" name="email" value="{{ old('email', $user->email) }}" maxlength="100" required autofocus>
 
                             @include('partials/field_error', ['field'=>'email'])
                         </div>
@@ -93,7 +93,7 @@
                         <label for="job_title" class="col-sm-2 control-label">{{ __('Job Title') }}</label>
 
                         <div class="col-md-6">
-                            <input id="job_title" type="text" class="form-control input-sized" name="job_title" value="{{ old('job_title', $user->job_title) }}" placeholder="{{ __('(optional)') }}" maxlength="255">
+                            <input id="job_title" type="text" class="form-control input-sized" name="job_title" value="{{ old('job_title', $user->job_title) }}" placeholder="{{ __('(optional)') }}" maxlength="100">
 
                             @include('partials/field_error', ['field'=>'job_title'])
                         </div>
@@ -113,7 +113,7 @@
                         <label for="timezone" class="col-sm-2 control-label">{{ __('Timezone') }} (todo)</label>
 
                         <div class="col-md-6">
-                            <select id="timezone" type="text" class="form-control input-sized" name="timezone" required autofocus>
+                            <select id="timezone" class="form-control input-sized" name="timezone" required autofocus>
                                 <option value="Pacific/Honolulu" @if (old('role', $user->timezone) == 'Pacific/Honolulu')selected="selected"@endif>(GMT-10:00) Hawaiian/Aleutian Time</option>
                                 <option value="America/Anchorage" @if (old('role', $user->timezone) == 'America/Anchorage')selected="selected"@endif>(GMT-08:00) Alaska Time</option>
                                 <option value="America/Los_Angeles" @if (old('role', $user->timezone) == 'America/Los_Angeles')selected="selected"@endif>(GMT-07:00) Pacific Time (US)</option>

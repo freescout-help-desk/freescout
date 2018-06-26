@@ -185,6 +185,7 @@ h1, h2, h3, h4, h5, h6 {
 /**
  * Navbar
  */
+a.navbar-brand.active img,
 a.navbar-brand:hover img {
 	-webkit-filter: brightness(2);
 	filter: brightness(2);
@@ -339,6 +340,10 @@ a h4 {
     text-transform: uppercase;
     width: 50px;
 }
+.card.no-img h4,
+.card.no-img p {
+    margin-left: 0;
+}
 @media (max-width:582px) {
     .card {
         width: 100%;
@@ -358,6 +363,9 @@ a h4 {
 }
 .margin-left {
     margin-left: 20px !important;
+}
+.margin-bottom-0 {
+    margin-bottom: 0 !important;
 }
 .heading {
     color: #253540;
@@ -412,4 +420,29 @@ a h4 {
     display: block;
     font-size: 13px;
     margin: 4px 0 9px;
+}
+.text-help {
+    color: #93a1af;
+}
+.wizard-header {
+    padding: 40px 50px 0;
+    text-align: center;
+}
+.wizard-header h1 {
+    font-size: 24px;
+    margin: 12px 0 10px;
+    color: #2a3b47;
+}
+.wizard-header p {
+    color: #93a1af;
+    font-size: 15px;
+    margin: 0;
+}
+.wizard-body {
+    padding: 10px 50px 0;
+}
+.wizard-footer {
+    border-radius: 0 0 4px 4px;
+    padding: 0 50px 40px;
+    text-align: center;
 }

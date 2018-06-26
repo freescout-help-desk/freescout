@@ -32,7 +32,7 @@
                         </button>
 
                         <!-- Branding Image -->
-                        <a class="navbar-brand" href="{{ url('/') }}" title="{{ __('Dashboard') }}">
+                        <a class="navbar-brand @if (Route::currentRouteName() == 'dashboard')active @endif" href="{{ url('/') }}" title="{{ __('Dashboard') }}">
                             <img src="/img/logo-brand.png" />
                             {{-- config('app.name', 'FreeScout') --}}
                         </a>
@@ -79,7 +79,7 @@
                                         <li><a href="#">{{ __('Beacons') }} (todo)</a></li>
                                         <li><a href="#">{{ __('Company') }} (todo)</a></li>
                                         <li><a href="#">{{ __('Docs') }} (todo)</a></li>
-                                        <li><a href="#">{{ __('Mailbox') }}</a></li>
+                                        <li><a href="{{ route('mailboxes') }}">{{ __('Mailboxes') }}</a></li>
                                     @endif
                                     <li><a href="#">{{ __('Tags') }} (todo)</a></li>
                                     @if (Auth::user()->isAdmin())
