@@ -14,13 +14,17 @@
   * Starred conversations.
   * Trash section.
   * Quick changing of customer.
-  * Option allowing to decide what to do after sending a reply: open next conversation or stay in the current.
+  * Pasting screenshots from the clipboard into reply area.
   
 You can suggest features or vote for features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular)
 
 ## Project Homepage
 
 [https://github.com/freescout-helpdesk/freescout](https://github.com/freescout-helpdesk/freescout)
+
+## Release Date
+
+If you would like to be notified by email when **FreeScout** will be released, you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
 
 ## Requirements
 
