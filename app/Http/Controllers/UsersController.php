@@ -37,7 +37,7 @@ class UsersController extends Controller
 
         $this->authorize('view', $user);
 
-        $users = User::all();
+        $users = User::all()->except($id);
 
         return view('users/profile', ['user' => $user, 'users' => $users]);
     }

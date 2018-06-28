@@ -4,20 +4,6 @@
 
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
-
-    <div class="dropdown sidebar-title">
-        <span class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
-            {{ $user->emails }} {{ $user->last_name }} @if (count($users))<span class="caret"></span>@endif
-        </span>
-        @if (count($users))
-            <ul class="dropdown-menu">
-                @foreach ($users as $user_item)
-                    <li @if ($user_item->id == $user->id)class="active"@endif><a href="{{ route('users.profile', ['id'=>$user_item->id]) }}">{{ $user_item->emails }} {{ $user_item->last_name }}</a></li>
-                @endforeach
-            </ul>
-        @endif
-    </div>
-
     @include('users/sidebar_menu')
 @endsection
 

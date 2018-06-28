@@ -20,7 +20,10 @@ Route::get('/users/profile/{id}', 'UsersController@profile')->name('users.profil
 Route::post('/users/profile/{id}', 'UsersController@profileSave');
 
 Route::get('/settings/mailboxes', 'MailboxesController@mailboxes')->name('mailboxes');
-Route::get('/settings/mailbox/{id}', 'MailboxesController@update')->name('mailboxes.update');
-Route::post('/settings/mailbox/{id}', 'MailboxesController@updateSave');
 Route::get('/settings/mailbox-new', 'MailboxesController@create')->name('mailboxes.create');
 Route::post('/settings/mailbox-new', 'MailboxesController@createSave');
+Route::get('/settings/mailbox/{id}', 'MailboxesController@update')->name('mailboxes.update');
+Route::post('/settings/mailbox/{id}', 'MailboxesController@updateSave');
+Route::get('/settings/permissions/{id}', 'MailboxesController@permissions')->name('mailboxes.permissions');
+Route::post('/settings/permissions/{id}', 'MailboxesController@permissionsSave');
+Route::get('/mailbox/{id}', 'MailboxesController@update')->name('mailboxes.view');

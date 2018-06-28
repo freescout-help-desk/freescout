@@ -1087,7 +1087,7 @@ html {
 }
 body {
   font-family: "Liberation Sans","Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 1.6;
   color: #394956;
   background-color: #f1f3f5;
@@ -1188,8 +1188,8 @@ h6,
 .h5,
 .h6 {
   font-family: inherit;
-  font-weight: 500;
-  line-height: 1.1;
+  font-weight: 700;
+  line-height: 1.22em;
   color: inherit;
 }
 h1 small,
@@ -1276,7 +1276,7 @@ h2,
 }
 h3,
 .h3 {
-  font-size: 24px;
+  font-size: 16px;
 }
 h4,
 .h4 {
@@ -3121,14 +3121,14 @@ fieldset[disabled] .btn-default.focus {
 }
 .btn-primary {
   color: #fff;
-  background-color: #266f9b;
-  border-color: #266f9b;
+  background-color: #337ab7;
+  border-color: #337ab7;
 }
 .btn-primary:focus,
 .btn-primary.focus {
   color: #fff;
-  background-color: #005689;
-  border-color: #005689;
+  background-color: #286090;
+  border-color: #286090;
 }
 .btn-primary:hover {
   color: #fff;
@@ -4516,6 +4516,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 }
 .navbar-default .navbar-nav > li > a {
   color: #83b8db;
+  font-size: 14px;
 }
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {

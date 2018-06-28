@@ -41,7 +41,24 @@
                     <div class="collapse navbar-collapse" id="app-navbar-collapse">
                         <!-- Left Side Of Navbar -->
                         <ul class="nav navbar-nav">
-                            <li><a href="#">{{ __('Mailbox') }}</a></li>
+                            @php
+                                $mailboxes = App\Mailbox::all();
+                            @endphp
+                            @if (count($mailboxes) == 1)
+                                <li><a href="{{ route('mailboxes.view', ['id'=>$mailboxes[0]->id]) }}" @if (Route::currentRouteName() == 'mailboxes.view')class="active"@endif>{{ __('Mailbox') }}</a></li>
+                            @else
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
+                                        {{ __('Mailbox') }} <span class="caret"></span>
+                                    </a>
+
+                                    <ul class="dropdown-menu">
+                                        @foreach ($mailboxes as $mailbox_item)
+                                            <li @if ($mailbox_item->id == request()->route()->parameters->id)class="active"@endif><a href="{{ route('mailboxes.view', ['id'=>request()->route()->parameters->id]) }}">{{ $mailbox_item->name }}</a></li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @endif
                             @if (Auth::user()->isAdmin())
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
@@ -102,7 +119,7 @@
                                     </a>
 
                                     <ul class="dropdown-menu">
-                                        <li><a href="#">{{ __('Your Profile') }}</a></li>
+                                        <li><a href="{{ route('users.profile', ['id'=>Auth::user()->id]) }}">{{ __('Your Profile') }}</a></li>
                                         <li class="divider"></li>
                                         <li>
                                             <a href="{{ route('logout') }}"

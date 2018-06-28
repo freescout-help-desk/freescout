@@ -75,7 +75,7 @@ class MailboxesController extends Controller
 
         $this->authorize('update', $mailbox);
 
-        $mailboxes = Mailbox::all();
+        $mailboxes = Mailbox::all()->except($id);
 
         return view('mailboxes/update', ['mailbox' => $mailbox, 'mailboxes' => $mailboxes]);
     }
@@ -118,5 +118,17 @@ class MailboxesController extends Controller
 
         \Session::flash('flash_success', __('Mailbox settings saved'));
         return redirect()->route('mailboxes.update', ['id' => $id]);
+    }
+
+    /**
+     * Mailbox permissions
+     */
+    public function permissions($id)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+        
+        $this->authorize('update', $mailbox);
+
+        return view('mailboxes/permissions', ['mailbox' => $mailbox]);
     }
 }

@@ -361,6 +361,11 @@ a h4 {
     background-color: #f9fafa;
     border-color: #f9fafa;
 }
+.note-editor .btn-default.active,
+.note-editor .btn-default:hover {
+    background-color: #e6e6e6;
+    border-color: #e6e6e6;
+}
 
 /**
  * General
@@ -386,7 +391,7 @@ a h4 {
 }
 .section-heading {
     border-bottom: 1px solid #d6dde3;
-    padding: 12px 20px;
+    padding: 12px 18px;
     color: #253540;
     font-size: 16px;
     font-weight: 400;

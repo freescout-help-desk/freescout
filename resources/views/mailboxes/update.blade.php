@@ -4,20 +4,6 @@
 
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
-
-    <div class="dropdown sidebar-title">
-        <span class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
-            {{ $mailbox->name }} @if (count($mailboxes))<span class="caret"></span>@endif
-        </span>
-        @if (count($mailboxes))
-            <ul class="dropdown-menu">
-                @foreach ($mailboxes as $mailbox_item)
-                    <li @if ($mailbox_item->id == $mailbox->id)class="active"@endif><a href="{{ route('mailboxes.update', ['id'=>$mailbox_item->id]) }}">{{ $mailbox_item->emails }} {{ $mailbox_item->last_name }}</a></li>
-                @endforeach
-            </ul>
-        @endif
-    </div>
-
     @include('mailboxes/sidebar_menu')
 @endsection
 
@@ -143,7 +129,7 @@
                     <div class="form-group">
                         <div class="col-md-6 col-sm-offset-2">
                             <button type="submit" class="btn btn-primary">
-                                {{ __('Save Profile') }}
+                                {{ __('Save') }}
                             </button>
 
                             <a href="#" class="btn btn-link is-error">{{ __('Delete mailbox') }} (todo)</a>
