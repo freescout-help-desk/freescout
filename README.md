@@ -18,13 +18,13 @@
   
 You can suggest features or vote for features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular)
 
-## Project Homepage
-
-[https://github.com/freescout-helpdesk/freescout](https://github.com/freescout-helpdesk/freescout)
-
 ## Release Date
 
 If you would like to be notified by email when **FreeScout** will be released, you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
+
+## Project Homepage
+
+[https://github.com/freescout-helpdesk/freescout](https://github.com/freescout-helpdesk/freescout)
 
 ## Requirements
 

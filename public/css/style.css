@@ -351,6 +351,18 @@ a h4 {
 }
 
 /**
+ * Editor
+ */
+.note-editor.note-frame {
+    border-color: #d6dde3 !important;
+}
+.note-editor .btn-default {
+    color: #86929e;
+    background-color: #f9fafa;
+    border-color: #f9fafa;
+}
+
+/**
  * General
  */
 .banner {

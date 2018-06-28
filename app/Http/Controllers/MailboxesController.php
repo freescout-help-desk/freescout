@@ -19,7 +19,7 @@ class MailboxesController extends Controller
     }
 
     /**
-     * Users list
+     * Mailboxes list
      */
     public function mailboxes()
     {
@@ -64,5 +64,59 @@ class MailboxesController extends Controller
 
         \Session::flash('flash_success', __('Mailbox created successfully'));
         return redirect()->route('mailboxes.update', ['id' => $mailbox->id]);
+    }
+
+    /**
+     * Edit mailbox
+     */
+    public function update($id)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+
+        $this->authorize('update', $mailbox);
+
+        $mailboxes = Mailbox::all();
+
+        return view('mailboxes/update', ['mailbox' => $mailbox, 'mailboxes' => $mailboxes]);
+    }
+
+    /**
+     * Save mailbox
+     * 
+     * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request
+     */
+    public function updateSave($id, Request $request)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+
+        $this->authorize('update', $mailbox);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:40',
+            'email' => 'required|string|email|max:128|unique:mailboxes,email,'.$id,
+            'aliases' => 'string|max:128',
+            'from_name' => 'required|integer',
+            'from_name_custom' => 'nullable|string|max:128',
+            'ticket_status' => 'required|integer',
+            'template' => 'required|integer',
+            'ticket_assignee' => 'required|integer',
+            'signature' => 'nullable|string',
+        ]);
+
+        //event(new Registered($user = $this->create($request->all())));
+
+        if ($validator->fails()) {
+            return redirect()->route('mailboxes.update', ['id' => $id])
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+
+        $mailbox->fill($request->all());
+
+        $mailbox->save();
+
+        \Session::flash('flash_success', __('Mailbox settings saved'));
+        return redirect()->route('mailboxes.update', ['id' => $id]);
     }
 }

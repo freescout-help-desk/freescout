@@ -12,7 +12,7 @@
 
     <!-- Styles -->
     {!! Minify::stylesheet(array('/css/fonts.css', '/css/bootstrap.css', '/css/style.css')) !!}
-    {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
+    @yield('stylesheets')
 </head>
 <body>
     <div id="app">
@@ -147,7 +147,12 @@
     </div>
 
     <!-- Scripts -->
-    {{--<script src="{{ asset('js/bootstrap.js') }}"></script>--}}
     {!! Minify::javascript(array('/js/jquery.js', '/js/bootstrap.js', '/js/main.js')) !!}
+    @yield('javascripts')
+    @if ($__env->yieldContent('javascript'))
+        <script type="text/javascript">
+            @yield('javascript')
+        </script>
+    @endif
 </body>
 </html>

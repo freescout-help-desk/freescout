@@ -18,7 +18,7 @@
         @endif
     </div>
 
-    @include('partials/sidebar_menu')
+    @include('users/sidebar_menu')
 @endsection
 
 @section('content')
