@@ -2,11 +2,10 @@
 /public/hot
 /public/storage
 /storage/*.key
-# Althoug committing vendor directory would make installation process much easier
-# we still need to ignore /vandor as there are require-dev dependencies
-# https://www.codeenigma.com/build/blog/do-you-really-need-composer-production
-# https://getcomposer.org/doc/faqs/should-i-commit-the-dependencies-in-my-vendor-directory.md
-/vendor
+# We are committing /vendor directory to make installation process super easy, even on a shared hosting:
+# - https://www.codeenigma.com/build/blog/do-you-really-need-composer-production
+# - https://getcomposer.org/doc/faqs/should-i-commit-the-dependencies-in-my-vendor-directory.md
+/vendor/**/.git
 /.idea
 /.vagrant
 Homestead.json

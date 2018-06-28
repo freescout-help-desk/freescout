@@ -41,14 +41,7 @@ Coming as soon as the first stable version will be released.
 
 ## Development Guide
 
-FreeScout development rules and guidelines:
-
-  * Feel free to impelement and push any HelpScout functionality which is not implemented yet.
-  * Please stick to the HelpScout design and functionality, no need to reinvent the wheel. FreeScout provides all the HelpScout features out of the box plus several [most needed extra features](https://feedback.userreport.com/de1fc910-a7f3-41b1-ada5-466ac6316fe2/). Additional features are added by developing plugins for FreeScout as standard Laravel packages.
-  * FreeScout API must be completely equal to [HelpScout's API](https://developer.helpscout.com/help-desk-api/)
-  * All strings must be translatable.
-  * Design must be mobile friendly.
-  * In copmoser.json make sure to specify only exact versions of packages (Example: 1.0.2)
+FreeScout development [rules and guidelines](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide)
 
 ## Screenshots
 

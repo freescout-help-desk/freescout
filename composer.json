@@ -16,8 +16,7 @@
         "filp/whoops": "2.2.0",
         "fzaninotto/faker": "v1.7.1",
         "mockery/mockery": "1.1.0",
-        "phpunit/phpunit": "6.5.8",
-        "symfony/thanks": "v1.0.7"
+        "phpunit/phpunit": "6.5.8"
     },
     "autoload": {
         "classmap": [

@@ -187,6 +187,7 @@ return [
          * Package Service Providers...
          */
         Devfactory\Minify\MinifyServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
 
         /*
          * Application Service Providers...
