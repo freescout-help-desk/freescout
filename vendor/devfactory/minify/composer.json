@@ -1,0 +1,29 @@
+{
+  "name": "devfactory/minify",
+  "keywords": ["minify", "laravel5"],
+  "description": "A package for minifying styles and javascript for laravel 5 ",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Da Costa Alcindo",
+      "email": "alcindo.dacosta@devfactory.ch"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "tedivm/jshrink": "~1.0",
+    "natxet/CssMin": "3.*",
+    "illuminate/filesystem": "~5.0",
+    "illuminate/support": "~5.0"
+  },
+  "require-dev": {
+    "phpspec/phpspec": "2.0.0",
+    "mikey179/vfsStream": "1.2.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Devfactory\\Minify\\": "src/"
+    }
+  },
+  "minimum-stability": "stable"
+}
