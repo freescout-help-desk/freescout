@@ -72,4 +72,12 @@ class Mailbox extends Model
             $model->slug = strtolower(substr(md5(Hash::make($model->id)), 0, 16));
         });
     }
+
+    /**
+     * Get users having access to the mailbox
+     */
+    public function users()
+    {
+        return $this->belongsToMany('App\User');
+    }
 }

@@ -93,7 +93,6 @@
                                     @if (Auth::user()->isAdmin())
                                         <li><a href="#">{{ __('Apps') }} (todo)</a></li>
                                         <li><a href="#">{{ __('Plugins') }} (todo)</a></li>
-                                        <li><a href="#">{{ __('Beacons') }} (todo)</a></li>
                                         <li><a href="#">{{ __('Company') }} (todo)</a></li>
                                         <li><a href="#">{{ __('Docs') }} (todo)</a></li>
                                         <li><a href="{{ route('mailboxes') }}">{{ __('Mailboxes') }}</a></li>
@@ -156,7 +155,7 @@
             </div>
         @endif
 
-        @if (in_array(Route::currentRouteName(), array('dashboard')))
+        @if (!in_array(Route::currentRouteName(), array('mailboxes.view')))
             <div class="footer">
                 &copy; {{ date('Y') }}, <a href="{{ config('app.freescout_url') }}" target="blank">FreeScout</a> — Free open source help desk &amp; shared mailbox (v{{ config('app.version') }})
             </div>

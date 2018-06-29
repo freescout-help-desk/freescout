@@ -184,7 +184,7 @@
                         <label for="photo_url" class="col-sm-2 control-label">{{ __('Photo') }} (todo)</label>
 
                         <div class="col-md-6">
-                            <input type="file" name="photo" id="photo">
+                            <input type="file" name="photo" id="photo" disabled="disabled">
                             <p class="help-block">{{ __('Image will be re-sized to 200x200. JPG, GIF, PNG accepted.') }}</p>
                             @include('partials/field_error', ['field'=>'photo_url'])
                         </div>

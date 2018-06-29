@@ -5,15 +5,22 @@
 /**
  * Layout
  */
+#app {
+    min-height: 100%;
+}
 .footer {
     text-align: center;
     font-size: 12px;
+    position: absolute;
+    bottom: 0;
     color: #b4c0ca;
     margin-bottom: 20px;
     margin-top: 20px;
+    width: 100%;
 }
 .content {
     margin-top: 20px;
+    padding-bottom: 60px;
 }
 .layout-2col {
     display: flex;
