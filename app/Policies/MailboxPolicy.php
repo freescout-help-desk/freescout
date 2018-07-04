@@ -19,7 +19,11 @@ class MailboxPolicy
      */
     public function view(User $user, Mailbox $mailbox)
     {
-        //
+        if ($user->isAdmin()) {
+            return true;
+        } else {
+            return $user->mailboxes->contains($mailbox));
+        }
     }
 
     /**

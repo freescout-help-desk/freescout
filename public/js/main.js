@@ -46,7 +46,7 @@ function mailboxUpdateInit(from_name_custom)
 	});
 }
 
-function mailboxPermissionsInit()
+function permissionsInit()
 {
     $('.sel-all').click(function(event) {
 		$("#permissions-fields input").attr('checked', 'checked');

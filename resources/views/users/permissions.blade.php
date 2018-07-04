@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title_full', __('Mailbox Permissions').' - '.$mailbox->name)
+@section('title_full', __('User Permissions').' - '.$user->first_name.' '.$user->last_name)
 
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
-    @include('mailboxes/sidebar_menu')
+    @include('users/sidebar_menu')
 @endsection
 
 @section('content')
@@ -17,8 +17,7 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
-                <h3> {{ __('Selected Users have access to this mailbox:') }}</h3>
-                <p class="help-block">{{ __('Administrators have access to all mailboxes and are not listed here.') }}</p>
+                <h3> {{ __(':first_name has access to the selected mailboxes:', ['first_name' => $user->first_name]) }}</h3>
             </div>
             <div class="col-xs-12">
                 <form method="POST" action="">
@@ -27,11 +26,11 @@
                     <p><a href="javascript:void(0)" class="sel-all">{{ __('all') }}</a> / <a href="javascript:void(0)" class="sel-none">{{ __('none') }}</a></p>
 
                     <fieldset id="permissions-fields">
-                        @foreach ($users as $user)
+                        @foreach ($mailboxes as $mailbox)
                             <div class="control-group">
                                 <div class="controls">
-                                    <label class="control-label checkbox" for="user-{{ $user->id }}">
-                                        <input type="checkbox" name="users[]" id="user-{{ $user->id }}" value="{{ $user->id }}" @if ($mailbox_users->contains($user)) checked="checked" @endif> {{ $user->first_name }} {{ $user->last_name }}
+                                    <label class="control-label checkbox" for="mailbox-{{ $mailbox->id }}">
+                                        <input type="checkbox" name="mailboxes[]" id="mailbox-{{ $mailbox->id }}" value="{{ $mailbox->id }}" @if ($user_mailboxes->contains($mailbox)) checked="checked" @endif> {{ $mailbox->name }}
                                     </label>
                                 </div>
                             </div>
@@ -40,7 +39,7 @@
                     <div class="form-group margin-top">
                         
                         <button type="submit" class="btn btn-primary">
-                            {{ __('Save') }}
+                            {{ __('Save Permissions') }}
                         </button>
                     
                     </div>
