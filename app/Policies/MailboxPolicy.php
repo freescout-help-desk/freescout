@@ -22,7 +22,7 @@ class MailboxPolicy
         if ($user->isAdmin()) {
             return true;
         } else {
-            return $user->mailboxes->contains($mailbox));
+            return $user->mailboxes->contains($mailbox);
         }
     }
 
