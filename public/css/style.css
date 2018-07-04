@@ -470,3 +470,13 @@ a h4 {
     padding: 0 50px 40px;
     text-align: center;
 }
+#permissions-fields .control-group {
+    display: inline-block;
+    vertical-align: top;
+    width: 200px;
+    text-overflow: ellipsis;
+}
+#permissions-fields .control-label {
+    margin-top: 0;
+    margin-bottom: 0;
+}

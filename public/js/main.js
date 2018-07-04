@@ -45,3 +45,13 @@ function mailboxUpdateInit(from_name_custom)
 		}
 	});
 }
+
+function mailboxPermissionsInit()
+{
+    $('.sel-all').click(function(event) {
+		$("#permissions-fields input").attr('checked', 'checked');
+	});
+	$('.sel-none').click(function(event) {
+		$("#permissions-fields input").removeAttr('checked');
+	});
+}

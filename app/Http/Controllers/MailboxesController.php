@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 use App\Mailbox;
+use App\User;
 
 class MailboxesController extends Controller
 {
@@ -129,6 +130,28 @@ class MailboxesController extends Controller
         
         $this->authorize('update', $mailbox);
 
-        return view('mailboxes/permissions', ['mailbox' => $mailbox]);
+        $users = User::where('role', '!=', User::ROLE_ADMIN)->get();
+
+        return view('mailboxes/permissions', ['mailbox' => $mailbox, 'users' => $users, 'mailbox_users' => $mailbox->users]);
+    }
+
+    /**
+     * Save mailbox permissions
+     * 
+     * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request
+     */
+    public function permissionsSave($id, Request $request)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+
+        $this->authorize('update', $mailbox);
+
+        $mailbox->users()->sync($request->users);
+
+        //$mailbox->save();
+
+        \Session::flash('flash_success', __('Mailbox permissions saved!'));
+        return redirect()->route('mailboxes.permissions', ['id' => $id]);
     }
 }

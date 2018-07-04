@@ -21,25 +21,28 @@
                 <p class="help-block">{{ __('Administrators have access to all mailboxes and are not listed here.') }}</p>
             </div>
             <div class="col-xs-12">
-                <form class="form-horizontal" method="POST" action="">
+                <form method="POST" action="">
                     {{ csrf_field() }}
 
-                    <p><a href="javascript:void(0)" class="selAll">all</a> / <a href="javascript:void(0)" class="selNone">none</a></p>
+                    <p><a href="javascript:void(0)" class="sel-all">{{ __('all') }}</a> / <a href="javascript:void(0)" class="sel-none">{{ __('none') }}</a></p>
 
-                    <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                        <div class="col-xs-12">
-                            <input id="name" type="text" class="form-control input-sized" name="name" value="{{ old('name', $mailbox->name) }}" maxlength="40" required autofocus>
-
-                            @include('partials/field_error', ['field'=>'name'])
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <button type="submit" class="btn btn-primary">
-                                {{ __('Save') }}
-                            </button>
-                        </div>
+                    <fieldset id="permissions-fields">
+                        @foreach ($users as $user)
+                            <div class="control-group">
+                                <div class="controls">
+                                    <label class="control-label checkbox" for="user-{{ $user->id }}">
+                                        <input type="checkbox" name="users[]" id="user-{{ $user->id }}" value="{{ $user->id }}" @if ($mailbox_users->contains($user)) checked="checked" @endif> {{ $user->first_name }} {{ $user->last_name }}
+                                    </label>
+                                </div>
+                            </div>
+                        @endforeach
+                    </fieldset>
+                    <div class="form-group margin-top">
+                        
+                        <button type="submit" class="btn btn-primary">
+                            {{ __('Save') }}
+                        </button>
+                    
                     </div>
                 </form>
             </div>
@@ -51,5 +54,5 @@
 
 @section('javascript')
     @parent
-    mailboxUpdateInit('{{ App\Mailbox::FROM_NAME_CUSTOM }}');
+    mailboxPermissionsInit();
 @endsection
