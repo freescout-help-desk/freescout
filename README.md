@@ -35,14 +35,14 @@ If you would like to be notified by email when **FreeScout** will be released, y
 
 Coming as soon as the first stable version will be released.
 
-## Plugins
-
-<a href="https://github.com/freescout-helpdesk/freescout/wiki/FreeScout-Plugins">List of available FreeScout plugins</a>
-
 ## Development Guide
 
-FreeScout development [rules and guidelines](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide)
+FreeScout [development guide](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide)
 
 ## Screenshots
 
-![FreeScout](https://freescout-helpdesk.github.io/img/screenshots/freescout-login.png)
+Login page
+![Login page](https://freescout-helpdesk.github.io/img/screenshots/freescout-login.png)
+
+Mailbox connection settings page
+![Mailbox connection settings page](https://freescout-helpdesk.github.io/img/screenshots/mailbox-connection.png)
