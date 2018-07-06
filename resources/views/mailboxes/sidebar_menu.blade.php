@@ -12,7 +12,7 @@
 </div>
 <ul class="sidebar-menu">
     <li @if (Route::currentRouteName() == 'mailboxes.update')class="active"@endif><a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-envelope"></i> {{ __('Edit Mailbox') }}</a></li>
-    <li @if (Route::currentRouteName() == 'mailboxes.connection')class="active"@endif><a href="{{ route('mailboxes.connection', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-cog"></i> {{ __('Connection Settings') }}</a></li>
+    <li @if (Route::currentRouteName() == 'mailboxes.connection' || Route::currentRouteName() == 'mailboxes.connection.incoming')class="active"@endif><a href="{{ route('mailboxes.connection', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-cog"></i> {{ __('Connection Settings') }}</a></li>
     <li @if (Route::currentRouteName() == 'mailboxes.permissions')class="active"@endif><a href="{{ route('mailboxes.permissions', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-ok"></i> {{ __('Permissions') }}</a></li>
     <li @if (Route::currentRouteName() == 'mailboxes.fields')class="active"@endif><a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-list"></i> {{ __('Custom Fields') }} (todo)</a></li>
     <li @if (Route::currentRouteName() == 'mailboxes.autoreply')class="active"@endif><a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-share"></i> {{ __('Auto Reply') }} (todo)</a></li>

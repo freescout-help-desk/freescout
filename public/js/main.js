@@ -64,8 +64,15 @@ function mailboxConnectionInit(out_method_smtp)
 {
 	$(document).ready(function(){
 	    $(':input[name="out_method"]').on('change', function(event) {
+	    	var method = $(':input[name="out_method"]:checked').val();
 			$('.out_method_options').addClass('hidden');
-			$('#out_method_'+$(':input[name="out_method"]:checked').val()+'_options').removeClass('hidden');
+			$('#out_method_'+method+'_options').removeClass('hidden');
+
+			if (parseInt(method) == parseInt(out_method_smtp)) {
+				$('#out_method_'+out_method_smtp+'_options :input').attr('required', 'required');
+			} else {
+				$('#out_method_'+out_method_smtp+'_options :input').removeAttr('required');
+			}
 		});
 	});
 }

@@ -48,12 +48,12 @@
                         </div>
                     </div>
 
-                    <div id="out_method_{{ App\Mailbox::OUT_METHOD_SMTP }}_options" class="out_method_options hidden margin-top">
+                    <div id="out_method_{{ App\Mailbox::OUT_METHOD_SMTP }}_options" class="out_method_options @if ($mailbox->out_method != App\Mailbox::OUT_METHOD_SMTP) hidden @endif margin-top">
                         <div class="form-group{{ $errors->has('out_server') ? ' has-error' : '' }}">
                             <label for="out_server" class="col-sm-2 control-label">{{ __('SMTP Server') }}</label>
 
                             <div class="col-md-6">
-                                <input id="out_server" type="text" class="form-control input-sized" name="out_server" value="{{ old('out_server', $mailbox->out_server) }}" maxlength="255" required autofocus>
+                                <input id="out_server" type="text" class="form-control input-sized" name="out_server" value="{{ old('out_server', $mailbox->out_server) }}" maxlength="255"  @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
 
                                 @include('partials/field_error', ['field'=>'out_server'])
                             </div>
@@ -62,7 +62,7 @@
                             <label for="out_port" class="col-sm-2 control-label">{{ __('Port') }}</label>
 
                             <div class="col-md-6">
-                                <input id="out_port" type="number" class="form-control input-sized" name="out_port" value="{{ old('out_port', $mailbox->out_port) }}" maxlength="5" required autofocus>
+                                <input id="out_port" type="number" class="form-control input-sized" name="out_port" value="{{ old('out_port', $mailbox->out_port) }}" maxlength="5" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
 
                                 @include('partials/field_error', ['field'=>'out_port'])
                             </div>
@@ -71,7 +71,7 @@
                             <label for="out_username" class="col-sm-2 control-label">{{ __('Username') }}</label>
 
                             <div class="col-md-6">
-                                <input id="out_username" type="text" class="form-control input-sized" name="out_username" value="{{ old('out_username', $mailbox->out_username) }}" maxlength="100" required autofocus>
+                                <input id="out_username" type="text" class="form-control input-sized" name="out_username" value="{{ old('out_username', $mailbox->out_username) }}" maxlength="100" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
 
                                 @include('partials/field_error', ['field'=>'out_username'])
                             </div>
@@ -80,7 +80,7 @@
                             <label for="out_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="out_password" type="password" class="form-control input-sized" name="out_password" value="{{ old('out_password', $mailbox->out_password) }}" maxlength="255" required autofocus>
+                                <input id="out_password" type="password" class="form-control input-sized" name="out_password" value="{{ old('out_password', $mailbox->out_password) }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
 
                                 @include('partials/field_error', ['field'=>'out_password'])
                             </div>
@@ -89,7 +89,7 @@
                             <label for="out_ssl" class="col-sm-2 control-label">{{ __('Security') }}</label>
 
                             <div class="col-md-6">
-                                <select id="out_ssl" class="form-control input-sized" name="out_ssl" required autofocus>
+                                <select id="out_ssl" class="form-control input-sized" name="out_ssl" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
                                     <option value="{{ App\Mailbox::OUT_SSL_NONE }}" @if (old('out_ssl', $mailbox->out_ssl) == App\Mailbox::OUT_SSL_NONE)selected="selected"@endif>{{ __('None') }}</option>
                                     <option value="{{ App\Mailbox::OUT_SSL_SSL }}" @if (old('out_ssl', $mailbox->out_ssl) == App\Mailbox::OUT_SSL_SSL)selected="selected"@endif>{{ __('SSL') }}</option>
                                     <option value="{{ App\Mailbox::OUT_SSL_TLS }}" @if (old('out_ssl', $mailbox->out_ssl) == App\Mailbox::OUT_SSL_TLS)selected="selected"@endif>{{ __('TLS') }}</option>

@@ -157,7 +157,7 @@ class MailboxesController extends Controller
     }
 
     /**
-     * Mailbox permissions
+     * Mailbox connection settings
      */
     public function connectionOutgoing($id)
     {
@@ -165,5 +165,75 @@ class MailboxesController extends Controller
         $this->authorize('update', $mailbox);
 
         return view('mailboxes/connection', ['mailbox' => $mailbox, 'sendmail_path' => ini_get('sendmail_path')]);
+    }
+
+    /**
+     * Save mailbox connection settings
+     */
+    public function connectionOutgoingSave($id, Request $request)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+        $this->authorize('update', $mailbox);
+
+        if ($request->out_method == Mailbox::OUT_METHOD_SMTP) {
+            $validator = Validator::make($request->all(), [
+                'out_server' => 'required|string|max:255',
+                'out_port' => 'required|integer',
+                'out_username' => 'required|string|max:100',
+                'out_password' => 'required|string|max:255',
+                'out_ssl' => 'required|integer',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->route('mailboxes.connection', ['id' => $id])
+                            ->withErrors($validator)
+                            ->withInput();
+            }
+        }
+
+        $mailbox->fill($request->all());
+        $mailbox->save();
+
+        \Session::flash('flash_success', __('Connection settings saved!'));
+        return redirect()->route('mailboxes.connection', ['id' => $id]);
+    }
+
+    /**
+     * Mailbox incoming settings
+     */
+    public function connectionIncoming($id)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+        $this->authorize('update', $mailbox);
+
+        return view('mailboxes/connection_incoming', ['mailbox' => $mailbox]);
+    }
+
+    /**
+     * Save mailbox connection settings
+     */
+    public function connectionIncomingSave($id, Request $request)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+        $this->authorize('update', $mailbox);
+
+        $validator = Validator::make($request->all(), [
+            'in_server' => 'required|string|max:255',
+            'in_port' => 'required|integer',
+            'in_username' => 'required|string|max:100',
+            'in_password' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('mailboxes.connection.incoming', ['id' => $id])
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+
+        $mailbox->fill($request->all());
+        $mailbox->save();
+
+        \Session::flash('flash_success', __('Connection settings saved!'));
+        return redirect()->route('mailboxes.connection.incoming', ['id' => $id]);
     }
 }
