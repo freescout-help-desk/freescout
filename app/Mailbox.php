@@ -41,7 +41,7 @@ class Mailbox extends Model
     const OUT_METHOD_PHP_MAIL = 1;
     const OUT_METHOD_SENDMAIL = 2;
     const OUT_METHOD_SMTP = 3;
-    const OUT_METHOD_GMAIL = 3;
+    //const OUT_METHOD_GMAIL = 3; // todo
     // todo: mailgun, sendgrid, mandrill, etc
     
     /**

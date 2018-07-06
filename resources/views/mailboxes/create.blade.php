@@ -62,10 +62,20 @@
 					                    <div class="form-group{{ $errors->has('users') ? ' has-error' : '' }}">
 					                        <label for="users" class="col-sm-4 control-label">{{ __('Who Else Will Use This Mailbox') }}</label>
 
-					                        <div class="col-md-6">
-					                            <p class="existing">
-					                            	<a href="javascript:void(0)" class="selAll">{{ __('all') }}</a> / <a href="javascript:void(0)" class="selNone">{{ __('none') }}</a>
-					                            </p>
+					                        <div class="col-md-6 control-padded">
+					                            <div><a href="javascript:void(0)" class="sel-all">{{ __('all') }}</a> / <a href="javascript:void(0)" class="sel-none">{{ __('none') }}</a></div>
+
+					                            <fieldset id="permissions-fields">
+							                        @foreach ($users as $user)
+							                            <div class="control-group">
+							                                <div class="controls">
+							                                    <label class="control-label checkbox" for="user-{{ $user->id }}">
+							                                        <input type="checkbox" name="users[]" id="user-{{ $user->id }}" value="{{ $user->id }}" @if (is_array(old('users')) && in_array($user->id, old('users'))) checked="checked" @endif> {{ $user->first_name }} {{ $user->last_name }}
+							                                    </label>
+							                                </div>
+							                            </div>
+							                        @endforeach
+							                    </fieldset>
 
 					                            @include('partials/field_error', ['field'=>'users'])
 					                        </div>
@@ -92,4 +102,9 @@
 	    </div>
 	</div>
 </div>
+@endsection
+
+@section('javascript')
+    @parent
+    permissionsInit();
 @endsection

@@ -50,8 +50,6 @@
     </div>
 @endsection
 
-@include('partials/editor')
-
 @section('javascript')
     @parent
     permissionsInit();

@@ -11,8 +11,8 @@
 .footer {
     text-align: center;
     font-size: 12px;
-    position: absolute;
-    bottom: 0;
+    /*position: absolute;
+    bottom: 0;*/
     color: #b4c0ca;
     margin-bottom: 20px;
     margin-top: 20px;
@@ -20,7 +20,8 @@
 }
 .content {
     margin-top: 20px;
-    padding-bottom: 60px;
+    /*padding-bottom: 60px;*/
+    min-height: 300px;
 }
 .layout-2col {
     display: flex;
@@ -49,6 +50,7 @@
     min-width: 0;
     position: relative;
     z-index: 2;
+    overflow: hidden;
 }
 .sidebar-title {
     color: #2a3b47;
@@ -259,7 +261,7 @@ select.form-control {
     width: 270px;
 }
 .control-label {
-    font-size: 13px;
+    font-size: 13.4px;
 }
 .controls>.checkbox:first-child,
 .controls>.radio:first-child {
@@ -271,7 +273,7 @@ select.form-control {
     margin-bottom: 0;
     padding-top: 5px;
     vertical-align: middle;
-    font-size: 13px;
+    font-size: 13.4px;
 }
 .checkbox,
 .radio {
@@ -279,6 +281,12 @@ select.form-control {
     padding-left: 22px;
     padding-right: 7px;
     position: relative;
+}
+.input-group {
+    padding-top: 3px;
+}
+.input-group-btn .btn {
+    height: 28px;
 }
 
 /**
@@ -385,11 +393,26 @@ a h4 {
 .margin-top {
     margin-top: 20px !important;
 }
+.margin-top-25 {
+    margin-top: 25px !important;
+}
+.margin-top-40 {
+    margin-top: 40px !important;
+}
 .margin-left {
     margin-left: 20px !important;
 }
+.margin-bottom {
+    margin-bottom: 20px !important;
+}
+.margin-0 {
+    margin: 0 !important;
+}
 .margin-bottom-0 {
     margin-bottom: 0 !important;
+}
+.padding-top-0 {
+    padding-top: 0 !important;
 }
 .heading {
     color: #253540;
@@ -398,6 +421,13 @@ a h4 {
 }
 .section-heading {
     border-bottom: 1px solid #d6dde3;
+    padding: 12px 18px;
+    color: #253540;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 30px;
+}
+.section-heading-noborder {
     padding: 12px 18px;
     color: #253540;
     font-size: 16px;
@@ -437,12 +467,12 @@ a h4 {
 }
 .popover {
     color:#4f5d6b;
-    font-size:13px
+    font-size:13.4px
 }
 .help-block {
     color: #93a1af;
     display: block;
-    font-size: 13px;
+    font-size: 13.4px;
     margin: 4px 0 9px;
 }
 .text-help {
@@ -479,4 +509,44 @@ a h4 {
 #permissions-fields .control-label {
     margin-top: 0;
     margin-bottom: 0;
+}
+#permissions-fields .control-label {
+    text-align: left;
+}
+.control-padded {
+    padding-top: 4px;
+}
+#connection-settings {
+    padding-left: 18px;
+}
+.accordion .panel-title > a {
+    display: block;
+    text-decoration: none;
+    color: #2a3b47;
+    font-size: 16px;
+    font-weight: normal;
+    padding: 10px 15px;
+}
+.accordion .panel-title > a .caret {
+    float: right;
+    top: 7px;
+    right: 2px;
+    position: relative;
+    border-top-color: #a5b2bd;
+}
+.accordion .panel-title > a .label {
+    padding-bottom: 1px;
+    position: relative;
+    padding-left: 5px;
+    top: -2px;
+}
+.accordion .panel-default > .panel-heading {
+    background-color: #fff;
+    padding: 0;
+}
+.accordion .panel-default > .panel-heading:hover {
+    background-color: #f1f3f5;
+}
+.accordion-status {
+    margin-left: 4px;
 }

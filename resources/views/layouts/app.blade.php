@@ -42,7 +42,7 @@
                         <!-- Left Side Of Navbar -->
                         <ul class="nav navbar-nav">
                             @php
-                                $mailboxes = App\Mailbox::all();
+                                $mailboxes = Auth::user()->mailboxesHasAccess();
                             @endphp
                             @if (count($mailboxes) == 1)
                                 <li><a href="{{ route('mailboxes.view', ['id'=>$mailboxes[0]->id]) }}" @if (Route::currentRouteName() == 'mailboxes.view')class="active"@endif>{{ __('Mailbox') }}</a></li>
@@ -51,10 +51,9 @@
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
                                         {{ __('Mailbox') }} <span class="caret"></span>
                                     </a>
-
                                     <ul class="dropdown-menu">
                                         @foreach ($mailboxes as $mailbox_item)
-                                            <li @if ($mailbox_item->id == request()->route()->parameters->id)class="active"@endif><a href="{{ route('mailboxes.view', ['id'=>request()->route()->parameters->id]) }}">{{ $mailbox_item->name }}</a></li>
+                                            <li @if ($mailbox_item->id == app('request')->input('id'))class="active"@endif><a href="{{ route('mailboxes.view', ['id' => app('request')->input('id')]) }}">{{ $mailbox_item->name }}</a></li>
                                         @endforeach
                                     </ul>
                                 </li>
@@ -157,7 +156,7 @@
 
         @if (!in_array(Route::currentRouteName(), array('mailboxes.view')))
             <div class="footer">
-                &copy; {{ date('Y') }}, <a href="{{ config('app.freescout_url') }}" target="blank">FreeScout</a> — Free open source help desk &amp; shared mailbox (v{{ config('app.version') }})
+                &copy; {{ date('Y') }}, <a href="{{ config('app.freescout_url') }}" target="blank">FreeScout</a> — Free open source help desk &amp; shared mailbox<br/>v{{ config('app.version') }}
             </div>
         @endif
     </div>

@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Mailbox;
 
 class User extends Authenticatable
 {
@@ -93,5 +94,17 @@ class User extends Authenticatable
     public function getFullName()
     {
         return $this->first_name . ' ' . $this->last_name;
+    }
+
+    /**
+     * Get mailboxes to which user has access
+     */
+    public function mailboxesHasAccess()
+    {
+        if ($this->isAdmin()) {
+            return Mailbox::all();
+        } else {
+            $this->mailboxes;
+        }
     }
 }

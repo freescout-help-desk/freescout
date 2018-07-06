@@ -34,7 +34,9 @@ class MailboxesController extends Controller
      */
     public function create()
     {
-        return view('mailboxes/create');
+        $users = User::where('role', '!=', User::ROLE_ADMIN)->get();
+
+        return view('mailboxes/create', ['users' => $users]);
     }
 
     /**
@@ -62,6 +64,8 @@ class MailboxesController extends Controller
         $mailbox = new Mailbox;
         $mailbox->fill($request->all());
         $mailbox->save();
+
+        $mailbox->users()->sync($request->users);
 
         \Session::flash('flash_success', __('Mailbox created successfully'));
         return redirect()->route('mailboxes.update', ['id' => $mailbox->id]);
@@ -144,14 +148,22 @@ class MailboxesController extends Controller
     public function permissionsSave($id, Request $request)
     {
         $mailbox = Mailbox::findOrFail($id);
-
         $this->authorize('update', $mailbox);
 
         $mailbox->users()->sync($request->users);
 
-        //$mailbox->save();
-
         \Session::flash('flash_success', __('Mailbox permissions saved!'));
         return redirect()->route('mailboxes.permissions', ['id' => $id]);
+    }
+
+    /**
+     * Mailbox permissions
+     */
+    public function connectionOutgoing($id)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+        $this->authorize('update', $mailbox);
+
+        return view('mailboxes/connection', ['mailbox' => $mailbox, 'sendmail_path' => ini_get('sendmail_path')]);
     }
 }
