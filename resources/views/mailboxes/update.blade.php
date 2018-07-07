@@ -42,10 +42,12 @@
                     <div class="form-group{{ $errors->has('aliases') ? ' has-error' : '' }}">
                         <label for="aliases" class="col-sm-2 control-label">{{ __('Aliases') }}</label>
 
-                        <div class="col-md-6 flexy">
-                            <input id="aliases" type="text" class="form-control input-sized" name="aliases" value="{{ old('aliases', $mailbox->aliases) }}" maxlength="128" required autofocus>
+                        <div class="col-md-6">
+                            <div class="flexy">
+                                <input id="aliases" type="text" class="form-control input-sized" name="aliases" value="{{ old('aliases', $mailbox->aliases) }}" maxlength="128" required autofocus>
 
-                            <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="ture" data-placement="left"  data-content="{{ __('Aliases are other email addresses that also forward to your mailbox address. Separate each email with a comma.') }}"></i>
+                                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="ture" data-placement="left"  data-content="{{ __('Aliases are other email addresses that also forward to your mailbox address. Separate each email with a comma.') }}"></i>
+                            </div>
                             
                             @include('partials/field_error', ['field'=>'aliases'])
                         </div>
@@ -54,14 +56,16 @@
                     <div class="form-group{{ $errors->has('from_name') ? ' has-error' : '' }}">
                         <label for="from_name" class="col-sm-2 control-label">{{ __('From Name') }}</label>
 
-                        <div class="col-md-6 flexy">
-                            <select id="from_name" class="form-control input-sized" name="from_name" required autofocus>
-                                <option value="{{ App\Mailbox::FROM_NAME_MAILBOX }}" @if (old('from_name', $mailbox->from_name) == App\Mailbox::FROM_NAME_MAILBOX)selected="selected"@endif>{{ __('Mailbox Name') }}</option>
-                                <option value="{{ App\Mailbox::FROM_NAME_USER }}" @if (old('from_name', $mailbox->from_name) == App\Mailbox::FROM_NAME_USER)selected="selected"@endif>{{ __("User's Name") }}</option>
-                                <option value="{{ App\Mailbox::FROM_NAME_CUSTOM }}" @if (old('from_name', $mailbox->from_name) == App\Mailbox::FROM_NAME_CUSTOM)selected="selected"@endif>{{ __('Custom Name') }}</option>
-                            </select>
+                        <div class="col-md-6">
+                            <div class="flexy">
+                                <select id="from_name" class="form-control input-sized" name="from_name" required autofocus>
+                                    <option value="{{ App\Mailbox::FROM_NAME_MAILBOX }}" @if (old('from_name', $mailbox->from_name) == App\Mailbox::FROM_NAME_MAILBOX)selected="selected"@endif>{{ __('Mailbox Name') }}</option>
+                                    <option value="{{ App\Mailbox::FROM_NAME_USER }}" @if (old('from_name', $mailbox->from_name) == App\Mailbox::FROM_NAME_USER)selected="selected"@endif>{{ __("User's Name") }}</option>
+                                    <option value="{{ App\Mailbox::FROM_NAME_CUSTOM }}" @if (old('from_name', $mailbox->from_name) == App\Mailbox::FROM_NAME_CUSTOM)selected="selected"@endif>{{ __('Custom Name') }}</option>
+                                </select>
 
-                            <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="ture" data-placement="left"  data-content="{{ __('Name that will appear in the <strong>From</strong> field when a customer views your email.') }}"></i>
+                                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="ture" data-placement="left"  data-content="{{ __('Name that will appear in the <strong>From</strong> field when a customer views your email.') }}"></i>
+                            </div>
 
                             @include('partials/field_error', ['field'=>'from_name'])
                         </div>

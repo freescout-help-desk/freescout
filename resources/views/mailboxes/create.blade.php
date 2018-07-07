@@ -86,6 +86,8 @@
 					                            <button type="submit" class="btn btn-primary">
 					                                {{ __('Create Mailbox') }}
 					                            </button>
+
+					                            <a href="{{ route('mailboxes') }}" class="btn btn-link">{{ __('Cancel') }}</a>
 					                        </div>
 					                    </div>
 

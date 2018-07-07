@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Hash;
 use App\Mailbox;
 
 class User extends Authenticatable
@@ -106,5 +107,16 @@ class User extends Authenticatable
         } else {
             $this->mailboxes;
         }
+    }
+
+    /**
+     * Generate random password for the user
+     * @param  integer $length
+     * @return string
+     */
+    public function generatePassword($length = 8)
+    {
+        $this->password = Hash::make(str_random($length));
+        return $this->password;
     }
 }

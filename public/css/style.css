@@ -253,6 +253,10 @@ a.navbar-brand:hover img {
 /**
  * Forms
  */
+label.checkbox,
+label.radio {
+    cursor: pointer;
+}
 select.form-control {
     height: 28px;
     line-height: 28px;
@@ -301,9 +305,6 @@ select.form-control {
     margin: 0 18px 18px 0;
     margin: 0 18px 18px 0;
     padding: 18px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     width: 250px;
     height: 90px;
     float: left;
@@ -319,6 +320,9 @@ a h4 {
     font-size: 18px;
     font-weight: 400;
     margin: 2px 0 4px 66px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .card > p {
     color: #93a1af;
@@ -407,6 +411,9 @@ a h4 {
 }
 .margin-0 {
     margin: 0 !important;
+}
+.margin-top-0 {
+    margin-top: 0 !important;
 }
 .margin-bottom-0 {
     margin-bottom: 0 !important;
@@ -550,4 +557,10 @@ a h4 {
 }
 .accordion-status {
     margin-left: 4px;
+}
+.form-divider {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

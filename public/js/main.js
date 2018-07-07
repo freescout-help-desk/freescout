@@ -76,3 +76,18 @@ function mailboxConnectionInit(out_method_smtp)
 		});
 	});
 }
+
+function userCreateInit()
+{
+	$(document).ready(function(){
+	    $('#send_invite').on('change', function(event) {
+	    	if ($(this).is(':checked')) {
+	    		$('.no-send-invite').addClass('hidden');
+	    		$('#password').removeAttr('required');
+	    	} else {
+				$('.no-send-invite').removeClass('hidden');
+				$('#password').attr('required', 'required');
+	    	}
+		});
+	});
+}

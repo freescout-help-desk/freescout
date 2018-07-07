@@ -34,6 +34,8 @@ class MailboxesController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', 'App\Mailbox');
+        
         $users = User::where('role', '!=', User::ROLE_ADMIN)->get();
 
         return view('mailboxes/create', ['users' => $users]);
