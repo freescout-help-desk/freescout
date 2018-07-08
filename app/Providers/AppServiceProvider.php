@@ -14,9 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // To avoid MySQL error:
+        // To avoid MySQL error in packages:
         // "SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes"
-        //Schema::defaultStringLength(191);
+        Schema::defaultStringLength(191);
     }
 
     /**

@@ -13,8 +13,11 @@
 
 Auth::routes();
 
+# General routes for logged in users
 Route::get('/', 'SecureController@dashboard')->name('dashboard');
+Route::get('/logs/{name?}', 'SecureController@logs')->name('logs');
 
+# Users
 Route::get('/users', 'UsersController@users')->name('users');
 Route::get('/users/wizard', 'UsersController@create')->name('users.create');
 Route::post('/users/wizard', 'UsersController@createSave');
@@ -24,6 +27,7 @@ Route::post('/users/permissions/{id}', 'UsersController@permissionsSave');
 Route::get('/users/permissions/{id}', 'UsersController@permissions')->name('users.permissions');
 Route::post('/users/permissions/{id}', 'UsersController@permissionsSave');
 
+# Mailboxes
 Route::get('/settings/mailboxes', 'MailboxesController@mailboxes')->name('mailboxes');
 Route::get('/settings/mailbox-new', 'MailboxesController@create')->name('mailboxes.create');
 Route::post('/settings/mailbox-new', 'MailboxesController@createSave');

@@ -41,8 +41,10 @@ FreeScout [development guide](https://github.com/freescout-helpdesk/freescout/wi
 
 ## Screenshots
 
-Login page
+Login page:
+
 ![Login page](https://freescout-helpdesk.github.io/img/screenshots/freescout-login.png)
 
-Mailbox connection settings page
+Mailbox connection settings page:
+
 ![Mailbox connection settings page](https://freescout-helpdesk.github.io/img/screenshots/mailbox-connection.png)

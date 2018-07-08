@@ -1,0 +1,36 @@
+{
+    "name": "patchwork/utf8",
+    "type": "library",
+    "description": "Portable and performant UTF-8, Unicode and Grapheme Clusters for PHP",
+    "keywords": ["utf8","utf-8","unicode","i18n","grapheme"],
+    "homepage": "https://github.com/tchwork/utf8",
+    "license": "(Apache-2.0 or GPL-2.0)",
+    "authors": [
+        {
+            "name": "Nicolas Grekas",
+            "email": "p@tchwork.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "lib-pcre": ">=7.3"
+    },
+    "suggest": {
+        "ext-wfio": "Use WFIO for UTF-8 filesystem access on Windows",
+        "ext-intl": "Use Intl for best performance",
+        "ext-iconv": "Use iconv for best performance",
+        "ext-mbstring": "Use Mbstring for best performance"
+    },
+    "autoload": {
+        "psr-4": {"Patchwork\\": "src/Patchwork/"},
+        "classmap": ["src/Normalizer.php"]
+    },
+    "autoload-dev": {
+        "files": ["tests/bootstrap.php"]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.3-dev"
+        }
+    }
+}

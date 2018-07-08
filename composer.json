@@ -6,10 +6,11 @@
     "type": "project",
     "require": {
         "php": ">=7.0.0",
+        "devfactory/minify": "1.0.7",
         "fideloper/proxy": "3.3.4",
         "laravel/framework": "v5.5.40",
         "laravel/tinker": "v1.0.7",
-        "devfactory/minify": "1.0.7"
+        "spatie/laravel-activitylog": "2.7.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v2.4.3",

@@ -66,7 +66,7 @@
 				                        </div>
 				                    </div>
 
-				                    <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}  @if (!empty(old('send_invite')) || empty(old('role'))) hidden @endif no-send-invite">
+				                    <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}  @if (!empty(old('send_invite')) || empty(old('role'))) hidden1 @endif no-send-invite">
 				                        <label for="password" class="col-sm-4 control-label">{{ __('Password') }}</label>
 
 				                        <div class="col-md-6">
@@ -110,8 +110,8 @@
 										<div class="controls send-email">
 											<div class="col-md-8 col-sm-offset-4">
 												<label class="checkbox">
-													<input type="checkbox" name="send_invite" id="send_invite" value="1" @if (!empty(old('send_invite')) || empty(old('role'))) checked="checked" @endif>
-													{{ __('Send an invite email') }}
+													<input type="checkbox" name="send_invite" id="send_invite" value="1" disabled @if (!empty(old('send_invite')) || empty(old('role'))) checked1="checked1" @endif>
+													{{ __('Send an invite email') }} (todo)
 												</label>
 
 												<span class="text-help">{{ __("An invite can be sent later if you aren't ready") }}</span>

@@ -119,4 +119,13 @@ class User extends Authenticatable
         $this->password = Hash::make(str_random($length));
         return $this->password;
     }
+
+    /**
+     * Get URL for editing user
+     * @return string
+     */
+    public function urlEdit()
+    {
+        return route('users.profile', ['id'=>$this->id]);
+    }
 }

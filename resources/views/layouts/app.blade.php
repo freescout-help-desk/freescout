@@ -100,6 +100,7 @@
                                     @if (Auth::user()->isAdmin())
                                         <li><a href="#">{{ __('Teams') }} (todo)</a></li>
                                         <li><a href="{{ route('users') }}">{{ __('Users') }}</a></li>
+                                        <li><a href="{{ route('logs') }}">{{ __('Logs') }}</a></li>
                                     @endif
                                 </ul>
                             </li>

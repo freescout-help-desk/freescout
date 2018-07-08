@@ -564,3 +564,17 @@ a h4 {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+.empty-content {
+    box-shadow: none;
+    margin: 12em auto 0;
+    text-align: center;
+    text-align: center;
+}
+.empty-content i {
+    font-size: 57px;
+    color: #a5b2bd;
+}
+.empty-content p {
+    color: #a5b2bd;
+    font-size: 16px;
+}

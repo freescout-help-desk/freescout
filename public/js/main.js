@@ -91,3 +91,10 @@ function userCreateInit()
 		});
 	});
 }
+
+function logsInit()
+{
+	$(document).ready(function() {
+	    $('#table-logs').DataTable();
+	} );
+}
