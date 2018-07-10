@@ -22,14 +22,14 @@ You can suggest features or vote for features [here](https://feedback.userreport
 
 If you would like to be notified by email when **FreeScout** will be released, you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
 
-## Project Homepage
-
-[https://github.com/freescout-helpdesk/freescout](https://github.com/freescout-helpdesk/freescout)
-
 ## Requirements
 
   * PHP 7.0.0+
   * MySQL/MariaDB 5.0+
+
+## Documentation
+
+FreeScout [Docs](https://github.com/freescout-helpdesk/freescout/wiki)
 
 ## Installation Guide
 

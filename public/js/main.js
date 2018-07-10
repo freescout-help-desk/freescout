@@ -98,3 +98,22 @@ function logsInit()
 	    $('#table-logs').DataTable();
 	} );
 }
+
+function multiInputInit()
+{
+	$(document).ready(function() {
+	    $('.multi-add').click(function() {
+	    	var clone = $(this).parents('.multi-container:first').children('.multi-item:first').clone(true, true);
+	    	clone.find(':input').val('');
+	    	clone.insertAfter($(this).parents('.multi-container:first').children('.multi-item:last'));
+		});
+		$('.multi-remove').click(function() {
+	    	if ($(this).parents('.multi-container:first').children('.multi-item').length > 1) {
+	    		$(this).parents('.multi-item:first').remove();
+	    	} else {
+	    		$(this).parents('.multi-item:first').children(':input').val('');
+	    	}
+		});
+	} );
+}
+

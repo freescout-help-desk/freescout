@@ -24,7 +24,7 @@
                     {{ csrf_field() }}
 
                     <div class="form-group margin-top">
-                        <label for="email" class="col-sm-2 control-label">{{ __('Method') }}</label>
+                        <label for="email" class="col-sm-2 control-label">{{ __('Method') }} <a href="https://github.com/freescout-helpdesk/freescout/wiki/Sending-Methods" target="blank" class="glyphicon glyphicon-info-sign help-icon" data-toggle="tooltip" title="{{ __("Click to read more about sending methods") }}"></a></label>
 
                         <div class="col-sm-6">
                             <div class="control-group">
@@ -45,10 +45,17 @@
                                     <input type="radio" name="out_method" value="{{ App\Mailbox::OUT_METHOD_SMTP }}" id="out_method_{{ App\Mailbox::OUT_METHOD_SMTP }}" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) checked="checked" @endif> {{ __("SMTP") }}
                                 </label>
                             </div>
+                            <div class="control-group">
+                                <label class="radio disabled" for="out_method_elastic">
+                                    <input type="radio" name="out_method" disabled value="elastic" id="out_method_elastic" @if ($mailbox->out_method == 'elastic') checked="checked" @endif> <a href="https://elasticemail.com/account#/create-account?r=bc0975e9-3d6b-462f-be7c-629e7672a4a8" target="_blank">{{ __("Elastic Email") }}</a> (todo)<br/>
+                                    <span class="text-help">{{ __("150,000 free emails per month, allows to see email delivery status") }}</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
                     <div id="out_method_{{ App\Mailbox::OUT_METHOD_SMTP }}_options" class="out_method_options @if ($mailbox->out_method != App\Mailbox::OUT_METHOD_SMTP) hidden @endif margin-top">
+                        <hr/>
                         <div class="form-group{{ $errors->has('out_server') ? ' has-error' : '' }}">
                             <label for="out_server" class="col-sm-2 control-label">{{ __('SMTP Server') }}</label>
 
@@ -98,6 +105,7 @@
                                 @include('partials/field_error', ['field'=>'out_ssl'])
                             </div>
                         </div>
+                        <hr/>
                     </div>
                     
                     <div class="form-group margin-bottom-0">

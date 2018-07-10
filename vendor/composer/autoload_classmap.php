@@ -6,8 +6,12 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\ActivityLog' => $baseDir . '/app/ActivityLog.php',
     'App\\Console\\Commands\\CreateUser' => $baseDir . '/app/Console/Commands/CreateUser.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
+    'App\\Customer' => $baseDir . '/app/Customer.php',
+    'App\\Email' => $baseDir . '/app/Email.php',
+    'App\\Events\\Event' => $baseDir . '/app/Events/Event.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
     'App\\Http\\Controllers\\Auth\\ForgotPasswordController' => $baseDir . '/app/Http/Controllers/Auth/ForgotPasswordController.php',
     'App\\Http\\Controllers\\Auth\\LoginController' => $baseDir . '/app/Http/Controllers/Auth/LoginController.php',
@@ -23,6 +27,12 @@ return array(
     'App\\Http\\Middleware\\TrimStrings' => $baseDir . '/app/Http/Middleware/TrimStrings.php',
     'App\\Http\\Middleware\\TrustProxies' => $baseDir . '/app/Http/Middleware/TrustProxies.php',
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
+    'App\\Listeners\\LogFailedLogin' => $baseDir . '/app/Listeners/LogFailedLogin.php',
+    'App\\Listeners\\LogLockout' => $baseDir . '/app/Listeners/LogLockout.php',
+    'App\\Listeners\\LogPasswordReset' => $baseDir . '/app/Listeners/LogPasswordReset.php',
+    'App\\Listeners\\LogRegisteredUser' => $baseDir . '/app/Listeners/LogRegisteredUser.php',
+    'App\\Listeners\\LogSuccessfulLogin' => $baseDir . '/app/Listeners/LogSuccessfulLogin.php',
+    'App\\Listeners\\LogSuccessfulLogout' => $baseDir . '/app/Listeners/LogSuccessfulLogout.php',
     'App\\Mailbox' => $baseDir . '/app/Mailbox.php',
     'App\\Policies\\MailboxPolicy' => $baseDir . '/app/Policies/MailboxPolicy.php',
     'App\\Policies\\UserPolicy' => $baseDir . '/app/Policies/UserPolicy.php',
@@ -141,6 +151,7 @@ return array(
     'CssVariablesMinifierFilter' => $vendorDir . '/natxet/CssMin/src/CssMin.php',
     'CssVariablesMinifierPlugin' => $vendorDir . '/natxet/CssMin/src/CssMin.php',
     'CssWhitesmithsFormatter' => $vendorDir . '/natxet/CssMin/src/CssMin.php',
+    'CustomersTableSeeder' => $baseDir . '/database/seeds/CustomersTableSeeder.php',
     'DatabaseSeeder' => $baseDir . '/database/seeds/DatabaseSeeder.php',
     'DebugBar\\Bridge\\CacheCacheCollector' => $vendorDir . '/maximebf/debugbar/src/DebugBar/Bridge/CacheCacheCollector.php',
     'DebugBar\\Bridge\\DoctrineCollector' => $vendorDir . '/maximebf/debugbar/src/DebugBar/Bridge/DoctrineCollector.php',

@@ -253,6 +253,9 @@ a.navbar-brand:hover img {
 /**
  * Forms
  */
+label.disabled {
+    color: #93a1af;
+}
 label.checkbox,
 label.radio {
     cursor: pointer;
@@ -263,6 +266,9 @@ select.form-control {
 }
 .input-sized {
     width: 270px;
+}
+.input-sized2 {
+    width: 387px;
 }
 .control-label {
     font-size: 13.4px;
@@ -472,6 +478,17 @@ a h4 {
     float: left;
     top: 7px;
 }
+.help-icon {
+    color: #a5b2bd;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 15px;
+    top: 3px;
+}
+a.help-icon:hover {
+    color: #a5b2bd;
+    text-decoration: none;
+}
 .popover {
     color:#4f5d6b;
     font-size:13.4px
@@ -481,6 +498,12 @@ a h4 {
     display: block;
     font-size: 13.4px;
     margin: 4px 0 9px;
+}
+.help-block a {
+    color: #93a1af;
+}
+.help-block a:hover {
+    color: #23527c;
 }
 .text-help {
     color: #93a1af;
@@ -523,7 +546,7 @@ a h4 {
 .control-padded {
     padding-top: 4px;
 }
-#connection-settings {
+.nav-tabs-main {
     padding-left: 18px;
 }
 .accordion .panel-title > a {
@@ -577,4 +600,24 @@ a h4 {
 .empty-content p {
     color: #a5b2bd;
     font-size: 16px;
+}
+.multi-item {
+    display: flex;
+    flex: 1;
+    flex-basis: auto;
+    -ms-flex: 1;
+    -webkit-flex: 1;
+    margin-bottom: 5px;
+}
+.multi-remove,
+.multi-remove:focus {
+    color: #c1cbd4;
+    font-size: 18px;
+    position: relative;
+    top: 2px;
+    margin-left: 5px;
+}
+.multi-remove:hover {
+    color: #8899aa;
+    text-decoration: none;
 }

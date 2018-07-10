@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use App\User;
 
 class CreateUsersTable extends Migration
 {
@@ -20,10 +21,10 @@ class CreateUsersTable extends Migration
             $table->string('last_name', 30);
             $table->string('email', 100)->unique();
             $table->string('password');
-            $table->string('role')->default('user'); // admin/user
+            $table->string('role')->default(User::ROLE_USER); // admin/user
             $table->string('timezone')->default('UTC');
             $table->string('photo_url')->nullable();
-            $table->string('type')->default('user'); // team/user
+            $table->string('type')->default(User::TYPE_USER); // team/user
             $table->unsignedTinyInteger('invite_state')->default(1); // 1 - not invited
             $table->string('emails', 100)->nullable();
             $table->string('job_title', 100)->nullable();

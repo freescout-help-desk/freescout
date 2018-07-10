@@ -360,8 +360,12 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
     );
 
     public static $classMap = array (
+        'App\\ActivityLog' => __DIR__ . '/../..' . '/app/ActivityLog.php',
         'App\\Console\\Commands\\CreateUser' => __DIR__ . '/../..' . '/app/Console/Commands/CreateUser.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
+        'App\\Customer' => __DIR__ . '/../..' . '/app/Customer.php',
+        'App\\Email' => __DIR__ . '/../..' . '/app/Email.php',
+        'App\\Events\\Event' => __DIR__ . '/../..' . '/app/Events/Event.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\Auth\\ForgotPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ForgotPasswordController.php',
         'App\\Http\\Controllers\\Auth\\LoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/LoginController.php',
@@ -377,6 +381,12 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'App\\Http\\Middleware\\TrimStrings' => __DIR__ . '/../..' . '/app/Http/Middleware/TrimStrings.php',
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
+        'App\\Listeners\\LogFailedLogin' => __DIR__ . '/../..' . '/app/Listeners/LogFailedLogin.php',
+        'App\\Listeners\\LogLockout' => __DIR__ . '/../..' . '/app/Listeners/LogLockout.php',
+        'App\\Listeners\\LogPasswordReset' => __DIR__ . '/../..' . '/app/Listeners/LogPasswordReset.php',
+        'App\\Listeners\\LogRegisteredUser' => __DIR__ . '/../..' . '/app/Listeners/LogRegisteredUser.php',
+        'App\\Listeners\\LogSuccessfulLogin' => __DIR__ . '/../..' . '/app/Listeners/LogSuccessfulLogin.php',
+        'App\\Listeners\\LogSuccessfulLogout' => __DIR__ . '/../..' . '/app/Listeners/LogSuccessfulLogout.php',
         'App\\Mailbox' => __DIR__ . '/../..' . '/app/Mailbox.php',
         'App\\Policies\\MailboxPolicy' => __DIR__ . '/../..' . '/app/Policies/MailboxPolicy.php',
         'App\\Policies\\UserPolicy' => __DIR__ . '/../..' . '/app/Policies/UserPolicy.php',
@@ -495,6 +505,7 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'CssVariablesMinifierFilter' => __DIR__ . '/..' . '/natxet/CssMin/src/CssMin.php',
         'CssVariablesMinifierPlugin' => __DIR__ . '/..' . '/natxet/CssMin/src/CssMin.php',
         'CssWhitesmithsFormatter' => __DIR__ . '/..' . '/natxet/CssMin/src/CssMin.php',
+        'CustomersTableSeeder' => __DIR__ . '/../..' . '/database/seeds/CustomersTableSeeder.php',
         'DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeds/DatabaseSeeder.php',
         'DebugBar\\Bridge\\CacheCacheCollector' => __DIR__ . '/..' . '/maximebf/debugbar/src/DebugBar/Bridge/CacheCacheCollector.php',
         'DebugBar\\Bridge\\DoctrineCollector' => __DIR__ . '/..' . '/maximebf/debugbar/src/DebugBar/Bridge/DoctrineCollector.php',

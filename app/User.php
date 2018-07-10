@@ -21,6 +21,12 @@ class User extends Authenticatable
     const ROLE_USER = 'user';
 
     /**
+     * Types
+     */
+    const TYPE_USER = 'user';
+    const TYPE_TEAM = 'team';
+    
+    /**
      * Invite states
      */
     const INVITE_STATE_ACTIVATED = 0;

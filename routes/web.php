@@ -40,3 +40,8 @@ Route::get('/settings/connection-settings/{id}/outgoing', 'MailboxesController@c
 Route::post('/settings/connection-settings/{id}/outgoing', 'MailboxesController@connectionOutgoingSave');
 Route::get('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncoming')->name('mailboxes.connection.incoming');
 Route::post('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncomingSave');
+
+# Customers
+Route::get('/customer/{id}/edit', 'CustomersController@update')->name('customers.update');
+Route::post('/customer/{id}/edit', 'CustomersController@updateSave');
+Route::get('/customer/{id}/', 'CustomersController@conversations')->name('customers.conversations');
