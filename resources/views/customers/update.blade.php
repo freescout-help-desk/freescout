@@ -3,7 +3,7 @@
 @section('title_full', $customer->getFullName().' - '.__('Customer Profile'))
 
 @section('sidebar')
-    123
+    @include('customers/profile_snippet')
 @endsection
 
 @section('content')

@@ -102,4 +102,16 @@ class CustomersController extends Controller
         \Session::flash('flash_success', __('Permissions saved successfully'));
         return redirect()->route('users.permissions', ['id' => $id]);
     }
+
+    /**
+     * View customer conversations.
+     * 
+     * @param  intg $id
+     */
+    public function conversations($id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        return view('customers/conversations', ['customer' => $customer]);
+    }
 }

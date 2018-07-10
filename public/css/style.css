@@ -621,3 +621,60 @@ a.help-icon:hover {
     color: #8899aa;
     text-decoration: none;
 }
+.customer-photo-container {
+    margin: 20px auto 0 auto;
+    max-width: 86px;
+    position: relative;
+}
+.customer-photo {
+    border:3px solid #fff;
+    border-radius:3px;
+    box-shadow:0 1px 1px rgba(0,0,0,.2);
+    display:block;
+    max-height:86px;
+    max-width:86px;
+    min-height:43px;
+}
+.customer-snippet h3 {
+    text-align: center;
+    word-wrap: break-word;
+    color: #253540;
+    font-size: 1.6em;
+    font-weight: 400;
+    line-height: 1.2em;
+    margin: 0 0 4px 0;
+}
+.customer-data {
+    padding: 0 17px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+.customer-contacts {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+.customer-contacts li,
+.customer-contacts li a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    color: #72808e;
+    line-height: 16px;
+}
+.customer-contacts li a:hover {
+    text-decoration: none;
+    color: #1f5e89;
+}
+.customer-contacts li i {
+    color: #b5c1cc;
+    font-size: 14px;
+    margin-right: 6px;
+    vertical-align: top;
+    display: inline-block;
+}
+.customer-divider {
+    margin: 10px 0;
+    border-bottom: 1px dashed #d6dde3;
+}
