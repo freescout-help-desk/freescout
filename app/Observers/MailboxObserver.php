@@ -16,7 +16,7 @@ class MailboxObserver
      */
     public function created(Mailbox $mailbox)
     {
-        foreach (Folder::$common_types as $type) {
+        foreach (Folder::$public_types as $type) {
             $folder = new Folder;
             $folder->mailbox_id = $mailbox->id;
             $folder->type = $type;

@@ -20,10 +20,12 @@ class DatabaseSeeder extends Seeder
             
             $customer->emails()->save(factory(App\Email::class)->make());
 
-            $conversation = factory(App\Conversation::class)->create(['created_by' => $user->id, 'mailbox_id' => $m->id, 'customer_id' => $customer->id, 'user_id' => $user->id]);
+            for ($i=0; $i < 3; $i++) { 
+                $conversation = factory(App\Conversation::class)->create(['created_by' => $user->id, 'mailbox_id' => $m->id, 'customer_id' => $customer->id, 'user_id' => $user->id]);
 
-            $thread = factory(App\Thread::class)->make(['customer_id' => $customer->id, 'to' => $customer->getMainEmail(), 'conversation_id' => $conversation->id]);
-            $conversation->threads()->save($thread);
+                $thread = factory(App\Thread::class)->make(['customer_id' => $customer->id, 'to' => $customer->getMainEmail(), 'conversation_id' => $conversation->id]);
+                $conversation->threads()->save($thread);
+            }
         });
     }
 }

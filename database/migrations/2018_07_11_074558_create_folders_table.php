@@ -18,6 +18,7 @@ class CreateFoldersTable extends Migration
             $table->integer('mailbox_id');
             $table->integer('user_id')->nullable();
             $table->unsignedTinyInteger('type');
+            $table->integer('total_count')->default(0);
             $table->integer('active_count')->default(0);
 
             $table->unique(['mailbox_id', 'user_id', 'type']);

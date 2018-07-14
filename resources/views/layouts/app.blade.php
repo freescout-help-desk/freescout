@@ -14,7 +14,7 @@
     {!! Minify::stylesheet(array('/css/fonts.css', '/css/bootstrap.css', '/css/style.css')) !!}
     @yield('stylesheets')
 </head>
-<body>
+<body class="@if (Auth::user()->isAdmin()) user-is-admin @endif">
     <div id="app">
 
         @if (!in_array(Route::currentRouteName(), array('login', 'register')))

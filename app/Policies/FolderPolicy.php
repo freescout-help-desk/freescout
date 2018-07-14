@@ -6,7 +6,7 @@ use App\User;
 use App\Folder;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class MailboxPolicy
+class FolderPolicy
 {
     use HandlesAuthorization;
 

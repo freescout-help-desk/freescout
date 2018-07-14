@@ -166,7 +166,6 @@ class Mailbox extends Model
 
     /**
      * Get folders for the dashboard.
-     * @return collection
      */
     public function getMainFolders()
     {
@@ -178,6 +177,42 @@ class Mailbox extends Model
                         $query2->where(['user_id' => auth()->user()->id]);
                     });
             })
+            ->orderBy('type')
             ->get();
+    }
+
+    /**
+     * Get folders available for the current user.
+     */
+    public function getAssesibleFolders()
+    {
+        return $this->folders()
+            ->where(function ($query) {
+                $query->whereIn('type', Folder::$public_types)
+                    ->orWhere(function ($query2) {
+                        $query2->whereIn('type', Folder::$personal_types);
+                        $query2->where(['user_id' => auth()->user()->id]);
+                    });
+            })
+            ->orderBy('type')
+            ->get();
+    }
+
+    /**
+     * Update total and active counters for folders.
+     */
+    public function updateFoldersCounters()
+    {
+        $folders = $this->folders;
+        foreach ($folders as $folder) {
+
+            $folder->active_count = $folder->conversations()
+                ->where('status', Conversation::STATUS_ACTIVE)
+                ->count();
+            
+            $folder->total_count = $folder->conversations()->count();
+
+            $folder->save();
+        }
     }
 }

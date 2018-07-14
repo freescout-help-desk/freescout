@@ -13,13 +13,13 @@ class Folder extends Model
     const TYPE_UNASSIGNED = 1;
     // User specific
     const TYPE_MINE = 20;
+    // User specific
+    const TYPE_STARRED = 25;
     const TYPE_DRAFTS = 30;
     const TYPE_ASSIGNED = 40;
     const TYPE_CLOSED = 60;
     const TYPE_SPAM = 80;
     const TYPE_DELETED = 110;
-    // User specific
-    const TYPE_STARRED = 120;
 
     public static $types = [
         self::TYPE_UNASSIGNED => 'Unassigned',
@@ -32,8 +32,22 @@ class Folder extends Model
         self::TYPE_STARRED => 'Starred',
     ];
 
-    // Standard non-user specific mailbox types
-    public static $common_types = [
+    /**
+     * https://glyphicons.bootstrapcheatsheets.com/
+     */
+    public static $type_icons = [
+        self::TYPE_UNASSIGNED => 'folder-open',
+        self::TYPE_MINE => 'hand-right',
+        self::TYPE_DRAFTS => 'duplicate',
+        self::TYPE_ASSIGNED => 'user',
+        self::TYPE_CLOSED => 'lock', // lock
+        self::TYPE_SPAM => 'ban-circle',
+        self::TYPE_DELETED => 'trash',
+        self::TYPE_STARRED => 'star',
+    ];
+
+    // Public non-user specific mailbox types
+    public static $public_types = [
         self::TYPE_UNASSIGNED,
         self::TYPE_DRAFTS,
         self::TYPE_ASSIGNED,
@@ -71,11 +85,16 @@ class Folder extends Model
      */
     public function conversations()
     {
-        return $this->belongsToMany('App\Conversation');
+        return $this->hasMany('App\Conversation');
     }
 
     public function getTypeName()
     {
         return __(self::$types[$this->type]);
+    }
+
+    public function getTypeIcon()
+    {
+        return self::$type_icons[$this->type];
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Validator;
 use App\Mailbox;
 use App\User;
+use App\Folder;
 
 class MailboxesController extends Controller
 {
@@ -244,12 +245,27 @@ class MailboxesController extends Controller
     /**
      * View mailbox
      */
-    public function view($id)
+    public function view($id, $folder_id = null)
     {
         $mailbox = Mailbox::findOrFail($id);
 
-        //$this->authorize('view', $mailbox);
+        $folders = $mailbox->getAssesibleFolders();
 
-        return view('mailboxes/view', ['mailbox' => $mailbox]);
+        $folder = null;
+        if (!empty($folder_id)) {
+            $folder = $folders->filter(function($item) use ($folder_id) {
+                return $item->id == $folder_id;
+            })->first();
+        }
+        // By default we display Unassigned folder
+        if (empty($folder)) {
+            $folder = $folders->filter(function($item) {
+                return $item->type == Folder::TYPE_UNASSIGNED;
+            })->first();
+        }
+
+        $this->authorize('view', $folder);
+
+        return view('mailboxes/view', ['mailbox' => $mailbox, 'folders' => $folders, 'folder' => $folder]);
     }
 }

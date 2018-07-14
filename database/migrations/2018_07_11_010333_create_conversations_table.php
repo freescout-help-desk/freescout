@@ -59,7 +59,7 @@ class CreateConversationsTable extends Migration
             $table->timestamps();
 
             // Indexes
-            //$table->index(['mailbox_id', 'status', 'state');
+            $table->index(['folder_id', 'status']);
         });
     }
 

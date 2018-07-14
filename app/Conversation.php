@@ -136,9 +136,9 @@ class Conversation extends Model
     /**
      * Folders containing starred conversations
      */
-    public function folders()
+    public function extraFolders()
     {
-        return $this->belongsToMany('App\Folder');
+        return $this->belongsTo('App\Customer');
     }
 
     /**

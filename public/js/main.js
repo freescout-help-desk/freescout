@@ -3,7 +3,7 @@ var fs_sidebar_menu_applied = false;
 $(document).ready(function(){
 
 	// Tooltips
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip({container: 'body'});
 
     // Popover
     $('[data-toggle="popover"]').popover({
