@@ -6,6 +6,15 @@
 
 [![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout)
 
+## Table of Contents
+   * [Features](#features)
+   * [Release Date](#release-date)
+   * [Requirements](#requirements)
+   * [Documentation](#documentation)
+   * [Installation Guide](#installation-guide)
+   * [Development Guide](#development-guide)
+   * [Screenshots](#screenshots)
+
 ## Features
 
 **FreeScout** will provide the same set of features as a HelpScout: help desk tools, email management and analytics. Also **FreeScout** will provide several extra features in addition to the standard HelpScout features:
@@ -29,7 +38,7 @@ If you would like to be notified by email when **FreeScout** will be released, y
 
 ## Documentation
 
-FreeScout [Docs](https://github.com/freescout-helpdesk/freescout/wiki)
+[Documentation](https://github.com/freescout-helpdesk/freescout/wiki)
 
 ## Installation Guide
 
