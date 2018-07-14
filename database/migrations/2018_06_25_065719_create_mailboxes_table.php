@@ -31,13 +31,13 @@ class CreateMailboxesTable extends Migration
             $table->unsignedTinyInteger('out_method')->default(Mailbox::OUT_METHOD_PHP_MAIL);
             $table->string('out_server', 255)->nullable();
             $table->string('out_username', 100)->nullable();
-            $table->string('out_password')->nullable();
+            $table->string('out_password', 255)->nullable();
             $table->unsignedInteger('out_port')->nullable();
             $table->unsignedTinyInteger('out_ssl')->default(Mailbox::OUT_SSL_NONE);
             $table->string('in_server', 255)->nullable();
             $table->unsignedInteger('in_port')->nullable();
             $table->string('in_username', 100)->nullable();
-            $table->string('in_password')->nullable();
+            $table->string('in_password', 255)->nullable();
             $table->boolean('auto_reply_enabled')->default(false);
             $table->string('auto_reply_subject', 128)->nullable();
             $table->text('auto_reply_message')->nullable();

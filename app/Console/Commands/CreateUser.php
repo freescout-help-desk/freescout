@@ -52,10 +52,15 @@ class CreateUser extends Command
                 $user->password = \Hash::make($this->secret(($key+1) . "/" . count($fillables) . " User $fillable"));
             } elseif ($fillable == 'role') {
                 $user->$fillable = $this->ask(($key+1) . "/" . count($fillables) . " User $fillable (admin/user)", 'admin');
+                if (!$user->$fillable) {
+                    $user->$fillable = 'admin';
+                }
+
                 while (!in_array($user->$fillable, User::$roles)) {
                     $this->error("Incorrect role");
                     $user->$fillable = $this->ask("Please enter valid role");
                 }
+                $user->$fillable = array_flip(User::$roles)[$user->$fillable];
             } else {
                 $user->$fillable = $this->ask(($key+1) . "/" . count($fillables) . " User $fillable");
 

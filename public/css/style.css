@@ -21,7 +21,7 @@
 .content {
     margin-top: 20px;
     /*padding-bottom: 60px;*/
-    min-height: 300px;
+    min-height: 400px;
 }
 .layout-2col {
     display: flex;
@@ -316,6 +316,7 @@ select.form-control {
     float: left;
 }
 a.card:active,
+a.card:focus,
 a.card:hover {
     text-decoration: none;
 }
@@ -369,8 +370,88 @@ a h4 {
 .card.no-img p {
     margin-left: 0;
 }
+.dash-cards {
+    box-sizing:border-box;
+    display:flex;
+    flex-wrap:wrap;
+}
+.dash-card {
+    float: left;
+    position: relative;
+    background: #fff;
+    border: 1px solid #c1cbd4;
+    border-radius: 4px;
+    border-top: 4px solid #5cb85c;
+    box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
+    box-sizing: border-box;
+    min-height: 295px;
+    margin: 0 20px 20px 0;
+    width: 235px;
+}
+.dash-card-content {
+    padding-bottom: 48px;
+    padding-top: 20px;
+}
+.dash-card-footer {
+    border-radius: 0 0 4px 4px;
+    bottom: 0;
+    left: 0;
+    padding: 10px;
+    position: absolute;
+    right: 0;
+    text-align: right;
+}
+.dash-card h3 {
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-bottom: 8px;
+    margin-top: 0;
+}
+.dash-card a,
+.dash-card a:hover,
+.dash-card a:focus {
+    color: #194c6e;
+}
+.dash-card a:hover {
+    text-decoration: underline;
+}
+.dash-card-link {
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-bottom: 16px;
+}
+.dash-card-list-item {
+    font-size: 14px;
+    text-decoration: none!important;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 0;
+    display: block;
+}
+.dash-card-list-item:hover {
+    background-color: #f1f3f5;
+}
+.dash-card-list-item span {
+    display: block;
+    float: right;
+}
+.dash-card-footer > a {
+    color: #c1cbd4;
+    display: inline-block;
+    font-size: 16px;
+    margin: 0 6px;
+    float: right;
+}
+.dash-card-footer > a:hover {
+    color: #677f95;
+    text-decoration: none;
+}
+
 @media (max-width:582px) {
-    .card {
+    .card,
+    .dash-card {
         width: 100%;
     }
 }
@@ -507,6 +588,14 @@ a.help-icon:hover {
 }
 .text-help {
     color: #93a1af;
+}
+.help-link,
+.help-link:hover,
+.help-link:focus {
+    color: #93a1af!important;
+}
+.help-link:hover {
+    text-decoration: underline;
 }
 .wizard-header {
     padding: 40px 50px 0;
@@ -675,6 +764,22 @@ a.help-icon:hover {
     display: inline-block;
 }
 .customer-divider {
-    margin: 10px 0;
-    border-bottom: 1px dashed #d6dde3;
+    display: block;
+    text-align: center;
+    color: #93a1af;
+    font-size: 1.5em;
+    margin: 12px 0 18px;
+    line-height: 6px;
+    letter-spacing: 3px;
+}
+.text-truncate {
+    overflow: hidden!important;
+    text-overflow: ellipsis!important;
+    white-space: nowrap!important;
+}
+.text-wrap-break {
+    word-wrap: break-word!important;
+}
+.text-charcoal {
+    color: #2a3b47!important;
 }

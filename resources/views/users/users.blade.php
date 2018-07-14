@@ -23,7 +23,7 @@
                     <i class="card-avatar" data-initial="{{ strtoupper($user->first_name[0]) }}{{ strtoupper($user->last_name[0]) }}"></i>
                 @endif
                 <h4>{{ $user->first_name }} {{ $user->last_name }}</h4>
-                <p>{{ $user->getRole() }}</p>
+                <p>{{ $user->getRoleName(true) }}</p>
             </a>
         @endforeach
     </div>

@@ -20,11 +20,11 @@ class CreateUsersTable extends Migration
             $table->string('first_name', 20);
             $table->string('last_name', 30);
             $table->string('email', 100)->unique();
-            $table->string('password');
-            $table->string('role')->default(User::ROLE_USER); // admin/user
-            $table->string('timezone')->default('UTC');
-            $table->string('photo_url')->nullable();
-            $table->string('type')->default(User::TYPE_USER); // team/user
+            $table->string('password', 255);
+            $table->unsignedTinyInteger('role')->default(User::ROLE_USER); // admin/user
+            $table->string('timezone', 255)->default('UTC');
+            $table->string('photo_url', 255)->nullable();
+            $table->unsignedTinyInteger('type')->default(User::TYPE_USER); // team/user
             $table->unsignedTinyInteger('invite_state')->default(1); // 1 - not invited
             $table->string('emails', 100)->nullable();
             $table->string('job_title', 100)->nullable();

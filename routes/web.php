@@ -35,7 +35,8 @@ Route::get('/settings/mailbox/{id}', 'MailboxesController@update')->name('mailbo
 Route::post('/settings/mailbox/{id}', 'MailboxesController@updateSave');
 Route::get('/settings/permissions/{id}', 'MailboxesController@permissions')->name('mailboxes.permissions');
 Route::post('/settings/permissions/{id}', 'MailboxesController@permissionsSave');
-Route::get('/mailbox/{id}', 'MailboxesController@update')->name('mailboxes.view');
+Route::get('/mailbox/{id}', 'MailboxesController@view')->name('mailboxes.view');
+Route::get('/mailbox/{id}/{folder_id}', 'MailboxesController@view')->name('mailboxes.view.folder');
 Route::get('/settings/connection-settings/{id}/outgoing', 'MailboxesController@connectionOutgoing')->name('mailboxes.connection');
 Route::post('/settings/connection-settings/{id}/outgoing', 'MailboxesController@connectionOutgoingSave');
 Route::get('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncoming')->name('mailboxes.connection.incoming');

@@ -11,22 +11,6 @@ class MailboxPolicy
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can view the mailbox.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Mailbox  $mailbox
-     * @return mixed
-     */
-    public function view(User $user, Mailbox $mailbox)
-    {
-        if ($user->isAdmin()) {
-            return true;
-        } else {
-            return $user->mailboxes->contains($mailbox);
-        }
-    }
-
-    /**
      * Determine whether the user can create mailboxes.
      *
      * @param  \App\User  $user

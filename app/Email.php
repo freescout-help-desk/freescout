@@ -21,7 +21,7 @@ class Email extends Model
     protected $guarded = ['id', 'customer_id'];
 
     /**
-     * Get the post that owns the comment.
+     * Get email's customer
      */
     public function customer()
     {

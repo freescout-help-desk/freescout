@@ -14,6 +14,7 @@ class CreateCustomersTable extends Migration
      */
     public function up()
     {
+        // https://developer.helpscout.com/mailbox-api/endpoints/customers/get/
         Schema::create('customers', function (Blueprint $table) {
             $table->increments('id');
             $table->string('first_name', 255)->nullable();
@@ -24,7 +25,7 @@ class CreateCustomersTable extends Migration
             $table->string('photo_url', 255)->nullable();
             // Age and gender do not exist in the web interface, but exist in the API
             $table->string('age', 7)->nullable();
-            $table->string('gender', 7)->default(Customer::GENDER_UNKNOWN);
+            $table->string('gender', 7)->nullable();
             $table->text('phones')->nullable(); // JSON
             $table->text('websites')->nullable(); // JSON
             $table->text('social_profiles')->nullable(); // JSON

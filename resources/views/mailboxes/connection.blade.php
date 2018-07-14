@@ -47,8 +47,20 @@
                             </div>
                             <div class="control-group">
                                 <label class="radio disabled" for="out_method_elastic">
-                                    <input type="radio" name="out_method" disabled value="elastic" id="out_method_elastic" @if ($mailbox->out_method == 'elastic') checked="checked" @endif> <a href="https://elasticemail.com/account#/create-account?r=bc0975e9-3d6b-462f-be7c-629e7672a4a8" target="_blank">{{ __("Elastic Email") }}</a> (todo)<br/>
+                                    <input type="radio" name="out_method" disabled value="elastic" id="out_method_elastic" @if ($mailbox->out_method == 'elastic') checked="checked" @endif> <a href="https://elasticemail.com/account#/create-account?r=bc0975e9-3d6b-462f-be7c-629e7672a4a8" target="_blank">Elastic Email</a> (todo)<br/>
                                     <span class="text-help">{{ __("150,000 free emails per month, allows to see email delivery status") }}</span>
+                                </label>
+                            </div>
+                            <div class="control-group">
+                                <label class="radio disabled" for="out_method_amazon">
+                                    <input type="radio" name="out_method" disabled value="mailgun" id="out_method_amazon" @if ($mailbox->out_method == 'amazon') checked="checked" @endif> <a href="https://aws.amazon.com/ses/pricing/" target="_blank">Amazon SES</a> (todo)<br/>
+                                    <span class="text-help">{!! __("62,000 free emails per month from :%a_begin%Amazon EC2:%a_end% server, allows to see email delivery status", ['%a_begin%' => '<a href="https://aws.amazon.com/ec2/" target="_blank">', '%a_end%' => '</a>']) !!}</span>
+                                </label>
+                            </div>
+                            <div class="control-group">
+                                <label class="radio disabled" for="out_method_mailgun">
+                                    <input type="radio" name="out_method" disabled value="mailgun" id="out_method_mailgun" @if ($mailbox->out_method == 'mailgun') checked="checked" @endif> <a href="https://www.mailgun.com" target="_blank">Mailgun</a> (todo)<br/>
+                                    <span class="text-help">{{ __("10,000 free emails per month, allows to see email delivery status") }}</span>
                                 </label>
                             </div>
                         </div>

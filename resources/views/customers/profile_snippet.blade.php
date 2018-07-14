@@ -4,10 +4,11 @@
     </div>
     <div class="customer-data">
 		<h3>{{ $customer->getFullName() }}</h3>
-		<ul class="customer-contacts">
-			<li>todo</li>
-		</ul>
-		<div class="customer-divider"></div>
+		{{-- todo: display full customer info --}}
+		{{--<ul class="customer-contacts">
+			<li></li>
+		</ul>--}}
+		<div class="customer-divider">...</div>
 		<ul class="customer-contacts">
 			@foreach ($customer->emails as $email)
 	            <li><a href="#" title="{{ __('Email customer') }}"><i class="glyphicon glyphicon-envelope"></i> {{ $email->email }}</a></li>

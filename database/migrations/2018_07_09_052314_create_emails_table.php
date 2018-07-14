@@ -17,7 +17,9 @@ class CreateEmailsTable extends Migration
         Schema::create('emails', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('customer_id');
-            $table->string('email', 100)->unique();
+            // Max email length is 255, but if we specify 255, we get can not create an index:
+            // SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes
+            $table->string('email', 191)->unique();
             // Type is not used in the web interface, but appears in API
             $table->string('type', 5)->default(Email::TYPE_WORK);
         });

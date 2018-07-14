@@ -24,7 +24,9 @@ class SecureController extends Controller
      */
     public function dashboard()
     {
-        return view('dashboard');
+        $mailboxes = auth()->user()->mailboxesCanView();
+
+        return view('secure/dashboard', ['mailboxes' => $mailboxes]);
     }
 
     /**

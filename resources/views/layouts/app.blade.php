@@ -42,7 +42,7 @@
                         <!-- Left Side Of Navbar -->
                         <ul class="nav navbar-nav">
                             @php
-                                $mailboxes = Auth::user()->mailboxesHasAccess();
+                                $mailboxes = Auth::user()->mailboxesCanView();
                             @endphp
                             @if (count($mailboxes) == 1)
                                 <li><a href="{{ route('mailboxes.view', ['id'=>$mailboxes[0]->id]) }}" @if (Route::currentRouteName() == 'mailboxes.view')class="active"@endif>{{ __('Mailbox') }}</a></li>

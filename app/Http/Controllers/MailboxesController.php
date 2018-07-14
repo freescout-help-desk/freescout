@@ -68,6 +68,7 @@ class MailboxesController extends Controller
         $mailbox->save();
 
         $mailbox->users()->sync($request->users);
+        $mailbox->syncPersonalFolders($request->users);
 
         \Session::flash('flash_success', __('Mailbox created successfully'));
         return redirect()->route('mailboxes.update', ['id' => $mailbox->id]);
@@ -153,6 +154,7 @@ class MailboxesController extends Controller
         $this->authorize('update', $mailbox);
 
         $mailbox->users()->sync($request->users);
+        $mailbox->syncPersonalFolders($request->users);
 
         \Session::flash('flash_success', __('Mailbox permissions saved!'));
         return redirect()->route('mailboxes.permissions', ['id' => $id]);
@@ -237,5 +239,17 @@ class MailboxesController extends Controller
 
         \Session::flash('flash_success', __('Connection settings saved!'));
         return redirect()->route('mailboxes.connection.incoming', ['id' => $id]);
+    }
+
+    /**
+     * View mailbox
+     */
+    public function view($id)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+
+        //$this->authorize('view', $mailbox);
+
+        return view('mailboxes/view', ['mailbox' => $mailbox]);
     }
 }

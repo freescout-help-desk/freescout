@@ -78,6 +78,7 @@ class UsersController extends Controller
         $user->save();
 
         $user->mailboxes()->sync($request->mailboxes);
+        $user->syncPersonalFolders($request->mailboxes);
 
         // Send invite
         if (!empty($request->send_invite)) {
@@ -170,6 +171,7 @@ class UsersController extends Controller
         $this->authorize('update', $user);
 
         $user->mailboxes()->sync($request->mailboxes);
+        $user->syncPersonalFolders($request->mailboxes);
 
         \Session::flash('flash_success', __('Permissions saved successfully'));
         return redirect()->route('users.permissions', ['id' => $id]);

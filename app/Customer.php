@@ -367,6 +367,22 @@ class Customer extends Model
     }
 
     /**
+     * Get customer conversations
+     */
+    public function conversations()
+    {
+        return $this->hasMany('App\Conversation');
+    }
+
+    /**
+     * Get main email
+     */
+    public function getMainEmail()
+    {
+        return $this->emails()->first()->email;
+    }
+
+    /**
      * Prepare data for saving as JSON
      * 
      * @param  array $data  
