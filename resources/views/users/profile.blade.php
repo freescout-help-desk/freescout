@@ -161,7 +161,7 @@
                     </div>
 
                     <div class="form-group{{ $errors->has('time_format') ? ' has-error' : '' }}">
-                        <label for="time_format" class="col-sm-2 control-label">{{ __('Time Format') }} (todo)</label>
+                        <label for="time_format" class="col-sm-2 control-label">{{ __('Time Format') }}</label>
 
                         <div class="col-md-6">
      

@@ -18,5 +18,5 @@
             </ul>
         </div>
     @endif
-    <a class="btn" href="#" aria-label="{{ __("New Conversation") }}" data-toggle="tooltip" title="{{ __("New Conversation") }}"><i class="glyphicon glyphicon-edit"></i></a>
+    <a class="btn" href="#" aria-label="{{ __("New Conversation") }}" data-toggle="tooltip" title="{{ __("New Conversation") }}"><i class="glyphicon glyphicon-envelope"></i></a>
 </div>

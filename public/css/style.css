@@ -873,3 +873,184 @@ a.help-icon:hover {
 .text-charcoal {
     color: #2a3b47!important;
 }
+.table.table-conversations {
+    margin: 0;
+    table-layout: fixed;
+    width: 100%;
+}
+.table-conversations .conv-fader {
+    background: linear-gradient(to right,rgba(255,255,255,0),#fff);
+    position: absolute;
+    width: 18px;
+    bottom: 1px;
+    right: 0;
+    z-index: 2;
+    height: 100%;
+}
+.table-conversations .conv-fader::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    bottom: 0;
+    height: 100%;
+}
+.table.table-conversations th {
+    padding: 4px 13px 1px 13px;
+    white-space: nowrap;
+}
+.table.table-conversations th.conv-customer {
+    padding-left: 0;
+}
+.table-conversations .conv-cb {
+    padding: 4px 0;
+    text-align: center;
+    vertical-align: middle;
+}
+.table-conversations td input {
+    margin: 0;
+}
+.table-conversations th a,
+.table-conversations th a:hover,
+.table-conversations th a:focus,
+.table-conversations th span {
+    color: #7a8da0;
+    text-decoration: none;
+    cursor: default;
+    line-height: 26px;
+    display: block;
+    font-weight: normal;
+}
+.table.table-conversations tbody td {
+    line-height: 1em;
+    padding: 0;
+    vertical-align: middle;
+}
+.table-conversations td a {
+    color: #2a3b47;
+    display: block;
+    font-size: 14px;
+    padding: 14px;
+}
+.table-conversations td a:hover,
+.table-conversations td a:focus {
+    text-decoration: none;
+}
+.table-conversations .conv-active td {
+    font-weight: bold;
+    line-height: 1.2em;
+}
+.table-conversations td.conv-customer a {
+    line-height: 1.2em;
+    padding-left: 0;
+    word-wrap: break-word;
+}
+table.table-conversations td.conv-subject {
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: top;
+    padding-bottom: 6px;
+}
+table.table-conversations td.conv-attachment {
+    color: #93a1af;
+    vertical-align: top;
+    padding: 7px 0 0 0;
+    text-align: center;
+}
+.table-conversations td.conv-attachment i {
+    top: 4px;
+}
+.table-conversations td.conv-subject a {
+    overflow: hidden;
+    padding: 8.4px 4px 7px 4px;
+    position: relative;
+    white-space: nowrap;
+}
+.table-conversations td p {
+    color: #2a3b47;
+    font-size: 13.4px;
+}
+.table-conversations td .conv-preview {
+    color: #93a1af;
+    font-weight: normal;
+}
+.table-conversations td.conv-subject p {
+    line-height: 1.5em;
+    margin: 0;
+}
+.table-conversations .conv-current {
+    width: 2px;
+}
+.table-conversations .conv-cb {
+    width: 40px;
+}
+.table-conversations .conv-customer {
+    width: 150px;
+}
+.table-conversations .conv-attachment {
+    width: 20px;
+}
+.table-conversations .conv-thread-count {
+    width: 42px;
+}
+.table-conversations .conv-thread-count span {
+    background: #f1f3f5;
+    border: 1px solid #d6dde3;
+    color: #a5b2bd;
+    font-size: 11px;
+    font-weight: 400;
+    padding: .1em .4em;
+    border-radius: 4px;
+}
+.table-conversations .conv-number {
+    width: 86px;
+}
+.table-conversations .conv-date {
+    width: 138px;
+}
+@media (max-width:1000px) {
+    .table-responsive2 td.responsive-hide {
+        display: none;
+    }
+
+    .table-responsive2 {
+        border: 0;
+    }
+
+    .table-responsive2 thead {
+        border: none;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+
+    .table-responsive2 tr {
+        border-bottom: 3px solid #ddd;
+        display: block;
+    }
+
+    .table-responsive2 td {
+        /*border-bottom: 1px solid #ddd;*/
+        display: block;
+        /*font-size: .8em;*/
+        text-align: right;
+    }
+
+    .table-responsive2 td::before {
+        /*
+        * aria-label has no advantage, it won't be read inside a table
+        content: attr(aria-label);
+        */
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .table-responsive2 td:last-child {
+        border-bottom: 0;
+    }
+}

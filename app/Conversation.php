@@ -79,6 +79,11 @@ class Conversation extends Model
     );
 
     /**
+     * Automatically converted into Carbon dates.
+     */
+    protected $dates = ['created_at', 'updated_at', 'last_reply_at'];
+
+    /**
      * Attributes which are not fillable using fill() method
      */
     protected $guarded = ['id', 'folder_id'];
@@ -143,6 +148,7 @@ class Conversation extends Model
 
     /**
      * Set preview text
+     * 
      * @param string $text
      */
     public function setPreview($text = '')
@@ -158,5 +164,26 @@ class Conversation extends Model
             }
         }
         return $this->preview;
+    }
+
+    /**
+     * Get conversation timestamp title.
+     * 
+     * @return string
+     */
+    public function getDateTitle()
+    {
+        if ($this->threads == 1) {
+            $title = __("Created by :person<br/>:date", ['person' => ucfirst(__(
+            self::$persons[$this->source_via])), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
+        } else {
+            $title = __("Last reply by :person<br/>:date", ['person' => ucfirst(__(self::$persons[$this->source_via])), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
+        }
+        return $title;
+    }
+
+    public function isActive()
+    {
+        return $this->status == self::STATUS_ACTIVE;
     }
 }

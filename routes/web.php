@@ -46,3 +46,6 @@ Route::post('/settings/connection-settings/{id}/incoming', 'MailboxesController@
 Route::get('/customer/{id}/edit', 'CustomersController@update')->name('customers.update');
 Route::post('/customer/{id}/edit', 'CustomersController@updateSave');
 Route::get('/customer/{id}/', 'CustomersController@conversations')->name('customers.conversations');
+
+# Conversations
+Route::get('/conversation/{id}', 'ConversationsController@view')->name('conversations.view');

@@ -55,7 +55,7 @@ class UsersController extends Controller
             'first_name' => 'required|string|max:20',
             'last_name' => 'required|string|max:30',
             'email' => 'required|string|email|max:100|unique:users',
-            'role' => [ 'required', Rule::in(User::$roles)]
+            'role' => [ 'required', Rule::in(array_keys(User::$roles))]
         ];
         if (empty($request->send_invite)) {
             $rules['password'] = 'required|string|max:255';
@@ -123,7 +123,7 @@ class UsersController extends Controller
             'phone' => 'max:60',
             'timezone' => 'required|string|max:255',
             'time_format' => 'required',
-            'role' => [ 'required', Rule::in(User::$roles)]
+            'role' => [ 'required', Rule::in(array_keys(User::$roles))]
         ]);
 
         //event(new Registered($user = $this->create($request->all())));

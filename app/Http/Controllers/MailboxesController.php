@@ -266,6 +266,11 @@ class MailboxesController extends Controller
 
         $this->authorize('view', $folder);
 
-        return view('mailboxes/view', ['mailbox' => $mailbox, 'folders' => $folders, 'folder' => $folder]);
+        return view('mailboxes/view', [
+            'mailbox' => $mailbox, 
+            'folders' => $folders, 
+            'folder' => $folder,
+            'conversations' => $folder->conversations,
+        ]);
     }
 }

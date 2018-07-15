@@ -1,11 +1,15 @@
 <?php
-
+/**
+ * User model class.
+ * Class also responsible for dates conversion and representation.
+ */
 namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use App\Mailbox;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -187,6 +191,69 @@ class User extends Authenticatable
                 $folder->type = $type;
                 $folder->save();
             }
+        }
+    }
+
+    /**
+     * Format date according to user's timezone and time format.
+     * 
+     * @param  Carbon $date   
+     * @param  string $format 
+     * @return string         
+     */
+    public static function dateFormat($date, $format)
+    {
+        $user = auth()->user();
+        if ($user) {
+            if ($user->time_format == self::TIME_FORMAT_12) {
+                $format = strtr($format, [
+                    'H' => 'h',
+                    'G' => 'g',
+                    ':i' => ':ia',
+                    ':ia:s' => ':i:sa',
+                ]);
+            } else {
+                $format = strtr($format, [
+                    'h' => 'H',
+                    'g' => 'G',
+                    ':ia' => ':i',
+                    ':i:sa' => ':i:s',
+                ]);
+            }
+            // todo: formatLocalized has to be used here and below,
+            // but it returns $format value instead of formatted date
+            return $date->setTimezone($user->timezone)->format($format);
+        } else {
+            return $date->format($format);
+        }
+    }
+
+    /**
+     * Convert date into human readable format.
+     * 
+     * @param  Carbon $date
+     * @return string
+     */
+    public static function dateDiffForHumans($date)
+    {
+        $user = auth()->user();
+        if ($user) {
+            $date->setTimezone($user->timezone);
+        }
+
+        if ($date->diffInSeconds(Carbon::now()) <= 60) {
+            return __("Just now");
+        } elseif ($date->diffInDays(Carbon::now()) > 7) {
+            // Exact date
+            if (Carbon::now()->year == $date->year) {
+                return User::dateFormat($date, "M j");
+            } else {
+                return User::dateFormat($date, "M j, Y");
+            }
+        } else {
+            $diff_text = $date->diffForHumans();
+            $diff_text = preg_replace("/minutes?/", 'min', $diff_text);
+            return $diff_text;
         }
     }
 }

@@ -33,6 +33,7 @@ class CreateConversationsTable extends Migration
             // (i.e. if moving from a different platform, you can import your history). 
             // When imported is set to true, no outgoing emails or notifications will be generated.
             $table->boolean('imported')->default(false);
+            $table->boolean('has_attachments')->default(false);
             $table->integer('mailbox_id');
             // assignee - Who the conversation is assigned to
             $table->integer('user_id')->nullable();
