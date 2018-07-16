@@ -270,7 +270,7 @@ class MailboxesController extends Controller
             'mailbox' => $mailbox, 
             'folders' => $folders, 
             'folder' => $folder,
-            'conversations' => $folder->conversations,
+            'conversations' => $folder->conversations()->orderBy('status', 'asc')->orderBy('last_reply_at', 'desc')->get(),
         ]);
     }
 

@@ -40,6 +40,7 @@ class Conversation extends Model
      */
     const STATUS_ACTIVE = 1;
     const STATUS_CLOSED = 2;
+    // What it means?
     const STATUS_OPEN = 3;
     const STATUS_PENDING = 4;
     const STATUS_SPAM = 5;
