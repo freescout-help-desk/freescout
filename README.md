@@ -2,7 +2,7 @@
 
 ![FreeScout](https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/banner.png)
 
-**FreeScout** is a free open source help desk and shared inbox written in PHP (Laravel 5.5 framework), full analog of HelpScout. FreeScout is currently under active development. As you may know Help Scout on **November 29, 2018** will force all free accounts to upgrade to the paid plan, so developing a free open source alternative is kind of urgent. FreeScout is being developed from scratch and is not using any Help Scout files or code. If you would like to join efforts, please read [Development Guide](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide).
+**FreeScout** is a free open source help desk and shared inbox written in PHP (Laravel 5.5 framework), full analog of HelpScout. As you may know Help Scout on **November 29, 2018** will force all free accounts to upgrade to the paid plan, so developing a free open source alternative is kind of urgent. FreeScout is being developed from scratch and is not using any Help Scout files or code to comply with GitHub's [DMCA Policy](https://help.github.com/articles/dmca-takedown-policy/). FreeScout is currently under active development. If you would like to join efforts, just fork [this repo](https://github.com/freescout-helpdesk/freescout) and follow [instructions](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide).
 
 ![Dashboard](https://freescout-helpdesk.github.io/img/screenshots/dashboard.png)
 
