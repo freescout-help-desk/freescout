@@ -88,7 +88,7 @@
                     <td class="conv-subject" data-label="{{ __('Conversation') }}">
                         <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}" title="{{ __('View conversation') }}">
                             <span class="conv-fader"></span>
-                            <p>{{ $conversation->subject }}</p>
+                            <p><span class="conv-subject-number">#{{ $conversation->number }} </span>{{ $conversation->subject }}</p>
                             <p class="conv-preview">{{ $conversation->preview }}</p>
                         </a>
                     </td>
@@ -136,14 +136,16 @@
                 @else
                     <td class="conv-totals" colspan="5">
                 @endif
-                    <strong>{{ $folder->total_count }}</strong> {{ __('total conversations') }}
-                    &nbsp;|&nbsp; {{ __('Viewing') }} <strong>1</strong>-<strong>50</strong>
+                    <strong>{{ $folder->total_count }}</strong> {{ __('total conversations') }}&nbsp;|&nbsp; 
+                    <strong>{{ $folder->active_count }}</strong> {{ __('active') }}&nbsp;|&nbsp; 
+                    {{ __('Viewing') }} <strong>1</strong>-<strong>50</strong>
                 </td>
-                <td colspan="3">
-                    <div class="pager">
-                        <i class="icon-prev no"></i>
-                        <a href="#" class="next" title="Next Page (K)"><i class="icon-next"></i></a>
-                        <a href="#" class="last" title="Last Page"><i class="icon-last"></i></a>
+                <td colspan="3" class="conv-nav">
+                    <div class="table-pager">
+                        {{--<a href="#" class="pager-nav pager-first glyphicon glyphicon-backward" title="{{ __('First Page') }}"></a>
+                        <a href="#" class="pager-nav pager-prev glyphicon glyphicon-triangle-left" title="{{ __('Previous Page') }}"></a>--}}
+                        <a href="#" class="pager-nav pager-next glyphicon glyphicon-triangle-right" title="{{ __('Next Page') }}"></a>
+                        <a href="#" class="pager-nav pager-last glyphicon glyphicon-forward" title="{{ __('Last Page') }}"></a>
                     </div>
                 </td>
             </tr>

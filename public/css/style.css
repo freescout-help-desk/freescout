@@ -222,7 +222,9 @@
     }
     .sidebar-title-extra {
         padding-top: 5px;
-        margin-right: 120px
+        margin-right: 120px;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .sidebar-title-extra-value {
         font-size: 14px;
@@ -897,6 +899,7 @@ a.help-icon:hover {
 .table.table-conversations th {
     padding: 4px 13px 1px 13px;
     white-space: nowrap;
+    border-bottom: 1px solid #e3e8eb;
 }
 .table.table-conversations th.conv-customer {
     padding-left: 0;
@@ -924,6 +927,7 @@ a.help-icon:hover {
     line-height: 1em;
     padding: 0;
     vertical-align: middle;
+    border-bottom: 1px solid #e3e8eb;
 }
 .table-conversations td a {
     color: #2a3b47;
@@ -958,6 +962,7 @@ table.table-conversations td.conv-attachment {
 }
 .table-conversations td.conv-attachment i {
     top: 4px;
+    font-size: 12px;
 }
 .table-conversations td.conv-subject a {
     overflow: hidden;
@@ -1007,16 +1012,39 @@ table.table-conversations td.conv-attachment {
 .table-conversations .conv-date {
     width: 138px;
 }
+.table.table-conversations tfoot td {
+    border: 0;
+    color: #7a8da0;
+    font-size: 13px;
+    height: 28px;
+    padding: 0 17px;
+    vertical-align: middle;
+}
+.table-conversations tfoot strong {
+    color: #676d7a;
+}
+.table-pager {
+    float: right;
+}
+.table-pager a.pager-nav {
+    display: inline-block;
+    color: #a5b2bd;
+    padding: 4px 0;
+    width: 25px;
+    line-height: 24px;
+    font-size: 16px;
+}
+.conv-subject-number {
+    display: none;
+}
 @media (max-width:1000px) {
-    .table-responsive2 td.responsive-hide {
-        display: none;
+    /**
+     * Make conversations table responsive
+     */
+    .table-conversations {
+        display: block;
     }
-
-    .table-responsive2 {
-        border: 0;
-    }
-
-    .table-responsive2 thead {
+    .table-conversations thead {
         border: none;
         clip: rect(0 0 0 0);
         height: 1px;
@@ -1026,31 +1054,97 @@ table.table-conversations td.conv-attachment {
         position: absolute;
         width: 1px;
     }
-
-    .table-responsive2 tr {
-        border-bottom: 3px solid #ddd;
+    .table.table-conversations td,
+    .table.table-conversations tr,
+    .table.table-conversations tbody,
+    .table.table-conversations tfoot {
         display: block;
+        width: 100%;
+        border: 0;
     }
-
-    .table-responsive2 td {
-        /*border-bottom: 1px solid #ddd;*/
-        display: block;
-        /*font-size: .8em;*/
+    .table.table-conversations tbody td {
+        border: 0;
+    }
+    .table.table-conversations tbody tr {
+        position: relative;
+        height: 80px;
+        border-bottom: 1px solid #e3e8eb;
+    }
+    .conv-cb {
+        width: 25px !important;
+        float: left;
+        padding: 11px 0 !important;
+    }
+    .conv-subject {
+        position: absolute !important;
+        top: 24px;
+        padding-left: 25px!important;
+        padding-right: 20px!important;
+    }
+    .table-conversations .conv-fader {
+        width: 80px;
+    }
+    .conv-customer {
+        position: absolute;
+        top: 0;
+        padding-left: 25px!important;
+    }
+    .conv-customer a,
+    .conv-date a {
+        padding: 11px 5px 0 0 !important;
+        line-height: 1.2em;
+    }
+    .conv-date a {
+        padding-top: 13px!important;
+    }
+    .conv-date a {
+        font-size: 12px!important;
+    }
+    .conv-subject-number {
+        display: inline;
+    }
+    .conv-number {
+        display: none!important;
+    }
+    .conv-attachment {
+        position: absolute;
+        left: 7;
+        top: 24px;
+        text-align: center;
+        width: 25px!important;
+    }
+    .conv-date {
+        width: 50%;
+        position: absolute;
+        top: 0;
+        right: 0;
         text-align: right;
     }
-
-    .table-responsive2 td::before {
-        /*
-        * aria-label has no advantage, it won't be read inside a table
-        content: attr(aria-label);
-        */
-        content: attr(data-label);
-        float: left;
-        font-weight: bold;
-        text-transform: uppercase;
+    .conv-thread-count {
+        position: absolute;
+        right: 0;
+        top: 30px;
+        z-index: 999;
+        text-align: right;
     }
-
-    .table-responsive2 td:last-child {
-        border-bottom: 0;
+    .conv-thread-count a {
+        padding-right: 5px!important;
+    }
+    .table.table-conversations tfoot tr {
+        display: block;
+        position: relative;
+        height: 32px;
+    }
+    .conv-totals {
+        line-height: 31px!important;
+    }
+    .conv-totals {
+        position: absolute;
+        left: 0;
+        text-align: left;
+    }
+    .conv-nav {
+        position: absolute;
+        right: 0;
     }
 }
