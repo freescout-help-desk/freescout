@@ -79,7 +79,7 @@
                         </a>    
                     </td>
                     <td class="conv-attachment" data-label="{{ __('Attachments') }}">
-                        @if ($conversation->has_attachments || 1)
+                        @if ($conversation->has_attachments)
                             <i class="glyphicon glyphicon-paperclip"></i>
                         @else
                             &nbsp;
@@ -93,7 +93,7 @@
                         </a>
                     </td>
                     <td class="conv-thread-count" data-label="{{ __('Threads') }}">
-                        <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}" title="{{ __('View conversation') }}">@if ($conversation->threads <= 0)&nbsp;@else<span>{{ $conversation->threads }}</span>@endif</a>
+                        <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}" title="{{ __('View conversation') }}">@if ($conversation->threads <= 1)&nbsp;@else<span>{{ $conversation->threads }}</span>@endif</a>
                     </td>
                     @if ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED)
                         <td class="conv-owner" data-label="{{ __('Assigned To') }}">

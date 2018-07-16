@@ -53,7 +53,7 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         @foreach ($mailboxes as $mailbox_item)
-                                            <li @if ($mailbox_item->id == app('request')->input('id'))class="active"@endif><a href="{{ route('mailboxes.view', ['id' => app('request')->input('id')]) }}">{{ $mailbox_item->name }}</a></li>
+                                            <li @if ($mailbox_item->id == app('request')->input('id'))class="active"@endif><a href="{{ route('mailboxes.view', ['id' => $mailbox_item->id]) }}">{{ $mailbox_item->name }}</a></li>
                                         @endforeach
                                     </ul>
                                 </li>

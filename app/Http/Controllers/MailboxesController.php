@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Validator;
 use App\Mailbox;
 use App\User;
@@ -81,12 +82,11 @@ class MailboxesController extends Controller
     public function update($id)
     {
         $mailbox = Mailbox::findOrFail($id);
-
         $this->authorize('update', $mailbox);
 
         $mailboxes = Mailbox::all()->except($id);
 
-        return view('mailboxes/update', ['mailbox' => $mailbox, 'mailboxes' => $mailboxes]);
+        return view('mailboxes/update', ['mailbox' => $mailbox, 'mailboxes' => $mailboxes, 'flashes' => $this->mailboxActiveWarning($mailbox)]);
     }
 
     /**
@@ -169,7 +169,7 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
         $this->authorize('update', $mailbox);
 
-        return view('mailboxes/connection', ['mailbox' => $mailbox, 'sendmail_path' => ini_get('sendmail_path')]);
+        return view('mailboxes/connection', ['mailbox' => $mailbox, 'sendmail_path' => ini_get('sendmail_path'), 'flashes' => $this->mailboxActiveWarning($mailbox)]);
     }
 
     /**
@@ -211,7 +211,7 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
         $this->authorize('update', $mailbox);
 
-        return view('mailboxes/connection_incoming', ['mailbox' => $mailbox]);
+        return view('mailboxes/connection_incoming', ['mailbox' => $mailbox, 'flashes' => $this->mailboxActiveWarning($mailbox)]);
     }
 
     /**
@@ -272,5 +272,29 @@ class MailboxesController extends Controller
             'folder' => $folder,
             'conversations' => $folder->conversations,
         ]);
+    }
+
+    private function mailboxActiveWarning($mailbox)
+    {
+        $flashes = [];
+
+        if ($mailbox) {
+            if (Route::currentRouteName() != 'mailboxes.connection' && !$mailbox->isOutActive()) {
+                $flashes[] = [
+                    'type' => 'warning',
+                    'text' => __('Sending emails need to be configured for the mailbox in order to send emails to customers and support agents').' (<a href="'.route('mailboxes.connection', ['id' => $mailbox->id]).'">'.__("Connection Settings » Sending Emails").'</a>)',
+                    'unescaped' => true
+                ];
+            }
+            if (Route::currentRouteName() != 'mailboxes.connection.incoming' && !$mailbox->isInActive()) {
+                $flashes[] = [
+                    'type' => 'warning',
+                    'text' => __('Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address').' (<a href="'.route('mailboxes.connection.incoming', ['id' => $mailbox->id]).'">'.__("Connection Settings » Receiving Emails").'</a>)',
+                    'unescaped' => true
+                ];
+            }
+        }
+
+        return $flashes;
     }
 }

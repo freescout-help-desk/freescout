@@ -442,6 +442,12 @@ a h4 {
 .card.no-img p {
     margin-left: 0;
 }
+.card-active {
+    border-top: 4px solid #5cb85c;
+}
+.card-inactive {
+    border-top: 4px solid #93a1af;
+}
 .dash-cards {
     box-sizing:border-box;
     display:flex;
@@ -513,6 +519,25 @@ a h4 {
 .dash-card-list-item span {
     display: block;
     float: right;
+}
+.dash-card-inactive-content {
+    display: none;
+    padding: 8px 20px;
+}
+.dash-card-inactive-content .help-block {
+    font-size: 14px;
+}
+.dash-card-inactive-content .btn-link {
+    padding-left: 0;
+}
+.dash-card-inactive .dash-card-inactive-content {
+    display: block;
+}
+.dash-card-inactive .dash-card-list {
+    display: none;
+}
+.dash-card.dash-card-inactive {
+    border-top-color: #93a1af;
 }
 .dash-card-item-empty span {
     display: none;
@@ -1071,7 +1096,7 @@ table.table-conversations td.conv-attachment {
         border-bottom: 1px solid #e3e8eb;
     }
     .conv-cb {
-        width: 25px !important;
+        width: 27px !important;
         float: left;
         padding: 11px 0 !important;
     }
@@ -1087,7 +1112,7 @@ table.table-conversations td.conv-attachment {
     .conv-customer {
         position: absolute;
         top: 0;
-        padding-left: 25px!important;
+        padding-left: 28px!important;
     }
     .conv-customer a,
     .conv-date a {
