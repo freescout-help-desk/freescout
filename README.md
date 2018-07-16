@@ -42,11 +42,11 @@ If you would like to be notified by email when **FreeScout** will be released, y
 
 ## Installation Guide
 
-Coming as soon as the first stable version will be released.
+[Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
 
 ## Development Guide
 
-FreeScout [development guide](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide)
+[Development Guide](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide)
 
 ## Screenshots
 
