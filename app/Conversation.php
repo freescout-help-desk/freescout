@@ -39,18 +39,29 @@ class Conversation extends Model
      * Conversation statuses
      */
     const STATUS_ACTIVE = 1;
-    const STATUS_CLOSED = 2;
-    // What it means?
-    const STATUS_OPEN = 3;
-    const STATUS_PENDING = 4;
-    const STATUS_SPAM = 5;
+    const STATUS_PENDING = 2;
+    const STATUS_CLOSED = 3;
+    const STATUS_SPAM = 4;
+    // Present in the API, but what does it mean?
+    const STATUS_OPEN = 5;
 
     public static $statuses = array(
     	self::STATUS_ACTIVE => 'active',
+        self::STATUS_PENDING => 'pending',
     	self::STATUS_CLOSED => 'closed',
-    	self::STATUS_OPEN => 'open',
-    	self::STATUS_PENDING => 'pending',
     	self::STATUS_SPAM => 'spam',
+        //self::STATUS_OPEN => 'open',
+    );
+
+    /**
+     * https://glyphicons.bootstrapcheatsheets.com/
+     */
+    public static $status_icons = array(
+        self::STATUS_ACTIVE => 'ok',
+        self::STATUS_PENDING => 'hourglass',
+        self::STATUS_CLOSED => 'lock',
+        self::STATUS_SPAM => 'ban-circle',
+        //self::STATUS_OPEN => 'folder-open',
     );
 
     /**
@@ -186,5 +197,40 @@ class Conversation extends Model
     public function isActive()
     {
         return $this->status == self::STATUS_ACTIVE;
+    }
+
+    /**
+     * Get status name.
+     * 
+     * @param  integer $status
+     * @return string        
+     */
+    public static function getStatusName($status)
+    {
+        switch ($status) {
+            case self::STATUS_ACTIVE:
+                return __("Active");
+                break;
+
+            case self::STATUS_PENDING:
+                return __("Pending");
+                break;
+
+            case self::STATUS_CLOSED:
+                return __("Closed");
+                break;
+
+            case self::STATUS_SPAM:
+                return __("Spam");
+                break;
+
+            case self::STATUS_OPEN:
+                return __("Open");
+                break;
+
+            default:
+                return '';
+                break;
+        }
     }
 }
