@@ -10,8 +10,8 @@ FreeScout is being developed from scratch and is not using any copyrighted Help 
 
 ## Table of Contents
    * [Features](#features)
-   * [Release Date](#release-date)
    * [Requirements](#requirements)
+   * [Release Date](#release-date)
    * [Documentation](#documentation)
    * [Installation Guide](#installation-guide)
    * [Development Guide](#development-guide)
@@ -29,15 +29,15 @@ FreeScout is being developed from scratch and is not using any copyrighted Help 
   
 You can suggest features or vote for features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular)
 
-## Release Date
-
-If you would like to be notified by email when **FreeScout** will be released, you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
-
 ## Requirements
 
   * PHP 7.0.0+
   * MySQL/MariaDB 5.0+
   * Git (optional, for easier upgrading in the future)
+
+## Release Date
+
+If you would like to be notified by email when **FreeScout** will be released, you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
 
 ## Documentation
 
@@ -50,6 +50,10 @@ If you would like to be notified by email when **FreeScout** will be released, y
 ## Development Guide
 
 [Development Guide](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide)
+
+## Todo List
+
+[Todo List](https://github.com/freescout-helpdesk/freescout/projects/1)
 
 ## Screenshots
 

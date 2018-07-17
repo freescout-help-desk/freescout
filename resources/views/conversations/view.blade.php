@@ -16,11 +16,18 @@
             <div id="conv-toolbar">
                 
                 <div class="conv-actions">
-                    <span class="conv-reply glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Reply") }}"></span>
-                    <span class="conv-add-note glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Note") }}"></span>
-                    <span class="conv-add-tags glyphicon glyphicon-tag" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Note") }}"></span>
-                    <span class="conv-run-workflow glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}"></span>
-                    <span class="glyphicon glyphicon-option-horizontal" data-toggle="tooltip" title="{{ __("More Actions") }}"></span>
+                    <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}"></span>
+                    <span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" data-toggle="tooltip"></span>
+                    <span class="conv-add-tags conv-action glyphicon glyphicon-tag" data-toggle="tooltip" data-placement="bottom" title="{{ __("Tag") }}" onclick="alert('todo: implement tags')"></span>
+                    <span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>
+                    <div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
+                        <span class="glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></span>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">{{ __("Delete") }} (todo)</a></li>
+                            <li><a href="#">{{ __("Follow") }} (todo)</a></li>
+                            <li><a href="#">{{ __("Forward") }} (todo)</a></li>
+                        </ul>
+                    </div>
                 </div>
 
                 <ul class="conv-info">
@@ -48,8 +55,8 @@
                     </li>
                     <li>
                         <div class="btn-group" data-toggle="tooltip" title="{{ __("Status") }}">
-                            <button type="button" class="btn btn-default conv-info-icon"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
-                            <button type="button" class="btn btn-default dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button type="button" class="btn btn-{{ App\Conversation::$status_colors[$conversation->status] }} conv-info-icon"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
+                            <button type="button" class="btn btn-{{ App\Conversation::$status_colors[$conversation->status] }} dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span>{{ App\Conversation::getStatusName($conversation->status) }}</span> <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu conv-status">
@@ -65,13 +72,15 @@
 
             </div>
             <div id="conv-subject">
-                <div>
-                    {{ $conversation->subject }}
-                </div>
-                <div>
-                    #<strong>{{ $conversation->number }}</strong>
-                    <i class="glyphicon glyphicon-menu-left"></i>
-                    <i class="glyphicon glyphicon-menu-right"></i>
+                <div class="conv-subjwrap">
+                    <div class="conv-subjtext">
+                        {{ $conversation->subject }}
+                    </div>
+                    <div class="conv-numnav">
+                        <i class="glyphicon glyphicon-star-empty conv-star" onclick="alert('todo: implement starred conversations')" data-toggle="tooltip" title="{{ __("Star Conversation") }}"></i>&nbsp; #<strong>{{ $conversation->number }}</strong>
+                        <i class="glyphicon glyphicon-menu-left" data-toggle="tooltip" title="{{ __("Newer") }}"></i>
+                        <i class="glyphicon glyphicon-menu-right" data-toggle="tooltip" title="{{ __("Older") }}"></i>
+                    </div>
                 </div>
             </div>
         </div>

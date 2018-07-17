@@ -892,17 +892,55 @@ table.table-conversations td.conv-attachment {
     border-bottom: 1px solid #e3e8eb;
     padding-left: 9px;
 }
-.conv-actions span {
+.conv-actions .conv-action {
+    display: inline-block;
     padding: 17px 14px 9px;
     color: #4f5d69;
     font-size: 17px;
     cursor: pointer;
 }
-.conv-actions span:hover {
+.conv-actions .conv-action:hover {
     color: #394956;
 }
 #conv-subject {
+    padding: 16px 25px 24px;
+}
+.conv-subjwrap {
     padding-right: 145px;
+    position: relative;
+}
+.conv-subjtext {
+    color: #2a3b47;
+    font-weight: 400;
+    font-size: 23px;
+    line-height: 30px;
+    word-wrap: break-word;
+}
+.conv-numnav {
+    margin: 0;
+    position: absolute;
+    color: #93a1af;
+    right: 0;
+    top: 8px;
+}
+.conv-numnav strong {
+    color: #2a3b47;
+    font-size: 18px;
+    font-weight: bold;
+    padding-right: 8px;
+}
+.conv-numnav i {
+    cursor: pointer;
+    font-size: 15px;
+}
+.conv-numnav i:hover {
+    color: #364a5a;
+}
+.conv-star {
+    color: #bbc4cc;
+}
+.conv-starred {
+    color: #ffd76e;
 }
 .conv-info {
     overflow: visible;
@@ -917,7 +955,7 @@ table.table-conversations td.conv-attachment {
     display: inline-block;
     margin: 0 4px;
 }
-.conv-info .btn {
+.conv-info .btn-default {
     color: #4f5d69!important;
 }
 .conv-info .btn-group button.conv-info-icon {
@@ -965,8 +1003,17 @@ table.table-conversations td.conv-attachment {
         right: 0!important;
         left: auto!important;
     }
-    .conv-actions span {
+    .conv-actions .conv-action {
         padding: 17px 8px 9px;
+    }
+    .conv-subjtext {
+        font-size: 20px;
+    }
+    #conv-subject {
+        padding: 16px 13px 24px;
+    }
+    .conv-numnav {
+        top: 0;
     }
 }
 @media (max-width:991px) {
