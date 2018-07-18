@@ -903,7 +903,7 @@ table.table-conversations td.conv-attachment {
     color: #394956;
 }
 #conv-subject {
-    padding: 16px 25px 24px;
+    padding: 16px 13px 24px 25px;
 }
 .conv-subjwrap {
     padding-right: 145px;
@@ -921,7 +921,7 @@ table.table-conversations td.conv-attachment {
     position: absolute;
     color: #93a1af;
     right: 0;
-    top: 8px;
+    top: 5px;
 }
 .conv-numnav strong {
     color: #2a3b47;
@@ -983,6 +983,28 @@ table.table-conversations td.conv-attachment {
 .conv-actions {
     display: inline-block;
 }
+.conv-sidebar-block {
+    margin: 20px 5px;
+    background: #fff;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1);
+    border-radius: 3px;
+}
+.conv-sidebar-block .panel {
+    border: 0;
+}
+.conv-customer-hist .accordion .panel-title a {
+    color: #2a3b47;
+    font-size: 13.4px;
+    font-weight: 500;
+}
+.conv-customer-hist .accordion .panel-default > .panel-heading:hover {
+    background-color: transparent;
+}
+.customer-snippet {
+    padding: 5px 0;
+    margin-top: 60px;
+    position: relative;
+}
 @media (max-width:1100px) {
     #conv-layout-header,
     #conv-layout-main,
@@ -995,7 +1017,7 @@ table.table-conversations td.conv-attachment {
         height: auto;
     }
 }
-@media (max-width:991px) {
+@media (max-width:700px) {
     .conv-info .btn-group button.conv-info-val span:first-child {
         display: none!important;
     }
@@ -1014,6 +1036,9 @@ table.table-conversations td.conv-attachment {
     }
     .conv-numnav {
         top: 0;
+    }
+    .conv-info .btn-group button.conv-info-val {
+        padding-right: 17px;
     }
 }
 @media (max-width:991px) {
@@ -1153,6 +1178,9 @@ a.help-icon:hover {
 .text-help {
     color: #93a1af;
 }
+.text-help a:hover {
+    color: #23527c;
+}
 .help-link,
 .help-link:hover,
 .help-link:focus {
@@ -1275,18 +1303,26 @@ a.help-icon:hover {
     text-decoration: none;
 }
 .customer-photo-container {
-    margin: 20px auto 0 auto;
+    margin: -53px 0 0 15px;
     max-width: 86px;
     position: relative;
 }
 .customer-photo {
-    border:3px solid #fff;
-    border-radius:3px;
-    box-shadow:0 1px 1px rgba(0,0,0,.2);
-    display:block;
-    max-height:86px;
-    max-width:86px;
-    min-height:43px;
+    border: 3px solid #fff;
+    border-radius: 3px;
+    box-shadow:0 4px 6px rgba(147,161,175,.5);
+    display: block;
+    max-height: 70px;
+    max-width: 70px;
+}
+.customer-name {
+    color: #2a3b47;
+    font-size: 17px;
+    line-height: 21px;
+}
+.customer-name:hover,
+.customer-name:focus {
+    color: #2a3b47;
 }
 .customer-snippet h3 {
     text-align: center;
@@ -1297,15 +1333,27 @@ a.help-icon:hover {
     line-height: 1.2em;
     margin: 0 0 4px 0;
 }
+.customer-social-profiles {
+    position: absolute;
+    top: -28px;
+    right: 12px;
+}
+.customer-social-profiles a {
+    font-size: 17px;
+    color: #b6bec6;
+}
+.customer-social-profiles a:hover {
+    color: #72808e;
+    text-decoration: none;
+}
 .customer-data {
-    padding: 0 17px;
-    margin-top: 24px;
-    margin-bottom: 24px;
+    padding: 0px 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 .customer-contacts {
     margin: 0;
     padding: 0;
-    text-align: center;
 }
 .customer-contacts li,
 .customer-contacts li a {
@@ -1313,19 +1361,28 @@ a.help-icon:hover {
     text-overflow: ellipsis;
     white-space: nowrap;
     display: block;
-    color: #72808e;
+    margin-top: 2px;
+    color: #93a1af;
     line-height: 16px;
 }
 .customer-contacts li a:hover {
-    text-decoration: none;
-    color: #1f5e89;
+    color: #93a1af;
 }
 .customer-contacts li i {
     color: #b5c1cc;
     font-size: 14px;
-    margin-right: 6px;
+    margin-right: 3px;
     vertical-align: top;
     display: inline-block;
+}
+.customer-contacts .contact-main,
+.customer-contacts .contact-main:hover {
+    color: #3197d6;
+}
+.customer-section {
+    margin-top: 10px;
+    color: #93a1af;
+    word-wrap: break-word;
 }
 .customer-divider {
     display: block;
@@ -1346,4 +1403,16 @@ a.help-icon:hover {
 }
 .text-charcoal {
     color: #2a3b47!important;
+}
+.btn-grey {
+    color: #fff;
+    background-color: #84909d;
+    border-color: #72808e;
+}
+.btn-grey:focus,
+.btn-grey.focus,
+.btn-grey:hover {
+  color: #fff;
+  background-color: #64717b;
+  border-color: #4f5d69;
 }

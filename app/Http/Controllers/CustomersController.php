@@ -65,6 +65,10 @@ class CustomersController extends Controller
         }
 
         $customer->fill($request->all());
+        // Websites
+        if (!empty($request->websites)) {
+            $customer->setWebsites($request->websites);
+        }
         $customer->save();
 
         $customer->syncEmails($request->emails);

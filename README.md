@@ -15,6 +15,7 @@ FreeScout is being developed from scratch and is not using any copyrighted Help 
    * [Documentation](#documentation)
    * [Installation Guide](#installation-guide)
    * [Development Guide](#development-guide)
+   * [Todo List](#todo-list)
    * [Screenshots](#screenshots)
 
 ## Features

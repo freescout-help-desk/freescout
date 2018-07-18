@@ -66,8 +66,8 @@ class Conversation extends Model
 
     public static $status_colors = array(
         self::STATUS_ACTIVE => 'success',
-        self::STATUS_PENDING => 'info',
-        self::STATUS_CLOSED => 'warning',
+        self::STATUS_PENDING => 'warning',
+        self::STATUS_CLOSED => 'grey',
         self::STATUS_SPAM => 'danger',
         //self::STATUS_OPEN => 'folder-open',
     );

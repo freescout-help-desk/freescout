@@ -85,7 +85,27 @@
             </div>
         </div>
         <div id="conv-layout-customer">
-            customer
+            <div class="conv-customer-block conv-sidebar-block">
+                @include('customers/profile_snippet', ['customer' => $conversation->customer])
+            </div>
+            <div class="conv-customer-hist conv-sidebar-block">
+                <div class="panel-group accordion accordion-empty">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" href="#collapse-conv-prev">{{ __("Previous Conversations") }} 
+                                    <b class="caret"></b>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse-conv-prev" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <p>todo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="conv-layout-main">
             main

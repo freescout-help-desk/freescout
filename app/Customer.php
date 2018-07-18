@@ -383,18 +383,6 @@ class Customer extends Model
     }
 
     /**
-     * Prepare data for saving as JSON
-     * 
-     * @param  array $data  
-     * @param  string $field 
-     * @return string        JSON string
-     */
-    public static function formatJsonField(array $data, $field = '')
-    {
-        return json_encode($data);
-    }
-
-    /**
      * Get customer full name.
      * 
      * @return string
@@ -454,5 +442,66 @@ class Customer extends Model
                 $email->save();
             }
         }
+    }
+
+    /**
+     * Get customers phones as array.
+     * 
+     * @return array
+     */
+    public function getPhones()
+    {
+        if ($this->phones) {
+            return json_decode($this->phones);
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Get customers social profiles as array.
+     * 
+     * @return array
+     */
+    public function getSocialProfiles()
+    {
+        if ($this->social_profiles) {
+            return json_decode($this->social_profiles);
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Get customers social profiles as array.
+     * 
+     * @return array
+     */
+    public function getWebsites($dummy_if_empty = false)
+    {
+        if ($this->websites) {
+            return json_decode($this->websites);
+        } elseif ($dummy_if_empty) {
+            return [''];
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Set websites as JSON
+     * @param array $websites_array
+     */
+    public function setWebsites(array $websites_array)
+    {
+        $websites = [];
+        foreach ($websites_array as $key => $value) {
+            $value = filter_var((string)$value, FILTER_SANITIZE_URL);
+            if (!preg_match("/http(s)?:\/\//i", $value)) {
+                $value = 'http://'.$value;
+            }
+            $websites[] = (string)$value;
+        }
+        $this->websites = json_encode($websites);
     }
 }

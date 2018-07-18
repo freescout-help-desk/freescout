@@ -46,7 +46,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group{{ $errors->has('emails') ? ' has-error' : '' }}">
+                    <div class="form-group{{ $errors->has('emails') ? ' has-error' : '' }} margin-bottom-0">
                         <label for="emails" class="col-sm-2 control-label">{{ __('Email') }}</label>
 
                         <div class="col-md-6">
@@ -57,13 +57,30 @@
                                         <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                     </div>
                                 @endforeach
-                                <p class="help-block"><a href="javascript:void(0)" class="multi-add" tabindex="-1">{{ __('Add an email address') }}</a></p>
+                                <p class="help-block"><a href="javascript:void(0)" class="multi-add " tabindex="-1">{{ __('Add an email address') }}</a></p>
                             </div>
 
                             @include('partials/field_error', ['field'=>'emails'])
                         </div>
                     </div>
 
+                    <div class="form-group{{ $errors->has('websites') ? ' has-error' : '' }}">
+                        <label for="websites" class="col-sm-2 control-label">{{ __('Website') }}</label>
+
+                        <div class="col-md-6">
+                            <div class="multi-container">
+                                @foreach ($customer->getWebsites(true) as $website)
+                                    <div class="multi-item">
+                                        <input id="websites" type="text" class="form-control input-sized2" name="websites[]" value="{{ $website }}" maxlength="100">
+                                        <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
+                                    </div>
+                                @endforeach
+                                <p class="help-block"><a href="javascript:void(0)" class="multi-add" tabindex="-1">{{ __('Add a website') }}</a></p>
+                            </div>
+
+                            @include('partials/field_error', ['field'=>'websites'])
+                        </div>
+                    </div>
                     <div class="form-group">
                         <div class="col-md-6 col-sm-offset-2">
                             <button type="submit" class="btn btn-primary">
