@@ -65,6 +65,9 @@
                                 @endforeach
                             </ul>
                         </div>
+                    </li><li class="conv-next-prev">
+                        <i class="glyphicon glyphicon-menu-left" data-toggle="tooltip" title="{{ __("Newer") }}" onclick="alert('todo: implement conversation navigation')"></i>
+                        <i class="glyphicon glyphicon-menu-right" data-toggle="tooltip" title="{{ __("Older") }}" onclick="alert('todo: implement conversation navigation')"></i>
                     </li>
                 </ul>
 
@@ -77,9 +80,7 @@
                         {{ $conversation->subject }}
                     </div>
                     <div class="conv-numnav">
-                        <i class="glyphicon glyphicon-star-empty conv-star" onclick="alert('todo: implement starred conversations')" data-toggle="tooltip" title="{{ __("Star Conversation") }}"></i>&nbsp; #<strong>{{ $conversation->number }}</strong>
-                        <i class="glyphicon glyphicon-menu-left" data-toggle="tooltip" title="{{ __("Newer") }}"></i>
-                        <i class="glyphicon glyphicon-menu-right" data-toggle="tooltip" title="{{ __("Older") }}"></i>
+                        <i class="glyphicon glyphicon-star-empty conv-star" onclick="alert('todo: implement starred conversations')" data-toggle="tooltip" title="{{ __("Star Conversation") }}"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>
                     </div>
                 </div>
             </div>
@@ -98,7 +99,7 @@
                                 </a>
                             </h4>
                         </div>
-                        <div id="collapse-conv-prev" class="panel-collapse collapse in">
+                        <div id="collapse-conv-prev" class="panel-collapse collapse {{-- in --}}">
                             <div class="panel-body">
                                 <p>todo</p>
                             </div>

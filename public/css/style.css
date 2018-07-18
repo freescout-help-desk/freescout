@@ -903,7 +903,7 @@ table.table-conversations td.conv-attachment {
     color: #394956;
 }
 #conv-subject {
-    padding: 16px 13px 24px 25px;
+    padding: 16px 9px 24px 20px;
 }
 .conv-subjwrap {
     padding-right: 145px;
@@ -1005,6 +1005,20 @@ table.table-conversations td.conv-attachment {
     margin-top: 60px;
     position: relative;
 }
+.conv-next-prev {
+    vertical-align: middle;
+    margin-right: 0!important;
+}
+.conv-next-prev i {
+    font-size: 16px;
+    color: #a5b2bd;
+    position: relative;
+    top: 3px;
+}
+.conv-next-prev i:hover {
+    cursor: pointer;
+    color: #4f5d69;
+}
 @media (max-width:1100px) {
     #conv-layout-header,
     #conv-layout-main,
@@ -1032,7 +1046,7 @@ table.table-conversations td.conv-attachment {
         font-size: 20px;
     }
     #conv-subject {
-        padding: 16px 13px 24px;
+        padding: 16px 2px 24px 13px;
     }
     .conv-numnav {
         top: 0;
@@ -1040,23 +1054,38 @@ table.table-conversations td.conv-attachment {
     .conv-info .btn-group button.conv-info-val {
         padding-right: 17px;
     }
+    .conv-info {
+        margin-right: 6px;
+    }
+    .conv-info > li {
+        margin: 0 2px;
+    }
+    #conv-toolbar {
+        padding-left: 6px;
+    }
+    .conv-actions .conv-action {
+        font-size: 15px;
+    }
 }
 @media (max-width:991px) {
     .conv-info .btn-group button.conv-info-val {
-        max-width: 150px;
+        max-width: 148px;
     }
 }
-@media (min-width:992px) and (min-width:1100px) {
+@media (min-width:992px) {
     .conv-info .btn-group button.conv-info-val {
-        max-width: 200px;
+        max-width: 170px;
     }
 }
-@media (min-width:1100px) {
+@media (min-width:1100px) and (max-width:1239px) {
     .conv-info .btn-group button.conv-info-val {
-        max-width: 100px;
+        max-width: 94px;
+    }
+    .conv-actions .conv-action {
+        padding: 17px 10px 9px;
     }
 }
-@media (min-width:1200px) {
+@media (min-width:1240px) {
     .conv-info .btn-group button.conv-info-val {
         max-width: 150px;
     }

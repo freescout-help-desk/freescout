@@ -32,6 +32,7 @@ You can suggest features or vote for features [here](https://feedback.userreport
 
 ## Requirements
 
+  * Nginx / Apache / IIS
   * PHP 7.0.0+
   * MySQL/MariaDB 5.0+
   * Git (optional, for easier upgrading in the future)
