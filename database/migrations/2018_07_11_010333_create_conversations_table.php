@@ -20,7 +20,7 @@ class CreateConversationsTable extends Migration
             // Conversation Number
             $table->unsignedInteger('number');
             // Number of threads the conversation has
-            $table->unsignedInteger('threads')->default(0);
+            $table->unsignedInteger('threads_count')->default(0);
             $table->unsignedTinyInteger('type');
             $table->integer('folder_id');
             $table->unsignedTinyInteger('status')->default(Conversation::STATUS_ACTIVE);

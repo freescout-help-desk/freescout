@@ -30,6 +30,8 @@ class ConversationsController extends Controller
         return view('conversations/view', [
             'conversation' => $conversation,
             'mailbox' => $conversation->mailbox,
+            'customer' => $conversation->customer,
+            'threads' => $conversation->threads,
             'folder' => $conversation->folder,
             'folders' => $conversation->mailbox->getAssesibleFolders()
         ]);

@@ -21,11 +21,11 @@ class CreateCustomersTable extends Migration
             $table->string('last_name', 255)->nullable();
             $table->string('company', 255)->nullable();
             $table->string('job_title', 255)->nullable();
-            $table->string('photo_type', 13)->nullable();
+            $table->unsignedTinyInteger('photo_type')->nullable();
             $table->string('photo_url', 255)->nullable();
             // Age and gender do not exist in the web interface, but exist in the API
             $table->string('age', 7)->nullable();
-            $table->string('gender', 7)->nullable();
+            $table->unsignedTinyInteger('gender')->nullable();
             $table->text('phones')->nullable(); // JSON
             $table->text('websites')->nullable(); // JSON
             $table->text('social_profiles')->nullable(); // JSON

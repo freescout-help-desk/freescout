@@ -47,7 +47,7 @@
                                 <li><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
                                 @foreach ($mailbox->users as $user)
                                     @if ($user->id != Auth::user()->id)
-                                        <li><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
+                                        <li @if ($conversation->user->id == $user->id) class="active" @endif><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
                                     @endif
                                 @endforeach
                             </ul>
@@ -61,7 +61,7 @@
                             </button>
                             <ul class="dropdown-menu conv-status">
                                 @foreach (App\Conversation::$statuses as $status => $dummy)
-                                    <li><a href="#" data-status="{{ $status }}">{{ App\Conversation::getStatusName($status) }}</a></li>
+                                    <li @if ($conversation->status == $status) class="active" @endif><a href="#" data-status="{{ $status }}">{{ App\Conversation::getStatusName($status) }}</a></li>
                                 @endforeach
                             </ul>
                         </div>
@@ -87,17 +87,18 @@
         </div>
         <div id="conv-layout-customer">
             <div class="conv-customer-block conv-sidebar-block">
-                @include('customers/profile_snippet', ['customer' => $conversation->customer])
+                @include('customers/profile_snippet', ['customer' => $customer])
                 <div class="dropdown customer-trigger" data-toggle="tooltip" title="{{ __("Settings") }}">
                     <a href="javascript:void(0)" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                        <li role="presentation"><a href="{{ route('customers.update', ['id' => $conversation->customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
+                        <li role="presentation"><a href="{{ route('customers.update', ['id' => $customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
                         <li role="presentation"><a href="javascript:alert('todo: implement customer changing');void(0);" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
+                        <li role="presentation" class="customer-hist-trigger"><a data-toggle="collapse" href="#collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
                     </ul>
                 </div>
-                <div data-toggle="collapse" href="#collapse-conv-prev" class="customer-hist-trigger">
+                {{--<div data-toggle="collapse" href="#collapse-conv-prev" class="customer-hist-trigger">
                     <div class="glyphicon glyphicon-list-alt" data-toggle="tooltip" title="{{ __("Previous Conversations") }}"></div>
-                </div>
+                </div>--}}
             </div>
             <div class="conv-customer-hist conv-sidebar-block">
                 <div class="panel-group accordion accordion-empty">
@@ -119,7 +120,11 @@
             </div>
         </div>
         <div id="conv-layout-main">
-            main
+            @foreach ($threads as $thread)
+                <div class="thread">
+                    {{ $thread->body }}
+                </div>
+            @endforeach
         </div>
     </div>
 @endsection

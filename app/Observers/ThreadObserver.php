@@ -18,7 +18,7 @@ class ThreadObserver
 
         $now = date("Y-m-d H:i:s");
         if (!in_array($thread->type, [Thread::TYPE_LINEITEM, Thread::TYPE_NOTE])) {
-            $conversation->threads++;
+            $conversation->threads_count++;
         }
         if (!in_array($thread->type, [Thread::TYPE_CUSTOMER])) {
             $conversation->user_updated_at = $now;

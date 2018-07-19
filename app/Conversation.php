@@ -193,7 +193,7 @@ class Conversation extends Model
      */
     public function getDateTitle()
     {
-        if ($this->threads == 1) {
+        if ($this->threads_count == 1) {
             $title = __("Created by :person<br/>:date", ['person' => ucfirst(__(
             self::$persons[$this->source_via])), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
         } else {

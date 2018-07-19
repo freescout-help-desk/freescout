@@ -10,72 +10,144 @@ class Customer extends Model
 	/**
 	 * Genders
 	 */
-    const GENDER_MALE = 'male';
-    const GENDER_FEMALE = 'female';
-    const GENDER_UNKNOWN = 'unknown';
+    const GENDER_UNKNOWN = 1;
+    const GENDER_MALE = 2;
+    const GENDER_FEMALE = 3;
+
+    /**
+     * For API
+     */
+    public static $genders = [
+        self::GENDER_UNKNOWN => 'unknown',
+        self::GENDER_MALE => 'male',
+        self::GENDER_FEMALE => 'female',
+    ];
 
     /**
      * Phone types
      */
-    const PHONE_TYPE_WORK = 'work';
-    const PHONE_TYPE_HOME = 'home';
-    const PHONE_TYPE_MOBILE = 'mobile';
-    const PHONE_TYPE_FAX = 'fax';
-    const PHONE_TYPE_PAGER = 'pager';
-    const PHONE_TYPE_OTHER = 'other';
+    const PHONE_TYPE_WORK = 1;
+    const PHONE_TYPE_HOME = 2;
+    const PHONE_TYPE_OTHER = 3;
+    const PHONE_TYPE_MOBILE = 4;
+    const PHONE_TYPE_FAX = 5;
+    const PHONE_TYPE_PAGER = 6;
 
+    /**
+     * For API
+     */
     public static $phone_types = [
-    	self::PHONE_TYPE_WORK => 'Work',
-    	self::PHONE_TYPE_HOME => 'Home',
-    	self::PHONE_TYPE_OTHER => 'Other',
-    	self::PHONE_TYPE_MOBILE => 'Mobile',
+    	self::PHONE_TYPE_WORK => 'work',
+    	self::PHONE_TYPE_HOME => 'home',
+    	self::PHONE_TYPE_OTHER => 'other',
+    	self::PHONE_TYPE_MOBILE => 'mobile',
     	self::PHONE_TYPE_FAX => 'Fax',
-    	self::PHONE_TYPE_PAGER => 'Pager',
+    	self::PHONE_TYPE_PAGER => 'pager',
     ];
 
     /**
      * Photo types
      */
-    const PHOTO_TYPE_UKNOWN = 'unknown';
-    const PHOTO_TYPE_GRAVATAR = 'gravatar';
-    const PHOTO_TYPE_TWITTER = 'twitter';
-    const PHOTO_TYPE_FACEBOOK = 'facebook';
-    const PHOTO_TYPE_GOOGLEPROFILE = 'googleprofile';
-    const PHOTO_TYPE_GOOGLEPLUS = 'googleplus';
-    const PHOTO_TYPE_LINKEDIN = 'linkedin';
-    const PHOTO_TYPE_VK = 'vk'; // Extra
+    const PHOTO_TYPE_UKNOWN = 1;
+    const PHOTO_TYPE_GRAVATAR = 2;
+    const PHOTO_TYPE_TWITTER = 3;
+    const PHOTO_TYPE_FACEBOOK = 4;
+    const PHOTO_TYPE_GOOGLEPROFILE = 5;
+    const PHOTO_TYPE_GOOGLEPLUS = 6;
+    const PHOTO_TYPE_LINKEDIN = 7;
+    const PHOTO_TYPE_VK = 8; // Extra
+
+    /**
+     * For API
+     */
+    public static $photo_types = [
+        self::PHOTO_TYPE_UKNOWN => 'unknown',
+        self::PHOTO_TYPE_GRAVATAR => 'gravatar',
+        self::PHOTO_TYPE_TWITTER => 'twitter',
+        self::PHOTO_TYPE_FACEBOOK => 'facebook',
+        self::PHOTO_TYPE_GOOGLEPROFILE => 'googleprofile',
+        self::PHOTO_TYPE_GOOGLEPLUS => 'googleplus',
+        self::PHOTO_TYPE_LINKEDIN => 'linkedin',
+        self::PHOTO_TYPE_VK => 'vk', // Extra
+    ];
 
     /**
      * Chat types
      */
+    const CHAT_TYPE_AIM = 1;
+    const CHAT_TYPE_GTALK = 2;
+    const CHAT_TYPE_ICQ = 3;
+    const CHAT_TYPE_XMPP = 4;
+    const CHAT_TYPE_MSN = 5;
+    const CHAT_TYPE_SKYPE = 6;
+    const CHAT_TYPE_YAHOO = 7;
+    const CHAT_TYPE_QQ = 8;
+    const CHAT_TYPE_WECHAT = 10;
+    const CHAT_TYPE_OTHER = 9;
+
+    /**
+     * For API
+     */
     public static $chat_types = [
-    	'aim' => 'AIM',
-		'gtalk' => 'Google+',
-		'icq' => 'ICQ',
-		'xmpp' => 'XMPP',
-		'msn' => 'MSN',
-		'skype' => 'Skype',
-		'yahoo' => 'Yahoo',
-		'qq' => 'QQ',
-		'wechat' => 'WeChat', // Extra
-		'other' => 'Other',
+        self::CHAT_TYPE_AIM => 'aim',
+        self::CHAT_TYPE_GTALK => 'gtalk',
+        self::CHAT_TYPE_ICQ => 'icq',
+        self::CHAT_TYPE_XMPP => 'xmpp',
+        self::CHAT_TYPE_MSN => 'msn',
+        self::CHAT_TYPE_SKYPE => 'skype',
+        self::CHAT_TYPE_YAHOO => 'yahoo',
+        self::CHAT_TYPE_QQ => 'qq',
+        self::CHAT_TYPE_WECHAT => 'wechat', // Extra
+        self::CHAT_TYPE_OTHER => 'other',
     ];
-   
-    const SOCIAL_TYPE_TWITTER = 'twitter';
-    const SOCIAL_TYPE_FACEBOOK = 'facebook';
-    const SOCIAL_TYPE_LINKEDIN = 'linkedin';
-    const SOCIAL_TYPE_ABOUTME = 'aboutme';
-    const SOCIAL_TYPE_GOOGLE = 'google';
-    const SOCIAL_TYPE_GOOGLEPLUS = 'googleplus';
-    const SOCIAL_TYPE_TUNGLEME = 'tungleme';
-    const SOCIAL_TYPE_QUORA = 'quora';
-    const SOCIAL_TYPE_FOURSQUARE = 'foursquare';
-    const SOCIAL_TYPE_YOUTUBE = 'youtube';
-    const SOCIAL_TYPE_FLICKR = 'flickr';
-    const SOCIAL_TYPE_VK = 'vk'; // Extra
-    const SOCIAL_TYPE_OTHER = 'other';
+
+    public static $chat_type_names = [
+        self::CHAT_TYPE_AIM => 'AIM',
+        self::CHAT_TYPE_GTALK => 'Google+',
+        self::CHAT_TYPE_ICQ => 'ICQ',
+        self::CHAT_TYPE_XMPP => 'XMPP',
+        self::CHAT_TYPE_MSN => 'MSN',
+        self::CHAT_TYPE_SKYPE => 'Skype',
+        self::CHAT_TYPE_YAHOO => 'Yahoo',
+        self::CHAT_TYPE_QQ => 'QQ',
+        self::CHAT_TYPE_WECHAT => 'WeChat', // Extra
+        self::CHAT_TYPE_OTHER => 'Other',
+    ];
+
+    /**
+     * Social types
+     */
+    const SOCIAL_TYPE_TWITTER = 1;
+    const SOCIAL_TYPE_FACEBOOK = 2;
+    const SOCIAL_TYPE_LINKEDIN = 3;
+    const SOCIAL_TYPE_ABOUTME = 4;
+    const SOCIAL_TYPE_GOOGLE = 5;
+    const SOCIAL_TYPE_GOOGLEPLUS = 6;
+    const SOCIAL_TYPE_TUNGLEME = 7;
+    const SOCIAL_TYPE_QUORA = 8;
+    const SOCIAL_TYPE_FOURSQUARE = 9;
+    const SOCIAL_TYPE_YOUTUBE = 10;
+    const SOCIAL_TYPE_FLICKR = 11;
+    const SOCIAL_TYPE_VK = 13; // Extra
+    const SOCIAL_TYPE_OTHER = 12;
 
     public static $social_types = [
+        self::SOCIAL_TYPE_TWITTER => 'twitter',
+        self::SOCIAL_TYPE_FACEBOOK => 'facebook',
+        self::SOCIAL_TYPE_LINKEDIN => 'linkedin',
+        self::SOCIAL_TYPE_ABOUTME => 'aboutme',
+        self::SOCIAL_TYPE_GOOGLE => 'google',
+        self::SOCIAL_TYPE_GOOGLEPLUS => 'googleplus',
+        self::SOCIAL_TYPE_TUNGLEME => 'tungleme',
+        self::SOCIAL_TYPE_QUORA => 'quora',
+        self::SOCIAL_TYPE_FOURSQUARE => 'foursquare',
+        self::SOCIAL_TYPE_YOUTUBE => 'youtube',
+        self::SOCIAL_TYPE_FLICKR => 'flickr',
+        self::SOCIAL_TYPE_VK => 'vk', // Extra
+        self::SOCIAL_TYPE_OTHER => 'other',
+    ];
+
+    public static $social_type_names = [
         self::SOCIAL_TYPE_TWITTER => 'Twitter',
         self::SOCIAL_TYPE_FACEBOOK => 'Facebook',
         self::SOCIAL_TYPE_LINKEDIN => 'Linkedin',
@@ -456,6 +528,36 @@ class Customer extends Model
         } else {
             return [];
         }
+    }
+
+    /**
+     * Set phones as JSON.
+     * 
+     * @param array $phones_array
+     */
+    public function setPhones(array $phones_array)
+    {
+        $this->phones = json_encode(self::formatPhones($phones));
+    }
+
+    /**
+     * Sanitize phones array
+     * 
+     * @param  array  $phones_array [description]
+     * @return array               [description]
+     */
+    public static function formatPhones(array $phones_array)
+    {
+        $phones = [];
+        foreach ($phones_array as $phone) {
+            if (!empty($phone['value']) && !empty($phone['type']) && in_array($phone['type'], array_keys(self::$phone_types))) {
+                $phones[] = [
+                    'value' => (string)$phone['value'],
+                    'type' => (int)$phone['type'],
+                ];
+            }
+        }
+        return json_encode($phones);
     }
 
     /**
