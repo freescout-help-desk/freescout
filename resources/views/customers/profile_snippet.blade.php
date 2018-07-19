@@ -7,10 +7,10 @@
 		{{-- todo: display full customer info --}}
 		<ul class="customer-contacts customer-section">
 			@foreach ($customer->emails as $email)
-	            <li><a href="#" title="{{ __('Email customer') }}" class="@if ($loop->index == 0) contact-main @endif">{{ $email->email }}</a></li>
+	            <li class="customer-email"><a href="#" title="{{ __('Email customer') }}" class="@if ($loop->index == 0) contact-main @endif">{{ $email->email }}</a></li>
 	        @endforeach
 			@foreach ($customer->getPhones() as $phone)
-	            <li><a href="#" title="{{ __('Call customer') }}">{{ $phone->value }}</a></li>
+	            <li class="customer-phone"><a href="#" title="{{ __('Call customer') }}">{{ $phone->value }}</a></li>
 	        @endforeach
 		</ul>
 		<div class="customer-extra">
@@ -28,9 +28,9 @@
 			@endphp
 			@if ($customer->company || $customer->job_title || $location)
 				<div class="customer-section">
-					@if ($customer->company)<p>{{ $customer->company }}</p>@endif
-					@if ($customer->job_title)<p>{{ $customer->job_title }}</p>@endif
-					@if ($location)<p>{{ implode(', ', $location) }}</p>@endif
+					@if ($customer->company)<div>{{ $customer->company }}</div>@endif
+					@if ($customer->job_title)<div>{{ $customer->job_title }}</div>@endif
+					@if ($location)<div>{{ implode(', ', $location) }}</div>@endif
 				</div>
 			@endif
 			@if ($customer->background)

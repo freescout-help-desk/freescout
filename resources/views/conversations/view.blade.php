@@ -21,7 +21,7 @@
                     <span class="conv-add-tags conv-action glyphicon glyphicon-tag" data-toggle="tooltip" data-placement="bottom" title="{{ __("Tag") }}" onclick="alert('todo: implement tags')"></span>
                     <span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>
                     <div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
-                        <span class="glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></span>
+                        <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></span>
                         <ul class="dropdown-menu">
                             <li><a href="#">{{ __("Delete") }} (todo)</a></li>
                             <li><a href="#">{{ __("Follow") }} (todo)</a></li>
@@ -88,6 +88,16 @@
         <div id="conv-layout-customer">
             <div class="conv-customer-block conv-sidebar-block">
                 @include('customers/profile_snippet', ['customer' => $conversation->customer])
+                <div class="dropdown customer-trigger" data-toggle="tooltip" title="{{ __("Settings") }}">
+                    <a href="javascript:void(0)" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
+                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                        <li role="presentation"><a href="{{ route('customers.update', ['id' => $conversation->customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
+                        <li role="presentation"><a href="javascript:alert('todo: implement customer changing');void(0);" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
+                    </ul>
+                </div>
+                <div data-toggle="collapse" href="#collapse-conv-prev" class="customer-hist-trigger">
+                    <div class="glyphicon glyphicon-list-alt" data-toggle="tooltip" title="{{ __("Previous Conversations") }}"></div>
+                </div>
             </div>
             <div class="conv-customer-hist conv-sidebar-block">
                 <div class="panel-group accordion accordion-empty">
