@@ -2,7 +2,7 @@
 
 ![FreeScout](https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/banner.png)
 
-**FreeScout** is a free open source help desk and shared inbox written in PHP (Laravel 5.5 framework), full analog of HelpScout. As you may know Help Scout on **November 29, 2018** will force all free accounts to upgrade to the paid plan, so developing a free open source alternative is kind of urgent.
+**FreeScout** is a free open source help desk and shared inbox written in PHP7 (Laravel 5.5 framework), full analog of HelpScout. As you may know, Help Scout on **November 29, 2018** will force all free accounts to upgrade to the paid plan, so developing a free open source alternative is kind of urgent.
 
 FreeScout is being developed from scratch and is not using any copyrighted Help Scout materials to comply with GitHub's [DMCA Policy](https://help.github.com/articles/dmca-takedown-policy/) (trademark, logos, icons, CSS, JS, HTML files are copyrighted; idea, look and feel can not be copyrighted). FreeScout is currently under active development. If you would like to join efforts, just fork [this repo](https://github.com/freescout-helpdesk/freescout) and follow [instructions](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide).
 
@@ -20,13 +20,14 @@ FreeScout is being developed from scratch and is not using any copyrighted Help 
 
 ## Features
 
+![FreeScout Logo](https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/logo-300.png)
+
 [FreeScout](https://github.com/freescout-helpdesk/freescout) will provide the same set of features as a HelpScout: help desk tools, email management and analytics. Also **FreeScout** will provide several extra features in addition to the standard HelpScout features:
 
   * Sending message to multiple customers at once.
   * Starred conversations.
-  * Deleted conversations folder.
-  * Quick changing of customer.
   * Pasting screenshots from the clipboard into the reply area.
+  * Deleted conversations folder.
   
 You can suggest features or vote for features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular)
 
