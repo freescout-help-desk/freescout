@@ -34,12 +34,18 @@ class Thread extends Model
     const TYPE_CHAT = 8;
 
     public static $types = [
+        // Thread by customer
     	self::TYPE_CUSTOMER => 'customer',
+        // Thread by user
     	self::TYPE_MESSAGE => 'message',
     	self::TYPE_NOTE => 'note',
+        // lineitem represents a change of state on the conversation. This could include, but not limited to, the conversation was assigned, the status changed, the conversation was moved from one mailbox to another, etc. A line item won’t have a body, to/cc/bcc lists, or attachments.
     	self::TYPE_LINEITEM => 'lineitem',
     	self::TYPE_PHONE => 'phone',
+        // When a conversation is forwarded, a new conversation is created to represent the forwarded conversation.
+        // forwardparent is the type set on the thread of the original conversation that initiated the forward event.
     	self::TYPE_FORWARDPARENT => 'forwardparent',
+        // forwardchild is the type set on the first thread of the new forwarded conversation.
     	self::TYPE_FORWARDCHILD => 'forwardchild',
     	self::TYPE_CHAT => 'chat',
     ];
@@ -154,5 +160,91 @@ class Thread extends Model
     public function conversation()
     {
         return $this->belongsTo('App\Conversation');
+    }
+
+    /**
+     * Get sanitized body HTML
+     * @return string
+     */
+    public function getCleanBody()
+    {
+        return \Purifier::clean($this->body);
+    }
+
+    /**
+     * Get thread recipients.
+     * 
+     * @return array
+     */
+    public function getTos()
+    {
+        if ($this->to) {
+            return json_decode($this->to);
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Get thread CC recipients.
+     * 
+     * @return array
+     */
+    public function getCcs()
+    {
+        if ($this->cc) {
+            return json_decode($this->cc);
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Get thread BCC recipients.
+     * 
+     * @return array
+     */
+    public function getBccs()
+    {
+        if ($this->bcc) {
+            return json_decode($this->bcc);
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Get status name. Made as a function to allow status names translation.
+     * 
+     * @param  integer $status
+     * @return string        
+     */
+    public static function getStatusName($status)
+    {
+        switch ($status) {
+            case self::STATUS_ACTIVE:
+                return __("Active");
+                break;
+
+            case self::STATUS_PENDING:
+                return __("Pending");
+                break;
+
+            case self::STATUS_CLOSED:
+                return __("Closed");
+                break;
+
+            case self::STATUS_SPAM:
+                return __("Spam");
+                break;
+
+            case self::STATUS_NOCHANGE:
+                return __("Not changed");
+                break;
+
+            default:
+                return '';
+                break;
+        }
     }
 }

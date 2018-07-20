@@ -121,9 +121,113 @@
         </div>
         <div id="conv-layout-main">
             @foreach ($threads as $thread)
-                <div class="thread">
-                    {{ $thread->body }}
-                </div>
+                
+                @if ($thread->type == App\Thread::TYPE_LINEITEM)
+                    <div class="thread thread-lineitem">
+                        <div class="thread-message">
+                            <div class="thread-header">
+                                <div class="thread-title">
+                                </div>
+                                <div class="thread-info">
+                                    <span class="thread-date"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="thread">
+                        <div class="thread-photo">
+                            <img src="/img/default-avatar.png" alt="">
+                        </div>
+                        <div class="thread-message">
+                            <div class="thread-header">
+                                <div class="thread-title">
+                                    <div class="thread-person">
+                                        <strong>
+                                            @if ($thread->type == App\Thread::TYPE_CUSTOMER)
+                                                {{ $thread->customer->getFullName() }}
+                                            @else
+                                                @if ($thread->user->id == Auth::user()->id)
+                                                    {{ __("you") }}
+                                                @else
+                                                    {{ $thread->user->getFullName() }}
+                                                @endif
+                                            @endif
+                                        </strong> 
+                                        @if ($loop->index == 0)
+                                            {{ __("started the conversation") }}
+                                        @else
+                                            {{ __("replied") }}
+                                        @endif
+                                    </div>
+                                    <div class="thread-recipients">
+                                        @if ($thread->getTos() == 1 && $thread->getTos()[0] == $mailbox->email)
+                                        @elseif ($thread->getTos())
+                                            <div>
+                                                <strong>
+                                                    {{ __("To") }}:
+                                                </strong>
+                                                {{ implode(', ', $thread->getTos()) }}
+                                            </div>
+                                        @endif
+                                        @if ($thread->getCcs() == 1 && $thread->getCcs()[0] == $mailbox->email)
+                                        @elseif ($thread->getCcs())
+                                            <div>
+                                                <strong>
+                                                    {{ __("Cc") }}:
+                                                </strong>
+                                                {{ implode(', ', $thread->getCcs()) }}
+                                            </div>
+                                        @endif
+                                        @if ($thread->getBccs() == 1 && $thread->getBccs()[0] == $mailbox->email)
+                                        @elseif ($thread->getBccs())
+                                            <div>
+                                                <strong>
+                                                    {{ __("Bcc") }}:
+                                                </strong>
+                                                {{ implode(', ', $thread->getBccs()) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="thread-info">
+                                    <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
+                                    @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
+                                        <span class="thread-status">
+                                            @if ($loop->index == 0 || $thread->status != App\Thread::STATUS_NOCHANGE)
+                                                @php
+                                                    $show_status = true;
+                                                @endphp
+                                            @endif
+                                            @if ($loop->index == 0 || $thread->user_id != $threads[$loop->index-1]->user_id)
+                                                @if ($thread->user)
+                                                    {{ $thread->user->getFullName() }}@if (!empty($show_status)),@endif
+                                                @else
+                                                    {{ __("Anyone") }}@if (!empty($show_status)),@endif
+                                                @endif
+                                            @endif
+                                            @if (!empty($show_status))
+                                                {{ App\Thread::getStatusName($thread->status) }}
+                                            @endif
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="thread-body">
+                                {!! $thread->getCleanBody() !!}
+                            </div>
+                        </div>
+                        <div class="dropdown thread-options">
+                            <span class="dropdown-toggle glyphicon glyphicon-option-vertical" data-toggle="dropdown"></span>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                <li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }}</a></li>
+                                <li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }}</a></li>
+                                <li><a href="javascript:alert('todo: implement new conversation from thread');void(0);" title="{{ __("Start a conversation with this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
+                                <li><a href="#" title="{{ __("Show original email") }}" class="thread-orig-trigger">{{ __("Show Original") }}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                @endif
             @endforeach
         </div>
     </div>

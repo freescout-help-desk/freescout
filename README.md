@@ -63,9 +63,13 @@ Login page:
 
 ![Login page](https://freescout-helpdesk.github.io/img/screenshots/freescout-login.png)
 
-Conversations:
+Conversations list:
 
 ![Conversations](https://freescout-helpdesk.github.io/img/screenshots/conversations.png)
+
+Conversation:
+
+![Conversation](https://freescout-helpdesk.github.io/img/screenshots/conversation.png)
 
 Mailbox connection settings page:
 

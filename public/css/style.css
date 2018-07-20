@@ -1141,6 +1141,66 @@ table.table-conversations td.conv-attachment {
 .customer-hist-trigger {
     display: none;
 }
+.thread {
+    position: relative;
+}
+.thread-header {
+    overflow: hidden;
+    min-height: 40px;
+}
+.thread-message {
+    margin: 0 24px 0 72px;
+    padding: 25px 15px;
+}
+.thread-photo {
+    float: left;
+    padding: 25px 20px 25px 20px;
+}
+.thread-photo img {
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    max-width: 45px;
+    max-height: 45px;
+    padding: 2px;
+}
+.thread-title {
+    float: left;
+    max-width: 68%;
+}
+.thread-person {
+    color: #8494a4;
+    font-size: 18px;
+    line-height: 1.2em;
+    margin-bottom: 12px;
+}
+.thread-person strong {
+    font-weight: bold;
+    color: #253540;
+    font-size: 18px;
+}
+.thread-info {
+    color: #a5b2bd;
+    float: right;
+    text-align: right;
+    font-size: 12px;
+}
+.thread-recipients {
+    clear: both;
+    margin: -4px 0 14px;
+}
+.thread-body {
+    color: #253540;
+    font-size: 14px;
+    line-height: 1.45em;
+    overflow-y: hidden;
+}
+.thread-options {
+    position: absolute;
+    top: 23px;
+    cursor: pointer;
+    right: 15px;
+    color: #a5b2bd;
+}
 @media (max-width:1100px) {
     #conv-layout-header,
     #conv-layout-main,
@@ -1192,6 +1252,7 @@ table.table-conversations td.conv-attachment {
     .customer-name {
         float: left;
         margin-right: 7px;
+        font-weight: bold;
     }
     .customer-section {
         margin-top: 0px;
