@@ -1,6 +1,7 @@
 # FreeScout — Free Self-Hosted HelpScout Alternative
 
-![FreeScout Logo](https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/logo-300.png =190x190)
+<img src="https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/logo-300.png" width="180" height="180" />
+
 **FreeScout** is a free open source help desk and shared inbox written in PHP7 (Laravel 5.5 framework), full analog of HelpScout. As you may know, Help Scout on **November 29, 2018** will force all free accounts to upgrade to the paid plan, so developing a free open source alternative is kind of urgent.
 
 FreeScout is being developed from scratch and is not using any copyrighted Help Scout materials to comply with GitHub's [DMCA Policy](https://help.github.com/articles/dmca-takedown-policy/) (trademark, logos, icons, CSS, JS, HTML files are copyrighted; idea, look and feel can not be copyrighted). FreeScout is currently under active development. If you would like to join efforts, just fork [this repo](https://github.com/freescout-helpdesk/freescout) and follow [instructions](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide).
