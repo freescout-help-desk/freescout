@@ -8,8 +8,8 @@ class ConversationObserver
 {
     /**
      * On create.
-     * 
-     * @param  Conversation $conversation
+     *
+     * @param Conversation $conversation
      */
     public function created(Conversation $conversation)
     {
@@ -18,8 +18,8 @@ class ConversationObserver
 
     /**
      * On conversation delete.
-     * 
-     * @param  Conversation $conversation
+     *
+     * @param Conversation $conversation
      */
     public function deleting(Conversation $conversation)
     {

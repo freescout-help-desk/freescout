@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Validator;
 use App\Conversation;
 
 class ConversationsController extends Controller
@@ -29,11 +27,11 @@ class ConversationsController extends Controller
 
         return view('conversations/view', [
             'conversation' => $conversation,
-            'mailbox' => $conversation->mailbox,
-            'customer' => $conversation->customer,
-            'threads' => $conversation->threads,
-            'folder' => $conversation->folder,
-            'folders' => $conversation->mailbox->getAssesibleFolders()
+            'mailbox'      => $conversation->mailbox,
+            'customer'     => $conversation->customer,
+            'threads'      => $conversation->threads,
+            'folder'       => $conversation->folder,
+            'folders'      => $conversation->mailbox->getAssesibleFolders(),
         ]);
     }
 }

@@ -6,22 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Email extends Model
 {
-	/**
-	 * Email types
-	 */
-	const TYPE_WORK = 'work';
-	const TYPE_HOME = 'home';
-	const TYPE_OTHER = 'other';
+    /**
+     * Email types.
+     */
+    const TYPE_WORK = 'work';
+    const TYPE_HOME = 'home';
+    const TYPE_OTHER = 'other';
 
     public $timestamps = false;
 
     /**
-     * Attributes which are not fillable using fill() method
+     * Attributes which are not fillable using fill() method.
      */
     protected $guarded = ['id', 'customer_id'];
 
     /**
-     * Get email's customer
+     * Get email's customer.
      */
     public function customer()
     {
@@ -29,9 +29,11 @@ class Email extends Model
     }
 
     /**
-     * Sanatize email address
-     * @param  string $email 
-     * @return string        
+     * Sanatize email address.
+     *
+     * @param string $email
+     *
+     * @return string
      */
     public static function sanatizeEmail($email)
     {

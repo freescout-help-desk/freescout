@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -16,7 +16,7 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Auth\Events\Registered' => [
             'App\Listeners\LogRegisteredUser',
         ],
-        
+
         'Illuminate\Auth\Events\Login' => [
             'App\Listeners\LogSuccessfulLogin',
         ],

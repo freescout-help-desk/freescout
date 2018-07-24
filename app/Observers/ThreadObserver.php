@@ -8,15 +8,15 @@ class ThreadObserver
 {
     /**
      * Thread created.
-     * 
-     * @param  Thread $thread
+     *
+     * @param Thread $thread
      */
     public function created(Thread $thread)
     {
         // Update data in conversation
         $conversation = $thread->conversation;
 
-        $now = date("Y-m-d H:i:s");
+        $now = date('Y-m-d H:i:s');
         if (!in_array($thread->type, [Thread::TYPE_LINEITEM, Thread::TYPE_NOTE])) {
             $conversation->threads_count++;
         }
@@ -26,5 +26,4 @@ class ThreadObserver
         $conversation->last_reply_at = $now;
         $conversation->save();
     }
-
 }

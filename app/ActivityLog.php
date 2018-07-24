@@ -15,7 +15,7 @@ class ActivityLog extends Activity
     const DESCRIPTION_USER_LOGIN_FAILED = 'login_failed';
     const DESCRIPTION_USER_PASSWORD_RESET = 'password_reset';
 
-    function getEventDescription()
+    public function getEventDescription()
     {
         switch ($this->description) {
             case self::DESCRIPTION_USER_LOGIN:

@@ -7,18 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Thread extends Model
 {
     /**
-     * By whom action performed (source_via)
+     * By whom action performed (source_via).
      */
     const PERSON_CUSTOMER = 1;
     const PERSON_USER = 2;
-    
-    public static $persons = array(
+
+    public static $persons = [
         self::PERSON_CUSTOMER => 'customer',
-        self::PERSON_USER => 'user',
-    );
+        self::PERSON_USER     => 'user',
+    ];
 
     /**
-     * Thread types
+     * Thread types.
      */
     // Email from customer
     const TYPE_CUSTOMER = 1;
@@ -35,23 +35,23 @@ class Thread extends Model
 
     public static $types = [
         // Thread by customer
-    	self::TYPE_CUSTOMER => 'customer',
+        self::TYPE_CUSTOMER => 'customer',
         // Thread by user
-    	self::TYPE_MESSAGE => 'message',
-    	self::TYPE_NOTE => 'note',
+        self::TYPE_MESSAGE => 'message',
+        self::TYPE_NOTE    => 'note',
         // lineitem represents a change of state on the conversation. This could include, but not limited to, the conversation was assigned, the status changed, the conversation was moved from one mailbox to another, etc. A line item won’t have a body, to/cc/bcc lists, or attachments.
-    	self::TYPE_LINEITEM => 'lineitem',
-    	self::TYPE_PHONE => 'phone',
+        self::TYPE_LINEITEM => 'lineitem',
+        self::TYPE_PHONE    => 'phone',
         // When a conversation is forwarded, a new conversation is created to represent the forwarded conversation.
         // forwardparent is the type set on the thread of the original conversation that initiated the forward event.
-    	self::TYPE_FORWARDPARENT => 'forwardparent',
+        self::TYPE_FORWARDPARENT => 'forwardparent',
         // forwardchild is the type set on the first thread of the new forwarded conversation.
-    	self::TYPE_FORWARDCHILD => 'forwardchild',
-    	self::TYPE_CHAT => 'chat',
+        self::TYPE_FORWARDCHILD => 'forwardchild',
+        self::TYPE_CHAT         => 'chat',
     ];
 
     /**
-     * Statuses
+     * Statuses.
      */
     const STATUS_ACTIVE = 1;
     const STATUS_CLOSED = 2;
@@ -59,31 +59,31 @@ class Thread extends Model
     const STATUS_PENDING = 4;
     const STATUS_SPAM = 5;
 
-    public static $statuses = array(
-    	self::STATUS_ACTIVE => 'active',
-    	self::STATUS_CLOSED => 'closed',
-    	self::STATUS_NOCHANGE => 'nochange',
-    	self::STATUS_PENDING => 'pending',
-    	self::STATUS_SPAM => 'spam',
-    );
+    public static $statuses = [
+        self::STATUS_ACTIVE   => 'active',
+        self::STATUS_CLOSED   => 'closed',
+        self::STATUS_NOCHANGE => 'nochange',
+        self::STATUS_PENDING  => 'pending',
+        self::STATUS_SPAM     => 'spam',
+    ];
 
     /**
-     * States
+     * States.
      */
     const STATE_DRAFT = 1;
     const STATE_PUBLISHED = 2;
     const STATE_HIDDEN = 3;
     const STATE_REVIEW = 4;
-  
-    public static $states = array(
-    	self::STATE_DRAFT => 'draft',
-    	self::STATE_PUBLISHED => 'published',
-    	self::STATE_HIDDEN => 'hidden',
-    	self::STATE_REVIEW => 'review',
-    );
+
+    public static $states = [
+        self::STATE_DRAFT     => 'draft',
+        self::STATE_PUBLISHED => 'published',
+        self::STATE_HIDDEN    => 'hidden',
+        self::STATE_REVIEW    => 'review',
+    ];
 
     /**
-     * Action associated with the line item
+     * Action associated with the line item.
      */
     // The conversation was moved from another mailbox
     const ACTION_TYPE_MOVED_FROM_MAILBOX = 1;
@@ -106,32 +106,32 @@ class Thread extends Model
     // Describes an optional action associated with the line item
     // todo: values need to be checked via HelpScout API
     public static $action_types = [
-    	self::ACTION_TYPE_MOVED_FROM_MAILBOX => 'moved-from-mailbox',
-    	self::ACTION_TYPE_MERGED => 'merged',
-    	self::ACTION_TYPE_IMPORTED => 'imported',
-    	self::ACTION_TYPE_WORKFLOW_MANUAL => 'manual-workflow',
-    	self::ACTION_TYPE_WORKFLOW_AUTO => 'automatic-workflow',
-    	self::ACTION_TYPE_IMPORTED_EXTERNAL => 'imported-external',
-    	self::ACTION_TYPE_CHANGED_TICKET_CUSTOMER => 'changed-ticket-customer',
-    	self::ACTION_TYPE_DELETED_TICKET => 'deleted-ticket',
-    	self::ACTION_TYPE_RESTORE_TICKET => 'restore-ticket',
+        self::ACTION_TYPE_MOVED_FROM_MAILBOX      => 'moved-from-mailbox',
+        self::ACTION_TYPE_MERGED                  => 'merged',
+        self::ACTION_TYPE_IMPORTED                => 'imported',
+        self::ACTION_TYPE_WORKFLOW_MANUAL         => 'manual-workflow',
+        self::ACTION_TYPE_WORKFLOW_AUTO           => 'automatic-workflow',
+        self::ACTION_TYPE_IMPORTED_EXTERNAL       => 'imported-external',
+        self::ACTION_TYPE_CHANGED_TICKET_CUSTOMER => 'changed-ticket-customer',
+        self::ACTION_TYPE_DELETED_TICKET          => 'deleted-ticket',
+        self::ACTION_TYPE_RESTORE_TICKET          => 'restore-ticket',
     ];
 
-	/**
-     * Source types (equal to thread source types)
+    /**
+     * Source types (equal to thread source types).
      */
     const SOURCE_TYPE_EMAIL = 1;
     const SOURCE_TYPE_WEB = 2;
     const SOURCE_TYPE_API = 3;
-  
+
     public static $source_types = [
-    	self::SOURCE_TYPE_EMAIL => 'email',
-    	self::SOURCE_TYPE_WEB => 'web',
-    	self::SOURCE_TYPE_API => 'api',
+        self::SOURCE_TYPE_EMAIL => 'email',
+        self::SOURCE_TYPE_WEB   => 'web',
+        self::SOURCE_TYPE_API   => 'api',
     ];
 
-	/**
-     * Status of the email sent to the customer or user, to whom the thread is assigned
+    /**
+     * Status of the email sent to the customer or user, to whom the thread is assigned.
      */
     const SEND_STATUS_TOSEND = 1;
     const SEND_STATUS_SENT = 2;
@@ -139,7 +139,7 @@ class Thread extends Model
     const SEND_STATUS_DELIVERY_ERROR = 4;
 
     /**
-     * The user assigned to this thread (assignedTo)
+     * The user assigned to this thread (assignedTo).
      */
     public function user()
     {
@@ -147,7 +147,7 @@ class Thread extends Model
     }
 
     /**
-     * Get the thread customer
+     * Get the thread customer.
      */
     public function customer()
     {
@@ -155,7 +155,7 @@ class Thread extends Model
     }
 
     /**
-     * Get conversation
+     * Get conversation.
      */
     public function conversation()
     {
@@ -163,7 +163,8 @@ class Thread extends Model
     }
 
     /**
-     * Get sanitized body HTML
+     * Get sanitized body HTML.
+     *
      * @return string
      */
     public function getCleanBody()
@@ -173,7 +174,7 @@ class Thread extends Model
 
     /**
      * Get thread recipients.
-     * 
+     *
      * @return array
      */
     public function getTos()
@@ -187,7 +188,7 @@ class Thread extends Model
 
     /**
      * Get thread CC recipients.
-     * 
+     *
      * @return array
      */
     public function getCcs()
@@ -201,7 +202,7 @@ class Thread extends Model
 
     /**
      * Get thread BCC recipients.
-     * 
+     *
      * @return array
      */
     public function getBccs()
@@ -215,31 +216,32 @@ class Thread extends Model
 
     /**
      * Get status name. Made as a function to allow status names translation.
-     * 
-     * @param  integer $status
-     * @return string        
+     *
+     * @param int $status
+     *
+     * @return string
      */
     public static function getStatusName($status)
     {
         switch ($status) {
             case self::STATUS_ACTIVE:
-                return __("Active");
+                return __('Active');
                 break;
 
             case self::STATUS_PENDING:
-                return __("Pending");
+                return __('Pending');
                 break;
 
             case self::STATUS_CLOSED:
-                return __("Closed");
+                return __('Closed');
                 break;
 
             case self::STATUS_SPAM:
-                return __("Spam");
+                return __('Spam');
                 break;
 
             case self::STATUS_NOCHANGE:
-                return __("Not changed");
+                return __('Not changed');
                 break;
 
             default:

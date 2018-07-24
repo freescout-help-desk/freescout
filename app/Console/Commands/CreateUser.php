@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\User;
+use Illuminate\Console\Command;
 
 class CreateUser extends Command
 {
@@ -39,46 +39,47 @@ class CreateUser extends Command
     public function handle()
     {
         $class = config(
-            'auth.providers.' . config(
-                'auth.guards.' . config(
+            'auth.providers.'.config(
+                'auth.guards.'.config(
                     'auth.defaults.guard'
-                ) . '.provider'
-            ) . '.model'
+                ).'.provider'
+            ).'.model'
         );
-        $user = new $class;
+        $user = new $class();
         $fillables = ['role', 'first_name', 'last_name', 'email', 'password'];
-        foreach($fillables as $key => $fillable) {
+        foreach ($fillables as $key => $fillable) {
             if ($fillable == 'password') {
-                $user->password = \Hash::make($this->secret(($key+1) . "/" . count($fillables) . " User $fillable"));
+                $user->password = \Hash::make($this->secret(($key + 1).'/'.count($fillables)." User $fillable"));
             } elseif ($fillable == 'role') {
-                $user->$fillable = $this->ask(($key+1) . "/" . count($fillables) . " User $fillable (admin/user)", 'admin');
+                $user->$fillable = $this->ask(($key + 1).'/'.count($fillables)." User $fillable (admin/user)", 'admin');
                 if (!$user->$fillable) {
                     $user->$fillable = 'admin';
                 }
 
                 while (!in_array($user->$fillable, User::$roles)) {
-                    $this->error("Incorrect role");
-                    $user->$fillable = $this->ask("Please enter valid role");
+                    $this->error('Incorrect role');
+                    $user->$fillable = $this->ask('Please enter valid role');
                 }
                 $user->$fillable = array_flip(User::$roles)[$user->$fillable];
             } else {
-                $user->$fillable = $this->ask(($key+1) . "/" . count($fillables) . " User $fillable");
+                $user->$fillable = $this->ask(($key + 1).'/'.count($fillables)." User $fillable");
 
                 if ($fillable == 'email') {
                     while (!filter_var($user->$fillable, FILTER_VALIDATE_EMAIL)) {
-                        $this->error("Incorrect email address");
-                        $user->$fillable = $this->ask("Please enter valid email address");
+                        $this->error('Incorrect email address');
+                        $user->$fillable = $this->ask('Please enter valid email address');
                     }
                 }
             }
         }
-        if ($this->confirm("Do you want to create the user?", true)) {
+        if ($this->confirm('Do you want to create the user?', true)) {
             if ($user->isAdmin()) {
                 $user->invite_state = User::INVITE_STATE_ACTIVATED;
             }
             $user->save();
             $this->info("User created (id: {$user->id})");
         }
+
         return true;
     }
 }

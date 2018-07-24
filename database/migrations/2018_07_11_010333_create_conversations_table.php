@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 use App\Conversation;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateConversationsTable extends Migration
 {
@@ -29,8 +29,8 @@ class CreateConversationsTable extends Migration
             $table->text('cc')->nullable(); // JSON
             $table->text('bcc')->nullable(); // JSON
             $table->string('preview', Conversation::PREVIEW_MAXLENGTH);
-            // The imported field enables conversation to be created for historical purposes 
-            // (i.e. if moving from a different platform, you can import your history). 
+            // The imported field enables conversation to be created for historical purposes
+            // (i.e. if moving from a different platform, you can import your history).
             // When imported is set to true, no outgoing emails or notifications will be generated.
             $table->boolean('imported')->default(false);
             $table->boolean('has_attachments')->default(false);

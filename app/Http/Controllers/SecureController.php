@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\ActivityLog;
+use Illuminate\Http\Request;
 
 class SecureController extends Controller
 {
@@ -30,16 +30,16 @@ class SecureController extends Controller
     }
 
     /**
-     * Logs
+     * Logs.
      *
      * @return \Illuminate\Http\Response
      */
     public function logs(Request $request)
     {
-                //->where('preferences->dining->meal', 'salad')
-                //->get();
+        //->where('preferences->dining->meal', 'salad')
+        //->get();
         $names = ActivityLog::select('log_name')->distinct()->get()->pluck('log_name');
-     
+
         $activities = [];
         $cols = [];
         $current_name = '';
@@ -53,12 +53,12 @@ class SecureController extends Controller
 
         $logs = [];
         foreach ($activities as $activity) {
-            $log = array(
-                'date' => $activity->created_at,
-                'user' => $activity->causer,
+            $log = [
+                'date'  => $activity->created_at,
+                'user'  => $activity->causer,
                 'event' => $activity->getEventDescription(),
-            );
-            $cols = array('date', 'user', 'event');
+            ];
+            $cols = ['date', 'user', 'event'];
 
             foreach ($activity->properties as $property_name => $property_value) {
                 if (!is_string($property_value)) {

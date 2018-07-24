@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Validator;
-use Illuminate\Validation\Rule;
-use App\User;
 use App\Mailbox;
+use App\User;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Validator;
 
 class UsersController extends Controller
 {
@@ -21,7 +21,7 @@ class UsersController extends Controller
     }
 
     /**
-     * Users list
+     * Users list.
      */
     public function users()
     {
@@ -31,7 +31,7 @@ class UsersController extends Controller
     }
 
     /**
-     * New user
+     * New user.
      */
     public function create()
     {
@@ -42,20 +42,20 @@ class UsersController extends Controller
     }
 
     /**
-     * Create new mailbox
+     * Create new mailbox.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      */
     public function createSave(Request $request)
     {
         $this->authorize('create', 'App\User');
 
         $rules = [
-            'role' => 'integer',
+            'role'       => 'integer',
             'first_name' => 'required|string|max:20',
-            'last_name' => 'required|string|max:30',
-            'email' => 'required|string|email|max:100|unique:users',
-            'role' => [ 'required', Rule::in(array_keys(User::$roles))]
+            'last_name'  => 'required|string|max:30',
+            'email'      => 'required|string|email|max:100|unique:users',
+            'role'       => ['required', Rule::in(array_keys(User::$roles))],
         ];
         if (empty($request->send_invite)) {
             $rules['password'] = 'required|string|max:255';
@@ -68,7 +68,7 @@ class UsersController extends Controller
                         ->withInput();
         }
 
-        $user = new User;
+        $user = new User();
         $user->fill($request->all());
 
         if (!empty($request->send_invite)) {
@@ -86,11 +86,12 @@ class UsersController extends Controller
         }
 
         \Session::flash('flash_success', __('User created successfully'));
+
         return redirect()->route('users.profile', ['id' => $user->id]);
     }
 
     /**
-     * User profile
+     * User profile.
      */
     public function profile($id)
     {
@@ -106,7 +107,8 @@ class UsersController extends Controller
     /**
      * Handle a registration request for the application.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function profileSave($id, Request $request)
@@ -115,15 +117,15 @@ class UsersController extends Controller
         $this->authorize('update', $user);
 
         $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:20',
-            'last_name' => 'required|string|max:30',
-            'email' => 'required|string|email|max:100|unique:users,email,'.$id,
-            'emails' => 'max:100',
-            'job_title' => 'max:100',
-            'phone' => 'max:60',
-            'timezone' => 'required|string|max:255',
+            'first_name'  => 'required|string|max:20',
+            'last_name'   => 'required|string|max:30',
+            'email'       => 'required|string|email|max:100|unique:users,email,'.$id,
+            'emails'      => 'max:100',
+            'job_title'   => 'max:100',
+            'phone'       => 'max:60',
+            'timezone'    => 'required|string|max:255',
             'time_format' => 'required',
-            'role' => [ 'required', Rule::in(array_keys(User::$roles))]
+            'role'        => ['required', Rule::in(array_keys(User::$roles))],
         ]);
 
         //event(new Registered($user = $this->create($request->all())));
@@ -143,11 +145,12 @@ class UsersController extends Controller
         $user->save();
 
         \Session::flash('flash_success', __('Profile saved successfully'));
+
         return redirect()->route('users.profile', ['id' => $id]);
     }
 
     /**
-     * User mailboxes
+     * User mailboxes.
      */
     public function permissions($id)
     {
@@ -160,10 +163,10 @@ class UsersController extends Controller
     }
 
     /**
-     * Save user permissions
-     * 
-     * @param  int  $id
-     * @param  \Illuminate\Http\Request  $request
+     * Save user permissions.
+     *
+     * @param int                      $id
+     * @param \Illuminate\Http\Request $request
      */
     public function permissionsSave($id, Request $request)
     {
@@ -174,6 +177,7 @@ class UsersController extends Controller
         $user->syncPersonalFolders($request->mailboxes);
 
         \Session::flash('flash_success', __('Permissions saved successfully'));
+
         return redirect()->route('users.permissions', ['id' => $id]);
     }
 }

@@ -8,9 +8,10 @@ class UserObserver
 {
     /**
      * On user delete.
-     * 
-     * @param  Conversation $mailbox
-     * @return [type]           [description]
+     *
+     * @param Conversation $mailbox
+     *
+     * @return [type] [description]
      */
     public function deleting(User $user)
     {
