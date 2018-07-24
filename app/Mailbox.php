@@ -7,10 +7,9 @@ use Illuminate\Support\Facades\Hash;
 
 class Mailbox extends Model
 {
-
-	/**
-	 * From Name: name that will appear in the From field when a customer views your email.
-	 */
+    /**
+     * From Name: name that will appear in the From field when a customer views your email.
+     */
     const FROM_NAME_MAILBOX = 1;
     const FROM_NAME_USER = 2;
     const FROM_NAME_CUSTOM = 3;
@@ -23,29 +22,29 @@ class Mailbox extends Model
     const TICKET_STATUS_CLOSED = 3;
 
     /**
-     * Default Assignee
+     * Default Assignee.
      */
     const TICKET_ASSIGNEE_ANYONE = 1;
     const TICKET_ASSIGNEE_REPLYING_UNASSIGNED = 2;
     const TICKET_ASSIGNEE_REPLYING = 3;
 
     /**
-     * Email Template
+     * Email Template.
      */
     const TEMPLATE_FANCY = 1;
     const TEMPLATE_PLAIN = 2;
 
     /**
-     * Sending Emails
+     * Sending Emails.
      */
     const OUT_METHOD_PHP_MAIL = 1;
     const OUT_METHOD_SENDMAIL = 2;
     const OUT_METHOD_SMTP = 3;
     //const OUT_METHOD_GMAIL = 3; // todo
     // todo: mailgun, sendgrid, mandrill, etc
-    
+
     /**
-     * Secure Connection
+     * Secure Connection.
      */
     const OUT_SSL_NONE = 1;
     const OUT_SSL_SSL = 2;
@@ -58,23 +57,23 @@ class Mailbox extends Model
     const RATINGS_PLACEMENT_BELOW = 2;
 
     /**
-     * Attributes fillable using fill() method
+     * Attributes fillable using fill() method.
+     *
      * @var [type]
      */
-    protected $fillable  = ['name', 'slug', 'email', 'aliases', 'from_name', 'from_name_custom', 'ticket_status', 'ticket_assignee', 'template', 'signature', 'out_method', 'out_server', 'out_username', 'out_password', 'out_port', 'out_ssl', 'in_server', 'in_port', 'in_username', 'in_password', 'auto_reply_enabled', 'auto_reply_subject', 'auto_reply_message', 'office_hours_enabled', 'ratings', 'ratings_placement', 'ratings_text'];
+    protected $fillable = ['name', 'slug', 'email', 'aliases', 'from_name', 'from_name_custom', 'ticket_status', 'ticket_assignee', 'template', 'signature', 'out_method', 'out_server', 'out_username', 'out_password', 'out_port', 'out_ssl', 'in_server', 'in_port', 'in_username', 'in_password', 'auto_reply_enabled', 'auto_reply_subject', 'auto_reply_message', 'office_hours_enabled', 'ratings', 'ratings_placement', 'ratings_text'];
 
     protected static function boot()
     {
         parent::boot();
 
-        self::created(function (Mailbox $model)
-        {
+        self::created(function (Mailbox $model) {
             $model->slug = strtolower(substr(md5(Hash::make($model->id)), 0, 16));
         });
     }
 
     /**
-     * Get users having access to the mailbox
+     * Get users having access to the mailbox.
      */
     public function users()
     {
@@ -82,7 +81,7 @@ class Mailbox extends Model
     }
 
     /**
-     * Get mailbox conversations
+     * Get mailbox conversations.
      */
     public function conversations()
     {
@@ -90,7 +89,7 @@ class Mailbox extends Model
     }
 
     /**
-     * Get mailbox folders
+     * Get mailbox folders.
      */
     public function folders()
     {
@@ -99,8 +98,8 @@ class Mailbox extends Model
 
     /**
      * Create personal folders for users.
-     * 
-     * @param  mixed $users    
+     *
+     * @param mixed $users
      */
     public function syncPersonalFolders($users)
     {
@@ -130,7 +129,7 @@ class Mailbox extends Model
                 continue;
             }
             foreach (Folder::$personal_types as $type) {
-                $folder = new Folder;
+                $folder = new Folder();
                 $folder->mailbox_id = $this->id;
                 $folder->user_id = $user_id;
                 $folder->type = $type;
@@ -155,7 +154,7 @@ class Mailbox extends Model
                 continue;
             }
             foreach (Folder::$personal_types as $type) {
-                $folder = new Folder;
+                $folder = new Folder();
                 $folder->mailbox_id = $this->id;
                 $folder->user_id = $user_id;
                 $folder->type = $type;
@@ -205,11 +204,10 @@ class Mailbox extends Model
     {
         $folders = $this->folders;
         foreach ($folders as $folder) {
-
             $folder->active_count = $folder->conversations()
                 ->where('status', Conversation::STATUS_ACTIVE)
                 ->count();
-            
+
             $folder->total_count = $folder->conversations()->count();
 
             $folder->save();
@@ -218,18 +216,18 @@ class Mailbox extends Model
 
     /**
      * Is mailbox available for using.
-     * 
-     * @return boolean
+     *
+     * @return bool
      */
     public function isActive()
     {
-        return ($this->isInActive() && $this->isOutActive());
+        return $this->isInActive() && $this->isOutActive();
     }
 
     /**
      * Is receiving emails configured for the mailbox.
-     * 
-     * @return boolean
+     *
+     * @return bool
      */
     public function isInActive()
     {
@@ -242,8 +240,8 @@ class Mailbox extends Model
 
     /**
      * Is sending emails configured for the mailbox.
-     * 
-     * @return boolean
+     *
+     * @return bool
      */
     public function isOutActive()
     {

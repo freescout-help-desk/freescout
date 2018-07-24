@@ -3,8 +3,6 @@
 namespace App\Listeners;
 
 use Illuminate\Auth\Events\Failed;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class LogFailedLogin
 {
@@ -21,7 +19,8 @@ class LogFailedLogin
     /**
      * Handle the event.
      *
-     * @param  Failed  $event
+     * @param Failed $event
+     *
      * @return void
      */
     public function handle(Failed $event)

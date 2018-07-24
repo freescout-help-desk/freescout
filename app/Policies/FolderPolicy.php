@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\User;
 use App\Folder;
+use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class FolderPolicy
@@ -13,8 +13,9 @@ class FolderPolicy
     /**
      * Determine whether the user can view the folder.
      *
-     * @param  \App\User  $user
-     * @param  \App\Folder  $folder
+     * @param \App\User   $user
+     * @param \App\Folder $folder
+     *
      * @return bool
      */
     public function view(User $user, Folder $folder)

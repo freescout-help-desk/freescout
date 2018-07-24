@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Folder;
+use App\Mailbox;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Validator;
-use App\Mailbox;
-use App\User;
-use App\Folder;
 
 class MailboxesController extends Controller
 {
@@ -22,7 +22,7 @@ class MailboxesController extends Controller
     }
 
     /**
-     * Mailboxes list
+     * Mailboxes list.
      */
     public function mailboxes()
     {
@@ -32,21 +32,21 @@ class MailboxesController extends Controller
     }
 
     /**
-     * New mailbox
+     * New mailbox.
      */
     public function create()
     {
         $this->authorize('create', 'App\Mailbox');
-        
+
         $users = User::where('role', '!=', User::ROLE_ADMIN)->get();
 
         return view('mailboxes/create', ['users' => $users]);
     }
 
     /**
-     * Create new mailbox
+     * Create new mailbox.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      */
     public function createSave(Request $request)
     {
@@ -54,7 +54,7 @@ class MailboxesController extends Controller
 
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:128|unique:mailboxes',
-            'name' => 'required|string|max:40',
+            'name'  => 'required|string|max:40',
         ]);
 
         // //event(new Registered($user = $this->create($request->all())));
@@ -65,7 +65,7 @@ class MailboxesController extends Controller
                         ->withInput();
         }
 
-        $mailbox = new Mailbox;
+        $mailbox = new Mailbox();
         $mailbox->fill($request->all());
         $mailbox->save();
 
@@ -73,11 +73,12 @@ class MailboxesController extends Controller
         $mailbox->syncPersonalFolders($request->users);
 
         \Session::flash('flash_success', __('Mailbox created successfully'));
+
         return redirect()->route('mailboxes.update', ['id' => $mailbox->id]);
     }
 
     /**
-     * Edit mailbox
+     * Edit mailbox.
      */
     public function update($id)
     {
@@ -90,10 +91,10 @@ class MailboxesController extends Controller
     }
 
     /**
-     * Save mailbox
-     * 
-     * @param  int  $id
-     * @param  \Illuminate\Http\Request  $request
+     * Save mailbox.
+     *
+     * @param int                      $id
+     * @param \Illuminate\Http\Request $request
      */
     public function updateSave($id, Request $request)
     {
@@ -102,15 +103,15 @@ class MailboxesController extends Controller
         $this->authorize('update', $mailbox);
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:40',
-            'email' => 'required|string|email|max:128|unique:mailboxes,email,'.$id,
-            'aliases' => 'string|max:128',
-            'from_name' => 'required|integer',
+            'name'             => 'required|string|max:40',
+            'email'            => 'required|string|email|max:128|unique:mailboxes,email,'.$id,
+            'aliases'          => 'string|max:128',
+            'from_name'        => 'required|integer',
             'from_name_custom' => 'nullable|string|max:128',
-            'ticket_status' => 'required|integer',
-            'template' => 'required|integer',
-            'ticket_assignee' => 'required|integer',
-            'signature' => 'nullable|string',
+            'ticket_status'    => 'required|integer',
+            'template'         => 'required|integer',
+            'ticket_assignee'  => 'required|integer',
+            'signature'        => 'nullable|string',
         ]);
 
         //event(new Registered($user = $this->create($request->all())));
@@ -126,16 +127,17 @@ class MailboxesController extends Controller
         $mailbox->save();
 
         \Session::flash('flash_success', __('Mailbox settings saved'));
+
         return redirect()->route('mailboxes.update', ['id' => $id]);
     }
 
     /**
-     * Mailbox permissions
+     * Mailbox permissions.
      */
     public function permissions($id)
     {
         $mailbox = Mailbox::findOrFail($id);
-        
+
         $this->authorize('update', $mailbox);
 
         $users = User::where('role', '!=', User::ROLE_ADMIN)->get();
@@ -144,10 +146,10 @@ class MailboxesController extends Controller
     }
 
     /**
-     * Save mailbox permissions
-     * 
-     * @param  int  $id
-     * @param  \Illuminate\Http\Request  $request
+     * Save mailbox permissions.
+     *
+     * @param int                      $id
+     * @param \Illuminate\Http\Request $request
      */
     public function permissionsSave($id, Request $request)
     {
@@ -158,11 +160,12 @@ class MailboxesController extends Controller
         $mailbox->syncPersonalFolders($request->users);
 
         \Session::flash('flash_success', __('Mailbox permissions saved!'));
+
         return redirect()->route('mailboxes.permissions', ['id' => $id]);
     }
 
     /**
-     * Mailbox connection settings
+     * Mailbox connection settings.
      */
     public function connectionOutgoing($id)
     {
@@ -173,7 +176,7 @@ class MailboxesController extends Controller
     }
 
     /**
-     * Save mailbox connection settings
+     * Save mailbox connection settings.
      */
     public function connectionOutgoingSave($id, Request $request)
     {
@@ -182,11 +185,11 @@ class MailboxesController extends Controller
 
         if ($request->out_method == Mailbox::OUT_METHOD_SMTP) {
             $validator = Validator::make($request->all(), [
-                'out_server' => 'required|string|max:255',
-                'out_port' => 'required|integer',
+                'out_server'   => 'required|string|max:255',
+                'out_port'     => 'required|integer',
                 'out_username' => 'required|string|max:100',
                 'out_password' => 'required|string|max:255',
-                'out_ssl' => 'required|integer',
+                'out_ssl'      => 'required|integer',
             ]);
 
             if ($validator->fails()) {
@@ -200,11 +203,12 @@ class MailboxesController extends Controller
         $mailbox->save();
 
         \Session::flash('flash_success', __('Connection settings saved!'));
+
         return redirect()->route('mailboxes.connection', ['id' => $id]);
     }
 
     /**
-     * Mailbox incoming settings
+     * Mailbox incoming settings.
      */
     public function connectionIncoming($id)
     {
@@ -215,7 +219,7 @@ class MailboxesController extends Controller
     }
 
     /**
-     * Save mailbox connection settings
+     * Save mailbox connection settings.
      */
     public function connectionIncomingSave($id, Request $request)
     {
@@ -223,8 +227,8 @@ class MailboxesController extends Controller
         $this->authorize('update', $mailbox);
 
         $validator = Validator::make($request->all(), [
-            'in_server' => 'required|string|max:255',
-            'in_port' => 'required|integer',
+            'in_server'   => 'required|string|max:255',
+            'in_port'     => 'required|integer',
             'in_username' => 'required|string|max:100',
             'in_password' => 'required|string|max:255',
         ]);
@@ -239,11 +243,12 @@ class MailboxesController extends Controller
         $mailbox->save();
 
         \Session::flash('flash_success', __('Connection settings saved!'));
+
         return redirect()->route('mailboxes.connection.incoming', ['id' => $id]);
     }
 
     /**
-     * View mailbox
+     * View mailbox.
      */
     public function view($id, $folder_id = null)
     {
@@ -253,13 +258,13 @@ class MailboxesController extends Controller
 
         $folder = null;
         if (!empty($folder_id)) {
-            $folder = $folders->filter(function($item) use ($folder_id) {
+            $folder = $folders->filter(function ($item) use ($folder_id) {
                 return $item->id == $folder_id;
             })->first();
         }
         // By default we display Unassigned folder
         if (empty($folder)) {
-            $folder = $folders->filter(function($item) {
+            $folder = $folders->filter(function ($item) {
                 return $item->type == Folder::TYPE_UNASSIGNED;
             })->first();
         }
@@ -267,9 +272,9 @@ class MailboxesController extends Controller
         $this->authorize('view', $folder);
 
         return view('mailboxes/view', [
-            'mailbox' => $mailbox, 
-            'folders' => $folders, 
-            'folder' => $folder,
+            'mailbox'       => $mailbox,
+            'folders'       => $folders,
+            'folder'        => $folder,
             'conversations' => $folder->conversations()->orderBy('status', 'asc')->orderBy('last_reply_at', 'desc')->get(),
         ]);
     }
@@ -281,16 +286,16 @@ class MailboxesController extends Controller
         if ($mailbox) {
             if (Route::currentRouteName() != 'mailboxes.connection' && !$mailbox->isOutActive()) {
                 $flashes[] = [
-                    'type' => 'warning',
-                    'text' => __('Sending emails need to be configured for the mailbox in order to send emails to customers and support agents').' (<a href="'.route('mailboxes.connection', ['id' => $mailbox->id]).'">'.__("Connection Settings » Sending Emails").'</a>)',
-                    'unescaped' => true
+                    'type'      => 'warning',
+                    'text'      => __('Sending emails need to be configured for the mailbox in order to send emails to customers and support agents').' (<a href="'.route('mailboxes.connection', ['id' => $mailbox->id]).'">'.__('Connection Settings » Sending Emails').'</a>)',
+                    'unescaped' => true,
                 ];
             }
             if (Route::currentRouteName() != 'mailboxes.connection.incoming' && !$mailbox->isInActive()) {
                 $flashes[] = [
-                    'type' => 'warning',
-                    'text' => __('Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address').' (<a href="'.route('mailboxes.connection.incoming', ['id' => $mailbox->id]).'">'.__("Connection Settings » Receiving Emails").'</a>)',
-                    'unescaped' => true
+                    'type'      => 'warning',
+                    'text'      => __('Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address').' (<a href="'.route('mailboxes.connection.incoming', ['id' => $mailbox->id]).'">'.__('Connection Settings » Receiving Emails').'</a>)',
+                    'unescaped' => true,
                 ];
             }
         }

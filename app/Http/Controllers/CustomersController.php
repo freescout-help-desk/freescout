@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
 use Illuminate\Http\Request;
 use Validator;
-use Illuminate\Validation\Rule;
-use App\Customer;
-use App\Email;
 
 class CustomersController extends Controller
 {
@@ -21,7 +19,7 @@ class CustomersController extends Controller
     }
 
     /**
-     * Edit customer
+     * Edit customer.
      */
     public function update($id)
     {
@@ -42,7 +40,8 @@ class CustomersController extends Controller
     /**
      * Save customer.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function updateSave($id, Request $request)
@@ -51,11 +50,11 @@ class CustomersController extends Controller
 
         $validator = Validator::make($request->all(), [
             'first_name' => 'nullable|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:255',
-            'state' => 'nullable|string|max:255',
-            'zip' => 'nullable|string|max:12',
-            'country' => 'nullable|string|max:2',
+            'last_name'  => 'nullable|string|max:255',
+            'city'       => 'nullable|string|max:255',
+            'state'      => 'nullable|string|max:255',
+            'zip'        => 'nullable|string|max:12',
+            'country'    => 'nullable|string|max:2',
         ]);
 
         if ($validator->fails()) {
@@ -74,11 +73,12 @@ class CustomersController extends Controller
         $customer->syncEmails($request->emails);
 
         \Session::flash('flash_success', __('Customer saved successfully'));
+
         return redirect()->route('customers.update', ['id' => $id]);
     }
 
     /**
-     * User mailboxes
+     * User mailboxes.
      */
     public function permissions($id)
     {
@@ -91,10 +91,10 @@ class CustomersController extends Controller
     }
 
     /**
-     * Save user permissions
-     * 
-     * @param  int  $id
-     * @param  \Illuminate\Http\Request  $request
+     * Save user permissions.
+     *
+     * @param int                      $id
+     * @param \Illuminate\Http\Request $request
      */
     public function permissionsSave($id, Request $request)
     {
@@ -104,13 +104,14 @@ class CustomersController extends Controller
         $user->mailboxes()->sync($request->mailboxes);
 
         \Session::flash('flash_success', __('Permissions saved successfully'));
+
         return redirect()->route('users.permissions', ['id' => $id]);
     }
 
     /**
      * View customer conversations.
-     * 
-     * @param  intg $id
+     *
+     * @param intg $id
      */
     public function conversations($id)
     {

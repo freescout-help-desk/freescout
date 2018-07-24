@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
 
     /*
     |--------------------------------------------------------------------------
@@ -24,9 +24,9 @@ return array(
     |
     */
 
-    'ignore_environments' => array(
-	    'local',
-    ),
+    'ignore_environments' => [
+        'local',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +41,7 @@ return array(
     */
 
     'css_build_path' => '/css/builds/',
-    'css_url_path' => '/css/builds/',
+    'css_url_path'   => '/css/builds/',
 
     /*
     |--------------------------------------------------------------------------
@@ -56,22 +56,22 @@ return array(
     */
 
     'js_build_path' => '/js/builds/',
-    'js_url_path' => '/js/builds/', 
+    'js_url_path'   => '/js/builds/',
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Hash modification
     |--------------------------------------------------------------------------
     |
     | You can disable usage of modification time (mtime) for hash build and
-	| add additional salt (exp. commit hash) for hash build
+    | add additional salt (exp. commit hash) for hash build
     |
     */
 
     'disable_mtime' => false,
-    'hash_salt' => '', 
+    'hash_salt'     => '',
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Base URL
     |--------------------------------------------------------------------------
@@ -80,5 +80,5 @@ return array(
     | value. By default if empty HTTP_HOST would be used.
     |
     */
-	'base_url' => ''
-);
+    'base_url' => '',
+];

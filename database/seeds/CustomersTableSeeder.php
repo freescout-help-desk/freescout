@@ -12,8 +12,8 @@ class CustomersTableSeeder extends Seeder
     public function run()
     {
         factory(App\Customer::class, 5)->create()->each(function ($m) {
-	        $m->emails()->save(factory(App\Email::class)->make());
-	        $m->emails()->save(factory(App\Email::class)->make());
-	    });
+            $m->emails()->save(factory(App\Email::class)->make());
+            $m->emails()->save(factory(App\Email::class)->make());
+        });
     }
 }
