@@ -77,4 +77,4 @@ Mailbox connection settings page:
 ![Mailbox connection settings page](https://freescout-helpdesk.github.io/img/screenshots/mailbox-connection.png)
 
 
-[![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout)
+[![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout) [![Join the chat at https://gitter.im/freescout-helpdesk/Lobby](https://badges.gitter.im/freescout-helpdesk/Lobby.svg)](https://gitter.im/freescout-helpdesk/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
