@@ -243,4 +243,60 @@ class Conversation extends Model
                 break;
         }
     }
+
+    /**
+     * Get next active conversation.
+     * 
+     * @param  string $mode next|prev|closest
+     * @return Conversation
+     */
+    public function getNearby($mode = 'closest')
+    {
+        $folder = $this->folder;
+        $query = Conversation::where('folder_id', $folder->id)
+            ->where('id', '<>', $this->id);
+        $order_bys = $folder->getOrderByArray();
+        
+        if ($mode != 'prev') {
+            // Try to get next conversation
+            $query_next = $query;
+            foreach ($order_bys as $order_by) {
+                foreach ($order_by as $field => $sort_order) {
+                    if ($sort_order == 'asc') {
+                        $query_next->where($field, '>=', $this->$field);
+                    } else {
+                        $query_next->where($field, '<=', $this->$field);
+                    }
+                    $query_next->orderBy($field, $sort_order);
+                }
+            }
+        }
+        // echo 'folder_id'.$folder->id.'|';
+        // echo 'id'.$this->id.'|';
+        // echo 'status'.self::STATUS_ACTIVE.'|';
+        // echo '$this->status'.$this->status.'|';
+        // echo '$this->last_reply_at'.$this->last_reply_at.'|';
+        // echo $query_next->toSql();
+        // exit();
+        $conversation = $query_next->first();
+
+        if ($conversation || $mode == 'next') {
+            return $conversation;
+        }
+
+        // Try to get previous conversation
+        $query_prev = $query;
+        foreach ($order_bys as $order_by) {
+            foreach ($order_by as $field => $sort_order) {
+                if ($sort_order == 'asc') {
+                    $query_prev->where($field, '<=', $this->$field);
+                } else {
+                    $query_prev->where($field, '<=', $this->$field);
+                }
+                $query_prev->orderBy($field, $sort_order);
+            }
+        }
+        
+        return $query_prev->first();
+    }
 }

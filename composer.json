@@ -11,7 +11,9 @@
         "laravel/framework": "v5.5.40",
         "laravel/tinker": "v1.0.7",
         "mews/purifier": "2.1.0",
-        "spatie/laravel-activitylog": "2.7.0"
+        "spatie/laravel-activitylog": "2.7.0",
+        "lord/laroute": "2.4.7",
+        "axn/laravel-laroute": "1.3.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v2.4.3",

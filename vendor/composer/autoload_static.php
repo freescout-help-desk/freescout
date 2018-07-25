@@ -86,6 +86,7 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         ),
         'L' => 
         array (
+            'Lord\\Laroute\\' => 13,
             'League\\Flysystem\\' => 17,
             'Laravel\\Tinker\\' => 15,
         ),
@@ -121,6 +122,7 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         ),
         'A' => 
         array (
+            'Axn\\Laroute\\' => 12,
             'App\\' => 4,
         ),
     );
@@ -257,6 +259,10 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         array (
             0 => __DIR__ . '/..' . '/mews/purifier/src',
         ),
+        'Lord\\Laroute\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/lord/laroute/src',
+        ),
         'League\\Flysystem\\' => 
         array (
             0 => __DIR__ . '/..' . '/league/flysystem/src',
@@ -312,6 +318,10 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'Barryvdh\\Debugbar\\' => 
         array (
             0 => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src',
+        ),
+        'Axn\\Laroute\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/axn/laravel-laroute/src',
         ),
         'App\\' => 
         array (
@@ -424,6 +434,8 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'App\\User' => __DIR__ . '/../..' . '/app/User.php',
         'ArithmeticError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/ArithmeticError.php',
         'AssertionError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/AssertionError.php',
+        'Axn\\Laroute\\Routes\\Collection' => __DIR__ . '/..' . '/axn/laravel-laroute/src/Routes/Collection.php',
+        'Axn\\Laroute\\ServiceProvider' => __DIR__ . '/..' . '/axn/laravel-laroute/src/ServiceProvider.php',
         'Barryvdh\\Debugbar\\Console\\ClearCommand' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/Console/ClearCommand.php',
         'Barryvdh\\Debugbar\\Console\\PublishCommand' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/Console/PublishCommand.php',
         'Barryvdh\\Debugbar\\Controllers\\AssetController' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/Controllers/AssetController.php',
@@ -2259,6 +2271,14 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'League\\Flysystem\\Util\\ContentListingFormatter' => __DIR__ . '/..' . '/league/flysystem/src/Util/ContentListingFormatter.php',
         'League\\Flysystem\\Util\\MimeType' => __DIR__ . '/..' . '/league/flysystem/src/Util/MimeType.php',
         'League\\Flysystem\\Util\\StreamHasher' => __DIR__ . '/..' . '/league/flysystem/src/Util/StreamHasher.php',
+        'Lord\\Laroute\\Compilers\\CompilerInterface' => __DIR__ . '/..' . '/lord/laroute/src/Compilers/CompilerInterface.php',
+        'Lord\\Laroute\\Compilers\\TemplateCompiler' => __DIR__ . '/..' . '/lord/laroute/src/Compilers/TemplateCompiler.php',
+        'Lord\\Laroute\\Console\\Commands\\LarouteGeneratorCommand' => __DIR__ . '/..' . '/lord/laroute/src/Console/Commands/LarouteGeneratorCommand.php',
+        'Lord\\Laroute\\Generators\\GeneratorInterface' => __DIR__ . '/..' . '/lord/laroute/src/Generators/GeneratorInterface.php',
+        'Lord\\Laroute\\Generators\\TemplateGenerator' => __DIR__ . '/..' . '/lord/laroute/src/Generators/TemplateGenerator.php',
+        'Lord\\Laroute\\LarouteServiceProvider' => __DIR__ . '/..' . '/lord/laroute/src/LarouteServiceProvider.php',
+        'Lord\\Laroute\\Routes\\Collection' => __DIR__ . '/..' . '/lord/laroute/src/Routes/Collection.php',
+        'Lord\\Laroute\\Routes\\Exceptions\\ZeroRoutesException' => __DIR__ . '/..' . '/lord/laroute/src/Routes/Exceptions/ZeroRoutesException.php',
         'MailboxesTableSeeder' => __DIR__ . '/../..' . '/database/seeds/MailboxesTableSeeder.php',
         'Mews\\Purifier\\Facades\\Purifier' => __DIR__ . '/..' . '/mews/purifier/src/Facades/Purifier.php',
         'Mews\\Purifier\\Purifier' => __DIR__ . '/..' . '/mews/purifier/src/Purifier.php',
@@ -4050,7 +4070,6 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'Symfony\\Polyfill\\Mbstring\\Mbstring' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/Mbstring.php',
         'Symfony\\Polyfill\\Php70\\Php70' => __DIR__ . '/..' . '/symfony/polyfill-php70/Php70.php',
         'Tests\\CreatesApplication' => __DIR__ . '/../..' . '/tests/CreatesApplication.php',
-        'Tests\\Feature\\ExampleTest' => __DIR__ . '/../..' . '/tests/Feature/ExampleTest.php',
         'Tests\\TestCase' => __DIR__ . '/../..' . '/tests/TestCase.php',
         'Tests\\Unit\\ExampleTest' => __DIR__ . '/../..' . '/tests/Unit/ExampleTest.php',
         'Text_Template' => __DIR__ . '/..' . '/phpunit/php-text-template/src/Template.php',

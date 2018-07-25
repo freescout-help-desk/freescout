@@ -30,4 +30,25 @@ class ConversationPolicy
             }
         }
     }
+
+    /**
+     * Determine whether the user can update the conversation.
+     *
+     * @param \App\User         $user
+     * @param \App\Conversation $conversation
+     *
+     * @return bool
+     */
+    public function update(User $user, Conversation $conversation)
+    {
+        if ($user->isAdmin()) {
+            return true;
+        } else {
+            if ($conversation->mailbox()->users->contains($user)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
 }

@@ -96,4 +96,57 @@ class Folder extends Model
     {
         return self::$type_icons[$this->type];
     }
+
+    /**
+     * Get order by array.
+     * 
+     * @return array
+     */
+    public function getOrderByArray()
+    {
+        $order_by = [];
+
+        switch ($this->type) {
+            case self::TYPE_UNASSIGNED:
+            case self::TYPE_MINE:
+            case self::TYPE_ASSIGNED:
+                $order_by[] = ['status' => 'asc'];
+                $order_by[] = ['last_reply_at' => 'desc'];
+                break;
+            
+            case self::TYPE_STARRED:
+                $order_by = [['conversation_folder.id' => 'desc']];
+                break;
+
+            case self::TYPE_DRAFTS:
+                $order_by = [['updated_at' => 'desc']];
+                break;
+
+            case self::TYPE_CLOSED:
+                $order_by = [['closed_at' => 'desc']];
+                
+            case self::TYPE_SPAM:
+                $order_by = [['last_reply_at' => 'desc']];
+                break;
+
+            case self::TYPE_DELETED:
+                $order_by = [['user_updated_at' => 'desc']];
+                break;
+        }      
+        return $order_by;
+    }
+
+    /**
+     * Add order by to the query.
+     */
+    public function queryAddOrderBy($query)
+    {
+        $order_bys = $this->getOrderByArray();
+        foreach ($order_bys as $order_by) {
+            foreach ($order_by as $field => $sort_order) {
+                $query->orderBy($field, $sort_order);
+            }
+        }
+        return $query;
+    }
 }

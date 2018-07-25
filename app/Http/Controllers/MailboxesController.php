@@ -271,11 +271,13 @@ class MailboxesController extends Controller
 
         $this->authorize('view', $folder);
 
+        $conversations = $folder->queryAddOrderBy($folder->conversations())->get();
+
         return view('mailboxes/view', [
-            'mailbox'       => $mailbox,
-            'folders'       => $folders,
+            'mailbox'       => $mailbox, 
+            'folders'       => $folders, 
             'folder'        => $folder,
-            'conversations' => $folder->conversations()->orderBy('status', 'asc')->orderBy('last_reply_at', 'desc')->get(),
+            'conversations' => $conversations,
         ]);
     }
 

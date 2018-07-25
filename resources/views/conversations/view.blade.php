@@ -2,6 +2,7 @@
 
 @section('title', '#'.$conversation->number.' '.$conversation->subject)
 @section('body_class', 'body-conv')
+@section('body_attrs')@parent data-conversation_id="{{ $conversation->id }}"@endsection
 
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
@@ -237,5 +238,5 @@
 
 @section('javascript')
     @parent
-    mailboxUpdateInit('{{ App\Mailbox::FROM_NAME_CUSTOM }}');
+    conversationInit();
 @endsection

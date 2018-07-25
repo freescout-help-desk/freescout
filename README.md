@@ -2,8 +2,8 @@
 
 <img src="https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/logo-300.png" width="180" height="180" />
 
-[![PHP version](https://img.shields.io/badge/PHP-%3E=%207.0-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements)
-[![Build Status](https://travis-ci.org/freescout-helpdesk/freescout.svg?branch=master)](https://travis-ci.org/freescout-helpdesk/freescout) [![Join the chat at https://gitter.im/freescout-helpdesk/Lobby](https://badges.gitter.im/freescout-helpdesk/Lobby.svg)](https://gitter.im/freescout-helpdesk/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Free%20self-hosted%20Help%20Scout%20alternative&url=https://github.com/freescout-helpdesk/freescout&hashtags=helpscout,helpdesk,php,laravel,developers)
+[![PHP version](https://img.shields.io/badge/PHP-%207.0%2B-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) [![Laravel version](https://img.shields.io/badge/Laravel-5.5-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) 
+[![Build Status](https://travis-ci.org/freescout-helpdesk/freescout.svg?branch=master)](https://travis-ci.org/freescout-helpdesk/freescout) [![Join the chat at https://gitter.im/freescout-helpdesk/Lobby](https://badges.gitter.im/freescout-helpdesk/Lobby.svg)](https://gitter.im/freescout-helpdesk/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout)
 
 **FreeScout** is a free open source help desk and shared inbox written in PHP7 (Laravel 5.5 framework), full analog of HelpScout. As you may know, Help Scout on **November 29, 2018** will force all free accounts to upgrade to the paid plan, so developing a free open source alternative is kind of urgent.
 
@@ -37,7 +37,7 @@ You can suggest features or vote for features [here](https://feedback.userreport
 ## Requirements
 
   * Nginx / Apache / IIS
-  * PHP 7.0.0+
+  * PHP 7.0+
   * MySQL/MariaDB 5.0+
   * Git (optional, for easier upgrading in the future)
 

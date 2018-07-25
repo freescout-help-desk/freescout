@@ -21,6 +21,9 @@ $(document).ready(function(){
 			});
 		}
 	});
+
+	// Floating alerts
+	fsFloatingAlertsInit();
 });
 
 function mailboxUpdateInit(from_name_custom)
@@ -117,3 +120,112 @@ function multiInputInit()
 	} );
 }
 
+function fsAjax(url, data, success_callback, error_callback, no_loader)
+{
+    // Setup AJAX
+	$.ajaxSetup({
+		headers: {
+	    	'X-CSRF-TOKEN': $('meta[name="csrf-token"]:first').attr('content')
+		}
+	});
+	// Show loader
+	if (typeof(no_loader) == "undefined" || !no_loader) {
+
+	}
+
+	if (typeof(error_callback) == "undefined" || !error_callback) {
+		error_callback = function() {
+			alert('todo: error callback');
+			fsLoaderHide();
+		};
+	}
+
+	$.ajax({
+		url: url,
+		method: 'post',
+		dataType: 'json',
+		data: data,
+		success: success_callback,
+		error: error_callback
+   });
+}
+
+function fsLoaderShow()
+{
+	$("#loader-main").show();
+}
+
+function fsLoaderHide()
+{
+	$("#loader-main").hide();
+}
+
+// Display floating alerts
+function fsFloatingAlertsInit()
+{
+	var alerts = $(".alert-floating:hidden");
+			
+	alerts.each(function(i, obj) {
+		$(obj).css('display', 'flex');
+		setTimeout(function(){
+		    obj.remove(); 
+		}, 7000);
+	});
+
+	if (alerts.length) {
+		$('body').click(function() {
+			alerts.remove();
+		});
+	}
+}
+
+function fsShowFloatingAlert(type, msg)
+{
+	var icon = 'ok';
+	var alert_class = 'success';
+
+	if (type == 'error') {
+		icon = 'exclamation-sign';
+		alert_class = 'danger';
+	}
+
+	var html = '<div class="alert alert-'+alert_class+' alert-floating">'+
+    	'<i class="glyphicon glyphicon-'+icon+'"></i>'+
+        '<div>'+msg+'</div>'+
+        '</div>';
+    $('body:first').append(html);
+    fsFloatingAlertsInit();
+}
+
+function conversationInit()
+{
+	$(document).ready(function(){
+	    jQuery(".conv-status li > a").click(function(e){
+			if (!$(this).hasClass('active')) {
+				fsLoaderShow();
+				fsAjax(laroute.route('conversations.ajax'), {
+					action: 'change_status',
+					status: $(this).attr('data-status'),
+					conversation_id: fsGetGlobalAttr('conversation_id')
+				}, function(response) {
+					if (typeof(response.status) != "undefined" && response.status == 'success') {
+						if (typeof(response.redirect_url) != "undefined") {
+							window.location.href = response.redirect_url;
+						} else {
+							window.location.href = '';
+						}
+					} else {
+						fsShowFloatingAlert('error', response.msg);
+					}
+					fsLoaderHide();
+				});
+			}
+			e.preventDefault();
+		});
+	});
+}
+
+function fsGetGlobalAttr(attr)
+{
+	return $("body:first").attr('data-'+attr);
+}

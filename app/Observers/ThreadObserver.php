@@ -23,7 +23,10 @@ class ThreadObserver
         if (!in_array($thread->type, [Thread::TYPE_CUSTOMER])) {
             $conversation->user_updated_at = $now;
         }
-        $conversation->last_reply_at = $now;
+        if (in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE])) {
+            $conversation->last_reply_at = $now;
+            $conversation->last_reply_from = $thread->source_via;
+        }
         $conversation->save();
     }
 }

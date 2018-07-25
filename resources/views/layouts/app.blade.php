@@ -14,7 +14,7 @@
     {!! Minify::stylesheet(array('/css/fonts.css', '/css/bootstrap.css', '/css/style.css')) !!}
     @yield('stylesheets')
 </head>
-<body class="@if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class')">
+<body class="@if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class')" @yield('body_attrs')>
     <div id="app">
 
         @if (!in_array(Route::currentRouteName(), array('login', 'register')))
@@ -162,8 +162,12 @@
         @endif
     </div>
 
+    <div id="loader-main"></div>
+
+    @yield('body_bottom')
+
     <!-- Scripts -->
-    {!! Minify::javascript(array('/js/jquery.js', '/js/bootstrap.js', '/js/main.js')) !!}
+    {!! Minify::javascript(array('/js/jquery.js', '/js/bootstrap.js', '/js/laroute.js', '/js/main.js')) !!}
     @yield('javascripts')
     @if ($__env->yieldContent('javascript'))
         <script type="text/javascript">

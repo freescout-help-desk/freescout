@@ -9,15 +9,20 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
+| Every time you change routes, run the following command to make them available in JS:
+|     php artisan laroute:generate
 */
 
 Auth::routes();
 
-// General routes for logged in users
+# Public routes
+
+
+# General routes for logged in users
 Route::get('/', 'SecureController@dashboard')->name('dashboard');
 Route::get('/logs/{name?}', 'SecureController@logs')->name('logs');
 
-// Users
+# Users
 Route::get('/users', 'UsersController@users')->name('users');
 Route::get('/users/wizard', 'UsersController@create')->name('users.create');
 Route::post('/users/wizard', 'UsersController@createSave');
@@ -27,7 +32,7 @@ Route::post('/users/permissions/{id}', 'UsersController@permissionsSave');
 Route::get('/users/permissions/{id}', 'UsersController@permissions')->name('users.permissions');
 Route::post('/users/permissions/{id}', 'UsersController@permissionsSave');
 
-// Mailboxes
+# Mailboxes
 Route::get('/settings/mailboxes', 'MailboxesController@mailboxes')->name('mailboxes');
 Route::get('/settings/mailbox-new', 'MailboxesController@create')->name('mailboxes.create');
 Route::post('/settings/mailbox-new', 'MailboxesController@createSave');
@@ -42,10 +47,11 @@ Route::post('/settings/connection-settings/{id}/outgoing', 'MailboxesController@
 Route::get('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncoming')->name('mailboxes.connection.incoming');
 Route::post('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncomingSave');
 
-// Customers
+# Customers
 Route::get('/customer/{id}/edit', 'CustomersController@update')->name('customers.update');
 Route::post('/customer/{id}/edit', 'CustomersController@updateSave');
 Route::get('/customer/{id}/', 'CustomersController@conversations')->name('customers.conversations');
 
-// Conversations
+# Conversations
 Route::get('/conversation/{id}', 'ConversationsController@view')->name('conversations.view');
+Route::post('/conversation/ajax', ['uses' => 'ConversationsController@ajax', 'laroute' => true])->name('conversations.ajax');
