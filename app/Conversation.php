@@ -246,17 +246,18 @@ class Conversation extends Model
 
     /**
      * Get next active conversation.
-     * 
-     * @param  string $mode next|prev|closest
+     *
+     * @param string $mode next|prev|closest
+     *
      * @return Conversation
      */
     public function getNearby($mode = 'closest')
     {
         $folder = $this->folder;
-        $query = Conversation::where('folder_id', $folder->id)
+        $query = self::where('folder_id', $folder->id)
             ->where('id', '<>', $this->id);
         $order_bys = $folder->getOrderByArray();
-        
+
         if ($mode != 'prev') {
             // Try to get next conversation
             $query_next = $query;
@@ -296,7 +297,7 @@ class Conversation extends Model
                 $query_prev->orderBy($field, $sort_order);
             }
         }
-        
+
         return $query_prev->first();
     }
 }

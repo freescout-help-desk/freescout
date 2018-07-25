@@ -274,8 +274,8 @@ class MailboxesController extends Controller
         $conversations = $folder->queryAddOrderBy($folder->conversations())->get();
 
         return view('mailboxes/view', [
-            'mailbox'       => $mailbox, 
-            'folders'       => $folders, 
+            'mailbox'       => $mailbox,
+            'folders'       => $folders,
             'folder'        => $folder,
             'conversations' => $conversations,
         ]);
