@@ -42,13 +42,14 @@ class CreateConversationsTable extends Migration
             // Originating source of the conversation - user or customer
             // ID of the customer or user who created the conversation
             // createdBy in the API
-            $table->integer('created_by');
+            $table->integer('created_by_user_id')->nullable();
+            $table->integer('created_by_customer_id')->nullable();
             // source.via - Originating source of the conversation - user or customer
             $table->unsignedTinyInteger('source_via');
             // source.type - Originating type of the conversation (email, web, API etc)
             $table->unsignedTinyInteger('source_type');
             // closedBy - ID of the user who closed the conversation
-            $table->integer('closed_by_user')->nullable();
+            $table->integer('closed_by_user_id')->nullable();
             // UTC time when the conversation was closed
             $table->timestamp('closed_at')->nullable();
             // UTC time when the last user update occurred

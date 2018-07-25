@@ -4,11 +4,11 @@ use App\Conversation;
 use Faker\Generator as Faker;
 
 $factory->define(Conversation::class, function (Faker $faker, $params) {
-    if (!empty($params['created_by'])) {
-        $created_by = $params['created_by'];
+    if (!empty($params['created_by_user_id'])) {
+        $created_by_user_id = $params['created_by_user_id'];
     } else {
         // Pick random user
-        $created_by = App\User::inRandomOrder()->first()->id;
+        $created_by_user_id = App\User::inRandomOrder()->first()->id;
     }
     $folder_id = null;
     if (!empty($params['folder_id'])) {
@@ -26,14 +26,14 @@ $factory->define(Conversation::class, function (Faker $faker, $params) {
     return [
         'type'      => $faker->randomElement([Conversation::TYPE_EMAIL, Conversation::TYPE_PHONE]),
         'folder_id' => $folder_id,
-        'state'     => $faker->randomElement(array_keys(Conversation::$states)),
+        'state'     => Conversation::STATE_PUBLISHED, // $faker->randomElement(array_keys(Conversation::$states)),
         'subject'   => $faker->sentence(7),
         // todo: cc and bcc must be equal to first (or last?) thread of conversation
         'cc'          => json_encode([$faker->unique()->safeEmail]),
         'bcc'         => json_encode([$faker->unique()->safeEmail]),
         'preview'     => $faker->text(Conversation::PREVIEW_MAXLENGTH),
         'imported'    => true,
-        'created_by'  => $created_by,
+        'created_by_user_id'  => $created_by_user_id,
         'source_via'  => Conversation::PERSON_CUSTOMER,
         'source_type' => Conversation::SOURCE_TYPE_EMAIL,
     ];

@@ -128,9 +128,14 @@
                         <div class="thread-message">
                             <div class="thread-header">
                                 <div class="thread-title">
+                                    @include('conversations/thread_by') 
+                                    @if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED)
+                                        {{ __("marked as") }} {{ $thread->getStatusName() }}
+                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
+                                    @endif
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date"></span>
+                                    <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -148,11 +153,7 @@
                                             @if ($thread->type == App\Thread::TYPE_CUSTOMER)
                                                 {{ $thread->customer->getFullName() }}
                                             @else
-                                                @if ($thread->user->id == Auth::user()->id)
-                                                    {{ __("you") }}
-                                                @else
-                                                    {{ $thread->user->getFullName() }}
-                                                @endif
+                                                @include('conversations/thread_by')
                                             @endif
                                         </strong> 
                                         @if ($loop->index == 0)
@@ -208,7 +209,7 @@
                                                 @endif
                                             @endif
                                             @if (!empty($show_status))
-                                                {{ App\Thread::getStatusName($thread->status) }}
+                                                {{ $thread->getStatusName() }}
                                             @endif
                                         </span>
                                     @endif

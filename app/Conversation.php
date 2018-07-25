@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Folder;
 
 class Conversation extends Model
 {
@@ -101,7 +102,7 @@ class Conversation extends Model
     /**
      * Automatically converted into Carbon dates.
      */
-    protected $dates = ['created_at', 'updated_at', 'last_reply_at'];
+    protected $dates = ['created_at', 'updated_at', 'last_reply_at', 'closed_at'];
 
     /**
      * Attributes which are not fillable using fill() method.
@@ -165,6 +166,30 @@ class Conversation extends Model
         return $this->belongsTo('App\Customer');
     }
 
+    /**
+     * Get user who created the conversations.
+     */
+    public function created_by_user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
+    /**
+     * Get customer who created the conversations.
+     */
+    public function created_by_customer()
+    {
+        return $this->belongsTo('App\Customer');
+    }
+
+    /**
+     * Get user who closed the conversations.
+     */
+    public function closed_by_user()
+    {
+        return $this->belongsTo('App\User');
+    }
+    
     /**
      * Set preview text.
      *
@@ -245,6 +270,25 @@ class Conversation extends Model
     }
 
     /**
+     * Set conersation status and all related fields.
+     * 
+     * @param integer $status
+     */
+    public function setStatus($status, $user = null)
+    {
+        $now = date('Y-m-d H:i:s');
+
+        $this->status = $status;
+        $this->updateFolder();
+        $this->user_updated_at = $now;
+
+        if ($user && $status == self::STATUS_CLOSED) {
+            $this->closed_by_user_id = $user->id;
+            $this->closed_at = $now;
+        }
+    }
+
+    /**
      * Get next active conversation.
      * 
      * @param  string $mode next|prev|closest
@@ -298,5 +342,34 @@ class Conversation extends Model
         }
         
         return $query_prev->first();
+    }
+
+    /**
+     * Set folder according to the status, sate and user of the conversation.
+     */
+    public function updateFolder()
+    {
+        if ($this->state == self::STATE_DRAFT) {
+            $folder_type = Folder::TYPE_DRAFTS;
+        } elseif ($this->state == self::STATE_DELETED) {
+            $folder_type = Folder::TYPE_DELETED;
+        } elseif ($this->status == self::STATUS_SPAM) {
+            $folder_type = Folder::TYPE_SPAM;
+        } elseif ($this->status == self::STATUS_CLOSED) {
+            $folder_type = Folder::TYPE_CLOSED;
+        } elseif ($this->user_id) {
+            $folder_type = Folder::TYPE_ASSIGNED;
+        } else {
+            $folder_type = Folder::TYPE_UNASSIGNED;
+        }
+
+        // Find folder
+        $folder = $this->mailbox->folders()
+            ->where('type', $folder_type)
+            ->first();
+
+        if ($folder) {
+            $this->folder_id = $folder->id;
+        }
     }
 }

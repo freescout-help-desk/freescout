@@ -632,7 +632,7 @@ a h4 {
     text-decoration: none;
 }
 .customer-data {
-    padding: 0px 20px 0 18px;
+    padding: 0px 26px 0 18px;
     margin-top: 15px;
     margin-bottom: 15px;
 }
@@ -983,6 +983,7 @@ table.table-conversations td.conv-attachment {
     background-color: #f1f3f5;
     width: 280px;
     height: 100%;
+    z-index: 9;
 }
 #conv-toolbar {
     border-bottom: 1px solid #e3e8eb;
@@ -1143,6 +1144,10 @@ table.table-conversations td.conv-attachment {
 }
 .thread {
     position: relative;
+    border-bottom: 1px solid #e3e8eb;
+}
+.thread:last-child {
+    border-bottom: 0;
 }
 .thread-header {
     overflow: hidden;
@@ -1200,6 +1205,19 @@ table.table-conversations td.conv-attachment {
     cursor: pointer;
     right: 13px;
     color: #a5b2bd;
+}
+.thread-lineitem {
+    background: #f9fafa;
+    overflow: auto;
+}
+.thread-lineitem .thread-message {
+    padding-top: 12px;
+    padding-bottom: 9px;
+    color: #a5b2bd;
+    font-size: 12px;
+}
+.thread-lineitem .thread-header {
+    min-height: auto;
 }
 @media (max-width:1100px) {
     #conv-layout-header,

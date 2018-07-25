@@ -34,6 +34,6 @@ $factory->define(Thread::class, function (Faker $faker, $params) {
         'bcc'         => json_encode([$faker->unique()->safeEmail]),
         'source_via'  => Thread::PERSON_CUSTOMER,
         'source_type' => Thread::SOURCE_TYPE_EMAIL,
-        'created_by'  => $customer_id,
+        'created_by_customer_id'  => $customer_id,
     ];
 });
