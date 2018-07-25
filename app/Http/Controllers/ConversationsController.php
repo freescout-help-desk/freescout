@@ -39,17 +39,18 @@ class ConversationsController extends Controller
 
     public function ajax(Request $request)
     {
-        $response = array(
+        $response = [
             'status' => 'error',
             'msg'    => '',
-        );
+        ];
 
         $user = auth()->user();
 
         switch ($request->action) {
             case 'change_status':
                 $conversation = Conversation::find($request->conversation_id);
-                $new_status = (int)$request->status;
+
+                $new_status = (int) $request->status;
 
                 if (!$conversation) {
                     $response['msg'] = 'Conversation not found';
@@ -60,7 +61,7 @@ class ConversationsController extends Controller
                 if (!$response['msg'] && !$user->can('update', $conversation)) {
                     $response['msg'] = 'Not enough permissions';
                 }
-                if (!$response['msg'] && !in_array((int)$request->status, array_keys(Conversation::$statuses))) {
+                if (!$response['msg'] && !in_array((int) $request->status, array_keys(Conversation::$statuses))) {
                     $response['msg'] = 'Incorrect status';
                 }
                 if (!$response['msg']) {
@@ -91,7 +92,7 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Status updated');
                 }
                 break;
-            
+
             default:
                 $response['msg'] = 'Unknown action';
                 break;
