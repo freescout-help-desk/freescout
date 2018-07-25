@@ -29,12 +29,12 @@ $factory->define(Conversation::class, function (Faker $faker, $params) {
         'state'     => Conversation::STATE_PUBLISHED, // $faker->randomElement(array_keys(Conversation::$states)),
         'subject'   => $faker->sentence(7),
         // todo: cc and bcc must be equal to first (or last?) thread of conversation
-        'cc'          => json_encode([$faker->unique()->safeEmail]),
-        'bcc'         => json_encode([$faker->unique()->safeEmail]),
-        'preview'     => $faker->text(Conversation::PREVIEW_MAXLENGTH),
-        'imported'    => true,
+        'cc'                  => json_encode([$faker->unique()->safeEmail]),
+        'bcc'                 => json_encode([$faker->unique()->safeEmail]),
+        'preview'             => $faker->text(Conversation::PREVIEW_MAXLENGTH),
+        'imported'            => true,
         'created_by_user_id'  => $created_by_user_id,
-        'source_via'  => Conversation::PERSON_CUSTOMER,
-        'source_type' => Conversation::SOURCE_TYPE_EMAIL,
+        'source_via'          => Conversation::PERSON_CUSTOMER,
+        'source_type'         => Conversation::SOURCE_TYPE_EMAIL,
     ];
 });
