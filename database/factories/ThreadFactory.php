@@ -26,14 +26,14 @@ $factory->define(Thread::class, function (Faker $faker, $params) {
     return [
         'type' => Thread::TYPE_CUSTOMER,
         //'conversation_id' => ,
-        'customer_id' => $customer_id,
-        'state'       => Thread::STATE_PUBLISHED,
-        'body'        => $faker->text(500),
-        'to'          => $to,
-        'cc'          => json_encode([$faker->unique()->safeEmail]),
-        'bcc'         => json_encode([$faker->unique()->safeEmail]),
-        'source_via'  => Thread::PERSON_CUSTOMER,
-        'source_type' => Thread::SOURCE_TYPE_EMAIL,
+        'customer_id'             => $customer_id,
+        'state'                   => Thread::STATE_PUBLISHED,
+        'body'                    => $faker->text(500),
+        'to'                      => $to,
+        'cc'                      => json_encode([$faker->unique()->safeEmail]),
+        'bcc'                     => json_encode([$faker->unique()->safeEmail]),
+        'source_via'              => Thread::PERSON_CUSTOMER,
+        'source_type'             => Thread::SOURCE_TYPE_EMAIL,
         'created_by_customer_id'  => $customer_id,
     ];
 });

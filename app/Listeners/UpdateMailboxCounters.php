@@ -2,9 +2,6 @@
 
 namespace App\Listeners;
 
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-
 class UpdateMailboxCounters
 {
     /**
@@ -21,6 +18,7 @@ class UpdateMailboxCounters
      * Handle the event.
      *
      * @param  $event
+     *
      * @return void
      */
     public function handle($event)

@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Folder;
 
 class Conversation extends Model
 {
@@ -189,7 +188,7 @@ class Conversation extends Model
     {
         return $this->belongsTo('App\User');
     }
-    
+
     /**
      * Set preview text.
      *
@@ -271,8 +270,8 @@ class Conversation extends Model
 
     /**
      * Set conersation status and all related fields.
-     * 
-     * @param integer $status
+     *
+     * @param int $status
      */
     public function setStatus($status, $user = null)
     {

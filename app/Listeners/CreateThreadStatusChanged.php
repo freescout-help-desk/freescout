@@ -3,8 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\ConversationStatusChanged;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Thread;
 
 class CreateThreadStatusChanged
@@ -22,7 +20,8 @@ class CreateThreadStatusChanged
     /**
      * Handle the event.
      *
-     * @param  ConversationStatusChanged  $event
+     * @param ConversationStatusChanged $event
+     *
      * @return void
      */
     public function handle(ConversationStatusChanged $event)
