@@ -99,7 +99,7 @@ class Folder extends Model
 
     /**
      * Get order by array.
-     * 
+     *
      * @return array
      */
     public function getOrderByArray()
@@ -113,7 +113,7 @@ class Folder extends Model
                 $order_by[] = ['status' => 'asc'];
                 $order_by[] = ['last_reply_at' => 'desc'];
                 break;
-            
+
             case self::TYPE_STARRED:
                 $order_by = [['conversation_folder.id' => 'desc']];
                 break;
@@ -124,7 +124,7 @@ class Folder extends Model
 
             case self::TYPE_CLOSED:
                 $order_by = [['closed_at' => 'desc']];
-                
+
             case self::TYPE_SPAM:
                 $order_by = [['last_reply_at' => 'desc']];
                 break;
@@ -132,7 +132,8 @@ class Folder extends Model
             case self::TYPE_DELETED:
                 $order_by = [['user_updated_at' => 'desc']];
                 break;
-        }      
+        }
+
         return $order_by;
     }
 
@@ -147,6 +148,7 @@ class Folder extends Model
                 $query->orderBy($field, $sort_order);
             }
         }
+
         return $query;
     }
 }

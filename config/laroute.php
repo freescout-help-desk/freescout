@@ -48,7 +48,7 @@ return [
      * with them.
      */
     'template' => 'resources/assets/js/laroute.js',
-    
+
     /*
      * Appends a prefix to URLs. By default the prefix is an empty string.
     *
