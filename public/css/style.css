@@ -1415,7 +1415,7 @@ table.table-conversations td.conv-attachment {
     top: 16px;
     transform: translate(-50%,0) translate(-1px,0);
     z-index: 1099;
-    max-width: 250px;
+    max-width: 300px;
     border-radius: 4px;
     flex-direction: row;
     padding: 9px 14px;

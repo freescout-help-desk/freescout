@@ -135,7 +135,7 @@ function fsAjax(url, data, success_callback, error_callback, no_loader)
 
 	if (typeof(error_callback) == "undefined" || !error_callback) {
 		error_callback = function() {
-			alert('todo: error callback');
+			fsShowFloatingAlert('error', Lang.get("messages.ajax_error"));
 			fsLoaderHide();
 		};
 	}
