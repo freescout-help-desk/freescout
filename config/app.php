@@ -91,7 +91,7 @@ return [
     | locales: available locales
     */
 
-    'locale' => 'en',
+    'locale'  => 'en',
     'locales' => ['en'],
 
     /*
