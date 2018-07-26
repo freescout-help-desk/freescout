@@ -2,6 +2,7 @@
 /**
  * Comman generates vars.js file with variables and translated strings.
  */
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -42,7 +43,7 @@ class GenerateVarsJs extends Command
     {
         try {
             $params = [
-                'locales' => config('app.locales')
+                'locales' => config('app.locales'),
             ];
 
             $filesystem = new Filesystem();
