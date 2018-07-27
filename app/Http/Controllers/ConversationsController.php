@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Conversation;
-use App\Mailbox;
 use App\Folder;
+use App\Mailbox;
 
 class ConversationsController extends Controller
 {
@@ -47,7 +47,7 @@ class ConversationsController extends Controller
 
         $conversation = new Conversation();
         $conversation->body = '';
-        
+
         $folder = $mailbox->folders()->where('type', Folder::TYPE_DRAFTS)->first();
 
         return view('conversations/create', [
