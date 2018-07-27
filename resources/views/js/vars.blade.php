@@ -20,7 +20,11 @@ var lang_messages = {
         "{{ $locale }}.messages": {
             {{-- Add here strings which you need to be translated in JS--}}
             "ajax_error": "{{ __("Error occured. Please check your internet connection and try again.") }}",
-            "error_occured": "{{ __("Error occured, please try again later.") }}"
+            "error_occured": "{{ __("Error occured, please try again later.") }}",
+            "upload_attachments": "{{ __("Upload Attachments") }}",
+            "saved_replies": "{{ __("Saved Replies") }}",
+            "save_draft": "{{ __("Save Draft") }}",
+            "discard": "{{ __("Discard") }}"
         }@if (!$loop->last),@endif
     @endforeach
 };

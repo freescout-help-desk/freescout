@@ -31,6 +31,7 @@ class CreateThreadUserChanged
         $thread->user_id = $event->conversation->user_id;
         $thread->type = Thread::TYPE_LINEITEM;
         $thread->state = Thread::STATE_PUBLISHED;
+        $thread->status = Thread::STATUS_NOCHANGE;
         $thread->action_type = Thread::ACTION_TYPE_USER_CHANGED;
         $thread->source_via = Thread::PERSON_USER;
         // todo: this need to be changed for API

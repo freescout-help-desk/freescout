@@ -254,6 +254,7 @@ class MailboxesController extends Controller
     public function view($id, $folder_id = null)
     {
         $mailbox = Mailbox::findOrFail($id);
+        $this->authorize('view', $mailbox);
 
         $folders = $mailbox->getAssesibleFolders();
 

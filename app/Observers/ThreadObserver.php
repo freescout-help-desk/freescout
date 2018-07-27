@@ -27,6 +27,9 @@ class ThreadObserver
             $conversation->last_reply_at = $now;
             $conversation->last_reply_from = $thread->source_via;
         }
+        if ($conversation->source_via == Conversation::PERSON_CUSTOMER) {
+            $conversation->read_by_user = false;
+        }
         $conversation->save();
     }
 }

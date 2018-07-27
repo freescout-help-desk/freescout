@@ -152,10 +152,3 @@
         </tfoot>
     </table>
 @endsection
-
-@include('partials/editor')
-
-@section('javascript')
-    @parent
-    mailboxUpdateInit('{{ App\Mailbox::FROM_NAME_CUSTOM }}');
-@endsection

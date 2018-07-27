@@ -36,7 +36,7 @@ class Conversation extends Model
     ];
 
     /**
-     * Conversation statuses.
+     * Conversation statuses (code must be equal to thread statuses).
      */
     const STATUS_ACTIVE = 1;
     const STATUS_PENDING = 2;

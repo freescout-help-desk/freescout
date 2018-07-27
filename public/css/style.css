@@ -7,6 +7,7 @@
  */
 #app {
     min-height: 100%;
+    overflow: hidden;
 }
 .footer {
     text-align: center;
@@ -50,7 +51,7 @@
     min-width: 0;
     position: relative;
     z-index: 2;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 .sidebar-title {
     color: #2a3b47;
@@ -374,6 +375,10 @@ select.form-control {
 .btn-sidebar {
     margin: 8px 0 0 20px;
 }
+.btn-sidebar:focus,
+.btn-sidebar:hover {
+    background-color: #f9f9f9;
+}
 .btn-grey {
     color: #fff;
     background-color: #8f9aa6;
@@ -381,9 +386,9 @@ select.form-control {
 }
 .btn-grey:focus,
 .btn-grey:hover {
-  color: #fff;
-  background-color: #64717b;
-  border-color: #4f5d69;
+    color: #fff;
+    background-color: #64717b;
+    border-color: #4f5d69;
 }
 .btn-success.btn-light {
     background-color: #81c981;
@@ -614,6 +619,20 @@ a h4 {
 .note-editor .btn-default:hover {
     background-color: #e6e6e6;
     border-color: #e6e6e6;
+}
+.note-btn i.glyphicon {
+    position: relative;
+    top: 3px;
+}
+.note-btn.btn-sm {
+    font-size: 14px;
+    line-height: 18px;
+}
+.note-actions {
+    float: right;
+}
+.note-actions .note-btn:first-child {
+    font-size: 16px;
 }
 
 /**
@@ -1250,6 +1269,121 @@ table.table-conversations td.conv-attachment {
 .thread-lineitem .thread-header {
     min-height: auto;
 }
+.conv-new #conv-toolbar {
+    border-bottom: 1px solid #d4d9dd;
+    padding: 6px 0 7px 0;
+}
+.conv-new #conv-toolbar h2 {
+    color: #253540;
+    float: left;
+    font-size: 20px;
+    font-weight: normal;
+    line-height: 39px;
+    margin: 0;
+    padding: 0 0 0 20px;
+}
+.conv-new #conv-toolbar .btn-group {
+    margin: 5px 0 0 20px;
+    color: #4f5d6b;
+}
+.conv-new #conv-toolbar .btn-group i {
+    color: #4f5d6b;
+    position: relative;
+    top: 3px;
+}
+.conv-new .conv-info {
+    font-size: 14px;
+    color: #253540;
+    margin: 0px 20px 0px 0;
+}
+.conv-new .conv-info strong {
+    font-size: 20px;
+    line-height: 39px;
+    font-weight: normal;
+}
+.conv-new-form {
+    padding-top: 15px;
+}
+.conv-new-form .form-group {
+    margin-bottom: 10px;
+}
+.toggle-cc {
+    padding-left: 4px;
+    padding-bottom: 5px;
+    margin-top: -5px;
+}
+.conv-block {
+    margin: 0 20px;
+}
+@media (max-width:700px) {
+    .conv-info .btn-group button.conv-info-val span:first-child {
+        display: none!important;
+    }
+    .conv-info .dropdown-menu {
+        right: 0!important;
+        left: auto!important;
+    }
+    .conv-actions .conv-action {
+        padding: 17px 8px 9px;
+    }
+    .conv-subjtext {
+        font-size: 20px;
+    }
+    #conv-subject {
+        padding: 16px 2px 24px 13px;
+    }
+    .conv-customer-block {
+        padding-left: 15px;
+    }
+    .conv-numnav {
+        top: 0;
+    }
+    .conv-info .btn-group button.conv-info-val {
+        padding-right: 17px;
+    }
+    .conv-info {
+        margin-right: 6px;
+    }
+    .conv-info > li {
+        margin: 0 2px;
+    }
+    #conv-toolbar {
+        padding-left: 6px;
+    }
+    .conv-actions .conv-action {
+        font-size: 15px;
+    }
+    .thread-photo {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .thread-message {
+        margin-right: 15px;
+        margin-left: 62px;
+    }
+    .thread-options {
+        right: 10px;
+    }
+    .conv-new #conv-toolbar h2 {
+        padding-left: 13px;
+        font-size: 17px;
+    }
+    .conv-new .conv-info {
+        margin-right: 13px;
+    }
+    .conv-new .conv-info strong {
+        font-size: 17px;
+    }
+    .conv-new-form {
+        padding-top: 0;
+    }
+    .conv-new #conv-toolbar .btn-group {
+        margin-left: 13px;
+    }
+    .conv-block {
+        margin: 0 13px;
+    }
+}
 @media (max-width:1100px) {
     #conv-layout-header,
     #conv-layout-main,
@@ -1356,56 +1490,6 @@ table.table-conversations td.conv-attachment {
     .conv-customer-hist .panel-body {
         border-top: 1px solid #e3e8eb!important;
         border-bottom: 0;
-    }
-}
-@media (max-width:700px) {
-    .conv-info .btn-group button.conv-info-val span:first-child {
-        display: none!important;
-    }
-    .conv-info .dropdown-menu {
-        right: 0!important;
-        left: auto!important;
-    }
-    .conv-actions .conv-action {
-        padding: 17px 8px 9px;
-    }
-    .conv-subjtext {
-        font-size: 20px;
-    }
-    #conv-subject {
-        padding: 16px 2px 24px 13px;
-    }
-    .conv-customer-block {
-        padding-left: 15px;
-    }
-    .conv-numnav {
-        top: 0;
-    }
-    .conv-info .btn-group button.conv-info-val {
-        padding-right: 17px;
-    }
-    .conv-info {
-        margin-right: 6px;
-    }
-    .conv-info > li {
-        margin: 0 2px;
-    }
-    #conv-toolbar {
-        padding-left: 6px;
-    }
-    .conv-actions .conv-action {
-        font-size: 15px;
-    }
-    .thread-photo {
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-    .thread-message {
-        margin-right: 15px;
-        margin-left: 62px;
-    }
-    .thread-options {
-        right: 10px;
     }
 }
 @media (max-width:991px) {

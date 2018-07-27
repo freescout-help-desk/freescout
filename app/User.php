@@ -177,7 +177,7 @@ class User extends Authenticatable
         if (is_array($mailboxes)) {
             $mailbox_ids = $mailboxes;
         } else {
-            $mailbox_ids = $this->mailboxes()->pluck('id');
+            $mailbox_ids = $this->mailboxes()->pluck('mailboxes.id');
         }
 
         $cur_mailboxes = Folder::select('mailbox_id')

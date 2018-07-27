@@ -1,5 +1,67 @@
 var fs_sidebar_menu_applied = false;
 
+// Configuring editor
+var EditorAttachmentButton = function (context) {
+	var ui = $.summernote.ui;
+
+	// create button
+	var button = ui.button({
+		contents: '<i class="glyphicon glyphicon-paperclip"></i>',
+		tooltip: Lang.get("messages.upload_attachments"),
+		container: 'body',
+		click: function () {
+			alert('todo: implement attachments');
+		}
+	});
+
+	return button.render();   // return button as jquery object
+}
+var EditorSavedRepliesButton = function (context) {
+	var ui = $.summernote.ui;
+
+	// create button
+	var button = ui.button({
+		contents: '<i class="glyphicon glyphicon-floppy-open"></i>',
+		tooltip: Lang.get("messages.saved_replies"),
+		container: 'body',
+		click: function () {
+			alert('todo: implement saved replies');
+		}
+	});
+
+	return button.render();   // return button as jquery object
+}
+var EditorSaveDraftButton = function (context) {
+	var ui = $.summernote.ui;
+
+	// create button
+	var button = ui.button({
+		contents: '<i class="glyphicon glyphicon-ok-circle"></i>',
+		tooltip: Lang.get("messages.save_draft"),
+		container: 'body',
+		click: function () {
+			alert('todo: implement saving draft');
+		}
+	});
+
+	return button.render();   // return button as jquery object
+}
+var EditorDiscardButton = function (context) {
+	var ui = $.summernote.ui;
+
+	// create button
+	var button = ui.button({
+		contents: '<i class="glyphicon glyphicon-trash"></i>',
+		tooltip: Lang.get("messages.discard"),
+		container: 'body',
+		click: function () {
+			alert('todo: implement discarding a draft');
+		}
+	});
+
+	return button.render();   // return button as jquery object
+}
+
 $(document).ready(function(){
 
 	// Tooltips
@@ -35,6 +97,7 @@ function mailboxUpdateInit(from_name_custom)
 		// https://gist.github.com/abr4xas/22caf07326a81ecaaa195f97321da4ae
 		$('#signature').summernote({
 			height: 120,
+			dialogsInBody: true,
 			toolbar: [
 			    // [groupName, [list of button]]
 			    ['style', ['bold', 'italic', 'underline', 'ul', 'ol', 'link', 'codeview']],
@@ -258,4 +321,33 @@ function conversationInit()
 function fsGetGlobalAttr(attr)
 {
 	return $("body:first").attr('data-'+attr);
+}
+
+// New conversation page
+function newConversationInit()
+{
+	$(document).ready(function() {
+
+		$('#body').summernote({
+			height: 120,
+			dialogsInBody: true,
+			dialogsFade: true,
+			toolbar: [
+			    // [groupName, [list of button]]
+			    ['style', ['attachment', 'bold', 'italic', 'underline', 'ul', 'ol', 'link', 'picture', 'codeview', 'savedreplies']],
+			    ['actions', ['savedraft', 'discard']],
+			],
+			buttons: {
+			    attachment: EditorAttachmentButton,
+			    savedreplies: EditorSavedRepliesButton,
+			    savedraft: EditorSaveDraftButton,
+			    discard: EditorDiscardButton
+			}
+		});
+
+	    $('.toggle-cc a:first').click(function() {
+			$('.field-cc').removeClass('hidden');
+			$(this).parent().remove();
+		});
+	});
 }

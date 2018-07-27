@@ -27,6 +27,26 @@ class MailboxPolicy
     }
 
     /**
+     * Determine whether the user can view mailbox conversations.
+     *
+     * @param \App\User $user
+     *
+     * @return mixed
+     */
+    public function view(User $user)
+    {
+        if ($user->isAdmin()) {
+            return true;
+        } else {
+            if ($mailbox()->users->contains($user)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
      * Determine whether the user can update the mailbox.
      *
      * @param \App\User    $user

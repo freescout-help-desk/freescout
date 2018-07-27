@@ -51,13 +51,13 @@ class Thread extends Model
     ];
 
     /**
-     * Statuses.
+     * Statuses (code must be equal to conversations statuses).
      */
     const STATUS_ACTIVE = 1;
-    const STATUS_CLOSED = 2;
-    const STATUS_NOCHANGE = 3;
-    const STATUS_PENDING = 4;
-    const STATUS_SPAM = 5;
+    const STATUS_PENDING = 2;
+    const STATUS_CLOSED = 3;
+    const STATUS_SPAM = 4;
+    const STATUS_NOCHANGE = 6;
 
     public static $statuses = [
         self::STATUS_ACTIVE   => 'active',
@@ -284,15 +284,15 @@ class Thread extends Model
 
     /**
      * Get text for the assignee.
-     *
+     * 
      * @return string
      */
     public function getAssignedName()
     {
         if (!$this->user_id) {
-            return __('anyone');
+            return __("anyone");
         } elseif ($this->user_id == auth()->user()->id) {
-            return __('yourself');
+            return __("yourself");
         } else {
             return $this->user->getFullName();
         }
