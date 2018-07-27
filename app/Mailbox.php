@@ -204,18 +204,19 @@ class Mailbox extends Model
     {
         $folders = $this->folders;
         foreach ($folders as $folder) {
+            // todo: starred conversations counting
             if ($folder->type == Folder::TYPE_MINE && $folder->user_id) {
-                $folder->active_count = $folder->conversations()
-                    ->where('status', Conversation::STATUS_ACTIVE)
+                $folder->active_count = Conversation::where('status', Conversation::STATUS_ACTIVE)
                     ->where('user_id', $folder->user_id)
                     ->count();
-            // todo: starred conversations counting
+                $folder->total_count = Conversation::where('user_id', $folder->user_id)
+                    ->count();
             } else {
                 $folder->active_count = $folder->conversations()
                     ->where('status', Conversation::STATUS_ACTIVE)
                     ->count();
+                $folder->total_count = $folder->conversations()->count();
             }
-            $folder->total_count = $folder->conversations()->count();
             $folder->save();
         }
     }

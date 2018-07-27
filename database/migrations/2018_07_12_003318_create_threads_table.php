@@ -50,6 +50,7 @@ class CreateThreadsTable extends Migration
             $table->unsignedTinyInteger('send_status')->default(Thread::SEND_STATUS_TOSEND);
             // Text describing the sending status
             $table->string('send_status_text', 255)->nullable();
+            // Email opened by customer
             $table->timestamp('opened_at')->nullable();
             $table->timestamps();
         });

@@ -296,6 +296,10 @@ class Conversation extends Model
     {
         $now = date('Y-m-d H:i:s');
 
+        if ($user_id == -1) {
+            $user_id = null;
+        }
+
         $this->user_id = $user_id;
         $this->updateFolder();
         $this->user_updated_at = $now;

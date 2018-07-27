@@ -58,6 +58,8 @@ class CreateConversationsTable extends Migration
             $table->timestamp('last_reply_at')->nullable();
             // Whether the last reply was from a user or a customer
             $table->unsignedTinyInteger('last_reply_from')->nullable();
+            // Thread read by any user (used to display spam folder)
+            $table->boolean('read_by_user')->default(false);
             $table->timestamps();
 
             // Indexes

@@ -388,11 +388,20 @@ select.form-control {
 .btn-success.btn-light {
     background-color: #81c981;
 }
+.btn-success.btn-light:hover {
+    background-color: #449d44;
+}
 .btn-warning.btn-light {
     background-color: #f2b967;
 }
+.btn-warning.btn-light:hover {
+    background-color: #ec971f;
+}
 .btn-danger.btn-light {
     background-color: #e27c78;
+}
+.btn-danger.btn-light:hover {
+    background-color: #c9302c;
 }
 
 /**
@@ -1728,6 +1737,6 @@ a.help-icon:hover {
     height: 100%;
     z-index: 9999;
     background: url('../img/loader-main.gif') 50% 50% no-repeat transparent;
-    opacity: 0.85;
-    filter: alpha(opacity=85); /* For IE8 and earlier */
+    opacity: 0.90;
+    filter: alpha(opacity=90); /* For IE8 and earlier */
 }

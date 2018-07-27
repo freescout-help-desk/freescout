@@ -103,7 +103,7 @@ class SecureController extends Controller
                 if (!$response['msg'] && !$user->can('update', $conversation)) {
                     $response['msg'] = 'Not enough permissions';
                 }
-                if (!$response['msg'] && !in_array($new_user_id, $conversation->mailbox->userIdsHavingAccess())) {
+                if (!$response['msg'] && (int)$new_user_id != -1 && !in_array($new_user_id, $conversation->mailbox->userIdsHavingAccess())) {
                     $response['msg'] = 'Incorrect user';
                 }
                 if (!$response['msg']) {

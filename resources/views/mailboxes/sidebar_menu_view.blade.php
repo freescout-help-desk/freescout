@@ -5,7 +5,25 @@
 <ul class="sidebar-menu">
     @foreach ($folders as $folder_item)
         @if ($folder_item->type != App\Folder::TYPE_DELETED || ($folder_item->type == App\Folder::TYPE_DELETED && $folder_item->total_count))
-            <li class="@if ($folder_item->id == $folder->id) active @endif"><a href="{{ route('mailboxes.view.folder', ['id'=>$mailbox->id, 'folder_id'=>$folder_item->id]) }}" @if (!$folder_item->active_count) class="no-active" @endif><i class="glyphicon glyphicon-{{ $folder_item->getTypeIcon() }}"></i> {{ $folder_item->getTypeName() }}@if ($folder_item->active_count)<span class="active-count pull-right" data-toggle="tooltip" title="{{ __("Active Conversations") }}">{{ $folder_item->active_count }}</span>@endif</a></li>
+            <li class="@if ($folder_item->id == $folder->id) active @endif">
+                <a href="{{ route('mailboxes.view.folder', ['id'=>$mailbox->id, 'folder_id'=>$folder_item->id]) }}" @if (!$folder_item->active_count) class="no-active" @endif><i class="glyphicon glyphicon-{{ $folder_item->getTypeIcon() }}"></i> {{ $folder_item->getTypeName() }}
+                    @php
+                        $active_count = $folder_item->active_count;
+                        if ($folder_item->type == App\Folder::TYPE_ASSIGNED) {
+                            $mine_folder = $folders->firstWhere('type', App\Folder::TYPE_MINE);
+                            if ($mine_folder) {
+                                $active_count = $active_count - $mine_folder->active_count;
+                                if ($active_count < 0) {
+                                    $active_count = 0;
+                                }
+                            }
+                        }
+                    @endphp
+                    @if ($active_count)<span class="active-count pull-right" data-toggle="tooltip" title="{{ __("Active Conversations") }}">
+                        {{ $active_count }}</span>
+                    @endif
+                </a>
+            </li>
         @endif
     @endforeach
 </ul>

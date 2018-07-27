@@ -217,8 +217,10 @@ function conversationInit()
 						} else {
 							window.location.href = '';
 						}
-					} else {
+					} else if (typeof(response.msg) != "undefined") {
 						fsShowFloatingAlert('error', response.msg);
+					} else {
+						fsShowFloatingAlert('error', Lang.get("messages.error_occured"));
 					}
 					fsLoaderHide();
 				});
@@ -240,8 +242,10 @@ function conversationInit()
 						} else {
 							window.location.href = '';
 						}
-					} else {
+					} else if (typeof(response.msg) != "undefined") {
 						fsShowFloatingAlert('error', response.msg);
+					} else {
+						fsShowFloatingAlert('error', Lang.get("messages.error_occured"));
 					}
 					fsLoaderHide();
 				});

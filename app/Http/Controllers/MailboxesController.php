@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Conversation;
 use App\Folder;
 use App\Mailbox;
 use App\User;
@@ -271,7 +272,18 @@ class MailboxesController extends Controller
 
         $this->authorize('view', $folder);
 
-        $conversations = $folder->queryAddOrderBy($folder->conversations())->get();
+        $user = auth()->user();
+
+        if ($folder->type == Folder::TYPE_MINE) {
+            // Get conversations from personal folder
+            $query_conversations = Conversation::where('user_id', $user->id);
+        } elseif ($folder->type == Folder::TYPE_ASSIGNED) {
+            // Assigned - do not show my conversations
+            $query_conversations = $folder->conversations()->where('user_id', '<>', $user->id);
+        } else {
+            $query_conversations = $folder->conversations();
+        }
+        $conversations = $folder->queryAddOrderBy($query_conversations)->get();
 
         return view('mailboxes/view', [
             'mailbox'       => $mailbox,
