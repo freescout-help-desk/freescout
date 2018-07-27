@@ -4,7 +4,6 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
-use App\User;
 
 class Mailbox extends Model
 {
@@ -210,7 +209,7 @@ class Mailbox extends Model
                     ->where('status', Conversation::STATUS_ACTIVE)
                     ->where('user_id', $folder->user_id)
                     ->count();
-                // todo: starred conversations counting
+            // todo: starred conversations counting
             } else {
                 $folder->active_count = $folder->conversations()
                     ->where('status', Conversation::STATUS_ACTIVE)
@@ -268,6 +267,7 @@ class Mailbox extends Model
     {
         $users = $this->users;
         $admins = User::where('role', User::ROLE_ADMIN)->get();
+
         return $users->merge($admins)->unique();
     }
 
@@ -278,6 +278,7 @@ class Mailbox extends Model
     {
         $user_ids = $this->users()->pluck('users.id');
         $admin_ids = User::where('role', User::ROLE_ADMIN)->pluck('id');
+
         return $user_ids->merge($admin_ids)->unique()->toArray();
     }
 }

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\ActivityLog;
-use Illuminate\Http\Request;
 use App\Conversation;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
+use Illuminate\Http\Request;
 
 class SecureController extends Controller
 {
@@ -92,7 +92,7 @@ class SecureController extends Controller
             case 'conversation_change_user':
                 $conversation = Conversation::find($request->conversation_id);
 
-                $new_user_id = (int)$request->user_id;
+                $new_user_id = (int) $request->user_id;
 
                 if (!$conversation) {
                     $response['msg'] = 'Conversation not found';
