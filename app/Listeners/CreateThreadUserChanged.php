@@ -2,10 +2,10 @@
 
 namespace App\Listeners;
 
-use App\Events\ConversationStatusChanged;
+use App\Events\ConversationUserChanged;
 use App\Thread;
 
-class CreateThreadStatusChanged
+class CreateThreadUserChanged
 {
     /**
      * Create the event listener.
@@ -24,14 +24,14 @@ class CreateThreadStatusChanged
      *
      * @return void
      */
-    public function handle(ConversationStatusChanged $event)
+    public function handle(ConversationUserChanged $event)
     {
         $thread = new Thread();
         $thread->conversation_id = $event->conversation->id;
         $thread->user_id = $event->conversation->user_id;
         $thread->type = Thread::TYPE_LINEITEM;
         $thread->state = Thread::STATE_PUBLISHED;
-        $thread->action_type = Thread::ACTION_TYPE_STATUS_CHANGED;
+        $thread->action_type = Thread::ACTION_TYPE_USER_CHANGED;
         $thread->source_via = Thread::PERSON_USER;
         // todo: this need to be changed for API
         $thread->source_type = Thread::SOURCE_TYPE_WEB;

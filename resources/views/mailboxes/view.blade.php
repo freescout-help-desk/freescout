@@ -97,7 +97,7 @@
                     </td>
                     @if ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED)
                         <td class="conv-owner" data-label="{{ __('Assigned To') }}">
-                            <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}" title="{{ __('View conversation') }}"> LikeBtn Ruzanna </a>
+                            <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}" title="{{ __('View conversation') }}"> {{ $conversation->user->getFullName() }} </a>
                         </td>
                     @endif
                     <td class="conv-number" data-label="

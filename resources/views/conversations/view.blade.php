@@ -34,21 +34,23 @@
                 <ul class="conv-info">
                     <li>
                         <div class="btn-group" data-toggle="tooltip" title="{{ __("Assignee") }}">
-                            <button type="button" class="btn btn-default conv-info-icon"><i class="glyphicon glyphicon-user"></i></button>
+                            <button type="button" class="btn btn-default conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i></button>
                             <button type="button" class="btn btn-default dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @if ($conversation->user)
+                                @if ($conversation->user_id == Auth::user()->id)
+                                    <span>{{ __("Me") }}</span> 
+                                @elseif ($conversation->user)
                                     <span>{{ $conversation->user->getFullName() }}</span> 
                                 @else
                                     <span>{{ __("Anyone") }}</span> 
                                 @endif
                                 <span class="caret"></span>
                             </button>
-                            <ul class="dropdown-menu">
-                                <li><a href="#" data-user_id="-1">{{ __("Anyone") }}</a></li>
-                                <li><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
-                                @foreach ($mailbox->users as $user)
+                            <ul class="dropdown-menu conv-user">
+                                <li @if (!$conversation->user_id) class="active" @endif><a href="#" data-user_id="-1">{{ __("Anyone") }}</a></li>
+                                <li @if ($conversation->user_id == Auth::user()->id) class="active" @endif><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
+                                @foreach ($mailbox->usersHavingAccess() as $user)
                                     @if ($user->id != Auth::user()->id)
-                                        <li @if ($conversation->user->id == $user->id) class="active" @endif><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
+                                        <li @if ($conversation->user_id == $user->id) class="active" @endif><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
                                     @endif
                                 @endforeach
                             </ul>
@@ -56,8 +58,8 @@
                     </li>
                     <li>
                         <div class="btn-group" data-toggle="tooltip" title="{{ __("Status") }}">
-                            <button type="button" class="btn btn-{{ App\Conversation::$status_colors[$conversation->status] }} conv-info-icon"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
-                            <button type="button" class="btn btn-{{ App\Conversation::$status_colors[$conversation->status] }} dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button type="button" class="btn btn-{{ App\Conversation::$status_colors[$conversation->status] }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
+                            <button type="button" class="btn btn-{{ App\Conversation::$status_colors[$conversation->status] }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span>{{ App\Conversation::getStatusName($conversation->status) }}</span> <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu conv-status">
@@ -132,6 +134,7 @@
                                     @if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED)
                                         {{ __("marked as") }} {{ $thread->getStatusName() }}
                                     @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
+                                         {{ __("assigned to") }} {{ $thread->getAssignedName() }}
                                     @endif
                                 </div>
                                 <div class="thread-info">
@@ -222,10 +225,10 @@
                         <div class="dropdown thread-options">
                             <span class="dropdown-toggle glyphicon glyphicon-option-vertical" data-toggle="dropdown"></span>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                <li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }}</a></li>
-                                <li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }}</a></li>
+                                <li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }} (todo)</a></li>
+                                <li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>
                                 <li><a href="javascript:alert('todo: implement new conversation from thread');void(0);" title="{{ __("Start a conversation with this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
-                                <li><a href="#" title="{{ __("Show original email") }}" class="thread-orig-trigger">{{ __("Show Original") }}</a></li>
+                                <li><a href="#" title="{{ __("Show original email") }}" class="thread-orig-trigger">{{ __("Show Original") }} (todo)</a></li>
                             </ul>
                         </div>
                     </div>

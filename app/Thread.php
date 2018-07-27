@@ -281,4 +281,20 @@ class Thread extends Model
                 break;
         }
     }
+
+    /**
+     * Get text for the assignee.
+     * 
+     * @return string
+     */
+    public function getAssignedName()
+    {
+        if (!$this->user_id) {
+            return __("anyone");
+        } elseif ($this->user_id == auth()->user()->id) {
+            return __("yourself");
+        } else {
+            return $this->user->getFullName();
+        }
+    }
 }

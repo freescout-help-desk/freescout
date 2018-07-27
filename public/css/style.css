@@ -371,6 +371,29 @@ select.form-control {
 .input-group-btn .btn {
     height: 28px;
 }
+.btn-sidebar {
+    margin: 8px 0 0 20px;
+}
+.btn-grey {
+    color: #fff;
+    background-color: #8f9aa6;
+    border-color: #72808e;
+}
+.btn-grey:focus,
+.btn-grey:hover {
+  color: #fff;
+  background-color: #64717b;
+  border-color: #4f5d69;
+}
+.btn-success.btn-light {
+    background-color: #81c981;
+}
+.btn-warning.btn-light {
+    background-color: #f2b967;
+}
+.btn-danger.btn-light {
+    background-color: #e27c78;
+}
 
 /**
  * Cards
@@ -1061,7 +1084,6 @@ table.table-conversations td.conv-attachment {
 }
 .conv-info .btn-group button.conv-info-icon {
     padding: 0 7px;
-    cursor: default;
 }
 .conv-info .btn-group button.conv-info-val {
     max-width: 100px;
@@ -1697,18 +1719,6 @@ a.help-icon:hover {
 .text-charcoal {
     color: #2a3b47!important;
 }
-.btn-grey {
-    color: #fff;
-    background-color: #84909d;
-    border-color: #72808e;
-}
-.btn-grey:focus,
-.btn-grey.focus,
-.btn-grey:hover {
-  color: #fff;
-  background-color: #64717b;
-  border-color: #4f5d69;
-}
 #loader-main {
     position: fixed;
     display: none;
@@ -1718,6 +1728,6 @@ a.help-icon:hover {
     height: 100%;
     z-index: 9999;
     background: url('../img/loader-main.gif') 50% 50% no-repeat transparent;
-    opacity: 0.75;
-    filter: alpha(opacity=75); /* For IE8 and earlier */
+    opacity: 0.85;
+    filter: alpha(opacity=85); /* For IE8 and earlier */
 }

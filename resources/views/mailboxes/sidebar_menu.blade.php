@@ -13,3 +13,4 @@
 <ul class="sidebar-menu">
     @include("mailboxes/settings_menu")
 </ul>
+<a href="{{ route('mailboxes.view', ['id' => $mailbox_item->id]) }}" class="btn btn-default btn-sidebar">{{ __("Open Mailbox") }}</a>

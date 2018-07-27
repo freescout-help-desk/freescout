@@ -41,6 +41,11 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\CreateThreadStatusChanged',
             'App\Listeners\UpdateMailboxCounters',
         ],
+
+        'App\Events\ConversationUserChanged' => [
+            'App\Listeners\CreateThreadUserChanged',
+            'App\Listeners\UpdateMailboxCounters',
+        ],
     ];
 
     /**

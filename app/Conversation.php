@@ -288,6 +288,20 @@ class Conversation extends Model
     }
 
     /**
+     * Set conversation user and all related fields.
+     * 
+     * @param int $user_id
+     */
+    public function setUser($user_id)
+    {
+        $now = date('Y-m-d H:i:s');
+
+        $this->user_id = $user_id;
+        $this->updateFolder();
+        $this->user_updated_at = $now;
+    }
+
+    /**
      * Get next active conversation.
      *
      * @param string $mode next|prev|closest
@@ -345,7 +359,7 @@ class Conversation extends Model
     }
 
     /**
-     * Set folder according to the status, sate and user of the conversation.
+     * Set folder according to the status, state and user of the conversation.
      */
     public function updateFolder()
     {

@@ -120,8 +120,10 @@ function multiInputInit()
 	} );
 }
 
-function fsAjax(url, data, success_callback, error_callback, no_loader)
+function fsAjax(data, success_callback, error_callback, no_loader)
 {
+	var url = laroute.route('ajax');
+
     // Setup AJAX
 	$.ajaxSetup({
 		headers: {
@@ -130,7 +132,7 @@ function fsAjax(url, data, success_callback, error_callback, no_loader)
 	});
 	// Show loader
 	if (typeof(no_loader) == "undefined" || !no_loader) {
-
+		fsLoaderShow();
 	}
 
 	if (typeof(error_callback) == "undefined" || !error_callback) {
@@ -200,11 +202,35 @@ function fsShowFloatingAlert(type, msg)
 function conversationInit()
 {
 	$(document).ready(function(){
+
+		// Change conversation assignee
+	    jQuery(".conv-user li > a").click(function(e){
+			if (!$(this).hasClass('active')) {
+				fsAjax({
+					action: 'conversation_change_user',
+					user_id: $(this).attr('data-user_id'),
+					conversation_id: fsGetGlobalAttr('conversation_id')
+				}, function(response) {
+					if (typeof(response.status) != "undefined" && response.status == 'success') {
+						if (typeof(response.redirect_url) != "undefined") {
+							window.location.href = response.redirect_url;
+						} else {
+							window.location.href = '';
+						}
+					} else {
+						fsShowFloatingAlert('error', response.msg);
+					}
+					fsLoaderHide();
+				});
+			}
+			e.preventDefault();
+		});
+
+		// Change conversation status
 	    jQuery(".conv-status li > a").click(function(e){
 			if (!$(this).hasClass('active')) {
-				fsLoaderShow();
-				fsAjax(laroute.route('conversations.ajax'), {
-					action: 'change_status',
+				fsAjax({
+					action: 'conversation_change_status',
 					status: $(this).attr('data-status'),
 					conversation_id: fsGetGlobalAttr('conversation_id')
 				}, function(response) {

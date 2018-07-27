@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
+use App\User;
 
 class Mailbox extends Model
 {
@@ -204,12 +205,18 @@ class Mailbox extends Model
     {
         $folders = $this->folders;
         foreach ($folders as $folder) {
-            $folder->active_count = $folder->conversations()
-                ->where('status', Conversation::STATUS_ACTIVE)
-                ->count();
-
+            if ($folder->type == Folder::TYPE_MINE && $folder->user_id) {
+                $folder->active_count = $folder->conversations()
+                    ->where('status', Conversation::STATUS_ACTIVE)
+                    ->where('user_id', $folder->user_id)
+                    ->count();
+                // todo: starred conversations counting
+            } else {
+                $folder->active_count = $folder->conversations()
+                    ->where('status', Conversation::STATUS_ACTIVE)
+                    ->count();
+            }
             $folder->total_count = $folder->conversations()->count();
-
             $folder->save();
         }
     }
@@ -252,5 +259,25 @@ class Mailbox extends Model
         } else {
             return true;
         }
+    }
+
+    /**
+     * Get users who have access to the mailbox.
+     */
+    public function usersHavingAccess()
+    {
+        $users = $this->users;
+        $admins = User::where('role', User::ROLE_ADMIN)->get();
+        return $users->merge($admins)->unique();
+    }
+
+    /**
+     * Get users IDs who have access to the mailbox.
+     */
+    public function userIdsHavingAccess()
+    {
+        $user_ids = $this->users()->pluck('users.id');
+        $admin_ids = User::where('role', User::ROLE_ADMIN)->pluck('id');
+        return $user_ids->merge($admin_ids)->unique()->toArray();
     }
 }
