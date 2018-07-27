@@ -289,7 +289,7 @@ class Conversation extends Model
 
     /**
      * Set conversation user and all related fields.
-     * 
+     *
      * @param int $user_id
      */
     public function setUser($user_id)
