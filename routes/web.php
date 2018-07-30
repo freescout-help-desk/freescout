@@ -20,7 +20,6 @@ Auth::routes();
 // General routes for logged in users
 Route::get('/', 'SecureController@dashboard')->name('dashboard');
 Route::get('/logs/{name?}', 'SecureController@logs')->name('logs');
-Route::post('/ajax', ['uses' => 'SecureController@ajax', 'laroute' => true])->name('ajax');
 
 // Users
 Route::get('/users', 'UsersController@users')->name('users');
@@ -34,6 +33,7 @@ Route::post('/users/permissions/{id}', 'UsersController@permissionsSave');
 
 // Conversations
 Route::get('/conversation/{id}', 'ConversationsController@view')->name('conversations.view');
+Route::post('/conversation/ajax', ['uses' => 'ConversationsController@ajax', 'laroute' => true])->name('conversations.ajax');
 Route::get('/mailbox/{mailbox_id}/new-ticket', 'ConversationsController@create')->name('conversations.create');
 Route::get('/conversation/draft/{id}', 'ConversationsController@draft')->name('conversations.draft');
 

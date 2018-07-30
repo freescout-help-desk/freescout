@@ -75,7 +75,7 @@
                     </td>
                     <td class="conv-customer" data-label="{{ __('Customer') }}">
                         <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}">
-                            {{ $conversation->customer->getFullName()}}
+                            {{ $conversation->customer->getFullName(true)}}
                         </a>    
                     </td>
                     <td class="conv-attachment" data-label="{{ __('Attachments') }}">

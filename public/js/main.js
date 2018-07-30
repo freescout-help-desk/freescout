@@ -1,4 +1,28 @@
 var fs_sidebar_menu_applied = false;
+var fs_loader_timeout;
+// Default validation options
+// https://devhints.io/parsley
+window.ParsleyConfig = window.ParsleyConfig || {};
+$.extend(window.ParsleyConfig, {
+	excluded: '.note-codable, [data-parsley-exclude]',
+    errorClass: 'has-error',
+    //successClass: 'has-success',
+    classHandler: function(ParsleyField) {
+        return ParsleyField.$element.parents('.form-group:first');
+    },
+    errorsContainer: function(ParsleyField) {
+    	var help_block = ParsleyField.$element.parent().children('.help-block:first');
+
+    	if (help_block) {
+    		return help_block;
+    	} else {
+    		return ParsleyField.$element;
+    		//return ParsleyField.$element.parents('.form-group:first');
+    	}
+    },
+    errorsWrapper: '<div class="help-block"></div>',
+    errorTemplate: '<div></div>'
+});
 
 // Configuring editor
 var EditorAttachmentButton = function (context) {
@@ -21,7 +45,7 @@ var EditorSavedRepliesButton = function (context) {
 
 	// create button
 	var button = ui.button({
-		contents: '<i class="glyphicon glyphicon-floppy-open"></i>',
+		contents: '<i class="glyphicon glyphicon-comment"></i>',
 		tooltip: Lang.get("messages.saved_replies"),
 		container: 'body',
 		click: function () {
@@ -96,13 +120,15 @@ function mailboxUpdateInit(from_name_custom)
 		// https://www.kerneldev.com/2018/01/11/using-summernote-wysiwyg-editor-with-laravel/
 		// https://gist.github.com/abr4xas/22caf07326a81ecaaa195f97321da4ae
 		$('#signature').summernote({
-			height: 120,
+			minHeight: 120,
 			dialogsInBody: true,
+			disableResizeEditor: true,
 			toolbar: [
 			    // [groupName, [list of button]]
 			    ['style', ['bold', 'italic', 'underline', 'ul', 'ol', 'link', 'codeview']],
 			]
 		});
+		$('.note-statusbar').remove();
 
 	    $('#from_name').change(function(event) {
 			if ($(this).val() == from_name_custom) {
@@ -183,10 +209,8 @@ function multiInputInit()
 	} );
 }
 
-function fsAjax(data, success_callback, error_callback, no_loader)
+function fsAjax(data, url, success_callback, error_callback, no_loader)
 {
-	var url = laroute.route('ajax');
-
     // Setup AJAX
 	$.ajaxSetup({
 		headers: {
@@ -195,13 +219,14 @@ function fsAjax(data, success_callback, error_callback, no_loader)
 	});
 	// Show loader
 	if (typeof(no_loader) == "undefined" || !no_loader) {
-		fsLoaderShow();
+		fsLoaderShow(true);
 	}
 
 	if (typeof(error_callback) == "undefined" || !error_callback) {
 		error_callback = function() {
 			fsShowFloatingAlert('error', Lang.get("messages.ajax_error"));
 			fsLoaderHide();
+			$("button[data-loading-text!='']:disabled").button('reset');
 		};
 	}
 
@@ -215,14 +240,22 @@ function fsAjax(data, success_callback, error_callback, no_loader)
    });
 }
 
-function fsLoaderShow()
+// Show loader
+function fsLoaderShow(delay)
 {
-	$("#loader-main").show();
+	if (typeof(delay) != "undefined" && delay) {
+		fs_loader_timeout = setTimeout(function() {
+			$("#loader-main").show();
+	    }, 1000);
+	} else {
+		$("#loader-main").show();
+	}
 }
 
 function fsLoaderHide()
 {
 	$("#loader-main").hide();
+	clearTimeout(fs_loader_timeout);
 }
 
 // Display floating alerts
@@ -273,7 +306,9 @@ function conversationInit()
 					action: 'conversation_change_user',
 					user_id: $(this).attr('data-user_id'),
 					conversation_id: fsGetGlobalAttr('conversation_id')
-				}, function(response) {
+				}, 
+				laroute.route('conversations.ajax'),
+				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
 						if (typeof(response.redirect_url) != "undefined") {
 							window.location.href = response.redirect_url;
@@ -298,7 +333,9 @@ function conversationInit()
 					action: 'conversation_change_status',
 					status: $(this).attr('data-status'),
 					conversation_id: fsGetGlobalAttr('conversation_id')
-				}, function(response) {
+				}, 
+				laroute.route('conversations.ajax'),
+				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
 						if (typeof(response.redirect_url) != "undefined") {
 							window.location.href = response.redirect_url;
@@ -315,6 +352,20 @@ function conversationInit()
 			}
 			e.preventDefault();
 		});
+
+	    // Reply
+	    jQuery(".conv-reply").click(function(e){
+	    	if ($(".conv-reply-block").hasClass('hidden')) {
+				$(".conv-action-block").addClass('hidden');
+				$(".conv-reply-block").removeClass('hidden');
+				$(".conv-action").addClass('inactive');
+				$(this).removeClass('inactive');
+			} else {
+				$(".conv-action-block").addClass('hidden');
+				$(".conv-action").removeClass('inactive');
+			}
+			e.preventDefault();
+		});
 	});
 }
 
@@ -323,31 +374,81 @@ function fsGetGlobalAttr(attr)
 	return $("body:first").attr('data-'+attr);
 }
 
+// Initialize conversation body editor
+function convEditorInit()
+{
+	$('#body').summernote({
+		minHeight: 200,
+		dialogsInBody: true,
+		dialogsFade: true,
+		disableResizeEditor: true,
+		toolbar: [
+		    // [groupName, [list of button]]
+		    ['style', ['attachment', 'bold', 'italic', 'underline', 'ul', 'ol', 'link', 'picture', 'codeview', 'savedreplies']],
+		    ['actions', ['savedraft', 'discard']],
+		],
+		buttons: {
+		    attachment: EditorAttachmentButton,
+		    savedreplies: EditorSavedRepliesButton,
+		    savedraft: EditorSaveDraftButton,
+		    discard: EditorDiscardButton
+		}
+	});
+	var html = $('#editor_bottom_toolbar').html();
+	$('.note-statusbar').addClass('note-statusbar-toolbar form-inline').html(html);
+}
+
 // New conversation page
 function newConversationInit()
 {
 	$(document).ready(function() {
 
-		$('#body').summernote({
-			height: 120,
-			dialogsInBody: true,
-			dialogsFade: true,
-			toolbar: [
-			    // [groupName, [list of button]]
-			    ['style', ['attachment', 'bold', 'italic', 'underline', 'ul', 'ol', 'link', 'picture', 'codeview', 'savedreplies']],
-			    ['actions', ['savedraft', 'discard']],
-			],
-			buttons: {
-			    attachment: EditorAttachmentButton,
-			    savedreplies: EditorSavedRepliesButton,
-			    savedraft: EditorSaveDraftButton,
-			    discard: EditorDiscardButton
-			}
-		});
+		convEditorInit();
 
 	    $('.toggle-cc a:first').click(function() {
 			$('.field-cc').removeClass('hidden');
 			$(this).parent().remove();
+		});
+
+	    $('.dropdown-after-send a').click(function() {
+			$('.dropdown-after-send li').removeClass('active');
+			$(this).parent().addClass('active');
+			alert('todo: implement choosing action after sending a message');
+		});
+
+		// Send reply or new conversation
+	    jQuery(".btn-send-text").click(function(e){
+	    	var button = $(this);
+
+	    	// Validate before sending
+	    	form = $(".form-reply:first");
+
+	    	if (!form.parsley().validate()) {
+	    		return;
+	    	}
+
+	    	button.button('loading');
+
+	    	data = form.serialize();
+	    	data += '&action=send_reply';
+	
+			fsAjax(data, laroute.route('conversations.ajax'), function(response) {
+				if (typeof(response.status) != "undefined" && response.status == 'success') {
+					if (typeof(response.redirect_url) != "undefined") {
+						window.location.href = response.redirect_url;
+					} else {
+						window.location.href = '';
+					}
+				} else if (typeof(response.msg) != "undefined") {
+					fsShowFloatingAlert('error', response.msg);
+					button.button('reset');
+				} else {
+					fsShowFloatingAlert('error', Lang.get("messages.error_occured"));
+					button.button('reset');
+				}
+				fsLoaderHide();
+			});
+			e.preventDefault();
 		});
 	});
 }

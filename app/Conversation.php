@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Customer;
+use App\Email;
 
 class Conversation extends Model
 {
@@ -198,14 +200,15 @@ class Conversation extends Model
     {
         $this->preview = '';
 
-        if ($text) {
-            $this->preview = mb_substr($text, 0, self::PREVIEW_MAXLENGTH);
-        } else {
+        if (!$text) {
             $first_thread = $this->threads()->first();
             if ($first_thread) {
-                $this->preview = mb_substr($first_thread->body, 0, self::PREVIEW_MAXLENGTH);
+                $text = $first_thread->body;
             }
         }
+
+        $text = strip_tags($text);
+        $this->preview = mb_substr($text, 0, self::PREVIEW_MAXLENGTH);
 
         return $this->preview;
     }
@@ -389,5 +392,55 @@ class Conversation extends Model
         if ($folder) {
             $this->folder_id = $folder->id;
         }
+    }
+
+    /**
+     * Set CC as JSON.
+     */
+    public function setCc($emails)
+    {
+        $emails_array = self::sanitizeEmails($emails);
+        if ($emails_array) {
+            $this->cc = json_encode($emails_array);
+        } else {
+            $this->cc = null;
+        }
+    }
+
+    /**
+     * Set BCC as JSON.
+     */
+    public function setBcc( $emails)
+    {
+        $emails_array = self::sanitizeEmails($emails);
+        if ($emails_array) {
+            $this->bcc = json_encode($emails_array);
+        } else {
+            $this->bcc = null;
+        }
+    }
+
+    /**
+     * Convert list of email to array.
+     * 
+     * @return 
+     */
+    public static function sanitizeEmails($emails)
+    {
+        $emails_array = [];
+
+        if (is_array($emails)) {
+            $emails_array = $emails;
+        } else {
+            $emails_array = explode(',', $emails);
+        }
+
+        foreach ($emails_array as $i => $email) {
+            $emails_array[$i] = Email::sanitizeEmail($email);
+            if (!$emails_array[$i]) {
+                unset($emails_array[$i]);
+            }
+        }
+        return $emails_array;
     }
 }

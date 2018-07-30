@@ -20,6 +20,7 @@ class CreateConversationsTable extends Migration
             // Conversation Number
             $table->unsignedInteger('number');
             // Number of threads the conversation has
+            // Lineitems and notes are not counted
             $table->unsignedInteger('threads_count')->default(0);
             $table->unsignedTinyInteger('type');
             $table->integer('folder_id');
@@ -54,7 +55,7 @@ class CreateConversationsTable extends Migration
             $table->timestamp('closed_at')->nullable();
             // UTC time when the last user update occurred
             $table->timestamp('user_updated_at')->nullable();
-            // customerWaitingSince
+            // customerWaitingSince - reply by customer or user
             $table->timestamp('last_reply_at')->nullable();
             // Whether the last reply was from a user or a customer
             $table->unsignedTinyInteger('last_reply_from')->nullable();

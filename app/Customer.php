@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Email;
 
 class Customer extends Model
 {
@@ -459,15 +460,16 @@ class Customer extends Model
      *
      * @return string
      */
-    public function getFullName()
+    public function getFullName($email_if_empty = false)
     {
         if ($this->first_name || $this->last_name) {
             return $this->first_name.' '.$this->last_name;
-        } elseif ($this->emails) {
-            return explode('@', $this->emails[0]->email)[0];
-        } else {
-            return $this->id;
+        } elseif ($email_if_empty) {
+            if (count($this->emails)) {
+                return explode('@', $this->emails[0]->email)[0];
+            }
         }
+        return '';
     }
 
     /**
@@ -609,5 +611,37 @@ class Customer extends Model
             $websites[] = (string) $value;
         }
         $this->websites = json_encode($websites);
+    }
+
+    /**
+     * Create customer or get existing.
+     * 
+     * @param  string $email
+     * @param  array  $data  [description]
+     * @return [type]        [description]
+     */
+    public static function create($email, $data = [])
+    {
+        $email = Email::sanitizeEmail($email);
+        if (!$email) {
+            return null;
+        }
+        $email_obj = Email::where('email', $email)->first();
+        if ($email_obj) {
+            $customer = $email_obj->customer;
+        } else {
+            $customer = new Customer();
+            $email_obj = new Email();
+            $email_obj->email = $email;
+        }
+        $customer->fill($data);
+        $customer->save();
+
+        if (empty($email_obj->id) || !$email_obj->customer_id) {
+            $email_obj->customer()->associate($customer);
+            $email_obj->save();
+        }
+
+        return $customer;
     }
 }

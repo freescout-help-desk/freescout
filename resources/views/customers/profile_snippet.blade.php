@@ -3,7 +3,9 @@
     	<img src="/img/default-avatar.png" alt="" class="customer-photo">
     </div>
     <div class="customer-data">
-		<a href="{{ route('customers.update', ['id' => $customer->id]) }}" class="customer-name">{{ $customer->getFullName() }}</a>
+    	@if ($customer->getFullName(false))
+			<a href="{{ route('customers.update', ['id' => $customer->id]) }}" class="customer-name">{{ $customer->getFullName() }}</a>
+		@endif
 		{{-- todo: display full customer info --}}
 		<ul class="customer-contacts customer-section">
 			@foreach ($customer->emails as $email)

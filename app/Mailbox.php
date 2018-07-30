@@ -282,4 +282,18 @@ class Mailbox extends Model
 
         return $user_ids->merge($admin_ids)->unique()->toArray();
     }
+
+    /**
+     * Check if user has access to the mailbox.
+     * @return bool
+     */
+    public function userHasAccess($user_id)
+    {
+        $user = User::find($user_id);
+        if ($user && $user->isAdmin()) {
+            return true;
+        } else {
+            return (bool)$this->users()->where('users.id', $user_id)->count();
+        }
+    }
 }

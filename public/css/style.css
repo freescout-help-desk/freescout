@@ -391,22 +391,28 @@ select.form-control {
     border-color: #4f5d69;
 }
 .btn-success.btn-light {
-    background-color: #81c981;
+    background-color: #71c171;
 }
 .btn-success.btn-light:hover {
-    background-color: #449d44;
+    background-color: #57b357;
 }
 .btn-warning.btn-light {
-    background-color: #f2b967;
+    background-color: #f2b661;
 }
 .btn-warning.btn-light:hover {
     background-color: #ec971f;
 }
 .btn-danger.btn-light {
-    background-color: #e27c78;
+    background-color: #de6864;
 }
 .btn-danger.btn-light:hover {
     background-color: #c9302c;
+}
+.has-error.help-block {
+    color: #a94442;
+}
+.has-error .form-control[data-parsley-exclude="true"] {
+    border-color: #ccc;
 }
 
 /**
@@ -620,9 +626,12 @@ a h4 {
     background-color: #e6e6e6;
     border-color: #e6e6e6;
 }
+.note-editor.panel {
+    margin: 0;
+}
 .note-btn i.glyphicon {
     position: relative;
-    top: 3px;
+    top: 2px;
 }
 .note-btn.btn-sm {
     font-size: 14px;
@@ -633,6 +642,40 @@ a h4 {
 }
 .note-actions .note-btn:first-child {
     font-size: 16px;
+}
+.note-editor.note-frame .note-statusbar.note-statusbar-toolbar {
+    border-top: 1px solid #ddd;
+    background-color: #f9fafa;
+    text-align: right;
+    color: #72808e;
+}
+.note-bottom-div {
+    margin: 0 8px;
+    color: #c1cbd4;
+    font-size: 9px;
+}
+.btn-group-send {
+    margin-left: 12px;
+    margin-top: -1px;
+    margin-bottom: -1px;
+}
+.btn-group-send .btn {
+    height: 38px;
+}
+.btn-send-menu {
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 9px;
+    border-left-color: #659ac8;
+}
+.btn-send-text {
+    min-width: 94px;
+}
+.note-statusbar-toolbar select.form-control {
+    height: 24px;
+    line-height: 24px;
+    padding-top: 2px;
+    padding-bottom: 1px;
 }
 
 /**
@@ -1050,12 +1093,17 @@ table.table-conversations td.conv-attachment {
 .conv-actions .conv-action:hover {
     color: #394956;
 }
+.conv-action.inactive {
+    color: #aeb6c0;
+}
 .conv-action.dropdown {
     padding: 0!important;
 }
 #conv-subject {
-    padding: 16px 9px 24px 20px;
     border-bottom: 1px solid #e3e8eb;
+}
+.conv-subj-block {
+    padding: 16px 9px 24px 20px;
 }
 .conv-subjwrap {
     padding-right: 145px;
@@ -1315,6 +1363,34 @@ table.table-conversations td.conv-attachment {
 .conv-block {
     margin: 0 20px;
 }
+.conv-block.conv-reply-block {
+    margin-top: -7px;
+    margin-bottom: 12px;
+}
+.conv-reply-block .form-group {
+    margin-bottom: 5px;
+}
+.conv-reply-block .form-group label {
+    width: 33px;
+    padding-right: 0;
+    padding-left: 0px;
+}
+.conv-reply-block .form-group input {
+    max-width: 600px;
+    min-width: 150px;
+}
+.conv-reply-block .control-label {
+    float: left;
+    text-align: right;
+}
+.conv-reply-body {
+    margin-top: 13px;
+}
+.conv-reply-field {
+    padding-left: 10px;
+    float: left;
+    width: 68%;
+}
 @media (max-width:700px) {
     .conv-info .btn-group button.conv-info-val span:first-child {
         display: none!important;
@@ -1329,7 +1405,7 @@ table.table-conversations td.conv-attachment {
     .conv-subjtext {
         font-size: 20px;
     }
-    #conv-subject {
+    .conv-subj-block {
         padding: 16px 2px 24px 13px;
     }
     .conv-customer-block {
@@ -1383,6 +1459,9 @@ table.table-conversations td.conv-attachment {
     .conv-block {
         margin: 0 13px;
     }
+    .conv-reply-field {
+        width: 80%;
+    }
 }
 @media (max-width:1100px) {
     #conv-layout-header,
@@ -1397,6 +1476,9 @@ table.table-conversations td.conv-attachment {
     }
     #conv-layout-customer {
         border-bottom: 1px solid #e3e8eb;
+    }
+    .customer-snippet {
+        min-height: 46px;
     }
     .customer-snippet,
     .conv-sidebar-block {
@@ -1417,7 +1499,7 @@ table.table-conversations td.conv-attachment {
         box-shadow: 0 1px 2px rgba(0,0,0,.2);
     }
     .conv-customer-block {
-        padding: 15px 20px 12px;
+        padding: 15px 20px 15px;
     }
     .customer-data {
         margin: 0 0 0 45px;
@@ -1537,6 +1619,9 @@ table.table-conversations td.conv-attachment {
     -webkit-box-shadow: 4px 4px 12px rgba(0, 0, 0, .175);
     box-shadow: 4px 4px 12px rgba(0, 0, 0, .175);
     cursor: default;
+}
+.alert-floating.alert-danger {
+    position: fixed;
 }
 .alert-floating .glyphicon {
     margin-right: 8px;
@@ -1823,4 +1908,9 @@ a.help-icon:hover {
     background: url('../img/loader-main.gif') 50% 50% no-repeat transparent;
     opacity: 0.90;
     filter: alpha(opacity=90); /* For IE8 and earlier */
+}
+a.text-danger,
+a.text-danger:hover,
+a.text-danger:focus {
+    color: #cc1f19!important;
 }

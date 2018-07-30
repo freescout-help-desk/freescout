@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Conversation;
 use App\Thread;
 
 class ThreadObserver

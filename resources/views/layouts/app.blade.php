@@ -167,7 +167,7 @@
     @yield('body_bottom')
 
     <!-- Scripts -->
-    {!! Minify::javascript(array('/js/jquery.js', '/js/bootstrap.js', '/js/laroute.js', '/js/lang.js', '/js/vars.js', '/js/main.js')) !!}
+    {!! Minify::javascript(array('/js/jquery.js', '/js/bootstrap.js', '/js/laroute.js', '/js/lang.js', '/js/vars.js', '/js/parsley/parsley.min.js', '/js/parsley/i18n/'.Config::get('app.locale').'.js', '/js/main.js')) !!}
     @yield('javascripts')
     @if ($__env->yieldContent('javascript'))
         <script type="text/javascript">

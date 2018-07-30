@@ -25,7 +25,7 @@
                 </div>
 
                 <div class="conv-info">
-                    # <strong class="conv-new-number">{{ __("Pending") }}</strong>
+                    #<strong class="conv-new-number">{{ __("Pending") }}</strong>
                 </div>
 
                 <div class="clearfix"></div>
@@ -37,10 +37,11 @@
             <div class="conv-block">
                 <div class="row">
                     <div class="col-xs-12">
-                        <form class="form-horizontal margin-top" method="POST" action="">
+                        <form class="form-horizontal margin-top form-reply" method="POST" action="">
                             {{ csrf_field() }}
-
-                            <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                            <input type="hidden" name="conversation_id" value="{{ $conversation->id }}"/>
+                            <input type="hidden" name="mailbox_id" value="{{ $mailbox->id }}"/>
+                            <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }}">
                                 <label for="to" class="col-sm-2 control-label">{{ __('To') }}</label>
 
                                 <div class="col-sm-9">
@@ -54,40 +55,42 @@
                                 <a href="javascript:void(0);" class="help-link">Cc/Bcc</a>
                             </div>
 
-                            <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }} @if (!$conversation->cc) hidden @endif field-cc">
+                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} @if (!$conversation->cc) hidden @endif field-cc">
                                 <label for="cc" class="col-sm-2 control-label">{{ __('Cc') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', $conversation->cc) }}" required autofocus>
+                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', $conversation->cc) }}">
 
                                     @include('partials/field_error', ['field'=>'cc'])
                                 </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }} @if (!$conversation->bcc) hidden @endif field-cc">
+                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }} @if (!$conversation->bcc) hidden @endif field-cc">
                                 <label for="bcc" class="col-sm-2 control-label">{{ __('Bcc') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', $conversation->bcc) }}" required autofocus>
+                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', $conversation->bcc) }}">
 
                                     @include('partials/field_error', ['field'=>'bcc'])
                                 </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                            <div class="form-group{{ $errors->has('subject') ? ' has-error' : '' }}">
                                 <label for="subject" class="col-sm-2 control-label">{{ __('Subject') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="subject" type="text" class="form-control" name="subject" value="{{ old('subject', $conversation->subject) }}" required autofocus>
+                                    <input id="subject" type="text" class="form-control" name="subject" value="{{ old('subject', $conversation->subject) }}" maxlength="998" required autofocus>
 
                                     @include('partials/field_error', ['field'=>'subject'])
                                 </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('signature') ? ' has-error' : '' }}">
+                            <div class="form-group{{ $errors->has('body') ? ' has-error' : '' }}">
                                 <div class="col-sm-12">
-                                    <textarea id="body" class="form-control" name="body" rows="8">{{ old('body', $conversation->body) }}</textarea>
-                                    @include('partials/field_error', ['field'=>'body'])
+                                    <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}">{{ old('body', $conversation->body) }}</textarea>
+                                    <div class="help-block">
+                                        @include('partials/field_error', ['field'=>'body'])
+                                    </div>
                                 </div>
                             </div>
 
@@ -97,6 +100,7 @@
             </div>
         </div>
     </div>
+    @include('conversations/editor_bottom_toolbar')
 @endsection
 
 @include('partials/editor')

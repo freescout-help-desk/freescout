@@ -237,6 +237,39 @@ class Thread extends Model
     }
 
     /**
+     * Set to as JSON.
+     */
+    public function setTo($emails)
+    {
+        $emails_array = Conversation::sanitizeEmails($emails);
+        if ($emails_array) {
+            $this->to = json_encode($emails_array);
+        } else {
+            $this->to = null;
+        }
+    }
+
+    public function setCc($emails)
+    {
+        $emails_array = Conversation::sanitizeEmails($emails);
+        if ($emails_array) {
+            $this->cc = json_encode($emails_array);
+        } else {
+            $this->cc = null;
+        }
+    }
+
+    public function setBcc($emails)
+    {
+        $emails_array = Conversation::sanitizeEmails($emails);
+        if ($emails_array) {
+            $this->bcc = json_encode($emails_array);
+        } else {
+            $this->bcc = null;
+        }
+    }
+
+    /**
      * Get thread's status name.
      *
      * @return string

@@ -78,13 +78,54 @@
 
             </div>
             <div id="conv-subject">
-                <div class="conv-subjwrap">
-                    <div class="conv-subjtext">
-                        {{ $conversation->subject }}
+                <div class="conv-subj-block">
+                    <div class="conv-subjwrap">
+                        <div class="conv-subjtext">
+                            {{ $conversation->subject }}
+                        </div>
+                        <div class="conv-numnav">
+                            <i class="glyphicon glyphicon-star-empty conv-star" onclick="alert('todo: implement starred conversations')" data-toggle="tooltip" title="{{ __("Star Conversation") }}"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>
+                        </div>
                     </div>
-                    <div class="conv-numnav">
-                        <i class="glyphicon glyphicon-star-empty conv-star" onclick="alert('todo: implement starred conversations')" data-toggle="tooltip" title="{{ __("Star Conversation") }}"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>
+                </div>
+
+                <div class="conv-block conv-reply-block conv-action-block hidden">
+                    <div class="col-xs-12">
+                        <form class="form-horizontal form-reply" method="POST" action="">
+                            {{ csrf_field() }}
+                            <input type="hidden" name="conversation_id" value="{{ $conversation->id }}"/>
+                            <input type="hidden" name="mailbox_id" value="{{ $mailbox->id }}"/>
+                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }}">
+                                <label for="cc" class="control-label">{{ __('Cc') }}</label>
+
+                                <div class="conv-reply-field">
+                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', $conversation->cc) }}">
+                                    @include('partials/field_error', ['field'=>'cc'])
+                                </div>
+                            </div>
+
+                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }}">
+                                <label for="bcc" class="control-label">{{ __('Bcc') }}</label>
+
+                                <div class="conv-reply-field">
+                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', $conversation->bcc) }}">
+
+                                    @include('partials/field_error', ['field'=>'bcc'])
+                                </div>
+                            </div>
+
+                            <div class="form-group{{ $errors->has('body') ? ' has-error' : '' }} conv-reply-body">
+                               
+                                    <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}">{{ old('body', $conversation->body) }}</textarea>
+                                    <div class="help-block">
+                                        @include('partials/field_error', ['field'=>'body'])
+                                    </div>
+                            </div>
+
+                        </form>
                     </div>
+                    <div class="clearfix"></div>
+                    @include('conversations/editor_bottom_toolbar')
                 </div>
             </div>
         </div>
@@ -159,7 +200,7 @@
                                                 @include('conversations/thread_by')
                                             @endif
                                         </strong> 
-                                        @if ($loop->index == 0)
+                                        @if ($loop->last)
                                             {{ __("started the conversation") }}
                                         @else
                                             {{ __("replied") }}
@@ -238,7 +279,10 @@
     </div>
 @endsection
 
+@include('partials/editor')
+
 @section('javascript')
     @parent
     conversationInit();
+    newConversationInit();
 @endsection

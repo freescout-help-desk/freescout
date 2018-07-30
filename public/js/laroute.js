@@ -8,8 +8,8 @@
             rootUrl: '',
             routes : [
     {
-        "uri": "ajax",
-        "name": "ajax"
+        "uri": "conversation\/ajax",
+        "name": "conversations.ajax"
     }
 ],
             prefix: '',
