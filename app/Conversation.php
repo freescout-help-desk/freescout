@@ -3,8 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Customer;
-use App\Email;
 
 class Conversation extends Model
 {
@@ -410,7 +408,7 @@ class Conversation extends Model
     /**
      * Set BCC as JSON.
      */
-    public function setBcc( $emails)
+    public function setBcc($emails)
     {
         $emails_array = self::sanitizeEmails($emails);
         if ($emails_array) {
@@ -422,8 +420,8 @@ class Conversation extends Model
 
     /**
      * Convert list of email to array.
-     * 
-     * @return 
+     *
+     * @return
      */
     public static function sanitizeEmails($emails)
     {
@@ -441,6 +439,7 @@ class Conversation extends Model
                 unset($emails_array[$i]);
             }
         }
+
         return $emails_array;
     }
 }

@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Conversation;
 use App\Customer;
+use App\Events\ConversationStatusChanged;
+use App\Events\ConversationUserChanged;
 use App\Folder;
 use App\Mailbox;
 use App\Thread;
-use Validator;
 use Illuminate\Http\Request;
-use App\Events\ConversationStatusChanged;
-use App\Events\ConversationUserChanged;
+use Validator;
 
 class ConversationsController extends Controller
 {
@@ -276,7 +276,7 @@ class ConversationsController extends Controller
             case 'send_reply':
 
                 $mailbox = Mailbox::findOrFail($request->mailbox_id);
-               
+
                 if (!$response['msg'] && !$user->can('view', $mailbox)) {
                     $response['msg'] = __('Not enough permissions');
                 }
@@ -296,11 +296,11 @@ class ConversationsController extends Controller
 
                 if (!$response['msg']) {
                     $validator = Validator::make($request->all(), [
-                        'to' => 'required|string',
+                        'to'       => 'required|string',
                         'subject'  => 'required|string|max:998',
-                        'body'  => 'required|string',
-                        'cc' => 'nullable|string',
-                        'bcc' => 'nullable|string',
+                        'body'     => 'required|string',
+                        'cc'       => 'nullable|string',
+                        'bcc'      => 'nullable|string',
                     ]);
 
                     if ($validator->fails()) {
@@ -329,11 +329,11 @@ class ConversationsController extends Controller
 
                 if (!$response['msg']) {
                     $now = date('Y-m-d H:i:s');
-                    
+
                     if ($new) {
                         // New conversation
                         $customer = Customer::create($to_array[0]);
-                        
+
                         $conversation = new Conversation();
                         $conversation->type = Conversation::TYPE_EMAIL;
                         $conversation->status = $request->status;
@@ -354,7 +354,7 @@ class ConversationsController extends Controller
                         $customer = $conversation->customer;
                     }
                     $conversation->status = $request->status;
-                    if ((int)$request->user_id != -1) {
+                    if ((int) $request->user_id != -1) {
                         // Check if user has access to the current mailbox
                         if ($mailbox->userHasAccess($request->user_id)) {
                             $conversation->user_id = $request->user_id;

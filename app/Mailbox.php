@@ -285,6 +285,7 @@ class Mailbox extends Model
 
     /**
      * Check if user has access to the mailbox.
+     *
      * @return bool
      */
     public function userHasAccess($user_id)
@@ -293,7 +294,7 @@ class Mailbox extends Model
         if ($user && $user->isAdmin()) {
             return true;
         } else {
-            return (bool)$this->users()->where('users.id', $user_id)->count();
+            return (bool) $this->users()->where('users.id', $user_id)->count();
         }
     }
 }
