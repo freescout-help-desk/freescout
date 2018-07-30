@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Email;
 
 class Customer extends Model
 {
@@ -469,6 +468,7 @@ class Customer extends Model
                 return explode('@', $this->emails[0]->email)[0];
             }
         }
+
         return '';
     }
 
@@ -615,22 +615,23 @@ class Customer extends Model
 
     /**
      * Create customer or get existing.
-     * 
-     * @param  string $email
-     * @param  array  $data  [description]
-     * @return [type]        [description]
+     *
+     * @param string $email
+     * @param array  $data  [description]
+     *
+     * @return [type] [description]
      */
     public static function create($email, $data = [])
     {
         $email = Email::sanitizeEmail($email);
         if (!$email) {
-            return null;
+            return;
         }
         $email_obj = Email::where('email', $email)->first();
         if ($email_obj) {
             $customer = $email_obj->customer;
         } else {
-            $customer = new Customer();
+            $customer = new self();
             $email_obj = new Email();
             $email_obj->email = $email;
         }

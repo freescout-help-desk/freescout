@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\ActivityLog;
-use App\Conversation;
 use Illuminate\Http\Request;
 
 class SecureController extends Controller

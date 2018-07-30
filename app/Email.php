@@ -14,8 +14,8 @@ class Email extends Model
     const TYPE_OTHER = 3;
 
     public static $types = [
-        self::TYPE_WORK => 'work',
-        self::TYPE_HOME => 'home',
+        self::TYPE_WORK  => 'work',
+        self::TYPE_HOME  => 'home',
         self::TYPE_OTHER => 'other',
     ];
 
@@ -36,8 +36,9 @@ class Email extends Model
 
     /**
      * Sanitize email address.
-     * 
-     * @param  string $email
+     *
+     * @param string $email
+     *
      * @return string
      */
     public static function sanitizeEmail($email)
@@ -47,6 +48,7 @@ class Email extends Model
         }
         $email = filter_var($email, FILTER_SANITIZE_EMAIL);
         $email = strtolower($email);
+
         return $email;
     }
 }
