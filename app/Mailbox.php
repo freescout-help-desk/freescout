@@ -300,8 +300,9 @@ class Mailbox extends Model
 
     /**
      * Get From array for the Mail function.
-     * 
-     * @param  App\User $from_user
+     *
+     * @param App\User $from_user
+     *
      * @return array
      */
     public function getMailFrom($from_user = null)
@@ -340,7 +341,7 @@ class Mailbox extends Model
 
     /**
      * Get domain part of the mailbox email.
-     * 
+     *
      * @return string
      */
     public function getEmailDomain()

@@ -54,9 +54,9 @@ class SecureController extends Controller
         $logs = [];
         foreach ($activities as $activity) {
             $log = [
-                'date'  => $activity->created_at,
+                'date'   => $activity->created_at,
                 'causer' => $activity->causer,
-                'event' => $activity->getEventDescription(),
+                'event'  => $activity->getEventDescription(),
             ];
 
             $cols = ['date'];
@@ -65,7 +65,7 @@ class SecureController extends Controller
             } else {
                 $cols[] = __('Customer');
             }
-                
+
             $cols[] = 'event';
 
             foreach ($activity->properties as $property_name => $property_value) {

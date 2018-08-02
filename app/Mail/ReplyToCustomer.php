@@ -3,11 +3,10 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Mail\Mailer as MailerContract;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
 
 // https://medium.com/@guysmilez/queuing-mailables-with-custom-headers-in-laravel-5-4-ab615f022f17
 //abstract class AbstractMessage extends Mailable
@@ -17,21 +16,21 @@ class ReplyToCustomer extends Mailable
 
     /**
      * Conversation to send.
-     * 
+     *
      * @var [type]
      */
     public $conversation;
 
     /**
      * Threads to send.
-     * 
+     *
      * @var [type]
      */
     public $threads;
 
     /**
      * Custome haders.
-     * 
+     *
      * @var array
      */
     public $headers = [];
@@ -68,6 +67,7 @@ class ReplyToCustomer extends Mailable
                         $headers->addTextHeader($header, $value);
                     }
                 }
+
                 return $swiftmessage;
             });
             //unset($this->headers['Message-ID']);
@@ -85,7 +85,7 @@ class ReplyToCustomer extends Mailable
         // ->attach('/path/to/file');
     }
 
-    /**
+    /*
      * Send the message using the given mailer.
      *
      * @param  \Illuminate\Contracts\Mail\Mailer  $mailer
@@ -105,7 +105,7 @@ class ReplyToCustomer extends Mailable
     //     });
     // }
 
-    /**
+    /*
      * Add custom headers to the message.
      *
      * @param \Illuminate\Mail\Message $message

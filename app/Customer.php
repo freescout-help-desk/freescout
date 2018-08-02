@@ -658,9 +658,10 @@ class Customer extends Model
 
     /**
      * Format date according to customer's timezone.
-     * 
-     * @param  Carbon $date
-     * @param  string $format
+     *
+     * @param Carbon $date
+     * @param string $format
+     *
      * @return string
      */
     public static function dateFormat($date, $format = 'M j, Y H:i')
