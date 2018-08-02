@@ -123,6 +123,7 @@ function mailboxUpdateInit(from_name_custom)
 			minHeight: 120,
 			dialogsInBody: true,
 			disableResizeEditor: true,
+			followingToolbar: false,
 			toolbar: [
 			    // [groupName, [list of button]]
 			    ['style', ['bold', 'italic', 'underline', 'ul', 'ol', 'link', 'codeview']],
@@ -187,7 +188,9 @@ function userCreateInit()
 function logsInit()
 {
 	$(document).ready(function() {
-	    $('#table-logs').DataTable();
+	    $('#table-logs').DataTable({
+	   		"ordering": false
+	    });
 	} );
 }
 
@@ -382,6 +385,7 @@ function convEditorInit()
 		dialogsInBody: true,
 		dialogsFade: true,
 		disableResizeEditor: true,
+		followingToolbar: false,
 		toolbar: [
 		    // [groupName, [list of button]]
 		    ['style', ['attachment', 'bold', 'italic', 'underline', 'ul', 'ol', 'link', 'picture', 'codeview', 'savedreplies']],

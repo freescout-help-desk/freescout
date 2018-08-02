@@ -33,6 +33,8 @@ class CreateThreadsTable extends Migration
             $table->text('to')->nullable(); // JSON
             $table->text('cc')->nullable(); // JSON
             $table->text('bcc')->nullable(); // JSON
+            // Email Message-ID header for email received from customer
+            $table->string('message_id', 998)->nullable();
             // source.via - Originating source of the thread - user or customer
             $table->unsignedTinyInteger('source_via');
             // source.type - Originating type of the thread (email, web, API etc)

@@ -11,10 +11,10 @@
 
 namespace Symfony\Component\Translation\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class TranslatorPass implements CompilerPassInterface
 {
@@ -26,7 +26,7 @@ class TranslatorPass implements CompilerPassInterface
 
     public function __construct($translatorServiceId = 'translator.default', $readerServiceId = 'translation.loader', $loaderTag = 'translation.loader', $debugCommandServiceId = 'console.command.translation_debug', $updateCommandServiceId = 'console.command.translation_update')
     {
-        if ('translation.loader' === $readerServiceId && 2 > func_num_args()) {
+        if ('translation.loader' === $readerServiceId && 2 > \func_num_args()) {
             @trigger_error(sprintf('The default value for $readerServiceId in "%s()" will change in 4.0 to "translation.reader".', __METHOD__), E_USER_DEPRECATED);
         }
 

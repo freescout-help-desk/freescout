@@ -94,6 +94,10 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         array (
             'Illuminate\\' => 11,
         ),
+        'H' => 
+        array (
+            'Html2Text\\' => 10,
+        ),
         'F' => 
         array (
             'Fideloper\\Proxy\\' => 16,
@@ -275,6 +279,10 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         array (
             0 => __DIR__ . '/..' . '/laravel/framework/src/Illuminate',
         ),
+        'Html2Text\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/soundasleep/html2text/src',
+        ),
         'Fideloper\\Proxy\\' => 
         array (
             0 => __DIR__ . '/..' . '/fideloper/proxy/src',
@@ -385,13 +393,18 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
 
     public static $classMap = array (
         'App\\ActivityLog' => __DIR__ . '/../..' . '/app/ActivityLog.php',
+        'App\\Console\\Commands\\Build' => __DIR__ . '/../..' . '/app/Console/Commands/Build.php',
         'App\\Console\\Commands\\CreateUser' => __DIR__ . '/../..' . '/app/Console/Commands/CreateUser.php',
+        'App\\Console\\Commands\\GenerateVarsJs' => __DIR__ . '/../..' . '/app/Console/Commands/GenerateVarsJs.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Conversation' => __DIR__ . '/../..' . '/app/Conversation.php',
         'App\\Customer' => __DIR__ . '/../..' . '/app/Customer.php',
         'App\\Email' => __DIR__ . '/../..' . '/app/Email.php',
-        'App\\Events\\Event' => __DIR__ . '/../..' . '/app/Events/Event.php',
+        'App\\Events\\ConversationCreated' => __DIR__ . '/../..' . '/app/Events/ConversationCreated.php',
+        'App\\Events\\ConversationStatusChanged' => __DIR__ . '/../..' . '/app/Events/ConversationStatusChanged.php',
+        'App\\Events\\ConversationUserChanged' => __DIR__ . '/../..' . '/app/Events/ConversationUserChanged.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
+        'App\\FailedJob' => __DIR__ . '/../..' . '/app/FailedJob.php',
         'App\\Folder' => __DIR__ . '/../..' . '/app/Folder.php',
         'App\\Http\\Controllers\\Auth\\ForgotPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ForgotPasswordController.php',
         'App\\Http\\Controllers\\Auth\\LoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/LoginController.php',
@@ -404,17 +417,24 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'App\\Http\\Controllers\\SecureController' => __DIR__ . '/../..' . '/app/Http/Controllers/SecureController.php',
         'App\\Http\\Controllers\\UsersController' => __DIR__ . '/../..' . '/app/Http/Controllers/UsersController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
+        'App\\Http\\Middleware\\CheckRole' => __DIR__ . '/../..' . '/app/Http/Middleware/CheckRole.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
         'App\\Http\\Middleware\\RedirectIfAuthenticated' => __DIR__ . '/../..' . '/app/Http/Middleware/RedirectIfAuthenticated.php',
         'App\\Http\\Middleware\\TrimStrings' => __DIR__ . '/../..' . '/app/Http/Middleware/TrimStrings.php',
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
+        'App\\Job' => __DIR__ . '/../..' . '/app/Job.php',
+        'App\\Jobs\\SendReplyToCustomer' => __DIR__ . '/../..' . '/app/Jobs/SendReplyToCustomer.php',
         'App\\Listeners\\LogFailedLogin' => __DIR__ . '/../..' . '/app/Listeners/LogFailedLogin.php',
         'App\\Listeners\\LogLockout' => __DIR__ . '/../..' . '/app/Listeners/LogLockout.php',
         'App\\Listeners\\LogPasswordReset' => __DIR__ . '/../..' . '/app/Listeners/LogPasswordReset.php',
         'App\\Listeners\\LogRegisteredUser' => __DIR__ . '/../..' . '/app/Listeners/LogRegisteredUser.php',
         'App\\Listeners\\LogSuccessfulLogin' => __DIR__ . '/../..' . '/app/Listeners/LogSuccessfulLogin.php',
         'App\\Listeners\\LogSuccessfulLogout' => __DIR__ . '/../..' . '/app/Listeners/LogSuccessfulLogout.php',
+        'App\\Listeners\\SendReplyToCustomer' => __DIR__ . '/../..' . '/app/Listeners/SendReplyToCustomer.php',
+        'App\\Listeners\\UpdateMailboxCounters' => __DIR__ . '/../..' . '/app/Listeners/UpdateMailboxCounters.php',
+        'App\\Mail\\Mail' => __DIR__ . '/../..' . '/app/Mail/Mail.php',
+        'App\\Mail\\ReplyToCustomer' => __DIR__ . '/../..' . '/app/Mail/ReplyToCustomer.php',
         'App\\Mailbox' => __DIR__ . '/../..' . '/app/Mailbox.php',
         'App\\MailboxUser' => __DIR__ . '/../..' . '/app/MailboxUser.php',
         'App\\Observers\\ConversationObserver' => __DIR__ . '/../..' . '/app/Observers/ConversationObserver.php',
@@ -1447,6 +1467,8 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'Hamcrest\\Type\\IsString' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsString.php',
         'Hamcrest\\Util' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Util.php',
         'Hamcrest\\Xml\\HasXPath' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Xml/HasXPath.php',
+        'Html2Text\\Html2Text' => __DIR__ . '/..' . '/soundasleep/html2text/src/Html2Text.php',
+        'Html2Text\\Html2TextException' => __DIR__ . '/..' . '/soundasleep/html2text/src/Html2TextException.php',
         'Illuminate\\Auth\\Access\\AuthorizationException' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Access/AuthorizationException.php',
         'Illuminate\\Auth\\Access\\Gate' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Access/Gate.php',
         'Illuminate\\Auth\\Access\\HandlesAuthorization' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Access/HandlesAuthorization.php',
@@ -3873,6 +3895,7 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'Symfony\\Component\\HttpKernel\\HttpCache\\Ssi' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/Ssi.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\Store' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/Store.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\StoreInterface' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/StoreInterface.php',
+        'Symfony\\Component\\HttpKernel\\HttpCache\\SubRequestHandler' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/SubRequestHandler.php',
         'Symfony\\Component\\HttpKernel\\HttpCache\\SurrogateInterface' => __DIR__ . '/..' . '/symfony/http-kernel/HttpCache/SurrogateInterface.php',
         'Symfony\\Component\\HttpKernel\\HttpKernel' => __DIR__ . '/..' . '/symfony/http-kernel/HttpKernel.php',
         'Symfony\\Component\\HttpKernel\\HttpKernelInterface' => __DIR__ . '/..' . '/symfony/http-kernel/HttpKernelInterface.php',

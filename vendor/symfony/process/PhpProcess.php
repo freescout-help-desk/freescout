@@ -39,7 +39,7 @@ class PhpProcess extends Process
         } else {
             $php = array_merge(array($php), $executableFinder->findArguments());
         }
-        if ('phpdbg' === PHP_SAPI) {
+        if ('phpdbg' === \PHP_SAPI) {
             $file = tempnam(sys_get_temp_dir(), 'dbg');
             file_put_contents($file, $script);
             register_shutdown_function('unlink', $file);
@@ -69,7 +69,7 @@ class PhpProcess extends Process
         if (null === $this->getCommandLine()) {
             throw new RuntimeException('Unable to find the PHP executable.');
         }
-        $env = 1 < func_num_args() ? func_get_arg(1) : null;
+        $env = 1 < \func_num_args() ? func_get_arg(1) : null;
 
         parent::start($callback, $env);
     }

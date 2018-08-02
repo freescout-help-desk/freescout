@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Conversation;
 use App\Customer;
+use App\Events\ConversationCreated;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
 use App\Folder;
@@ -30,15 +31,21 @@ class ConversationsController extends Controller
     public function view($id)
     {
         $conversation = Conversation::findOrFail($id);
-
         $this->authorize('view', $conversation);
+
+        // Detect folder
+        if ($conversation->user_id == auth()->user()->id) {
+            $folder = $conversation->mailbox->folders()->where('type', Folder::TYPE_MINE)->first();
+        } else {
+            $folder = $conversation->folder;
+        }
 
         return view('conversations/view', [
             'conversation' => $conversation,
             'mailbox'      => $conversation->mailbox,
             'customer'     => $conversation->customer,
             'threads'      => $conversation->threads()->orderBy('created_at', 'desc')->get(),
-            'folder'       => $conversation->folder,
+            'folder'       => $folder,
             'folders'      => $conversation->mailbox->getAssesibleFolders(),
         ]);
     }
@@ -203,6 +210,21 @@ class ConversationsController extends Controller
                     $conversation->setUser($new_user_id);
                     $conversation->save();
 
+                    // Create lineitem thread
+                    $thread = new Thread();
+                    $thread->conversation_id = $conversation->id;
+                    $thread->user_id = $conversation->user_id;
+                    $thread->type = Thread::TYPE_LINEITEM;
+                    $thread->state = Thread::STATE_PUBLISHED;
+                    $thread->status = Thread::STATUS_NOCHANGE;
+                    $thread->action_type = Thread::ACTION_TYPE_USER_CHANGED;
+                    $thread->source_via = Thread::PERSON_USER;
+                    // todo: this need to be changed for API
+                    $thread->source_type = Thread::SOURCE_TYPE_WEB;
+                    $thread->customer_id = $conversation->customer_id;
+                    $thread->created_by_user_id = $user->id;
+                    $thread->save();
+
                     event(new ConversationUserChanged($conversation));
 
                     $response['status'] = 'success';
@@ -249,6 +271,21 @@ class ConversationsController extends Controller
 
                     $conversation->setStatus($new_status, $user);
                     $conversation->save();
+
+                    // Create lineitem thread
+                    $thread = new Thread();
+                    $thread->conversation_id = $conversation->id;
+                    $thread->user_id = $conversation->user_id;
+                    $thread->type = Thread::TYPE_LINEITEM;
+                    $thread->state = Thread::STATE_PUBLISHED;
+                    $thread->status = $conversation->status;
+                    $thread->action_type = Thread::ACTION_TYPE_STATUS_CHANGED;
+                    $thread->source_via = Thread::PERSON_USER;
+                    // todo: this need to be changed for API
+                    $thread->source_type = Thread::SOURCE_TYPE_WEB;
+                    $thread->customer_id = $conversation->customer_id;
+                    $thread->created_by_user_id = $user->id;
+                    $thread->save();
 
                     event(new ConversationStatusChanged($conversation));
 
@@ -329,7 +366,8 @@ class ConversationsController extends Controller
 
                 if (!$response['msg']) {
                     $now = date('Y-m-d H:i:s');
-
+                    $status_changed = false;
+                    $user_changed = false;
                     if ($new) {
                         // New conversation
                         $customer = Customer::create($to_array[0]);
@@ -352,12 +390,17 @@ class ConversationsController extends Controller
                         $conversation->source_type = Conversation::SOURCE_TYPE_WEB;
                     } else {
                         $customer = $conversation->customer;
+
+                        if ((int)$request->status != (int)$conversation->status) {
+                            $status_changed = true;
+                        }
                     }
                     $conversation->status = $request->status;
                     if ((int) $request->user_id != -1) {
                         // Check if user has access to the current mailbox
-                        if ($mailbox->userHasAccess($request->user_id)) {
+                        if ((int)$conversation->user_id != (int)$request->user_id && $mailbox->userHasAccess($request->user_id)) {
                             $conversation->user_id = $request->user_id;
+                            $user_changed = true;
                         }
                     } else {
                         $conversation->user_id = null;
@@ -367,6 +410,16 @@ class ConversationsController extends Controller
                     $conversation->user_updated_at = $now;
                     $conversation->updateFolder();
                     $conversation->save();
+
+                    // Fire events
+                    if (!$new) {
+                        if ($status_changed) {
+                             event(new ConversationStatusChanged($conversation));
+                        }
+                        if ($user_changed) {
+                             event(new ConversationUserChanged($conversation));
+                        }
+                    }
 
                     // Create thread
                     $thread = new Thread();
@@ -384,6 +437,8 @@ class ConversationsController extends Controller
                     $thread->customer_id = $customer->id;
                     $thread->created_by_user_id = auth()->user()->id;
                     $thread->save();
+
+                    event(new ConversationCreated($conversation));
 
                     $response['status'] = 'success';
                     $response['redirect_url'] = route('conversations.view', ['id' => $conversation->id]);

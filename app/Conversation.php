@@ -66,7 +66,7 @@ class Conversation extends Model
 
     public static $status_colors = [
         self::STATUS_ACTIVE  => 'success',
-        self::STATUS_PENDING => 'warning',
+        self::STATUS_PENDING => 'default',
         self::STATUS_CLOSED  => 'grey',
         self::STATUS_SPAM    => 'danger',
         //self::STATUS_OPEN => 'folder-open',
@@ -187,6 +187,20 @@ class Conversation extends Model
     public function closed_by_user()
     {
         return $this->belongsTo('App\User');
+    }
+
+    /**
+     * Get only reply threads from conversations.
+     * 
+     * @return Collection
+     */
+    public function getReplies()
+    {
+        return $this->threads()
+            ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE])
+            ->where('state', Thread::STATE_PUBLISHED)
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     /**
@@ -415,6 +429,34 @@ class Conversation extends Model
             $this->bcc = json_encode($emails_array);
         } else {
             $this->bcc = null;
+        }
+    }
+
+    /**
+     * Get CC recipients.
+     *
+     * @return array
+     */
+    public function getCcArray()
+    {
+        if ($this->cc) {
+            return json_decode($this->cc);
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Get BCC recipients.
+     *
+     * @return array
+     */
+    public function getBccArray()
+    {
+        if ($this->bcc) {
+            return json_decode($this->bcc);
+        } else {
+            return [];
         }
     }
 

@@ -73,47 +73,37 @@
                     <td class="conv-cb">
                         <input type="checkbox" id="cb-{{ $conversation->id }}" name="cb_{{ $conversation->id }}" value="{{ $conversation->id }}">
                     </td>
-                    <td class="conv-customer" data-label="{{ __('Customer') }}">
+                    <td class="conv-customer">
                         <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}">
                             {{ $conversation->customer->getFullName(true)}}
                         </a>    
                     </td>
-                    <td class="conv-attachment" data-label="{{ __('Attachments') }}">
+                    <td class="conv-attachment">
                         @if ($conversation->has_attachments)
                             <i class="glyphicon glyphicon-paperclip"></i>
                         @else
                             &nbsp;
                         @endif
                     </td>
-                    <td class="conv-subject" data-label="{{ __('Conversation') }}">
+                    <td class="conv-subject">
                         <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}" title="{{ __('View conversation') }}">
                             <span class="conv-fader"></span>
                             <p><span class="conv-subject-number">#{{ $conversation->number }} </span>{{ $conversation->subject }}</p>
                             <p class="conv-preview">{{ $conversation->preview }}</p>
                         </a>
                     </td>
-                    <td class="conv-thread-count" data-label="{{ __('Threads') }}">
+                    <td class="conv-thread-count">
                         <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}" title="{{ __('View conversation') }}">@if ($conversation->threads_count <= 1)&nbsp;@else<span>{{ $conversation->threads_count }}</span>@endif</a>
                     </td>
                     @if ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED)
-                        <td class="conv-owner" data-label="{{ __('Assigned To') }}">
+                        <td class="conv-owner">
                             <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}" title="{{ __('View conversation') }}"> {{ $conversation->user->getFullName() }} </a>
                         </td>
                     @endif
-                    <td class="conv-number" data-label="
-                        @if ($folder->type == App\Folder::TYPE_CLOSED)
-                            {{ __("Closed") }}
-                        @elseif ($folder->type == App\Folder::TYPE_DRAFTS)
-                            {{ __("Last Updated") }}
-                        @elseif ($folder->type == App\Folder::TYPE_DELETED)
-                            {{ __("Deleted") }}
-                        @else
-                            {{ __("Waiting Since") }}
-                        @endif
-                    ">
+                    <td class="conv-number">
                         <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}" title="{{ __('View conversation') }}">{{ $conversation->number }}</a>
                     </td>
-                    <td class="conv-date" data-label="{{ __('Assigned To') }}">
+                    <td class="conv-date">
                         <a href="{{ route('conversations.view', ['id' => $conversation->id]) }}" @if (!in_array($conversation->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED])) data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conversation->getDateTitle() }}"@else title="{{ __('View conversation') }}" @endif >
                             @if ($folder->type == App\Folder::TYPE_CLOSED)
                                 {{ App\User::dateDiffForHumans($conversation->closed_at) }}

@@ -14,19 +14,19 @@ namespace Symfony\Component\Debug\Tests\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\Exception\LengthRequiredHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 use Symfony\Component\HttpKernel\Exception\PreconditionRequiredHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 
 class FlattenExceptionTest extends TestCase
@@ -236,7 +236,7 @@ class FlattenExceptionTest extends TestCase
         $this->assertSame(array('object', 'stdClass'), $array[$i++]);
         $this->assertSame(array('object', 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'), $array[$i++]);
         $this->assertSame(array('incomplete-object', 'BogusTestClass'), $array[$i++]);
-        $this->assertSame(array('resource', defined('HHVM_VERSION') ? 'Directory' : 'stream'), $array[$i++]);
+        $this->assertSame(array('resource', \defined('HHVM_VERSION') ? 'Directory' : 'stream'), $array[$i++]);
         $this->assertSame(array('resource', 'stream'), $array[$i++]);
 
         $args = $array[$i++];

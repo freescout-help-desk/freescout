@@ -25,8 +25,34 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        // Remove failed jobs
+        $schedule->command('queue:flush')
+            ->daily();
+
+        // Restart processing queued jobs (just in case)
+        $schedule->command('queue:restart')
+            ->hourly();
+
+        // Command runs as subprocess and sets cache mutex. If schedule:run command is killed
+        // subprocess does not clear the mutex and it stays in the cache until cache:clear is executed. 
+        // By default, the lock will expire after 24 hours.
+        
+        // No need
+        // So on receiving a kill signal we need to manually remove all mutexes.
+        // $pid = getmypid();
+        // register_shutdown_function(function () use ($pid, $schedule) {
+        //     if ($pid === getmypid()) {
+        //         foreach ($schedule->events() as $event) {
+        //             if ($event->description) {
+        //                 $event->mutex->forget($event);
+        //             }
+        //         }
+        //     }
+        // });
+        $schedule->command('queue:work', Config('app.queue_work_params'))
+            //->everyMinute()
+            ->withoutOverlapping()
+            ->sendOutputTo(storage_path() . '/logs/queue-jobs.log');
     }
 
     /**

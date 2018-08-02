@@ -73,6 +73,8 @@ class Thread extends Model
     const STATE_DRAFT = 1;
     const STATE_PUBLISHED = 2;
     const STATE_HIDDEN = 3;
+    // A state of review means the thread has been stopped by Traffic Cop and is waiting
+    // to be confirmed (or discarded) by the person that created the thread.
     const STATE_REVIEW = 4;
 
     public static $states = [
@@ -140,9 +142,10 @@ class Thread extends Model
      * Status of the email sent to the customer or user, to whom the thread is assigned.
      */
     const SEND_STATUS_TOSEND = 1;
-    const SEND_STATUS_SENT = 2;
-    const SEND_STATUS_DELIVERY_SUCCESS = 3;
-    const SEND_STATUS_DELIVERY_ERROR = 4;
+    const SEND_STATUS_SEND_SUCCESS = 2;
+    const SEND_STATUS_SEND_ERROR = 3;
+    const SEND_STATUS_DELIVERY_SUCCESS = 4;
+    const SEND_STATUS_DELIVERY_ERROR = 5;
 
     /**
      * The user assigned to this thread (assignedTo).
@@ -199,7 +202,7 @@ class Thread extends Model
      *
      * @return array
      */
-    public function getTos()
+    public function getToArray()
     {
         if ($this->to) {
             return json_decode($this->to);
@@ -213,7 +216,7 @@ class Thread extends Model
      *
      * @return array
      */
-    public function getCcs()
+    public function getCcArray()
     {
         if ($this->cc) {
             return json_decode($this->cc);
@@ -227,7 +230,7 @@ class Thread extends Model
      *
      * @return array
      */
-    public function getBccs()
+    public function getBccArray()
     {
         if ($this->bcc) {
             return json_decode($this->bcc);
@@ -328,6 +331,18 @@ class Thread extends Model
             return __('yourself');
         } else {
             return $this->user->getFullName();
+        }
+    }
+
+    /**
+     * Get user or customer who created the thead.
+     */
+    public function getCreatedBy()
+    {
+        if (!empty($this->created_by_user_id)) {
+            return $this->created_by_user;
+        } else {
+            return $this->created_by_customer;
         }
     }
 }

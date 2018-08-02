@@ -12,13 +12,13 @@
 namespace Symfony\Component\Console\Helper;
 
 use Symfony\Component\Console\Exception\LogicException;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Formatter\OutputFormatter;
 
 /**
  * Symfony Style Guide compliant question helper.
@@ -40,7 +40,7 @@ class SymfonyQuestionHelper extends QuestionHelper
                 $value = $validator($value);
             } else {
                 // make required
-                if (!is_array($value) && !is_bool($value) && 0 === strlen($value)) {
+                if (!\is_array($value) && !\is_bool($value) && 0 === \strlen($value)) {
                     @trigger_error('The default question validator is deprecated since Symfony 3.3 and will not be used anymore in version 4.0. Set a custom question validator if needed.', E_USER_DEPRECATED);
 
                     throw new LogicException('A value is required.');

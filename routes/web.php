@@ -19,7 +19,8 @@ Auth::routes();
 
 // General routes for logged in users
 Route::get('/', 'SecureController@dashboard')->name('dashboard');
-Route::get('/logs/{name?}', 'SecureController@logs')->name('logs');
+Route::get('/logs/{name?}', ['uses' => 'SecureController@logs', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs');
+Route::get('/system', ['uses' => 'SecureController@system', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system');
 
 // Users
 Route::get('/users', 'UsersController@users')->name('users');

@@ -207,31 +207,31 @@
                                         @endif
                                     </div>
                                     <div class="thread-recipients">
-                                        @if ($thread->getTos() == 1 && $thread->getTos()[0] == $mailbox->email)
-                                        @elseif ($thread->getTos())
+                                        @if ($thread->getToArray() == 1 && $thread->getToArray()[0] == $mailbox->email)
+                                        @elseif ($thread->getToArray())
                                             <div>
                                                 <strong>
                                                     {{ __("To") }}:
                                                 </strong>
-                                                {{ implode(', ', $thread->getTos()) }}
+                                                {{ implode(', ', $thread->getToArray()) }}
                                             </div>
                                         @endif
-                                        @if ($thread->getCcs() == 1 && $thread->getCcs()[0] == $mailbox->email)
-                                        @elseif ($thread->getCcs())
+                                        @if ($thread->getCcArray() == 1 && $thread->getCcArray()[0] == $mailbox->email)
+                                        @elseif ($thread->getCcArray())
                                             <div>
                                                 <strong>
                                                     {{ __("Cc") }}:
                                                 </strong>
-                                                {{ implode(', ', $thread->getCcs()) }}
+                                                {{ implode(', ', $thread->getCcArray()) }}
                                             </div>
                                         @endif
-                                        @if ($thread->getBccs() == 1 && $thread->getBccs()[0] == $mailbox->email)
-                                        @elseif ($thread->getBccs())
+                                        @if ($thread->getBccArray() == 1 && $thread->getBccArray()[0] == $mailbox->email)
+                                        @elseif ($thread->getBccArray())
                                             <div>
                                                 <strong>
                                                     {{ __("Bcc") }}:
                                                 </strong>
-                                                {{ implode(', ', $thread->getBccs()) }}
+                                                {{ implode(', ', $thread->getBccArray()) }}
                                             </div>
                                         @endif
                                     </div>

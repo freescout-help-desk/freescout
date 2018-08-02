@@ -35,7 +35,7 @@ class Mailbox extends Model
     const TEMPLATE_PLAIN = 2;
 
     /**
-     * Sending Emails.
+     * Outgoing method. Must be listed in getMailDriverName.
      */
     const OUT_METHOD_PHP_MAIL = 1;
     const OUT_METHOD_SENDMAIL = 2;
@@ -296,5 +296,55 @@ class Mailbox extends Model
         } else {
             return (bool) $this->users()->where('users.id', $user_id)->count();
         }
+    }
+
+    /**
+     * Get From array for the Mail function.
+     * 
+     * @param  App\User $from_user
+     * @return array
+     */
+    public function getMailFrom($from_user = null)
+    {
+        $name = $this->name;
+
+        if ($this->from_name == self::FROM_NAME_CUSTOM && $this->from_name_custom) {
+            $name = $this->from_name_custom;
+        } elseif ($this->from_name == self::FROM_NAME_CUSTOM && $from_user) {
+            $name = $from_user->getFullName();
+        }
+
+        return ['address' => $this->email, 'name' => $name];
+    }
+
+    /**
+     * Get corresponding Laravel mail driver name.
+     */
+    public function getMailDriverName()
+    {
+        switch ($this->out_method) {
+            case self::OUT_METHOD_PHP_MAIL:
+                return 'mail';
+
+            case self::OUT_METHOD_SENDMAIL:
+                return 'sendmail';
+
+            case self::OUT_METHOD_SMTP:
+                return 'smtp';
+
+            default:
+                return 'mail';
+                break;
+        }
+    }
+
+    /**
+     * Get domain part of the mailbox email.
+     * 
+     * @return string
+     */
+    public function getEmailDomain()
+    {
+        return explode('@', $this->email)[1];
     }
 }

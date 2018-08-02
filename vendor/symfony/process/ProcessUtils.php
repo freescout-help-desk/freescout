@@ -46,7 +46,7 @@ class ProcessUtils
         //Fix for PHP bug #49446 escapeshellarg doesn't work on Windows
         //@see https://bugs.php.net/bug.php?id=43784
         //@see https://bugs.php.net/bug.php?id=49446
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             if ('' === $argument) {
                 return escapeshellarg($argument);
             }
@@ -91,10 +91,10 @@ class ProcessUtils
     public static function validateInput($caller, $input)
     {
         if (null !== $input) {
-            if (is_resource($input)) {
+            if (\is_resource($input)) {
                 return $input;
             }
-            if (is_string($input)) {
+            if (\is_string($input)) {
                 return $input;
             }
             if (is_scalar($input)) {
@@ -118,6 +118,6 @@ class ProcessUtils
 
     private static function isSurroundedBy($arg, $char)
     {
-        return 2 < strlen($arg) && $char === $arg[0] && $char === $arg[strlen($arg) - 1];
+        return 2 < \strlen($arg) && $char === $arg[0] && $char === $arg[\strlen($arg) - 1];
     }
 }

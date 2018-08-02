@@ -11,9 +11,9 @@
 
 namespace Symfony\Component\Translation\Dumper;
 
-use Symfony\Component\Translation\MessageCatalogue;
 use Symfony\Component\Translation\Exception\InvalidArgumentException;
 use Symfony\Component\Translation\Exception\RuntimeException;
+use Symfony\Component\Translation\MessageCatalogue;
 
 /**
  * FileDumper is an implementation of DumperInterface that dump a message catalogue to file(s).
@@ -79,7 +79,7 @@ abstract class FileDumper implements DumperInterface
                     copy($fullpath, $fullpath.'~');
                 }
             } else {
-                $directory = dirname($fullpath);
+                $directory = \dirname($fullpath);
                 if (!file_exists($directory) && !@mkdir($directory, 0777, true)) {
                     throw new RuntimeException(sprintf('Unable to create directory "%s".', $directory));
                 }

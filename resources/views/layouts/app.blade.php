@@ -101,6 +101,7 @@
                                         <li><a href="#">{{ __('Teams') }} (todo)</a></li>
                                         <li><a href="{{ route('users') }}">{{ __('Users') }}</a></li>
                                         <li><a href="{{ route('logs') }}">{{ __('Logs') }}</a></li>
+                                        <li><a href="{{ route('system') }}">{{ __('System') }}</a></li>
                                     @endif
                                 </ul>
                             </li>

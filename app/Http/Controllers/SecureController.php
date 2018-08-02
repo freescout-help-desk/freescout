@@ -44,10 +44,10 @@ class SecureController extends Controller
         $cols = [];
         $current_name = '';
         if (!empty($request->name)) {
-            $activities = ActivityLog::inLog($request->name)->get();
+            $activities = ActivityLog::inLog($request->name)->orderBy('created_at', 'desc')->get();
             $current_name = $request->name;
         } elseif (count($names)) {
-            $activities = ActivityLog::inLog($names[0])->get();
+            $activities = ActivityLog::inLog($names[0])->orderBy('created_at', 'desc')->get();
             $current_name = $names[0];
         }
 
@@ -55,10 +55,18 @@ class SecureController extends Controller
         foreach ($activities as $activity) {
             $log = [
                 'date'  => $activity->created_at,
-                'user'  => $activity->causer,
+                'causer' => $activity->causer,
                 'event' => $activity->getEventDescription(),
             ];
-            $cols = ['date', 'user', 'event'];
+
+            $cols = ['date'];
+            if ($activity->causer_type == 'App\User') {
+                $cols[] = __('User');
+            } else {
+                $cols[] = __('Customer');
+            }
+                
+            $cols[] = 'event';
 
             foreach ($activity->properties as $property_name => $property_value) {
                 if (!is_string($property_value)) {
@@ -72,5 +80,16 @@ class SecureController extends Controller
         }
 
         return view('secure/logs', ['logs' => $logs, 'names' => $names, 'current_name' => $current_name, 'cols' => $cols]);
+    }
+
+    /**
+     * System status.
+     */
+    public function system(Request $request)
+    {
+        $queued_jobs = \App\Job::orderBy('created_at', 'desc')->get();
+        $failed_jobs = \App\FailedJob::orderBy('failed_at', 'desc')->get();
+
+        return view('secure/system', ['queued_jobs' => $queued_jobs, 'failed_jobs' => $failed_jobs]);
     }
 }

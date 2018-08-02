@@ -11,7 +11,7 @@
     </div>
     <ul class="sidebar-menu">
         @foreach ($names as $name)
-            <li @if ($current_name == $name)class="active"@endif><i class="glyphicon glyphicon-minus"></i> <a href="{{ route('logs', ['name'=>$name]) }}">{{ ucfirst($name) }}</a></li>
+            <li @if ($current_name == $name)class="active"@endif><i class="glyphicon glyphicon-list-alt"></i> <a href="{{ route('logs', ['name'=>$name]) }}">{{ App\ActivityLog::getLogTitle($name) }}</a></li>
         @endforeach
     </ul>
 @endsection
@@ -35,8 +35,8 @@
                     <tr>
                         @foreach ($row as $col => $value)
                             <td>
-                                @if ($col == 'user')
-                                    <a href="{{ $value->urlEdit() }}">{{ $value->getFullName() }}</a>
+                                @if ($col == 'causer')
+                                    <a href="{{ $value->url() }}">{{ $value->getFullName(true) }}</a>
                                 @else
                                     {{ $value }}
                                 @endif

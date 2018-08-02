@@ -161,7 +161,7 @@ class User extends Authenticatable
      *
      * @return string
      */
-    public function urlEdit()
+    public function url()
     {
         return route('users.profile', ['id'=>$this->id]);
     }
@@ -209,7 +209,7 @@ class User extends Authenticatable
      *
      * @return string
      */
-    public static function dateFormat($date, $format)
+    public static function dateFormat($date, $format = 'M j, Y H:i')
     {
         $user = auth()->user();
         if ($user) {

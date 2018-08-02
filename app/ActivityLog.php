@@ -6,7 +6,8 @@ use Spatie\Activitylog\Models\Activity;
 
 class ActivityLog extends Activity
 {
-    const NAME_USER = 'user';
+    const NAME_USER = 'users';
+    const NAME_EMAILS_SENDING = 'emails_sending';
 
     const DESCRIPTION_USER_LOGIN = 'login';
     const DESCRIPTION_USER_LOGOUT = 'logout';
@@ -14,6 +15,7 @@ class ActivityLog extends Activity
     const DESCRIPTION_USER_LOCKED = 'locked';
     const DESCRIPTION_USER_LOGIN_FAILED = 'login_failed';
     const DESCRIPTION_USER_PASSWORD_RESET = 'password_reset';
+    const DESCRIPTION_EMAILS_SENDING_ERROR = 'error_sending_email';
 
     public function getEventDescription()
     {
@@ -30,9 +32,26 @@ class ActivityLog extends Activity
                 return __('Failed login');
             case self::DESCRIPTION_USER_PASSWORD_RESET:
                 return __('Reset password');
+            case self::DESCRIPTION_EMAILS_SENDING_ERROR:
+                return __('Error sending email');
             default:
                 return $this->description;
                 break;
+        }
+    }
+
+    /**
+     * Get title for the log record.
+     */
+    public static function getLogTitle($log_name)
+    {
+        switch ($log_name) {
+            case self::NAME_USER:
+                return __('Users');
+            case self::NAME_EMAILS_SENDING:
+                return __('Emails Sending');
+            default:
+                return ucfirst($log_name);
         }
     }
 }

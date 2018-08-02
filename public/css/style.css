@@ -381,14 +381,25 @@ select.form-control {
 }
 .btn-grey {
     color: #fff;
-    background-color: #8f9aa6;
-    border-color: #72808e;
+    background-color: #87939f;
+    border-color: #727f8b;
 }
 .btn-grey:focus,
 .btn-grey:hover {
     color: #fff;
     background-color: #64717b;
     border-color: #4f5d69;
+}
+.btn-lightgrey {
+    color: #fff;
+    background-color: #a5b2bd;
+    border-color: #7e8d99;
+}
+.btn-lightgrey:focus,
+.btn-lightgrey:hover {
+    color: #fff;
+    background-color: #72808e;
+    border-color: #72808e;
 }
 .btn-success.btn-light {
     background-color: #71c171;
@@ -1644,6 +1655,16 @@ table.table-conversations td.conv-attachment {
 }
 .alert-floating.alert-warning {
     border: 1px solid #8a6d3b;
+}
+
+/**
+ * Tables
+ */
+.table-dark-header th {
+    background-color: #f9f9f9;
+}
+.table-main-col {
+    width: 70%;
 }
 
 /**

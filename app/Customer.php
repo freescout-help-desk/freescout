@@ -645,4 +645,26 @@ class Customer extends Model
 
         return $customer;
     }
+
+    /**
+     * Get customer URL.
+     *
+     * @return string
+     */
+    public function url()
+    {
+        return route('customers.update', ['id'=>$this->id]);
+    }
+
+    /**
+     * Format date according to customer's timezone.
+     * 
+     * @param  Carbon $date
+     * @param  string $format
+     * @return string
+     */
+    public static function dateFormat($date, $format = 'M j, Y H:i')
+    {
+        return $date->format($format);
+    }
 }

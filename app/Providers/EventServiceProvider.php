@@ -38,14 +38,28 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         'App\Events\ConversationStatusChanged' => [
-            'App\Listeners\CreateThreadStatusChanged',
             'App\Listeners\UpdateMailboxCounters',
         ],
 
         'App\Events\ConversationUserChanged' => [
-            'App\Listeners\CreateThreadUserChanged',
             'App\Listeners\UpdateMailboxCounters',
         ],
+
+        'App\Events\ConversationCreated' => [
+             'App\Listeners\SendReplyToCustomer',
+        ],
+
+        'App\Events\ConversationUserReplied' => [
+            
+        ],
+
+        // 'App\Events\ConversationUserAddedNote' => [
+            
+        // ],
+
+        // 'App\Events\ConversationCustomerReplied' => [
+            
+        // ],
     ];
 
     /**
