@@ -3,7 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\ConversationCreated;
-use App\Thread;
 
 class SendReplyToCustomer
 {

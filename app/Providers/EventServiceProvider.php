@@ -50,15 +50,15 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         'App\Events\ConversationUserReplied' => [
-            
+
         ],
 
         // 'App\Events\ConversationUserAddedNote' => [
-            
+
         // ],
 
         // 'App\Events\ConversationCustomerReplied' => [
-            
+
         // ],
     ];
 

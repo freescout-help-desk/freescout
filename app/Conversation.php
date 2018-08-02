@@ -191,7 +191,7 @@ class Conversation extends Model
 
     /**
      * Get only reply threads from conversations.
-     * 
+     *
      * @return Collection
      */
     public function getReplies()

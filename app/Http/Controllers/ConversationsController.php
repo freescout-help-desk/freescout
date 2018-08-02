@@ -391,14 +391,14 @@ class ConversationsController extends Controller
                     } else {
                         $customer = $conversation->customer;
 
-                        if ((int)$request->status != (int)$conversation->status) {
+                        if ((int) $request->status != (int) $conversation->status) {
                             $status_changed = true;
                         }
                     }
                     $conversation->status = $request->status;
                     if ((int) $request->user_id != -1) {
                         // Check if user has access to the current mailbox
-                        if ((int)$conversation->user_id != (int)$request->user_id && $mailbox->userHasAccess($request->user_id)) {
+                        if ((int) $conversation->user_id != (int) $request->user_id && $mailbox->userHasAccess($request->user_id)) {
                             $conversation->user_id = $request->user_id;
                             $user_changed = true;
                         }
@@ -414,10 +414,10 @@ class ConversationsController extends Controller
                     // Fire events
                     if (!$new) {
                         if ($status_changed) {
-                             event(new ConversationStatusChanged($conversation));
+                            event(new ConversationStatusChanged($conversation));
                         }
                         if ($user_changed) {
-                             event(new ConversationUserChanged($conversation));
+                            event(new ConversationUserChanged($conversation));
                         }
                     }
 

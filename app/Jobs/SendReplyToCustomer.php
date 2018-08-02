@@ -5,10 +5,10 @@ namespace App\Jobs;
 use App\Mail\ReplyToCustomer;
 use App\Thread;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Mail;
 
 class SendReplyToCustomer implements ShouldQueue
@@ -90,6 +90,7 @@ class SendReplyToCustomer implements ShouldQueue
         if (!empty($failures)) {
             $last_thread->send_status = Thread::SEND_STATUS_SEND_ERROR;
             $last_thread->save();
+
             throw new \Exception('Could not send email to: '.implode(', ', $failures));
         } else {
             $last_thread->send_status = Thread::SEND_STATUS_SEND_SUCCESS;
@@ -100,7 +101,8 @@ class SendReplyToCustomer implements ShouldQueue
     /**
      * The job failed to process.
      *
-     * @param  Exception  $exception
+     * @param Exception $exception
+     *
      * @return void
      */
     public function failed(\Exception $exception)
@@ -115,7 +117,7 @@ class SendReplyToCustomer implements ShouldQueue
            ->causedBy($this->customer)
            ->withProperties([
                 'error'    => $exception->getMessage(),
-                'to'    => $this->customer->getMainEmail()
+                'to'       => $this->customer->getMainEmail(),
             ])
            ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
            ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR);

@@ -4,10 +4,9 @@ namespace App\Mail;
 
 class Mail
 {
-
     /**
      * Configure mail sending parameters.
-     * 
+     *
      * @param App\Mailbox $mailbox
      */
     public static function setMailDriver($mailbox = null, $user = null)
