@@ -45,7 +45,7 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\UpdateMailboxCounters',
         ],
 
-        'App\Events\ConversationCreated' => [
+        'App\Events\UserReplied' => [
              'App\Listeners\SendReplyToCustomer',
         ],
 

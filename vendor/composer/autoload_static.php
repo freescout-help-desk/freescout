@@ -14,12 +14,12 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
+        'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
+        '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         'e91d0dc994644828154ae2387ede1ca8' => __DIR__ . '/..' . '/spatie/string/src/string_functions.php',
         '4a1f389d6ce373bda9e57857d3b61c84' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/helpers.php',
-        'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
-        '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
         'cb61d74ad51d00867155534456b38b23' => __DIR__ . '/..' . '/mews/purifier/src/helpers.php',
         '72b1e3f4a2af9b30b3f137b3ec2057fc' => __DIR__ . '/..' . '/spatie/laravel-activitylog/src/helpers.php',
     );
@@ -37,6 +37,7 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         array (
             'Whoops\\' => 7,
             'Webmozart\\Assert\\' => 17,
+            'Webklex\\IMAP\\' => 13,
         ),
         'U' => 
         array (
@@ -149,6 +150,10 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
+        ),
+        'Webklex\\IMAP\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP',
         ),
         'Underscore\\' => 
         array (
@@ -395,6 +400,7 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'App\\ActivityLog' => __DIR__ . '/../..' . '/app/ActivityLog.php',
         'App\\Console\\Commands\\Build' => __DIR__ . '/../..' . '/app/Console/Commands/Build.php',
         'App\\Console\\Commands\\CreateUser' => __DIR__ . '/../..' . '/app/Console/Commands/CreateUser.php',
+        'App\\Console\\Commands\\FetchEmails' => __DIR__ . '/../..' . '/app/Console/Commands/FetchEmails.php',
         'App\\Console\\Commands\\GenerateVarsJs' => __DIR__ . '/../..' . '/app/Console/Commands/GenerateVarsJs.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Conversation' => __DIR__ . '/../..' . '/app/Conversation.php',
@@ -4140,6 +4146,26 @@ class ComposerStaticInit992853026b5d9a5aba1df559a69505cb
         'Underscore\\UnderscoreTest' => __DIR__ . '/..' . '/anahkiasen/underscore-php/tests/UnderscoreTest.php',
         'Underscore\\UnderscoreTestCase' => __DIR__ . '/..' . '/anahkiasen/underscore-php/tests/UnderscoreTestCase.php',
         'UsersTableSeeder' => __DIR__ . '/../..' . '/database/seeds/UsersTableSeeder.php',
+        'Webklex\\IMAP\\Attachment' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Attachment.php',
+        'Webklex\\IMAP\\Client' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Client.php',
+        'Webklex\\IMAP\\ClientManager' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/ClientManager.php',
+        'Webklex\\IMAP\\EncodingAliases' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/EncodingAliases.php',
+        'Webklex\\IMAP\\Exceptions\\ConnectionFailedException' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Exceptions/ConnectionFailedException.php',
+        'Webklex\\IMAP\\Exceptions\\GetMessagesFailedException' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Exceptions/GetMessagesFailedException.php',
+        'Webklex\\IMAP\\Exceptions\\InvalidWhereQueryCriteriaException' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Exceptions/InvalidWhereQueryCriteriaException.php',
+        'Webklex\\IMAP\\Exceptions\\MessageSearchValidationException' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Exceptions/MessageSearchValidationException.php',
+        'Webklex\\IMAP\\Exceptions\\MethodNotFoundException' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Exceptions/MethodNotFoundException.php',
+        'Webklex\\IMAP\\Facades\\Client' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Facades/Client.php',
+        'Webklex\\IMAP\\Folder' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Folder.php',
+        'Webklex\\IMAP\\Message' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Message.php',
+        'Webklex\\IMAP\\Providers\\LaravelServiceProvider' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Providers/LaravelServiceProvider.php',
+        'Webklex\\IMAP\\Query\\Query' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Query/Query.php',
+        'Webklex\\IMAP\\Query\\WhereQuery' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Query/WhereQuery.php',
+        'Webklex\\IMAP\\Support\\AttachmentCollection' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Support/AttachmentCollection.php',
+        'Webklex\\IMAP\\Support\\FlagCollection' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Support/FlagCollection.php',
+        'Webklex\\IMAP\\Support\\FolderCollection' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Support/FolderCollection.php',
+        'Webklex\\IMAP\\Support\\MessageCollection' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Support/MessageCollection.php',
+        'Webklex\\IMAP\\Support\\PaginatedCollection' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Support/PaginatedCollection.php',
         'Webmozart\\Assert\\Assert' => __DIR__ . '/..' . '/webmozart/assert/src/Assert.php',
         'Whoops\\Exception\\ErrorException' => __DIR__ . '/..' . '/filp/whoops/src/Whoops/Exception/ErrorException.php',
         'Whoops\\Exception\\Formatter' => __DIR__ . '/..' . '/filp/whoops/src/Whoops/Exception/Formatter.php',

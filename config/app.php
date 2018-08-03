@@ -152,7 +152,14 @@ return [
     | Must contained comma separeted list of existing queues
     |-------------------------------------------------------------------------
     */
-    'queue_work_params' => ['--queue' => 'emails', '--tries' => '7', '--sleep' => '3'],
+    'queue_work_params' => ['--queue' => 'emails', '--tries' => '7', '--sleep' => '5'],
+
+    /*
+    |--------------------------------------------------------------------------
+    | PHP extensions required by the app
+    |-------------------------------------------------------------------------
+    */
+    'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', 'mcrypt'],
 
     /*
     |--------------------------------------------------------------------------

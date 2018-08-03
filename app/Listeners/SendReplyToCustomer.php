@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Events\ConversationCreated;
+use App\Events\UserReplied;
 
 class SendReplyToCustomer
 {
@@ -19,11 +19,11 @@ class SendReplyToCustomer
     /**
      * Handle the event.
      *
-     * @param ConversationCreated $event
+     * @param UserReplied $event
      *
      * @return void
      */
-    public function handle(ConversationCreated $event)
+    public function handle(UserReplied $event)
     {
         $conversation = $event->conversation;
 

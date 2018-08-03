@@ -10,12 +10,36 @@
         </span>
     </div>
     <ul class="sidebar-menu">
-        <li><a href="#jobs"><i class="glyphicon glyphicon-time"></i> {{ __('Jobs') }}</a></li>
+        <li><a href="#php"><i class="glyphicon glyphicon-menu-right"></i> PHP</a></li>
+        <li><a href="#jobs"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Jobs') }}</a></li>
     </ul>
 @endsection
 
 @section('content')
 <div class="container">
+
+    <h3 id="php">PHP</h3>
+
+    <p>
+        {{ __('Required PHP extensions') }}
+    </p>
+
+    <table class="table table-dark-header table-bordered table-responsive">
+        <tbody>
+            @foreach ($php_extensions as $extension_name => $extension_status)
+                <tr>
+                    <th>{{ $extension_name }}</th>
+                    <td class="table-main-col">
+                        @if ($extension_status)
+                            <strong class="text-success">OK</strong>
+                        @else
+                            <strong class="text-danger">{{ __('Not found') }}</strong>
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 
     <h3 id="jobs">{{ __('Jobs') }}</h3>
     <table class="table table-dark-header table-bordered table-responsive">

@@ -8,6 +8,7 @@ class ActivityLog extends Activity
 {
     const NAME_USER = 'users';
     const NAME_EMAILS_SENDING = 'emails_sending';
+    const NAME_EMAILS_FETCHING = 'emails_fetching';
 
     const DESCRIPTION_USER_LOGIN = 'login';
     const DESCRIPTION_USER_LOGOUT = 'logout';
@@ -16,6 +17,7 @@ class ActivityLog extends Activity
     const DESCRIPTION_USER_LOGIN_FAILED = 'login_failed';
     const DESCRIPTION_USER_PASSWORD_RESET = 'password_reset';
     const DESCRIPTION_EMAILS_SENDING_ERROR = 'error_sending_email';
+    const DESCRIPTION_EMAILS_FETCHING_ERROR = 'error_fetching_email';
 
     public function getEventDescription()
     {
@@ -34,6 +36,8 @@ class ActivityLog extends Activity
                 return __('Reset password');
             case self::DESCRIPTION_EMAILS_SENDING_ERROR:
                 return __('Error sending email');
+            case self::DESCRIPTION_EMAILS_FETCHING_ERROR:
+                return __('Error fetching email');
             default:
                 return $this->description;
                 break;
@@ -50,6 +54,8 @@ class ActivityLog extends Activity
                 return __('Users');
             case self::NAME_EMAILS_SENDING:
                 return __('Emails Sending');
+            case self::NAME_EMAILS_FETCHING:
+                return __('Emails Fetching');
             default:
                 return ucfirst($log_name);
         }

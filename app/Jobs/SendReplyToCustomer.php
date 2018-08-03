@@ -79,8 +79,8 @@ class SendReplyToCustomer implements ShouldQueue
         $headers['Message-ID'] = $message_id;
 
         Mail::to([['name' => $this->customer->getFullName(), 'email' => $this->customer->getMainEmail()]])
-            ->cc($this->conversation->getCcArray())
-            ->bcc($this->conversation->getBccArray())
+            ->cc($last_thread->getCcArray())
+            ->bcc($last_thread->getBccArray())
             ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers));
 
         $last_thread->message_id = $message_id;

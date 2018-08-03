@@ -33,24 +33,17 @@ class Kernel extends ConsoleKernel
         $schedule->command('queue:restart')
             ->hourly();
 
+        // Fetch emails from mailboxes
+        // $schedule->command('freescout:fetch-emails')
+        //     ->everyMinute()
+        //     ->withoutOverlapping()
+        //     ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
+
         // Command runs as subprocess and sets cache mutex. If schedule:run command is killed
         // subprocess does not clear the mutex and it stays in the cache until cache:clear is executed.
         // By default, the lock will expire after 24 hours.
-
-        // No need
-        // So on receiving a kill signal we need to manually remove all mutexes.
-        // $pid = getmypid();
-        // register_shutdown_function(function () use ($pid, $schedule) {
-        //     if ($pid === getmypid()) {
-        //         foreach ($schedule->events() as $event) {
-        //             if ($event->description) {
-        //                 $event->mutex->forget($event);
-        //             }
-        //         }
-        //     }
-        // });
         $schedule->command('queue:work', Config('app.queue_work_params'))
-            //->everyMinute()
+            ->everyMinute()
             ->withoutOverlapping()
             ->sendOutputTo(storage_path().'/logs/queue-jobs.log');
     }

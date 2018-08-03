@@ -44,11 +44,41 @@ class Mailbox extends Model
     // todo: mailgun, sendgrid, mandrill, etc
 
     /**
-     * Secure Connection.
+     * Outgoing encryption.
      */
-    const OUT_SSL_NONE = 1;
-    const OUT_SSL_SSL = 2;
-    const OUT_SSL_TLS = 3;
+    const OUT_ENCRYPTION_NONE = 1;
+    const OUT_ENCRYPTION_SSL = 2;
+    const OUT_ENCRYPTION_TLS = 3;
+
+    public static $out_encryptions = [
+        self::OUT_ENCRYPTION_NONE => '',
+        self::OUT_ENCRYPTION_SSL => 'ssl',
+        self::OUT_ENCRYPTION_TLS => 'tls',
+    ];
+
+    /**
+     * Incoming protocol.
+     */
+    const IN_PROTOCOL_IMAP = 1;
+    const IN_PROTOCOL_POP3 = 2;
+
+    public static $in_protocols = [
+        self::IN_PROTOCOL_IMAP => 'imap',
+        self::IN_PROTOCOL_POP3 => 'pop3',
+    ];
+
+    /**
+     * Incoming encryption.
+     */
+    const IN_ENCRYPTION_NONE = 1;
+    const IN_ENCRYPTION_SSL = 2;
+    const IN_ENCRYPTION_TLS = 3;
+
+    public static $in_encryptions = [
+        self::IN_ENCRYPTION_NONE => '',
+        self::IN_ENCRYPTION_SSL => 'ssl',
+        self::IN_ENCRYPTION_TLS => 'tls',
+    ];
 
     /**
      * Ratings Playcement: place ratings text above/below signature.
@@ -61,7 +91,7 @@ class Mailbox extends Model
      *
      * @var [type]
      */
-    protected $fillable = ['name', 'slug', 'email', 'aliases', 'from_name', 'from_name_custom', 'ticket_status', 'ticket_assignee', 'template', 'signature', 'out_method', 'out_server', 'out_username', 'out_password', 'out_port', 'out_ssl', 'in_server', 'in_port', 'in_username', 'in_password', 'auto_reply_enabled', 'auto_reply_subject', 'auto_reply_message', 'office_hours_enabled', 'ratings', 'ratings_placement', 'ratings_text'];
+    protected $fillable = ['name', 'slug', 'email', 'aliases', 'from_name', 'from_name_custom', 'ticket_status', 'ticket_assignee', 'template', 'signature', 'out_method', 'out_server', 'out_username', 'out_password', 'out_port', 'out_encryption', 'in_server', 'in_port', 'in_username', 'in_password', 'in_protocol', 'in_encryption', 'auto_reply_enabled', 'auto_reply_subject', 'auto_reply_message', 'office_hours_enabled', 'ratings', 'ratings_placement', 'ratings_text'];
 
     protected static function boot()
     {
@@ -238,7 +268,7 @@ class Mailbox extends Model
      */
     public function isInActive()
     {
-        if ($this->in_server && $this->in_port && $this->in_username && $this->in_password) {
+        if ($this->in_protocol && $this->in_server && $this->in_port && $this->in_username && $this->in_password) {
             return true;
         } else {
             return false;
@@ -335,7 +365,6 @@ class Mailbox extends Model
 
             default:
                 return 'mail';
-                break;
         }
     }
 
@@ -347,5 +376,35 @@ class Mailbox extends Model
     public function getEmailDomain()
     {
         return explode('@', $this->email)[1];
+    }
+
+    /**
+     * Get outgoing email encryption protocol.
+     * 
+     * @return string
+     */
+    public function getOutEncryptionName()
+    {
+        return self::$out_encryptions[$this->out_encryption];
+    }
+
+    /**
+     * Get incoming email encryption protocol.
+     * 
+     * @return string
+     */
+    public function getInEncryptionName()
+    {
+        return self::$in_encryptions[$this->in_encryption];
+    }
+
+    /**
+     * Get incoming protocol name.
+     * 
+     * @return string
+     */
+    public function getInProtocolName()
+    {
+        return self::$in_protocols[$this->in_protocol];
     }
 }

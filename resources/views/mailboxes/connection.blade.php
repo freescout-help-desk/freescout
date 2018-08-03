@@ -104,17 +104,17 @@
                                 @include('partials/field_error', ['field'=>'out_password'])
                             </div>
                         </div>
-                        <div class="form-group{{ $errors->has('out_ssl') ? ' has-error' : '' }}">
-                            <label for="out_ssl" class="col-sm-2 control-label">{{ __('Security') }}</label>
+                        <div class="form-group{{ $errors->has('out_encryption') ? ' has-error' : '' }}">
+                            <label for="out_encryption" class="col-sm-2 control-label">{{ __('Encryption') }}</label>
 
                             <div class="col-md-6">
-                                <select id="out_ssl" class="form-control input-sized" name="out_ssl" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
-                                    <option value="{{ App\Mailbox::OUT_SSL_NONE }}" @if (old('out_ssl', $mailbox->out_ssl) == App\Mailbox::OUT_SSL_NONE)selected="selected"@endif>{{ __('None') }}</option>
-                                    <option value="{{ App\Mailbox::OUT_SSL_SSL }}" @if (old('out_ssl', $mailbox->out_ssl) == App\Mailbox::OUT_SSL_SSL)selected="selected"@endif>{{ __('SSL') }}</option>
-                                    <option value="{{ App\Mailbox::OUT_SSL_TLS }}" @if (old('out_ssl', $mailbox->out_ssl) == App\Mailbox::OUT_SSL_TLS)selected="selected"@endif>{{ __('TLS') }}</option>
+                                <select id="out_encryption" class="form-control input-sized" name="out_encryption" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
+                                    <option value="{{ App\Mailbox::OUT_ENCRYPTION_NONE }}" @if (old('out_encryption', $mailbox->out_encryption) == App\Mailbox::OUT_ENCRYPTION_NONE)selected="selected"@endif>{{ __('None') }}</option>
+                                    <option value="{{ App\Mailbox::OUT_ENCRYPTION_SSL }}" @if (old('out_encryption', $mailbox->out_encryption) == App\Mailbox::OUT_ENCRYPTION_SSL)selected="selected"@endif>{{ __('SSL') }}</option>
+                                    <option value="{{ App\Mailbox::OUT_ENCRYPTION_TLS }}" @if (old('out_encryption', $mailbox->out_encryption) == App\Mailbox::OUT_ENCRYPTION_TLS)selected="selected"@endif>{{ __('TLS') }}</option>
                                 </select>
 
-                                @include('partials/field_error', ['field'=>'out_ssl'])
+                                @include('partials/field_error', ['field'=>'out_encryption'])
                             </div>
                         </div>
                         <hr/>

@@ -36,8 +36,13 @@ class SecureController extends Controller
      */
     public function logs(Request $request)
     {
-        //->where('preferences->dining->meal', 'salad')
-        //->get();
+        function addCol($cols, $col)
+        {
+            if (!in_array($col, $cols)) {
+                $cols[] = $col;
+            }
+            return $cols;
+        }
         $names = ActivityLog::select('log_name')->distinct()->get()->pluck('log_name');
 
         $activities = [];
@@ -52,28 +57,28 @@ class SecureController extends Controller
         }
 
         $logs = [];
+        $cols = ['date'];
         foreach ($activities as $activity) {
-            $log = [
-                'date'   => $activity->created_at,
-                'causer' => $activity->causer,
-                'event'  => $activity->getEventDescription(),
-            ];
-
-            $cols = ['date'];
-            if ($activity->causer_type == 'App\User') {
-                $cols[] = __('User');
-            } else {
-                $cols[] = __('Customer');
+            $log = [];
+            $log['date'] = $activity->created_at;
+            if ($activity->causer) {
+                $log['causer'] = $activity->causer;
+                if ($activity->causer_type == 'App\User') {
+                    $cols = addCol($cols, 'user');
+                } else {
+                    $cols = addCol($cols, 'customer');
+                }
             }
+            $log['event'] = $activity->getEventDescription();
 
-            $cols[] = 'event';
+            $cols = addCol($cols, 'event');
 
             foreach ($activity->properties as $property_name => $property_value) {
                 if (!is_string($property_value)) {
                     $property_value = json_encode($property_value);
                 }
                 $log[$property_name] = $property_value;
-                $cols[] = $property_name;
+                $cols = addCol($cols, $property_name);
             }
 
             $logs[] = $log;
@@ -87,9 +92,30 @@ class SecureController extends Controller
      */
     public function system(Request $request)
     {
+        // PHP extensions
+        $php_extensions = [];
+        foreach (\Config::get('app.required_extensions') as $extension_name) {
+            $alternatives = explode('/', $extension_name);
+            if ($alternatives) {
+                foreach ($alternatives as $alternative) {
+                    $php_extensions[$extension_name] = extension_loaded(trim($alternative));
+                    if ($php_extensions[$extension_name]) {
+                        break;
+                    }
+                }
+            } else {
+                $php_extensions[$extension_name] = extension_loaded($extension_name);
+            }
+        }
+
+        // Jobs
         $queued_jobs = \App\Job::orderBy('created_at', 'desc')->get();
         $failed_jobs = \App\FailedJob::orderBy('failed_at', 'desc')->get();
 
-        return view('secure/system', ['queued_jobs' => $queued_jobs, 'failed_jobs' => $failed_jobs]);
+        return view('secure/system', [
+            'queued_jobs'    => $queued_jobs,
+            'failed_jobs'    => $failed_jobs,
+            'php_extensions' => $php_extensions
+        ]);
     }
 }

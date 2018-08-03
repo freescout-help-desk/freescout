@@ -190,7 +190,7 @@ class MailboxesController extends Controller
                 'out_port'     => 'required|integer',
                 'out_username' => 'required|string|max:100',
                 'out_password' => 'required|string|max:255',
-                'out_ssl'      => 'required|integer',
+                'out_encryption'      => 'required|integer',
             ]);
 
             if ($validator->fails()) {

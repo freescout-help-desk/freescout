@@ -195,7 +195,7 @@
                                     <div class="thread-person">
                                         <strong>
                                             @if ($thread->type == App\Thread::TYPE_CUSTOMER)
-                                                {{ $thread->customer->getFullName() }}
+                                                {{ $thread->customer->getFullName(true) }}
                                             @else
                                                 @include('conversations/thread_by')
                                             @endif

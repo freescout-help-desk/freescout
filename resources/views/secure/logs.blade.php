@@ -33,12 +33,16 @@
             <tbody>
                 @foreach ($logs as $row)
                     <tr>
-                        @foreach ($row as $col => $value)
+                        @foreach ($cols as $col)
                             <td>
-                                @if ($col == 'causer')
-                                    <a href="{{ $value->url() }}">{{ $value->getFullName(true) }}</a>
+                                @if (isset($row[$col]))
+                                    @if ($col == 'user' || $col == 'customer')
+                                        <a href="{{ $row[$col]->url() }}">{{ $row[$col]->getFullName(true) }}</a>
+                                    @else
+                                        {{ $row[$col] }}
+                                    @endif
                                 @else
-                                    {{ $value }}
+                                    &nbsp;
                                 @endif
                             </td>
                         @endforeach
