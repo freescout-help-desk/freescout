@@ -6,9 +6,9 @@ use App\Conversation;
 use App\Customer;
 use App\Email;
 use App\Events\CustomerReplied;
+use App\Mail\Mail;
 use App\Mailbox;
 use App\Thread;
-use App\Mail\Mail;
 use Illuminate\Console\Command;
 use Webklex\IMAP\Client;
 
@@ -53,21 +53,22 @@ class FetchEmails extends Command
             ->where('in_password', '<>', '')
             ->get();
 
-            foreach ($mailboxes as $mailbox) {
-                $this->info('['.date('Y-m-d H:i:s').'] Mailbox: '.$mailbox->name);
-                try {
-                    $this->fetch($mailbox);
-                } catch(\Exception $e) {
-                    $this->error('['.date('Y-m-d H:i:s').'] Error: '.$e->getMessage().'; Line: '.$e->getLine());
-                    activity()
+        foreach ($mailboxes as $mailbox) {
+            $this->info('['.date('Y-m-d H:i:s').'] Mailbox: '.$mailbox->name);
+
+            try {
+                $this->fetch($mailbox);
+            } catch (\Exception $e) {
+                $this->error('['.date('Y-m-d H:i:s').'] Error: '.$e->getMessage().'; Line: '.$e->getLine());
+                activity()
                        ->withProperties([
                             'error'    => $e->getMessage(),
                             'mailbox'  => $mailbox->name,
                         ])
                        ->useLog(\App\ActivityLog::NAME_EMAILS_FETCHING)
                        ->log(\App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR);
-                }
             }
+        }
     }
 
     public function fetch($mailbox)
@@ -79,7 +80,7 @@ class FetchEmails extends Command
             'validate_cert' => true,
             'username'      => $mailbox->in_username,
             'password'      => $mailbox->in_password,
-            'protocol'      => $mailbox->getInProtocolName()
+            'protocol'      => $mailbox->getInProtocolName(),
         ]);
 
         // Connect to the Server
@@ -89,12 +90,12 @@ class FetchEmails extends Command
         $folder = $client->getFolder('INBOX');
 
         if (!$folder) {
-            throw new \Exception("Could not get mailbox folder: INBOX", 1);
+            throw new \Exception('Could not get mailbox folder: INBOX', 1);
         }
 
         // Get unseen messages for a period
         $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
-        
+
         $this->line('['.date('Y-m-d H:i:s').'] Fetched: '.count($messages));
 
         $message_index = 1;
@@ -108,7 +109,7 @@ class FetchEmails extends Command
                 $message->setFlag(['Seen']);
                 continue;
             }
-            
+
             if ($message->hasHTMLBody()) {
                 // Get body and replace :cid with images URLs
                 $body = $message->getHTMLBody(true);
@@ -152,7 +153,7 @@ class FetchEmails extends Command
             $attachments = $message->getAttachments();
 
             $save_result = $this->saveThread($mailbox->id, $message_id, $in_reply_to, $references, $from, $to, $cc, $bcc, $subject, $body, $attachments);
-            
+
             if ($save_result) {
                 $message->setFlag(['Seen']);
                 $this->line('['.date('Y-m-d H:i:s').'] Processed');
@@ -173,14 +174,14 @@ class FetchEmails extends Command
         $new = false;
         $conversation = null;
         $now = date('Y-m-d H:i:s');
-        
+
         $prev_thread = null;
 
         if ($in_reply_to) {
             $prev_thread = Thread::where('message_id', $in_reply_to)->first();
         } elseif ($references) {
             if (!is_array($references)) {
-                $references = array_filter(preg_split("/[, <>]/", $references));
+                $references = array_filter(preg_split('/[, <>]/', $references));
             }
             $prev_thread = Thread::whereIn('message_id', $references)->first();
         }
@@ -249,7 +250,7 @@ class FetchEmails extends Command
         if ($is_html) {
             $separator = Mail::REPLY_ABOVE_HTML;
 
-            $dom = new \DOMDocument;
+            $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
             $dom->loadHTML($body);
             libxml_use_internal_errors(false);
@@ -270,14 +271,16 @@ class FetchEmails extends Command
         if (!empty($parts)) {
             return $parts[0];
         }
+
         return $body;
     }
 
     /**
      * Remove mailbox email from the list of emails.
-     * 
-     * @param  array $list
-     * @param  string $mailbox_email [description]
+     *
+     * @param array  $list
+     * @param string $mailbox_email [description]
+     *
      * @return array
      */
     public function removeMailboxEmail($list, $mailbox_email)
@@ -291,13 +294,15 @@ class FetchEmails extends Command
                 break;
             }
         }
+
         return $list;
     }
 
     /**
      * Conver email object to plain emails.
-     * 
-     * @param  array $obj_list
+     *
+     * @param array $obj_list
+     *
      * @return array
      */
     public function formatEmailList($obj_list)
@@ -306,6 +311,7 @@ class FetchEmails extends Command
         foreach ($obj_list as $item) {
             $plain_list[] = $item->mail;
         }
+
         return $plain_list;
     }
 }
