@@ -186,10 +186,10 @@ class MailboxesController extends Controller
 
         if ($request->out_method == Mailbox::OUT_METHOD_SMTP) {
             $validator = Validator::make($request->all(), [
-                'out_server'   => 'required|string|max:255',
-                'out_port'     => 'required|integer',
-                'out_username' => 'required|string|max:100',
-                'out_password' => 'required|string|max:255',
+                'out_server'          => 'required|string|max:255',
+                'out_port'            => 'required|integer',
+                'out_username'        => 'required|string|max:100',
+                'out_password'        => 'required|string|max:255',
                 'out_encryption'      => 'required|integer',
             ]);
 

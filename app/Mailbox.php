@@ -52,8 +52,8 @@ class Mailbox extends Model
 
     public static $out_encryptions = [
         self::OUT_ENCRYPTION_NONE => '',
-        self::OUT_ENCRYPTION_SSL => 'ssl',
-        self::OUT_ENCRYPTION_TLS => 'tls',
+        self::OUT_ENCRYPTION_SSL  => 'ssl',
+        self::OUT_ENCRYPTION_TLS  => 'tls',
     ];
 
     /**
@@ -76,8 +76,8 @@ class Mailbox extends Model
 
     public static $in_encryptions = [
         self::IN_ENCRYPTION_NONE => '',
-        self::IN_ENCRYPTION_SSL => 'ssl',
-        self::IN_ENCRYPTION_TLS => 'tls',
+        self::IN_ENCRYPTION_SSL  => 'ssl',
+        self::IN_ENCRYPTION_TLS  => 'tls',
     ];
 
     /**
@@ -380,7 +380,7 @@ class Mailbox extends Model
 
     /**
      * Get outgoing email encryption protocol.
-     * 
+     *
      * @return string
      */
     public function getOutEncryptionName()
@@ -390,7 +390,7 @@ class Mailbox extends Model
 
     /**
      * Get incoming email encryption protocol.
-     * 
+     *
      * @return string
      */
     public function getInEncryptionName()
@@ -400,7 +400,7 @@ class Mailbox extends Model
 
     /**
      * Get incoming protocol name.
-     * 
+     *
      * @return string
      */
     public function getInProtocolName()

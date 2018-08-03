@@ -41,6 +41,7 @@ class SecureController extends Controller
             if (!in_array($col, $cols)) {
                 $cols[] = $col;
             }
+
             return $cols;
         }
         $names = ActivityLog::select('log_name')->distinct()->get()->pluck('log_name');
@@ -115,7 +116,7 @@ class SecureController extends Controller
         return view('secure/system', [
             'queued_jobs'    => $queued_jobs,
             'failed_jobs'    => $failed_jobs,
-            'php_extensions' => $php_extensions
+            'php_extensions' => $php_extensions,
         ]);
     }
 }
