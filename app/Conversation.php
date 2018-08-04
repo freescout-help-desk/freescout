@@ -223,9 +223,9 @@ class Conversation extends Model
         $text = trim(preg_replace('/\s+/', ' ', $text));
 
         // Remove "undetectable" whitespaces
-        $whitespaces = ["%81", "%7F", "%C5%8D", "%8D", "%8F", "%C2%90", "%C2", "%90", "%9D", "%C2%A0", "%A0", "%C2%AD", "%AD", "%08", "%09", "%0A", "%0D"];
-        $text  = urlencode($text);
-        foreach($whitespaces as $char){
+        $whitespaces = ['%81', '%7F', '%C5%8D', '%8D', '%8F', '%C2%90', '%C2', '%90', '%9D', '%C2%A0', '%A0', '%C2%AD', '%AD', '%08', '%09', '%0A', '%0D'];
+        $text = urlencode($text);
+        foreach ($whitespaces as $char) {
             $text = str_replace($char, ' ', $text);
         }
         $text = urldecode($text);

@@ -31,7 +31,7 @@ class FetchEmails extends Command
 
     /**
      * Current mailbox.
-     * 
+     *
      * @var Mailbox
      */
     public $mailbox;
@@ -272,9 +272,10 @@ class FetchEmails extends Command
 
     /**
      * Save attachments from email.
-     * 
-     * @param  array $attachments
-     * @param  integer $thread_id
+     *
+     * @param array $attachments
+     * @param int   $thread_id
+     *
      * @return bool
      */
     public function saveAttachments($email_attachments, $thread_id)
@@ -292,6 +293,7 @@ class FetchEmails extends Command
                 $has_attachments = true;
             }
         }
+
         return $has_attachments;
     }
 

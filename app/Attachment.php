@@ -53,12 +53,12 @@ class Attachment extends Model
 
         $file_name = $name;
 
-        $attachment            = new Attachment();
+        $attachment = new self();
         $attachment->thread_id = $thread_id;
-        $attachment->name      = $name;
+        $attachment->name = $name;
         $attachment->file_name = $file_name;
         $attachment->mime_type = $mime_type;
-        $attachment->type      = $type;
+        $attachment->type = $type;
         //$attachment->size      = Storage::size($file_path);
         $attachment->save();
 
@@ -69,20 +69,22 @@ class Attachment extends Model
         if ($attachment->size) {
             $attachment->save();
         }
+
         return true;
     }
 
     /**
      * Get file path by ID.
-     * 
-     * @param  integer $id
+     *
+     * @param int $id
+     *
      * @return string
      */
     public static function getPath($id)
     {
         $hash = md5($id);
 
-        $first  = -1;
+        $first = -1;
         $second = 0;
 
         for ($i = 0; $i < strlen($hash); $i++) {
@@ -98,6 +100,7 @@ class Attachment extends Model
         if ($first == -1) {
             $first = 0;
         }
+
         return $first.DIRECTORY_SEPARATOR.$second.DIRECTORY_SEPARATOR;
     }
 
@@ -115,7 +118,7 @@ class Attachment extends Model
 
     /**
      * Get attachment public URL.
-     * 
+     *
      * @return string
      */
     public function getUrl()
@@ -125,7 +128,7 @@ class Attachment extends Model
 
     /**
      * Convert size into human readable format.
-     * 
+     *
      * @return string
      */
     public function getSizeName()
@@ -138,9 +141,9 @@ class Attachment extends Model
         $size = (int) $size;
         if ($size > 0) {
             $base = log($size) / log(1024);
-            $suffixes = array(' b', ' KB', ' MB', ' GB', ' TB');
+            $suffixes = [' b', ' KB', ' MB', ' GB', ' TB'];
 
-            return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
+            return round(pow(1024, $base - floor($base)), $precision).$suffixes[floor($base)];
         } else {
             return $size;
         }
