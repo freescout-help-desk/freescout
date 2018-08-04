@@ -106,6 +106,7 @@ class FetchEmails extends Command
         $this->line('['.date('Y-m-d H:i:s').'] Fetched: '.count($messages));
 
         $message_index = 1;
+
         try {
             // We have to sort messages manually, as they can be in non-chronological order
             $messages = $this->sortMessage($messages);
@@ -184,8 +185,9 @@ class FetchEmails extends Command
                     $this->logError('Error occured processing message');
                 }
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $message->setFlag(['Seen']);
+
             throw $e;
         }
     }
@@ -207,7 +209,7 @@ class FetchEmails extends Command
                 ])
                 ->useLog(\App\ActivityLog::NAME_EMAILS_FETCHING)
                 ->log(\App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             // Do nothing
         }
     }
@@ -325,10 +327,11 @@ class FetchEmails extends Command
      */
     public function separateReply($body, $is_html, $is_reply)
     {
-        $cmp_reply_length_desc = function($a, $b) {
+        $cmp_reply_length_desc = function ($a, $b) {
             if (mb_strlen($a) == mb_strlen($b)) {
                 return 0;
             }
+
             return (mb_strlen($a) < mb_strlen($b)) ? -1 : 1;
         };
 
@@ -365,6 +368,7 @@ class FetchEmails extends Command
             }
             if (count($reply_bodies)) {
                 usort($reply_bodies, $cmp_reply_length_desc);
+
                 return $reply_bodies[0];
             }
         }
@@ -414,8 +418,9 @@ class FetchEmails extends Command
 
     /**
      * We have to sort messages manually, as they can be in non-chronological order.
-     * 
-     * @param  Collection $messages
+     *
+     * @param Collection $messages
+     *
      * @return Collection
      */
     public function sortMessage($messages)
@@ -423,6 +428,7 @@ class FetchEmails extends Command
         $messages = $messages->sortBy(function ($message, $key) {
             return $message->getDate()->timestamp;
         });
+
         return $messages;
     }
 }
