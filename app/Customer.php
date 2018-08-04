@@ -488,7 +488,7 @@ class Customer extends Model
 
     /**
      * Get first part of the email.
-     * 
+     *
      * @return string
      */
     public function getNameFromEmail()
