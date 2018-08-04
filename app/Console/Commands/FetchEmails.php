@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Attachment;
 use App\Conversation;
 use App\Customer;
 use App\Email;
@@ -27,6 +28,13 @@ class FetchEmails extends Command
      * @var string
      */
     protected $description = 'Fetch emails from mailboxes addresses';
+
+    /**
+     * Current mailbox.
+     * 
+     * @var Mailbox
+     */
+    public $mailbox;
 
     /**
      * Create a new command instance.
@@ -56,17 +64,12 @@ class FetchEmails extends Command
         foreach ($mailboxes as $mailbox) {
             $this->info('['.date('Y-m-d H:i:s').'] Mailbox: '.$mailbox->name);
 
+            $this->mailbox = $mailbox;
+
             try {
                 $this->fetch($mailbox);
             } catch (\Exception $e) {
-                $this->error('['.date('Y-m-d H:i:s').'] Error: '.$e->getMessage().'; Line: '.$e->getLine());
-                activity()
-                       ->withProperties([
-                            'error'    => $e->getMessage(),
-                            'mailbox'  => $mailbox->name,
-                        ])
-                       ->useLog(\App\ActivityLog::NAME_EMAILS_FETCHING)
-                       ->log(\App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR);
+                $this->logError('Error: '.$e->getMessage().'; Line: '.$e->getLine());
             }
         }
     }
@@ -96,6 +99,10 @@ class FetchEmails extends Command
         // Get unseen messages for a period
         $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
 
+        if ($client->getLastError()) {
+            $this->logError($client->getLastError());
+        }
+
         $this->line('['.date('Y-m-d H:i:s').'] Fetched: '.count($messages));
 
         $message_index = 1;
@@ -119,7 +126,7 @@ class FetchEmails extends Command
                 $body = $this->separateReply($body, false);
             }
             if (!$body) {
-                $this->error('['.date('Y-m-d H:i:s').'] Message body is empty');
+                $this->logError('Message body is empty');
                 $message->setFlag(['Seen']);
                 continue;
             }
@@ -130,7 +137,7 @@ class FetchEmails extends Command
                 $from = $message->getFrom();
             }
             if (!$from) {
-                $this->error('['.date('Y-m-d H:i:s').'] From is empty');
+                $this->logError('From is empty');
                 $message->setFlag(['Seen']);
                 continue;
             } else {
@@ -158,9 +165,27 @@ class FetchEmails extends Command
                 $message->setFlag(['Seen']);
                 $this->line('['.date('Y-m-d H:i:s').'] Processed');
             } else {
-                $this->error('['.date('Y-m-d H:i:s').'] Error occured processing message');
+                $this->logError('Error occured processing message');
             }
         }
+    }
+
+    public function logError($message)
+    {
+        $this->error('['.date('Y-m-d H:i:s').'] '.$message);
+
+        $mailbox_name = '';
+        if ($this->mailbox) {
+            $mailbox_name = $this->mailbox->name;
+        }
+
+        activity()
+            ->withProperties([
+                'error'    => $message,
+                'mailbox'  => $mailbox_name,
+            ])
+            ->useLog(\App\ActivityLog::NAME_EMAILS_FETCHING)
+            ->log(\App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR);
     }
 
     /**
@@ -195,7 +220,6 @@ class FetchEmails extends Command
 
             $conversation = new Conversation();
             $conversation->type = Conversation::TYPE_EMAIL;
-            $conversation->status = Conversation::STATUS_ACTIVE;
             $conversation->state = Conversation::STATE_PUBLISHED;
             $conversation->subject = $subject;
             $conversation->setCc($cc);
@@ -210,6 +234,8 @@ class FetchEmails extends Command
             $conversation->source_via = Conversation::PERSON_CUSTOMER;
             $conversation->source_type = Conversation::SOURCE_TYPE_EMAIL;
         }
+        // Reply from customer makes conversation active
+        $conversation->status = Conversation::STATUS_ACTIVE;
         $conversation->last_reply_at = $now;
         $conversation->last_reply_from = Conversation::PERSON_USER;
         // Set folder id
@@ -233,9 +259,40 @@ class FetchEmails extends Command
         $thread->created_by_customer_id = $customer->id;
         $thread->save();
 
+        $has_attachments = $this->saveAttachments($attachments, $thread->id);
+        if ($has_attachments) {
+            $thread->has_attachments = true;
+            $thread->save();
+        }
+
         event(new CustomerReplied($conversation, $thread, $new));
 
         return true;
+    }
+
+    /**
+     * Save attachments from email.
+     * 
+     * @param  array $attachments
+     * @param  integer $thread_id
+     * @return bool
+     */
+    public function saveAttachments($email_attachments, $thread_id)
+    {
+        $has_attachments = false;
+        foreach ($email_attachments as $email_attachment) {
+            $create_result = Attachment::create(
+                $email_attachment->getName(),
+                $email_attachment->getMimeType(),
+                Attachment::typeNameToInt($email_attachment->getType()),
+                $email_attachment->getContent(),
+                $thread_id
+            );
+            if ($create_result) {
+                $has_attachments = true;
+            }
+        }
+        return $has_attachments;
     }
 
     /**

@@ -220,6 +220,18 @@ class Conversation extends Model
         }
 
         $text = strip_tags($text);
+        $text = trim(preg_replace('/\s+/', ' ', $text));
+
+        // Remove "undetectable" whitespaces
+        $whitespaces = ["%81", "%7F", "%C5%8D", "%8D", "%8F", "%C2%90", "%C2", "%90", "%9D", "%C2%A0", "%A0", "%C2%AD", "%AD", "%08", "%09", "%0A", "%0D"];
+        $text  = urlencode($text);
+        foreach($whitespaces as $char){
+            $text = str_replace($char, ' ', $text);
+        }
+        $text = urldecode($text);
+
+        $text = trim(preg_replace('/[ ]+/', ' ', $text));
+
         $this->preview = mb_substr($text, 0, self::PREVIEW_MAXLENGTH);
 
         return $this->preview;

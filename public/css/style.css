@@ -1328,6 +1328,35 @@ table.table-conversations td.conv-attachment {
 .thread-lineitem .thread-header {
     min-height: auto;
 }
+.thread-attachments {
+    position: relative;
+}
+.thread-attachments ul {
+    list-style: none;
+    padding-left: 23px;
+}
+.thread-attachments li {
+    border-radius: 4px;
+    border: 1px solid #dadada;
+    display: inline-block;
+    line-height: 1;
+    background-color: #f5f5f5;
+    margin: 8px 4px 8px 0;
+    padding: 4px 10px;
+    position: relative;
+}
+.thread-attachments i {
+    color: #a5b2bd;
+    font-size: 14px;
+    position: absolute;
+    top: 12px;
+}
+.thread-attachments a {
+    display: inline-block;
+}
+.thread-attachments span {
+    text-transform: lowercase;
+}
 .conv-new #conv-toolbar {
     border-bottom: 1px solid #d4d9dd;
     padding: 6px 0 7px 0;
@@ -1934,4 +1963,21 @@ a.text-danger,
 a.text-danger:hover,
 a.text-danger:focus {
     color: #cc1f19!important;
+}
+.break-words {
+    /* These are technically the same, but use both */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+
+    -ms-word-break: break-all;
+    /* This is the dangerous one in WebKit, as it breaks things wherever */
+    word-break: break-all;
+    /* Instead use this non-standard one: */
+    word-break: break-word;
+
+    /* Adds a hyphen where the word breaks, if supported (No Blink) */
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
 }

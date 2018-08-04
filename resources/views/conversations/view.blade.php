@@ -262,6 +262,19 @@
                             <div class="thread-body">
                                 {!! $thread->getCleanBody() !!}
                             </div>
+                            @if ($thread->has_attachments)
+                                <div class="thread-attachments">
+                                    <i class="glyphicon glyphicon-paperclip"></i>
+                                    <ul>
+                                        @foreach ($thread->attachments as $attachment)
+                                            <li>
+                                                <a href="{{ $attachment->getUrl() }}" class="break-words" target="_blank">{{ $attachment->name }}</a>
+                                                <span class="text-help">{{ $attachment->getSizeName() }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
                         </div>
                         <div class="dropdown thread-options">
                             <span class="dropdown-toggle glyphicon glyphicon-option-vertical" data-toggle="dropdown"></span>

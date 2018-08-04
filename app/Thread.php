@@ -172,6 +172,14 @@ class Thread extends Model
     }
 
     /**
+     * Get thread attachmets.
+     */
+    public function attachments()
+    {
+        return $this->hasMany('App\Attachment');
+    }
+
+    /**
      * Get user who created the thread.
      */
     public function created_by_user()
