@@ -131,6 +131,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Get user first name.
+     *
+     * @return string
+     */
+    public function getFirstName()
+    {
+        return $this->first_name;
+    }
+
+    /**
      * Get mailboxes to which user has access.
      */
     public function mailboxesCanView()

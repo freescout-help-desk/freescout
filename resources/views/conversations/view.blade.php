@@ -99,7 +99,7 @@
                                 <label for="cc" class="control-label">{{ __('Cc') }}</label>
 
                                 <div class="conv-reply-field">
-                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', $conversation->cc) }}">
+                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', implode(',', $conversation->getCcArray())) }}">
                                     @include('partials/field_error', ['field'=>'cc'])
                                 </div>
                             </div>
@@ -108,7 +108,7 @@
                                 <label for="bcc" class="control-label">{{ __('Bcc') }}</label>
 
                                 <div class="conv-reply-field">
-                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', $conversation->bcc) }}">
+                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', implode(',', $conversation->getBccArray())) }}">
 
                                     @include('partials/field_error', ['field'=>'bcc'])
                                 </div>

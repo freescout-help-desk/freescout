@@ -69,7 +69,7 @@ class FetchEmails extends Command
             try {
                 $this->fetch($mailbox);
             } catch (\Exception $e) {
-                $this->logError('Error: '.$e->getMessage().'; Line: '.$e->getLine());
+                $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
             }
         }
     }
@@ -106,67 +106,87 @@ class FetchEmails extends Command
         $this->line('['.date('Y-m-d H:i:s').'] Fetched: '.count($messages));
 
         $message_index = 1;
-        foreach ($messages as $message_id => $message) {
-            $this->line('['.date('Y-m-d H:i:s').'] '.$message_index.') '.$message->getSubject());
-            $message_index++;
+        try {
+            // We have to sort messages manually, as they can be in non-chronological order
+            $messages = $this->sortMessage($messages);
+            foreach ($messages as $message_id => $message) {
+                $this->line('['.date('Y-m-d H:i:s').'] '.$message_index.') '.$message->getSubject());
+                $message_index++;
 
-            // Check if message already fetched
-            if (Thread::where('message_id', $message_id)->first()) {
-                $this->line('['.date('Y-m-d H:i:s').'] Message with such Message-ID has been fetched before: '.$message_id);
-                $message->setFlag(['Seen']);
-                continue;
+                // Check if message already fetched
+                if (Thread::where('message_id', $message_id)->first()) {
+                    $this->line('['.date('Y-m-d H:i:s').'] Message with such Message-ID has been fetched before: '.$message_id);
+                    $message->setFlag(['Seen']);
+                    continue;
+                }
+
+                // Detect prev thread
+                $is_reply = false;
+                $in_reply_to = $message->getInReplyTo();
+                $references = $message->getReferences();
+                if ($in_reply_to) {
+                    $prev_thread = Thread::where('message_id', $in_reply_to)->first();
+                } elseif ($references) {
+                    if (!is_array($references)) {
+                        $references = array_filter(preg_split('/[, <>]/', $references));
+                    }
+                    $prev_thread = Thread::whereIn('message_id', $references)->first();
+                }
+                if ($prev_thread) {
+                    $is_reply = true;
+                }
+
+                if ($message->hasHTMLBody()) {
+                    // Get body and replace :cid with images URLs
+                    $body = $message->getHTMLBody(true);
+                    $body = $this->separateReply($body, true, $is_reply);
+                } else {
+                    $body = $message->getTextBody();
+                    $body = $this->separateReply($body, false, $is_reply);
+                }
+                if (!$body) {
+                    $this->logError('Message body is empty');
+                    $message->setFlag(['Seen']);
+                    continue;
+                }
+
+                $subject = $message->getSubject();
+                $from = $message->getReplyTo();
+                if (!$from) {
+                    $from = $message->getFrom();
+                }
+                if (!$from) {
+                    $this->logError('From is empty');
+                    $message->setFlag(['Seen']);
+                    continue;
+                } else {
+                    $from = $this->formatEmailList($from);
+                    $from = $from[0];
+                }
+
+                $to = $this->formatEmailList($message->getTo());
+                $to = $this->removeMailboxEmail($to, $mailbox->email);
+
+                $cc = $this->formatEmailList($message->getCc());
+                $cc = $this->removeMailboxEmail($cc, $mailbox->email);
+
+                $bcc = $this->formatEmailList($message->getBcc());
+                $bcc = $this->removeMailboxEmail($bcc, $mailbox->email);
+
+                $attachments = $message->getAttachments();
+
+                $save_result = $this->saveThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments);
+
+                if ($save_result) {
+                    $message->setFlag(['Seen']);
+                    $this->line('['.date('Y-m-d H:i:s').'] Processed');
+                } else {
+                    $this->logError('Error occured processing message');
+                }
             }
-
-            if ($message->hasHTMLBody()) {
-                // Get body and replace :cid with images URLs
-                $body = $message->getHTMLBody(true);
-                $body = $this->separateReply($body, true);
-            } else {
-                $body = $message->getTextBody();
-                $body = $this->separateReply($body, false);
-            }
-            if (!$body) {
-                $this->logError('Message body is empty');
-                $message->setFlag(['Seen']);
-                continue;
-            }
-
-            $subject = $message->getSubject();
-            $from = $message->getReplyTo();
-            if (!$from) {
-                $from = $message->getFrom();
-            }
-            if (!$from) {
-                $this->logError('From is empty');
-                $message->setFlag(['Seen']);
-                continue;
-            } else {
-                $from = $this->formatEmailList($from);
-                $from = $from[0];
-            }
-
-            $to = $this->formatEmailList($message->getTo());
-            $to = $this->removeMailboxEmail($to, $mailbox->email);
-
-            $cc = $this->formatEmailList($message->getCc());
-            $cc = $this->removeMailboxEmail($cc, $mailbox->email);
-
-            $bcc = $this->formatEmailList($message->getBcc());
-            $bcc = $this->removeMailboxEmail($bcc, $mailbox->email);
-
-            $in_reply_to = $message->getInReplyTo();
-            $references = $message->getReferences();
-
-            $attachments = $message->getAttachments();
-
-            $save_result = $this->saveThread($mailbox->id, $message_id, $in_reply_to, $references, $from, $to, $cc, $bcc, $subject, $body, $attachments);
-
-            if ($save_result) {
-                $message->setFlag(['Seen']);
-                $this->line('['.date('Y-m-d H:i:s').'] Processed');
-            } else {
-                $this->logError('Error occured processing message');
-            }
+        } catch(\Exception $e) {
+            $message->setFlag(['Seen']);
+            throw $e;
         }
     }
 
@@ -179,19 +199,23 @@ class FetchEmails extends Command
             $mailbox_name = $this->mailbox->name;
         }
 
-        activity()
-            ->withProperties([
-                'error'    => $message,
-                'mailbox'  => $mailbox_name,
-            ])
-            ->useLog(\App\ActivityLog::NAME_EMAILS_FETCHING)
-            ->log(\App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR);
+        try {
+            activity()
+                ->withProperties([
+                    'error'    => $message,
+                    'mailbox'  => $mailbox_name,
+                ])
+                ->useLog(\App\ActivityLog::NAME_EMAILS_FETCHING)
+                ->log(\App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR);
+        } catch(\Exception $e) {
+            // Do nothing
+        }
     }
 
     /**
      * Save email as thread.
      */
-    public function saveThread($mailbox_id, $message_id, $in_reply_to, $references, $from, $to, $cc, $bcc, $subject, $body, $attachments)
+    public function saveThread($mailbox_id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments)
     {
         $cc = array_merge($cc, $to);
 
@@ -200,23 +224,18 @@ class FetchEmails extends Command
         $conversation = null;
         $now = date('Y-m-d H:i:s');
 
-        $prev_thread = null;
-
-        if ($in_reply_to) {
-            $prev_thread = Thread::where('message_id', $in_reply_to)->first();
-        } elseif ($references) {
-            if (!is_array($references)) {
-                $references = array_filter(preg_split('/[, <>]/', $references));
-            }
-            $prev_thread = Thread::whereIn('message_id', $references)->first();
-        }
-
+        $customer = Customer::create($from);
         if ($prev_thread) {
             $conversation = $prev_thread->conversation;
+
+            // If reply came from another customer: change customer, add original as CC
+            if ($conversation->customer_id != $customer->id) {
+                $cc[] = $conversation->customer->getMainEmail();
+                $conversation->customer_id = $customer->id;
+            }
         } else {
             // Create conversation
             $new = true;
-            $customer = Customer::create($from);
 
             $conversation = new Conversation();
             $conversation->type = Conversation::TYPE_EMAIL;
@@ -304,14 +323,21 @@ class FetchEmails extends Command
      *
      * @return string
      */
-    public function separateReply($body, $is_html)
+    public function separateReply($body, $is_html, $is_reply)
     {
+        $cmp_reply_length_desc = function($a, $b) {
+            if (mb_strlen($a) == mb_strlen($b)) {
+                return 0;
+            }
+            return (mb_strlen($a) < mb_strlen($b)) ? -1 : 1;
+        };
+
         if ($is_html) {
-            $separator = Mail::REPLY_ABOVE_HTML;
+            $separator = Mail::REPLY_SEPARATOR_HTML;
 
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
-            $dom->loadHTML($body);
+            $dom->loadHTML(mb_convert_encoding($body, 'HTML-ENTITIES', 'UTF-8'));
             libxml_use_internal_errors(false);
             $bodies = $dom->getElementsByTagName('body');
             if ($bodies->length == 1) {
@@ -323,12 +349,24 @@ class FetchEmails extends Command
                 $body = $matches[1];
             }
         } else {
-            $separator = Mail::REPLY_ABOVE_TEXT;
+            $separator = Mail::REPLY_SEPARATOR_TEXT;
             $body = nl2br($body);
         }
-        $parts = explode($separator, $body);
-        if (!empty($parts)) {
-            return $parts[0];
+
+        // This is reply, we need to separate reply text from old text
+        if ($is_reply) {
+            // Check all separators and choose the shortest reply
+            $reply_bodies = [];
+            foreach (Mail::$alternative_reply_separators as $alt_separator) {
+                $parts = explode($alt_separator, $body);
+                if (count($parts) > 1) {
+                    $reply_bodies[] = $parts[0];
+                }
+            }
+            if (count($reply_bodies)) {
+                usort($reply_bodies, $cmp_reply_length_desc);
+                return $reply_bodies[0];
+            }
         }
 
         return $body;
@@ -372,5 +410,19 @@ class FetchEmails extends Command
         }
 
         return $plain_list;
+    }
+
+    /**
+     * We have to sort messages manually, as they can be in non-chronological order.
+     * 
+     * @param  Collection $messages
+     * @return Collection
+     */
+    public function sortMessage($messages)
+    {
+        $messages = $messages->sortBy(function ($message, $key) {
+            return $message->getDate()->timestamp;
+        });
+        return $messages;
     }
 }

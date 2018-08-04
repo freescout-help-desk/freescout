@@ -13,7 +13,7 @@
 	<table cellspacing="0" border="0" cellpadding="0" width="100%">
 	    <tr>
 	        <td>
-	            <table id="fsReplyAbove" class="fsReplyAbove" width="100%" border="0" cellspacing="0" cellpadding="0">
+	            <table id="{{ App\Mail\Mail::REPLY_SEPARATOR_HTML }}" class="{{ App\Mail\Mail::REPLY_SEPARATOR_HTML }}" width="100%" border="0" cellspacing="0" cellpadding="0">
 	            	@foreach ($threads as $thread)
 		            	<tr>
 						    <td>
@@ -21,7 +21,7 @@
 						            <tr>
 						                <td style="padding:8px 0 10px 0;">
 						                    <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#727272; font-size:16px; line-height:22px; margin:0; font-weight:normal;">
-						                    	<strong style="color:#000000;">{{ $thread->getCreatedBy()->first_name }}</strong> @if ($loop->last){{ __('sent a message') }}@else {{ __('replied') }}@endif
+						                    	<strong style="color:#000000;">{{ $thread->getCreatedBy()->getFirstName(true) }}</strong> @if ($loop->last){{ __('sent a message') }}@else {{ __('replied') }}@endif
 						                	</h3>
 
 						                    @if ($thread->getCcArray())
@@ -44,9 +44,10 @@
 					                                {{-- todo: Satisfaction ratings --}}
 					                                {{--<br><br>How would you rate my reply?<br><a href="" style="color:#50bc1c;">Great</a> &nbsp;&nbsp; <a href="" style="color:#555555;">Okay</a> &nbsp;&nbsp; <a href="" style="color:#f10000;">Not Good</a>
 					                                --}}
-
-					                                {!! $conversation->mailbox->signature !!}
-					                                <br><br>
+					                                @if ($thread->source_via == App\Thread::PERSON_USER)
+						                                {!! $conversation->mailbox->signature !!}
+						                                <br><br>
+						                            @endif
 	                                            </div>
 	                                        </div>
 						                </td>

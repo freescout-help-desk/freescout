@@ -222,13 +222,14 @@ class Conversation extends Model
         $text = strip_tags($text);
         $text = trim(preg_replace('/\s+/', ' ', $text));
 
+        // Causes "General error: 1366 Incorrect string value"
         // Remove "undetectable" whitespaces
-        $whitespaces = ['%81', '%7F', '%C5%8D', '%8D', '%8F', '%C2%90', '%C2', '%90', '%9D', '%C2%A0', '%A0', '%C2%AD', '%AD', '%08', '%09', '%0A', '%0D'];
-        $text = urlencode($text);
-        foreach ($whitespaces as $char) {
-            $text = str_replace($char, ' ', $text);
-        }
-        $text = urldecode($text);
+        // $whitespaces = ['%81', '%7F', '%C5%8D', '%8D', '%8F', '%C2%90', '%C2', '%90', '%9D', '%C2%A0', '%A0', '%C2%AD', '%AD', '%08', '%09', '%0A', '%0D'];
+        // $text = urlencode($text);
+        // foreach ($whitespaces as $char) {
+        //     $text = str_replace($char, ' ', $text);
+        // }
+        // $text = urldecode($text);
 
         $text = trim(preg_replace('/[ ]+/', ' ', $text));
 
@@ -425,6 +426,7 @@ class Conversation extends Model
     {
         $emails_array = self::sanitizeEmails($emails);
         if ($emails_array) {
+            $emails_array = array_unique($emails_array);
             $this->cc = json_encode($emails_array);
         } else {
             $this->cc = null;
@@ -438,6 +440,7 @@ class Conversation extends Model
     {
         $emails_array = self::sanitizeEmails($emails);
         if ($emails_array) {
+            $emails_array = array_unique($emails_array);
             $this->bcc = json_encode($emails_array);
         } else {
             $this->bcc = null;

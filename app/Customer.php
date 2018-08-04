@@ -464,12 +464,40 @@ class Customer extends Model
         if ($this->first_name || $this->last_name) {
             return $this->first_name.' '.$this->last_name;
         } elseif ($email_if_empty) {
-            if (count($this->emails)) {
-                return explode('@', $this->emails[0]->email)[0];
-            }
+            return $this->getNameFromEmail();
         }
 
         return '';
+    }
+
+    /**
+     * Get customer first name.
+     *
+     * @return string
+     */
+    public function getFirstName($email_if_empty = false)
+    {
+        if ($this->first_name) {
+            return $this->first_name;
+        } elseif ($email_if_empty) {
+            return $this->getNameFromEmail();
+        }
+
+        return '';
+    }
+
+    /**
+     * Get first part of the email.
+     * 
+     * @return string
+     */
+    public function getNameFromEmail()
+    {
+        if (count($this->emails)) {
+            return explode('@', $this->emails[0]->email)[0];
+        } else {
+            return '';
+        }
     }
 
     /**
