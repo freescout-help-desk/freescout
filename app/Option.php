@@ -1,7 +1,8 @@
 <?php
 /**
- * todo: implement caching by saving all options in one cache variable on register_shutdown_function
+ * todo: implement caching by saving all options in one cache variable on register_shutdown_function.
  */
+
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
@@ -16,16 +17,18 @@ class Option extends Model
      * @var array
      */
     protected $guarded = ['id'];
+
     /**
      * Set an option.
      *
-     * @param   string $name
-     * @param   string $value
-     * @return  boolean
+     * @param string $name
+     * @param string $value
+     *
+     * @return bool
      */
     public static function set($name, $value)
     {
-        $option = Option::firstOrCreate(
+        $option = self::firstOrCreate(
             ['name' => $name], ['value' => $value]
         );
         if ($option['value'] != $value) {
@@ -37,17 +40,17 @@ class Option extends Model
     /**
      * Get option.
      *
-     * @param  string  $name
+     * @param string $name
+     *
      * @return string
      */
     public static function get($name, $default = false)
     {
-        $option = Option::where('name', (string) $name)->first();
+        $option = self::where('name', (string) $name)->first();
         if ($option) {
             return $option->value;
         } else {
             return $default;
         }
     }
-
 }

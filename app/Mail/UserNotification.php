@@ -3,8 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Container\Container;
-use Illuminate\Contracts\Mail\Mailer as MailerContract;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -79,7 +77,7 @@ class UserNotification extends Mailable
             });
         }
 
-        $subject = '[#'.$this->conversation->number.'] ' .$this->conversation->subject;
+        $subject = '[#'.$this->conversation->number.'] '.$this->conversation->subject;
 
         $customer = $this->conversation->customer;
 

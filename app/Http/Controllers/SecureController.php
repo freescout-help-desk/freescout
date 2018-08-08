@@ -120,10 +120,11 @@ class SecureController extends Controller
         $commands_list = ['freescout:fetch-emails', 'queue:work'];
         foreach ($commands_list as $command_name) {
             $status_texts = [];
-            
+
             // Check if command is running now
             if (function_exists('shell_exec')) {
                 $running_commands = 0;
+
                 try {
                     $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '{$command_name}'"));
                     $pids = [];
@@ -140,7 +141,7 @@ class SecureController extends Controller
                 if ($running_commands == 1) {
                     $commands[] = [
                         'name'        => $command_name,
-                        'status'      => "success",
+                        'status'      => 'success',
                         'status_text' => __('Running'),
                     ];
                     continue;
@@ -148,14 +149,14 @@ class SecureController extends Controller
                     unset($pids[0]);
                     $commands[] = [
                         'name'        => $command_name,
-                        'status'      => "error",
+                        'status'      => 'error',
                         'status_text' => __(':number commands are running at the same time. Please stop extra commands by executing the following console command:', ['number' => $running_commands]).' kill '.implode(' | kill ', $pids),
                     ];
                     continue;
                 }
             }
             // Check last run
-            $option_name = str_replace('freescout_', '', preg_replace("/[^a-zA-Z0-9]/", '_', $command_name));
+            $option_name = str_replace('freescout_', '', preg_replace('/[^a-zA-Z0-9]/', '_', $command_name));
 
             $date_text = '?';
             $last_run = Option::get($option_name.'_last_run');
@@ -174,7 +175,7 @@ class SecureController extends Controller
             $status_texts[] = __('Last successful run:').' '.$date_text;
 
             $status = 'error';
-            if ($last_successful_run && $last_run && (int)$last_successful_run >= (int)$last_run) {
+            if ($last_successful_run && $last_run && (int) $last_successful_run >= (int) $last_run) {
                 unset($status_texts[0]);
                 $status = 'success';
             }
@@ -182,7 +183,7 @@ class SecureController extends Controller
             $commands[] = [
                 'name'        => $command_name,
                 'status'      => $status,
-                'status_text' => implode(' / ', $status_texts)
+                'status_text' => implode(' / ', $status_texts),
             ];
         }
 

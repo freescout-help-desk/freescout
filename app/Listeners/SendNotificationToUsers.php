@@ -18,7 +18,6 @@ class SendNotificationToUsers
 
     /**
      * Handle the event.
-     *
      */
     public function handle($event)
     {

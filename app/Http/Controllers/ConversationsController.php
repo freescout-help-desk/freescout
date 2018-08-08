@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Conversation;
 use App\Customer;
-use App\Events\UserCreatedConversation;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
+use App\Events\UserCreatedConversation;
 use App\Events\UserReplied;
 use App\Folder;
 use App\Mailbox;

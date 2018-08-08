@@ -72,10 +72,12 @@ class User extends Authenticatable
     protected $fillable = ['role', 'first_name', 'last_name', 'email', 'password', 'role', 'timezone', 'photo_url', 'type', 'emails', 'job_title', 'phone', 'time_format', 'enable_kb_shortcuts'];
 
     /**
-     * For array_unique function
+     * For array_unique function.
+     *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->id.'';
     }
 

@@ -16,7 +16,7 @@ class Mail
     public static $alternative_reply_separators = [
         self::REPLY_SEPARATOR_HTML,
         '<div class="gmail_quote">',
-        '<blockquote'
+        '<blockquote',
     ];
 
     /**

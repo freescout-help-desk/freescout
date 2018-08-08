@@ -15,7 +15,7 @@ class UserObserver
     public function created(User $user)
     {
         // We can not create user folders here, as user is not connected to mailboxes yet
-        
+
         // Add default subscriptions
         Subscription::addDefaultSubscriptions($user->id);
     }
