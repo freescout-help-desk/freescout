@@ -34,10 +34,10 @@ class Kernel extends ConsoleKernel
             ->hourly();
 
         // Fetch emails from mailboxes
-        // $schedule->command('freescout:fetch-emails')
-        //     ->everyMinute()
-        //     ->withoutOverlapping()
-        //     ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
+        $schedule->command('freescout:fetch-emails')
+            ->everyMinute()
+            ->withoutOverlapping()
+            ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
 
         // Command runs as subprocess and sets cache mutex. If schedule:run command is killed
         // subprocess does not clear the mutex and it stays in the cache until cache:clear is executed.

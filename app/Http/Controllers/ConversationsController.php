@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Conversation;
 use App\Customer;
+use App\Events\UserCreatedConversation;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
 use App\Events\UserReplied;
@@ -225,7 +226,7 @@ class ConversationsController extends Controller
                     $thread->created_by_user_id = $user->id;
                     $thread->save();
 
-                    event(new ConversationUserChanged($conversation));
+                    event(new ConversationUserChanged($conversation, $user));
 
                     $response['status'] = 'success';
 
@@ -417,7 +418,7 @@ class ConversationsController extends Controller
                             event(new ConversationStatusChanged($conversation));
                         }
                         if ($user_changed) {
-                            event(new ConversationUserChanged($conversation));
+                            event(new ConversationUserChanged($conversation, $user));
                         }
                     }
 
@@ -438,7 +439,11 @@ class ConversationsController extends Controller
                     $thread->created_by_user_id = auth()->user()->id;
                     $thread->save();
 
-                    event(new UserReplied($conversation, $new));
+                    if ($new) {
+                        event(new UserCreatedConversation($conversation, $thread));
+                    } else {
+                        event(new UserReplied($conversation));
+                    }
 
                     $response['status'] = 'success';
                     $response['redirect_url'] = route('conversations.view', ['id' => $conversation->id]);

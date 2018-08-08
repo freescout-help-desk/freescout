@@ -204,6 +204,26 @@ class Conversation extends Model
     }
 
     /**
+     * Get all published conversation thread in desc order.
+     * @return Collection
+     */
+    public function getThreads($skip = null, $take = null)
+    {
+        $query = $this->threads()
+            ->where('state', Thread::STATE_PUBLISHED)
+            ->orderBy('created_at', 'desc');
+
+        if (!is_null($skip)) {
+            $query->skip($skip);
+        }
+        if (!is_null($take)) {
+            $query->take($take);
+        }
+
+        return $query->get();
+    }
+
+    /**
      * Set preview text.
      *
      * @param string $text
@@ -262,12 +282,22 @@ class Conversation extends Model
 
     /**
      * Get status name.
+     * 
+     * @return string
+     */
+    public function getStatusName()
+    {
+        return self::statusCodeToName($this->status);
+    }
+
+    /**
+     * Convert status code to name.
      *
      * @param int $status
      *
      * @return string
      */
-    public static function getStatusName($status)
+    public static function statusCodeToName($status)
     {
         switch ($status) {
             case self::STATUS_ACTIVE:
@@ -498,5 +528,15 @@ class Conversation extends Model
         }
 
         return $emails_array;
+    }
+
+    /**
+     * Get conversation URL.
+     *
+     * @return string
+     */
+    public function url()
+    {
+        return route('conversations.view', ['id' => $this->id]);
     }
 }

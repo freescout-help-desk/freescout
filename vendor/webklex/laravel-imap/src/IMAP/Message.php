@@ -313,11 +313,9 @@ class Message {
         }
 
         if (property_exists($header, 'subject')) {
-            $this->subject = imap_utf8($header->subject);
+            $this->subject = $this->decodeString($this->convertEncoding($header->subject, $this->getEncoding($header->subject)), 'UTF-7');
         }
-        if (property_exists($header, 'subject')) {
-            $this->subject = imap_utf8($header->subject);
-        }
+
         if (property_exists($header, 'date')) {
             $date = $header->date;
 
@@ -683,9 +681,13 @@ class Message {
      *
      * @return mixed|string
      */
-    private function convertEncoding($str, $from = "ISO-8859-2", $to = "UTF-8") {
+    public function convertEncoding($str, $from = "ISO-8859-2", $to = "UTF-8") {
+
+        $from = EncodingAliases::get($from);
+        $to = EncodingAliases::get($to);
+
         if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
-            return iconv(EncodingAliases::get($from), $to.'//IGNORE', $str);
+            return iconv($from, $to.'//IGNORE', $str);
         } else {
             if (!$from) {
                 return mb_convert_encoding($str, $to);
@@ -697,18 +699,21 @@ class Message {
     /**
      * Get the encoding of a given abject
      *
-     * @param object $structure
+     * @param object|string $structure
      *
      * @return null|string
      */
-    private function getEncoding($structure) {
+    public function getEncoding($structure) {
         if (property_exists($structure, 'parameters')) {
             foreach ($structure->parameters as $parameter) {
                 if (strtolower($parameter->attribute) == "charset") {
                     return strtoupper($parameter->value);
                 }
             }
+        }elseif (is_string($structure) === true){
+            return mb_detect_encoding($structure);
         }
+
         return null;
     }
 
@@ -716,7 +721,9 @@ class Message {
      * Find the folder containing this message.
      *
      * @param null|Folder $folder where to start searching from (top-level inbox by default)
+     *
      * @return null|Folder
+     * @throws Exceptions\ConnectionFailedException
      */
     public function getContainingFolder(Folder $folder = null) {
         $folder = $folder ?: $this->client->getFolders()->first();
@@ -753,10 +760,10 @@ class Message {
 
     /**
      * Move the Message into an other Folder
-     *
-     * @param string  $mailbox
+     * @param string $mailbox
      *
      * @return bool
+     * @throws Exceptions\ConnectionFailedException
      */
     public function moveToFolder($mailbox = 'INBOX') {
         $this->client->createFolder($mailbox);
@@ -766,23 +773,30 @@ class Message {
 
     /**
      * Delete the current Message
+     * @param bool $expunge
      *
      * @return bool
+     * @throws Exceptions\ConnectionFailedException
      */
-    public function delete() {
+    public function delete($expunge = true) {
         $status = imap_delete($this->client->getConnection(), $this->uid, FT_UID);
-        $this->client->expunge();
+        if($expunge) $this->client->expunge();
 
         return $status;
     }
 
     /**
      * Restore a deleted Message
+     * @param boolean $expunge
      *
      * @return bool
+     * @throws Exceptions\ConnectionFailedException
      */
-    public function restore() {
-        return imap_undelete($this->client->getConnection(), $this->uid, FT_UID);
+    public function restore($expunge = true) {
+        $status = imap_undelete($this->client->getConnection(), $this->uid, FT_UID);
+        if($expunge) $this->client->expunge();
+
+        return $status;
     }
 
     /**
@@ -811,7 +825,10 @@ class Message {
      */
     public function setFlag($flag) {
         $flag = "\\".trim(is_array($flag) ? implode(" \\", $flag) : $flag);
-        return imap_setflag_full($this->client->getConnection(), $this->getUid(), $flag, SE_UID);
+        $status = imap_setflag_full($this->client->getConnection(), $this->getUid(), $flag, SE_UID);
+        $this->parseFlags();
+
+        return $status;
     }
 
     /**
@@ -822,7 +839,10 @@ class Message {
      */
     public function unsetFlag($flag) {
         $flag = "\\".trim(is_array($flag) ? implode(" \\", $flag) : $flag);
-        return imap_clearflag_full($this->client->getConnection(), $this->getUid(), $flag, SE_UID);
+        $status = imap_clearflag_full($this->client->getConnection(), $this->getUid(), $flag, SE_UID);
+        $this->parseFlags();
+
+        return $status;
     }
 
     /**

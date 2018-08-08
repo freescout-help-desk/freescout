@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Mail\ReplyToCustomer;
+use App\SendLog;
 use App\Thread;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,19 +22,16 @@ class SendReplyToCustomer implements ShouldQueue
 
     public $customer;
 
-    public $user;
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($conversation, $threads, $customer, $user)
+    public function __construct($conversation, $threads, $customer)
     {
         $this->conversation = $conversation;
         $this->threads = $threads;
         $this->customer = $customer;
-        $this->user = $user;
     }
 
     /**
@@ -45,9 +43,6 @@ class SendReplyToCustomer implements ShouldQueue
     {
         $mailbox = $this->conversation->mailbox;
 
-        // Configure mail driver according to Mailbox settings
-        \App\Mail\Mail::setMailDriver($mailbox, $this->user);
-
         // Threads has to be sorted here, if sorted before, they come here in wrong order
         $this->threads = $this->threads->sortByDesc(function ($item, $key) {
             return $item->created_at;
@@ -57,6 +52,9 @@ class SendReplyToCustomer implements ShouldQueue
         $headers = [];
         $last_thread = $this->threads->first();
         $prev_thread = null;
+
+        // Configure mail driver according to Mailbox settings
+        \App\Mail\Mail::setMailDriver($mailbox, $last_thread->created_by_user);
 
         if (count($this->threads) == 1) {
             $new = true;
@@ -78,23 +76,36 @@ class SendReplyToCustomer implements ShouldQueue
         $message_id = 'thread-'.$last_thread->id.'-'.time().'@'.$mailbox->getEmailDomain();
         $headers['Message-ID'] = $message_id;
 
-        Mail::to([['name' => $this->customer->getFullName(), 'email' => $this->customer->getMainEmail()]])
+        $customer_email = $this->customer->getMainEmail();
+        Mail::to([['name' => $this->customer->getFullName(), 'email' => $customer_email]])
             ->cc($last_thread->getCcArray())
             ->bcc($last_thread->getBccArray())
             ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers));
 
         $last_thread->message_id = $message_id;
+        $last_thread->save();
 
-        // Laravel tells us exactly what email addresses failed, let's send back the first
+        // Laravel tells us exactly what email addresses failed
         $failures = Mail::failures();
-        if (!empty($failures)) {
-            $last_thread->send_status = Thread::SEND_STATUS_SEND_ERROR;
-            $last_thread->save();
 
+        // Save to send log
+        $recipients = array_merge([$customer_email], $last_thread->getCcArray(), $last_thread->getBccArray());
+        foreach ($recipients as $recipient) {
+            if (in_array($recipient, $failures)) {
+                $status = SendLog::STATUS_SEND_ERROR;
+            } else {
+                $status = SendLog::STATUS_ACCEPTED;
+            }
+            if ($customer_email == $recipient) {
+                $customer_id = $this->customer->id;
+            } else {
+                $customer_id = null;
+            }
+            SendLog::log($last_thread->id, $message_id, $recipient, $status, $customer_id);
+        }
+
+        if (!empty($failures)) {
             throw new \Exception('Could not send email to: '.implode(', ', $failures));
-        } else {
-            $last_thread->send_status = Thread::SEND_STATUS_SEND_SUCCESS;
-            $last_thread->save();
         }
     }
 
@@ -107,11 +118,12 @@ class SendReplyToCustomer implements ShouldQueue
      */
     public function failed(\Exception $exception)
     {
-        $this->threads = $this->threads->sortByDesc(function ($item, $key) {
-            return $item->created_at;
-        });
-        $this->threads[0]->send_status = Thread::SEND_STATUS_SEND_ERROR;
-        $this->threads[0]->save();
+        // No need
+        // $this->threads = $this->threads->sortByDesc(function ($item, $key) {
+        //     return $item->created_at;
+        // });
+        // $this->threads[0]->send_status = Thread::SEND_STATUS_SEND_ERROR;
+        // $this->threads[0]->save();
 
         activity()
            ->causedBy($this->customer)

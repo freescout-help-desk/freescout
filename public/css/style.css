@@ -747,9 +747,11 @@ a h4 {
 }
 .customer-contacts li,
 .customer-contacts li a {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    /*overflow: hidden;
+    text-overflow: ellipsis;*/
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    /*white-space: nowrap;*/
     display: block;
     margin-top: 2px;
     color: #93a1af;
@@ -1001,6 +1003,12 @@ table.table-conversations td.conv-attachment {
         top: 0;
         padding-left: 28px!important;
     }
+    .conv-customer a {
+        width: 350px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
     .conv-customer a,
     .conv-date a {
         padding: 11px 5px 0 0 !important;
@@ -1058,6 +1066,11 @@ table.table-conversations td.conv-attachment {
     .conv-nav {
         position: absolute;
         right: 0;
+    }
+}
+@media (max-width:700px) {
+    .conv-customer a {
+        width: 250px;
     }
 }
 
@@ -1286,6 +1299,8 @@ table.table-conversations td.conv-attachment {
     font-size: 18px;
     line-height: 1.2em;
     margin-bottom: 12px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 .thread-person strong {
     font-weight: bold;
@@ -1336,11 +1351,11 @@ table.table-conversations td.conv-attachment {
     padding-left: 23px;
 }
 .thread-attachments li {
-    border-radius: 4px;
-    border: 1px solid #dadada;
+    border-radius: 2px;
+    /*border: 1px solid #dadada;*/
     display: inline-block;
     line-height: 1;
-    background-color: #f5f5f5;
+    background-color: #f1f3f4;
     margin: 8px 4px 8px 0;
     padding: 4px 10px;
     position: relative;
@@ -1566,6 +1581,9 @@ table.table-conversations td.conv-attachment {
     .customer-trigger {
         top: 16px;
     }
+    .customer-email {
+        width: 100%;
+    }
     .customer-email:before {
         content: '<';
     }
@@ -1639,6 +1657,31 @@ table.table-conversations td.conv-attachment {
 }
 
 /**
+ * Subscriptions
+ */
+.subscriptions-email,
+.subscriptions-browser,
+.subscriptions-mobile {
+    text-align: center;
+}
+.user-subscriptions {
+    margin-bottom: 30px;
+}
+.user-subscriptions .table-header th,
+.user-subscriptions .table-header td {
+    border-top: none;
+    font-size: 14px;
+    padding-top: 20px;
+    vertical-align: bottom;
+    line-height: 18px;
+}
+.user-subscriptions .table-header td {
+    padding-bottom: 4px;
+}
+.user-subscriptions .table-header input {
+    margin-top: 6px;
+}
+/**
  * Alerts
  */
 .alert-floating {
@@ -1695,6 +1738,10 @@ table.table-conversations td.conv-attachment {
 .table-main-col {
     width: 70%;
 }
+.table-header {
+    font-size: 14px;
+}
+
 
 /**
  * Misc
@@ -1947,6 +1994,9 @@ a.help-icon:hover {
 .text-charcoal {
     color: #2a3b47!important;
 }
+.text-large {
+    font-size: 14px;
+}
 #loader-main {
     position: fixed;
     display: none;
@@ -1956,8 +2006,8 @@ a.help-icon:hover {
     height: 100%;
     z-index: 9999;
     background: url('../img/loader-main.gif') 50% 50% no-repeat transparent;
-    opacity: 0.90;
-    filter: alpha(opacity=90); /* For IE8 and earlier */
+    opacity: 0.85;
+    filter: alpha(opacity=85); /* For IE8 and earlier */
 }
 a.text-danger,
 a.text-danger:hover,
@@ -1980,4 +2030,10 @@ a.text-danger:focus {
     -moz-hyphens: auto;
     -webkit-hyphens: auto;
     hyphens: auto;
+}
+.row-container {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
 }

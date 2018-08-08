@@ -14,7 +14,7 @@
 
     @include('partials/flash_messages')
 
-    <div class="container">
+    <div class="row-container">
         <div class="row">
             <div class="col-xs-12">
                 <h3> {{ __(':first_name has access to the selected mailboxes:', ['first_name' => $user->first_name]) }}</h3>

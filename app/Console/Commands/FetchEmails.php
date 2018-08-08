@@ -6,9 +6,12 @@ use App\Attachment;
 use App\Conversation;
 use App\Customer;
 use App\Email;
+use App\Events\CustomerCreatedConversation;
 use App\Events\CustomerReplied;
 use App\Mail\Mail;
 use App\Mailbox;
+use App\Option;
+use App\Subscription;
 use App\Thread;
 use Illuminate\Console\Command;
 use Webklex\IMAP\Client;
@@ -53,6 +56,9 @@ class FetchEmails extends Command
      */
     public function handle()
     {
+        $now = time();
+        Option::set('fetch_emails_last_run', $now);
+
         // Get active mailboxes
         $mailboxes = Mailbox::where('in_protocol', '<>', '')
             ->where('in_server', '<>', '')
@@ -68,9 +74,14 @@ class FetchEmails extends Command
 
             try {
                 $this->fetch($mailbox);
+                Option::set('fetch_emails_last_successful_run', $now);
             } catch (\Exception $e) {
                 $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
             }
+
+            // Middleware Terminate handler is not launched for commands,
+            // so we need to run processing subscription events manually
+            Subscription::processEvents();
         }
     }
 
@@ -123,8 +134,10 @@ class FetchEmails extends Command
 
                 // Detect prev thread
                 $is_reply = false;
+                $prev_thread = null;
                 $in_reply_to = $message->getInReplyTo();
                 $references = $message->getReferences();
+                
                 if ($in_reply_to) {
                     $prev_thread = Thread::where('message_id', $in_reply_to)->first();
                 } elseif ($references) {
@@ -133,7 +146,7 @@ class FetchEmails extends Command
                     }
                     $prev_thread = Thread::whereIn('message_id', $references)->first();
                 }
-                if ($prev_thread) {
+                if (!empty($prev_thread)) {
                     $is_reply = true;
                 }
 
@@ -286,7 +299,11 @@ class FetchEmails extends Command
             $thread->save();
         }
 
-        event(new CustomerReplied($conversation, $thread, $new));
+        if ($new) {
+            event(new CustomerCreatedConversation($conversation, $thread));
+        } else {
+            event(new CustomerReplied($conversation, $thread));
+        }
 
         return true;
     }

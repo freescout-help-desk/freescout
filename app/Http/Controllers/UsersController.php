@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mailbox;
 use App\User;
+use App\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Validator;
@@ -150,7 +151,7 @@ class UsersController extends Controller
     }
 
     /**
-     * User mailboxes.
+     * User permissions.
      */
     public function permissions($id)
     {
@@ -179,5 +180,45 @@ class UsersController extends Controller
         \Session::flash('flash_success', __('Permissions saved successfully'));
 
         return redirect()->route('users.permissions', ['id' => $id]);
+    }
+
+    /**
+     * User notifications settings.
+     */
+    public function notifications($id)
+    {
+        $user = User::findOrFail($id);
+        $this->authorize('update', $user);
+
+        $subscriptions = $user->subscriptions()->select('medium', 'event')->get();
+
+        $person = '';
+        if ($id != auth()->user()->id) {
+            $person = $user->getFirstName(true);
+        }
+
+        return view('users/notifications', [
+            'user'          => $user, 
+            'subscriptions' => $subscriptions,
+            'person'        => $person,
+        ]);
+    }
+
+    /**
+     * Save user notifications settings.
+     *
+     * @param int $id
+     * @param \Illuminate\Http\Request $request
+     */
+    public function notificationsSave($id, Request $request)
+    {
+        $user = User::findOrFail($id);
+        $this->authorize('update', $user);
+
+        Subscription::saveFromArray($request->subscriptions, $user->id);
+
+        \Session::flash('flash_success', __('Notifications saved successfully'));
+
+        return redirect()->route('users.notifications', ['id' => $id]);
     }
 }

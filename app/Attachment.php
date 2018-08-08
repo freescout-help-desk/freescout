@@ -45,17 +45,14 @@ class Attachment extends Model
     /**
      * Save attachment to file and database.
      */
-    public static function create($name, $mime_type, $type, $content, $thread_id = null)
+    public static function create($file_name, $mime_type, $type, $content, $thread_id = null)
     {
         if (!$content) {
             return false;
         }
 
-        $file_name = $name;
-
         $attachment = new self();
         $attachment->thread_id = $thread_id;
-        $attachment->name = $name;
         $attachment->file_name = $file_name;
         $attachment->mime_type = $mime_type;
         $attachment->type = $type;
@@ -121,7 +118,7 @@ class Attachment extends Model
      *
      * @return string
      */
-    public function getUrl()
+    public function url()
     {
         return Storage::url(self::DIRECTORY.DIRECTORY_SEPARATOR.self::getPath($this->id).$this->file_name);
     }

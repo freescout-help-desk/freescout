@@ -43,21 +43,28 @@ class EventServiceProvider extends ServiceProvider
 
         'App\Events\ConversationUserChanged' => [
             'App\Listeners\UpdateMailboxCounters',
+            'App\Listeners\SendNotificationToUsers',
         ],
 
         'App\Events\UserReplied' => [
              'App\Listeners\SendReplyToCustomer',
+             'App\Listeners\SendNotificationToUsers',
         ],
 
-        'App\Events\ConversationUserReplied' => [
+        'App\Events\CustomerReplied' => [
+            'App\Listeners\SendNotificationToUsers',
+        ],
 
+        'App\Events\UserCreatedConversation' => [
+            'App\Listeners\SendReplyToCustomer',
+            'App\Listeners\SendNotificationToUsers',
+        ],
+
+        'App\Events\CustomerCreatedConversation' => [
+            'App\Listeners\SendNotificationToUsers',
         ],
 
         // 'App\Events\ConversationUserAddedNote' => [
-
-        // ],
-
-        // 'App\Events\ConversationCustomerReplied' => [
 
         // ],
     ];

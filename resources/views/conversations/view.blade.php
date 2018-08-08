@@ -60,11 +60,11 @@
                         <div class="btn-group" data-toggle="tooltip" title="{{ __("Status") }}">
                             <button type="button" class="btn btn-{{ App\Conversation::$status_colors[$conversation->status] }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
                             <button type="button" class="btn btn-{{ App\Conversation::$status_colors[$conversation->status] }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span>{{ App\Conversation::getStatusName($conversation->status) }}</span> <span class="caret"></span>
+                                <span>{{ $conversation->getStatusName() }}</span> <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu conv-status">
                                 @foreach (App\Conversation::$statuses as $status => $dummy)
-                                    <li @if ($conversation->status == $status) class="active" @endif><a href="#" data-status="{{ $status }}">{{ App\Conversation::getStatusName($status) }}</a></li>
+                                    <li @if ($conversation->status == $status) class="active" @endif><a href="#" data-status="{{ $status }}">{{ App\Conversation::statusCodeToName($status) }}</a></li>
                                 @endforeach
                             </ul>
                         </div>
@@ -268,8 +268,8 @@
                                     <ul>
                                         @foreach ($thread->attachments as $attachment)
                                             <li>
-                                                <a href="{{ $attachment->getUrl() }}" class="break-words" target="_blank">{{ $attachment->name }}</a>
-                                                <span class="text-help">{{ $attachment->getSizeName() }}</span>
+                                                <a href="{{ $attachment->url() }}" class="break-words" target="_blank">{{ $attachment->file_name }}</a>
+                                                <span class="text-help">({{ $attachment->getSizeName() }})</span>
                                             </li>
                                         @endforeach
                                     </ul>

@@ -456,3 +456,16 @@ function newConversationInit()
 		});
 	});
 }
+
+function notificationsInit()
+{
+	$(document).ready(function() {
+	    $('.sel-all').click(function(event) {
+	    	if ($(this).is(':checked')) {
+				$(".subscriptions-"+$(this).val()+" input").attr('checked', 'checked');
+			} else {
+				$(".subscriptions-"+$(this).val()+" input").removeAttr('checked');
+			}
+		});
+	});
+}

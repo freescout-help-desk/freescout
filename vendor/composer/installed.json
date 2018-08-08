@@ -796,6 +796,45 @@
         ]
     },
     {
+        "name": "html2text/html2text",
+        "version": "4.1.0",
+        "version_normalized": "4.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mtibben/html2text.git",
+            "reference": "bf613dc8d3389d70c891cd847954346acab16574"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mtibben/html2text/zipball/bf613dc8d3389d70c891cd847954346acab16574",
+            "reference": "bf613dc8d3389d70c891cd847954346acab16574",
+            "shasum": ""
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~4"
+        },
+        "suggest": {
+            "ext-mbstring": "For best performance",
+            "symfony/polyfill-mbstring": "If you can't install ext-mbstring"
+        },
+        "time": "2017-05-15T01:50:59+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Html2Text\\": [
+                    "src/",
+                    "test/"
+                ]
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPLv2"
+        ],
+        "description": "Converts HTML to formatted plain text"
+    },
+    {
         "name": "jakub-onderka/php-console-color",
         "version": "0.1",
         "version_normalized": "0.1.0.0",
@@ -2144,17 +2183,17 @@
     },
     {
         "name": "phpspec/prophecy",
-        "version": "1.7.6",
-        "version_normalized": "1.7.6.0",
+        "version": "1.8.0",
+        "version_normalized": "1.8.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/phpspec/prophecy.git",
-            "reference": "33a7e3c4fda54e912ff6338c48823bd5c0f0b712"
+            "reference": "4ba436b55987b4bf311cb7c6ba82aa528aac0a06"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/phpspec/prophecy/zipball/33a7e3c4fda54e912ff6338c48823bd5c0f0b712",
-            "reference": "33a7e3c4fda54e912ff6338c48823bd5c0f0b712",
+            "url": "https://api.github.com/repos/phpspec/prophecy/zipball/4ba436b55987b4bf311cb7c6ba82aa528aac0a06",
+            "reference": "4ba436b55987b4bf311cb7c6ba82aa528aac0a06",
             "shasum": ""
         },
         "require": {
@@ -2166,13 +2205,13 @@
         },
         "require-dev": {
             "phpspec/phpspec": "^2.5|^3.2",
-            "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5"
+            "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.5 || ^7.1"
         },
-        "time": "2018-04-18T13:57:24+00:00",
+        "time": "2018-08-05T17:53:17+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.7.x-dev"
+                "dev-master": "1.8.x-dev"
             }
         },
         "installation-source": "dist",
@@ -3503,58 +3542,6 @@
         "homepage": "https://github.com/sebastianbergmann/version"
     },
     {
-        "name": "soundasleep/html2text",
-        "version": "0.5.0",
-        "version_normalized": "0.5.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/soundasleep/html2text.git",
-            "reference": "cdb89f6ffa2c4cc78f8ed9ea6ee0594a9133ccad"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/soundasleep/html2text/zipball/cdb89f6ffa2c4cc78f8ed9ea6ee0594a9133ccad",
-            "reference": "cdb89f6ffa2c4cc78f8ed9ea6ee0594a9133ccad",
-            "shasum": ""
-        },
-        "require": {
-            "ext-dom": "*",
-            "ext-libxml": "*",
-            "php": ">=5.3.2"
-        },
-        "require-dev": {
-            "phpunit/phpunit": ">=4.0",
-            "soundasleep/component-tests": "dev-master"
-        },
-        "time": "2017-04-19T22:01:50+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Html2Text\\": "src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "EPL-1.0"
-        ],
-        "authors": [
-            {
-                "name": "Jevon Wright",
-                "homepage": "https://jevon.org",
-                "role": "Developer"
-            }
-        ],
-        "description": "A PHP script to convert HTML into a plain text format",
-        "homepage": "https://github.com/soundasleep/html2text",
-        "keywords": [
-            "email",
-            "html",
-            "php",
-            "text"
-        ]
-    },
-    {
         "name": "spatie/laravel-activitylog",
         "version": "2.7.0",
         "version_normalized": "2.7.0.0",
@@ -4832,24 +4819,24 @@
     },
     {
         "name": "webklex/laravel-imap",
-        "version": "1.2.5",
-        "version_normalized": "1.2.5.0",
+        "version": "1.2.6",
+        "version_normalized": "1.2.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Webklex/laravel-imap.git",
-            "reference": "42c82513daae67323ee769feaa64525b60449165"
+            "reference": "22ef428718848f0dad3a32ea9cfa6e54971ad7b5"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Webklex/laravel-imap/zipball/42c82513daae67323ee769feaa64525b60449165",
-            "reference": "42c82513daae67323ee769feaa64525b60449165",
+            "url": "https://api.github.com/repos/Webklex/laravel-imap/zipball/22ef428718848f0dad3a32ea9cfa6e54971ad7b5",
+            "reference": "22ef428718848f0dad3a32ea9cfa6e54971ad7b5",
             "shasum": ""
         },
         "require": {
             "laravel/framework": ">=5.0.0",
             "php": ">=5.5.9"
         },
-        "time": "2018-07-30T20:22:35+00:00",
+        "time": "2018-08-04T21:07:08+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {

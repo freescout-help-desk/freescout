@@ -35,7 +35,7 @@ class CreateThreadsTable extends Migration
             $table->text('bcc')->nullable(); // JSON
             $table->boolean('has_attachments')->default(false);
             // Email Message-ID header for email received from customer
-            $table->string('message_id', 998)->nullable()->index();
+            $table->string('message_id', 998)->nullable();
             // source.via - Originating source of the thread - user or customer
             $table->unsignedTinyInteger('source_via');
             // source.type - Originating type of the thread (email, web, API etc)
@@ -50,12 +50,15 @@ class CreateThreadsTable extends Migration
             // ID of Saved reply that was used to create this Thread (savedReplyId)
             $table->integer('saved_reply_id')->nullable();
             // Status of the email sent to customer or user, to whom the thread is assigned
-            $table->unsignedTinyInteger('send_status')->default(Thread::SEND_STATUS_TOSEND);
+            //$table->unsignedTinyInteger('send_status')->default(Thread::SEND_STATUS_TOSEND);
             // Text describing the sending status
-            $table->string('send_status_text', 255)->nullable();
+            //$table->string('send_status_text', 255)->nullable();
             // Email opened by customer
             $table->timestamp('opened_at')->nullable();
             $table->timestamps();
+
+            // https://github.com/laravel/framework/issues/9293#issuecomment-373229281
+            $table->index([DB::raw('message_id(191)')], 'sendmails_message_id_index');
         });
     }
 

@@ -72,6 +72,14 @@ class User extends Authenticatable
     protected $fillable = ['role', 'first_name', 'last_name', 'email', 'password', 'role', 'timezone', 'photo_url', 'type', 'emails', 'job_title', 'phone', 'time_format', 'enable_kb_shortcuts'];
 
     /**
+     * For array_unique function
+     * @return string
+     */
+    public function __toString() {
+        return $this->id.'';
+    }
+
+    /**
      * Get mailboxes to which usre has access.
      */
     public function mailboxes()
@@ -93,6 +101,14 @@ class User extends Authenticatable
     public function folders()
     {
         return $this->hasMany('App\Folder');
+    }
+
+    /**
+     * User's subscriptions.
+     */
+    public function subscriptions()
+    {
+        return $this->hasMany('App\Subscription');
     }
 
     /**
@@ -219,9 +235,11 @@ class User extends Authenticatable
      *
      * @return string
      */
-    public static function dateFormat($date, $format = 'M j, Y H:i')
+    public static function dateFormat($date, $format = 'M j, Y H:i', $user = null)
     {
-        $user = auth()->user();
+        if (!$user) {
+            $user = auth()->user();
+        }
         if ($user) {
             if ($user->time_format == self::TIME_FORMAT_12) {
                 $format = strtr($format, [

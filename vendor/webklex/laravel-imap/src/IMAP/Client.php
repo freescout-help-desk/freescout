@@ -152,7 +152,8 @@ class Client {
     /**
      * Get the current imap resource
      *
-     * @return resource|boolean
+     * @return bool|resource
+     * @throws ConnectionFailedException
      */
     public function getConnection() {
         $this->checkConnection();
@@ -324,38 +325,50 @@ class Client {
     /**
      * Create a new Folder
      * @param string $name
+     * @param boolean $expunge
      *
      * @return bool
      * @throws ConnectionFailedException
      */
-    public function createFolder($name) {
+    public function createFolder($name, $expunge = true) {
         $this->checkConnection();
-        return imap_createmailbox($this->getConnection(), $this->getAddress() . imap_utf7_encode($name));
+        $status = imap_createmailbox($this->getConnection(), $this->getAddress() . imap_utf7_encode($name));
+        if($expunge) $this->expunge();
+
+        return $status;
     }
     
     /**
      * Rename Folder
-     * @param string $old_name
-     * @param string $new_name
+     * @param string  $old_name
+     * @param string  $new_name
+     * @param boolean $expunge
      *
      * @return bool
      * @throws ConnectionFailedException
      */
-    public function renameFolder($old_name, $new_name) {
+    public function renameFolder($old_name, $new_name, $expunge = true) {
         $this->checkConnection();
-        return imap_renamemailbox($this->getConnection(), $this->getAddress() . imap_utf7_encode($old_name), $this->getAddress() . imap_utf7_encode($new_name));
+        $status = imap_renamemailbox($this->getConnection(), $this->getAddress() . imap_utf7_encode($old_name), $this->getAddress() . imap_utf7_encode($new_name));
+        if($expunge) $this->expunge();
+
+        return $status;
     }
     
      /**
      * Delete Folder
      * @param string $name
+      * @param boolean $expunge
      *
      * @return bool
      * @throws ConnectionFailedException
      */
-    public function deleteFolder($name) {
+    public function deleteFolder($name, $expunge = true) {
         $this->checkConnection();
-        return imap_deletemailbox($this->getConnection(), $this->getAddress() . imap_utf7_encode($name));
+        $status = imap_deletemailbox($this->getConnection(), $this->getAddress() . imap_utf7_encode($name));
+        if($expunge) $this->expunge();
+
+        return $status;
     }
 
     /**

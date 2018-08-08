@@ -139,15 +139,6 @@ class Thread extends Model
     ];
 
     /**
-     * Status of the email sent to the customer or user, to whom the thread is assigned.
-     */
-    const SEND_STATUS_TOSEND = 1;
-    const SEND_STATUS_SEND_SUCCESS = 2;
-    const SEND_STATUS_SEND_ERROR = 3;
-    const SEND_STATUS_DELIVERY_SUCCESS = 4;
-    const SEND_STATUS_DELIVERY_ERROR = 5;
-
-    /**
      * The user assigned to this thread (assignedTo).
      */
     public function user()
@@ -334,12 +325,20 @@ class Thread extends Model
      *
      * @return string
      */
-    public function getAssignedName()
+    public function getAssignedName($ucfirst = false)
     {
         if (!$this->user_id) {
-            return __('anyone');
+            if ($ucfirst) {
+                return __('Anyone');
+            } else {
+                return __('anyone');
+            }
         } elseif ($this->user_id == auth()->user()->id) {
-            return __('yourself');
+            if ($ucfirst) {
+                return __('Yourself');
+            } else {
+                return __('yourself');
+            }
         } else {
             return $this->user->getFullName();
         }

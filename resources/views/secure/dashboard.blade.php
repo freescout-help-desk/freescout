@@ -34,7 +34,7 @@
                     </div>
                     @if (Auth::user()->can('update', $mailbox))
                         <div class="dash-card-footer">
-                            <a href="{{ route('mailboxes.update', ['id' => $mailbox->id]) }}" class="glyphicon glyphicon-envelope" data-toggle="tooltip" title="{{ __("New Conversation") }}"></a>
+                            <a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" class="glyphicon glyphicon-envelope" data-toggle="tooltip" title="{{ __("New Conversation") }}"></a>
                             <a href="{{ route('mailboxes.update', ['id' => $mailbox->id]) }}" class="glyphicon glyphicon-cog" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}"></a>
                         </div>
                     @endif

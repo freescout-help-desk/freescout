@@ -16,6 +16,8 @@ namespace Webklex\IMAP;
  * Class ClientManager
  *
  * @package Webklex\IMAP
+ *
+ * @mixin Client
  */
 class ClientManager {
 

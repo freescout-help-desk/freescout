@@ -14,9 +14,10 @@ namespace Webklex\IMAP\Query;
 
 use Webklex\IMAP\Exceptions\InvalidWhereQueryCriteriaException;
 use Webklex\IMAP\Exceptions\MethodNotFoundException;
+use Webklex\IMAP\Exceptions\MessageSearchValidationException;
 
 /**
- * Class Query
+ * Class WhereQuery
  *
  * @package Webklex\IMAP\Query
  * 
@@ -44,6 +45,8 @@ use Webklex\IMAP\Exceptions\MethodNotFoundException;
  * @method WhereQuery body($value)
  * @method WhereQuery before($date)
  * @method WhereQuery bcc($value)
+ *
+ * @mixin Query
  */
 class WhereQuery extends Query {
 
@@ -92,10 +95,11 @@ class WhereQuery extends Query {
     }
 
     /**
-     * @param string|array $criteria
-     * @param mixed $value
-     *
+     * @param mixed $criteria
+     * @param null  $value
+     * 
      * @return $this
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function where($criteria, $value = null) {
         if(is_array($criteria)){
@@ -146,6 +150,7 @@ class WhereQuery extends Query {
 
     /**
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereAll() {
         return $this->where('ALL');
@@ -153,6 +158,7 @@ class WhereQuery extends Query {
 
     /**
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereAnswered() {
         return $this->where('ANSWERED');
@@ -160,8 +166,9 @@ class WhereQuery extends Query {
 
     /**
      * @param string $value
-     *
+     * 
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereBcc($value) {
         return $this->where('BCC', $value);
@@ -169,9 +176,9 @@ class WhereQuery extends Query {
 
     /**
      * @param mixed $value
-     *
      * @return WhereQuery
-     * @throws \Webklex\IMAP\Exceptions\MessageSearchValidationException
+     * @throws InvalidWhereQueryCriteriaException
+     * @throws MessageSearchValidationException
      */
     public function whereBefore($value) {
         $date = $this->parse_date($value);
@@ -182,6 +189,7 @@ class WhereQuery extends Query {
      * @param string $value
      *
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereBody($value) {
         return $this->where('BODY', $value);
@@ -191,6 +199,7 @@ class WhereQuery extends Query {
      * @param string $value
      *
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereCc($value) {
         return $this->where('CC', $value);
@@ -198,6 +207,7 @@ class WhereQuery extends Query {
 
     /**
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereDeleted() {
         return $this->where('DELETED');
@@ -207,6 +217,7 @@ class WhereQuery extends Query {
      * @param string $value
      *
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereFlagged($value) {
         return $this->where('FLAGGED', $value);
@@ -216,6 +227,7 @@ class WhereQuery extends Query {
      * @param string $value
      *
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereFrom($value) {
         return $this->where('FROM', $value);
@@ -225,6 +237,7 @@ class WhereQuery extends Query {
      * @param string $value
      *
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereKeyword($value) {
         return $this->where('KEYWORD', $value);
@@ -232,6 +245,7 @@ class WhereQuery extends Query {
 
     /**
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereNew() {
         return $this->where('NEW');
@@ -239,6 +253,7 @@ class WhereQuery extends Query {
 
     /**
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereOld() {
         return $this->where('OLD');
@@ -248,7 +263,8 @@ class WhereQuery extends Query {
      * @param mixed $value
      *
      * @return WhereQuery
-     * @throws \Webklex\IMAP\Exceptions\MessageSearchValidationException
+     * @throws MessageSearchValidationException
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereOn($value) {
         $date = $this->parse_date($value);
@@ -257,6 +273,7 @@ class WhereQuery extends Query {
 
     /**
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereRecent() {
         return $this->where('RECENT');
@@ -264,6 +281,7 @@ class WhereQuery extends Query {
 
     /**
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereSeen() {
         return $this->where('SEEN');
@@ -273,7 +291,8 @@ class WhereQuery extends Query {
      * @param mixed $value
      *
      * @return WhereQuery
-     * @throws \Webklex\IMAP\Exceptions\MessageSearchValidationException
+     * @throws MessageSearchValidationException
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereSince($value) {
         $date = $this->parse_date($value);
@@ -284,6 +303,7 @@ class WhereQuery extends Query {
      * @param string $value
      *
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereSubject($value) {
         return $this->where('SUBJECT', $value);
@@ -293,6 +313,7 @@ class WhereQuery extends Query {
      * @param string $value
      *
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereText($value) {
         return $this->where('TEXT', $value);
@@ -302,6 +323,7 @@ class WhereQuery extends Query {
      * @param string $value
      *
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereTo($value) {
         return $this->where('TO', $value);
@@ -311,6 +333,7 @@ class WhereQuery extends Query {
      * @param string $value
      *
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereUnkeyword($value) {
         return $this->where('UNKEYWORD', $value);
@@ -318,6 +341,7 @@ class WhereQuery extends Query {
 
     /**
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereUnanswered() {
         return $this->where('UNANSWERED');
@@ -325,6 +349,7 @@ class WhereQuery extends Query {
 
     /**
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereUndeleted() {
         return $this->where('UNDELETED');
@@ -332,6 +357,7 @@ class WhereQuery extends Query {
 
     /**
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereUnflagged() {
         return $this->where('UNFLAGGED');
@@ -339,6 +365,7 @@ class WhereQuery extends Query {
 
     /**
      * @return WhereQuery
+     * @throws InvalidWhereQueryCriteriaException
      */
     public function whereUnseen() {
         return $this->where('UNSEEN');

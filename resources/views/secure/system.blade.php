@@ -10,20 +10,45 @@
         </span>
     </div>
     <ul class="sidebar-menu">
+        <li><a href="#server"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Web Server') }}</a></li>
         <li><a href="#php"><i class="glyphicon glyphicon-menu-right"></i> PHP</a></li>
-        <li><a href="#jobs"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Jobs') }}</a></li>
+        <li><a href="#tasks"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Cron Commands') }}</a></li>
+        <li><a href="#jobs"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Background Jobs') }}</a></li>
     </ul>
 @endsection
 
 @section('content')
 <div class="container">
 
-    <h3 id="php">PHP</h3>
+    <h3 id="server">{{ __('Web Server') }}</h3>
 
+    <table class="table table-dark-header table-bordered table-responsive">
+        <tbody>
+            @if (!empty($_SERVER['SERVER_SOFTWARE']))
+                <tr>
+                    <th>{{ __('Name') }}</th>
+                    <td class="table-main-col">{{ $_SERVER['SERVER_SOFTWARE'] }}</td>
+                </tr>
+            @endif
+            <tr>
+                <th>{{ __('Date & Time') }}</th>
+                <td class="table-main-col">{{ App\User::dateFormat(new Illuminate\Support\Carbon()) }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 id="php" class="margin-top-40">PHP</h3>
+    <table class="table table-dark-header table-bordered table-responsive">
+        <tbody>
+            <tr>
+                <th>{{ __('Version') }}</th>
+                <td class="table-main-col">PHP {{ phpversion() }}</td>
+            </tr>
+        </tbody>
+    </table>
     <p>
-        {{ __('Required PHP extensions') }}
+        {{ __('Required PHP extensions:') }}
     </p>
-
     <table class="table table-dark-header table-bordered table-responsive">
         <tbody>
             @foreach ($php_extensions as $extension_name => $extension_status)
@@ -41,7 +66,25 @@
         </tbody>
     </table>
 
-    <h3 id="jobs">{{ __('Jobs') }}</h3>
+    <h3 id="cron" class="margin-top-40">Cron Commands</h3>
+    <p>
+        {!! __('Commands are launched by <i>schedule:run</i> cron command. Make sure that you have the following line in your crontab:') !!}<br/>
+        <code>* * * * * php /var/www/html/artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code>
+    </p>
+    <table class="table table-dark-header table-bordered table-responsive">
+        <tbody>
+            @foreach ($commands as $command)
+                <tr>
+                    <th>{{ $command['name'] }}</th>
+                    <td class="table-main-col">
+                        <strong class="text-@if ($command['status'] == "success"){{ 'success' }}@else{{ 'danger' }}@endif">{{ $command['status_text'] }}</strong>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <h3 id="jobs" class="margin-top-40">{{ __('Background Jobs') }}</h3>
     <table class="table table-dark-header table-bordered table-responsive">
         <tbody>
             <tr>
@@ -81,7 +124,7 @@
                 <th>{{ __('Failed Jobs') }}</th>
                 <td>
                     <p>
-                        {{ __('Total') }}:  @if (count($failed_jobs) > 0)<strong class="text-danger">@endif{{ count($failed_jobs) }}</strong>
+                        {{ __('Total') }}:  <strong @if (count($failed_jobs) > 0) class="text-danger" @endif >{{ count($failed_jobs) }}</strong>
                     </p>
                     @foreach ($failed_jobs as $job)
                         <table class="table">

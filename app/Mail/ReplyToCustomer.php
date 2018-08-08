@@ -56,11 +56,12 @@ class ReplyToCustomer extends Mailable
     {
         // Set Message-ID
         // Settings via $this->addCustomHeaders does not work
-        if (!empty($this->headers['Message-ID'])) {
-            //$message_id = $this->headers['Message-ID'];
-            $new_headers = $this->headers;
+        $new_headers = $this->headers;
+        if (!empty($new_headers)) {
             $this->withSwiftMessage(function ($swiftmessage) use ($new_headers) {
-                $swiftmessage->setId($new_headers['Message-ID']);
+                if (!empty($new_headers['Message-ID'])) {
+                    $swiftmessage->setId($new_headers['Message-ID']);
+                }
                 $headers = $swiftmessage->getHeaders();
                 foreach ($new_headers as $header => $value) {
                     if ($header != 'Message-ID') {
@@ -70,7 +71,6 @@ class ReplyToCustomer extends Mailable
 
                 return $swiftmessage;
             });
-            //unset($this->headers['Message-ID']);
         }
 
         $subject = $this->conversation->subject;

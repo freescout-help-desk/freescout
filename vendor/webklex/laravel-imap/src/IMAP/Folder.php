@@ -129,6 +129,7 @@ class Folder {
      * @param string $charset
      *
      * @return WhereQuery
+     * @throws Exceptions\ConnectionFailedException
      */
     public function query($charset = 'UTF-8'){
         $this->getClient()->checkConnection();
@@ -139,6 +140,7 @@ class Folder {
 
     /**
      * @inheritdoc self::query($charset = 'UTF-8')
+     * @throws Exceptions\ConnectionFailedException
      */
     public function search($charset = 'UTF-8'){
         return $this->query($charset);
@@ -146,6 +148,7 @@ class Folder {
 
     /**
      * @inheritdoc self::query($charset = 'UTF-8')
+     * @throws Exceptions\ConnectionFailedException
      */
     public function messages($charset = 'UTF-8'){
         return $this->query($charset);
@@ -359,14 +362,15 @@ class Folder {
 
     /**
      * Delete the current Mailbox
+     * @param boolean $expunge
      *
      * @return bool
      *
      * @throws Exceptions\ConnectionFailedException
      */
-    public function delete() {
+    public function delete($expunge = true) {
         $status = imap_deletemailbox($this->client->getConnection(), $this->path);
-        $this->client->expunge();
+        if($expunge) $this->client->expunge();
 
         return $status;
     }
@@ -375,14 +379,15 @@ class Folder {
      * Move or Rename the current Mailbox
      *
      * @param string $target_mailbox
+     * @param boolean $expunge
      *
      * @return bool
      *
      * @throws Exceptions\ConnectionFailedException
      */
-    public function move($target_mailbox) {
+    public function move($target_mailbox, $expunge = true) {
         $status = imap_renamemailbox($this->client->getConnection(), $this->path, $target_mailbox);
-        $this->client->expunge();
+        if($expunge) $this->client->expunge();
 
         return $status;
     }

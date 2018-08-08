@@ -81,6 +81,8 @@ class Attachment {
      * @param Message   $oMessage
      * @param object    $structure
      * @param integer   $part_number
+     *
+     * @throws Exceptions\ConnectionFailedException
      */
     public function __construct(Message $oMessage, $structure, $part_number = 1) {
         $this->oMessage = $oMessage;
@@ -128,6 +130,8 @@ class Attachment {
 
     /**
      * Fetch the given attachment
+     *
+     * @throws Exceptions\ConnectionFailedException
      */
     protected function fetch() {
 
@@ -143,7 +147,7 @@ class Attachment {
         if (property_exists($this->structure, 'dparameters')) {
             foreach ($this->structure->dparameters as $parameter) {
                 if (strtolower($parameter->attribute) == "filename") {
-                    $this->name = $parameter->value;
+                    $this->setName($parameter->value);
                     $this->disposition = property_exists($this->structure, 'disposition') ? $this->structure->disposition : null;
                     break;
                 }
@@ -152,16 +156,16 @@ class Attachment {
 
         if (self::TYPE_MESSAGE == $this->structure->type) {
             if ($this->structure->ifdescription) {
-                $this->name = $this->structure->description;
+                $this->setName($this->structure->description);
             } else {
-                $this->name = $this->structure->subtype;
+                $this->setName($this->structure->subtype);
             }
         }
 
         if (!$this->name && property_exists($this->structure, 'parameters')) {
             foreach ($this->structure->parameters as $parameter) {
                 if (strtolower($parameter->attribute) == "name") {
-                    $this->name = $parameter->value;
+                    $this->setName($parameter->value);
                     $this->disposition = property_exists($this->structure, 'disposition') ? $this->structure->disposition : null;
                     break;
                 }
@@ -216,6 +220,13 @@ class Attachment {
      */
     public function getId() {
         return $this->id;
+    }
+
+    /**
+     * @param $name
+     */
+    public function setName($name) {
+        $this->name = $this->oMessage->decodeString($this->oMessage->convertEncoding($name, $this->oMessage->getEncoding($name)), 'UTF-7');
     }
 
     /**

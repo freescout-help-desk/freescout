@@ -31,6 +31,8 @@ Route::post('/users/profile/{id}', 'UsersController@profileSave');
 Route::post('/users/permissions/{id}', 'UsersController@permissionsSave');
 Route::get('/users/permissions/{id}', 'UsersController@permissions')->name('users.permissions');
 Route::post('/users/permissions/{id}', 'UsersController@permissionsSave');
+Route::get('/users/notifications/{id}', 'UsersController@notifications')->name('users.notifications');
+Route::post('/users/notifications/{id}', 'UsersController@notificationsSave');
 
 // Conversations
 Route::get('/conversation/{id}', 'ConversationsController@view')->name('conversations.view');

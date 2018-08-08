@@ -1,0 +1,330 @@
+<?php
+/**
+ * todo: implement caching by saving all options in one cache variable on register_shutdown_function
+ */
+namespace App;
+
+use App\Thread;
+use Illuminate\Database\Eloquent\Model;
+
+class Subscription extends Model
+{
+    // Event types
+    const EVENT_TYPE_NEW              = 1;
+    const EVENT_TYPE_ASSIGNED         = 2;
+    const EVENT_TYPE_UPDATED          = 3;
+    const EVENT_TYPE_CUSTOMER_REPLIED = 4;
+    const EVENT_TYPE_USER_REPLIED     = 5;
+
+    // Notify me when…
+    const EVENT_NEW_CONVERSATION = 1;
+    const EVENT_CONVERSATION_ASSIGNED_TO_ME = 2;
+    const EVENT_CONVERSATION_ASSIGNED = 6;
+    const EVENT_FOLLOWED_CONVERSATION_UPDATED = 13;
+    const EVENT_I_AM_MENTIONED = 14;
+    const EVENT_MY_TEAM_MENTIONED = 15;
+    // Notify me when a customer replies…
+    const EVENT_CUSTOMER_REPLIED_TO_UNASSIGNED = 4;
+    const EVENT_CUSTOMER_REPLIED_TO_MY = 3;
+    const EVENT_CUSTOMER_REPLIED_TO_ASSIGNED = 7;
+    // Notify me when another Help Scout user replies or adds a note…
+    const EVENT_USER_REPLIED_TO_UNASSIGNED = 8;
+    const EVENT_USER_REPLIED_TO_MY = 5;
+    const EVENT_USER_REPLIED_TO_ASSIGNED = 9;
+
+    // Mediums
+    const MEDIUM_EMAIL = 1;
+    const MEDIUM_BROWSER = 2;
+    const MEDIUM_MOBILE = 3;
+
+    public static $mediums = [
+        self::MEDIUM_EMAIL,
+        self::MEDIUM_BROWSER,
+        self::MEDIUM_MOBILE,
+    ];
+
+    public static $default_subscriptions = [
+        self::MEDIUM_EMAIL => [
+            self::EVENT_CONVERSATION_ASSIGNED_TO_ME,
+            self::EVENT_FOLLOWED_CONVERSATION_UPDATED,
+            self::EVENT_I_AM_MENTIONED,
+            self::EVENT_MY_TEAM_MENTIONED,
+            self::EVENT_CUSTOMER_REPLIED_TO_MY,
+            self::EVENT_USER_REPLIED_TO_MY,
+        ],
+        self::MEDIUM_BROWSER => [
+            self::EVENT_CONVERSATION_ASSIGNED_TO_ME,
+            self::EVENT_FOLLOWED_CONVERSATION_UPDATED,
+            self::EVENT_I_AM_MENTIONED,
+            self::EVENT_MY_TEAM_MENTIONED,
+            self::EVENT_CUSTOMER_REPLIED_TO_MY,
+            self::EVENT_USER_REPLIED_TO_MY,
+        ],
+    ];
+
+    /**
+     * List of events that occured
+     */
+    public static $occured_events = [];
+
+    public $timestamps = false;
+
+    /**
+     * The attributes that are not mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = ['id'];
+
+    /**
+     * Subscribed user.
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
+    /**
+     * Add default subscriptions for user.
+     * 
+     * @param integer $user_id
+     */
+    public static function addDefaultSubscriptions($user_id)
+    {
+        self::saveFromArray(self::$default_subscriptions, $user_id);
+    }
+
+    /**
+     * Save subscriptions from passed array.
+     * 
+     * @param  array  $subscriptions [description]
+     * @return [type]                [description]
+     */
+    public static function saveFromArray($new_subscriptions, $user_id)
+    {
+        $subscriptions = [];
+
+        if (is_array($new_subscriptions)) {
+            foreach ($new_subscriptions as $medium => $events) {
+                foreach ($events as $event) {
+                    $subscriptions[] = [
+                        'user_id' => $user_id,
+                        'medium'  => $medium,
+                        'event'   => $event,
+                    ];
+                }
+            }
+        }
+
+        Subscription::where('user_id', $user_id)->delete();
+        Subscription::insert($subscriptions);
+    }
+
+    /**
+     * Check if subscription exists
+     */
+    public static function exists(array $params, $subscriptions = null)
+    {
+        if ($subscriptions) {
+            // Look in the passed list
+            foreach ($subscriptions as $subscription) {
+                foreach ($params as $param_name => $param_value) {
+                    if ($subscription->$param_name != $param_value) {
+                        continue 2;
+                    }
+                }
+                return true;
+            }
+        } else {
+            // Search in DB
+        }
+        return false;
+    }
+
+    /**
+     * Detect users to notify.
+     */
+    public static function usersToNotify($event_type, $conversation, $threads, $mailbox_user_ids = null)
+    {
+        if ($conversation->imported) {
+            return true;
+        }
+
+        // Detect events
+        $events = [];
+
+        $thread = $threads[0];
+        $prev_thread = null;
+        if (!empty($threads[1])) {
+            $prev_thread = $threads[1];
+        }
+
+        switch ($event_type) {
+            case self::EVENT_TYPE_NEW:
+                $events[] = self::EVENT_NEW_CONVERSATION;
+                break;
+
+            case self::EVENT_TYPE_ASSIGNED:
+                $events[] = self::EVENT_CONVERSATION_ASSIGNED_TO_ME;
+                $events[] = self::EVENT_CONVERSATION_ASSIGNED;
+                break;
+
+            case self::EVENT_TYPE_CUSTOMER_REPLIED:
+                $events[] = self::EVENT_FOLLOWED_CONVERSATION_UPDATED;
+                if (!empty($prev_thread) && $prev_thread->user_id) {
+                    $events[] = self::EVENT_CUSTOMER_REPLIED_TO_MY;
+                    $events[] = self::EVENT_CUSTOMER_REPLIED_TO_ASSIGNED;
+                } else {
+                    $events[] = self::EVENT_CUSTOMER_REPLIED_TO_UNASSIGNED;
+                }
+                break;
+
+            case self::EVENT_TYPE_USER_REPLIED:
+                $events[] = self::EVENT_FOLLOWED_CONVERSATION_UPDATED;
+                if (!empty($prev_thread) && $prev_thread->user_id) {
+                    $events[] = self::EVENT_USER_REPLIED_TO_MY;
+                    $events[] = self::EVENT_USER_REPLIED_TO_ASSIGNED;
+                } else {
+                    $events[] = self::EVENT_USER_REPLIED_TO_UNASSIGNED;
+                }
+                break;
+            // todo: EVENT_I_AM_MENTIONED, EVENT_MY_TEAM_MENTIONED
+        }
+        // Check if assigned user changed
+        $user_changed = false;
+        if ($event_type != self::EVENT_TYPE_ASSIGNED && $event_type != self::EVENT_TYPE_NEW) {
+            if ($thread->type == Thread::TYPE_LINEITEM && $thread->action_type == Thread::ACTION_TYPE_USER_CHANGED) {
+                $user_changed = true;
+            } elseif ($prev_thread) {
+                if ($prev_thread->user_id != $thread->user_id) {
+                    $user_changed = true;
+                }
+            } else {
+                // Get prev thread
+                if ($prev_thread && $prev_thread->user_id != $thread->user_id) {
+                    $user_changed = true;
+                }
+            }
+        }
+        if ($user_changed) {
+            $events[] = self::EVENT_CONVERSATION_ASSIGNED_TO_ME;
+            $events[] = self::EVENT_CONVERSATION_ASSIGNED;
+            $events[] = self::EVENT_FOLLOWED_CONVERSATION_UPDATED;
+        }
+        $events = array_unique($events);
+
+        // Detect subscribed users
+        if (!$mailbox_user_ids) {
+            $mailbox_user_ids = $conversation->mailbox->userIdsHavingAccess();
+        }
+
+        $subscriptions = Subscription::select(['user_id', 'medium'])
+            ->whereIn('user_id', $mailbox_user_ids)
+            ->whereIn('event', $events)
+            ->get();
+
+        // Filter subscribers
+        $users_to_notify = [];
+        foreach ($subscriptions as $i => $subscription) {
+            if (in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY]) && $conversation->user_id != $subscription->user_id
+            ) {
+                continue;
+            }
+            $users_to_notify[$subscription->medium][] = $subscription->user;
+            $users_to_notify[$subscription->medium] = array_unique($users_to_notify[$subscription->medium]);
+        }
+        return $users_to_notify;
+    }
+
+    /**
+     * Process events which occured.
+     */
+    public static function processEvents()
+    {
+        $notify = [];
+
+        foreach (self::$occured_events as $event) {
+            // Get mailbox users ids
+            $mailbox_user_ids = [];
+            foreach (self::$mediums as $medium) {
+                if (!empty($notify[$medium])) {
+                    foreach ($notify[$medium] as $conversation_id => $notify_info) {
+                        if ($notify_info['conversation']->mailbox_id == $event['conversation']->mailbox_id) {
+                            $mailbox_user_ids = $notify_info['mailbox_user_ids'];
+                            break 2;
+                        }
+                    }
+                }
+            }
+
+            $users = [];
+            $treads = [];
+            foreach (self::$mediums as $medium) {
+                if (empty($notify[$medium][$event['conversation']->id])) {
+                    $treads = $event['conversation']->getThreads();
+                    break;
+                } else {
+                    $users = $notify[$medium][$event['conversation']->id]['users'];
+                    $treads = $notify[$medium][$event['conversation']->id]['treads'];
+                }
+            }
+
+            $users_to_notify = self::usersToNotify($event['event_type'], $event['conversation'], $treads, $mailbox_user_ids);
+
+            if (!$users_to_notify) {
+                continue;
+            }
+            foreach ($users_to_notify as $medium => $medium_users_to_notify) {
+
+                // Remove current user from recipients if action caused by current user
+                foreach ($medium_users_to_notify as $i => $user) {
+                    if ($user->id == $event['caused_by_user_id']) {
+                        //unset($medium_users_to_notify[$i]);
+                    }
+                }
+
+                if (count($medium_users_to_notify)) {
+                    $notify[$medium][$event['conversation']->id] = [
+                        'users'            => array_unique(array_merge($users, $medium_users_to_notify)),
+                        'conversation'     => $event['conversation'],
+                        'treads'           => $treads,
+                        'mailbox_user_ids' => $mailbox_user_ids,
+                    ];
+                }
+            }
+        }
+
+        // Notify by email
+        if (!empty($notify[self::MEDIUM_EMAIL])) {
+            foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
+                \App\Jobs\SendNotificationToUsers::dispatch($notify_info['users'], $notify_info['conversation'], $notify_info['treads'])
+                    ->onQueue('emails');
+            }
+        }
+        // todo: mobile notification
+    }
+
+    /**
+     * Remember event type to process in ProcessSubscriptionEvents middleware on terminate.
+     */
+    public static function registerEvent($event_type, $conversation, $caused_by_user_id, $process_now = false)
+    {
+        self::$occured_events[] = [
+            'event_type'        => $event_type,
+            'conversation'      => $conversation,
+            'caused_by_user_id' => $caused_by_user_id,
+        ];
+
+        // Automatically add EVENT_TYPE_UPDATED
+        if (!in_array($event_type, [self::EVENT_TYPE_UPDATED, self::EVENT_TYPE_NEW])) {
+            self::$occured_events[] = [
+                'event_type'        => self::EVENT_TYPE_UPDATED,
+                'conversation'      => $conversation,
+                'caused_by_user_id' => $caused_by_user_id,
+            ];
+        }
+        if ($process_now) {
+            self::processEvents();
+        }
+    }
+}

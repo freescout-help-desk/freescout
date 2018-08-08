@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\ActivityLog;
+use App\Option;
+use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SecureController extends Controller
@@ -113,7 +116,78 @@ class SecureController extends Controller
         $queued_jobs = \App\Job::orderBy('created_at', 'desc')->get();
         $failed_jobs = \App\FailedJob::orderBy('failed_at', 'desc')->get();
 
+        // Commands
+        $commands_list = ['freescout:fetch-emails', 'queue:work'];
+        foreach ($commands_list as $command_name) {
+            $status_texts = [];
+            
+            // Check if command is running now
+            if (function_exists('shell_exec')) {
+                $running_commands = 0;
+                try {
+                    $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '{$command_name}'"));
+                    $pids = [];
+                    foreach ($processes as $process) {
+                        preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
+                        if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {
+                            $running_commands++;
+                            $pids[] = $m[1];
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Do nothing
+                }
+                if ($running_commands == 1) {
+                    $commands[] = [
+                        'name'        => $command_name,
+                        'status'      => "success",
+                        'status_text' => __('Running'),
+                    ];
+                    continue;
+                } elseif ($running_commands > 1) {
+                    unset($pids[0]);
+                    $commands[] = [
+                        'name'        => $command_name,
+                        'status'      => "error",
+                        'status_text' => __(':number commands are running at the same time. Please stop extra commands by executing the following console command:', ['number' => $running_commands]).' kill '.implode(' | kill ', $pids),
+                    ];
+                    continue;
+                }
+            }
+            // Check last run
+            $option_name = str_replace('freescout_', '', preg_replace("/[^a-zA-Z0-9]/", '_', $command_name));
+
+            $date_text = '?';
+            $last_run = Option::get($option_name.'_last_run');
+            if ($last_run) {
+                $date = Carbon::createFromTimestamp($last_run);
+                $date_text = User::dateFormat($date);
+            }
+            $status_texts[] = __('Last run:').' '.$date_text;
+
+            $date_text = '?';
+            $last_successful_run = Option::get($option_name.'_last_successful_run');
+            if ($last_successful_run) {
+                $date_ = Carbon::createFromTimestamp($last_successful_run);
+                $date_text = User::dateFormat($date);
+            }
+            $status_texts[] = __('Last successful run:').' '.$date_text;
+
+            $status = 'error';
+            if ($last_successful_run && $last_run && (int)$last_successful_run >= (int)$last_run) {
+                unset($status_texts[0]);
+                $status = 'success';
+            }
+
+            $commands[] = [
+                'name'        => $command_name,
+                'status'      => $status,
+                'status_text' => implode(' / ', $status_texts)
+            ];
+        }
+
         return view('secure/system', [
+            'commands'       => $commands,
             'queued_jobs'    => $queued_jobs,
             'failed_jobs'    => $failed_jobs,
             'php_extensions' => $php_extensions,

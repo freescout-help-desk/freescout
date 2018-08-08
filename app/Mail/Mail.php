@@ -16,7 +16,7 @@ class Mail
     public static $alternative_reply_separators = [
         self::REPLY_SEPARATOR_HTML,
         '<div class="gmail_quote">',
-        '<blockquote',
+        '<blockquote'
     ];
 
     /**
@@ -24,12 +24,12 @@ class Mail
      *
      * @param App\Mailbox $mailbox
      */
-    public static function setMailDriver($mailbox = null, $user = null)
+    public static function setMailDriver($mailbox = null, $user_from = null)
     {
         if ($mailbox) {
             // Configure mail driver according to Mailbox settings
             \Config::set('mail.driver', $mailbox->getMailDriverName());
-            \Config::set('mail.from', $mailbox->getMailFrom($user));
+            \Config::set('mail.from', $mailbox->getMailFrom($user_from));
 
             // SMTP
             if ($mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {

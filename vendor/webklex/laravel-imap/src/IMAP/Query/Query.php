@@ -218,6 +218,7 @@ class Query {
 
     /**
      * @return Client
+     * @throws \Webklex\IMAP\Exceptions\ConnectionFailedException
      */
     public function getClient() {
         $this->client->checkConnection();
