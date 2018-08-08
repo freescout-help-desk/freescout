@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Mail\UserNotification;
 use App\SendLog;
-use App\Thread;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

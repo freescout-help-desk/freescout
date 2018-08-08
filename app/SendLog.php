@@ -2,6 +2,7 @@
 /**
  * Outgoing emails.
  */
+
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
@@ -10,16 +11,16 @@ class SendLog extends Model
 {
     /**
      * Status of the email sent to the customer or user.
-     * https://documentation.mailgun.com/en/latest/api-events.html#event-types
+     * https://documentation.mailgun.com/en/latest/api-events.html#event-types.
      */
-    const STATUS_ACCEPTED          = 1; // accepted (for delivery)
-    const STATUS_SEND_ERROR        = 2;
-    const STATUS_DELIVERY_SUCCESS  = 4;
-    const STATUS_DELIVERY_ERROR    = 5; // rejected, failed
-    const STATUS_OPENED            = 6;
-    const STATUS_CLICKED           = 7;
-    const STATUS_UNSUBSCRIBED      = 8;
-    const STATUS_COMPLAINED        = 9;
+    const STATUS_ACCEPTED = 1; // accepted (for delivery)
+    const STATUS_SEND_ERROR = 2;
+    const STATUS_DELIVERY_SUCCESS = 4;
+    const STATUS_DELIVERY_ERROR = 5; // rejected, failed
+    const STATUS_OPENED = 6;
+    const STATUS_CLICKED = 7;
+    const STATUS_UNSUBSCRIBED = 8;
+    const STATUS_COMPLAINED = 9;
 
     /**
      * The attributes that are not mass assignable.

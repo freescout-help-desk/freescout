@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Mailbox;
-use App\User;
 use App\Subscription;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Validator;
@@ -198,7 +198,7 @@ class UsersController extends Controller
         }
 
         return view('users/notifications', [
-            'user'          => $user, 
+            'user'          => $user,
             'subscriptions' => $subscriptions,
             'person'        => $person,
         ]);
@@ -207,7 +207,7 @@ class UsersController extends Controller
     /**
      * Save user notifications settings.
      *
-     * @param int $id
+     * @param int                      $id
      * @param \Illuminate\Http\Request $request
      */
     public function notificationsSave($id, Request $request)

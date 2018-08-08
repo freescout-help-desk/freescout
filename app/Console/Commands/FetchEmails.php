@@ -137,7 +137,7 @@ class FetchEmails extends Command
                 $prev_thread = null;
                 $in_reply_to = $message->getInReplyTo();
                 $references = $message->getReferences();
-                
+
                 if ($in_reply_to) {
                     $prev_thread = Thread::where('message_id', $in_reply_to)->first();
                 } elseif ($references) {

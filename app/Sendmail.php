@@ -2,6 +2,7 @@
 /**
  * Outgoing emails.
  */
+
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +31,4 @@ class Sendmail extends Model
     {
         return $this->belongsTo('App\User');
     }
-
-    
 }

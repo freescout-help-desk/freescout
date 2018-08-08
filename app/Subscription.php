@@ -1,20 +1,20 @@
 <?php
 /**
- * todo: implement caching by saving all options in one cache variable on register_shutdown_function
+ * todo: implement caching by saving all options in one cache variable on register_shutdown_function.
  */
+
 namespace App;
 
-use App\Thread;
 use Illuminate\Database\Eloquent\Model;
 
 class Subscription extends Model
 {
     // Event types
-    const EVENT_TYPE_NEW              = 1;
-    const EVENT_TYPE_ASSIGNED         = 2;
-    const EVENT_TYPE_UPDATED          = 3;
+    const EVENT_TYPE_NEW = 1;
+    const EVENT_TYPE_ASSIGNED = 2;
+    const EVENT_TYPE_UPDATED = 3;
     const EVENT_TYPE_CUSTOMER_REPLIED = 4;
-    const EVENT_TYPE_USER_REPLIED     = 5;
+    const EVENT_TYPE_USER_REPLIED = 5;
 
     // Notify me when…
     const EVENT_NEW_CONVERSATION = 1;
@@ -63,7 +63,7 @@ class Subscription extends Model
     ];
 
     /**
-     * List of events that occured
+     * List of events that occured.
      */
     public static $occured_events = [];
 
@@ -86,8 +86,8 @@ class Subscription extends Model
 
     /**
      * Add default subscriptions for user.
-     * 
-     * @param integer $user_id
+     *
+     * @param int $user_id
      */
     public static function addDefaultSubscriptions($user_id)
     {
@@ -96,9 +96,10 @@ class Subscription extends Model
 
     /**
      * Save subscriptions from passed array.
-     * 
-     * @param  array  $subscriptions [description]
-     * @return [type]                [description]
+     *
+     * @param array $subscriptions [description]
+     *
+     * @return [type] [description]
      */
     public static function saveFromArray($new_subscriptions, $user_id)
     {
@@ -116,12 +117,12 @@ class Subscription extends Model
             }
         }
 
-        Subscription::where('user_id', $user_id)->delete();
-        Subscription::insert($subscriptions);
+        self::where('user_id', $user_id)->delete();
+        self::insert($subscriptions);
     }
 
     /**
-     * Check if subscription exists
+     * Check if subscription exists.
      */
     public static function exists(array $params, $subscriptions = null)
     {
@@ -133,11 +134,13 @@ class Subscription extends Model
                         continue 2;
                     }
                 }
+
                 return true;
             }
         } else {
             // Search in DB
         }
+
         return false;
     }
 
@@ -218,7 +221,7 @@ class Subscription extends Model
             $mailbox_user_ids = $conversation->mailbox->userIdsHavingAccess();
         }
 
-        $subscriptions = Subscription::select(['user_id', 'medium'])
+        $subscriptions = self::select(['user_id', 'medium'])
             ->whereIn('user_id', $mailbox_user_ids)
             ->whereIn('event', $events)
             ->get();
@@ -233,6 +236,7 @@ class Subscription extends Model
             $users_to_notify[$subscription->medium][] = $subscription->user;
             $users_to_notify[$subscription->medium] = array_unique($users_to_notify[$subscription->medium]);
         }
+
         return $users_to_notify;
     }
 

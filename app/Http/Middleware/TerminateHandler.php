@@ -5,9 +5,9 @@ namespace App\Http\Middleware;
 use App\Subscription;
 use Closure;
 
-class TerminateHandler {
-
-	public function handle($request, Closure $next)
+class TerminateHandler
+{
+    public function handle($request, Closure $next)
     {
         return $next($request);
     }

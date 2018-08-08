@@ -205,6 +205,7 @@ class Conversation extends Model
 
     /**
      * Get all published conversation thread in desc order.
+     *
      * @return Collection
      */
     public function getThreads($skip = null, $take = null)
@@ -282,7 +283,7 @@ class Conversation extends Model
 
     /**
      * Get status name.
-     * 
+     *
      * @return string
      */
     public function getStatusName()
