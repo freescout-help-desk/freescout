@@ -149,23 +149,23 @@ class FetchEmails extends Command
                 }
 
                 // Detect prev thread
-                $is_reply    = false;
+                $is_reply = false;
                 $prev_thread = null;
-                $user_id     = null;
-                $user        = null; // for user reply only
+                $user_id = null;
+                $user = null; // for user reply only
                 $message_from_customer = true;
                 $in_reply_to = $message->getInReplyTo();
-                $references  = $message->getReferences();
+                $references = $message->getReferences();
 
                 // Is it message from Customer or User replied to the notification
-                preg_match("/^".\App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $in_reply_to, $m);
+                preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $in_reply_to, $m);
                 if (!empty($m[1]) && !empty($m[2])) {
                     // Reply from User to the notification
-                    $prev_thread           = Thread::find($m[1]);
-                    $user_id               = $m[2];
-                    $user                  = User::find($user_id);
+                    $prev_thread = Thread::find($m[1]);
+                    $user_id = $m[2];
+                    $user = User::find($user_id);
                     $message_from_customer = false;
-                    $is_reply              = true;
+                    $is_reply = true;
 
                     if (!$user) {
                         $this->logError('User not found: '.$user_id);
@@ -173,13 +173,11 @@ class FetchEmails extends Command
                         continue;
                     }
                     $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
-
                 } elseif (($user = User::where('email', $from)->first()) && $in_reply_to && ($prev_thread = Thread::where('message_id', $in_reply_to)->first()) && $prev_thread->created_by_user_id == $user->id) {
                     // Reply from customer to his reply to the notification
                     $user_id = $user->id;
                     $message_from_customer = false;
-                    $is_reply              = true;
-
+                    $is_reply = true;
                 } else {
                     // Message from Customer
                     $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
@@ -195,7 +193,7 @@ class FetchEmails extends Command
                         $prev_message_id = $references[0];
                     }
                     if ($prev_message_id) {
-                        preg_match("/^".\App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
+                        preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
                         if (!empty($m[1])) {
                             $prev_thread = Thread::find($m[1]);
                         }
@@ -386,7 +384,7 @@ class FetchEmails extends Command
 
         // Reply from user makes conversation pending
         $conversation->status = Conversation::STATUS_PENDING;
-        $conversation->last_reply_at   = $now;
+        $conversation->last_reply_at = $now;
         $conversation->last_reply_from = Conversation::PERSON_USER;
         $conversation->user_updated_at = $now;
         // Set folder id

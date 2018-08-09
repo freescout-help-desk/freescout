@@ -550,7 +550,7 @@ class Conversation extends Model
 
     /**
      * Get CSS color of the status.
-     * 
+     *
      * @return string
      */
     public function getStatusColor()
