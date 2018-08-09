@@ -14,6 +14,17 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Affected Classes
 - NaN
 
+## [1.2.7] - 2018-08-06
+### Fixed
+- Broken non-latin characters in subjects and attachments  #133
+
+### Added
+- Required php extensions added to composer.json
+
+### Affected Classes
+- [Message::class](src/IMAP/Message.php)
+- [Attachment::class](src/IMAP/Attachment.php)
+
 ## [1.2.6] - 2018-08-04
 ### Fixed
 - Message subjects and attachment  names will now be decoded with a guessed encoding #97 #107

@@ -226,7 +226,7 @@ class Attachment {
      * @param $name
      */
     public function setName($name) {
-        $this->name = $this->oMessage->decodeString($this->oMessage->convertEncoding($name, $this->oMessage->getEncoding($name)), 'UTF-7');
+        $this->name = mb_decode_mimeheader($name);
     }
 
     /**

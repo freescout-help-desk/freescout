@@ -20,6 +20,10 @@
     ],
     "require": {
         "php": ">=5.5.9",
+        "ext-imap": "*",
+        "ext-mbstring": "*",
+        "ext-iconv": "*",
+        "ext-fileinfo": "*",
         "laravel/framework": ">=5.0.0"
     },
     "autoload": {

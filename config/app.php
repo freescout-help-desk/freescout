@@ -166,7 +166,7 @@ return [
     | PHP extensions required by the app
     |-------------------------------------------------------------------------
     */
-    'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', 'mcrypt'],
+    'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', 'mcrypt'/*, 'openssl', 'dom', 'xmlwriter', 'tokenizer', 'json', 'libxml', 'phar'*/],
 
     /*
     |--------------------------------------------------------------------------

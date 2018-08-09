@@ -171,6 +171,8 @@ class Message {
      * @param boolean       $fetch_body
      * @param boolean       $fetch_attachment
      * @param boolean       $fetch_flags
+     *
+     * @throws Exceptions\ConnectionFailedException
      */
     public function __construct($uid, $msglist, Client $client, $fetch_options = null, $fetch_body = false, $fetch_attachment = false, $fetch_flags = false) {
         $this->setFetchOption($fetch_options);
@@ -205,6 +207,7 @@ class Message {
      * @param int $options
      *
      * @return bool
+     * @throws Exceptions\ConnectionFailedException
      */
     public function copy($mailbox, $options = 0) {
         return imap_mail_copy($this->client->getConnection(), $this->msglist, $mailbox, $options);
@@ -217,6 +220,7 @@ class Message {
      * @param int $options
      *
      * @return bool
+     * @throws Exceptions\ConnectionFailedException
      */
     public function move($mailbox, $options = 0) {
         return imap_mail_move($this->client->getConnection(), $this->msglist, $mailbox, $options);
@@ -281,6 +285,7 @@ class Message {
      * Parse all defined headers
      *
      * @return void
+     * @throws Exceptions\ConnectionFailedException
      */
     private function parseHeader() {
         $this->header = $header = imap_fetchheader($this->client->getConnection(), $this->uid, FT_UID);
@@ -313,7 +318,7 @@ class Message {
         }
 
         if (property_exists($header, 'subject')) {
-            $this->subject = $this->decodeString($this->convertEncoding($header->subject, $this->getEncoding($header->subject)), 'UTF-7');
+            $this->subject = mb_decode_mimeheader($header->subject);
         }
 
         if (property_exists($header, 'date')) {
@@ -392,6 +397,7 @@ class Message {
      * Parse additional flags
      *
      * @return void
+     * @throws Exceptions\ConnectionFailedException
      */
     private function parseFlags() {
         $flags = imap_fetch_overview($this->client->getConnection(), $this->uid, FT_UID);
@@ -421,6 +427,7 @@ class Message {
      * Get the current Message header info
      *
      * @return object
+     * @throws Exceptions\ConnectionFailedException
      */
     public function getHeaderInfo() {
         if ($this->header_info == null) {
@@ -469,6 +476,7 @@ class Message {
      * Parse the Message body
      *
      * @return $this
+     * @throws Exceptions\ConnectionFailedException
      */
     public function parseBody() {
         $structure = imap_fetchstructure($this->client->getConnection(), $this->uid, FT_UID);
@@ -496,6 +504,8 @@ class Message {
      *
      * @param $structure
      * @param mixed $partNumber
+     *
+     * @throws Exceptions\ConnectionFailedException
      */
     private function fetchStructure($structure, $partNumber = null) {
         if ($structure->type == self::TYPE_TEXT &&
@@ -559,6 +569,8 @@ class Message {
      *
      * @param object $structure
      * @param mixed  $partNumber
+     *
+     * @throws Exceptions\ConnectionFailedException
      */
     protected function fetchAttachment($structure, $partNumber) {
 
@@ -701,20 +713,20 @@ class Message {
      *
      * @param object|string $structure
      *
-     * @return null|string
+     * @return string
      */
     public function getEncoding($structure) {
         if (property_exists($structure, 'parameters')) {
             foreach ($structure->parameters as $parameter) {
                 if (strtolower($parameter->attribute) == "charset") {
-                    return strtoupper($parameter->value);
+                    return EncodingAliases::get($parameter->value);
                 }
             }
         }elseif (is_string($structure) === true){
             return mb_detect_encoding($structure);
         }
 
-        return null;
+        return 'UTF-8';
     }
 
     /**
@@ -822,6 +834,7 @@ class Message {
      * @param string|array $flag
      *
      * @return bool
+     * @throws Exceptions\ConnectionFailedException
      */
     public function setFlag($flag) {
         $flag = "\\".trim(is_array($flag) ? implode(" \\", $flag) : $flag);
@@ -836,6 +849,7 @@ class Message {
      * @param string|array $flag
      *
      * @return bool
+     * @throws Exceptions\ConnectionFailedException
      */
     public function unsetFlag($flag) {
         $flag = "\\".trim(is_array($flag) ? implode(" \\", $flag) : $flag);
@@ -847,6 +861,7 @@ class Message {
 
     /**
      * @return null|object|string
+     * @throws Exceptions\ConnectionFailedException
      */
     public function getRawBody() {
         if ($this->raw_body === null) {
