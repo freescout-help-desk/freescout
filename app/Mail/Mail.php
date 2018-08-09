@@ -6,8 +6,18 @@ use App\Mailbox;
 
 class Mail
 {
+    /**
+     * Reply separators.
+     */
     const REPLY_SEPARATOR_HTML = 'fsReplyAbove';
     const REPLY_SEPARATOR_TEXT = '-- Please reply above this line --';
+
+    /**
+     * Message-ID prefixes for outgoing emails.
+     */
+    const MESSAGE_ID_PREFIX_NOTIFICATION = 'notify';
+    const MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY = 'conversation';
+    const MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER = 'reply';
 
     /**
      * If reply is not extracted properly from the incoming email, add here new separator.
@@ -15,6 +25,7 @@ class Mail
      */
     public static $alternative_reply_separators = [
         self::REPLY_SEPARATOR_HTML,
+        self::REPLY_SEPARATOR_TEXT,
         '<div class="gmail_quote">',
         '<blockquote',
     ];

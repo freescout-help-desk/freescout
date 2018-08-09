@@ -73,7 +73,7 @@ class SendReplyToCustomer implements ShouldQueue
             $headers['In-Reply-To'] = '<'.$prev_thread->message_id.'>';
             $headers['References'] = '<'.$prev_thread->message_id.'>';
         }
-        $message_id = 'thread-'.$last_thread->id.'-'.time().'@'.$mailbox->getEmailDomain();
+        $message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER.'-'.$last_thread->id.'-'.md5($last_thread->id).'@'.$mailbox->getEmailDomain();
         $headers['Message-ID'] = $message_id;
 
         $customer_email = $this->customer->getMainEmail();
@@ -82,8 +82,10 @@ class SendReplyToCustomer implements ShouldQueue
             ->bcc($last_thread->getBccArray())
             ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers));
 
-        $last_thread->message_id = $message_id;
-        $last_thread->save();
+        // In message_id we are storing Message-ID of the incoming email which created the thread
+        // Outcoming message_id can be generated for each thread by thread->id
+        // $last_thread->message_id = $message_id;
+        // $last_thread->save();
 
         // Laravel tells us exactly what email addresses failed
         $failures = Mail::failures();

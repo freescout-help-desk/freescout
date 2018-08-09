@@ -442,7 +442,7 @@ class ConversationsController extends Controller
                     if ($new) {
                         event(new UserCreatedConversation($conversation, $thread));
                     } else {
-                        event(new UserReplied($conversation));
+                        event(new UserReplied($conversation, $thread));
                     }
 
                     $response['status'] = 'success';

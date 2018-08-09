@@ -148,6 +148,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | FreeScout Repository
+    |-------------------------------------------------------------------------
+    */
+    'freescout_repo' => 'https://github.com/freescout-helpdesk/freescout',
+
+    /*
+    |--------------------------------------------------------------------------
     | Parameters used to run queued jobs processing.
     | Must contained comma separeted list of existing queues
     |-------------------------------------------------------------------------

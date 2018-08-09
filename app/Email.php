@@ -51,7 +51,7 @@ class Email extends Model
             return false;
         }
         $email = filter_var($email, FILTER_SANITIZE_EMAIL);
-        $email = strtolower($email);
+        $email = mb_strtolower($email, 'UTF-8');
 
         return $email;
     }

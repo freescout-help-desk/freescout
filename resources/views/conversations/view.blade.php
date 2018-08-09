@@ -58,8 +58,8 @@
                     </li>
                     <li>
                         <div class="btn-group" data-toggle="tooltip" title="{{ __("Status") }}">
-                            <button type="button" class="btn btn-{{ App\Conversation::$status_colors[$conversation->status] }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
-                            <button type="button" class="btn btn-{{ App\Conversation::$status_colors[$conversation->status] }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
+                            <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span>{{ $conversation->getStatusName() }}</span> <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu conv-status">

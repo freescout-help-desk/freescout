@@ -8,11 +8,13 @@ use App\Customer;
 use App\Email;
 use App\Events\CustomerCreatedConversation;
 use App\Events\CustomerReplied;
+use App\Events\UserReplied;
 use App\Mail\Mail;
 use App\Mailbox;
 use App\Option;
 use App\Subscription;
 use App\Thread;
+use App\User;
 use Illuminate\Console\Command;
 use Webklex\IMAP\Client;
 
@@ -132,24 +134,76 @@ class FetchEmails extends Command
                     continue;
                 }
 
+                // From
+                $from = $message->getReplyTo();
+                if (!$from) {
+                    $from = $message->getFrom();
+                }
+                if (!$from) {
+                    $this->logError('From is empty');
+                    $message->setFlag(['Seen']);
+                    continue;
+                } else {
+                    $from = $this->formatEmailList($from);
+                    $from = $from[0];
+                }
+
                 // Detect prev thread
-                $is_reply = false;
+                $is_reply    = false;
                 $prev_thread = null;
+                $user_id     = null;
+                $user        = null; // for user reply only
+                $message_from_customer = true;
                 $in_reply_to = $message->getInReplyTo();
-                $references = $message->getReferences();
+                $references  = $message->getReferences();
 
-                if ($in_reply_to) {
-                    $prev_thread = Thread::where('message_id', $in_reply_to)->first();
-                } elseif ($references) {
-                    if (!is_array($references)) {
-                        $references = array_filter(preg_split('/[, <>]/', $references));
+                // Is it message from Customer or User replied to the notification
+                preg_match("/^".\App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $in_reply_to, $m);
+                if (!empty($m[1]) && !empty($m[2])) {
+                    // Reply from User to the notification
+                    $prev_thread           = Thread::find($m[1]);
+                    $user_id               = $m[2];
+                    $user                  = User::find($user_id);
+                    $message_from_customer = false;
+                    $is_reply              = true;
+
+                    if (!$user) {
+                        $this->logError('User not found: '.$user_id);
+                        $message->setFlag(['Seen']);
+                        continue;
                     }
-                    $prev_thread = Thread::whereIn('message_id', $references)->first();
-                }
-                if (!empty($prev_thread)) {
-                    $is_reply = true;
-                }
+                    $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
 
+                } elseif (($user = User::where('email', $from)->first()) && $in_reply_to && ($prev_thread = Thread::where('message_id', $in_reply_to)->first()) && $prev_thread->created_by_user_id == $user->id) {
+                    // Reply from customer to his reply to the notification
+                    $user_id = $user->id;
+                    $message_from_customer = false;
+                    $is_reply              = true;
+
+                } else {
+                    // Message from Customer
+                    $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
+
+                    $prev_message_id = '';
+                    if ($in_reply_to) {
+                        $prev_message_id = $in_reply_to;
+                    } elseif ($references) {
+                        if (!is_array($references)) {
+                            $references = array_filter(preg_split('/[, <>]/', $references));
+                        }
+                        // Maybe we need to check all references
+                        $prev_message_id = $references[0];
+                    }
+                    if ($prev_message_id) {
+                        preg_match("/^".\App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
+                        if (!empty($m[1])) {
+                            $prev_thread = Thread::find($m[1]);
+                        }
+                    }
+                    if (!empty($prev_thread)) {
+                        $is_reply = true;
+                    }
+                }
                 if ($message->hasHTMLBody()) {
                     // Get body and replace :cid with images URLs
                     $body = $message->getHTMLBody(true);
@@ -165,18 +219,6 @@ class FetchEmails extends Command
                 }
 
                 $subject = $message->getSubject();
-                $from = $message->getReplyTo();
-                if (!$from) {
-                    $from = $message->getFrom();
-                }
-                if (!$from) {
-                    $this->logError('From is empty');
-                    $message->setFlag(['Seen']);
-                    continue;
-                } else {
-                    $from = $this->formatEmailList($from);
-                    $from = $from[0];
-                }
 
                 $to = $this->formatEmailList($message->getTo());
                 $to = $this->removeMailboxEmail($to, $mailbox->email);
@@ -189,11 +231,27 @@ class FetchEmails extends Command
 
                 $attachments = $message->getAttachments();
 
-                $save_result = $this->saveThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments);
+                if ($message_from_customer) {
+                    $new_thread_id = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments);
+                } else {
+                    // Check if From is the same as user's email.
+                    // If not we send an email with information to the sender.
+                    if (Email::sanitizeEmail($user->email) != Email::sanitizeEmail($from)) {
+                        $this->logError("From address {$from} is not the same as user {$user->id} email: ".$user->email);
+                        $message->setFlag(['Seen']);
+                        // todo: send email with information
+                        // Unable to process your update
+                        // Your email update couldn't be processed
+                        // If you are trying to update a conversation, remember you must respond from the same email address that's on your account. To send your update, please try again and send from your account email address (the email you login with).
+                        continue;
+                    }
 
-                if ($save_result) {
+                    $new_thread_id = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $to, $cc, $bcc, $body, $attachments);
+                }
+
+                if ($new_thread_id) {
                     $message->setFlag(['Seen']);
-                    $this->line('['.date('Y-m-d H:i:s').'] Processed');
+                    $this->line('['.date('Y-m-d H:i:s').'] Thread successfully created: '.$new_thread_id);
                 } else {
                     $this->logError('Error occured processing message');
                 }
@@ -228,9 +286,9 @@ class FetchEmails extends Command
     }
 
     /**
-     * Save email as thread.
+     * Save email from customer as thread.
      */
-    public function saveThread($mailbox_id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments)
+    public function saveCustomerThread($mailbox_id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments)
     {
         $cc = array_merge($cc, $to);
 
@@ -271,7 +329,7 @@ class FetchEmails extends Command
         // Reply from customer makes conversation active
         $conversation->status = Conversation::STATUS_ACTIVE;
         $conversation->last_reply_at = $now;
-        $conversation->last_reply_from = Conversation::PERSON_USER;
+        $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
         // Set folder id
         $conversation->updateFolder();
         $conversation->save();
@@ -279,6 +337,7 @@ class FetchEmails extends Command
         // Thread
         $thread = new Thread();
         $thread->conversation_id = $conversation->id;
+        $thread->user_id = $conversation->user_id;
         $thread->type = Thread::TYPE_CUSTOMER;
         $thread->status = $conversation->status;
         $thread->state = Thread::STATE_PUBLISHED;
@@ -305,7 +364,62 @@ class FetchEmails extends Command
             event(new CustomerReplied($conversation, $thread));
         }
 
-        return true;
+        return $thread->id;
+    }
+
+    /**
+     * Save email reply from user as thread.
+     */
+    public function saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $to, $cc, $bcc, $body, $attachments)
+    {
+        $cc = array_merge($cc, $to);
+
+        $conversation = null;
+        $now = date('Y-m-d H:i:s');
+
+        $conversation = $prev_thread->conversation;
+        // Determine assignee
+        // mailbe we need to check mailbox->ticket_assignee here, maybe not
+        if (!$conversation->user_id) {
+            $conversation->user_id = $user_id;
+        }
+
+        // Reply from user makes conversation pending
+        $conversation->status = Conversation::STATUS_PENDING;
+        $conversation->last_reply_at   = $now;
+        $conversation->last_reply_from = Conversation::PERSON_USER;
+        $conversation->user_updated_at = $now;
+        // Set folder id
+        $conversation->updateFolder();
+        $conversation->save();
+
+        // Thread
+        $thread = new Thread();
+        $thread->conversation_id = $conversation->id;
+        $thread->user_id = $conversation->user_id;
+        $thread->type = Thread::TYPE_MESSAGE;
+        $thread->status = $conversation->status;
+        $thread->state = Thread::STATE_PUBLISHED;
+        $thread->message_id = $message_id;
+        $thread->body = $body;
+        $thread->setTo($to);
+        $thread->setCc($cc);
+        $thread->setBcc($bcc);
+        $thread->source_via = Thread::PERSON_USER;
+        $thread->source_type = Thread::SOURCE_TYPE_EMAIL;
+        $thread->customer_id = $conversation->customer_id;
+        $thread->created_by_user_id = $user_id;
+        $thread->save();
+
+        $has_attachments = $this->saveAttachments($attachments, $thread->id);
+        if ($has_attachments) {
+            $thread->has_attachments = true;
+            $thread->save();
+        }
+
+        event(new UserReplied($conversation, $thread));
+
+        return $thread->id;
     }
 
     /**
@@ -353,8 +467,7 @@ class FetchEmails extends Command
         };
 
         if ($is_html) {
-            $separator = Mail::REPLY_SEPARATOR_HTML;
-
+            // Extract body content from HTML
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
             $dom->loadHTML(mb_convert_encoding($body, 'HTML-ENTITIES', 'UTF-8'));
@@ -369,7 +482,6 @@ class FetchEmails extends Command
                 $body = $matches[1];
             }
         } else {
-            $separator = Mail::REPLY_SEPARATOR_TEXT;
             $body = nl2br($body);
         }
 
@@ -427,7 +539,10 @@ class FetchEmails extends Command
     {
         $plain_list = [];
         foreach ($obj_list as $item) {
-            $plain_list[] = $item->mail;
+            $item->mail = Email::sanitizeEmail($item->mail);
+            if ($item->mail) {
+                $plain_list[] = $item->mail;
+            }
         }
 
         return $plain_list;

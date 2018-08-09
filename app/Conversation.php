@@ -64,12 +64,19 @@ class Conversation extends Model
         //self::STATUS_OPEN => 'folder-open',
     ];
 
-    public static $status_colors = [
+    public static $status_classes = [
         self::STATUS_ACTIVE  => 'success',
         self::STATUS_PENDING => 'default',
         self::STATUS_CLOSED  => 'grey',
         self::STATUS_SPAM    => 'danger',
         //self::STATUS_OPEN => 'folder-open',
+    ];
+
+    public static $status_colors = [
+        self::STATUS_ACTIVE  => '#71c171',
+        self::STATUS_PENDING => '',
+        self::STATUS_CLOSED  => '#87939f',
+        self::STATUS_SPAM    => '#de6864',
     ];
 
     /**
@@ -539,5 +546,15 @@ class Conversation extends Model
     public function url()
     {
         return route('conversations.view', ['id' => $this->id]);
+    }
+
+    /**
+     * Get CSS color of the status.
+     * 
+     * @return string
+     */
+    public function getStatusColor()
+    {
+        return self::$status_colors[$this->status];
     }
 }

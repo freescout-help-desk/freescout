@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class Subscription extends Model
 {
     // Event types
+    // Changing ticket status does not fire event
     const EVENT_TYPE_NEW = 1;
     const EVENT_TYPE_ASSIGNED = 2;
     const EVENT_TYPE_UPDATED = 3;
@@ -283,7 +284,7 @@ class Subscription extends Model
                 // Remove current user from recipients if action caused by current user
                 foreach ($medium_users_to_notify as $i => $user) {
                     if ($user->id == $event['caused_by_user_id']) {
-                        //unset($medium_users_to_notify[$i]);
+                        unset($medium_users_to_notify[$i]);
                     }
                 }
 

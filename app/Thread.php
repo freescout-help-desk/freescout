@@ -325,7 +325,7 @@ class Thread extends Model
      *
      * @return string
      */
-    public function getAssignedName($ucfirst = false)
+    public function getAssignedName($ucfirst = false, $user = null)
     {
         if (!$this->user_id) {
             if ($ucfirst) {
@@ -333,7 +333,7 @@ class Thread extends Model
             } else {
                 return __('anyone');
             }
-        } elseif ($this->user_id == auth()->user()->id) {
+        } elseif (($user && $this->user_id == $user->id) || (!$user && $this->user_id == auth()->user()->id)) {
             if ($ucfirst) {
                 return __('Yourself');
             } else {

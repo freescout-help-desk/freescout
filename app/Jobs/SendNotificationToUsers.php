@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\UserNotification;
 use App\SendLog;
+use App\Thread;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -54,13 +55,13 @@ class SendNotificationToUsers implements ShouldQueue
         $last_thread = $this->threads->first();
 
         // All notification for the same conversation has same dummy Message-ID
-        $prev_message_id = 'conversation-'.$this->conversation->id.'-'.md5($this->conversation->id).'@'.$mailbox->getEmailDomain();
+        $prev_message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY.'-'.$this->conversation->id.'-'.md5($this->conversation->id).'@'.$mailbox->getEmailDomain();
         $headers['In-Reply-To'] = '<'.$prev_message_id.'>';
         $headers['References'] = '<'.$prev_message_id.'>';
 
         $all_failures = [];
         foreach ($this->users as $user) {
-            $message_id = 'notify-'.$last_thread->id.'-'.$user->id.'-'.time().'@'.$mailbox->getEmailDomain();
+            $message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION.'-'.$last_thread->id.'-'.$user->id.'-'.time().'@'.$mailbox->getEmailDomain();
             $headers['Message-ID'] = $message_id;
 
             Mail::to([['name' => $user->getFullName(), 'email' => $user->email]])

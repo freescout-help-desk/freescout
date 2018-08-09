@@ -146,7 +146,7 @@ class SecureController extends Controller
                     ];
                     continue;
                 } elseif ($running_commands > 1) {
-                    unset($pids[0]);
+                    //unset($pids[0]);
                     $commands[] = [
                         'name'        => $command_name,
                         'status'      => 'error',
