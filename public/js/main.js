@@ -359,11 +359,16 @@ function conversationInit()
 	    // Reply
 	    jQuery(".conv-reply").click(function(e){
 	    	if ($(".conv-reply-block").hasClass('hidden')) {
+	    		// Show
 				$(".conv-action-block").addClass('hidden');
 				$(".conv-reply-block").removeClass('hidden');
 				$(".conv-action").addClass('inactive');
 				$(this).removeClass('inactive');
+				if (!$('#to').length) {
+					$('#body').summernote('focus');
+				}
 			} else {
+				// Hide
 				$(".conv-action-block").addClass('hidden');
 				$(".conv-action").removeClass('inactive');
 			}
