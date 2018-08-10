@@ -10,8 +10,10 @@ use App\Events\UserCreatedConversation;
 use App\Events\UserReplied;
 use App\Folder;
 use App\Mailbox;
+use App\MailboxUser;
 use App\Thread;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 use Validator;
 
 class ConversationsController extends Controller
@@ -29,17 +31,36 @@ class ConversationsController extends Controller
     /**
      * View conversation.
      */
-    public function view($id)
+    public function view(Request $request, $id)
     {
         $conversation = Conversation::findOrFail($id);
         $this->authorize('view', $conversation);
 
+        $user = auth()->user();
+
         // Detect folder
-        if ($conversation->user_id == auth()->user()->id) {
-            $folder = $conversation->mailbox->folders()->where('type', Folder::TYPE_MINE)->first();
-        } else {
-            $folder = $conversation->folder;
+        $folder = null;
+        if (Conversation::getFolderParam()) {
+            $folder = $conversation->mailbox->folders()->where('folders.id', Conversation::getFolderParam())->first();
+
+            // Check if conversation can be located in the passed folder_id
+            if (!$conversation->isInFolderAllowed($folder)) {
+                $request->session()->reflash();
+                return redirect()->away($conversation->url($conversation->folder_id));
+            }
         }
+
+        if (!$folder) {
+            if ($conversation->user_id == $user->id) {
+                $folder = $conversation->mailbox->folders()->where('type', Folder::TYPE_MINE)->first();
+            } else {
+                $folder = $conversation->folder;
+            }
+
+            return redirect()->away($conversation->url($folder->id));
+        }
+
+        $after_send = $conversation->mailbox->getUserSettings($user->id)->after_send;
 
         return view('conversations/view', [
             'conversation' => $conversation,
@@ -48,6 +69,7 @@ class ConversationsController extends Controller
             'threads'      => $conversation->threads()->orderBy('created_at', 'desc')->get(),
             'folder'       => $folder,
             'folders'      => $conversation->mailbox->getAssesibleFolders(),
+            'after_send'   => $after_send,
         ]);
     }
 
@@ -64,11 +86,14 @@ class ConversationsController extends Controller
 
         $folder = $mailbox->folders()->where('type', Folder::TYPE_DRAFTS)->first();
 
+        $after_send = $mailbox->getUserSettings(auth()->user()->id)->after_send;
+        
         return view('conversations/create', [
             'conversation' => $conversation,
             'mailbox'      => $mailbox,
             'folder'       => $folder,
             'folders'      => $mailbox->getAssesibleFolders(),
+            'after_send'   => $after_send,
         ]);
     }
 
@@ -90,96 +115,13 @@ class ConversationsController extends Controller
     }
 
     /**
-     * Save new conversation.
-     */
-    /*public function createSave($mailbox_id, Request $request)
-    {
-        $mailbox = Mailbox::findOrFail($mailbox_id);
-        $this->authorize('view', $mailbox);
-
-        $validator = Validator::make($request->all(), [
-            'to' => 'required|string',
-            'subject'  => 'required|string|max:998',
-            'body'  => 'required|string',
-            'cc' => 'nullable|string',
-            'bcc' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->route('conversations.create', ['mailbox_id' => $mailbox_id])
-                        ->withErrors($validator)
-                        ->withInput();
-        }
-
-        $to_array = Conversation::sanitizeEmails($request->to);
-
-        // Check if there are any emails
-        if (!$to_array) {
-            return redirect()->route('conversations.create', ['mailbox_id' => $mailbox_id])
-                        ->withErrors(['to' => __('Incorrect recipients')])
-                        ->withInput();
-        }
-
-        $now = date('Y-m-d H:i:s');
-        $customer = Customer::create($to_array[0]);
-
-        $conversation = new Conversation();
-        $conversation->type = Conversation::TYPE_EMAIL;
-        $conversation->status = $request->status;
-        $conversation->state = Conversation::STATE_PUBLISHED;
-        $conversation->subject = $request->subject;
-        $conversation->setCc($request->cc);
-        $conversation->setBcc($request->bcc);
-        $conversation->setPreview($request->body);
-        // todo: attachments
-        //$conversation->has_attachments = ;
-        // Set folder id
-        $conversation->mailbox_id = $mailbox_id;
-        if ((int)$request->user_id != -1) {
-            // Check if user has access to the current mailbox
-            if ($mailbox->userHasAccess($request->user_id)) {
-                $conversation->user_id = $request->user_id;
-            }
-        }
-
-        $conversation->customer_id = $customer->id;
-        $conversation->created_by_user_id = auth()->user()->id;
-        $conversation->source_via = Conversation::PERSON_USER;
-        $conversation->source_type = Conversation::SOURCE_TYPE_WEB;
-        $conversation->user_updated_at = $now;
-        $conversation->last_reply_at = $now;
-        $conversation->last_reply_from = Conversation::PERSON_USER;
-        $conversation->updateFolder();
-        $conversation->save();
-
-        // Create thread
-        $thread = new Thread();
-        $thread->conversation_id = $conversation->id;
-        $thread->user_id = auth()->user()->id;
-        $thread->type = Thread::TYPE_MESSAGE;
-        $thread->status = $request->status;
-        $thread->state = Thread::STATE_PUBLISHED;
-        $thread->body = $request->body;
-        $thread->setTo($request->to);
-        $thread->setCc($request->cc);
-        $thread->setBcc($request->bcc);
-        $thread->source_via = Thread::PERSON_USER;
-        $thread->source_type = Thread::SOURCE_TYPE_WEB;
-        $thread->customer_id = $customer->id;
-        $thread->created_by_user_id = auth()->user()->id;
-        $thread->save();
-
-        return redirect()->route('conversations.view', ['id' => $conversation->id]);
-    }*/
-
-    /**
      * Conversations ajax controller.
      */
     public function ajax(Request $request)
     {
         $response = [
             'status' => 'error',
-            'msg'    => '',
+            'msg'    => '', // this is error message
         ];
 
         $user = auth()->user();
@@ -233,10 +175,10 @@ class ConversationsController extends Controller
                     // Flash
                     $flash_message = __('Assignee updated');
                     if ($new_user_id != $user->id) {
-                        $flash_message .= ' <a href="'.route('conversations.view', ['id' => $conversation->id]).'">'.__('View').'</a>';
+                        $flash_message .= ' <a href="'.$conversation->url().'">'.__('View').'</a>';
 
                         if ($next_conversation) {
-                            $response['redirect_url'] = route('conversations.view', ['id' => $next_conversation->id]);
+                            $response['redirect_url'] = $next_conversation->url();
                         } else {
                             // Show conversations list
                             $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
@@ -295,10 +237,10 @@ class ConversationsController extends Controller
                     // Flash
                     $flash_message = __('Status updated');
                     if ($new_status != Conversation::STATUS_ACTIVE) {
-                        $flash_message .= ' <a href="'.route('conversations.view', ['id' => $conversation->id]).'">'.__('View').'</a>';
+                        $flash_message .= ' <a href="'.$conversation->url().'">'.__('View').'</a>';
 
                         if ($next_conversation) {
-                            $response['redirect_url'] = route('conversations.view', ['id' => $next_conversation->id]);
+                            $response['redirect_url'] = $next_conversation->url();
                         } else {
                             // Show conversations list
                             $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
@@ -446,14 +388,68 @@ class ConversationsController extends Controller
                     }
 
                     $response['status'] = 'success';
-                    $response['redirect_url'] = route('conversations.view', ['id' => $conversation->id]);
 
-                    $flash_message = __(
-                        ':%tag_start%Email Sent:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%',
-                        ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.route('conversations.view', ['id' => $conversation->id]).'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.draft', ['id' => $conversation->id]).'" class="text-danger">']
-                    );
+                    // Determine redirect
+                    if (!empty($request->after_send)) {
+                        switch ($request->after_send) {
+                            case MailboxUser::AFTER_SEND_STAY:
+                            default:
+                                $response['redirect_url'] = $conversation->url();
+                                break;
+                            case MailboxUser::AFTER_SEND_FOLDER:
+                                $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
+                                break;
+                            case MailboxUser::AFTER_SEND_NEXT:
+                                $next_conversation = $conversation->getNearby();
+                                if ($next_conversation) {
+                                    $response['redirect_url'] = $next_conversation->url();
+                                } else {
+                                    // Show folder
+                                    $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => Conversation::getCurrentFolder($conversation->folder_id)]);
+                                }
+                                break;
+                        }
+                    } else {
+                        // If something went wrong and after_send not set, just show the reply
+                        $response['redirect_url'] = $conversation->url();
+                    }
+
+                    if (!empty($request->after_send) && $request->after_send == MailboxUser::AFTER_SEND_STAY) {
+                        // Message without View link
+                        $flash_message = __(
+                            ':%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%',
+                            ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.draft', ['id' => $conversation->id]).'" class="text-danger">']
+                        );
+                    } else {
+                        $flash_message = __(
+                            ':%tag_start%Email Sent:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%',
+                            ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.draft', ['id' => $conversation->id]).'" class="text-danger">']
+                        );
+                    }
 
                     \Session::flash('flash_success_floating', $flash_message);
+                }
+                break;
+
+            // Save default redirect
+            case 'save_after_send':
+                $mailbox = Mailbox::find($request->mailbox_id);
+                if (!$mailbox) {
+                    $response['msg'] .= __('Mailbox not found');
+                } elseif (!$mailbox->userHasAccess($user->id)) {
+                    $response['msg'] .= __('Action not authorized');
+                }
+                if (!$response['msg']) {
+                    $mailbox_user = $user->mailboxes()->where('mailbox_id', $request->mailbox_id)->first();
+                    if (!$mailbox_user) {
+                        $mailbox_user = new MailboxUser();
+                        $mailbox_user->mailbox_id = $mailbox->id;
+                        $mailbox_user->user_id = $user->id;
+                    }
+                    $mailbox_user->settings->after_send = $request->value;
+                    $mailbox_user->settings->save();
+
+                    $response['status'] = 'success';
                 }
                 break;
             default:

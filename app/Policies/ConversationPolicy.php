@@ -23,7 +23,7 @@ class ConversationPolicy
         if ($user->isAdmin()) {
             return true;
         } else {
-            if ($conversation->mailbox()->users->contains($user)) {
+            if ($conversation->mailbox->users->contains($user)) {
                 return true;
             } else {
                 return false;

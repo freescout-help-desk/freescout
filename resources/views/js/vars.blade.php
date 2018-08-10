@@ -9,7 +9,7 @@
  */
 {{-- Global vars for JS. Set in /app/Console/Commands/GenerateJs.php --}}
 var Vars = {
-    
+    public_url: '{{ url('/') }}'
 };
 
 {{-- 
@@ -27,7 +27,9 @@ var lang_messages = {
             "upload_attachments": "{{ __("Upload Attachments") }}",
             "saved_replies": "{{ __("Saved Replies") }}",
             "save_draft": "{{ __("Save Draft") }}",
-            "discard": "{{ __("Discard") }}"
+            "discard": "{{ __("Discard") }}",
+            "close": "{{ __("Close") }}",
+            "settings_saved": "{{ __("Settings saved") }}"
         }@if (!$loop->last),@endif
     @endforeach
 };

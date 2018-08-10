@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Input;
 
 class Conversation extends Model
 {
@@ -543,9 +544,15 @@ class Conversation extends Model
      *
      * @return string
      */
-    public function url()
+    public function url($folder_id = null)
     {
-        return route('conversations.view', ['id' => $this->id]);
+        $params = ['id' => $this->id];
+        if (!$folder_id) {
+            $folder_id = self::getCurrentFolder();
+        }
+        $params['folder_id'] = $folder_id;
+
+        return route('conversations.view', $params);
     }
 
     /**
@@ -556,5 +563,51 @@ class Conversation extends Model
     public function getStatusColor()
     {
         return self::$status_colors[$this->status];
+    }
+
+    /**
+     * Get folder ID from request or use the default one.
+     */
+    public function getCurrentFolder($default_folder_id = null)
+    {
+        $folder_id = self::getFolderParam();
+        if ($folder_id) {
+            return $folder_id;
+        }
+        if ($this->folder_id) {
+            return $this->folder_id;
+        } else {
+            return $default_folder_id;
+        }
+    }
+
+    public static function getFolderParam()
+    {
+        if (!empty(request()->folder_id)) {
+            return request()->folder_id;
+        } elseif (!empty(Input::get('folder_id'))) {
+            return Input::get('folder_id');
+        }
+        return '';
+    }
+
+    /**
+     * Check if conversation can be in the folder.
+     */
+    public function isInFolderAllowed($folder)
+    {
+        if (in_array($folder->type, Folder::$public_types)) {
+            return ($folder->id == $this->folder_id);
+        } elseif ($folder->type == Folder::TYPE_MINE) {
+            $user = auth()->user();
+            if ($user && $user->id == $folder->user_id && $this->user_id == $user->id) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            // todo: check ConversationFolder here
+        }
+        return false;
     }
 }

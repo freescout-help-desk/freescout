@@ -212,7 +212,7 @@ function multiInputInit()
 	} );
 }
 
-function fsAjax(data, url, success_callback, error_callback, no_loader)
+function fsAjax(data, url, success_callback, no_loader, error_callback)
 {
     // Setup AJAX
 	$.ajaxSetup({
@@ -231,6 +231,14 @@ function fsAjax(data, url, success_callback, error_callback, no_loader)
 			fsLoaderHide();
 			$("button[data-loading-text!='']:disabled").button('reset');
 		};
+	}
+
+	// If this is conversation ajax request, add folder_id to the URL
+	if (url.indexOf('/conversation/') != -1) {
+		var folder_id = getQueryParam('folder_id');
+		if (folder_id) {
+			url += '?folder_id='+folder_id;
+		}
 	}
 
 	$.ajax({
@@ -414,15 +422,25 @@ function newConversationInit()
 
 		convEditorInit();
 
+		// Show CC
 	    $('.toggle-cc a:first').click(function() {
 			$('.field-cc').removeClass('hidden');
 			$(this).parent().remove();
 		});
 
-	    $('.dropdown-after-send a').click(function() {
-			$('.dropdown-after-send li').removeClass('active');
-			$(this).parent().addClass('active');
-			alert('todo: implement choosing action after sending a message');
+		// After send
+		$('.dropdown-after-send a:lt(3)').click(function(e) {
+			if (!$(this).parent().hasClass('active')) {
+				$("#after_send").val($(this).attr('data-after-send'));
+				$('.dropdown-after-send li').removeClass('active');
+				$(this).parent().addClass('active');
+			}
+			e.preventDefault();
+		});
+
+		// After send
+		$('.after-send-change').click(function(e) {
+			showModal($(this));
 		});
 
 		// Send reply or new conversation
@@ -473,4 +491,123 @@ function notificationsInit()
 			}
 		});
 	});
+}
+
+function getQueryParam(name, qs) {
+	if (typeof(qs) == "undefined") {
+		qs = document.location.search;
+	}
+    qs = qs.split('+').join(' ');
+
+    var params = {},
+        tokens,
+        re = /[?&]?([^=]+)=([^&]*)/g;
+
+    while (tokens = re.exec(qs)) {
+        params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+    }
+
+    if (typeof(params[name]) != "undefined") {
+    	return params[name];
+    } else {
+    	return '';
+    }
+}
+
+// Show bootstrap modal
+function showModal(a, onshow)
+{
+    var options = {};
+    var title = a.attr('data-modal-title');
+    if (title && title.charAt(0) == '#') {
+        title = $(title).html();
+    }
+    if (!title) {
+        title = a.text();
+    }
+    var remote = a.attr('data-remote');
+    var body = a.attr('data-modal-body');
+    var footer = a.attr('data-modal-footer');
+    var no_close_btn = a.attr('data-no-close-btn');
+    var no_footer = a.attr('data-modal-no-footer');
+    var modal_class = a.attr('data-modal-class');
+    var modal;
+
+    var html = [
+    '<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="jsmodal-label" aria-hidden="true">',
+        '<div class="modal-dialog '+modal_class+'">',
+            '<div class="modal-content">',
+                '<div class="modal-header">',
+                    '<button type="button" class="close" data-dismiss="modal" aria-label="'+Lang.get("messages.close")+'"><span aria-hidden="true">&times;</span></button>',
+                    '<h3 class="modal-title" id="jsmodal-label">'+title+'</h3>',
+                '</div>',
+                '<div class="modal-body"><div class="text-center modal-loader"><img src="'+Vars.public_url+'/img/loader-grey.gif" width="31" height="31"/></div></div>',
+                '<div class="modal-footer '+(no_footer == 'true' ? 'hidden' : '')+'">',
+                    (no_close_btn == 'true' ? '': '<button type="button" class="btn btn-default" data-dismiss="modal">'+Lang.get("messages.close")+'</button>'),
+                    footer,
+                '</div>',
+            '</div>',
+        '</div>',
+    '</div>'].join('');
+    modal = $(html);
+
+    if (typeof(onshow) !== "undefined") {
+        modal.on('shown.bs.modal', onshow);
+    }
+
+    modal.modal(options);
+
+    if (body) {
+        modal.children().find(".modal-body").html($(body).html());
+    } else {
+        setTimeout(function(){
+            $.ajax({
+                url: remote,
+                success: function(html) {
+                    modal.children().find(".modal-body").html(html);
+                },
+                error: function(data) {
+                    modal.children().find(".modal-body").html('<p class="alert alert-danger">'+Lang.get("messages.error_occured")+'</p>');
+                }
+            });
+        }, 500);
+    }
+}
+
+// Show floating error message on ajax error
+function showAjaxError(response)
+{
+	if (typeof(response.msg) != "undefined") {
+		fsShowFloatingAlert('error', response.msg);
+	} else {
+		fsShowFloatingAlert('error', Lang.get("messages.error_occured"));
+	}
+}
+
+// Save default redirect
+function saveAfterSend(el)
+{
+	var button = $(el);
+	button.button('loading');
+
+	var value = $(el).parents('.modal-body:first').children().find('[name="after_send_default"]:first').val();
+	data = {
+		value: value,
+		mailbox_id: fsGetGlobalAttr('mailbox_id'),
+		action: 'save_after_send'
+	};
+
+	fsAjax(data, laroute.route('conversations.ajax'), function(response) {
+		if (typeof(response.status) != "undefined" && response.status == 'success') {
+			// Show selected option in the dropdown
+			console.log('.dropdown-after-send [data-after-send='+value+']:first');
+			console.log($('.dropdown-after-send [data-after-send='+value+']:first'));
+			$('.dropdown-after-send [data-after-send='+value+']:first').click();
+			fsShowFloatingAlert('success', Lang.get("messages.settings_saved"));
+			$('.modal').modal('hide');
+		} else {
+			showAjaxError(response);
+		}
+		button.button('reset');
+	}, true);
 }

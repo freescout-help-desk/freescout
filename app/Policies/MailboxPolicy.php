@@ -33,12 +33,12 @@ class MailboxPolicy
      *
      * @return mixed
      */
-    public function view(User $user)
+    public function view(User $user, Mailbox $mailbox)
     {
         if ($user->isAdmin()) {
             return true;
         } else {
-            if ($mailbox()->users->contains($user)) {
+            if ($mailbox->users->contains($user)) {
                 return true;
             } else {
                 return false;

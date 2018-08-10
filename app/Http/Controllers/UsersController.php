@@ -6,6 +6,7 @@ use App\Mailbox;
 use App\Subscription;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Validator;
 
@@ -75,6 +76,7 @@ class UsersController extends Controller
         if (!empty($request->send_invite)) {
             $password = $user->generatePassword();
         }
+        $user->password = Hash::make($user->password);
 
         $user->save();
 

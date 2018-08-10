@@ -15,6 +15,9 @@
 
 Auth::routes();
 
+// Redirects
+Route::redirect('/home', '/', 301);
+
 // Public routes
 
 // General routes for logged in users

@@ -86,7 +86,7 @@ class User extends Authenticatable
      */
     public function mailboxes()
     {
-        return $this->belongsToMany('App\Mailbox');
+        return $this->belongsToMany('App\Mailbox')->as('settings')->withPivot('after_send');
     }
 
     /**
@@ -166,7 +166,7 @@ class User extends Authenticatable
         if ($this->isAdmin()) {
             return Mailbox::all();
         } else {
-            $this->mailboxes;
+            return $this->mailboxes;
         }
     }
 
@@ -202,10 +202,15 @@ class User extends Authenticatable
      */
     public function syncPersonalFolders($mailboxes)
     {
-        if (is_array($mailboxes)) {
-            $mailbox_ids = $mailboxes;
+        if ($this->isAdmin()) {
+            // For admin we get all mailboxes
+            $mailbox_ids = Mailbox::pluck('mailboxes.id');
         } else {
-            $mailbox_ids = $this->mailboxes()->pluck('mailboxes.id');
+            if (is_array($mailboxes)) {
+                $mailbox_ids = $mailboxes;
+            } else {
+                $mailbox_ids = $this->mailboxes()->pluck('mailboxes.id');
+            }
         }
 
         $cur_mailboxes = Folder::select('mailbox_id')

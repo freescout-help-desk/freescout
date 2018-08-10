@@ -9,7 +9,7 @@
             <span class="heading">{{ __('Users') }}</span>
         </div>
         <div class="flexy-item margin-left">
-            <a href="/users/wizard/" class="btn btn-primary">{{ __('New User') }}</a>
+            <a href="{{ route('users.create') }}" class="btn btn-primary">{{ __('New User') }}</a>
         </div>
         <div class="flexy-block"></div>
     </div>

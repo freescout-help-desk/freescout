@@ -17,7 +17,7 @@
 <body class="@if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class')" @yield('body_attrs')>
     <div id="app">
 
-        @if (!in_array(Route::currentRouteName(), array('login', 'register')))
+        @if (Auth::user())
 
             <nav class="navbar navbar-default navbar-static-top">
                 <div class="container">
@@ -68,21 +68,21 @@
                                         <li><a href="#">{{ __('New Site...') }} (todo)</a></li>
                                     </ul>
                                 </li>
+                            
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
+                                        {{ __('Reports') }} <span class="caret"></span>
+                                    </a>
+
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#">{{ __('Conversations') }} (todo)</a></li>
+                                        <li><a href="#">{{ __('Productivity') }} (todo)</a></li>
+                                        <li><a href="#">{{ __('Team') }} (todo)</a></li>
+                                        <li><a href="#">{{ __('Happiness') }} (todo)</a></li>
+                                        <li><a href="#">{{ __('Docs') }}  (todo)</a></li>
+                                    </ul>
+                                </li>
                             @endif
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
-                                    {{ __('Reports') }} <span class="caret"></span>
-                                </a>
-
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">{{ __('Conversations') }} (todo)</a></li>
-                                    <li><a href="#">{{ __('Productivity') }} (todo)</a></li>
-                                    <li><a href="#">{{ __('Team') }} (todo)</a></li>
-                                    <li><a href="#">{{ __('Happiness') }} (todo)</a></li>
-                                    <li><a href="#">{{ __('Docs') }}  (todo)</a></li>
-                                </ul>
-                            </li>
-
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
                                     {{ __('Manage') }} <span class="caret"></span>

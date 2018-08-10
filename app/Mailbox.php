@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\MailboxUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 
@@ -107,7 +108,7 @@ class Mailbox extends Model
      */
     public function users()
     {
-        return $this->belongsToMany('App\User');
+        return $this->belongsToMany('App\User')->as('settings')->withPivot('after_send');;
     }
 
     /**
@@ -131,36 +132,40 @@ class Mailbox extends Model
      *
      * @param mixed $users
      */
-    public function syncPersonalFolders($users)
+    public function syncPersonalFolders($users = null)
     {
-        if (is_array($users)) {
+        if (!empty($users) && is_array($users)) {
             $user_ids = $users;
         } else {
-            $user_ids = $this->users()->pluck('id')->toArray();
+            $user_ids = $this->users()->pluck('users.id')->toArray();
         }
 
         // Add admins
         $admin_user_ids = User::where('role', User::ROLE_ADMIN)->pluck('id')->toArray();
         $user_ids = array_merge($user_ids, $admin_user_ids);
 
+        self::createUsersFolders($user_ids, $this->id, Folder::$personal_types);
+    }
+
+    /**
+     * Created folders of specific type for passed users.
+     */
+    public static function createUsersFolders($user_ids, $mailbox_id, $folder_types)
+    {
         $cur_users = Folder::select('user_id')
-            ->where('mailbox_id', $this->id)
+            ->where('mailbox_id', $mailbox_id)
             ->whereIn('user_id', $user_ids)
             ->groupBy('user_id')
             ->pluck('user_id')
             ->toArray();
-        // $new_users = Mailbox::whereDoesntHave('folders', function ($query) {
-        //     $query->where('mailbox_id', $this->id);
-        //     $query->whereNotIn('user_id', $user_ids);
-        // })->get();
 
         foreach ($user_ids as $user_id) {
             if (in_array($user_id, $cur_users)) {
                 continue;
             }
-            foreach (Folder::$personal_types as $type) {
+            foreach ($folder_types as $type) {
                 $folder = new Folder();
-                $folder->mailbox_id = $this->id;
+                $folder->mailbox_id = $mailbox_id;
                 $folder->user_id = $user_id;
                 $folder->type = $type;
                 $folder->save();
@@ -168,28 +173,30 @@ class Mailbox extends Model
         }
     }
 
+    public function createPublicFolders()
+    {
+        foreach (Folder::$public_types as $type) {
+            $folder = new Folder();
+            $folder->mailbox_id = $this->id;
+            $folder->type = $type;
+            $folder->save();
+        }
+    }
+
     public function createAdminPersonalFolders()
     {
         $user_ids = User::where('role', User::ROLE_ADMIN)->pluck('id')->toArray();
+        self::createUsersFolders($user_ids, $this->id, Folder::$personal_types);
+    }
 
-        $cur_users = Folder::select('user_id')
-            ->where('mailbox_id', $this->id)
-            ->whereIn('user_id', $user_ids)
-            ->groupBy('user_id')
-            ->pluck('user_id')
-            ->toArray();
-
-        foreach ($user_ids as $user_id) {
-            if (in_array($user_id, $cur_users)) {
-                continue;
-            }
-            foreach (Folder::$personal_types as $type) {
-                $folder = new Folder();
-                $folder->mailbox_id = $this->id;
-                $folder->user_id = $user_id;
-                $folder->type = $type;
-                $folder->save();
-            }
+    public static function createAdminPersonalFoldersAllMailboxes($user_ids = null)
+    {
+        if (empty($user_ids)) {
+            $user_ids = User::where('role', User::ROLE_ADMIN)->pluck('id')->toArray();
+        }
+        $mailbox_ids = Mailbox::pluck('id');
+        foreach ($mailbox_ids as $mailbox_id) {
+            self::createUsersFolders($user_ids, $mailbox_id, Folder::$personal_types);
         }
     }
 
@@ -406,5 +413,22 @@ class Mailbox extends Model
     public function getInProtocolName()
     {
         return self::$in_protocols[$this->in_protocol];
+    }
+
+    /**
+     * Get pivot table parameters for the user.
+     */
+    public function getUserSettings($user_id)
+    {
+        $mailbox_user = $this->users()->where('users.id', $user_id)->first();
+        if ($mailbox_user) {
+            return $mailbox_user->settings;
+        } else {
+            // Admin may have no record in mailbox_user table
+            // Create dummy object with default parameters
+            $settings = new \StdClass();
+            $settings->after_send = MailboxUser::AFTER_SEND_NEXT;
+            return $settings;
+        }
     }
 }

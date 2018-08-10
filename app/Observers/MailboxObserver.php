@@ -17,12 +17,8 @@ class MailboxObserver
     public function created(Mailbox $mailbox)
     {
         // Create folders
-        foreach (Folder::$public_types as $type) {
-            $folder = new Folder();
-            $folder->mailbox_id = $mailbox->id;
-            $folder->type = $type;
-            $folder->save();
-        }
+        $mailbox->createPublicFolders();
+        $mailbox->syncPersonalFolders();
         $mailbox->createAdminPersonalFolders();
     }
 

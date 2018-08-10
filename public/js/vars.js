@@ -4,7 +4,7 @@
  */
 
 var Vars = {
-    
+    public_url: 'https://devfreescout.likebtn.com'
 };
 
 
@@ -16,7 +16,9 @@ var lang_messages = {
             "upload_attachments": "Upload Attachments",
             "saved_replies": "Saved Replies",
             "save_draft": "Save Draft",
-            "discard": "Discard"
+            "discard": "Discard",
+            "close": "Close",
+            "settings_saved": "Settings saved"
         }    };
 
 (function () {
