@@ -588,6 +588,7 @@ class Conversation extends Model
         } elseif (!empty(Input::get('folder_id'))) {
             return Input::get('folder_id');
         }
+
         return '';
     }
 
@@ -597,7 +598,7 @@ class Conversation extends Model
     public function isInFolderAllowed($folder)
     {
         if (in_array($folder->type, Folder::$public_types)) {
-            return ($folder->id == $this->folder_id);
+            return $folder->id == $this->folder_id;
         } elseif ($folder->type == Folder::TYPE_MINE) {
             $user = auth()->user();
             if ($user && $user->id == $folder->user_id && $this->user_id == $user->id) {
@@ -608,6 +609,7 @@ class Conversation extends Model
         } else {
             // todo: check ConversationFolder here
         }
+
         return false;
     }
 }

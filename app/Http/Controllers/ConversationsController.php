@@ -13,7 +13,6 @@ use App\Mailbox;
 use App\MailboxUser;
 use App\Thread;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 use Validator;
 
 class ConversationsController extends Controller
@@ -46,6 +45,7 @@ class ConversationsController extends Controller
             // Check if conversation can be located in the passed folder_id
             if (!$conversation->isInFolderAllowed($folder)) {
                 $request->session()->reflash();
+
                 return redirect()->away($conversation->url($conversation->folder_id));
             }
         }
@@ -87,7 +87,7 @@ class ConversationsController extends Controller
         $folder = $mailbox->folders()->where('type', Folder::TYPE_DRAFTS)->first();
 
         $after_send = $mailbox->getUserSettings(auth()->user()->id)->after_send;
-        
+
         return view('conversations/create', [
             'conversation' => $conversation,
             'mailbox'      => $mailbox,

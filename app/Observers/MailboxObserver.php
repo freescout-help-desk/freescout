@@ -2,7 +2,6 @@
 
 namespace App\Observers;
 
-use App\Folder;
 use App\Mailbox;
 
 class MailboxObserver

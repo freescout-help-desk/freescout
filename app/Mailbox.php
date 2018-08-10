@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\MailboxUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 
@@ -108,7 +107,7 @@ class Mailbox extends Model
      */
     public function users()
     {
-        return $this->belongsToMany('App\User')->as('settings')->withPivot('after_send');;
+        return $this->belongsToMany('App\User')->as('settings')->withPivot('after_send');
     }
 
     /**
@@ -194,7 +193,7 @@ class Mailbox extends Model
         if (empty($user_ids)) {
             $user_ids = User::where('role', User::ROLE_ADMIN)->pluck('id')->toArray();
         }
-        $mailbox_ids = Mailbox::pluck('id');
+        $mailbox_ids = self::pluck('id');
         foreach ($mailbox_ids as $mailbox_id) {
             self::createUsersFolders($user_ids, $mailbox_id, Folder::$personal_types);
         }
@@ -428,6 +427,7 @@ class Mailbox extends Model
             // Create dummy object with default parameters
             $settings = new \StdClass();
             $settings->after_send = MailboxUser::AFTER_SEND_NEXT;
+
             return $settings;
         }
     }
