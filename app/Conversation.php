@@ -248,8 +248,16 @@ class Conversation extends Model
             }
         }
 
+        // Remove all kinds of spaces after tags
+        // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
+        $text = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $text);
+
         $text = strip_tags($text);
-        $text = trim(preg_replace('/\s+/', ' ', $text));
+        $text = preg_replace('/\s+/mu', ' ', $text);
+
+        // Trim
+        $text = trim($text);
+        $text = preg_replace('/^\s+/mu', '', $text);
 
         // Causes "General error: 1366 Incorrect string value"
         // Remove "undetectable" whitespaces

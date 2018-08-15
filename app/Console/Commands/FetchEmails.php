@@ -437,6 +437,8 @@ class FetchEmails extends Command
                 $email_attachment->getMimeType(),
                 Attachment::typeNameToInt($email_attachment->getType()),
                 $email_attachment->getContent(),
+                '',
+                false,
                 $thread_id
             );
             if ($create_result) {

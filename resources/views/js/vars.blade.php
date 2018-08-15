@@ -29,7 +29,8 @@ var lang_messages = {
             "save_draft": "{{ __("Save Draft") }}",
             "discard": "{{ __("Discard") }}",
             "close": "{{ __("Close") }}",
-            "settings_saved": "{{ __("Settings saved") }}"
+            "settings_saved": "{{ __("Settings saved") }}",
+            "drag_image_file": "{{ __("Drag image or file here") }}"
         }@if (!$loop->last),@endif
     @endforeach
 };

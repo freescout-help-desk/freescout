@@ -79,10 +79,17 @@ class ReplyToCustomer extends Mailable
         }
 
         // from($this->from) Sets only email, name stays empty.
-        return $this->subject($subject)
+        $message = $this->subject($subject)
                     ->view('emails/customer/reply_fancy')
                     ->text('emails/customer/reply_fancy_text');
-        // ->attach('/path/to/file');
+
+        if ($this->threads->first()->has_attachments) {
+            foreach ($this->threads->first()->attachments as $attachment) {
+                $message->attach($attachment->getLocalFilePath());  
+            }
+        }
+
+        return $message;
     }
 
     /*

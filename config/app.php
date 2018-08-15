@@ -156,10 +156,12 @@ return [
     /*
     |--------------------------------------------------------------------------
     | Parameters used to run queued jobs processing.
-    | Must contained comma separeted list of existing queues
+    | Check for new jobs every 5 seconds.
+    | Retry failed jobs max 7 times (for example no connection to the mail server)
+    | Tries happen every minute.
     |-------------------------------------------------------------------------
     */
-    'queue_work_params' => ['--queue' => 'emails', '--tries' => '7', '--sleep' => '5'],
+    'queue_work_params' => ['--queue' => 'emails', '--sleep' => '5', '--tries' => '7'],
 
     /*
     |--------------------------------------------------------------------------

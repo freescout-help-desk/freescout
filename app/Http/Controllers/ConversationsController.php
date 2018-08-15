@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Attachment;
 use App\Conversation;
 use App\Customer;
 use App\Events\ConversationStatusChanged;
@@ -308,6 +309,25 @@ class ConversationsController extends Controller
                 }
 
                 if (!$response['msg']) {
+                    // Check attachments
+                    $has_attachments = false;
+                    $attachments = [];
+                    if (!empty($request->attachments_all)) {
+                        $embeds = [];
+                        if (!empty($request->attachments)) {
+                            $attachments = $request->attachments;
+                        }
+                        if (!empty($request->embeds)) {
+                            $embeds = $request->embeds;
+                        }
+                        if (count($attachments) != count($embeds)) {
+                            $has_attachments = true;
+                        }
+                        $attachments_to_remove = array_diff($request->attachments_all, $attachments);
+                        $attachments_to_remove = array_diff($attachments_to_remove, $embeds);
+                        Attachment::deleteByIds($attachments_to_remove);
+                    }
+
                     $now = date('Y-m-d H:i:s');
                     $status_changed = false;
                     $user_changed = false;
@@ -323,8 +343,9 @@ class ConversationsController extends Controller
                         $conversation->setCc($request->cc);
                         $conversation->setBcc($request->bcc);
                         $conversation->setPreview($request->body);
-                        // todo: attachments
-                        //$conversation->has_attachments = ;
+                        if ($has_attachments) {
+                            $conversation->has_attachments = true;
+                        }
                         // Set folder id
                         $conversation->mailbox_id = $request->mailbox_id;
                         $conversation->customer_id = $customer->id;
@@ -379,15 +400,23 @@ class ConversationsController extends Controller
                     $thread->source_type = Thread::SOURCE_TYPE_WEB;
                     $thread->customer_id = $customer->id;
                     $thread->created_by_user_id = auth()->user()->id;
+                    if ($has_attachments) {
+                        $thread->has_attachments = true;
+                    }
                     $thread->save();
+
+                    $response['status'] = 'success';
+
+                    // Set thread_id for uploaded attachments
+                    if ($attachments) {
+                        Attachment::whereIn('id', $attachments)->update(['thread_id' => $thread->id]);
+                    }
 
                     if ($new) {
                         event(new UserCreatedConversation($conversation, $thread));
                     } else {
                         event(new UserReplied($conversation, $thread));
                     }
-
-                    $response['status'] = 'success';
 
                     // Determine redirect
                     if (!empty($request->after_send)) {
@@ -461,6 +490,55 @@ class ConversationsController extends Controller
             $response['msg'] = 'Unknown error occured';
         }
 
+        return \Response::json($response);
+    }
+
+    /**
+     * Upload files and images.
+     */
+    public function upload(Request $request)
+    {
+        $response = [
+            'status' => 'error',
+            'msg'    => '', // this is error message
+        ];
+
+        $user = auth()->user();
+
+        if (!$user) {
+            $response['msg'] = __('Please login to upload file');
+        }
+
+        if (!$request->hasFile('file') || !$request->file('file')->isValid() || !$request->file) {
+            $response['msg'] = __('Error occured uploading file');
+        }
+
+        if (!$response['msg']) {
+            $embedded = true;
+
+            if (!empty($request->attach) && (int)$request->attach) {
+                $embedded = false;
+            }
+
+            $attachment = Attachment::create(
+                $request->file->getClientOriginalName(),
+                $request->file->getMimeType(),
+                null,
+                '',
+                $request->file,
+                $embedded,
+                null,
+                $user->id
+            );
+
+            if ($attachment) {
+                $response['status'] = 'success';
+                $response['url'] = $attachment->url();
+                $response['attachment_id'] = $attachment->id;
+            } else {
+                $response['msg'] = __('Error occured uploading file');
+            }
+        }
         return \Response::json($response);
     }
 }

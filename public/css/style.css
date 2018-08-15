@@ -1360,7 +1360,7 @@ table.table-conversations td.conv-attachment {
     padding: 4px 10px;
     position: relative;
 }
-.thread-attachments i {
+.thread-attachments i.glyphicon-paperclip {
     color: #a5b2bd;
     font-size: 14px;
     position: absolute;
@@ -1766,6 +1766,42 @@ table.table-conversations td.conv-attachment {
 }
 
 /**
+ * Attachments
+ */
+.attachments-upload {
+    display: none;
+    /*margin-right: -15px;
+    margin-left: -15px;*/
+}
+.attachments-upload img {
+    margin-right: 3px;
+}
+.attachments-upload.thread-attachments ul {
+    margin-bottom: 0;
+    padding-left: 0;
+}
+.attachments-upload.thread-attachments li {
+    margin-bottom: 0;
+}
+.attachments-upload .glyphicon-remove {
+    display: none;
+}
+.attachment-loaded img,
+.attachment-loaded .ellipsis {
+    display: none;
+}
+.attachment-loaded .glyphicon-remove {
+    display: inline-block;
+    color: #999;
+    cursor: pointer;
+    position: relative;
+    top: 2px;
+}
+.attachment-loaded .glyphicon-remove:hover {
+    color: #333;
+}
+
+/**
  * Misc
  */
 .banner {
@@ -2058,4 +2094,11 @@ a.text-danger:focus {
     padding-left: 15px;
     margin-right: auto;
     margin-left: auto;
+}
+a.disabled,
+a.disabled:hover,
+a.disabled:focus {
+    color: #93a1af;
+    text-decoration: none;
+    cursor: default;
 }

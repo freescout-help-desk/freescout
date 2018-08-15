@@ -40,6 +40,7 @@ Route::post('/users/notifications/{id}', 'UsersController@notificationsSave');
 // Conversations
 Route::get('/conversation/{id}', 'ConversationsController@view')->name('conversations.view');
 Route::post('/conversation/ajax', ['uses' => 'ConversationsController@ajax', 'laroute' => true])->name('conversations.ajax');
+Route::post('/conversation/upload', ['uses' => 'ConversationsController@upload', 'laroute' => true])->name('conversations.upload');
 Route::get('/mailbox/{mailbox_id}/new-ticket', 'ConversationsController@create')->name('conversations.create');
 Route::get('/conversation/draft/{id}', 'ConversationsController@draft')->name('conversations.draft');
 

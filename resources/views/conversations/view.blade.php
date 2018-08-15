@@ -114,6 +114,10 @@
                                 </div>
                             </div>
 
+                            <div class="thread-attachments attachments-upload form-group">
+                                <ul></ul>
+                            </div>
+
                             <div class="form-group{{ $errors->has('body') ? ' has-error' : '' }} conv-reply-body">
                                
                                     <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}">{{ old('body', $conversation->body) }}</textarea>

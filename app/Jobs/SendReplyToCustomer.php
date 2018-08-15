@@ -77,10 +77,20 @@ class SendReplyToCustomer implements ShouldQueue
         $headers['Message-ID'] = $message_id;
 
         $customer_email = $this->customer->getMainEmail();
-        Mail::to([['name' => $this->customer->getFullName(), 'email' => $customer_email]])
-            ->cc($last_thread->getCcArray())
-            ->bcc($last_thread->getBccArray())
-            ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers));
+        try {
+            $mail = Mail::to([['name' => $this->customer->getFullName(), 'email' => $customer_email]])
+                ->cc($last_thread->getCcArray())
+                ->bcc($last_thread->getBccArray())
+                ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers));
+        } catch (\Exception $e) {
+            activity()
+               //->causedBy()
+               ->withProperties([
+                    'error'    => $e->getMessage(),
+                ])
+               ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
+               ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR);
+        }
 
         // In message_id we are storing Message-ID of the incoming email which created the thread
         // Outcoming message_id can be generated for each thread by thread->id
@@ -113,6 +123,7 @@ class SendReplyToCustomer implements ShouldQueue
 
     /**
      * The job failed to process.
+     * This method is called after number of attempts had finished.
      *
      * @param Exception $exception
      *
@@ -120,13 +131,6 @@ class SendReplyToCustomer implements ShouldQueue
      */
     public function failed(\Exception $exception)
     {
-        // No need
-        // $this->threads = $this->threads->sortByDesc(function ($item, $key) {
-        //     return $item->created_at;
-        // });
-        // $this->threads[0]->send_status = Thread::SEND_STATUS_SEND_ERROR;
-        // $this->threads[0]->save();
-
         activity()
            ->causedBy($this->customer)
            ->withProperties([

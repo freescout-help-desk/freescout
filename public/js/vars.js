@@ -18,7 +18,8 @@ var lang_messages = {
             "save_draft": "Save Draft",
             "discard": "Discard",
             "close": "Close",
-            "settings_saved": "Settings saved"
+            "settings_saved": "Settings saved",
+            "drag_image_file": "Drag image or file here"
         }    };
 
 (function () {

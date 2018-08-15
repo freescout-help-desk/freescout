@@ -66,11 +66,12 @@ class SecureController extends Controller
             $log = [];
             $log['date'] = $activity->created_at;
             if ($activity->causer) {
-                $log['causer'] = $activity->causer;
                 if ($activity->causer_type == 'App\User') {
                     $cols = addCol($cols, 'user');
+                    $log['user'] = $activity->causer;
                 } else {
                     $cols = addCol($cols, 'customer');
+                    $log['customer'] = $activity->causer;
                 }
             }
             $log['event'] = $activity->getEventDescription();
@@ -146,12 +147,20 @@ class SecureController extends Controller
                     ];
                     continue;
                 } elseif ($running_commands > 1) {
-                    //unset($pids[0]);
+                    // queue:work command is stopped by settings a cache key
+                    \Cache::forever('illuminate:queue:restart', Carbon::now()->getTimestamp());
                     $commands[] = [
                         'name'        => $command_name,
                         'status'      => 'error',
-                        'status_text' => __(':number commands are running at the same time. Please stop extra commands by executing the following console command:', ['number' => $running_commands]).' kill '.implode(' | kill ', $pids),
+                        'status_text' => __(':number commands were running at the same time. Commands have been restarted', ['number' => $running_commands]),
                     ];
+
+                    //unset($pids[0]);
+                    // $commands[] = [
+                    //     'name'        => $command_name,
+                    //     'status'      => 'error',
+                    //     'status_text' => __(':number commands are running at the same time. Please stop extra commands by executing the following console command:', ['number' => $running_commands]).' kill '.implode(' | kill ', $pids),
+                    // ];
                     continue;
                 }
             }

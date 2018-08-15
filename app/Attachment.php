@@ -17,6 +17,8 @@ class Attachment extends Model
     const TYPE_MODEL = 7;
     const TYPE_OTHER = 8;
 
+    const DIRECTORY = 'attachment';
+
     // https://github.com/Webklex/laravel-imap/blob/master/src/IMAP/Attachment.php
     public static $types = [
         'message'     => self::TYPE_MESSAGE,
@@ -30,7 +32,14 @@ class Attachment extends Model
         'other'       => self::TYPE_OTHER,
     ];
 
-    const DIRECTORY = 'attachment';
+    /**
+     * Files with such extensions are being renamed on upload.
+     */
+    public static $restricted_extensions = [
+        'php.*',
+        'sh',
+        'pl',
+    ];
 
     public $timestamps = false;
 
@@ -45,39 +54,66 @@ class Attachment extends Model
     /**
      * Save attachment to file and database.
      */
-    public static function create($file_name, $mime_type, $type, $content, $thread_id = null)
+    public static function create($file_name, $mime_type, $type, $content, $uploaded_file, $embedded = false, $thread_id = null, $user_id = null)
     {
-        if (!$content) {
+        if (!$content && !$uploaded_file) {
             return false;
+        }
+
+        // Check extension
+        $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $extension)) {
+            $file_name = $file_name.'_';
+        }
+
+        if (!$type) {
+            $type = self::detectType($mime_type);
         }
 
         $attachment = new self();
         $attachment->thread_id = $thread_id;
+        $attachment->user_id   = $user_id;
         $attachment->file_name = $file_name;
         $attachment->mime_type = $mime_type;
-        $attachment->type = $type;
-        //$attachment->size      = Storage::size($file_path);
+        $attachment->type      = $type;
+        $attachment->embedded  = $embedded;
         $attachment->save();
 
-        $file_path = self::DIRECTORY.DIRECTORY_SEPARATOR.self::getPath($attachment->id).$file_name;
-        Storage::put($file_path, $content);
+        // Save file from content or copy file.
+        // We have to keep file name as is, so if file exists we create extra folder.
+        // Examples: 1/2/3
+        $file_dir = self::generatePath($attachment->id);
 
-        $attachment->size = Storage::size($file_path);
-        if ($attachment->size) {
-            $attachment->save();
+        $i = 0;
+        do {
+            $i++;
+            $file_path = self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir.$i.DIRECTORY_SEPARATOR.$file_name;
+        } while (Storage::exists($file_path));
+
+        $file_dir .= $i.DIRECTORY_SEPARATOR;
+
+        if ($uploaded_file) {
+            $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name);
+        } else {
+            Storage::put($file_path, $content);
         }
 
-        return true;
+        $attachment->file_dir = $file_dir;
+        $attachment->size = Storage::size($file_path);
+        $attachment->save();
+
+        return $attachment;
     }
 
     /**
-     * Get file path by ID.
+     * Get file path.
+     * Examples: 1/2, 1/3
      *
      * @param int $id
      *
      * @return string
      */
-    public static function getPath($id)
+    public static function generatePath($id)
     {
         $hash = md5($id);
 
@@ -102,6 +138,33 @@ class Attachment extends Model
     }
 
     /**
+     * Detect attachment type by it's mime type.
+     * 
+     * @param  string $mime_type
+     * @return int
+     */
+    public static function detectType($mime_type)
+    {
+        if (preg_match("/^text\//", $mime_type)) {
+            return self::TYPE_TEXT;
+        } elseif (preg_match("/^message\//", $mime_type)) {
+            return self::TYPE_MESSAGE;
+        } elseif (preg_match("/^application\//", $mime_type)) {
+            return self::TYPE_APPLICATION;
+        } elseif (preg_match("/^audio\//", $mime_type)) {
+            return self::TYPE_AUDIO;
+        } elseif (preg_match("/^image\//", $mime_type)) {
+            return self::TYPE_IMAGE;
+        } elseif (preg_match("/^video\//", $mime_type)) {
+            return self::TYPE_VIDEO;
+        } elseif (preg_match("/^model\//", $mime_type)) {
+            return self::TYPE_MODEL;
+        } else {
+            return self::TYPE_OTHER;
+        }
+    }
+
+    /**
      * Conver type name to integer.
      */
     public static function typeNameToInt($type_name)
@@ -120,7 +183,7 @@ class Attachment extends Model
      */
     public function url()
     {
-        return Storage::url(self::DIRECTORY.DIRECTORY_SEPARATOR.self::getPath($this->id).$this->file_name);
+        return Storage::url($this->getStorageFilePath());
     }
 
     /**
@@ -131,6 +194,16 @@ class Attachment extends Model
     public function getSizeName()
     {
         return self::formatBytes($this->size);
+    }
+
+    public function getStorageFilePath()
+    {
+        return self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name;
+    }
+
+    public function getLocalFilePath()
+    {
+        return Storage::path(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
     }
 
     public static function formatBytes($size, $precision = 0)
@@ -144,5 +217,24 @@ class Attachment extends Model
         } else {
             return $size;
         }
+    }
+
+    /**
+     * Delete attachments from disk and DB.
+     * Embeds are not taken into account.
+     * 
+     * @param  array $attachments 
+     */
+    public static function deleteByIds($attachment_ids)
+    {
+        $attachments = Attachment::whereIn('id', $attachment_ids);
+
+        // Delete from disk
+        foreach ($attachments as $attachment) {
+            Storage::delete($attachment->getStorageFilePath());
+        }
+
+        // Delete from DB
+        Attachment::whereIn('id', $attachment_ids)->delete();
     }
 }

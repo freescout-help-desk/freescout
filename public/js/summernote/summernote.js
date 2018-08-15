@@ -4875,8 +4875,14 @@ var Handle = /** @class */ (function () {
                 left: pos.left,
                 top: pos.top,
                 width: imageSize.w,
-                height: imageSize.h
+                height: imageSize.h,
             }).data('target', $image); // save current image element.
+
+            // FreeScout
+            // Otherwide image will not be scaled when viewing thread
+            $selection.attr('width', imageSize.w);
+            $selection.attr('height', imageSize.h);
+
             var origImageObj = new Image();
             origImageObj.src = $image.attr('src');
             var sizingText = imageSize.w + 'x' + imageSize.h + ' (' + this.lang.image.original + ': ' + origImageObj.width + 'x' + origImageObj.height + ')';

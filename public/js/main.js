@@ -1,5 +1,6 @@
 var fs_sidebar_menu_applied = false;
 var fs_loader_timeout;
+
 // Default validation options
 // https://devhints.io/parsley
 window.ParsleyConfig = window.ParsleyConfig || {};
@@ -34,7 +35,19 @@ var EditorAttachmentButton = function (context) {
 		tooltip: Lang.get("messages.upload_attachments"),
 		container: 'body',
 		click: function () {
-			alert('todo: implement attachments');
+			var element = document.createElement('div');
+			element.innerHTML = '<input type="file" multiple>';
+			var fileInput = element.firstChild;
+
+			fileInput.addEventListener('change', function() {
+				if (fileInput.files) {
+					for (var i = 0; i < fileInput.files.length; i++) {
+						editorSendFile(fileInput.files[i], true);	
+		            }
+			    }
+			});
+
+			fileInput.click();
 		}
 	});
 
@@ -110,6 +123,12 @@ $(document).ready(function(){
 
 	// Floating alerts
 	fsFloatingAlertsInit();
+
+	// Editor
+	(function($) {
+	$.summernote.lang['en-US'].image.dragImageHere = Lang.get("messages.drag_image_file");
+	$.summernote.lang['en-US'].image.dropImage = Lang.get("messages.drag_image_file");
+})(jQuery);
 });
 
 function mailboxUpdateInit(from_name_custom)
@@ -215,20 +234,17 @@ function multiInputInit()
 function fsAjax(data, url, success_callback, no_loader, error_callback)
 {
     // Setup AJAX
-	$.ajaxSetup({
-		headers: {
-	    	'X-CSRF-TOKEN': $('meta[name="csrf-token"]:first').attr('content')
-		}
-	});
+	ajaxSetup();
+
 	// Show loader
 	if (typeof(no_loader) == "undefined" || !no_loader) {
-		fsLoaderShow(true);
+		loaderShow(true);
 	}
 
 	if (typeof(error_callback) == "undefined" || !error_callback) {
 		error_callback = function() {
-			fsShowFloatingAlert('error', Lang.get("messages.ajax_error"));
-			fsLoaderHide();
+			showFloatingAlert('error', Lang.get("messages.ajax_error"));
+			loaderHide();
 			$("button[data-loading-text!='']:disabled").button('reset');
 		};
 	}
@@ -252,18 +268,18 @@ function fsAjax(data, url, success_callback, no_loader, error_callback)
 }
 
 // Show loader
-function fsLoaderShow(delay)
+function loaderShow(delay)
 {
 	if (typeof(delay) != "undefined" && delay) {
 		fs_loader_timeout = setTimeout(function() {
-			$("#loader-main").show();
+			$("#loader-main").fadeIn();
 	    }, 1000);
 	} else {
-		$("#loader-main").show();
+		$("#loader-main").fadeIn();
 	}
 }
 
-function fsLoaderHide()
+function loaderHide()
 {
 	$("#loader-main").hide();
 	clearTimeout(fs_loader_timeout);
@@ -288,7 +304,7 @@ function fsFloatingAlertsInit()
 	}
 }
 
-function fsShowFloatingAlert(type, msg)
+function showFloatingAlert(type, msg)
 {
 	var icon = 'ok';
 	var alert_class = 'success';
@@ -327,11 +343,11 @@ function conversationInit()
 							window.location.href = '';
 						}
 					} else if (typeof(response.msg) != "undefined") {
-						fsShowFloatingAlert('error', response.msg);
+						showFloatingAlert('error', response.msg);
 					} else {
-						fsShowFloatingAlert('error', Lang.get("messages.error_occured"));
+						showFloatingAlert('error', Lang.get("messages.error_occured"));
 					}
-					fsLoaderHide();
+					loaderHide();
 				});
 			}
 			e.preventDefault();
@@ -354,11 +370,11 @@ function conversationInit()
 							window.location.href = '';
 						}
 					} else if (typeof(response.msg) != "undefined") {
-						fsShowFloatingAlert('error', response.msg);
+						showFloatingAlert('error', response.msg);
 					} else {
-						fsShowFloatingAlert('error', Lang.get("messages.error_occured"));
+						showFloatingAlert('error', Lang.get("messages.error_occured"));
 					}
-					fsLoaderHide();
+					loaderHide();
 				});
 			}
 			e.preventDefault();
@@ -409,10 +425,154 @@ function convEditorInit()
 		    savedreplies: EditorSavedRepliesButton,
 		    savedraft: EditorSaveDraftButton,
 		    discard: EditorDiscardButton
-		}
+		},
+		callbacks: {
+	 		onImageUpload: function(files) {
+	 			if (!files) {
+	 				return;
+	 			}
+	            for (var i = 0; i < files.length; i++) {
+					editorSendFile(files[i]);	
+	            }
+	        }
+	    }
 	});
 	var html = $('#editor_bottom_toolbar').html();
 	$('.note-statusbar').addClass('note-statusbar-toolbar form-inline').html(html);
+}
+
+function ajaxSetup()
+{
+	$.ajaxSetup({
+		headers: {
+	    	'X-CSRF-TOKEN': $('meta[name="csrf-token"]:first').attr('content')
+		}
+	});
+}
+
+// Generate random unique ID
+function generateDummyId()
+{
+  // Math.random should be unique because of its seeding algorithm.
+  // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+  // after the decimal.
+  return '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// Save file uploaded in editor
+function editorSendFile(file, attach) 
+{
+	if (!file || typeof(file.type) == "undefined") {
+		return false;
+	}
+
+	var attachments_container = $(".attachments-upload:first");
+	var attachment_dummy_id = generateDummyId();
+
+	ajaxSetup();
+
+ 	if (typeof(attach) == "undefined") {
+		attach = false;
+	}
+
+	// Images are embedded by default, other files attached
+	if (file.type.indexOf('image/') == -1) {
+		attach = true;
+	}
+
+	// Show loader
+	if (attach) {
+		var attachment_html = '<li class="atachment-upload-'+attachment_dummy_id+'"><img src="'+Vars.public_url+'/img/loader-tiny.gif" width="16" height="16"/> <a href="javascript:void(0);" class="break-words disabled" target="_blank">'+file.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(file.size)+')</span> <i class="glyphicon glyphicon-remove" onclick="removeAttachment(\''+attachment_dummy_id+'\')"></i></li>';
+		$('.attachments-upload:first ul:first').append(attachment_html);
+		attachments_container.show();
+	} else {
+		loaderShow();
+	}
+
+	data = new FormData();
+	data.append("file", file);
+	if (attach) {
+		data.append("attach", 1);
+	} else {
+		data.append("attach", 0);
+	}
+	$.ajax({
+		url: laroute.route('conversations.upload'),
+		data: data,
+		cache: false,
+		contentType: false,
+		processData: false,
+		type: 'POST',
+		success: function(response){
+			if (typeof(response.url) == "undefined" || !response.url) {
+				showFloatingAlert('error', Lang.get("messages.error_occured"));
+				loaderHide();
+				removeAttachment(attachment_dummy_id);
+				return;
+			}
+			// Finish loading
+			if (attach) {
+				$('li.atachment-upload-'+attachment_dummy_id+':first').addClass('attachment-loaded');
+				$('li.atachment-upload-'+attachment_dummy_id+':first a').removeClass('disabled').attr('href', response.url);
+			} else {
+				loaderHide();
+			}
+			if (typeof(response.status) == "undefined" || response.status != "success") {
+				showAjaxError(response);
+				removeAttachment(attachment_dummy_id);
+				return;
+			}
+			if (attach) {
+				
+			} else {
+				// Embed image
+				$('#body').summernote('insertImage', response.url, function (image) {
+					var editor_width = $('.note-editable:first:visible').width();
+					if (image.width() > editor_width-85) {
+						image.css('width', editor_width-85);
+					}
+					image.attr('width', image.css('width').replace('px', ''));
+				});
+			}
+			if (typeof(response.attachment_id) != "undefined" || response.attachment_id) {
+				var input_html = '<input type="hidden" name="attachments_all[]" value="'+response.attachment_id+'" />';
+				input_html += '<input type="hidden" name="attachments[]" value="'+response.attachment_id+'" class="atachment-upload-'+attachment_dummy_id+'" />';
+				if (!attach) {
+					input_html += '<input type="hidden" name="embeds[]" value="'+response.attachment_id+'" class="atachment-upload-'+attachment_dummy_id+'" />';
+				}
+				attachments_container.prepend(input_html);
+			}
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			if (attach) {
+				removeAttachment(attachment_dummy_id);
+			} else {
+				loaderHide();
+			}
+			console.log(textStatus+": "+errorThrown);
+			showFloatingAlert('error', Lang.get("messages.error_occured"));
+		}
+	});
+}
+
+function removeAttachment(attachment_dummy_id)
+{
+	$('.atachment-upload-'+attachment_dummy_id).remove();
+}
+
+
+function formatBytes(size)
+{
+	precision = 2;
+	size = parseInt(size);
+    if (!isNaN(size) && size > 0) {
+        base = Math.log(size) / Math.log(1024);
+        suffixes = [' b', ' KB', ' MB', ' GB', ' TB'];
+
+        return Math.round(Math.pow(1024, base - Math.floor(base)), precision)+''+suffixes[Math.floor(base)];
+    } else {
+        return size;
+    }
 }
 
 // New conversation page
@@ -458,7 +618,7 @@ function newConversationInit()
 
 	    	data = form.serialize();
 	    	data += '&action=send_reply';
-	
+
 			fsAjax(data, laroute.route('conversations.ajax'), function(response) {
 				if (typeof(response.status) != "undefined" && response.status == 'success') {
 					if (typeof(response.redirect_url) != "undefined") {
@@ -466,14 +626,11 @@ function newConversationInit()
 					} else {
 						window.location.href = '';
 					}
-				} else if (typeof(response.msg) != "undefined") {
-					fsShowFloatingAlert('error', response.msg);
-					button.button('reset');
 				} else {
-					fsShowFloatingAlert('error', Lang.get("messages.error_occured"));
+					showAjaxError(response);
 					button.button('reset');
 				}
-				fsLoaderHide();
+				loaderHide();
 			});
 			e.preventDefault();
 		});
@@ -578,9 +735,9 @@ function showModal(a, onshow)
 function showAjaxError(response)
 {
 	if (typeof(response.msg) != "undefined") {
-		fsShowFloatingAlert('error', response.msg);
+		showFloatingAlert('error', response.msg);
 	} else {
-		fsShowFloatingAlert('error', Lang.get("messages.error_occured"));
+		showFloatingAlert('error', Lang.get("messages.error_occured"));
 	}
 }
 
@@ -603,7 +760,7 @@ function saveAfterSend(el)
 			console.log('.dropdown-after-send [data-after-send='+value+']:first');
 			console.log($('.dropdown-after-send [data-after-send='+value+']:first'));
 			$('.dropdown-after-send [data-after-send='+value+']:first').click();
-			fsShowFloatingAlert('success', Lang.get("messages.settings_saved"));
+			showFloatingAlert('success', Lang.get("messages.settings_saved"));
 			$('.modal').modal('hide');
 		} else {
 			showAjaxError(response);
