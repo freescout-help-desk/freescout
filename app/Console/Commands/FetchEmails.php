@@ -21,6 +21,11 @@ use Webklex\IMAP\Client;
 class FetchEmails extends Command
 {
     /**
+     * Period in days for fetching emails from mailbox email.
+     */
+    const CHECK_PERIOD = 1;
+
+    /**
      * The name and signature of the console command.
      *
      * @var string
@@ -110,7 +115,7 @@ class FetchEmails extends Command
         }
 
         // Get unseen messages for a period
-        $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
+        $messages = $folder->query()->unseen()->since(now()->subDays(self::CHECK_PERIOD))->leaveUnread()->get();
 
         if ($client->getLastError()) {
             $this->logError($client->getLastError());
@@ -219,13 +224,13 @@ class FetchEmails extends Command
                 $subject = $message->getSubject();
 
                 $to = $this->formatEmailList($message->getTo());
-                $to = $this->removeMailboxEmail($to, $mailbox->email);
+                $to = $mailbox->removeMailboxEmailsFromList($to);
 
                 $cc = $this->formatEmailList($message->getCc());
-                $cc = $this->removeMailboxEmail($cc, $mailbox->email);
+                $cc = $mailbox->removeMailboxEmailsFromList($cc);
 
                 $bcc = $this->formatEmailList($message->getBcc());
-                $bcc = $this->removeMailboxEmail($bcc, $mailbox->email);
+                $bcc = $mailbox->removeMailboxEmailsFromList($bcc);
 
                 $attachments = $message->getAttachments();
 
@@ -503,29 +508,6 @@ class FetchEmails extends Command
         }
 
         return $body;
-    }
-
-    /**
-     * Remove mailbox email from the list of emails.
-     *
-     * @param array  $list
-     * @param string $mailbox_email [description]
-     *
-     * @return array
-     */
-    public function removeMailboxEmail($list, $mailbox_email)
-    {
-        if (!is_array($list)) {
-            return [];
-        }
-        foreach ($list as $i => $email) {
-            if (Email::sanitizeEmail($email) == $mailbox_email) {
-                unset($list[$i]);
-                break;
-            }
-        }
-
-        return $list;
     }
 
     /**

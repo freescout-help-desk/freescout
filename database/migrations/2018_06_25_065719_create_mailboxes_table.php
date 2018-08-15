@@ -21,7 +21,7 @@ class CreateMailboxesTable extends Migration
             // Not used
             $table->string('slug', 16)->unique()->nullable();
             $table->string('email', 128)->unique();
-            $table->string('aliases', 128)->nullable();
+            $table->string('aliases', 255)->nullable();
             $table->unsignedTinyInteger('from_name')->default(Mailbox::FROM_NAME_MAILBOX);
             $table->string('from_name_custom', 128)->nullable();
             $table->unsignedTinyInteger('ticket_status')->default(Mailbox::TICKET_STATUS_PENDING);

@@ -431,4 +431,48 @@ class Mailbox extends Model
             return $settings;
         }
     }
+
+    /**
+     * Get main email and aliases.
+     * 
+     * @return array
+     */
+    public function getEmails()
+    {
+        $emails = [$this->email];
+
+        if ($this->aliases) {
+            $aliases = explode(',', $this->aliases);
+            foreach ($aliases as $alias) {
+                $alias = Email::sanitizeEmail($alias);
+                if ($alias) {
+                    $emails[] = $alias;
+                }
+            }
+        }
+        return $emails;
+    }
+
+    /**
+     * Remove mailbox email and aliases from the list of emails.
+     *
+     * @param array  $list
+     * @param Mailbox $mailbox
+     *
+     * @return array
+     */
+    public function removeMailboxEmailsFromList($list)
+    {
+        if (!is_array($list)) {
+            return [];
+        }
+        $mailbox_emails = $this->getEmails();
+        foreach ($list as $i => $email) {
+            if (in_array($email, $mailbox_emails)) {
+                unset($list[$i]);
+            }
+        }
+
+        return $list;
+    }
 }
