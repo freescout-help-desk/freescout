@@ -77,10 +77,13 @@ class SendReplyToCustomer implements ShouldQueue
         $headers['Message-ID'] = $message_id;
 
         $customer_email = $this->customer->getMainEmail();
+        $cc_array = $mailbox->removeMailboxEmailsFromList($last_thread->getCcArray());
+        $bcc_array = $mailbox->removeMailboxEmailsFromList($last_thread->getBccArray());
+        
         try {
             $mail = Mail::to([['name' => $this->customer->getFullName(), 'email' => $customer_email]])
-                ->cc($last_thread->getCcArray())
-                ->bcc($last_thread->getBccArray())
+                ->cc($cc_array)
+                ->bcc($bcc_array)
                 ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers));
         } catch (\Exception $e) {
             activity()
@@ -101,7 +104,7 @@ class SendReplyToCustomer implements ShouldQueue
         $failures = Mail::failures();
 
         // Save to send log
-        $recipients = array_merge([$customer_email], $last_thread->getCcArray(), $last_thread->getBccArray());
+        $recipients = array_merge([$customer_email], $cc_array, $bcc_array);
         foreach ($recipients as $recipient) {
             if (in_array($recipient, $failures)) {
                 $status = SendLog::STATUS_SEND_ERROR;

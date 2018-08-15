@@ -620,4 +620,28 @@ class Conversation extends Model
 
         return false;
     }
+
+    /**
+     * Get text for the assignee.
+     *
+     * @return string
+     */
+    public function getAssigneeName($ucfirst = false, $user = null)
+    {
+        if (!$this->user_id) {
+            if ($ucfirst) {
+                return __('Anyone');
+            } else {
+                return __('anyone');
+            }
+        } elseif (($user && $this->user_id == $user->id) || (!$user && $this->user_id == auth()->user()->id)) {
+            if ($ucfirst) {
+                return __('Me');
+            } else {
+                return __('me');
+            }
+        } else {
+            return $this->user->getFullName();
+        }
+    }
 }

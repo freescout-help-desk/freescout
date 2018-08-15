@@ -33,16 +33,10 @@
 
                 <ul class="conv-info">
                     <li>
-                        <div class="btn-group" data-toggle="tooltip" title="{{ __("Assignee") }}">
+                        <div class="btn-group" data-toggle="tooltip" title="{{ __("Assignee") }}: {{ $conversation->getAssigneeName(true) }}">
                             <button type="button" class="btn btn-default conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i></button>
                             <button type="button" class="btn btn-default dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @if ($conversation->user_id == Auth::user()->id)
-                                    <span>{{ __("Me") }}</span> 
-                                @elseif ($conversation->user)
-                                    <span>{{ $conversation->user->getFullName() }}</span> 
-                                @else
-                                    <span>{{ __("Anyone") }}</span> 
-                                @endif
+                                <span>{{ $conversation->getAssigneeName(true) }}</span> 
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu conv-user">
@@ -57,7 +51,7 @@
                         </div>
                     </li>
                     <li>
-                        <div class="btn-group" data-toggle="tooltip" title="{{ __("Status") }}">
+                        <div class="btn-group" data-toggle="tooltip" title="{{ __("Status") }}: {{ $conversation->getStatusName() }}">
                             <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
                             <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span>{{ $conversation->getStatusName() }}</span> <span class="caret"></span>

@@ -23,7 +23,7 @@ class FetchEmails extends Command
     /**
      * Period in days for fetching emails from mailbox email.
      */
-    const CHECK_PERIOD = 1;
+    const CHECK_PERIOD = 3;
 
     /**
      * The name and signature of the console command.
@@ -161,10 +161,26 @@ class FetchEmails extends Command
                 $message_from_customer = true;
                 $in_reply_to = $message->getInReplyTo();
                 $references = $message->getReferences();
+                $attachments = $message->getAttachments();
 
-                // Is it message from Customer or User replied to the notification
+                // Is it a bounce message
+                $is_bounce = false;
+                $bounce_message = null;
+                if ($message->hasAttachments()) {
+                    foreach ($attachments as $attachment) {
+                        if (!empty(Attachment::$types[$attachment->getType()]) && Attachment::$types[$attachment->getType()] == Attachment::TYPE_MESSAGE) {
+                            if (in_array($attachment->getName(), ['RFC822', 'DELIVERY-STATUS'])) {
+                                $is_bounce = true;
+                                $bounce_attachment = $attachment;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Is it a message from Customer or User replied to the notification
                 preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $in_reply_to, $m);
-                if (!empty($m[1]) && !empty($m[2])) {
+                if (!$is_bounce && !empty($m[1]) && !empty($m[2])) {
                     // Reply from User to the notification
                     $prev_thread = Thread::find($m[1]);
                     $user_id = $m[2];
@@ -231,8 +247,6 @@ class FetchEmails extends Command
 
                 $bcc = $this->formatEmailList($message->getBcc());
                 $bcc = $mailbox->removeMailboxEmailsFromList($bcc);
-
-                $attachments = $message->getAttachments();
 
                 if ($message_from_customer) {
                     $new_thread_id = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments);
