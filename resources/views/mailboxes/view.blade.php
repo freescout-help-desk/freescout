@@ -40,7 +40,7 @@
             </th>
             @if ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED)
                 <th class="conv-owner dropdown" data-toggle="tooltip" title="{{ __("Filter by Assigned To") }}">
-                    <span data-target="#" class="dropdown-toggle" data-toggle="dropdown">{{ __("Assigned To") }}</span>
+                    <span {{--data-target="#"--}} class="dropdown-toggle" data-toggle="dropdown">{{ __("Assigned To") }}</span>
                     <ul class="dropdown-menu">
                           <li><a class="filter-owner" data-id="1" href="#"><span class="option-title">{{ __("Anyone") }}</span></a></li>
                           <li><a class="filter-owner" data-id="123" href="#"><span class="option-title">{{ __("Me") }}</span></a></li>

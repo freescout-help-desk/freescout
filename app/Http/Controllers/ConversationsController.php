@@ -148,8 +148,9 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Incorrect user');
                 }
                 if (!$response['msg']) {
-                    // Next conversation has to be determined before updating status for current one
-                    $next_conversation = $conversation->getNearby();
+                    // Determine redirect
+                    // Must be done before updating current conversation's status or assignee.
+                    $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
 
                     $conversation->setUser($new_user_id);
                     $conversation->save();
@@ -178,12 +179,12 @@ class ConversationsController extends Controller
                     if ($new_user_id != $user->id) {
                         $flash_message .= ' <a href="'.$conversation->url().'">'.__('View').'</a>';
 
-                        if ($next_conversation) {
-                            $response['redirect_url'] = $next_conversation->url();
-                        } else {
-                            // Show conversations list
-                            $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
-                        }
+                        // if ($next_conversation) {
+                        //     $response['redirect_url'] = $next_conversation->url();
+                        // } else {
+                        //     // Show conversations list
+                        //     $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
+                        // }
                     }
                     \Session::flash('flash_success_floating', $flash_message);
 
@@ -210,8 +211,9 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Incorrect status');
                 }
                 if (!$response['msg']) {
-                    // Next conversation has to be determined before updating status for current one
-                    $next_conversation = $conversation->getNearby();
+                    // Determine redirect
+                    // Must be done before updating current conversation's status or assignee.
+                    $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
 
                     $conversation->setStatus($new_status, $user);
                     $conversation->save();
@@ -240,12 +242,12 @@ class ConversationsController extends Controller
                     if ($new_status != Conversation::STATUS_ACTIVE) {
                         $flash_message .= ' <a href="'.$conversation->url().'">'.__('View').'</a>';
 
-                        if ($next_conversation) {
-                            $response['redirect_url'] = $next_conversation->url();
-                        } else {
-                            // Show conversations list
-                            $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
-                        }
+                        // if ($next_conversation) {
+                        //     $response['redirect_url'] = $next_conversation->url();
+                        // } else {
+                        //     // Show conversations list
+                        //     $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
+                        // }
                     }
                     \Session::flash('flash_success_floating', $flash_message);
 
@@ -328,6 +330,10 @@ class ConversationsController extends Controller
                         Attachment::deleteByIds($attachments_to_remove);
                     }
 
+                    // Determine redirect. 
+                    // Must be done before updating current conversation's status or assignee.
+                    $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+
                     $now = date('Y-m-d H:i:s');
                     $status_changed = false;
                     $user_changed = false;
@@ -337,7 +343,6 @@ class ConversationsController extends Controller
 
                         $conversation = new Conversation();
                         $conversation->type = Conversation::TYPE_EMAIL;
-                        $conversation->status = $request->status;
                         $conversation->state = Conversation::STATE_PUBLISHED;
                         $conversation->subject = $request->subject;
                         $conversation->setCc($request->cc);
@@ -418,31 +423,6 @@ class ConversationsController extends Controller
                         event(new UserReplied($conversation, $thread));
                     }
 
-                    // Determine redirect
-                    if (!empty($request->after_send)) {
-                        switch ($request->after_send) {
-                            case MailboxUser::AFTER_SEND_STAY:
-                            default:
-                                $response['redirect_url'] = $conversation->url();
-                                break;
-                            case MailboxUser::AFTER_SEND_FOLDER:
-                                $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
-                                break;
-                            case MailboxUser::AFTER_SEND_NEXT:
-                                $next_conversation = $conversation->getNearby();
-                                if ($next_conversation) {
-                                    $response['redirect_url'] = $next_conversation->url();
-                                } else {
-                                    // Show folder
-                                    $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => Conversation::getCurrentFolder($conversation->folder_id)]);
-                                }
-                                break;
-                        }
-                    } else {
-                        // If something went wrong and after_send not set, just show the reply
-                        $response['redirect_url'] = $conversation->url();
-                    }
-
                     if (!empty($request->after_send) && $request->after_send == MailboxUser::AFTER_SEND_STAY) {
                         // Message without View link
                         $flash_message = __(
@@ -491,6 +471,43 @@ class ConversationsController extends Controller
         }
 
         return \Response::json($response);
+    }
+
+    /**
+     * Get redirect URL after performing an action.
+     */
+    public function getRedirectUrl($request, $conversation, $user)
+    {
+        if (!empty($request->after_send)) {
+            $after_send = $request->after_send;
+        } else {
+            $after_send = $conversation->mailbox->getUserSettings($user->id)->after_send;
+        }
+        if (!empty($after_send)) {
+            switch ($after_send) {
+                case MailboxUser::AFTER_SEND_STAY:
+                default:
+                    $redirect_url = $conversation->url();
+                    break;
+                case MailboxUser::AFTER_SEND_FOLDER:
+                    $redirect_url = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
+                    break;
+                case MailboxUser::AFTER_SEND_NEXT:
+                    $next_conversation = $conversation->getNearby();
+                    if ($next_conversation) {
+                        $redirect_url = $next_conversation->url();
+                    } else {
+                        // Show folder
+                        $redirect_url = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => Conversation::getCurrentFolder($conversation->folder_id)]);
+                    }
+                    break;
+            }
+        } else {
+            // If something went wrong and after_send not set, just show the reply
+            $redirect_url = $conversation->url();
+        }
+
+        return $redirect_url;
     }
 
     /**

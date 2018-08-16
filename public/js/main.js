@@ -126,9 +126,11 @@ $(document).ready(function(){
 
 	// Editor
 	(function($) {
-	$.summernote.lang['en-US'].image.dragImageHere = Lang.get("messages.drag_image_file");
-	$.summernote.lang['en-US'].image.dropImage = Lang.get("messages.drag_image_file");
-})(jQuery);
+		if (typeof($.summernote) != "undefined") {
+			$.summernote.lang['en-US'].image.dragImageHere = Lang.get("messages.drag_image_file");
+			$.summernote.lang['en-US'].image.dropImage = Lang.get("messages.drag_image_file");
+		}
+	})(jQuery);
 });
 
 function mailboxUpdateInit(from_name_custom)
