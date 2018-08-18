@@ -64,9 +64,9 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\SendNotificationToUsers',
         ],
 
-        // 'App\Events\ConversationUserAddedNote' => [
-
-        // ],
+        'App\Events\UserAddedNote' => [
+            'App\Listeners\SendNotificationToUsers',
+        ],
     ];
 
     /**

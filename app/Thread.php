@@ -226,6 +226,14 @@ class Thread extends Model
     }
 
     /**
+     * Get type name.
+     */
+    public function getTypeName()
+    {
+        return self::$types[$this->type];
+    }
+
+    /**
      * Get thread CC recipients.
      *
      * @return array

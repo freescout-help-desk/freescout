@@ -1330,21 +1330,32 @@ table.table-conversations td.conv-attachment {
     right: 13px;
     color: #a5b2bd;
 }
-.thread-lineitem {
+.thread-type-lineitem {
     background: #f9fafa;
     overflow: auto;
 }
-.thread-lineitem .thread-message {
+.thread-type-lineitem .thread-message {
     padding-top: 12px;
     padding-bottom: 9px;
     color: #a5b2bd;
     font-size: 12px;
 }
-.thread-lineitem .thread-header {
+.thread-type-lineitem .thread-header {
     min-height: auto;
 }
 .thread-attachments {
     position: relative;
+}
+.thread-type-message {
+    -webkit-box-shadow:inset 5px 0 0 0 #93a1af;
+    box-shadow:inset 5px 0 0 0 #93a1af
+}
+.thread-type-note {
+    -webkit-box-shadow:inset 5px 0 0 0 #ffc646;
+    box-shadow:inset 5px 0 0 0 #ffc646
+}
+.thread-type-note .thread-person {
+    color: #f7b126;
 }
 .thread-attachments ul {
     list-style: none;
@@ -1446,6 +1457,58 @@ table.table-conversations td.conv-attachment {
     padding-left: 10px;
     float: left;
     width: 68%;
+}
+.btn-add-note-text,
+.conv-note-block .btn-send-text,
+.conv-note-block .cc-container,
+.conv-note-block .bcc-container {
+    display: none;
+}
+.conv-note-block .btn-add-note-text {
+    display: block;
+}
+.conv-note-block .conv-reply-body {
+    margin-top: 5px;
+}
+.conv-note-block .note-editor.note-frame .note-statusbar.note-statusbar-toolbar {
+    border-top: 1px solid #ffd56d;
+    background-color: #fff7dd;
+    color: #d79400;
+}
+.conv-note-block .note-editor.note-frame {
+    border-color: #ffd56d !important;
+    color: #d79400;
+}
+.conv-note-block .form-control {
+    border-color: #ffd56d;
+    color: #b37100;
+}
+.conv-note-block .btn-primary,
+.conv-note-block .btn-primary:focus {
+    background-color: #f5b126;
+    border-color: #f5b126;
+    color: #fff;
+}
+.conv-note-block .btn-primary:hover {
+    background-color: #de980a;
+    border-color: #de980a;
+    color: #fff;
+}
+.conv-note-block .btn-send-menu {
+    border-left-color: #ffd56d;
+}
+.conv-note-block .note-bottom-div {
+    color: #b37100;
+}
+.conv-note-block .panel-default > .panel-heading {
+    border-color: #ffd56d;
+    background-color: #fff7dd;
+    color: #d79400;
+}
+.conv-note-block .note-editor .btn-default {
+    color: #b37100;
+    background-color: #fff7dd;
+    border-color: #fff7dd;
 }
 @media (max-width:700px) {
     .conv-info .btn-group button.conv-info-val span:first-child {
@@ -1704,7 +1767,8 @@ table.table-conversations td.conv-attachment {
     box-shadow: 4px 4px 12px rgba(0, 0, 0, .175);
     cursor: default;
 }
-.alert-floating.alert-danger {
+.alert-floating.alert-danger,
+.alert-floating.alert-warning {
     position: fixed;
 }
 .alert-floating .glyphicon {
@@ -1727,7 +1791,9 @@ table.table-conversations td.conv-attachment {
     border: 1px solid #a94442;
 }
 .alert-floating.alert-warning {
-    border: 1px solid #8a6d3b;
+    background-color: #fff6e2;
+    color: #b37100;
+    border: 1px solid #f5b126;
 }
 
 /**
@@ -2064,8 +2130,8 @@ a.help-icon:hover {
     height: 100%;
     z-index: 9999;
     background: url('../img/loader-main.gif') 50% 50% no-repeat #fff;
-    opacity: 0.55;
-    filter: alpha(opacity=85); /* For IE8 and earlier */
+    opacity: 0.60;
+    filter: alpha(opacity=60); /* For IE8 and earlier */
 }
 a.text-danger,
 a.text-danger:hover,

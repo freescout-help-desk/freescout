@@ -32,6 +32,13 @@
         </div>
     @endsection
 @endif
+@if (session('flash_warning_floating'))
+    @section('body_bottom')
+        <div class="alert alert-warning alert-floating">
+            <div>{!! session('flash_warning_floating') !!}</div>
+        </div>
+    @endsection
+@endif
 @if (!empty($flashes) && is_array($flashes))
     @foreach ($flashes as $flash)
      	<div class="alert alert-{{ $flash['type'] }}">

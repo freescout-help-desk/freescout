@@ -8,6 +8,7 @@ use App\Customer;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
 use App\Events\UserCreatedConversation;
+use App\Events\UserAddedNote;
 use App\Events\UserReplied;
 use App\Folder;
 use App\Mailbox;
@@ -277,36 +278,44 @@ class ConversationsController extends Controller
                     $new = true;
                 }
 
+                $is_note = false;
+                if (!empty($request->is_note)) {
+                    $is_note = true;
+                }
+
+                // Validate form
                 if (!$response['msg']) {
-                    $validator = Validator::make($request->all(), [
-                        'to'       => 'required|string',
-                        'subject'  => 'required|string|max:998',
-                        'body'     => 'required|string',
-                        'cc'       => 'nullable|string',
-                        'bcc'      => 'nullable|string',
-                    ]);
+                    if ($new) {
+                        $validator = Validator::make($request->all(), [
+                            'to'       => 'required|string',
+                            'subject'  => 'required|string|max:998',
+                            'body'     => 'required|string',
+                            'cc'       => 'nullable|string',
+                            'bcc'      => 'nullable|string',
+                        ]);
+                    } else {
+                        $validator = Validator::make($request->all(), [
+                            'body'     => 'required|string',
+                            'cc'       => 'nullable|string',
+                            'bcc'      => 'nullable|string',
+                        ]);
+                    }
 
                     if ($validator->fails()) {
-                        foreach ($validator->errors() as $errors) {
+                        foreach ($validator->errors() ->getMessages()as $errors) {
                             foreach ($errors as $field => $message) {
                                 $response['msg'] .= $message.' ';
                             }
                         }
-                        // return redirect()->route('conversations.create', ['mailbox_id' => $mailbox_id])
-                        //             ->withErrors($validator)
-                        //             ->withInput();
                     }
                 }
 
+                // Check To
                 if (!$response['msg'] && $new) {
                     $to_array = Conversation::sanitizeEmails($request->to);
 
-                    // Check if there are any emails
                     if (!$to_array) {
                         $response['msg'] .= __('Incorrect recipients');
-                        // return redirect()->route('conversations.create', ['mailbox_id' => $mailbox_id])
-                        //             ->withErrors(['to' => __('Incorrect recipients')])
-                        //             ->withInput();
                     }
                 }
 
@@ -332,7 +341,9 @@ class ConversationsController extends Controller
 
                     // Determine redirect. 
                     // Must be done before updating current conversation's status or assignee.
-                    $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+                    if (!$new) {
+                        $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+                    }
 
                     $now = date('Y-m-d H:i:s');
                     $status_changed = false;
@@ -358,6 +369,7 @@ class ConversationsController extends Controller
                         $conversation->source_via = Conversation::PERSON_USER;
                         $conversation->source_type = Conversation::SOURCE_TYPE_WEB;
                     } else {
+                        // Reply or note
                         $customer = $conversation->customer;
 
                         if ((int) $request->status != (int) $conversation->status) {
@@ -374,11 +386,17 @@ class ConversationsController extends Controller
                     } else {
                         $conversation->user_id = null;
                     }
-                    $conversation->last_reply_at = $now;
-                    $conversation->last_reply_from = Conversation::PERSON_USER;
-                    $conversation->user_updated_at = $now;
-                    $conversation->updateFolder();
+                    if (!$is_note) {
+                        $conversation->last_reply_at = $now;
+                        $conversation->last_reply_from = Conversation::PERSON_USER;
+                        $conversation->user_updated_at = $now;
+                        $conversation->updateFolder();
+                    }
                     $conversation->save();
+
+                    if ($new) {
+                        $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+                    }
 
                     // Fire events
                     if (!$new) {
@@ -394,7 +412,11 @@ class ConversationsController extends Controller
                     $thread = new Thread();
                     $thread->conversation_id = $conversation->id;
                     $thread->user_id = auth()->user()->id;
-                    $thread->type = Thread::TYPE_MESSAGE;
+                    if ($is_note) {
+                        $thread->type = Thread::TYPE_NOTE;
+                    } else {
+                        $thread->type = Thread::TYPE_MESSAGE;
+                    }
                     $thread->status = $request->status;
                     $thread->state = Thread::STATE_PUBLISHED;
                     $thread->body = $request->body;
@@ -419,24 +441,41 @@ class ConversationsController extends Controller
 
                     if ($new) {
                         event(new UserCreatedConversation($conversation, $thread));
+                    } elseif ($is_note) {
+                        event(new UserAddedNote($conversation, $thread));
                     } else {
                         event(new UserReplied($conversation, $thread));
                     }
 
                     if (!empty($request->after_send) && $request->after_send == MailboxUser::AFTER_SEND_STAY) {
                         // Message without View link
-                        $flash_message = __(
-                            ':%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%',
-                            ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.draft', ['id' => $conversation->id]).'" class="text-danger">']
-                        );
+                        if ($is_note) {
+                            $flash_type = 'warning';
+                            $flash_message = '<strong>'.__('Note added').'</strong>';
+                        } else {
+                            $flash_type = 'success';
+                            $flash_message = __(
+                                ':%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%',
+                                ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.draft', ['id' => $conversation->id]).'" class="text-danger">']
+                            );
+                        }
                     } else {
-                        $flash_message = __(
-                            ':%tag_start%Email Sent:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%',
-                            ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.draft', ['id' => $conversation->id]).'" class="text-danger">']
-                        );
+                        if ($is_note) {
+                            $flash_type = 'warning';
+                            $flash_message = __(
+                                ':%tag_start%Note added:%tag_end% :%view_start%View:%a_end%',
+                                ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;']
+                            );
+                        } else {
+                            $flash_type = 'success';
+                            $flash_message = __(
+                                ':%tag_start%Email Sent:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%',
+                                ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.draft', ['id' => $conversation->id]).'" class="text-danger">']
+                            );
+                        }
                     }
 
-                    \Session::flash('flash_success_floating', $flash_message);
+                    \Session::flash('flash_'.$flash_type.'_floating', $flash_message);
                 }
                 break;
 

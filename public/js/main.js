@@ -92,7 +92,8 @@ var EditorDiscardButton = function (context) {
 		tooltip: Lang.get("messages.discard"),
 		container: 'body',
 		click: function () {
-			alert('todo: implement discarding a draft');
+			$(".conv-action-block").addClass('hidden');
+			$(".conv-action").removeClass('inactive');
 		}
 	});
 
@@ -384,15 +385,36 @@ function conversationInit()
 
 	    // Reply
 	    jQuery(".conv-reply").click(function(e){
-	    	if ($(".conv-reply-block").hasClass('hidden')) {
+	    	if ($(".conv-reply-block").hasClass('hidden') || $(this).hasClass('inactive')) {
 	    		// Show
 				$(".conv-action-block").addClass('hidden');
-				$(".conv-reply-block").removeClass('hidden');
+				$(".conv-reply-block").removeClass('hidden')
+					.removeClass('conv-note-block')
+					.children().find(":input[name='is_note']:first").val('')
 				$(".conv-action").addClass('inactive');
 				$(this).removeClass('inactive');
 				if (!$('#to').length) {
 					$('#body').summernote('focus');
 				}
+			} else {
+				// Hide
+				$(".conv-action-block").addClass('hidden');
+				$(".conv-action").removeClass('inactive');
+			}
+			e.preventDefault();
+		});
+
+		// Add note
+	    jQuery(".conv-add-note").click(function(e){
+	    	if ($(".conv-reply-block").hasClass('hidden') || $(this).hasClass('inactive')) {
+	    		// Show
+				$(".conv-action-block").addClass('hidden');
+				$(".conv-reply-block").removeClass('hidden')
+					.addClass('conv-note-block')
+					.children().find(":input[name='is_note']:first").val(1);
+				$(".conv-action").addClass('inactive');
+				$(this).removeClass('inactive');
+				$('#body').summernote('focus');
 			} else {
 				// Hide
 				$(".conv-action-block").addClass('hidden');
@@ -606,7 +628,7 @@ function newConversationInit()
 		});
 
 		// Send reply or new conversation
-	    jQuery(".btn-send-text").click(function(e){
+	    jQuery(".btn-reply-submit").click(function(e){
 	    	var button = $(this);
 
 	    	// Validate before sending

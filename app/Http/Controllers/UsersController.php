@@ -88,7 +88,7 @@ class UsersController extends Controller
             // todo
         }
 
-        \Session::flash('flash_success', __('User created successfully'));
+        \Session::flash('flash_success_floating', __('User created successfully'));
 
         return redirect()->route('users.profile', ['id' => $user->id]);
     }

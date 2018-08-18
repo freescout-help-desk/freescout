@@ -89,7 +89,9 @@
                             {{ csrf_field() }}
                             <input type="hidden" name="conversation_id" value="{{ $conversation->id }}"/>
                             <input type="hidden" name="mailbox_id" value="{{ $mailbox->id }}"/>
-                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }}">
+                            <input type="hidden" name="is_note" value=""/>
+
+                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} cc-container">
                                 <label for="cc" class="control-label">{{ __('Cc') }}</label>
 
                                 <div class="conv-reply-field">
@@ -98,7 +100,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }}">
+                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }} bcc-container">
                                 <label for="bcc" class="control-label">{{ __('Bcc') }}</label>
 
                                 <div class="conv-reply-field">
@@ -115,7 +117,7 @@
                             <div class="form-group{{ $errors->has('body') ? ' has-error' : '' }} conv-reply-body">
                                
                                     <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}">{{ old('body', $conversation->body) }}</textarea>
-                                    <div class="help-block">
+                                    <div class="help-block has-error">
                                         @include('partials/field_error', ['field'=>'body'])
                                     </div>
                             </div>
@@ -165,7 +167,7 @@
             @foreach ($threads as $thread)
                 
                 @if ($thread->type == App\Thread::TYPE_LINEITEM)
-                    <div class="thread thread-lineitem">
+                    <div class="thread thread-type-{{ $thread->getTypeName() }}">
                         <div class="thread-message">
                             <div class="thread-header">
                                 <div class="thread-title">
@@ -183,7 +185,7 @@
                         </div>
                     </div>
                 @else
-                    <div class="thread">
+                    <div class="thread thread-type-{{ $thread->getTypeName() }}">
                         <div class="thread-photo">
                             <img src="/img/default-avatar.png" alt="">
                         </div>
@@ -200,6 +202,8 @@
                                         </strong> 
                                         @if ($loop->last)
                                             {{ __("started the conversation") }}
+                                        @elseif ($thread->type == App\Thread::TYPE_NOTE)
+                                            {{ __("added a note") }}
                                         @else
                                             {{ __("replied") }}
                                         @endif
