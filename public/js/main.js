@@ -132,6 +132,12 @@ $(document).ready(function(){
 			$.summernote.lang['en-US'].image.dropImage = Lang.get("messages.drag_image_file");
 		}
 	})(jQuery);
+
+	// Modal windows
+	$('a[data-trigger="modal"]').click(function(e) {
+    	showModal($(this));
+    	e.preventDefault();
+	});
 });
 
 function mailboxUpdateInit(from_name_custom)
@@ -422,6 +428,15 @@ function conversationInit()
 			}
 			e.preventDefault();
 		});
+
+		// View Send Log
+	    jQuery(".thread-send-log-trigger").click(function(e){
+	    	var thread_id = $(this).parents('.thread:first').attr('data-thread_id');
+	    	if (!thread_id) {
+	    		return;
+	    	}
+			e.preventDefault();
+		});
 	});
 }
 
@@ -707,6 +722,9 @@ function showModal(a, onshow)
         title = a.text();
     }
     var remote = a.attr('data-remote');
+    if (!remote) {
+    	remote = a.attr('href');
+    }
     var body = a.attr('data-modal-body');
     var footer = a.attr('data-modal-footer');
     var no_close_btn = a.attr('data-no-close-btn');

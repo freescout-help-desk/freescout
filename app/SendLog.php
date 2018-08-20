@@ -56,7 +56,7 @@ class SendLog extends Model
     /**
      * Save log record.
      */
-    public static function log($thread_id, $message_id, $email, $status, $customer_id = null, $user_id = null, $message = null)
+    public static function log($thread_id, $message_id, $email, $status, $customer_id = null, $user_id = null, $status_message = null)
     {
         $send_log = new self();
         $send_log->thread_id = $thread_id;
@@ -65,9 +65,54 @@ class SendLog extends Model
         $send_log->status = $status;
         $send_log->customer_id = $customer_id;
         $send_log->user_id = $user_id;
-        $send_log->message = $message;
+        $send_log->status_message = $status_message;
         $send_log->save();
 
         return true;
+    }
+
+    /**
+     * Get name of the status.
+     */
+    public function getStatusName()
+    {
+        switch ($this->status) {
+            case self::STATUS_ACCEPTED:
+                return __('Accepted for delivery');
+            case self::STATUS_SEND_ERROR:
+                return __('Send error');
+            case self::STATUS_DELIVERY_SUCCESS:
+                return __('Successfully delivered');
+            case self::STATUS_DELIVERY_ERROR:
+                return __('Delivery error');
+            case self::STATUS_OPENED:
+                return __('Recipient opened the message');
+            case self::STATUS_CLICKED:
+                return __('Recipient clicked a link in the message');
+            case self::STATUS_UNSUBSCRIBED:
+                return __('Recipient unsubscribed');
+            case self::STATUS_COMPLAINED:
+                return __('Recipient complained');
+            default:
+                return __('Unknown');
+        }
+    }
+
+    public function isErrorStatus()
+    {
+        if (in_array($this->status, [self::STATUS_SEND_ERROR, self::STATUS_DELIVERY_ERROR])) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function isSuccessStatus()
+    {
+        if (in_array($this->status, [self::STATUS_DELIVERY_SUCCESS])) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

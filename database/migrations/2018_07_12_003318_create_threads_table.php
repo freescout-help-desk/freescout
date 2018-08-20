@@ -51,8 +51,9 @@ class CreateThreadsTable extends Migration
             $table->integer('created_by_customer_id')->nullable();
             // ID of Saved reply that was used to create this Thread (savedReplyId)
             $table->integer('saved_reply_id')->nullable();
-            // Status of the email sent to customer or user, to whom the thread is assigned
-            //$table->unsignedTinyInteger('send_status')->default(Thread::SEND_STATUS_TOSEND);
+            // Status of the email sent to the customer or user, to whom the thread is assigned
+            // Values are in SendLog
+            $table->unsignedTinyInteger('send_status')->nullable();
             // Text describing the sending status
             //$table->string('send_status_text', 255)->nullable();
             // Email opened by customer

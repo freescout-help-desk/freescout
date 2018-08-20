@@ -2,9 +2,9 @@
 /**
  * Outgoing emails.
  */
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class CreateSendLogsTable extends Migration
 {
@@ -18,6 +18,7 @@ class CreateSendLogsTable extends Migration
         Schema::create('send_logs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('thread_id')->index();
+            // Customer ID is set only if email sent to the main conversation customer
             $table->integer('customer_id')->nullable();
             $table->integer('user_id')->nullable();
             // Message-ID header of the outgoing email
@@ -25,7 +26,7 @@ class CreateSendLogsTable extends Migration
             // We have to keep email as customer's or user's email may change
             $table->string('email', 191);
             $table->unsignedTinyInteger('status');
-            $table->string('message', 255)->nullable();
+            $table->string('status_message', 255)->nullable();
             $table->timestamps();
 
             // Indexes

@@ -22,6 +22,11 @@ class SendReplyToCustomer implements ShouldQueue
 
     public $customer;
 
+    private $failures = [];
+    private $recipients = [];
+    private $last_thread = null;
+    private $message_id = '';
+
     /**
      * Create a new job instance.
      *
@@ -50,11 +55,11 @@ class SendReplyToCustomer implements ShouldQueue
 
         $new = false;
         $headers = [];
-        $last_thread = $this->threads->first();
+        $this->last_thread = $this->threads->first();
         $prev_thread = null;
 
         // Configure mail driver according to Mailbox settings
-        \App\Mail\Mail::setMailDriver($mailbox, $last_thread->created_by_user);
+        \App\Mail\Mail::setMailDriver($mailbox, $this->last_thread->created_by_user);
 
         if (count($this->threads) == 1) {
             $new = true;
@@ -73,15 +78,16 @@ class SendReplyToCustomer implements ShouldQueue
             $headers['In-Reply-To'] = '<'.$prev_thread->message_id.'>';
             $headers['References'] = '<'.$prev_thread->message_id.'>';
         }
-        $message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER.'-'.$last_thread->id.'-'.md5($last_thread->id).'@'.$mailbox->getEmailDomain();
-        $headers['Message-ID'] = $message_id;
+        $this->message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER.'-'.$this->last_thread->id.'-'.md5($this->last_thread->id).'@'.$mailbox->getEmailDomain();
+        $headers['Message-ID'] = $this->message_id;
 
         $customer_email = $this->customer->getMainEmail();
-        $cc_array = $mailbox->removeMailboxEmailsFromList($last_thread->getCcArray());
-        $bcc_array = $mailbox->removeMailboxEmailsFromList($last_thread->getBccArray());
-        
+        $cc_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getCcArray());
+        $bcc_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getBccArray());
+        $this->recipients = array_merge([$customer_email], $cc_array, $bcc_array);
+
         try {
-            $mail = Mail::to([['name' => $this->customer->getFullName(), 'email' => $customer_email]])
+            Mail::to([['name' => $this->customer->getFullName(), 'email' => $customer_email]])
                 ->cc($cc_array)
                 ->bcc($bcc_array)
                 ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers));
@@ -93,31 +99,23 @@ class SendReplyToCustomer implements ShouldQueue
                 ])
                ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
                ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR);
+
+            // Failures will be save to send log when retry attempts will finish
+            $this->failures = $this->recipients;
+
+            throw $e;
         }
 
         // In message_id we are storing Message-ID of the incoming email which created the thread
         // Outcoming message_id can be generated for each thread by thread->id
-        // $last_thread->message_id = $message_id;
-        // $last_thread->save();
+        // $this->last_thread->message_id = $message_id;
+        // $this->last_thread->save();
 
         // Laravel tells us exactly what email addresses failed
-        $failures = Mail::failures();
+        $this->failures = Mail::failures();
 
         // Save to send log
-        $recipients = array_merge([$customer_email], $cc_array, $bcc_array);
-        foreach ($recipients as $recipient) {
-            if (in_array($recipient, $failures)) {
-                $status = SendLog::STATUS_SEND_ERROR;
-            } else {
-                $status = SendLog::STATUS_ACCEPTED;
-            }
-            if ($customer_email == $recipient) {
-                $customer_id = $this->customer->id;
-            } else {
-                $customer_id = null;
-            }
-            SendLog::log($last_thread->id, $message_id, $recipient, $status, $customer_id);
-        }
+        $this->saveToSendLog();
 
         if (!empty($failures)) {
             throw new \Exception('Could not send email to: '.implode(', ', $failures));
@@ -142,5 +140,27 @@ class SendReplyToCustomer implements ShouldQueue
             ])
            ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
            ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR);
+
+        $this->saveToSendLog();
+    }
+
+    /**
+     * Save failed email to send log.
+     */
+    public function saveToSendLog()
+    {
+        foreach ($this->recipients as $recipient) {
+            if (in_array($recipient, $this->failures)) {
+                $status = SendLog::STATUS_SEND_ERROR;
+            } else {
+                $status = SendLog::STATUS_ACCEPTED;
+            }
+            if ($customer_email == $recipient) {
+                $customer_id = $this->customer->id;
+            } else {
+                $customer_id = null;
+            }
+            SendLog::log($this->last_thread->id, $this->message_id, $recipient, $status, $customer_id);
+        }
     }
 }

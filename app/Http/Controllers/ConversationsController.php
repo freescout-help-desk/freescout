@@ -13,8 +13,10 @@ use App\Events\UserReplied;
 use App\Folder;
 use App\Mailbox;
 use App\MailboxUser;
+use App\SendLog;
 use App\Thread;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 use Validator;
 
 class ConversationsController extends Controller
@@ -510,6 +512,63 @@ class ConversationsController extends Controller
         }
 
         return \Response::json($response);
+    }
+
+    /**
+     * Conversations ajax controller.
+     */
+    public function ajaxHtml(Request $request)
+    {
+        switch ($request->action) {
+
+            case 'send_log':
+                return $this->ajaxHtmlSendLog();
+        }
+
+        abort(404);
+    }
+
+    /**
+     * Send log
+     * @return [type] [description]
+     */
+    public function ajaxHtmlSendLog()
+    {
+        $thread_id = Input::get('thread_id');
+        if (!$thread_id) {
+            abort(404);
+        }
+
+        $thread = Thread::find($thread_id);
+        if (!$thread) {
+            abort(404);
+        }
+
+        $user = auth()->user();
+
+        if (!$user->can('view', $thread->conversation)) {
+            abort(403);
+        }
+
+        // Get send log
+        $log_records = SendLog::where('thread_id', $thread_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $customers_log = [];
+        $users_log = [];
+        foreach ($log_records as $log_record) {
+            if ($log_record->user_id) {
+                $users_log[$log_record->email][] = $log_record;
+            } else {
+                $customers_log[$log_record->email][] = $log_record;
+            }
+        }
+
+        return view('conversations/ajax_html/send_log', [
+            'customers_log' => $customers_log,
+            'users_log' => $users_log,
+        ]);
     }
 
     /**
