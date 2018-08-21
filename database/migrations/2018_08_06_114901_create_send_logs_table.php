@@ -31,7 +31,7 @@ class CreateSendLogsTable extends Migration
 
             // Indexes
             // https://github.com/laravel/framework/issues/9293#issuecomment-373229281
-            $table->index([DB::raw('message_id(191)')], 'sendmails_message_id_index');
+            $table->index([DB::raw('message_id(191)')], 'send_logs_message_id_index');
         });
     }
 

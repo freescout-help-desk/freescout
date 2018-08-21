@@ -144,6 +144,7 @@ class FetchEmails extends Command
                 if (!$from) {
                     $from = $message->getFrom();
                 }
+
                 if (!$from) {
                     $this->logError('From is empty');
                     $message->setFlag(['Seen']);
@@ -247,6 +248,10 @@ class FetchEmails extends Command
 
                 $bcc = $this->formatEmailList($message->getBcc());
                 $bcc = $mailbox->removeMailboxEmailsFromList($bcc);
+
+                // Create customers
+                $emails = array_merge($message->getFrom(), $message->getReplyTo(), $message->getTo(), $message->getCc(), $message->getBcc());
+                $this->createCustomers($emails, $mailbox->getEmails());
 
                 if ($message_from_customer) {
                     $new_thread_id = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $message->getHeader());
@@ -560,5 +565,25 @@ class FetchEmails extends Command
         });
 
         return $messages;
+    }
+
+    /**
+     * Create customers from emails.
+     * 
+     * @param  array $emails_data
+     */
+    public function createCustomers($emails, $exclude_emails)
+    {
+        foreach ($emails as $item) {
+            // Email belongs to mailbox
+            if (in_array(Email::sanitizeEmail($item->mail), $exclude_emails)) {
+                continue;
+            }
+            $data = [];
+            if (!empty($item->personal)) {
+                list($data['first_name'], $data['last_name']) = explode(' ', $item->personal, 2);
+            }
+            Customer::create($item->mail, $data);
+        }
     }
 }
