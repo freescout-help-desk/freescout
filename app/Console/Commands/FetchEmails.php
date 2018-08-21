@@ -113,176 +113,203 @@ class FetchEmails extends Command
         if (!$folder) {
             throw new \Exception('Could not get mailbox folder: INBOX', 1);
         }
+        $folders = [$folder];
 
-        // Get unseen messages for a period
-        $messages = $folder->query()->unseen()->since(now()->subDays(self::CHECK_PERIOD))->leaveUnread()->get();
+        // It would be good to be able to fetch emails from Spam folder into Spam folder of the mailbox
+        // But it is difficult to determine Spam folder for different mail servers.
+        // $folders = [];
 
-        if ($client->getLastError()) {
-            $this->logError($client->getLastError());
-        }
+        // if ($mailbox->in_protocol == Mailbox::IN_PROTOCOL_IMAP) {
+        //     try {
+        //         //$folders = $client->getFolders();
+        //     } catch (\Exception $e) {
+        //         // Do nothing
+        //     }
+        // }
+        // if (!count($folders)) {
+        //     $folders = [$client->getFolder('INBOX')];
+        // }
 
-        $this->line('['.date('Y-m-d H:i:s').'] Fetched: '.count($messages));
+        foreach ($folders as $folder) {
 
-        $message_index = 1;
+            $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
 
-        try {
+            // Get unseen messages for a period
+            $messages = $folder->query()->unseen()->since(now()->subDays(self::CHECK_PERIOD))->leaveUnread()->get();
+
+            if ($client->getLastError()) {
+                // Throw exception for INBOX only
+                if ($folder->name == 'INBOX') {
+                    throw new Exception($client->getLastError(), 1);
+                } else {
+                    $this->error('['.date('Y-m-d H:i:s').'] '.$client->getLastError());
+                }
+            }
+
+            $this->line('['.date('Y-m-d H:i:s').'] Fetched: '.count($messages));
+
+            $message_index = 1;
+
             // We have to sort messages manually, as they can be in non-chronological order
             $messages = $this->sortMessage($messages);
             foreach ($messages as $message_id => $message) {
-                $this->line('['.date('Y-m-d H:i:s').'] '.$message_index.') '.$message->getSubject());
-                $message_index++;
+                try {
+                    $this->line('['.date('Y-m-d H:i:s').'] '.$message_index.') '.$message->getSubject());
+                    $message_index++;
 
-                // Check if message already fetched
-                if (Thread::where('message_id', $message_id)->first()) {
-                    $this->line('['.date('Y-m-d H:i:s').'] Message with such Message-ID has been fetched before: '.$message_id);
-                    $message->setFlag(['Seen']);
-                    continue;
-                }
+                    // Check if message already fetched
+                    if (Thread::where('message_id', $message_id)->first()) {
+                        $this->line('['.date('Y-m-d H:i:s').'] Message with such Message-ID has been fetched before: '.$message_id);
+                        $message->setFlag(['Seen']);
+                        continue;
+                    }
 
-                // From
-                $from = $message->getReplyTo();
-                if (!$from) {
-                    $from = $message->getFrom();
-                }
+                    // From
+                    $from = $message->getReplyTo();
+                    if (!$from) {
+                        $from = $message->getFrom();
+                    }
 
-                if (!$from) {
-                    $this->logError('From is empty');
-                    $message->setFlag(['Seen']);
-                    continue;
-                } else {
-                    $from = $this->formatEmailList($from);
-                    $from = $from[0];
-                }
+                    if (!$from) {
+                        $this->logError('From is empty');
+                        $message->setFlag(['Seen']);
+                        continue;
+                    } else {
+                        $from = $this->formatEmailList($from);
+                        $from = $from[0];
+                    }
 
-                // Detect prev thread
-                $is_reply = false;
-                $prev_thread = null;
-                $user_id = null;
-                $user = null; // for user reply only
-                $message_from_customer = true;
-                $in_reply_to = $message->getInReplyTo();
-                $references = $message->getReferences();
-                $attachments = $message->getAttachments();
+                    // Detect prev thread
+                    $is_reply = false;
+                    $prev_thread = null;
+                    $user_id = null;
+                    $user = null; // for user reply only
+                    $message_from_customer = true;
+                    $in_reply_to = $message->getInReplyTo();
+                    $references = $message->getReferences();
+                    $attachments = $message->getAttachments();
 
-                // Is it a bounce message
-                $is_bounce = false;
-                $bounce_message = null;
-                if ($message->hasAttachments()) {
-                    foreach ($attachments as $attachment) {
-                        if (!empty(Attachment::$types[$attachment->getType()]) && Attachment::$types[$attachment->getType()] == Attachment::TYPE_MESSAGE) {
-                            if (in_array($attachment->getName(), ['RFC822', 'DELIVERY-STATUS'])) {
-                                $is_bounce = true;
-                                $bounce_attachment = $attachment;
-                                break;
+                    // Is it a bounce message
+                    $is_bounce = false;
+                    $bounce_message = null;
+                    if ($message->hasAttachments()) {
+                        foreach ($attachments as $attachment) {
+                            if (!empty(Attachment::$types[$attachment->getType()]) && Attachment::$types[$attachment->getType()] == Attachment::TYPE_MESSAGE) {
+                                if (in_array($attachment->getName(), ['RFC822', 'DELIVERY-STATUS'])) {
+                                    $is_bounce = true;
+                                    $bounce_attachment = $attachment;
+                                    break;
+                                }
                             }
                         }
                     }
-                }
 
-                // Is it a message from Customer or User replied to the notification
-                preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $in_reply_to, $m);
-                if (!$is_bounce && !empty($m[1]) && !empty($m[2])) {
-                    // Reply from User to the notification
-                    $prev_thread = Thread::find($m[1]);
-                    $user_id = $m[2];
-                    $user = User::find($user_id);
-                    $message_from_customer = false;
-                    $is_reply = true;
-
-                    if (!$user) {
-                        $this->logError('User not found: '.$user_id);
-                        $message->setFlag(['Seen']);
-                        continue;
-                    }
-                    $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
-                } elseif (($user = User::where('email', $from)->first()) && $in_reply_to && ($prev_thread = Thread::where('message_id', $in_reply_to)->first()) && $prev_thread->created_by_user_id == $user->id) {
-                    // Reply from customer to his reply to the notification
-                    $user_id = $user->id;
-                    $message_from_customer = false;
-                    $is_reply = true;
-                } else {
-                    // Message from Customer
-                    $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
-
-                    $prev_message_id = '';
-                    if ($in_reply_to) {
-                        $prev_message_id = $in_reply_to;
-                    } elseif ($references) {
-                        if (!is_array($references)) {
-                            $references = array_filter(preg_split('/[, <>]/', $references));
-                        }
-                        // Maybe we need to check all references
-                        $prev_message_id = $references[0];
-                    }
-                    if ($prev_message_id) {
-                        preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
-                        if (!empty($m[1])) {
-                            $prev_thread = Thread::find($m[1]);
-                        }
-                    }
-                    if (!empty($prev_thread)) {
+                    // Is it a message from Customer or User replied to the notification
+                    preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $in_reply_to, $m);
+                    if (!$is_bounce && !empty($m[1]) && !empty($m[2])) {
+                        // Reply from User to the notification
+                        $prev_thread = Thread::find($m[1]);
+                        $user_id = $m[2];
+                        $user = User::find($user_id);
+                        $message_from_customer = false;
                         $is_reply = true;
+
+                        if (!$user) {
+                            $this->logError('User not found: '.$user_id);
+                            $message->setFlag(['Seen']);
+                            continue;
+                        }
+                        $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
+                    } elseif (($user = User::where('email', $from)->first()) && $in_reply_to && ($prev_thread = Thread::where('message_id', $in_reply_to)->first()) && $prev_thread->created_by_user_id == $user->id) {
+                        // Reply from customer to his reply to the notification
+                        $user_id = $user->id;
+                        $message_from_customer = false;
+                        $is_reply = true;
+                    } else {
+                        // Message from Customer
+                        $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
+
+                        $prev_message_id = '';
+                        if ($in_reply_to) {
+                            $prev_message_id = $in_reply_to;
+                        } elseif ($references) {
+                            if (!is_array($references)) {
+                                $references = array_filter(preg_split('/[, <>]/', $references));
+                            }
+                            // Maybe we need to check all references
+                            $prev_message_id = $references[0];
+                        }
+                        if ($prev_message_id) {
+                            preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
+                            if (!empty($m[1])) {
+                                $prev_thread = Thread::find($m[1]);
+                            }
+                        }
+                        if (!empty($prev_thread)) {
+                            $is_reply = true;
+                        }
                     }
-                }
-                if ($message->hasHTMLBody()) {
-                    // Get body and replace :cid with images URLs
-                    $body = $message->getHTMLBody(true);
-                    $body = $this->separateReply($body, true, $is_reply);
-                } else {
-                    $body = $message->getTextBody();
-                    $body = $this->separateReply($body, false, $is_reply);
-                }
-                if (!$body) {
-                    $this->logError('Message body is empty');
-                    $message->setFlag(['Seen']);
-                    continue;
-                }
-
-                $subject = $message->getSubject();
-
-                $to = $this->formatEmailList($message->getTo());
-                $to = $mailbox->removeMailboxEmailsFromList($to);
-
-                $cc = $this->formatEmailList($message->getCc());
-                $cc = $mailbox->removeMailboxEmailsFromList($cc);
-
-                $bcc = $this->formatEmailList($message->getBcc());
-                $bcc = $mailbox->removeMailboxEmailsFromList($bcc);
-
-                // Create customers
-                $emails = array_merge($message->getFrom(), $message->getReplyTo(), $message->getTo(), $message->getCc(), $message->getBcc());
-                $this->createCustomers($emails, $mailbox->getEmails());
-
-                if ($message_from_customer) {
-                    $new_thread_id = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $message->getHeader());
-                } else {
-                    // Check if From is the same as user's email.
-                    // If not we send an email with information to the sender.
-                    if (Email::sanitizeEmail($user->email) != Email::sanitizeEmail($from)) {
-                        $this->logError("From address {$from} is not the same as user {$user->id} email: ".$user->email);
+                    if ($message->hasHTMLBody()) {
+                        // Get body and replace :cid with images URLs
+                        $body = $message->getHTMLBody(true);
+                        $body = $this->separateReply($body, true, $is_reply);
+                    } else {
+                        $body = $message->getTextBody();
+                        $body = $this->separateReply($body, false, $is_reply);
+                    }
+                    if (!$body) {
+                        $this->logError('Message body is empty');
                         $message->setFlag(['Seen']);
-                        // todo: send email with information
-                        // Unable to process your update
-                        // Your email update couldn't be processed
-                        // If you are trying to update a conversation, remember you must respond from the same email address that's on your account. To send your update, please try again and send from your account email address (the email you login with).
                         continue;
                     }
 
-                    $new_thread_id = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $to, $cc, $bcc, $body, $attachments, $message->getHeader());
-                }
+                    $subject = $message->getSubject();
 
-                if ($new_thread_id) {
+                    $to = $this->formatEmailList($message->getTo());
+                    $to = $mailbox->removeMailboxEmailsFromList($to);
+
+                    $cc = $this->formatEmailList($message->getCc());
+                    $cc = $mailbox->removeMailboxEmailsFromList($cc);
+
+                    $bcc = $this->formatEmailList($message->getBcc());
+                    $bcc = $mailbox->removeMailboxEmailsFromList($bcc);
+
+                    // Create customers
+                    $emails = array_merge($message->getFrom(), $message->getReplyTo(), $message->getTo(), $message->getCc(), $message->getBcc());
+                    $this->createCustomers($emails, $mailbox->getEmails());
+
+                    if ($message_from_customer) {
+                        $new_thread_id = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $message->getHeader());
+                    } else {
+                        // Check if From is the same as user's email.
+                        // If not we send an email with information to the sender.
+                        if (Email::sanitizeEmail($user->email) != Email::sanitizeEmail($from)) {
+                            $this->logError("From address {$from} is not the same as user {$user->id} email: ".$user->email);
+                            $message->setFlag(['Seen']);
+                            // todo: send email with information
+                            // Unable to process your update
+                            // Your email update couldn't be processed
+                            // If you are trying to update a conversation, remember you must respond from the same email address that's on your account. To send your update, please try again and send from your account email address (the email you login with).
+                            continue;
+                        }
+
+                        $new_thread_id = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $to, $cc, $bcc, $body, $attachments, $message->getHeader());
+                    }
+
+                    if ($new_thread_id) {
+                        $message->setFlag(['Seen']);
+                        $this->line('['.date('Y-m-d H:i:s').'] Thread successfully created: '.$new_thread_id);
+                    } else {
+                        $this->logError('Error occured processing message');
+                    }
+                } catch (\Exception $e) {
                     $message->setFlag(['Seen']);
-                    $this->line('['.date('Y-m-d H:i:s').'] Thread successfully created: '.$new_thread_id);
-                } else {
-                    $this->logError('Error occured processing message');
+                    $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
                 }
             }
-        } catch (\Exception $e) {
-            $message->setFlag(['Seen']);
-
-            throw $e;
         }
+
+        $client->disconnect();
     }
 
     public function logError($message)
@@ -581,7 +608,11 @@ class FetchEmails extends Command
             }
             $data = [];
             if (!empty($item->personal)) {
-                list($data['first_name'], $data['last_name']) = explode(' ', $item->personal, 2);
+                $name_parts = explode(' ', $item->personal, 2);
+                $data['first_name'] = $name_parts[0];
+                if (!empty($name_parts[1])) {
+                    $data['last_name'] = $name_parts[1];
+                }
             }
             Customer::create($item->mail, $data);
         }

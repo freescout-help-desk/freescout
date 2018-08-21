@@ -67,7 +67,7 @@ class SendNotificationToUsers implements ShouldQueue
             // If this is notification on message from customer set customer as sender name
             $from_name = '';
             if ($last_thread->type == Thread::TYPE_CUSTOMER) {
-                $from_name = $last_thread->customer->getFullName().' '.__('via').' '.\Config::get('app.name');
+                $from_name = $last_thread->customer->getFullName();
                 if ($from_name) {
                     $from_name = $from_name.' '.__('via').' '.\Config::get('app.name');
                 }

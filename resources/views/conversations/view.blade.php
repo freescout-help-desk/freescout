@@ -188,7 +188,7 @@
                             @if (Auth::user()->isAdmin())
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
-                                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View email sending log") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}">{{ __("View Send Log") }}</a></li>
+                                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}">{{ __("Outgoing Emails") }}</a></li>
                                 </ul>
                             @endif
                         </div>
@@ -297,7 +297,7 @@
                                         'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message headers") }}" data-trigger="modal" data-modal-title="{{ __("Original Message Headers") }}" data-modal-fit="true">{{ __("Show Original") }}</a></li>
                                 @if (Auth::user()->isAdmin())
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
-                                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View email sending log") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}">{{ __("View Send Log") }}</a></li>
+                                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}">{{ __("Outgoing Emails") }}</a></li>
                                 @endif
                             </ul>
                         </div>

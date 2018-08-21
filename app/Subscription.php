@@ -146,7 +146,7 @@ class Subscription extends Model
     }
 
     /**
-     * Detect users to notify.
+     * Detect users to notify by medium.
      */
     public static function usersToNotify($event_type, $conversation, $threads, $mailbox_user_ids = null)
     {
@@ -248,6 +248,7 @@ class Subscription extends Model
     {
         $notify = [];
 
+        // Collection into notify array information about all users who need to be notified
         foreach (self::$occured_events as $event) {
             // Get mailbox users ids
             $mailbox_user_ids = [];
@@ -262,19 +263,20 @@ class Subscription extends Model
                 }
             }
 
+            // Get users and threads from previous results to avoid repeated SQL queries.
             $users = [];
-            $treads = [];
+            $threads = [];
             foreach (self::$mediums as $medium) {
                 if (empty($notify[$medium][$event['conversation']->id])) {
-                    $treads = $event['conversation']->getThreads();
+                    $threads = $event['conversation']->getThreads();
                     break;
                 } else {
                     $users = $notify[$medium][$event['conversation']->id]['users'];
-                    $treads = $notify[$medium][$event['conversation']->id]['treads'];
+                    $threads = $notify[$medium][$event['conversation']->id]['threads'];
                 }
             }
 
-            $users_to_notify = self::usersToNotify($event['event_type'], $event['conversation'], $treads, $mailbox_user_ids);
+            $users_to_notify = self::usersToNotify($event['event_type'], $event['conversation'], $threads, $mailbox_user_ids);
 
             if (!$users_to_notify) {
                 continue;
@@ -289,10 +291,22 @@ class Subscription extends Model
                 }
 
                 if (count($medium_users_to_notify)) {
+                    
+                    // Remove duplicate users
+                    // $user_ids = [];
+                    // foreach ($users as $i => $user) {
+                    //     if (in_array($user->id, $user_ids)) {
+                    //         unset($users[$i]);
+                    //     } else {
+                    //         $user_ids[] = $user->id;
+                    //     }
+                    // }
+
                     $notify[$medium][$event['conversation']->id] = [
+                        // Users subarray contains all users who need to receive notification for all events
                         'users'            => array_unique(array_merge($users, $medium_users_to_notify)),
                         'conversation'     => $event['conversation'],
-                        'treads'           => $treads,
+                        'threads'          => $threads,
                         'mailbox_user_ids' => $mailbox_user_ids,
                     ];
                 }
@@ -302,11 +316,11 @@ class Subscription extends Model
         // Notify by email
         if (!empty($notify[self::MEDIUM_EMAIL])) {
             foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
-                \App\Jobs\SendNotificationToUsers::dispatch($notify_info['users'], $notify_info['conversation'], $notify_info['treads'])
-                    ->onQueue('emails');
+                \App\Jobs\SendNotificationToUsers::dispatch($notify_info['users'], $notify_info['conversation'], $notify_info['threads'])->onQueue('emails');
             }
         }
         // todo: mobile notification
+        self::$occured_events = [];
     }
 
     /**

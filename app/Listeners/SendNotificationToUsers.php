@@ -51,7 +51,7 @@ class SendNotificationToUsers
         $conversation = $event->conversation;
 
         if (!$conversation->imported) {
-            // Using the last argument you can make event to be processed right away
+            // Using the last argument you can make event to be processed immediately
             Subscription::registerEvent($event_type, $conversation, $caused_by_user_id/*, true*/);
         }
     }
