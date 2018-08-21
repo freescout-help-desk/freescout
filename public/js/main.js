@@ -730,6 +730,8 @@ function showModal(a, onshow)
     var no_close_btn = a.attr('data-no-close-btn');
     var no_footer = a.attr('data-modal-no-footer');
     var modal_class = a.attr('data-modal-class');
+    // Fit modal body into the screen
+    var fit = a.attr('data-modal-fit');
     var modal;
 
     var html = [
@@ -740,7 +742,7 @@ function showModal(a, onshow)
                     '<button type="button" class="close" data-dismiss="modal" aria-label="'+Lang.get("messages.close")+'"><span aria-hidden="true">&times;</span></button>',
                     '<h3 class="modal-title" id="jsmodal-label">'+title+'</h3>',
                 '</div>',
-                '<div class="modal-body"><div class="text-center modal-loader"><img src="'+Vars.public_url+'/img/loader-grey.gif" width="31" height="31"/></div></div>',
+                '<div class="modal-body '+(fit == 'true' ? 'modal-body-fit' : '')+'"><div class="text-center modal-loader"><img src="'+Vars.public_url+'/img/loader-grey.gif" width="31" height="31"/></div></div>',
                 '<div class="modal-footer '+(no_footer == 'true' ? 'hidden' : '')+'">',
                     (no_close_btn == 'true' ? '': '<button type="button" class="btn btn-default" data-dismiss="modal">'+Lang.get("messages.close")+'</button>'),
                     footer,

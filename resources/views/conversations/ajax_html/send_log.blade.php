@@ -30,7 +30,7 @@
 	@endif
 
     @if (!empty($users_log))
-    	<h5>{{ __("Emails to users") }}</h5>
+    	<h5>{{ __("Notifications to users") }}</h5>
 
     	<table class="table table-striped">
     		<tr>

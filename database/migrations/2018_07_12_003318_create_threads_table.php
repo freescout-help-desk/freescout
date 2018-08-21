@@ -30,6 +30,7 @@ class CreateThreadsTable extends Migration
             $table->text('body', 65535)->nullable();
             // Original body after thread text is changed
             $table->text('body_original', 65535)->nullable();
+            $table->text('headers', 65535)->nullable();
             $table->text('to')->nullable(); // JSON
             $table->text('cc')->nullable(); // JSON
             $table->text('bcc')->nullable(); // JSON

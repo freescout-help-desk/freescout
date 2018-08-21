@@ -283,11 +283,12 @@
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                 <li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }} (todo)</a></li>
                                 <li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>
-                                <li><a href="javascript:alert('todo: implement new conversation from thread');void(0);" title="{{ __("Start a conversation with this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
+                                <li><a href="javascript:alert('todo: implement creating new conversation from thread');void(0);" title="{{ __("Start a conversation from this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
+                                <li><a href="{{ route('conversations.ajax_html', ['action' => 
+                                        'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message headers") }}" data-trigger="modal" data-modal-title="{{ __("Original Message Headers") }}" data-modal-fit="true">{{ __("Show Original") }}</a></li>
                                 @if (Auth::user()->isAdmin())
-                                    <li><a href="#" title="{{ __("Show original email headers") }}" class="thread-orig-trigger">{{ __("Show Headers") }} (todo)</a></li>
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
-                                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View email sending log") }}" class="thread-send-log-trigger" data-trigger="modal">{{ __("View Send Log") }}</a></li>
+                                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View email sending log") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails Log") }}">{{ __("View Send Log") }}</a></li>
                                 @endif
                             </ul>
                         </div>

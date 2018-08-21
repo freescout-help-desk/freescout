@@ -249,7 +249,7 @@ class FetchEmails extends Command
                 $bcc = $mailbox->removeMailboxEmailsFromList($bcc);
 
                 if ($message_from_customer) {
-                    $new_thread_id = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments);
+                    $new_thread_id = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $message->getHeader());
                 } else {
                     // Check if From is the same as user's email.
                     // If not we send an email with information to the sender.
@@ -263,7 +263,7 @@ class FetchEmails extends Command
                         continue;
                     }
 
-                    $new_thread_id = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $to, $cc, $bcc, $body, $attachments);
+                    $new_thread_id = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $to, $cc, $bcc, $body, $attachments, $message->getHeader());
                 }
 
                 if ($new_thread_id) {
@@ -305,7 +305,7 @@ class FetchEmails extends Command
     /**
      * Save email from customer as thread.
      */
-    public function saveCustomerThread($mailbox_id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments)
+    public function saveCustomerThread($mailbox_id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers)
     {
         $cc = array_merge($cc, $to);
 
@@ -359,6 +359,7 @@ class FetchEmails extends Command
         $thread->status = $conversation->status;
         $thread->state = Thread::STATE_PUBLISHED;
         $thread->message_id = $message_id;
+        $thread->headers = $headers;
         $thread->body = $body;
         $thread->setTo($to);
         $thread->setCc($cc);
@@ -387,7 +388,7 @@ class FetchEmails extends Command
     /**
      * Save email reply from user as thread.
      */
-    public function saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $to, $cc, $bcc, $body, $attachments)
+    public function saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $to, $cc, $bcc, $body, $attachments, $headers)
     {
         $cc = array_merge($cc, $to);
 
@@ -418,6 +419,7 @@ class FetchEmails extends Command
         $thread->status = $conversation->status;
         $thread->state = Thread::STATE_PUBLISHED;
         $thread->message_id = $message_id;
+        $thread->headers = $headers;
         $thread->body = $body;
         $thread->setTo($to);
         $thread->setCc($cc);

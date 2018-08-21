@@ -520,17 +520,17 @@ class ConversationsController extends Controller
     public function ajaxHtml(Request $request)
     {
         switch ($request->action) {
-
             case 'send_log':
                 return $this->ajaxHtmlSendLog();
+            case 'show_original':
+                return $this->ajaxHtmlShowOriginal();
         }
 
         abort(404);
     }
 
     /**
-     * Send log
-     * @return [type] [description]
+     * Send log.
      */
     public function ajaxHtmlSendLog()
     {
@@ -568,6 +568,32 @@ class ConversationsController extends Controller
         return view('conversations/ajax_html/send_log', [
             'customers_log' => $customers_log,
             'users_log' => $users_log,
+        ]);
+    }
+
+    /**
+     * Show original message headers.
+     */
+    public function ajaxHtmlShowOriginal()
+    {
+        $thread_id = Input::get('thread_id');
+        if (!$thread_id) {
+            abort(404);
+        }
+
+        $thread = Thread::find($thread_id);
+        if (!$thread) {
+            abort(404);
+        }
+
+        $user = auth()->user();
+
+        if (!$user->can('view', $thread->conversation)) {
+            abort(403);
+        }
+
+        return view('conversations/ajax_html/show_original', [
+            'thread' => $thread,
         ]);
     }
 

@@ -1830,6 +1830,10 @@ table.table-conversations td.conv-attachment {
 .modal-body p.help-block {
     font-size: 11.4px;
 }
+.modal-body.modal-body-fit {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
 
 /**
  * Attachments
@@ -2167,4 +2171,8 @@ a.disabled:focus {
     color: #93a1af;
     text-decoration: none;
     cursor: default;
+}
+.pre-wrap {
+    word-wrap: break-word;
+    white-space: pre-wrap;
 }

@@ -1,0 +1,1 @@
+<pre class="pre-wrap">{{ $thread->headers }}</pre>
