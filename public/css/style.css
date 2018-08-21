@@ -1332,7 +1332,10 @@ table.table-conversations td.conv-attachment {
 }
 .thread-type-lineitem {
     background: #f9fafa;
-    overflow: auto;
+    /*overflow: auto;*/
+}
+.thread-type-lineitem .thread-options {
+    top: 11px;
 }
 .thread-type-lineitem .thread-message {
     padding-top: 12px;

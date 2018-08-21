@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '#'.$conversation->number.' '.$conversation->subject)
+@section('title_full', '#'.$conversation->number.' '.$conversation->subject.' - '.$conversation->customer->getFullName(true))
 @section('body_class', 'body-conv')
 @section('body_attrs')@parent data-conversation_id="{{ $conversation->id }}"@endsection
 
@@ -183,6 +183,15 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="dropdown thread-options">
+                            <span class="dropdown-toggle glyphicon glyphicon-option-vertical" data-toggle="dropdown"></span>
+                            @if (Auth::user()->isAdmin())
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                    <li><a href="{{ route('conversations.ajax_html', ['action' => 
+                                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View email sending log") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}">{{ __("View Send Log") }}</a></li>
+                                </ul>
+                            @endif
+                        </div>
                     </div>
                 @else
                     <div class="thread thread-type-{{ $thread->getTypeName() }}">
@@ -288,7 +297,7 @@
                                         'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message headers") }}" data-trigger="modal" data-modal-title="{{ __("Original Message Headers") }}" data-modal-fit="true">{{ __("Show Original") }}</a></li>
                                 @if (Auth::user()->isAdmin())
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
-                                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View email sending log") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails Log") }}">{{ __("View Send Log") }}</a></li>
+                                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View email sending log") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}">{{ __("View Send Log") }}</a></li>
                                 @endif
                             </ul>
                         </div>

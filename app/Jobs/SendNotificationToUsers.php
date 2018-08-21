@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\UserNotification;
 use App\SendLog;
+use App\Thread;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -63,8 +64,21 @@ class SendNotificationToUsers implements ShouldQueue
             $message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION.'-'.$last_thread->id.'-'.$user->id.'-'.time().'@'.$mailbox->getEmailDomain();
             $headers['Message-ID'] = $message_id;
 
+            // If this is notification on message from customer set customer as sender name
+            $from_name = '';
+            if ($last_thread->type == Thread::TYPE_CUSTOMER) {
+                $from_name = $last_thread->customer->getFullName().' '.__('via').' '.\Config::get('app.name');
+                if ($from_name) {
+                    $from_name = $from_name.' '.__('via').' '.\Config::get('app.name');
+                }
+            }
+            if (!$from_name) {
+                $from_name = \Config::get('app.name');
+            }
+            $from = ['address' => $mailbox->email, 'name' => $from_name];
+
             Mail::to([['name' => $user->getFullName(), 'email' => $user->email]])
-                ->send(new UserNotification($user, $this->conversation, $this->threads, $headers));
+                ->send(new UserNotification($user, $this->conversation, $this->threads, $headers, $from));
 
             $failures = Mail::failures();
 
@@ -90,16 +104,16 @@ class SendNotificationToUsers implements ShouldQueue
      *
      * @return void
      */
-    public function failed(\Exception $exception)
+    public function failed(\Exception $e)
     {
         // Write to activity log
         activity()
            //->causedBy($this->customer)
            ->withProperties([
-                'error'    => $exception->getMessage(),
+                'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
                 //'to'       => $this->customer->getMainEmail(),
             ])
            ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
-           ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR);
+           ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_USER);
     }
 }

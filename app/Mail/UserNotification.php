@@ -39,16 +39,24 @@ class UserNotification extends Mailable
     public $headers = [];
 
     /**
+     * From
+     *
+     * @var array
+     */
+    public $from = [];
+
+    /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($user, $conversation, $threads, $headers)
+    public function __construct($user, $conversation, $threads, $headers, $from)
     {
         $this->user = $user;
         $this->conversation = $conversation;
         $this->threads = $threads;
         $this->headers = $headers;
+        $this->from = $from;
     }
 
     /**
@@ -84,7 +92,8 @@ class UserNotification extends Mailable
         $thread = $this->threads->first();
 
         return $this->subject($subject)
-                    ->view('emails/user/notification', ['customer' => $customer, 'thread' => $thread])
-                    ->text('emails/user/notification_text', ['customer' => $customer, 'thread' => $thread]);
+            ->from($this->from['address'], $this->from['name'])
+            ->view('emails/user/notification', ['customer' => $customer, 'thread' => $thread])
+            ->text('emails/user/notification_text', ['customer' => $customer, 'thread' => $thread]);
     }
 }

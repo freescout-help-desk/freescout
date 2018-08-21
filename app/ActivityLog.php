@@ -16,7 +16,8 @@ class ActivityLog extends Activity
     const DESCRIPTION_USER_LOCKED = 'locked';
     const DESCRIPTION_USER_LOGIN_FAILED = 'login_failed';
     const DESCRIPTION_USER_PASSWORD_RESET = 'password_reset';
-    const DESCRIPTION_EMAILS_SENDING_ERROR = 'error_sending_email';
+    const DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER = 'error_sending_email_to_customer';
+    const DESCRIPTION_EMAILS_SENDING_ERROR_TO_USER = 'error_sending_email_to_user';
     const DESCRIPTION_EMAILS_FETCHING_ERROR = 'error_fetching_email';
 
     public function getEventDescription()
@@ -34,8 +35,10 @@ class ActivityLog extends Activity
                 return __('Failed login');
             case self::DESCRIPTION_USER_PASSWORD_RESET:
                 return __('Reset password');
-            case self::DESCRIPTION_EMAILS_SENDING_ERROR:
-                return __('Error sending email');
+            case self::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER:
+                return __('Error sending email to customer');
+            case self::DESCRIPTION_EMAILS_SENDING_ERROR_TO_USER:
+                return __('Error sending email to user');
             case self::DESCRIPTION_EMAILS_FETCHING_ERROR:
                 return __('Error fetching email');
             default:

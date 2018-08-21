@@ -79,6 +79,7 @@ class ReplyToCustomer extends Mailable
         }
 
         // from($this->from) Sets only email, name stays empty.
+        // So we set from in Mail::setMailDriver
         $message = $this->subject($subject)
                     ->view('emails/customer/reply_fancy')
                     ->text('emails/customer/reply_fancy_text');

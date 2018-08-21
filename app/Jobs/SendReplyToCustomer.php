@@ -26,6 +26,7 @@ class SendReplyToCustomer implements ShouldQueue
     private $recipients = [];
     private $last_thread = null;
     private $message_id = '';
+    private $customer_email = '';
 
     /**
      * Create a new job instance.
@@ -81,13 +82,13 @@ class SendReplyToCustomer implements ShouldQueue
         $this->message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER.'-'.$this->last_thread->id.'-'.md5($this->last_thread->id).'@'.$mailbox->getEmailDomain();
         $headers['Message-ID'] = $this->message_id;
 
-        $customer_email = $this->customer->getMainEmail();
+        $this->customer_email = $this->customer->getMainEmail();
         $cc_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getCcArray());
         $bcc_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getBccArray());
-        $this->recipients = array_merge([$customer_email], $cc_array, $bcc_array);
+        $this->recipients = array_merge([$this->customer_email], $cc_array, $bcc_array);
 
         try {
-            Mail::to([['name' => $this->customer->getFullName(), 'email' => $customer_email]])
+            Mail::to([['name' => $this->customer->getFullName(), 'email' => $this->customer_email]])
                 ->cc($cc_array)
                 ->bcc($bcc_array)
                 ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers));
@@ -95,10 +96,10 @@ class SendReplyToCustomer implements ShouldQueue
             activity()
                //->causedBy()
                ->withProperties([
-                    'error'    => $e->getMessage(),
+                    'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
                 ])
                ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
-               ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR);
+               ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
 
             // Failures will be save to send log when retry attempts will finish
             $this->failures = $this->recipients;
@@ -130,16 +131,16 @@ class SendReplyToCustomer implements ShouldQueue
      *
      * @return void
      */
-    public function failed(\Exception $exception)
+    public function failed(\Exception $e)
     {
         activity()
            ->causedBy($this->customer)
            ->withProperties([
-                'error'    => $exception->getMessage(),
+                'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
                 'to'       => $this->customer->getMainEmail(),
             ])
            ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
-           ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR);
+           ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
 
         $this->saveToSendLog();
     }
@@ -155,7 +156,7 @@ class SendReplyToCustomer implements ShouldQueue
             } else {
                 $status = SendLog::STATUS_ACCEPTED;
             }
-            if ($customer_email == $recipient) {
+            if ($this->customer_email == $recipient) {
                 $customer_id = $this->customer->id;
             } else {
                 $customer_id = null;
