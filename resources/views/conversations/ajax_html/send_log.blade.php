@@ -1,5 +1,5 @@
 @if (!$customers_log && !$users_log)
-    <div class="alert alert-warning">{{ __("Log is empty") }}</div>
+    <div class="alert alert-warning">{{ __("There were no send attempts yet") }}</div>
 @else
     @if (!empty($customers_log))
     	<h5>{{ __("Emails to customers") }}</h5>
@@ -16,7 +16,7 @@
 		    			@if ($loop->index == 0)
 		    				<td rowspan="{{ count($logs) }}">{{ $email }}</td>
 		    			@endif
-		    			<td class="small">{{ App\User::dateFormat($log->created_at) }}</td>
+		    			<td>{{ App\User::dateFormat($log->created_at, 'M j, Y H:i:s') }}</td>
 		    			<td>
 		    				<span class="@if ($log->isErrorStatus())text-danger @elseif ($log->isSuccessStatus()) text-success @endif">{{ $log->getStatusName() }}</span>
 		    				@if ($log->status_message)
@@ -44,7 +44,7 @@
 		    			@if ($loop->index == 0)
 		    				<td rowspan="{{ count($logs) }}">{{ $email }}</td>
 		    			@endif
-		    			<td class="small">{{ App\User::dateFormat($log->created_at) }}</td>
+		    			<td>{{ App\User::dateFormat($log->created_at) }}</td>
 		    			<td>
 		    				<span class="@if ($log->isErrorStatus())text-danger @elseif ($log->isSuccessStatus()) text-success @endif">{{ $log->getStatusName() }}</span>
 		    				@if ($log->status_message)

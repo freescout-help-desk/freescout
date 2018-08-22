@@ -27,7 +27,7 @@ class SendNotificationToUsers
         // Detect event type by event class
         switch (get_class($event)) {
             case 'App\Events\UserReplied':
-                $caused_by_user_id = $event->conversation->created_by_user_id;
+                $caused_by_user_id = $event->thread->created_by_user_id;
                 $event_type = Subscription::EVENT_TYPE_USER_REPLIED;
                 break;
             case 'App\Events\UserCreatedConversation':

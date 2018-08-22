@@ -281,6 +281,7 @@ class Subscription extends Model
             if (!$users_to_notify) {
                 continue;
             }
+
             foreach ($users_to_notify as $medium => $medium_users_to_notify) {
 
                 // Remove current user from recipients if action caused by current user
@@ -291,17 +292,6 @@ class Subscription extends Model
                 }
 
                 if (count($medium_users_to_notify)) {
-                    
-                    // Remove duplicate users
-                    // $user_ids = [];
-                    // foreach ($users as $i => $user) {
-                    //     if (in_array($user->id, $user_ids)) {
-                    //         unset($users[$i]);
-                    //     } else {
-                    //         $user_ids[] = $user->id;
-                    //     }
-                    // }
-
                     $notify[$medium][$event['conversation']->id] = [
                         // Users subarray contains all users who need to receive notification for all events
                         'users'            => array_unique(array_merge($users, $medium_users_to_notify)),

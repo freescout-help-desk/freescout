@@ -93,16 +93,20 @@ class SendReplyToCustomer implements ShouldQueue
                 ->bcc($bcc_array)
                 ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers));
         } catch (\Exception $e) {
+            // We come here in case SMTP server unavailable for example
             activity()
-               //->causedBy()
-               ->withProperties([
+                ->causedBy($this->customer)
+                ->withProperties([
                     'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
-                ])
-               ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
-               ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
+                 ])
+                ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
+                ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
 
-            // Failures will be save to send log when retry attempts will finish
+            // Failures will be saved to send log when retry attempts will finish
             $this->failures = $this->recipients;
+
+            // Save to send log
+            $this->saveToSendLog($e->getMessage());
 
             throw $e;
         }
@@ -117,51 +121,50 @@ class SendReplyToCustomer implements ShouldQueue
 
         // Save to send log
         $this->saveToSendLog();
-
-        if (!empty($failures)) {
-            throw new \Exception('Could not send email to: '.implode(', ', $failures));
-        }
     }
 
     /**
      * The job failed to process.
-     * This method is called after number of attempts had finished.
+     * This method is called after attempts had finished.
+     * At this stage method has access only to variables passed in constructor.
      *
      * @param Exception $exception
      *
      * @return void
      */
-    public function failed(\Exception $e)
-    {
-        activity()
-           ->causedBy($this->customer)
-           ->withProperties([
-                'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
-                'to'       => $this->customer->getMainEmail(),
-            ])
-           ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
-           ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
+    // public function failed(\Exception $e)
+    // {
+    //     activity()
+    //        ->causedBy($this->customer)
+    //        ->withProperties([
+    //             'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
+    //             'to'       => $this->customer->getMainEmail(),
+    //         ])
+    //        ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
+    //        ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
 
-        $this->saveToSendLog();
-    }
+    //     $this->saveToSendLog();
+    // }
 
     /**
-     * Save failed email to send log.
+     * Save emails to send log.
      */
-    public function saveToSendLog()
+    public function saveToSendLog($error_message = '')
     {
         foreach ($this->recipients as $recipient) {
             if (in_array($recipient, $this->failures)) {
                 $status = SendLog::STATUS_SEND_ERROR;
+                $status_message = $error_message;
             } else {
                 $status = SendLog::STATUS_ACCEPTED;
+                $status_message = '';
             }
             if ($this->customer_email == $recipient) {
                 $customer_id = $this->customer->id;
             } else {
                 $customer_id = null;
             }
-            SendLog::log($this->last_thread->id, $this->message_id, $recipient, $status, $customer_id);
+            SendLog::log($this->last_thread->id, $this->message_id, $recipient, $status, $customer_id, null, $status_message);
         }
     }
 }

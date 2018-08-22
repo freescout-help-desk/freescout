@@ -732,7 +732,12 @@ function showModal(a, onshow)
     var modal_class = a.attr('data-modal-class');
     // Fit modal body into the screen
     var fit = a.attr('data-modal-fit');
+    var size = a.attr('data-modal-size'); // lg or sm
     var modal;
+
+    if (size) {
+    	modal_class += ' modal-'+size;
+    }
 
     var html = [
     '<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="jsmodal-label" aria-hidden="true">',

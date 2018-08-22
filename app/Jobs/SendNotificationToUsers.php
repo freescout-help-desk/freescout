@@ -59,7 +59,9 @@ class SendNotificationToUsers implements ShouldQueue
         $headers['In-Reply-To'] = '<'.$prev_message_id.'>';
         $headers['References'] = '<'.$prev_message_id.'>';
 
-        $all_failures = [];
+        // We throw an exception if any of the send attempts throws an exception (connection error, etc)
+        $global_exception = null;
+
         foreach ($this->users as $user) {
             $message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION.'-'.$last_thread->id.'-'.$user->id.'-'.time().'@'.$mailbox->getEmailDomain();
             $headers['Message-ID'] = $message_id;
@@ -77,43 +79,66 @@ class SendNotificationToUsers implements ShouldQueue
             }
             $from = ['address' => $mailbox->email, 'name' => $from_name];
 
-            Mail::to([['name' => $user->getFullName(), 'email' => $user->email]])
-                ->send(new UserNotification($user, $this->conversation, $this->threads, $headers, $from));
+            $exception = null;
 
-            $failures = Mail::failures();
+            try {
+                Mail::to([['name' => $user->getFullName(), 'email' => $user->email]])
+                    ->send(new UserNotification($user, $this->conversation, $this->threads, $headers, $from));
+            } catch (\Exception $e) {
+                // We come here in case SMTP server unavailable for example
+                activity()
+                    ->causedBy($user)
+                    ->withProperties([
+                        'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
+                     ])
+                    ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
+                    ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_USER);
 
-            // Save to send log
-            if (!empty($failures) && in_array($user->email, $failures)) {
-                $status = SendLog::STATUS_SEND_ERROR;
-            } else {
-                $status = SendLog::STATUS_ACCEPTED;
+                $exception = $e;
+                $global_exception = $e;
             }
-            SendLog::log($last_thread->id, $message_id, $user->email, $status, null, $user->id);
 
-            $all_failures = array_merge($all_failures, $failures);
+            if ($exception) {
+                $status = SendLog::STATUS_SEND_ERROR;
+                $status_message = $exception->getMessage();
+            } else {
+                $failures = Mail::failures();
+
+                // Save to send log
+                if (!empty($failures) && in_array($user->email, $failures)) {
+                    $status = SendLog::STATUS_SEND_ERROR;
+                } else {
+                    $status = SendLog::STATUS_ACCEPTED;
+                }
+            }
+
+            SendLog::log($last_thread->id, $message_id, $user->email, $status, null, $user->id, $status_message);
         }
-        if (!empty($all_failures)) {
-            throw new \Exception('Could not send email to: '.implode(', ', $all_failures));
+
+        if ($global_exception) {
+            throw $global_exception;
         }
     }
 
     /**
      * The job failed to process.
+     * This method is called after attempts had finished.
+     * At this stage method has access only to variables passed in constructor.
      *
      * @param Exception $exception
      *
      * @return void
      */
-    public function failed(\Exception $e)
-    {
-        // Write to activity log
-        activity()
-           //->causedBy($this->customer)
-           ->withProperties([
-                'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
-                //'to'       => $this->customer->getMainEmail(),
-            ])
-           ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
-           ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_USER);
-    }
+    // public function failed(\Exception $e)
+    // {
+    //     // Write to activity log
+    //     activity()
+    //        //->causedBy($this->customer)
+    //        ->withProperties([
+    //             'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
+    //             //'to'       => $this->customer->getMainEmail(),
+    //         ])
+    //        ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
+    //        ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_USER);
+    // }
 }

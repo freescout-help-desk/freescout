@@ -34,10 +34,12 @@
                 @foreach ($logs as $row)
                     <tr>
                         @foreach ($cols as $col)
-                            <td>
+                            <td class="break-words">
                                 @if (isset($row[$col]))
                                     @if ($col == 'user' || $col == 'customer')
                                         <a href="{{ $row[$col]->url() }}">{{ $row[$col]->getFullName(true) }}</a>
+                                    @elseif ($col == 'date')
+                                        {{  App\User::dateFormat(new Illuminate\Support\Carbon($row[$col]), 'M j, H:i:s') }}
                                     @else
                                         {{ $row[$col] }}
                                     @endif
