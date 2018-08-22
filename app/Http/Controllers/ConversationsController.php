@@ -153,7 +153,12 @@ class ConversationsController extends Controller
                 if (!$response['msg']) {
                     // Determine redirect
                     // Must be done before updating current conversation's status or assignee.
-                    $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+                    if ($new_user_id == $user->id) {
+                        // If user assigned conversation to himself, stay on the current page
+                        $response['redirect_url'] = $conversation->url();
+                    } else {
+                        $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+                    }
 
                     $conversation->setUser($new_user_id);
                     $conversation->save();
