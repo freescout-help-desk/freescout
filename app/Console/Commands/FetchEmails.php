@@ -191,7 +191,9 @@ class FetchEmails extends Command
 
                     // Is it a bounce message
                     $is_bounce = false;
-                    $bounce_message = null;
+                    $bounce_attachment = null;
+
+                    // Determine bounce by attachment
                     if ($message->hasAttachments()) {
                         foreach ($attachments as $attachment) {
                             if (!empty(Attachment::$types[$attachment->getType()]) && Attachment::$types[$attachment->getType()] == Attachment::TYPE_MESSAGE) {
@@ -220,7 +222,7 @@ class FetchEmails extends Command
                             continue;
                         }
                         $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
-                    } elseif (($user = User::where('email', $from)->first()) && $in_reply_to && ($prev_thread = Thread::where('message_id', $in_reply_to)->first()) && $prev_thread->created_by_user_id == $user->id) {
+                    } elseif (!$is_bounce && ($user = User::where('email', $from)->first()) && $in_reply_to && ($prev_thread = Thread::where('message_id', $in_reply_to)->first()) && $prev_thread->created_by_user_id == $user->id) {
                         // Reply from customer to his reply to the notification
                         $user_id = $user->id;
                         $message_from_customer = false;
@@ -230,23 +232,25 @@ class FetchEmails extends Command
                         $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
 
                         $prev_message_id = '';
-                        if ($in_reply_to) {
-                            $prev_message_id = $in_reply_to;
-                        } elseif ($references) {
-                            if (!is_array($references)) {
-                                $references = array_filter(preg_split('/[, <>]/', $references));
+                        if (!$is_bounce) {
+                            if ($in_reply_to) {
+                                $prev_message_id = $in_reply_to;
+                            } elseif ($references) {
+                                if (!is_array($references)) {
+                                    $references = array_filter(preg_split('/[, <>]/', $references));
+                                }
+                                // Maybe we need to check all references
+                                $prev_message_id = $references[0];
                             }
-                            // Maybe we need to check all references
-                            $prev_message_id = $references[0];
-                        }
-                        if ($prev_message_id) {
-                            preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
-                            if (!empty($m[1])) {
-                                $prev_thread = Thread::find($m[1]);
+                            if ($prev_message_id) {
+                                preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
+                                if (!empty($m[1])) {
+                                    $prev_thread = Thread::find($m[1]);
+                                }
                             }
-                        }
-                        if (!empty($prev_thread)) {
-                            $is_reply = true;
+                            if (!empty($prev_thread)) {
+                                $is_reply = true;
+                            }
                         }
                     }
                     if ($message->hasHTMLBody()) {
