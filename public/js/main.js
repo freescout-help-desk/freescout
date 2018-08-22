@@ -341,7 +341,7 @@ function conversationInit()
 				fsAjax({
 					action: 'conversation_change_user',
 					user_id: $(this).attr('data-user_id'),
-					conversation_id: fsGetGlobalAttr('conversation_id')
+					conversation_id: getGlobalAttr('conversation_id')
 				}, 
 				laroute.route('conversations.ajax'),
 				function(response) {
@@ -368,7 +368,7 @@ function conversationInit()
 				fsAjax({
 					action: 'conversation_change_status',
 					status: $(this).attr('data-status'),
-					conversation_id: fsGetGlobalAttr('conversation_id')
+					conversation_id: getGlobalAttr('conversation_id')
 				}, 
 				laroute.route('conversations.ajax'),
 				function(response) {
@@ -440,7 +440,7 @@ function conversationInit()
 	});
 }
 
-function fsGetGlobalAttr(attr)
+function getGlobalAttr(attr)
 {
 	return $("body:first").attr('data-'+attr);
 }
@@ -799,7 +799,7 @@ function saveAfterSend(el)
 	var value = $(el).parents('.modal-body:first').children().find('[name="after_send_default"]:first').val();
 	data = {
 		value: value,
-		mailbox_id: fsGetGlobalAttr('mailbox_id'),
+		mailbox_id: getGlobalAttr('mailbox_id'),
 		action: 'save_after_send'
 	};
 
@@ -816,4 +816,37 @@ function saveAfterSend(el)
 		}
 		button.button('reset');
 	}, true);
+}
+
+function viewMailboxInit()
+{
+	conversationPagination();
+}
+
+function conversationPagination()
+{
+	$(".table-conversations .pager-nav").click(function(e){
+		fsAjax(
+			{
+				action: 'conversations_pagination',
+				mailbox_id: getGlobalAttr('mailbox_id'),
+				folder_id: getGlobalAttr('folder_id'),
+				page: $(this).attr('data-page')
+			}, 
+			laroute.route('conversations.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == 'success') {
+					if (typeof(response.html) != "undefined") {
+						$(".table-conversations:first").html(response.html);
+						conversationPagination();
+					}
+				} else {
+					showAjaxError(response);
+				}
+				loaderHide();
+			}
+		);
+	
+		e.preventDefault();
+	});	
 }

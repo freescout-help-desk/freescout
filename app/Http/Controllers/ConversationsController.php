@@ -507,6 +507,12 @@ class ConversationsController extends Controller
                     $response['status'] = 'success';
                 }
                 break;
+
+            // Save default redirect
+            case 'conversations_pagination':
+                $response = $this->ajaxConversationsPagination($request, $response, $user);
+                break;
+
             default:
                 $response['msg'] = 'Unknown action';
                 break;
@@ -686,5 +692,42 @@ class ConversationsController extends Controller
             }
         }
         return \Response::json($response);
+    }
+
+    /**
+     * Ajax conversation navigation.
+     */
+    public function ajaxConversationsPagination(Request $request, $response, $user)
+    {
+        $mailbox = Mailbox::find($request->mailbox_id);
+        if (!$mailbox) {
+            $response['msg'] = __('Mailbox not found');
+        }
+
+        if (!$response['msg'] && !$user->can('view', $mailbox)) {
+            $response['msg'] = __('Not enough permissions');
+        }
+
+        if (!$response['msg']) {
+            $folder = Folder::find($request->folder_id);
+            if (!$folder) {
+                $response['msg'] = __('Folder not found');
+            }
+        }
+        if (!$response['msg'] && !$user->can('view', $folder)) {
+            $response['msg'] = __('Not enough permissions');
+        }
+
+        $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
+        $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(50, ['*'], 'page', $request->page);
+        
+        $response['status'] = 'success';
+
+        $response['html'] = view('mailboxes/conversations_table', [
+            'folder'        => $folder,
+            'conversations' => $conversations,
+        ])->render();
+
+        return $response;
     }
 }

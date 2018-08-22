@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Folder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
 
@@ -643,5 +644,24 @@ class Conversation extends Model
         } else {
             return $this->user->getFullName();
         }
+    }
+
+    /**
+     * Get query to fetch conversations by folder.
+     */
+    public static function getQueryByFolder($folder, $user_id)
+    {
+        if ($folder->type == Folder::TYPE_MINE) {
+            // Get conversations from personal folder
+            $query_conversations = Conversation::where('user_id', $user_id)
+                ->whereIn('status', [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING]);
+        } elseif ($folder->type == Folder::TYPE_ASSIGNED) {
+            // Assigned - do not show my conversations
+            $query_conversations = $folder->conversations()->where('user_id', '<>', $user_id);
+        } else {
+            $query_conversations = $folder->conversations();
+        }
+
+        return $query_conversations;
     }
 }

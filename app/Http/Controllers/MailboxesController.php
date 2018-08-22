@@ -275,17 +275,8 @@ class MailboxesController extends Controller
 
         $user = auth()->user();
 
-        if ($folder->type == Folder::TYPE_MINE) {
-            // Get conversations from personal folder
-            $query_conversations = Conversation::where('user_id', $user->id)
-                ->whereIn('status', [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING]);
-        } elseif ($folder->type == Folder::TYPE_ASSIGNED) {
-            // Assigned - do not show my conversations
-            $query_conversations = $folder->conversations()->where('user_id', '<>', $user->id);
-        } else {
-            $query_conversations = $folder->conversations();
-        }
-        $conversations = $folder->queryAddOrderBy($query_conversations)->get();
+        $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
+        $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(50);
 
         return view('mailboxes/view', [
             'mailbox'       => $mailbox,
