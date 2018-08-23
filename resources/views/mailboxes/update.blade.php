@@ -46,7 +46,7 @@
                             <div class="flexy">
                                 <input id="aliases" type="text" class="form-control input-sized" name="aliases" value="{{ old('aliases', $mailbox->aliases) }}" maxlength="255" required autofocus>
 
-                                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="ture" data-placement="left"  data-content="{{ __('Aliases are other email addresses that also forward to your mailbox address. Separate each email with a comma.') }}"></i>
+                                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left"  data-content="{{ __('Aliases are other email addresses that also forward to your mailbox address. Separate each email with a comma.') }}"></i>
                             </div>
                             
                             @include('partials/field_error', ['field'=>'aliases'])
@@ -64,7 +64,7 @@
                                     <option value="{{ App\Mailbox::FROM_NAME_CUSTOM }}" @if (old('from_name', $mailbox->from_name) == App\Mailbox::FROM_NAME_CUSTOM)selected="selected"@endif>{{ __('Custom Name') }}</option>
                                 </select>
 
-                                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="ture" data-placement="left"  data-content="{{ __('Name that will appear in the <strong>From</strong> field when a customer views your email.') }}"></i>
+                                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left"  data-content="{{ __('Name that will appear in the <strong>From</strong> field when a customer views your email.') }}"></i>
                             </div>
 
                             @include('partials/field_error', ['field'=>'from_name'])

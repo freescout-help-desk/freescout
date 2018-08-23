@@ -26,13 +26,13 @@
 
                         <div class="col-md-6">
                             <div class="controls">
-                                <div for="auto_reply_enabled" class="control-label">
+                                <div class="onoffswitch-wrap">
                                     <div class="onoffswitch">
                                         <input type="checkbox" name="auto_reply_enabled" value="{{ App\Mailbox::TEMPLATE_FANCY }}" id="auto_reply_enabled" class="onoffswitch-checkbox" @if (old('auto_reply_enabled', $mailbox->auto_reply_enabled))checked="checked"@endif >
                                         <label class="onoffswitch-label" for="auto_reply_enabled"></label>
                                     </div>
 
-                                    <i class="glyphicon glyphicon-info-sign icon-info icon-info-inline" data-toggle="popover" data-trigger="hover" data-html="ture" data-placement="left"  data-content="{{ __('Aliases are other email addresses that also forward to your mailbox address. Separate each email with a comma.') }}"></i>
+                                    <i class="glyphicon glyphicon-info-sign icon-info icon-info-inline" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left" data-title="{{ __('Auto Reply') }}" data-content="{{ __('When a customer emails this mailbox, application can send an auto reply to the customer immediately.<br/><br/>One auto-reply is sent per conversation and a customer won\'t receive more than one in a 24-hour period.') }}"></i>
                                 </div>
                             </div>
                             @include('partials/field_error', ['field'=>'auto_reply_enabled'])
@@ -67,6 +67,9 @@
 
                         <div class="col-md-9 auto_reply_message-editor">
                             <textarea id="auto_reply_message" class="form-control" name="auto_reply_message" rows="8">{{ old('auto_reply_message', $mailbox->auto_reply_message) }}</textarea>
+                            <p class="help-block">
+                                {{ __("Auto replies don't include your mailbox signature, so be sure to add your contact information if necessary.") }}
+                            </p>
                             @include('partials/field_error', ['field'=>'auto_reply_message'])
                         </div>
                     </div>
