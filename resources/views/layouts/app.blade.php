@@ -134,6 +134,25 @@
                                         </li>
                                     </ul>
                                 </li>
+
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle dropdown-toggle-icon" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre title="{{ __('Search') }}">
+                                        <i class="glyphicon glyphicon-search"></i>
+                                    </a>
+
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <form class="form-inline form-nav-search" role="form" action="{{ route('conversations.search') }}" target="_blank">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" name="q">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" type="submit">{{ __('Search') }}</button>
+                                                    </span>
+                                                </div>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </li>
                             @endguest
                         </ul>
                     </div>

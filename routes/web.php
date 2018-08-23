@@ -44,6 +44,7 @@ Route::post('/conversation/upload', ['uses' => 'ConversationsController@upload',
 Route::get('/mailbox/{mailbox_id}/new-ticket', 'ConversationsController@create')->name('conversations.create');
 Route::get('/conversation/draft/{id}', 'ConversationsController@draft')->name('conversations.draft');
 Route::get('/conversation/ajax_html/{action}', ['uses' => 'ConversationsController@ajaxHtml', 'laroute' => true])->name('conversations.ajax_html');
+Route::get('/search', 'ConversationsController@search')->name('conversations.search');
 
 // Mailboxes
 Route::get('/settings/mailboxes', 'MailboxesController@mailboxes')->name('mailboxes');

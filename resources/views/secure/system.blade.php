@@ -4,10 +4,8 @@
 
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
-    <div class="dropdown sidebar-title">
-        <span class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
-            {{ __('System') }}
-        </span>
+    <div class="sidebar-title">
+        {{ __('System') }}
     </div>
     <ul class="sidebar-menu">
         <li><a href="#server"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Web Server') }}</a></li>

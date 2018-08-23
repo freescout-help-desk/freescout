@@ -508,9 +508,13 @@ class ConversationsController extends Controller
                 }
                 break;
 
-            // Save default redirect
+            // Conversations navigation
             case 'conversations_pagination':
-                $response = $this->ajaxConversationsPagination($request, $response, $user);
+                if (!empty($request->q)) {
+                    $response = $this->ajaxSearch($request, $response, $user);
+                } else {
+                    $response = $this->ajaxConversationsPagination($request, $response, $user);
+                }                
                 break;
 
             default:
@@ -700,6 +704,9 @@ class ConversationsController extends Controller
     public function ajaxConversationsPagination(Request $request, $response, $user)
     {
         $mailbox = Mailbox::find($request->mailbox_id);
+        $folder = null;
+        $conversations = [];
+
         if (!$mailbox) {
             $response['msg'] = __('Mailbox not found');
         }
@@ -718,12 +725,88 @@ class ConversationsController extends Controller
             $response['msg'] = __('Not enough permissions');
         }
 
-        $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
-        $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(50, ['*'], 'page', $request->page);
+        if (!$response['msg']) {
+            $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
+            $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(50, ['*'], 'page', $request->page);
+        }
         
         $response['status'] = 'success';
 
-        $response['html'] = view('mailboxes/conversations_table', [
+        $response['html'] = view('conversations/conversations_table', [
+            'folder'        => $folder,
+            'conversations' => $conversations,
+        ])->render();
+
+        return $response;
+    }
+
+    /**
+     * Search.
+     */
+    public function search(Request $request)
+    {
+        $user = auth()->user();
+
+        $conversations = $this->searchQuery($request, $user);
+
+        // Dummy folder
+        $folder = $this->getSearchFolder($conversations);
+
+        return view('conversations/search', [
+            'folder'        => $folder,
+            'q'             => $request->q,
+            'conversations' => $conversations,
+        ]);
+    }
+
+    public function searchQuery($request, $user)
+    {
+        // Get IDs of mailboxes to which user has access
+        $mailbox_ids = $user->mailboxesIdsCanView();
+
+        $q = $request->q;
+        $like = '%'.mb_strtolower($q).'%';
+
+        $query_conversations = Conversation::whereIn('conversations.mailbox_id', $mailbox_ids)
+            ->join('threads', function ($join) {
+                $join->on('conversations.id', '=', 'threads.id');
+            })
+            ->where('conversations.subject', 'like', $like)
+            ->orWhere('threads.body', 'like', $like)
+            ->orWhere('threads.to', 'like', $like)
+            ->orWhere('threads.cc', 'like', $like)
+            ->orWhere('threads.bcc', 'like', $like)
+            ->orderBy('conversations.last_reply_at');
+
+        return $query_conversations->paginate(50);
+    }
+
+    /**
+     * Get dummy folder for search.
+     */
+    public function getSearchFolder($conversations)
+    {
+        $folder = new Folder();
+        $folder->type = Folder::TYPE_ASSIGNED;
+        // todo: use select([\DB::raw('SQL_CALC_FOUND_ROWS *')]) to count records
+        //$folder->total_count = $conversations->count();
+
+        return $folder;
+    }
+
+    /**
+     * Ajax conversations search.
+     */
+    public function ajaxSearch(Request $request, $response, $user)
+    {
+        $conversations = $this->searchQuery($request, $user);
+
+        // Dummy folder
+        $folder = $this->getSearchFolder($conversations);
+
+        $response['status'] = 'success';
+
+        $response['html'] = view('conversations/conversations_table', [
             'folder'        => $folder,
             'conversations' => $conversations,
         ])->render();

@@ -116,7 +116,12 @@ class FetchEmails extends Command
         $folders = [$folder];
 
         // It would be good to be able to fetch emails from Spam folder into Spam folder of the mailbox
-        // But it is difficult to determine Spam folder for different mail servers.
+        // But not all mail servers provide access to it.
+        // For example DreamHost does have a Spam folder but allows IMAP access to the following folders only:
+        //      ./cur
+        //      ./new
+        //      ./tmp
+        
         // $folders = [];
 
         // if ($mailbox->in_protocol == Mailbox::IN_PROTOCOL_IMAP) {

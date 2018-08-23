@@ -72,6 +72,9 @@
     list-style: none;
     padding: 0;
 }
+.sidebar-menu h3 {
+    margin: 0;
+}
 .sidebar-menu > li {
     margin: 0 0 2px 0;
     position: relative;
@@ -79,8 +82,14 @@
     display: list-item;
     text-align: -webkit-match-parent;
 }
+.sidebar-menu > li.no-link {
+    padding: 9px 20px 9px 20px;
+}
 .sidebar-menu > li:hover {
     background-color: #e3e8eb;
+}
+.sidebar-menu > li.no-link:hover {
+    background-color: transparent;
 }
 .sidebar-menu > li > a {
     color: #4f5d6b;
@@ -91,10 +100,23 @@
     position: relative;
     word-wrap: break-word;
 }
+.sidebar-menu > li.menu-link > a {
+    color: #337ab7;
+}
+.sidebar-menu-noicons > li > a {
+    padding: 9px 20px 9px 20px;
+}
+.sidebar-menu > li.menu-padded > a {
+    padding-left: 30px;
+}
 .sidebar-menu > li > a:hover,
 .sidebar-menu > li > a:focus {
     text-decoration: none;
     color: #394956;
+}
+.sidebar-menu > li.menu-link > a:hover,
+.sidebar-menu > li.menu-link > a:focus {
+    color: #23527c;
 }
 .sidebar-menu > li > a:hover .glyphicon {
     text-decoration: none;
@@ -306,6 +328,10 @@ a.navbar-brand:hover img {
 }
 .nav-user {
 	font-size: 14px;
+}
+.form-nav-search {
+    padding: 1px 11px 4px;
+    width: 250px;
 }
 @media (max-width:767px) {
 	.navbar-collapse {
@@ -1928,6 +1954,12 @@ table.table-conversations td.conv-attachment {
     font-size: 16px;
     font-weight: 400;
     line-height: 30px;
+}
+.section-search {
+    line-height: inherit;
+}
+.section-search .input-group {
+    padding-top: 0;
 }
 .flexy {
     display: flex;

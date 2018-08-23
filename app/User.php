@@ -171,6 +171,18 @@ class User extends Authenticatable
     }
 
     /**
+     * Get IDs of mailboxes to which user has access.
+     */
+    public function mailboxesIdsCanView()
+    {
+        if ($this->isAdmin()) {
+            return Mailbox::pluck('id')->toArray();
+        } else {
+            return $this->mailboxes()->pluck('id')->toArray();
+        }
+    }
+
+    /**
      * Generate random password for the user.
      *
      * @param int $length

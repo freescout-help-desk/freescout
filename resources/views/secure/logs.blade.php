@@ -4,10 +4,8 @@
 
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
-    <div class="dropdown sidebar-title">
-        <span class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
-            {{ __('Logs') }}
-        </span>
+    <div class="sidebar-title">
+        {{ __('Logs') }}
     </div>
     <ul class="sidebar-menu">
         @foreach ($names as $name)

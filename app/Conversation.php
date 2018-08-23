@@ -108,6 +108,26 @@ class Conversation extends Model
     ];
 
     /**
+     * todo: Search filters.
+     */
+    public static $filters = [
+        'assigned',
+        'customer',
+        'mailbox',
+        'status',
+        'subject',
+        'tag',
+        'type',
+        'body',
+        'number',
+        'id',
+        'after',
+        'before',
+        'between',
+        'on',
+    ];
+
+    /**
      * Automatically converted into Carbon dates.
      */
     protected $dates = ['created_at', 'updated_at', 'last_reply_at', 'closed_at'];

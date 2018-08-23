@@ -52,7 +52,7 @@
     </thead>
     <tbody>
         @foreach ($conversations as $conversation)
-            <tr class="@if ($conversation->isActive()) conv-active @endif">
+            <tr class="conv-row @if ($conversation->isActive()) conv-active @endif">
                 <td class="conv-current"></td>
                 <td class="conv-cb">
                     <input type="checkbox" id="cb-{{ $conversation->id }}" name="cb_{{ $conversation->id }}" value="{{ $conversation->id }}">
@@ -110,13 +110,17 @@
             @else
                 <td class="conv-totals" colspan="5">
             @endif
-                <strong>{{ $folder->total_count }}</strong> {{ __('total conversations') }}&nbsp;|&nbsp; 
-                <strong>{{ $folder->active_count }}</strong> {{ __('active') }}&nbsp;|&nbsp; 
+                @if (isset($folder->total_count))
+                    <strong>{{ $folder->total_count }}</strong> {{ __('total conversations') }}&nbsp;|&nbsp; 
+                @endif
+                @if (isset($folder->active_count))
+                    <strong>{{ $folder->active_count }}</strong> {{ __('active') }}&nbsp;|&nbsp; 
+                @endif
                 {{ __('Viewing') }} <strong>{{ $conversations->firstItem() }}</strong>-<strong>{{ $conversations->lastItem() }}</strong>
             </td>
             <td colspan="3" class="conv-nav">
                 <div class="table-pager">
-                    {{ $conversations->links('mailboxes/conversations_pagination') }}
+                    {{ $conversations->links('conversations/conversations_pagination') }}
                 </div>
             </td>
         </tr>

@@ -16,7 +16,7 @@
 
 @section('content')
     @include('partials/flash_messages')
-    @include('mailboxes/conversations_table')
+    @include('conversations/conversations_table')
 @endsection
 
 @section('javascript')

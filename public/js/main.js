@@ -102,13 +102,7 @@ var EditorDiscardButton = function (context) {
 
 $(document).ready(function(){
 
-	// Tooltips
-    $('[data-toggle="tooltip"]').tooltip({container: 'body'});
-
-    // Popover
-    $('[data-toggle="popover"]').popover({
-	    container: 'body'
-	});
+	triggersInit();
 
     // Submenu
     $('.sidebar-menu-toggle').click(function(event) {
@@ -132,13 +126,24 @@ $(document).ready(function(){
 			$.summernote.lang['en-US'].image.dropImage = Lang.get("messages.drag_image_file");
 		}
 	})(jQuery);
+});
+
+function triggersInit()
+{
+	// Tooltips
+    $('[data-toggle="tooltip"]').tooltip({container: 'body'});
+
+    // Popover
+    $('[data-toggle="popover"]').popover({
+	    container: 'body'
+	});
 
 	// Modal windows
 	$('a[data-trigger="modal"]').click(function(e) {
     	showModal($(this));
     	e.preventDefault();
 	});
-});
+}
 
 function mailboxUpdateInit(from_name_custom)
 {
@@ -823,6 +828,13 @@ function viewMailboxInit()
 	conversationPagination();
 }
 
+function searchInit()
+{
+	// Open all links in new window
+	$(".conv-row a").attr('target', '_blank');
+	conversationPagination();
+}
+
 function conversationPagination()
 {
 	$(".table-conversations .pager-nav").click(function(e){
@@ -831,6 +843,7 @@ function conversationPagination()
 				action: 'conversations_pagination',
 				mailbox_id: getGlobalAttr('mailbox_id'),
 				folder_id: getGlobalAttr('folder_id'),
+				q: getQueryParam('q'), // For search
 				page: $(this).attr('data-page')
 			}, 
 			laroute.route('conversations.ajax'),
@@ -839,6 +852,7 @@ function conversationPagination()
 					if (typeof(response.html) != "undefined") {
 						$(".table-conversations:first").html(response.html);
 						conversationPagination();
+						triggersInit();
 					}
 				} else {
 					showAjaxError(response);
