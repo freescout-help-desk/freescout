@@ -26,8 +26,8 @@ class LogFailedLogin
     public function handle(Failed $event)
     {
         activity()
-           ->causedBy($event->user)
-           ->withProperties(['ip' => app('request')->ip()])
+           //->causedBy($event->user)
+           ->withProperties(['ip' => app('request')->ip(), 'email' => request()->email])
            ->useLog(\App\ActivityLog::NAME_USER)
            ->log(\App\ActivityLog::DESCRIPTION_USER_LOGIN_FAILED);
     }

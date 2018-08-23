@@ -178,7 +178,7 @@ class User extends Authenticatable
         if ($this->isAdmin()) {
             return Mailbox::pluck('id')->toArray();
         } else {
-            return $this->mailboxes()->pluck('id')->toArray();
+            return $this->mailboxes()->pluck('mailboxes.id')->toArray();
         }
     }
 
