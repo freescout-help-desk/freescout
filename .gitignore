@@ -20,3 +20,5 @@ composer.lock
 .DS_Store
 Thumbs.db
 /.htaccess
+public/css/builds/
+public/js/builds/

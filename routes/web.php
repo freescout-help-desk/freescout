@@ -60,6 +60,7 @@ Route::get('/settings/connection-settings/{id}/outgoing', 'MailboxesController@c
 Route::post('/settings/connection-settings/{id}/outgoing', 'MailboxesController@connectionOutgoingSave');
 Route::get('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncoming')->name('mailboxes.connection.incoming');
 Route::post('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncomingSave');
+Route::get('/settings/mailbox/{id}/auto-reply', 'MailboxesController@autoReply')->name('mailboxes.auto_reply');
 
 // Customers
 Route::get('/customer/{id}/edit', 'CustomersController@update')->name('customers.update');

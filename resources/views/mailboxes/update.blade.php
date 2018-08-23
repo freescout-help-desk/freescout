@@ -14,7 +14,7 @@
 
     @include('partials/flash_messages')
 
-    <div class="container">
+    <div class="row-container">
         <div class="row">
             <div class="col-xs-12">
                 <form class="form-horizontal margin-top" method="POST" action="">
@@ -125,7 +125,7 @@
                     <div class="form-group{{ $errors->has('signature') ? ' has-error' : '' }}">
                         <label for="signature" class="col-sm-2 control-label">{{ __('Email Signature') }}</label>
 
-                        <div class="col-md-6 signature-editor">
+                        <div class="col-md-9 signature-editor">
                             <textarea id="signature" class="form-control" name="signature" rows="8">{{ old('signature', $mailbox->signature) }}</textarea>
                             @include('partials/field_error', ['field'=>'signature'])
                         </div>

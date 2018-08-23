@@ -309,4 +309,17 @@ class MailboxesController extends Controller
 
         return $flashes;
     }
+
+    /**
+     * Auto reply settings.
+     */
+    public function autoReply($id)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+        $this->authorize('update', $mailbox);
+
+        return view('mailboxes/auto_reply', [
+            'mailbox' => $mailbox
+        ]);
+    }
 }

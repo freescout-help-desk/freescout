@@ -1901,6 +1901,45 @@ table.table-conversations td.conv-attachment {
 }
 
 /**
+ * Fancy checkbox
+ * https://proto.io/freebies/onoff/
+ */
+.onoffswitch {
+    position: relative; width: 40px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+    display: inline-block;
+}
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    height: 20px; padding: 0; line-height: 20px;
+    border: 2px solid #D7D7D7; border-radius: 20px;
+    background-color: #D7D7D7;
+    transition: background-color 0.3s ease-in;
+}
+.onoffswitch-label:before {
+    content: "";
+    display: block; width: 20px; margin: 0px;
+    background: #FFFFFF;
+    position: absolute; top: 0; bottom: 0;
+    right: 19px;
+    border: 2px solid #D7D7D7; border-radius: 20px;
+    transition: all 0.3s ease-in 0s; 
+    height: 20px;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label {
+    background-color: #3197D6;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label, .onoffswitch-checkbox:checked + .onoffswitch-label:before {
+   border-color: #3197D6;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label:before {
+    right: 0px; 
+}
+
+/**
  * Misc
  */
 .banner {
@@ -1991,6 +2030,10 @@ table.table-conversations td.conv-attachment {
     margin-left: 7px;
     float: left;
     top: 7px;
+}
+.icon-info-inline {
+    float: none;
+    top: 0;
 }
 .help-icon {
     color: #a5b2bd;
@@ -2168,7 +2211,7 @@ a.help-icon:hover {
     width: 100%;
     height: 100%;
     z-index: 9999;
-    background: url('../img/loader-main.gif') 50% 50% no-repeat #fff;
+    background: url('/img/loader-main.gif') 50% 50% no-repeat #fff;
     opacity: 0.60;
     filter: alpha(opacity=60); /* For IE8 and earlier */
 }
