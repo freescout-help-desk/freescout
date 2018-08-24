@@ -32,7 +32,7 @@
 					                        </div>
 
 				                            <div class="col-sm-offset-4 col-md-6">
-				                            	<p class="help-block margin-bottom-0">{{ __('You can edit this later') }}</p>
+				                            	<p class="block-help margin-bottom-0">{{ __('You can edit this later') }}</p>
 				                            </div>
 					                    </div>
 

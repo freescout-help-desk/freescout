@@ -57,7 +57,7 @@
                                         <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                     </div>
                                 @endforeach
-                                <p class="help-block"><a href="javascript:void(0)" class="multi-add " tabindex="-1">{{ __('Add an email address') }}</a></p>
+                                <p class="block-help"><a href="javascript:void(0)" class="multi-add " tabindex="-1">{{ __('Add an email address') }}</a></p>
                             </div>
 
                             @include('partials/field_error', ['field'=>'emails'])
@@ -75,7 +75,7 @@
                                         <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                     </div>
                                 @endforeach
-                                <p class="help-block"><a href="javascript:void(0)" class="multi-add" tabindex="-1">{{ __('Add a website') }}</a></p>
+                                <p class="block-help"><a href="javascript:void(0)" class="multi-add" tabindex="-1">{{ __('Add a website') }}</a></p>
                             </div>
 
                             @include('partials/field_error', ['field'=>'websites'])

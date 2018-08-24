@@ -18,6 +18,7 @@ class Mail
     const MESSAGE_ID_PREFIX_NOTIFICATION = 'notify';
     const MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY = 'conversation';
     const MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER = 'reply';
+    const MESSAGE_ID_PREFIX_AUTO_REPLY = 'autoreply';
 
     /**
      * If reply is not extracted properly from the incoming email, add here new separator.
@@ -57,5 +58,25 @@ class Mail
         }
 
         (new \Illuminate\Mail\MailServiceProvider(app()))->register();
+    }
+
+    /**
+     * Replace mail vars in the text.
+     */
+    public static function replaceMailVars($text, $data = [])
+    {
+        // Available variables to insert into email in UI.
+        $vars = [
+            '{%subject%}'             => $data['conversation']->subject,
+            '{%mailbox.email%}'       => $data['mailbox']->email,
+            '{%mailbox.name%}'        => $data['mailbox']->name,
+            '{%conversation.number%}' => $data['conversation']->number,
+            '{%customer.fullName%}'   => $data['customer']->getFullName(true),
+            '{%customer.firstName%}'  => $data['customer']->getFirstName(true),
+            '{%customer.lastName%}'   => $data['customer']->last_name,
+            '{%customer.email%}'      => $data['customer']->getMainEmail()
+        ];
+
+        return strtr($text, $vars);
     }
 }

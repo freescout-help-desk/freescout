@@ -3020,7 +3020,7 @@ select[multiple].input-lg {
   margin-bottom: 0;
   font-size: 14px;
   font-weight: normal;
-  height: 30px;
+  /*height: 30px;*/
   line-height: 28px;
   text-align: center;
   white-space: nowrap;

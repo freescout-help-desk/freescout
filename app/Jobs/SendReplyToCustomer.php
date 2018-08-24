@@ -132,19 +132,19 @@ class SendReplyToCustomer implements ShouldQueue
      *
      * @return void
      */
-    // public function failed(\Exception $e)
-    // {
-    //     activity()
-    //        ->causedBy($this->customer)
-    //        ->withProperties([
-    //             'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
-    //             'to'       => $this->customer->getMainEmail(),
-    //         ])
-    //        ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
-    //        ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
+    public function failed(\Exception $e)
+    {
+        activity()
+           ->causedBy($this->customer)
+           ->withProperties([
+                'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
+                'to'       => $this->customer->getMainEmail(),
+            ])
+           ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
+           ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
 
-    //     $this->saveToSendLog();
-    // }
+        $this->saveToSendLog();
+    }
 
     /**
      * Save emails to send log.
@@ -164,7 +164,7 @@ class SendReplyToCustomer implements ShouldQueue
             } else {
                 $customer_id = null;
             }
-            SendLog::log($this->last_thread->id, $this->message_id, $recipient, $status, $customer_id, null, $status_message);
+            SendLog::log($this->last_thread->id, $this->message_id, $recipient, SendLog::MAIL_TYPE_EMAIL_TO_CUSTOMER, $status, $customer_id, null, $status_message);
         }
     }
 }

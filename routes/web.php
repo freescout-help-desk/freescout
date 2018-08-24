@@ -23,6 +23,7 @@ Route::redirect('/home', '/', 301);
 // General routes for logged in users
 Route::get('/', 'SecureController@dashboard')->name('dashboard');
 Route::get('/logs/{name?}', ['uses' => 'SecureController@logs', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs');
+Route::post('/logs/{name?}', ['uses' => 'SecureController@logsSubmit', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);
 Route::get('/system', ['uses' => 'SecureController@system', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system');
 
 // Users
@@ -61,6 +62,7 @@ Route::post('/settings/connection-settings/{id}/outgoing', 'MailboxesController@
 Route::get('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncoming')->name('mailboxes.connection.incoming');
 Route::post('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncomingSave');
 Route::get('/settings/mailbox/{id}/auto-reply', 'MailboxesController@autoReply')->name('mailboxes.auto_reply');
+Route::post('/settings/mailbox/{id}/auto-reply', 'MailboxesController@autoReplySave');
 
 // Customers
 Route::get('/customer/{id}/edit', 'CustomersController@update')->name('customers.update');

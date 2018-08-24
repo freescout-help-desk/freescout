@@ -61,6 +61,7 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         'App\Events\CustomerCreatedConversation' => [
+            'App\Listeners\SendAutoReply',
             'App\Listeners\SendNotificationToUsers',
         ],
 

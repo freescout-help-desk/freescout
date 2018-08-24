@@ -115,11 +115,10 @@
                             </div>
 
                             <div class="form-group{{ $errors->has('body') ? ' has-error' : '' }} conv-reply-body">
-                               
-                                    <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}">{{ old('body', $conversation->body) }}</textarea>
-                                    <div class="help-block has-error">
-                                        @include('partials/field_error', ['field'=>'body'])
-                                    </div>
+                                <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}">{{ old('body', $conversation->body) }}</textarea>
+                                <div class="help-block has-error">
+                                    @include('partials/field_error', ['field'=>'body'])
+                                </div>
                             </div>
 
                         </form>

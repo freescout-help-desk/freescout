@@ -58,7 +58,7 @@
                                     </ul>
                                 </li>
                             @endif
-                            @if (Auth::user()->isAdmin())
+                            {{--@if (Auth::user()->isAdmin())
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
                                         {{ __('Docs') }} <span class="caret"></span>
@@ -82,7 +82,7 @@
                                         <li><a href="#">{{ __('Docs') }}  (todo)</a></li>
                                     </ul>
                                 </li>
-                            @endif
+                            @endif--}}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
                                     {{ __('Manage') }} <span class="caret"></span>
@@ -90,16 +90,16 @@
 
                                 <ul class="dropdown-menu">
                                     @if (Auth::user()->isAdmin())
-                                        <li><a href="#">{{ __('Apps') }} (todo)</a></li>
-                                        <li><a href="#">{{ __('Plugins') }} (todo)</a></li>
+                                        {{--<li><a href="#">{{ __('Apps') }} (todo)</a></li>--}}
                                         <li><a href="#">{{ __('Company') }} (todo)</a></li>
-                                        <li><a href="#">{{ __('Docs') }} (todo)</a></li>
+                                        {{--<li><a href="#">{{ __('Docs') }} (todo)</a></li>--}}
                                         <li><a href="{{ route('mailboxes') }}">{{ __('Mailboxes') }}</a></li>
                                     @endif
                                     <li><a href="#">{{ __('Tags') }} (todo)</a></li>
                                     @if (Auth::user()->isAdmin())
-                                        <li><a href="#">{{ __('Teams') }} (todo)</a></li>
+                                        {{--<li><a href="#">{{ __('Teams') }} (todo)</a></li>--}}
                                         <li><a href="{{ route('users') }}">{{ __('Users') }}</a></li>
+                                        <li><a href="#">{{ __('Plugins') }} (todo)</a></li>
                                         <li><a href="{{ route('logs') }}">{{ __('Logs') }}</a></li>
                                         <li><a href="{{ route('system') }}">{{ __('System') }}</a></li>
                                     @endif
@@ -183,6 +183,8 @@
     </div>
 
     <div id="loader-main"></div>
+
+    @include('partials/floating_flash_messages')
 
     @yield('body_bottom')
 

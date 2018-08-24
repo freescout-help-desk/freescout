@@ -98,6 +98,7 @@ class SendNotificationToUsers implements ShouldQueue
                 $global_exception = $e;
             }
 
+            $status_message = '';
             if ($exception) {
                 $status = SendLog::STATUS_SEND_ERROR;
                 $status_message = $exception->getMessage();
@@ -112,7 +113,7 @@ class SendNotificationToUsers implements ShouldQueue
                 }
             }
 
-            SendLog::log($last_thread->id, $message_id, $user->email, $status, null, $user->id, $status_message);
+            SendLog::log($last_thread->id, $message_id, $user->email, SendLog::MAIL_TYPE_USER_NOTIFICATION, $status, null, $user->id, $status_message);
         }
 
         if ($global_exception) {
@@ -129,16 +130,16 @@ class SendNotificationToUsers implements ShouldQueue
      *
      * @return void
      */
-    // public function failed(\Exception $e)
-    // {
-    //     // Write to activity log
-    //     activity()
-    //        //->causedBy($this->customer)
-    //        ->withProperties([
-    //             'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
-    //             //'to'       => $this->customer->getMainEmail(),
-    //         ])
-    //        ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
-    //        ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_USER);
-    // }
+    public function failed(\Exception $e)
+    {
+        // Write to activity log
+        activity()
+           //->causedBy($this->customer)
+           ->withProperties([
+                'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
+                //'to'       => $this->customer->getMainEmail(),
+            ])
+           ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
+           ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_USER);
+    }
 }

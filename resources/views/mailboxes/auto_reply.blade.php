@@ -67,7 +67,7 @@
 
                         <div class="col-md-9 auto_reply_message-editor">
                             <textarea id="auto_reply_message" class="form-control" name="auto_reply_message" rows="8">{{ old('auto_reply_message', $mailbox->auto_reply_message) }}</textarea>
-                            <p class="help-block">
+                            <p class="block-help">
                                 {{ __("Auto replies don't include your mailbox signature, so be sure to add your contact information if necessary.") }}
                             </p>
                             @include('partials/field_error', ['field'=>'auto_reply_message'])

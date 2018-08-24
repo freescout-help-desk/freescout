@@ -203,7 +203,7 @@ class MailboxesController extends Controller
         $mailbox->fill($request->all());
         $mailbox->save();
 
-        \Session::flash('flash_success', __('Connection settings saved!'));
+        \Session::flash('flash_success_floating', __('Connection settings saved!'));
 
         return redirect()->route('mailboxes.connection', ['id' => $id]);
     }
@@ -318,8 +318,47 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
         $this->authorize('update', $mailbox);
 
+        if (!$mailbox->auto_reply_subject) {
+            $mailbox->auto_reply_subject = 'Re: {%subject%}';
+        }
+
         return view('mailboxes/auto_reply', [
             'mailbox' => $mailbox
         ]);
+    }
+
+    /**
+     * Save auto reply settings.
+     */
+    public function autoReplySave($id, Request $request)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+
+        $this->authorize('update', $mailbox);
+
+        if ($request->auto_reply_enabled) {
+            $validator = Validator::make($request->all(), [
+                'auto_reply_subject' => 'required|string|max:128',
+                'auto_reply_message' => 'required|string',
+            ]);
+            $validator->setAttributeNames([
+                'auto_reply_subject' => __('Subject'),
+                'auto_reply_message' => __('Message')
+            ]); 
+
+            if ($validator->fails()) {
+                return redirect()->route('mailboxes.auto_reply', ['id' => $id])
+                            ->withErrors($validator)
+                            ->withInput();
+            }
+        }
+
+        $mailbox->fill($request->all());
+
+        $mailbox->save();
+
+        \Session::flash('flash_success_floating', __('Auto Reply status saved'));
+
+        return redirect()->route('mailboxes.auto_reply', ['id' => $id]);
     }
 }

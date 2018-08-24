@@ -20,7 +20,7 @@
                             @endforeach
                         </div>
                         <div class="dash-card-inactive-content">
-                            <div class="help-block">
+                            <div class="block-help">
                                 {{ __('Administrator has not configured mailbox connection settings yet.') }}
                             </div>
                             @if (Auth::user()->can('update', $mailbox))

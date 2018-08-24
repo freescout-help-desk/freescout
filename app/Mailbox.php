@@ -87,6 +87,19 @@ class Mailbox extends Model
     const RATINGS_PLACEMENT_BELOW = 2;
 
     /**
+     * Default signature set when mailbox created.
+     */
+    const DEFAULT_SIGNATURE = '<span style="color:#808080;">--<br>
+{%mailbox.name%}<br></span>';
+
+    /**
+     * Default values.
+     */
+    protected $attributes = [
+        'signature' => self::DEFAULT_SIGNATURE,
+    ];
+
+    /**
      * Attributes fillable using fill() method.
      *
      * @var [type]

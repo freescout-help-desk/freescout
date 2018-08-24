@@ -605,7 +605,7 @@ a h4 {
     display: none;
     padding: 8px 20px;
 }
-.dash-card-inactive-content .help-block {
+.dash-card-inactive-content .block-help {
     font-size: 14px;
 }
 .dash-card-inactive-content .btn-link {
@@ -1698,7 +1698,7 @@ table.table-conversations td.conv-attachment {
     .customer-social-profiles {
         position: static;
     }
-    .panel-heading {
+    .conv-customer-hist .panel-heading {
         display: none;
     }
     .customer-hist-trigger {
@@ -1856,7 +1856,7 @@ table.table-conversations td.conv-attachment {
     height: 31px;
     margin-top: -15px;
 }
-.modal-body p.help-block {
+.modal-body p.block-help {
     font-size: 11.4px;
 }
 .modal-body.modal-body-fit {
@@ -2058,16 +2058,16 @@ a.help-icon:hover {
     color:#4f5d6b;
     font-size:13.4px
 }
-.help-block {
+.block-help {
     color: #93a1af;
     display: block;
     font-size: 13.4px;
     margin: 4px 0 9px;
 }
-.help-block a {
+.block-help a {
     color: #93a1af;
 }
-.help-block a:hover {
+.block-help a:hover {
     color: #23527c;
 }
 .text-help {

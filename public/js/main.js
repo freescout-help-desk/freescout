@@ -176,7 +176,7 @@ function summernoteInit(selector)
 		followingToolbar: false,
 		toolbar: [
 		    // [groupName, [list of button]]
-		    ['style', ['bold', 'italic', 'underline', 'ul', 'ol', 'link', 'codeview']],
+		    ['style', ['bold', 'italic', 'underline', 'color', 'ul', 'ol', 'link', 'codeview']],
 		]
 	});
 	$('.note-statusbar').remove();

@@ -19,7 +19,7 @@
         @endforeach
     </select> 
 
-    <input type="hidden" name="after_send" id="after_send" value="{{ $after_send }}"/>
+    <input type="hidden" name="after_send" id="after_send" value="{{ $after_send }}" data-parsley-exclude="true"/>
     <div class="btn-group btn-group-send">
     	<button class="hidden"></button>
         <button type="button" class="btn btn-primary btn-reply-submit btn-send-text" data-loading-text="{{ __('Sending…') }}">{{ __('Send') }}</button>
@@ -49,7 +49,7 @@
                                 <option value="{{ App\MailboxUser::AFTER_SEND_FOLDER }}" @if ($after_send == App\MailboxUser::AFTER_SEND_FOLDER)selected="selected"@endif>{{ __('Back to folder') }}</option>
                             </select>
 
-                            <p class="help-block">
+                            <p class="block-help">
                                 {{ __('This setting gives you control over what page loads after you perform an action (send a reply, add a note, etc.).') }}
                             </p>
                         </div>

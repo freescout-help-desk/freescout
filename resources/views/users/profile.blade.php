@@ -191,7 +191,7 @@
 
                         <div class="col-md-6">
                             <input type="file" name="photo" id="photo" disabled="disabled">
-                            <p class="help-block">{{ __('Image will be re-sized to 200x200. JPG, GIF, PNG accepted.') }}</p>
+                            <p class="block-help">{{ __('Image will be re-sized to 200x200. JPG, GIF, PNG accepted.') }}</p>
                             @include('partials/field_error', ['field'=>'photo_url'])
                         </div>
                     </div>

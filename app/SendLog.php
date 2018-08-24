@@ -23,6 +23,14 @@ class SendLog extends Model
     const STATUS_COMPLAINED = 9;
 
     /**
+     * Mail types.
+     */
+    const MAIL_TYPE_EMAIL_TO_CUSTOMER = 1;
+    const MAIL_TYPE_USER_NOTIFICATION = 2;
+    const MAIL_TYPE_AUTO_REPLY        = 3;
+    const MAIL_TYPE_WRONG_USER_EMAIL_MESSAGE  = 4;
+
+    /**
      * The attributes that are not mass assignable.
      *
      * @var array
@@ -56,12 +64,13 @@ class SendLog extends Model
     /**
      * Save log record.
      */
-    public static function log($thread_id, $message_id, $email, $status, $customer_id = null, $user_id = null, $status_message = null)
+    public static function log($thread_id, $message_id, $email, $mail_type, $status, $customer_id = null, $user_id = null, $status_message = null)
     {
         $send_log = new self();
         $send_log->thread_id = $thread_id;
         $send_log->message_id = $message_id;
         $send_log->email = $email;
+        $send_log->mail_type = $mail_type;
         $send_log->status = $status;
         $send_log->customer_id = $customer_id;
         $send_log->user_id = $user_id;

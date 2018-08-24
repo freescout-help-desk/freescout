@@ -47,17 +47,21 @@ class SecureController extends Controller
 
             return $cols;
         }
-        $names = ActivityLog::select('log_name')->distinct()->get()->pluck('log_name');
+
+        // No need to check permissions here, as they are checked in routing
+
+        $names = ActivityLog::select('log_name')->distinct()->pluck('log_name')->toArray();
 
         $activities = [];
         $cols = [];
-        $current_name = '';
+
+        $name = '';
         if (!empty($request->name)) {
             $activities = ActivityLog::inLog($request->name)->orderBy('created_at', 'desc')->get();
-            $current_name = $request->name;
+            $name = $request->name;
         } elseif (count($names)) {
             $activities = ActivityLog::inLog($names[0])->orderBy('created_at', 'desc')->get();
-            $current_name = $names[0];
+            $name = $names[0];
         }
 
         $logs = [];
@@ -89,7 +93,39 @@ class SecureController extends Controller
             $logs[] = $log;
         }
 
-        return view('secure/logs', ['logs' => $logs, 'names' => $names, 'current_name' => $current_name, 'cols' => $cols]);
+        if (!in_array($name, $names)) {
+            $names[] = $name;
+        }
+
+        return view('secure/logs', ['logs' => $logs, 'names' => $names, 'current_name' => $name, 'cols' => $cols]);
+    }
+
+    /**
+     * Logs page submitted
+     */
+    public function logsSubmit(Request $request)
+    {
+        // No need to check permissions here, as they are checked in routing
+
+        $name = '';
+        if (!empty($request->name)) {
+            $activities = ActivityLog::inLog($request->name)->orderBy('created_at', 'desc')->get();
+            $name = $request->name;
+        } elseif (count($names = ActivityLog::select('log_name')->distinct()->get()->pluck('log_name'))) {
+            $activities = ActivityLog::inLog($names[0])->orderBy('created_at', 'desc')->get();
+            $name = $names[0];
+        }
+
+        switch ($request->action) {
+            case 'clean':
+                if ($name) {
+                    ActivityLog::where('log_name', $name)->delete();
+                    \Session::flash('flash_success_floating', __('Log successfully cleaned'));
+                }
+                break;
+        }
+
+        return redirect()->route('logs', ['name' => $name]);
     }
 
     /**

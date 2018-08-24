@@ -11,6 +11,6 @@ $factory->define(App\Mailbox::class, function (Faker $faker) {
         'name'      => $name,
         'email'     => $email,
         'aliases'   => 'support@'.$domain.',help@'.$domain.', contact@'.$domain,
-        'signature' => '--<br/>'.$name,
+        //'signature' => '--<br/>'.$name,
     ];
 });

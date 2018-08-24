@@ -29,7 +29,7 @@ class ReplyToCustomer extends Mailable
     public $threads;
 
     /**
-     * Custome haders.
+     * Custom headers.
      *
      * @var array
      */

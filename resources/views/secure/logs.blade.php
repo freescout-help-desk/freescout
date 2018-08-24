@@ -16,9 +16,13 @@
 
 @section('content')
 <div class="container">
-    <div class="section-heading margin-bottom">
-        {{ __('Log Records') }}
-    </div>
+    <form method="post">
+        {{ csrf_field() }}
+        <div class="section-heading margin-bottom">
+            {{ __('Log Records') }} &nbsp;&nbsp;<button type="submit" name="action" value="clean" class="btn btn-default btn-xs" data-toggle="tooltip" title="{{ __('Clean this log') }}">{{ __('Clean Log') }}</button>
+        </div>
+    </form>
+
     @if (count($logs))
         <table id="table-logs" class="stripe hover order-column row-border" style="width:100%">
             <thead>

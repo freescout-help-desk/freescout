@@ -18,7 +18,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <h3> {{ __('Selected Users have access to this mailbox:') }}</h3>
-                <p class="help-block">{{ __('Administrators have access to all mailboxes and are not listed here.') }}</p>
+                <p class="block-help">{{ __('Administrators have access to all mailboxes and are not listed here.') }}</p>
             </div>
             <div class="col-xs-12">
                 <form method="POST" action="">

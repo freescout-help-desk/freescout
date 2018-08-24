@@ -30,10 +30,6 @@
                             <input id="email" type="email" class="form-control input-sized" name="email" value="{{ $mailbox->email }}" disabled="disabled">
                             <a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}#email" class="btn btn-link btn-sm" data-toggle="tooltip" title="{{ __('Change address in mailbox settings') }}">{{ __('Change') }}</a>
                         </div>
-
-                        {{--<div class="col-sm-offset-2 col-md-6">
-                            <p class="help-block margin-bottom-0"><strong>{{ __('ATTENTION') }}:</strong> {{ __('All emails from this address will be deleted') }}</p>
-                        </div>--}}
                     </div>
 
                     <div class="form-group{{ $errors->has('in_protocol') ? ' has-error' : '' }}">

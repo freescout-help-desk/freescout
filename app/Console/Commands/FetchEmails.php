@@ -64,6 +64,7 @@ class FetchEmails extends Command
     public function handle()
     {
         $now = time();
+        $successfully = true;
         Option::set('fetch_emails_last_run', $now);
 
         // Get active mailboxes
@@ -81,15 +82,19 @@ class FetchEmails extends Command
 
             try {
                 $this->fetch($mailbox);
-                Option::set('fetch_emails_last_successful_run', $now);
             } catch (\Exception $e) {
+                $successfully = false;
                 $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
             }
-
-            // Middleware Terminate handler is not launched for commands,
-            // so we need to run processing subscription events manually
-            Subscription::processEvents();
         }
+
+        if ($successfully) {
+            Option::set('fetch_emails_last_successful_run', $now);
+        }
+
+        // Middleware Terminate handler is not launched for commands,
+        // so we need to run processing subscription events manually
+        Subscription::processEvents();
     }
 
     public function fetch($mailbox)
@@ -248,9 +253,25 @@ class FetchEmails extends Command
                                 $prev_message_id = $references[0];
                             }
                             if ($prev_message_id) {
+
+                                $prev_thread_id = '';
+
+                                // Customer replied to the email from user
                                 preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
                                 if (!empty($m[1])) {
-                                    $prev_thread = Thread::find($m[1]);
+                                    $prev_thread_id = $m[1];
+                                }
+
+                                // Customer replied to the auto reply
+                                if (!$prev_thread_id) {
+                                    preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-/", $prev_message_id, $m);
+                                    if (!empty($m[1])) {
+                                        $prev_thread_id = $m[1];
+                                    }
+                                }
+                                
+                                if ($prev_thread_id) {
+                                    $prev_thread = Thread::find($prev_thread_id);
                                 }
                             }
                             if (!empty($prev_thread)) {
@@ -348,6 +369,7 @@ class FetchEmails extends Command
      */
     public function saveCustomerThread($mailbox_id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers)
     {
+        // Copy extra recipients to CC
         $cc = array_merge($cc, $to);
 
         // Find conversation
@@ -431,6 +453,7 @@ class FetchEmails extends Command
      */
     public function saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $to, $cc, $bcc, $body, $attachments, $headers)
     {
+        // Copy extra recipients to CC
         $cc = array_merge($cc, $to);
 
         $conversation = null;
