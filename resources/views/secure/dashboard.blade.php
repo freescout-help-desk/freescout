@@ -34,8 +34,16 @@
                     </div>
                     @if (Auth::user()->can('update', $mailbox))
                         <div class="dash-card-footer">
-                            <a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" class="glyphicon glyphicon-envelope" data-toggle="tooltip" title="{{ __("New Conversation") }}"></a>
-                            <a href="{{ route('mailboxes.update', ['id' => $mailbox->id]) }}" class="glyphicon glyphicon-cog" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}"></a>
+                            <div>
+                                <a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" class="glyphicon glyphicon-envelope" data-toggle="tooltip" title="{{ __("New Conversation") }}"></a>
+                            </div>
+
+                            <div class="btn-group dropdown dropup" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
+                                <a class="glyphicon glyphicon-cog dropdown-toggle" data-toggle="dropdown" href="#"></a>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                    @include("mailboxes/settings_menu")
+                                </ul>
+                            </div>
                         </div>
                     @endif
                 </div>

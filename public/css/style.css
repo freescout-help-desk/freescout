@@ -628,14 +628,17 @@ a h4 {
 .dash-card a.dash-card-item-empty:focus {
     color: #93a1af;
 }
-.dash-card-footer > a {
-    color: #c1cbd4;
+.dash-card-footer > div {
     display: inline-block;
-    font-size: 16px;
     margin: 0 6px;
     float: right;
 }
-.dash-card-footer > a:hover {
+.dash-card-footer > div > a {
+    color: #c1cbd4;
+    font-size: 16px;
+}
+.dash-card-footer > div > a:focus,
+.dash-card-footer > div > a:hover {
     color: #677f95;
     text-decoration: none;
 }
