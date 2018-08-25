@@ -19,7 +19,7 @@
     <form method="post">
         {{ csrf_field() }}
         <div class="section-heading margin-bottom">
-            {{ __('Log Records') }} &nbsp;&nbsp;<button type="submit" name="action" value="clean" class="btn btn-default btn-xs" data-toggle="tooltip" title="{{ __('Clean this log') }}">{{ __('Clean Log') }}</button>
+            {{ __('Log Records') }} &nbsp;&nbsp;<button type="submit" name="action" value="clean" class="btn btn-default btn-xs" data-toggle="tooltip" title="{{ __('Clear this log') }}">{{ __('Clear Log') }}</button>
         </div>
     </form>
 
@@ -42,6 +42,8 @@
                                         <a href="{{ $row[$col]->url() }}">{{ $row[$col]->getFullName(true) }}</a>
                                     @elseif ($col == 'date')
                                         {{  App\User::dateFormat(new Illuminate\Support\Carbon($row[$col]), 'M j, H:i:s') }}
+                                    @elseif ($col == 'conversation')
+                                        <a href="{{ route('conversations.view', ['id' => $row[$col]]) }}" target="_blank">#{{ $row[$col] }}</a>
                                     @else
                                         {{ $row[$col] }}
                                     @endif
@@ -54,6 +56,9 @@
                 @endforeach
             </tbody>
         </table>
+
+        {{ $activities->links() }}
+
     @else
         @include('partials/empty', ['empty_text' => __('Log is empty')])
     @endif

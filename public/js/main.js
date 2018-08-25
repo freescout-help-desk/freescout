@@ -277,7 +277,10 @@ function logsInit()
 {
 	$(document).ready(function() {
 	    $('#table-logs').DataTable({
-	   		"ordering": false
+	   		"ordering": false,
+	   		"paging": false,
+	   		"info": false,
+	   		"searching": false
 	    });
 	} );
 }

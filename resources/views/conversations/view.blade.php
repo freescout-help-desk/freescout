@@ -166,7 +166,7 @@
             @foreach ($threads as $thread)
                 
                 @if ($thread->type == App\Thread::TYPE_LINEITEM)
-                    <div class="thread thread-type-{{ $thread->getTypeName() }}">
+                    <div class="thread thread-type-{{ $thread->getTypeName() }}" id="thread-{{ $thread->id }}">
                         <div class="thread-message">
                             <div class="thread-header">
                                 <div class="thread-title">

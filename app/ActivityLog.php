@@ -7,8 +7,9 @@ use Spatie\Activitylog\Models\Activity;
 class ActivityLog extends Activity
 {
     const NAME_USER = 'users';
-    const NAME_EMAILS_SENDING = 'emails_sending';
-    const NAME_EMAILS_FETCHING = 'emails_fetching';
+    const NAME_OUT_EMAILS = 'out_emails'; // used to display send_log in Logs
+    const NAME_EMAILS_SENDING = 'send_errors';
+    const NAME_EMAILS_FETCHING = 'fetch_errors';
 
     const DESCRIPTION_USER_LOGIN = 'login';
     const DESCRIPTION_USER_LOGOUT = 'logout';
@@ -55,6 +56,8 @@ class ActivityLog extends Activity
         switch ($log_name) {
             case self::NAME_USER:
                 return __('Users');
+            case self::NAME_OUT_EMAILS:
+                return __('Outgoing Emails');
             case self::NAME_EMAILS_SENDING:
                 return __('Emails Sending');
             case self::NAME_EMAILS_FETCHING:

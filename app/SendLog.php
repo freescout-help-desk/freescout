@@ -124,4 +124,18 @@ class SendLog extends Model
             return false;
         }
     }
+
+    public function getMailTypeName()
+    {
+        switch ($this->mail_type) {
+            case self::MAIL_TYPE_EMAIL_TO_CUSTOMER:
+                return __('Email to customer');
+            case self::MAIL_TYPE_USER_NOTIFICATION:
+                return __('User notification');
+            case self::MAIL_TYPE_AUTO_REPLY:
+                return __('Auto reply to customer');
+            case self::MAIL_TYPE_WRONG_USER_EMAIL_MESSAGE:
+                return __('User using wrong email notification');
+        }
+    }
 }
