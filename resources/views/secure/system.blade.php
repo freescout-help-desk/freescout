@@ -8,7 +8,8 @@
         {{ __('System') }}
     </div>
     <ul class="sidebar-menu">
-        <li><a href="#server"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Web Server') }}</a></li>
+        <li><a href="#app"><i class="glyphicon glyphicon-menu-right"></i> {{ __('App') }}</a></li>
+        <li><a href="#server"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Server') }}</a></li>
         <li><a href="#php"><i class="glyphicon glyphicon-menu-right"></i> PHP</a></li>
         <li><a href="#tasks"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Cron Commands') }}</a></li>
         <li><a href="#jobs"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Background Jobs') }}</a></li>
@@ -18,19 +19,28 @@
 @section('content')
 <div class="container">
 
-    <h3 id="server">{{ __('Web Server') }}</h3>
+    <h3 id="app">{{ __('App') }}</h3>
 
     <table class="table table-dark-header table-bordered table-responsive">
         <tbody>
-            @if (!empty($_SERVER['SERVER_SOFTWARE']))
-                <tr>
-                    <th>{{ __('Name') }}</th>
-                    <td class="table-main-col">{{ $_SERVER['SERVER_SOFTWARE'] }}</td>
-                </tr>
-            @endif
             <tr>
                 <th>{{ __('Date & Time') }}</th>
                 <td class="table-main-col">{{ App\User::dateFormat(new Illuminate\Support\Carbon()) }}</td>
+            </tr>
+            <tr>
+                <th>{{ __('Timezone') }}</th>
+                <td class="table-main-col">{{ \Config::get('app.timezone') }} (GMT{{ date('O') }})</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 id="server" class="margin-top-40">{{ __('Server') }}</h3>
+
+    <table class="table table-dark-header table-bordered table-responsive">
+        <tbody>
+            <tr>
+                <th>{{ __('Name') }}</th>
+                <td class="table-main-col">@if (!empty($_SERVER['SERVER_SOFTWARE'])){{ $_SERVER['SERVER_SOFTWARE'] }}@else ? @endif</td>
             </tr>
         </tbody>
     </table>
