@@ -19,6 +19,18 @@ var lang_messages = {
             "discard": "Discard",
             "close": "Close",
             "settings_saved": "Settings saved",
+            "insert_var": "Insert variable",
+            "mailbox": "Mailbox",
+            "email": "Email",
+            "name": "Name",
+            "conversation": "Conversation",
+            "number": "Number",
+            "customer": "Customer",
+            "full_name": "Full Name",
+            "first_name": "First Name",
+            "last_name": "Last Name",
+            "email_addr": "Email Address",
+
             "drag_image_file": "Drag image or file here"
         }    };
 

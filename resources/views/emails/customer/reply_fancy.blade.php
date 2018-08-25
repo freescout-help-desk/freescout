@@ -45,7 +45,7 @@
 					                                {{--<br><br>How would you rate my reply?<br><a href="" style="color:#50bc1c;">Great</a> &nbsp;&nbsp; <a href="" style="color:#555555;">Okay</a> &nbsp;&nbsp; <a href="" style="color:#f10000;">Not Good</a>
 					                                --}}
 					                                @if ($thread->source_via == App\Thread::PERSON_USER)
-						                                {!! $conversation->mailbox->signature !!}
+						                                {!! $conversation->getSignatureProcessed() !!}
 						                                <br><br>
 						                            @endif
 	                                            </div>

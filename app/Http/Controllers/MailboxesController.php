@@ -337,7 +337,9 @@ class MailboxesController extends Controller
         $this->authorize('update', $mailbox);
 
         if ($request->auto_reply_enabled) {
-            $validator = Validator::make($request->all(), [
+            $post = $request->all();
+            $post['auto_reply_message'] = strip_tags($post['auto_reply_message']);
+            $validator = Validator::make($post, [
                 'auto_reply_subject' => 'required|string|max:128',
                 'auto_reply_message' => 'required|string',
             ]);

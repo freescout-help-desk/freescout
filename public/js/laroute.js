@@ -14,6 +14,10 @@
     {
         "uri": "conversation\/upload",
         "name": "conversations.upload"
+    },
+    {
+        "uri": "conversation\/ajax_html\/{action}",
+        "name": "conversations.ajax_html"
     }
 ],
             prefix: '',

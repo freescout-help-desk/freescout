@@ -30,6 +30,18 @@ var lang_messages = {
             "discard": "{{ __("Discard") }}",
             "close": "{{ __("Close") }}",
             "settings_saved": "{{ __("Settings saved") }}",
+            "insert_var": "{{ __("Insert variable") }}",
+            "mailbox": "{{ __("Mailbox") }}",
+            "email": "{{ __("Email") }}",
+            "name": "{{ __("Name") }}",
+            "conversation": "{{ __("Conversation") }}",
+            "number": "{{ __("Number") }}",
+            "customer": "{{ __("Customer") }}",
+            "full_name": "{{ __("Full Name") }}",
+            "first_name": "{{ __("First Name") }}",
+            "last_name": "{{ __("Last Name") }}",
+            "email_addr": "{{ __("Email Address") }}",
+
             "drag_image_file": "{{ __("Drag image or file here") }}"
         }@if (!$loop->last),@endif
     @endforeach

@@ -99,6 +99,37 @@ var EditorDiscardButton = function (context) {
 
 	return button.render();   // return button as jquery object
 }
+var EditorInsertVarButton = function (context) {
+	var ui = $.summernote.ui;
+
+	// todo: fallback=
+	var contents = 
+		'<select class="form-control summernote-inservar" tabindex="-1">'+
+		    '<option value="">'+Lang.get("messages.insert_var")+' ...</option>'+
+		    '<optgroup label="'+Lang.get("messages.mailbox")+'">'+
+		        '<option value="{%mailbox.email%}">'+Lang.get("messages.email")+'</option>'+
+		        '<option value="{%mailbox.name%}">'+Lang.get("messages.name")+'</option>'+
+		    '</optgroup>'+
+		    '<optgroup label="'+Lang.get("messages.conversation")+'">'+
+		        '<option value="{%conversation.number%}">'+Lang.get("messages.number")+'</option>'+
+		    '</optgroup>'+
+		    '<optgroup label="'+Lang.get("messages.customer")+'">'+
+		        '<option value="{%customer.fullName%}">'+Lang.get("messages.full_name")+'</option>'+
+		        '<option value="{%customer.firstName%}">'+Lang.get("messages.first_name")+'</option>'+
+		        '<option value="{%customer.lastName%}">'+Lang.get("messages.last_name")+'</option>'+
+		        '<option value="{%customer.email%}">'+Lang.get("messages.email_addr")+'</option>'+
+		    '</optgroup>'+
+	    '</select>';
+
+	// create button
+	var button = ui.button({
+		contents: contents,
+		tooltip: Lang.get("messages.insert_var"),
+		container: 'body'
+	});
+
+	return button.render();   // return button as jquery object
+}
 
 $(document).ready(function(){
 
@@ -174,12 +205,28 @@ function summernoteInit(selector)
 		dialogsInBody: true,
 		disableResizeEditor: true,
 		followingToolbar: false,
+		disableDragAndDrop: true,
 		toolbar: [
 		    // [groupName, [list of button]]
 		    ['style', ['bold', 'italic', 'underline', 'color', 'ul', 'ol', 'link', 'codeview']],
-		]
+		    ['actions-select', ['insertvar']]
+		],
+		buttons: {
+		    insertvar: EditorInsertVarButton
+		},
+	    callbacks: {
+		    onInit: function() {
+		    	// Remove statusbar
+		    	$('.note-statusbar').remove();
+
+		    	// Insert variables
+				$(selector).parent().children().find('.summernote-inservar:first').on('change', function(event) {
+					$(selector).summernote('insertText', $(this).val());
+					$(this).val('');
+				});
+		    }
+	    }
 	});
-	$('.note-statusbar').remove();
 }
 
 function permissionsInit()

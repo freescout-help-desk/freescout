@@ -3,5 +3,5 @@
 @endsection
 
 @section('javascripts')
-    <script src="{{ asset('js/summernote/summernote.js') }}"></script>
+	{!! Minify::javascript(array('/js/summernote/summernote.js')) !!}
 @endsection

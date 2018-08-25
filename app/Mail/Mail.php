@@ -79,4 +79,12 @@ class Mail
 
         return strtr($text, $vars);
     }
+
+    /**
+     * Check if text has vars in it.
+     */
+    public static function hasVars($text)
+    {
+        return preg_match("/({%|%})/", $text);
+    }
 }

@@ -62,7 +62,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group{{ $errors->has('auto_reply_message') ? ' has-error' : '' }}">
+                    <div class="form-group">
                         <label for="auto_reply_message" class="col-sm-2 control-label">{{ __('Message') }}</label>
 
                         <div class="col-md-9 auto_reply_message-editor">
@@ -70,7 +70,9 @@
                             <p class="block-help">
                                 {{ __("Auto replies don't include your mailbox signature, so be sure to add your contact information if necessary.") }}
                             </p>
-                            @include('partials/field_error', ['field'=>'auto_reply_message'])
+                            <div class="{{ $errors->has('auto_reply_message') ? ' has-error' : '' }}">
+                                @include('partials/field_error', ['field'=>'auto_reply_message'])
+                            </div>
                         </div>
                     </div>
 

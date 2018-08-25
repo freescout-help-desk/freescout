@@ -684,4 +684,22 @@ class Conversation extends Model
 
         return $query_conversations;
     }
+
+    /**
+     * Replace vars in signature.
+     */
+    public function getSignatureProcessed()
+    {
+        if (!\App\Mail\Mail::hasVars($this->mailbox->signature)) {
+            return $this->mailbox->signature;
+        }
+        $data = [
+            'mailbox'      => $this->mailbox,
+            'conversation' => $this,
+            'customer'     => $this->customer,
+        ];
+
+        // Set variables
+        return \App\Mail\Mail::replaceMailVars($this->mailbox->signature, $data);
+    }
 }
