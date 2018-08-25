@@ -218,6 +218,7 @@ class FetchEmails extends Command
 
                     // Is it a message from Customer or User replied to the notification
                     preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $in_reply_to, $m);
+
                     if (!$is_bounce && !empty($m[1]) && !empty($m[2])) {
                         // Reply from User to the notification
                         $prev_thread = Thread::find($m[1]);
@@ -233,6 +234,7 @@ class FetchEmails extends Command
                         }
                         $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
                     } elseif (!$is_bounce && ($user = User::where('email', $from)->first()) && $in_reply_to && ($prev_thread = Thread::where('message_id', $in_reply_to)->first()) && $prev_thread->created_by_user_id == $user->id) {
+
                         // Reply from customer to his reply to the notification
                         $user_id = $user->id;
                         $message_from_customer = false;
@@ -272,6 +274,9 @@ class FetchEmails extends Command
                                 
                                 if ($prev_thread_id) {
                                     $prev_thread = Thread::find($prev_thread_id);
+                                } else {
+                                    // Customer replied to his own message
+                                    $prev_thread = Thread::where('message_id', $prev_message_id)->first();
                                 }
                             }
                             if (!empty($prev_thread)) {
@@ -279,6 +284,7 @@ class FetchEmails extends Command
                             }
                         }
                     }
+
                     if ($message->hasHTMLBody()) {
                         // Get body and replace :cid with images URLs
                         $body = $message->getHTMLBody(true);
