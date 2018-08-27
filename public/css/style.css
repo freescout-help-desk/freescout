@@ -455,6 +455,30 @@ select.form-control {
 .has-error .form-control[data-parsley-exclude="true"] {
     border-color: #ccc;
 }
+.input-md {
+    height: 38px;
+    /*padding: 10px 16px;*/
+    /*font-size: 18px;*/
+    line-height: 18px;
+    /*border-radius: 3px;*/
+}
+select.input-lg {
+    height: 38px;
+    line-height: 38px;
+}
+textarea.input-md,
+select[multiple].input-md {
+    height: auto;
+}
+.input-ajax {
+    padding-right: 30px;
+}
+.input-ajax-active:after {
+    content: "";
+    position: absolute;
+    background: url('/img/loader-tiny.gif') 50% 50% no-repeat transparent;
+    right: 10px;
+}
 
 /**
  * Cards
@@ -1903,7 +1927,7 @@ table.table-conversations td.conv-attachment {
     opacity: 0.7;
 }
 .modal-body {
-    min-height: 150px;
+    min-height: 115px;
 }
 .modal-loader img {
     position: absolute;
@@ -2000,6 +2024,19 @@ table.table-conversations td.conv-attachment {
 }
 .onoffswitch-checkbox:checked + .onoffswitch-label:before {
     right: 0px; 
+}
+
+/**
+ * Change customer
+ */
+.customer-not-found-title {
+    display: none;
+}
+.customer-not-found .customer-not-found-title {
+    display: block;
+}
+.customer-not-found .customer-create-title {
+    display: none;
 }
 
 /**

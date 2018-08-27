@@ -587,6 +587,8 @@ class ConversationsController extends Controller
                 return $this->ajaxHtmlSendLog();
             case 'show_original':
                 return $this->ajaxHtmlShowOriginal();
+            case 'change_customer':
+                return $this->ajaxHtmlChangeCustomer();
         }
 
         abort(404);
@@ -657,6 +659,32 @@ class ConversationsController extends Controller
 
         return view('conversations/ajax_html/show_original', [
             'thread' => $thread,
+        ]);
+    }
+
+    /**
+     * Change conversation customer.
+     */
+    public function ajaxHtmlChangeCustomer()
+    {
+        $conversation_id = Input::get('conversation_id');
+        if (!$conversation_id) {
+            abort(404);
+        }
+
+        $conversation = Conversation::find($conversation_id);
+        if (!$conversation) {
+            abort(404);
+        }
+
+        $user = auth()->user();
+
+        if (!$user->can('view', $conversation)) {
+            abort(403);
+        }
+
+        return view('conversations/ajax_html/change_customer', [
+            'conversation' => $conversation,
         ]);
     }
 

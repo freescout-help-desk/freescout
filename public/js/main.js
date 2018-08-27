@@ -793,6 +793,7 @@ function showModal(a, onshow)
     var no_close_btn = a.attr('data-no-close-btn');
     var no_footer = a.attr('data-modal-no-footer');
     var modal_class = a.attr('data-modal-class');
+    var on_load = a.attr('data-modal-on-load');
     // Fit modal body into the screen
     var fit = a.attr('data-modal-fit');
     var size = a.attr('data-modal-size'); // lg or sm
@@ -828,12 +829,19 @@ function showModal(a, onshow)
 
     if (body) {
         modal.children().find(".modal-body").html($(body).html());
+        if (on_load && typeof(window[on_load]) == "function") {
+        	window[on_load](modal);
+        }
     } else {
         setTimeout(function(){
             $.ajax({
                 url: remote,
                 success: function(html) {
                     modal.children().find(".modal-body").html(html);
+
+			        if (on_load && typeof(window[on_load]) == "function") {
+			        	window[on_load](modal);
+			        }
                 },
                 error: function(data) {
                     modal.children().find(".modal-body").html('<p class="alert alert-danger">'+Lang.get("messages.error_occured")+'</p>');
@@ -921,4 +929,9 @@ function conversationPagination()
 	
 		e.preventDefault();
 	});	
+}
+
+function changeCustomerInit()
+{
+	alert(1);
 }

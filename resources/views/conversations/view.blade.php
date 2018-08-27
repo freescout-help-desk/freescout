@@ -150,7 +150,8 @@
                     <a href="javascript:void(0)" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                         <li role="presentation"><a href="{{ route('customers.update', ['id' => $customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
-                        <li role="presentation"><a href="javascript:alert('todo: implement customer changing');void(0);" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
+                        <li role="presentation"><a href="{{ route('conversations.ajax_html', ['action' => 
+                                        'change_customer']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Change Customer") }}" data-modal-no-footer="true" data-modal-on-load="changeCustomerInit" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
                         <li role="presentation" class="customer-hist-trigger"><a data-toggle="collapse" href="#collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
                     </ul>
                 </div>

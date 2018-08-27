@@ -267,8 +267,8 @@ th {
 @font-face {
   font-family: 'Glyphicons Halflings';
 
-  src: url('../fonts/glyphicons/glyphicons-halflings-regular.eot');
-  src: url('../fonts/glyphicons/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons/glyphicons-halflings-regular.woff2') format('woff2'), url('../fonts/glyphicons/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+  src: url('/fonts/glyphicons/glyphicons-halflings-regular.eot');
+  src: url('/fonts/glyphicons/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/fonts/glyphicons/glyphicons-halflings-regular.woff2') format('woff2'), url('/fonts/glyphicons/glyphicons-halflings-regular.woff') format('woff'), url('/fonts/glyphicons/glyphicons-halflings-regular.ttf') format('truetype'), url('/fonts/glyphicons/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
 .glyphicon {
   position: relative;
@@ -2570,7 +2570,8 @@ output {
   color: #555;
   background-color: #fff;
   background-image: none;
-  border: 1px solid #ccc;
+  /*border: 1px solid #ccc;*/
+  border: 1px solid #c1cbd4;
   border-radius: 3px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
           box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
@@ -2585,14 +2586,15 @@ output {
           box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
 }
 .form-control::-moz-placeholder {
-  color: #999;
+  /*color: #999;*/
+  color: #b4c0ca;
   opacity: 1;
 }
 .form-control:-ms-input-placeholder {
-  color: #999;
+  color: #b4c0ca;
 }
 .form-control::-webkit-input-placeholder {
-  color: #999;
+  color: #b4c0ca;
 }
 .form-control::-ms-expand {
   background-color: transparent;
@@ -5940,7 +5942,7 @@ button.close {
   bottom: 0;
   left: 0;
   z-index: 1040;
-  background-color: #000;
+  background-color: #337ab7;
 }
 .modal-backdrop.fade {
   filter: alpha(opacity=0);
