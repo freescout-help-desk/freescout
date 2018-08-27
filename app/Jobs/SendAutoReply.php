@@ -54,7 +54,7 @@ class SendAutoReply implements ShouldQueue
         $message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_AUTO_REPLY.'-'.$this->thread->id.'-'.md5($this->thread->id).'@'.$this->mailbox->getEmailDomain();
         $headers['Message-ID'] = $message_id;
 
-        $customer_email = $this->customer->getMainEmail(); // todo: get customer email linked to conversation
+        $customer_email = $this->conversation->customer_email;
         $recipients = [$customer_email];
         $failures   = [];
         $exception  = null;
@@ -123,7 +123,6 @@ class SendAutoReply implements ShouldQueue
            ->causedBy($this->customer)
            ->withProperties([
                 'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
-                //'to'       => $this->customer->getMainEmail(),
             ])
            ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
            ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);

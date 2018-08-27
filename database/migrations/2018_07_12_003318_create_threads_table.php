@@ -31,6 +31,11 @@ class CreateThreadsTable extends Migration
             // Original body after thread text is changed
             $table->longText('body_original')->nullable();
             $table->text('headers')->nullable();
+            // Email from
+            $table->string('from', 191)->nullable();
+            // To, CC and BCC are storing original incoming message values.
+            // Used for display only.
+            // For messages from user To must be customer's email.
             $table->text('to')->nullable(); // JSON
             $table->text('cc')->nullable(); // JSON
             $table->text('bcc')->nullable(); // JSON

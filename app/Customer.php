@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Email;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
@@ -464,7 +465,7 @@ class Customer extends Model
         if ($this->first_name || $this->last_name) {
             return $this->first_name.' '.$this->last_name;
         } elseif ($email_if_empty) {
-            return $this->getNameFromEmail();
+            return $this->getMainEmail();
         }
 
         return '';
@@ -511,14 +512,14 @@ class Customer extends Model
             $deleted_emails = [];
             foreach ($this->emails as $email) {
                 foreach ($emails as $email_address) {
-                    if (Email::sanatizeEmail($email->email) == Email::sanatizeEmail($email_address)) {
+                    if (Email::sanitizeEmail($email->email) == Email::sanitizeEmail($email_address)) {
                         continue 2;
                     }
                 }
                 $deleted_emails[] = $email;
             }
             foreach ($emails as $email_address) {
-                $email_address = Email::sanatizeEmail($email_address);
+                $email_address = Email::sanitizeEmail($email_address);
                 if (!$email_address) {
                     continue;
                 }

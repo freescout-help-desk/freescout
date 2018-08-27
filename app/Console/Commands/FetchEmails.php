@@ -302,13 +302,13 @@ class FetchEmails extends Command
                     $subject = $message->getSubject();
 
                     $to = $this->formatEmailList($message->getTo());
-                    $to = $mailbox->removeMailboxEmailsFromList($to);
+                    //$to = $mailbox->removeMailboxEmailsFromList($to);
 
                     $cc = $this->formatEmailList($message->getCc());
-                    $cc = $mailbox->removeMailboxEmailsFromList($cc);
+                    //$cc = $mailbox->removeMailboxEmailsFromList($cc);
 
                     $bcc = $this->formatEmailList($message->getBcc());
-                    $bcc = $mailbox->removeMailboxEmailsFromList($bcc);
+                    //$bcc = $mailbox->removeMailboxEmailsFromList($bcc);
 
                     // Create customers
                     $emails = array_merge($message->getFrom(), $message->getReplyTo(), $message->getTo(), $message->getCc(), $message->getBcc());
@@ -329,7 +329,7 @@ class FetchEmails extends Command
                             continue;
                         }
 
-                        $new_thread_id = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $to, $cc, $bcc, $body, $attachments, $message->getHeader());
+                        $new_thread_id = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $from, $to, $cc, $bcc, $body, $attachments, $message->getHeader());
                     }
 
                     if ($new_thread_id) {
@@ -375,9 +375,6 @@ class FetchEmails extends Command
      */
     public function saveCustomerThread($mailbox_id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers)
     {
-        // Copy extra recipients to CC
-        $cc = array_merge($cc, $to);
-
         // Find conversation
         $new = false;
         $conversation = null;
@@ -389,7 +386,8 @@ class FetchEmails extends Command
 
             // If reply came from another customer: change customer, add original as CC
             if ($conversation->customer_id != $customer->id) {
-                $cc[] = $conversation->customer->getMainEmail();
+                $cc[] = $conversation->customer_email;
+                // todo: trigger event
                 $conversation->customer_id = $customer->id;
             }
         } else {
@@ -400,8 +398,6 @@ class FetchEmails extends Command
             $conversation->type = Conversation::TYPE_EMAIL;
             $conversation->state = Conversation::STATE_PUBLISHED;
             $conversation->subject = $subject;
-            $conversation->setCc($cc);
-            $conversation->setBcc($bcc);
             $conversation->setPreview($body);
             if (count($attachments)) {
                 $conversation->has_attachments = true;
@@ -412,6 +408,10 @@ class FetchEmails extends Command
             $conversation->source_via = Conversation::PERSON_CUSTOMER;
             $conversation->source_type = Conversation::SOURCE_TYPE_EMAIL;
         }
+        // Save extra recipients to CC
+        $conversation->setCc(array_merge($cc, $to));
+        $conversation->setBcc($bcc);
+        $conversation->customer_email = $from;
         // Reply from customer makes conversation active
         $conversation->status = Conversation::STATUS_ACTIVE;
         $conversation->last_reply_at = $now;
@@ -430,6 +430,7 @@ class FetchEmails extends Command
         $thread->message_id = $message_id;
         $thread->headers = $headers;
         $thread->body = $body;
+        $thread->from = $from;
         $thread->setTo($to);
         $thread->setCc($cc);
         $thread->setBcc($bcc);
@@ -457,21 +458,21 @@ class FetchEmails extends Command
     /**
      * Save email reply from user as thread.
      */
-    public function saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $to, $cc, $bcc, $body, $attachments, $headers)
+    public function saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $from, $to, $cc, $bcc, $body, $attachments, $headers)
     {
-        // Copy extra recipients to CC
-        $cc = array_merge($cc, $to);
-
         $conversation = null;
         $now = date('Y-m-d H:i:s');
 
         $conversation = $prev_thread->conversation;
         // Determine assignee
-        // mailbe we need to check mailbox->ticket_assignee here, maybe not
+        // maybe we need to check mailbox->ticket_assignee here, maybe not
         if (!$conversation->user_id) {
             $conversation->user_id = $user_id;
         }
 
+        // Save extra recipients to CC
+        $conversation->setCc(array_merge($cc, $to));
+        $conversation->setBcc($bcc);
         // Reply from user makes conversation pending
         $conversation->status = Conversation::STATUS_PENDING;
         $conversation->last_reply_at = $now;
@@ -491,7 +492,9 @@ class FetchEmails extends Command
         $thread->message_id = $message_id;
         $thread->headers = $headers;
         $thread->body = $body;
-        $thread->setTo($to);
+        $thread->from = $from;
+        // To must be customer's email
+        $thread->setTo([$conversation->customer_email]);
         $thread->setCc($cc);
         $thread->setBcc($bcc);
         $thread->source_via = Thread::PERSON_USER;

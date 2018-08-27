@@ -23,11 +23,23 @@ class DatabaseSeeder extends Seeder
             for ($i = 0; $i < 7; $i++) {
                 $customer = factory(App\Customer::class)->create();
 
-                $customer->emails()->save(factory(App\Email::class)->make());
+                $email = factory(App\Email::class)->make();
+                $customer->emails()->save($email);
 
-                $conversation = factory(App\Conversation::class)->create(['created_by_user_id' => $user->id, 'mailbox_id' => $m->id, 'customer_id' => $customer->id, 'user_id' => $user->id, 'status' => array_rand([Conversation::STATUS_ACTIVE => 1, Conversation::STATUS_PENDING => 1])]);
+                $conversation = factory(App\Conversation::class)->create([
+                    'created_by_user_id' => $user->id, 
+                    'mailbox_id' => $m->id, 
+                    'customer_id' => $customer->id, 
+                    'customer_email' => $email->email, 
+                    'user_id' => $user->id, 
+                    'status' => array_rand([Conversation::STATUS_ACTIVE => 1, Conversation::STATUS_PENDING => 1])
+                ]);
 
-                $thread = factory(App\Thread::class)->make(['customer_id' => $customer->id, 'to' => $customer->getMainEmail(), 'conversation_id' => $conversation->id]);
+                $thread = factory(App\Thread::class)->make([
+                    'customer_id' => $customer->id, 
+                    'to' => $email->email, 
+                    'conversation_id' => $conversation->id
+                ]);
                 $conversation->threads()->save($thread);
             }
         });

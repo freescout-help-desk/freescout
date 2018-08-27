@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\ActivityLog;
 use App\Option;
 use App\SendLog;
+use App\Thread;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -62,8 +63,9 @@ class SecureController extends Controller
             $activities = ActivityLog::inLog($request->name)->orderBy('created_at', 'desc')->paginate($page_size);
             $name = $request->name;
         } elseif (count($names)) {
-            $activities = ActivityLog::inLog($names[0])->orderBy('created_at', 'desc')->paginate($page_size);
-            $name = $names[0];
+            $name =  ActivityLog::NAME_OUT_EMAILS;
+            // $activities = ActivityLog::inLog($names[0])->orderBy('created_at', 'desc')->paginate($page_size);
+            // $name = $names[0];
         }
 
         if ($name != ActivityLog::NAME_OUT_EMAILS) {
@@ -114,7 +116,7 @@ class SecureController extends Controller
 
                 $conversation = '';
                 if ($record->thread_id) {
-                    $conversation = $record->thread->conversation->number;
+                    $conversation = Thread::find($record->thread_id);
                 }
                 
                 $status = $record->getStatusName();
@@ -162,15 +164,16 @@ class SecureController extends Controller
             $activities = ActivityLog::inLog($request->name)->orderBy('created_at', 'desc')->get();
             $name = $request->name;
         } elseif (count($names = ActivityLog::select('log_name')->distinct()->get()->pluck('log_name'))) {
-            $activities = ActivityLog::inLog($names[0])->orderBy('created_at', 'desc')->get();
-            $name = $names[0];
+            $name =  ActivityLog::NAME_OUT_EMAILS;
+            // $activities = ActivityLog::inLog($names[0])->orderBy('created_at', 'desc')->get();
+            // $name = $names[0];
         }
 
         switch ($request->action) {
             case 'clean':
-                if ($name) {
+                if ($name && $name != ActivityLog::NAME_OUT_EMAILS) {
                     ActivityLog::where('log_name', $name)->delete();
-                    \Session::flash('flash_success_floating', __('Log successfully cleaned'));
+                    \Session::flash('flash_success_floating', __('Log successfully cleared'));
                 }
                 break;
         }

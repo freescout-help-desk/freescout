@@ -91,20 +91,35 @@
                             <input type="hidden" name="mailbox_id" value="{{ $mailbox->id }}"/>
                             <input type="hidden" name="is_note" value=""/>
 
-                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} cc-container">
+                            @if (!empty($to_customers))
+                                <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }} conv-recipient">
+                                    <label for="to" class="control-label">{{ __('To') }}</label>
+
+                                    <div class="conv-reply-field">
+                                        <select name="to" class="form-control">
+                                            @foreach ($to_customers as $to_customer)
+                                                <option value="{{ $to_customer['email'] }}" @if ($to_customer['email'] == $conversation->customer_email)selected="selected"@endif>{{ $to_customer['customer']->getFullName(true) }} &lt;{{ $to_customer['email'] }}&gt;</option>
+                                            @endforeach
+                                        </select>
+                                        @include('partials/field_error', ['field'=>'to'])
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} conv-recipient">
                                 <label for="cc" class="control-label">{{ __('Cc') }}</label>
 
                                 <div class="conv-reply-field">
-                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', implode(',', $conversation->getCcArray())) }}">
+                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', implode(',', $conversation->getCcArray(array_merge($mailbox->getEmails(), [$conversation->customer_email])))) }}">
                                     @include('partials/field_error', ['field'=>'cc'])
                                 </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }} bcc-container">
+                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }} conv-recipient">
                                 <label for="bcc" class="control-label">{{ __('Bcc') }}</label>
 
                                 <div class="conv-reply-field">
-                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', implode(',', $conversation->getBccArray())) }}">
+                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', implode(',', $conversation->getBccArray(array_merge($mailbox->getEmails(), [$conversation->customer_email])))) }}">
 
                                     @include('partials/field_error', ['field'=>'bcc'])
                                 </div>
@@ -130,7 +145,7 @@
         </div>
         <div id="conv-layout-customer">
             <div class="conv-customer-block conv-sidebar-block">
-                @include('customers/profile_snippet', ['customer' => $customer])
+                @include('customers/profile_snippet', ['customer' => $customer, 'main_email' => $conversation->customer_email])
                 <div class="dropdown customer-trigger" data-toggle="tooltip" title="{{ __("Settings") }}">
                     <a href="javascript:void(0)" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -193,7 +208,7 @@
                         </div>
                     </div>
                 @else
-                    <div class="thread thread-type-{{ $thread->getTypeName() }}">
+                    <div class="thread thread-type-{{ $thread->getTypeName() }}" id="thread-{{ $thread->id }}">
                         <div class="thread-photo">
                             <img src="/img/default-avatar.png" alt="">
                         </div>
@@ -203,9 +218,9 @@
                                     <div class="thread-person">
                                         <strong>
                                             @if ($thread->type == App\Thread::TYPE_CUSTOMER)
-                                                {{ $thread->customer->getFullName(true) }}
+                                                <a href="{{ $thread->customer->url() }}">{{ $thread->customer->getFullName(true) }}</a>
                                             @else
-                                                @include('conversations/thread_by')
+                                                @include('conversations/thread_by', ['as_link' => true])
                                             @endif
                                         </strong> 
                                         @if ($loop->last)
@@ -217,8 +232,11 @@
                                         @endif
                                     </div>
                                     <div class="thread-recipients">
-                                        @if ($thread->getToArray() == 1 && $thread->getToArray()[0] == $mailbox->email)
-                                        @elseif ($thread->getToArray())
+                                        @if ($loop->last 
+                                            || ($thread->type == App\Thread::TYPE_CUSTOMER && count($thread->getToArray($mailbox->getEmails())))
+                                            || ($thread->type == App\Thread::TYPE_MESSAGE && !in_array($conversation->customer_email, $thread->getToArray()))
+                                            || ($thread->type == App\Thread::TYPE_MESSAGE && count($customer->emails) > 1)
+                                        )
                                             <div>
                                                 <strong>
                                                     {{ __("To") }}:
@@ -226,8 +244,7 @@
                                                 {{ implode(', ', $thread->getToArray()) }}
                                             </div>
                                         @endif
-                                        @if ($thread->getCcArray() == 1 && $thread->getCcArray()[0] == $mailbox->email)
-                                        @elseif ($thread->getCcArray())
+                                        @if ($thread->getCcArray($mailbox->getEmails()))
                                             <div>
                                                 <strong>
                                                     {{ __("Cc") }}:
@@ -235,8 +252,7 @@
                                                 {{ implode(', ', $thread->getCcArray()) }}
                                             </div>
                                         @endif
-                                        @if ($thread->getBccArray() == 1 && $thread->getBccArray()[0] == $mailbox->email)
-                                        @elseif ($thread->getBccArray())
+                                        @if ($thread->getBccArray($mailbox->getEmails()))
                                             <div>
                                                 <strong>
                                                     {{ __("Bcc") }}:
@@ -292,13 +308,13 @@
                                 <li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }} (todo)</a></li>
                                 <li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>
                                 <li><a href="javascript:alert('todo: implement creating new conversation from thread');void(0);" title="{{ __("Start a conversation from this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
-                                @if ($thread->headers)
-                                    <li><a href="{{ route('conversations.ajax_html', ['action' => 
-                                        'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message headers") }}" data-trigger="modal" data-modal-title="{{ __("Original Message Headers") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
-                                @endif
                                 @if (Auth::user()->isAdmin())
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
+                                @endif
+                                @if ($thread->headers)
+                                    <li><a href="{{ route('conversations.ajax_html', ['action' => 
+                                        'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message headers") }}" data-trigger="modal" data-modal-title="{{ __("Original Message Headers") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
                                 @endif
                             </ul>
                         </div>

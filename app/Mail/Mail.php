@@ -74,7 +74,7 @@ class Mail
             '{%customer.fullName%}'   => $data['customer']->getFullName(true),
             '{%customer.firstName%}'  => $data['customer']->getFirstName(true),
             '{%customer.lastName%}'   => $data['customer']->last_name,
-            '{%customer.email%}'      => $data['customer']->getMainEmail()
+            '{%customer.email%}'      => $data['conversation']->customer_email
         ];
 
         return strtr($text, $vars);
@@ -86,5 +86,13 @@ class Mail
     public static function hasVars($text)
     {
         return preg_match("/({%|%})/", $text);
+    }
+
+    /**
+     * Remove email from a list of emails.
+     */
+    public static function removeEmailFromArray($list, $email)
+    {
+        return array_diff($list, [$email]);
     }
 }

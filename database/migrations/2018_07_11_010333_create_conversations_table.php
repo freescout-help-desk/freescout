@@ -27,6 +27,12 @@ class CreateConversationsTable extends Migration
             $table->unsignedTinyInteger('status')->default(Conversation::STATUS_ACTIVE);
             $table->unsignedTinyInteger('state')->default(Conversation::STATE_DRAFT);
             $table->string('subject', 998);
+            // Customer's email to which replies from users are sent.
+            // Customer may have several emails, so we need to know which 
+            // email to use for each conversation.
+            $table->string('customer_email', 191)->nullable();
+            // CC and BCC store values from the last reply from customer or user
+            // For incoming messages values are stored as is
             $table->text('cc')->nullable(); // JSON
             $table->text('bcc')->nullable(); // JSON
             $table->string('preview', Conversation::PREVIEW_MAXLENGTH);

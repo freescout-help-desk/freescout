@@ -66,14 +66,48 @@ class ConversationsController extends Controller
 
         $after_send = $conversation->mailbox->getUserSettings($user->id)->after_send;
 
+        $customer = $conversation->customer;
+
+        // Detect customers and emails to which user can reply
+        $to_customers = [];
+        // Add all customer emails
+        $customer_emails = $customer->emails;
+        $distinct_emails = [];
+        if (count($customer_emails) > 1) {
+            foreach ($customer_emails as $customer_email) {
+                $to_customers[] = [
+                    'customer' => $customer,
+                    'email'    => $customer_email->email,
+                ];
+                $distinct_emails[] = $customer_email->email;
+            }
+        }
+        // Add emails of customers from whom there were replies in the conversation
+        $prev_customers_emails = Thread::select('from', 'customer_id')
+            ->where('conversation_id', $id)
+            ->where('type', Thread::TYPE_CUSTOMER)
+            ->where('from', '<>', $conversation->customer_email)
+            ->groupBy(['from', 'customer_id'])
+            ->get();
+
+        foreach ($prev_customers_emails as $prev_customer) {
+            if (!in_array($prev_customer->from, $distinct_emails) && $prev_customer->customer && $prev_customer->from) {
+                $to_customers[] = [
+                    'customer' => $prev_customer->customer,
+                    'email'    => $prev_customer->from,
+                ];
+            }
+        }
+
         return view('conversations/view', [
             'conversation' => $conversation,
             'mailbox'      => $conversation->mailbox,
-            'customer'     => $conversation->customer,
+            'customer'     => $customer,
             'threads'      => $conversation->threads()->orderBy('created_at', 'desc')->get(),
             'folder'       => $folder,
             'folders'      => $conversation->mailbox->getAssesibleFolders(),
             'after_send'   => $after_send,
+            'to_customers' => $to_customers,
         ]);
     }
 
@@ -352,26 +386,27 @@ class ConversationsController extends Controller
                         $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
                     }
 
+                    // Conversation
                     $now = date('Y-m-d H:i:s');
                     $status_changed = false;
                     $user_changed = false;
                     if ($new) {
                         // New conversation
-                        $customer = Customer::create($to_array[0]);
+                        $customer_email = $to_array[0];
+                        $customer = Customer::create($customer_email);
 
                         $conversation = new Conversation();
                         $conversation->type = Conversation::TYPE_EMAIL;
                         $conversation->state = Conversation::STATE_PUBLISHED;
                         $conversation->subject = $request->subject;
-                        $conversation->setCc($request->cc);
-                        $conversation->setBcc($request->bcc);
+                        // CC and BCC are set on thread create
                         $conversation->setPreview($request->body);
                         if ($has_attachments) {
                             $conversation->has_attachments = true;
                         }
-                        // Set folder id
                         $conversation->mailbox_id = $request->mailbox_id;
                         $conversation->customer_id = $customer->id;
+                        $conversation->customer_email = $customer_email;
                         $conversation->created_by_user_id = auth()->user()->id;
                         $conversation->source_via = Conversation::PERSON_USER;
                         $conversation->source_type = Conversation::SOURCE_TYPE_WEB;
@@ -393,7 +428,19 @@ class ConversationsController extends Controller
                     } else {
                         $conversation->user_id = null;
                     }
+
+                    // To is a single email string
+                    $to = '';
+                    if (!empty($request->to)) {
+                        $to = $request->to;
+                    } else {
+                        $to = $conversation->customer_email;
+                    }
+
                     if (!$is_note) {
+                        // Save extra recipients to CC
+                        $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                        $conversation->setBcc($request->bcc);
                         $conversation->last_reply_at = $now;
                         $conversation->last_reply_from = Conversation::PERSON_USER;
                         $conversation->user_updated_at = $now;
@@ -427,7 +474,8 @@ class ConversationsController extends Controller
                     $thread->status = $request->status;
                     $thread->state = Thread::STATE_PUBLISHED;
                     $thread->body = $request->body;
-                    $thread->setTo($request->to);
+                    $thread->setTo($to);
+                    // We save CC and BCC as is and filter emails when sending replies
                     $thread->setCc($request->cc);
                     $thread->setBcc($request->bcc);
                     $thread->source_via = Thread::PERSON_USER;

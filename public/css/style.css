@@ -1238,6 +1238,9 @@ table.table-conversations td.conv-attachment {
     padding: 0;
     white-space: nowrap;
 }
+.conv-info .btn {
+    height: 30px;
+}
 .conv-info > li {
     display: inline-block;
     margin: 0 4px;
@@ -1370,6 +1373,11 @@ table.table-conversations td.conv-attachment {
     color: #253540;
     font-size: 18px;
 }
+.thread-person strong a,
+.thread-person strong a:hover,
+.thread-person strong a:focus {
+    color: #253540;
+}
 .thread-info {
     color: #a5b2bd;
     float: right;
@@ -1378,7 +1386,16 @@ table.table-conversations td.conv-attachment {
 }
 .thread-recipients {
     clear: both;
-    margin: -4px 0 14px;
+    margin: -8px 0 14px;
+    color: #a5b2bd;
+    font-size: 12px;
+    line-height: 14px;
+}
+.thread-recipients strong {
+    color: #72808e;
+}
+.thread-recipients div {
+    margin-top: 2px;
 }
 .thread-body {
     color: #253540;
@@ -1526,8 +1543,7 @@ table.table-conversations td.conv-attachment {
 }
 .btn-add-note-text,
 .conv-note-block .btn-send-text,
-.conv-note-block .cc-container,
-.conv-note-block .bcc-container {
+.conv-note-block .conv-recipient {
     display: none;
 }
 .conv-note-block .btn-add-note-text {
@@ -1713,9 +1729,9 @@ table.table-conversations td.conv-attachment {
     .customer-trigger {
         top: 16px;
     }
-    .customer-email {
+    /*.customer-email {
         width: 100%;
-    }
+    }*/
     .customer-email:before {
         content: '<';
     }

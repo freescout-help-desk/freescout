@@ -216,10 +216,14 @@ class Thread extends Model
      *
      * @return array
      */
-    public function getToArray()
+    public function getToArray($exclude_array = [])
     {
         if ($this->to) {
-            return json_decode($this->to);
+            $to_array = json_decode($this->to);
+            if ($to_array && $exclude_array) {
+                $to_array = array_diff($to_array, $exclude_array);
+            }
+            return $to_array;
         } else {
             return [];
         }
@@ -238,10 +242,14 @@ class Thread extends Model
      *
      * @return array
      */
-    public function getCcArray()
+    public function getCcArray($exclude_array = [])
     {
         if ($this->cc) {
-            return json_decode($this->cc);
+            $cc_array = json_decode($this->cc);
+            if ($cc_array && $exclude_array) {
+                $cc_array = array_diff($cc_array, $exclude_array);
+            }
+            return $cc_array;
         } else {
             return [];
         }
@@ -252,10 +260,14 @@ class Thread extends Model
      *
      * @return array
      */
-    public function getBccArray()
+    public function getBccArray($exclude_array = [])
     {
         if ($this->bcc) {
-            return json_decode($this->bcc);
+            $bcc_array = json_decode($this->bcc);
+            if ($bcc_array && $exclude_array) {
+                $bcc_array = array_diff($bcc_array, $exclude_array);
+            }
+            return $bcc_array;
         } else {
             return [];
         }

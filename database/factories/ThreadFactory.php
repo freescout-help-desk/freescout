@@ -29,7 +29,7 @@ $factory->define(Thread::class, function (Faker $faker, $params) {
         'customer_id'             => $customer_id,
         'state'                   => Thread::STATE_PUBLISHED,
         'body'                    => $faker->text(500),
-        'to'                      => $to,
+        'to'                      => json_encode([$to]),
         'cc'                      => json_encode([$faker->unique()->safeEmail]),
         'bcc'                     => json_encode([$faker->unique()->safeEmail]),
         'source_via'              => Thread::PERSON_CUSTOMER,

@@ -19,7 +19,7 @@
     <form method="post">
         {{ csrf_field() }}
         <div class="section-heading margin-bottom">
-            {{ __('Log Records') }} &nbsp;&nbsp;<button type="submit" name="action" value="clean" class="btn btn-default btn-xs" data-toggle="tooltip" title="{{ __('Clear this log') }}">{{ __('Clear Log') }}</button>
+            {{ __('Log Records') }} @if ($current_name != App\ActivityLog::NAME_OUT_EMAILS)&nbsp;&nbsp;<button type="submit" name="action" value="clean" class="btn btn-default btn-xs" data-toggle="tooltip" title="{{ __('Clear this log') }}">{{ __('Clear Log') }}</button>@endif
         </div>
     </form>
 
@@ -42,8 +42,8 @@
                                         <a href="{{ $row[$col]->url() }}">{{ $row[$col]->getFullName(true) }}</a>
                                     @elseif ($col == 'date')
                                         {{  App\User::dateFormat(new Illuminate\Support\Carbon($row[$col]), 'M j, H:i:s') }}
-                                    @elseif ($col == 'conversation')
-                                        <a href="{{ route('conversations.view', ['id' => $row[$col]]) }}" target="_blank">#{{ $row[$col] }}</a>
+                                    @elseif (is_object($row[$col]) && get_class($row[$col]) == 'App\Thread')
+                                        <a href="{{ route('conversations.view', ['id' => $row[$col]->conversation_id]) }}#thread-{{ $row[$col]->id }}" target="_blank">#{{ $row[$col]->conversation->number }}</a>
                                     @else
                                         {{ $row[$col] }}
                                     @endif

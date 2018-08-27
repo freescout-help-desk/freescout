@@ -25,6 +25,8 @@ class ThreadObserver
             $conversation->user_updated_at = $now;
         }
         if (in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE])) {
+            // $conversation->cc = $thread->cc;
+            // $conversation->bcc = $thread->bcc;
             $conversation->last_reply_at = $now;
             $conversation->last_reply_from = $thread->source_via;
         }

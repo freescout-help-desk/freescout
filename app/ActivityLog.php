@@ -59,9 +59,9 @@ class ActivityLog extends Activity
             case self::NAME_OUT_EMAILS:
                 return __('Outgoing Emails');
             case self::NAME_EMAILS_SENDING:
-                return __('Emails Sending');
+                return __('Send Errors');
             case self::NAME_EMAILS_FETCHING:
-                return __('Emails Fetching');
+                return __('Fetch Errors');
             default:
                 return ucfirst($log_name);
         }

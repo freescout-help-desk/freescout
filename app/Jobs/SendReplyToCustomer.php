@@ -82,9 +82,19 @@ class SendReplyToCustomer implements ShouldQueue
         $this->message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER.'-'.$this->last_thread->id.'-'.md5($this->last_thread->id).'@'.$mailbox->getEmailDomain();
         $headers['Message-ID'] = $this->message_id;
 
-        $this->customer_email = $this->customer->getMainEmail();
+        $this->customer_email = $this->conversation->customer_email;
         $cc_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getCcArray());
         $bcc_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getBccArray());
+
+        // Remove customer email from CC and BCC
+        $cc_array = \App\Mail\Mail::removeEmailFromArray($cc_array, $this->customer_email);
+        $bcc_array = \App\Mail\Mail::removeEmailFromArray($bcc_array, $this->customer_email);
+
+        // Remove from BCC emails which are present in CC
+        foreach ($cc_array as $cc_email) {
+            $bcc_array = \App\Mail\Mail::removeEmailFromArray($bcc_array, $cc_email);
+        }
+
         $this->recipients = array_merge([$this->customer_email], $cc_array, $bcc_array);
 
         try {
@@ -138,7 +148,7 @@ class SendReplyToCustomer implements ShouldQueue
            ->causedBy($this->customer)
            ->withProperties([
                 'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
-                'to'       => $this->customer->getMainEmail(),
+                'to'       => $this->customer_email,
             ])
            ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
            ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
