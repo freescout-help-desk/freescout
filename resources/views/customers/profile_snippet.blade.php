@@ -17,7 +17,7 @@
 		    @endif
 		    @foreach ($customer->emails as $email)
 		    	@if (empty($main_email) || $email->email != $main_email)
-	            	<li class="customer-email"><a href="#" title="{{ __('Email customer') }}" class="@if (empty($main_email)) && $loop->index == 0) contact-main @endif">{{ $email->email }}</a></li>
+	            	<li class="customer-email"><a href="#" title="{{ __('Email customer') }}" class="@if (empty($main_email) && $loop->index == 0) contact-main @endif">{{ $email->email }}</a></li>
 	            @endif
 	        @endforeach
 			@foreach ($customer->getPhones() as $phone)
