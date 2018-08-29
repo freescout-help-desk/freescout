@@ -93,7 +93,7 @@
                                 <ul class="dropdown-menu">
                                     @if (Auth::user()->isAdmin())
                                         {{--<li><a href="#">{{ __('Apps') }} (todo)</a></li>--}}
-                                        <li><a href="#">{{ __('Company') }} (todo)</a></li>
+                                        <li><a href="{{ route('settings') }}">{{ __('Settings') }}</a></li>
                                         {{--<li><a href="#">{{ __('Docs') }} (todo)</a></li>--}}
                                         <li><a href="{{ route('mailboxes') }}">{{ __('Mailboxes') }}</a></li>
                                     @endif

@@ -1,9 +1,9 @@
 <?php
 
-use App\User;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+use App\User;
 
 class CreateUsersTable extends Migration
 {
@@ -29,7 +29,7 @@ class CreateUsersTable extends Migration
             $table->string('emails', 100)->nullable();
             $table->string('job_title', 100)->nullable();
             $table->string('phone', 60)->nullable();
-            $table->unsignedTinyInteger('time_format')->default(2);
+            $table->unsignedTinyInteger('time_format')->default(Userr::TIME_FORMAT_24);
             $table->boolean('enable_kb_shortcuts')->default(true);
             //$table->boolean('is_user_workflow_related')->default(false);
             $table->boolean('locked')->default(false);

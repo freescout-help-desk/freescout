@@ -26,6 +26,10 @@ Route::get('/logs/{name?}', ['uses' => 'SecureController@logs', 'middleware' => 
 Route::post('/logs/{name?}', ['uses' => 'SecureController@logsSubmit', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);
 Route::get('/system', ['uses' => 'SecureController@system', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system');
 
+// Settings
+Route::get('/settings', ['uses' => 'SettingsController@general', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('settings');
+Route::post('/settings', ['uses' => 'SettingsController@generalSave', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('settings');
+
 // Users
 Route::get('/users', 'UsersController@users')->name('users');
 Route::get('/users/wizard', 'UsersController@create')->name('users.create');

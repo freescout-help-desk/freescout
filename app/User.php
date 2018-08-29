@@ -15,9 +15,6 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    // const CREATED_AT = 'created_at';
-    // const UPDATED_AT = 'modified_at';
-
     /**
      * Roles.
      */
@@ -47,6 +44,21 @@ class User extends Authenticatable
      */
     const TIME_FORMAT_12 = 1;
     const TIME_FORMAT_24 = 2;
+
+    /**
+     * Global user permissions.
+     */
+    const USER_PERM_DELETE_CONVERSATIONS = 1;
+    const USER_PERM_EDIT_CONVERSATIONS = 2;
+    const USER_PERM_EDIT_SAVED_REPLIES = 3;
+    const USER_PERM_EDIT_TAGS = 4;
+
+    public static $user_permissions = [
+        self::USER_PERM_DELETE_CONVERSATIONS,
+        self::USER_PERM_EDIT_CONVERSATIONS,
+        self::USER_PERM_EDIT_SAVED_REPLIES,
+        self::USER_PERM_EDIT_TAGS,
+    ];
 
     /**
      * The attributes that are not mass assignable.
@@ -315,6 +327,22 @@ class User extends Authenticatable
             $diff_text = preg_replace('/minutes?/', 'min', $diff_text);
 
             return $diff_text;
+        }
+    }
+
+    public static function getUserPermissionName($user_permission)
+    {
+        $user_permission_names = [
+            self::USER_PERM_DELETE_CONVERSATIONS => __('Users are allowed to delete notes/conversations'),
+            self::USER_PERM_EDIT_CONVERSATIONS => __('Users are allowed to edit notes/threads'),
+            self::USER_PERM_EDIT_SAVED_REPLIES => __('Users are allowed to edit/delete saved replies'),
+            self::USER_PERM_EDIT_TAGS => __('Users are allowed to manage tags'),
+        ];
+
+        if (!empty($user_permission_names[$user_permission])) {
+            return $user_permission_names[$user_permission];
+        } else {
+            return \Event::fire('filter.user_permission_name', [$user_permission]);
         }
     }
 }

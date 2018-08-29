@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container">
-    <div class="heading">{{ config('app.name') }} {{ __('Dashboard') }}</div>
+    <div class="heading">{{ App\Option::getCompanyName() }} {{ __('Dashboard') }}</div>
     @if (count($mailboxes))
         <div class="dash-cards margin-top">
             @foreach ($mailboxes as $mailbox)
