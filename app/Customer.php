@@ -660,13 +660,22 @@ class Customer extends Model
         $email_obj = Email::where('email', $email)->first();
         if ($email_obj) {
             $customer = $email_obj->customer;
+
+            if (empty($customer->first_name) && !empty($data['first_name'])) {
+                $customer->first_name = $data['first_name'];
+                if (empty($customer->last_name) && !empty($data['last_name'])) {
+                    $customer->last_name = $data['last_name'];
+                }
+                $customer->save();
+            }
         } else {
             $customer = new self();
             $email_obj = new Email();
             $email_obj->email = $email;
+
+            $customer->fill($data);
+            $customer->save();
         }
-        $customer->fill($data);
-        $customer->save();
 
         if (empty($email_obj->id) || !$email_obj->customer_id) {
             $email_obj->customer()->associate($customer);
