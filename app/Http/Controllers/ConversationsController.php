@@ -181,7 +181,7 @@ class ConversationsController extends Controller
                 if (!$response['msg'] && !$user->can('update', $conversation)) {
                     $response['msg'] = __('Not enough permissions');
                 }
-                if (!$response['msg'] && (int) $new_user_id != -1 && !in_array($new_user_id, $conversation->mailbox->userIdsHavingAccess())) {
+                if (!$response['msg'] && (int) $new_user_id != -1 && !$conversation->mailbox->userHasAccess($new_user_id)) {
                     $response['msg'] = __('Incorrect user');
                 }
                 if (!$response['msg']) {
@@ -564,6 +564,26 @@ class ConversationsController extends Controller
                     $response = $this->ajaxConversationsPagination($request, $response, $user);
                 }                
                 break;
+
+            // Change conversation customer
+            case 'conversation_change_customer':
+                $conversation = Conversation::find($request->conversation_id);
+                $customer_email = $request->customer_email;
+
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                }
+                if (!$response['msg'] && !$user->can('update', $conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+                if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Incorrect user');
+                }
+
+                $conversation->changeCustomer($customer_email, null, $user);
+
+                $response['status'] = 'success';
+                \Session::flash('flash_success_floating', __('Customer changed'));
 
             default:
                 $response['msg'] = 'Unknown action';

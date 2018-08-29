@@ -1,7 +1,7 @@
-@if (session('flash_success'))
+@if (session('flash_success') || session('flash_success_unescaped'))
     <div class="alert alert-success">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        {{ session('flash_success') }}
+        {{ session('flash_success') }}{!! session('flash_success_unescaped') !!}
     </div>
 @endif
 @if (session('flash_warning'))

@@ -291,6 +291,8 @@ function multiInputInit()
 	    $('.multi-add').click(function() {
 	    	var clone = $(this).parents('.multi-container:first').children('.multi-item:first').clone(true, true);
 	    	clone.find(':input').val('');
+	    	clone.find('.help-block').remove();
+	    	clone.removeClass('has-error');
 	    	clone.insertAfter($(this).parents('.multi-container:first').children('.multi-item:last'));
 		});
 		$('.multi-remove').click(function() {
@@ -774,9 +776,19 @@ function getQueryParam(name, qs) {
 }
 
 // Show bootstrap modal
-function showModal(a, onshow)
+function showModal(a, params)
 {
     var options = {};
+
+    if (typeof(params) == "undefined") {
+    	params = {};
+    }
+
+    if (typeof(a) == "undefined" || !a) {
+    	// Create dummy link
+    	a = $(document.createElement('a'));
+    }
+
     var title = a.attr('data-modal-title');
     if (title && title.charAt(0) == '#') {
         title = $(title).html();
@@ -789,30 +801,57 @@ function showModal(a, onshow)
     	remote = a.attr('href');
     }
     var body = a.attr('data-modal-body');
+    if (typeof(params.body) != "undefined") {
+    	body = params.body;
+    }
     var footer = a.attr('data-modal-footer');
     var no_close_btn = a.attr('data-no-close-btn');
-    var no_footer = a.attr('data-modal-no-footer');
+    if (typeof(params.no_footer) == "undefined") {
+    	params.no_footer = a.attr('data-modal-no-footer');
+    }
+    if (typeof(params.no_header) == "undefined") {
+    	params.no_header = a.attr('data-modal-no-header');
+    }
+    if (typeof(params.no_fade) == "undefined") {
+    	params.no_fade = a.attr('data-modal-no-fade');
+    }
     var modal_class = a.attr('data-modal-class');
-    var on_load = a.attr('data-modal-on-load');
+    var on_show = a.attr('data-modal-on-show');
+    if (typeof(params.on_show) != "undefined") {
+    	on_show = params.on_show;
+    }
+    // Size: lg or sm
+    if (typeof(params.size) == "undefined") {
+    	params.size = a.attr('data-modal-size');
+    }
+    if (typeof(params.width_auto) == "undefined") {
+    	params.width_auto = a.attr('data-modal-width-auto');
+    }
     // Fit modal body into the screen
     var fit = a.attr('data-modal-fit');
-    var size = a.attr('data-modal-size'); // lg or sm
+
     var modal;
 
-    if (size) {
-    	modal_class += ' modal-'+size;
+    if (params.size) {
+    	modal_class += ' modal-'+params.size;
+    }
+    if (params.width_auto) {
+    	modal_class += ' modal-width-auto';
+    }
+    if (typeof(modal_class) == "undefined") {
+    	modal_class = '';
     }
 
     var html = [
-    '<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="jsmodal-label" aria-hidden="true">',
+    '<div class="modal '+(params.no_fade == 'true' ? '' : 'fade')+'" tabindex="-1" role="dialog" aria-labelledby="jsmodal-label" aria-hidden="true">',
         '<div class="modal-dialog '+modal_class+'">',
             '<div class="modal-content">',
-                '<div class="modal-header">',
+                '<div class="modal-header '+(params.no_header == 'true' ? 'hidden' : '')+'">',
                     '<button type="button" class="close" data-dismiss="modal" aria-label="'+Lang.get("messages.close")+'"><span aria-hidden="true">&times;</span></button>',
                     '<h3 class="modal-title" id="jsmodal-label">'+title+'</h3>',
                 '</div>',
                 '<div class="modal-body '+(fit == 'true' ? 'modal-body-fit' : '')+'"><div class="text-center modal-loader"><img src="'+Vars.public_url+'/img/loader-grey.gif" width="31" height="31"/></div></div>',
-                '<div class="modal-footer '+(no_footer == 'true' ? 'hidden' : '')+'">',
+                '<div class="modal-footer '+(params.no_footer == 'true' ? 'hidden' : '')+'">',
                     (no_close_btn == 'true' ? '': '<button type="button" class="btn btn-default" data-dismiss="modal">'+Lang.get("messages.close")+'</button>'),
                     footer,
                 '</div>',
@@ -821,16 +860,24 @@ function showModal(a, onshow)
     '</div>'].join('');
     modal = $(html);
 
-    if (typeof(onshow) !== "undefined") {
-        modal.on('shown.bs.modal', onshow);
-    }
+    // if (typeof(onshow) !== "undefined") {
+    //     modal.on('shown.bs.modal', onshow);
+    // }
 
     modal.modal(options);
 
     if (body) {
-        modal.children().find(".modal-body").html($(body).html());
-        if (on_load && typeof(window[on_load]) == "function") {
-        	window[on_load](modal);
+    	var body_html = $(body).html();
+    	if (!body_html) {
+    		body_html = $('<div>'+body+'</div>').html()
+    	}
+        modal.children().find(".modal-body").html(body_html);
+        if (on_show) {
+        	if (typeof(window[on_show]) == "function") {
+        		window[on_show](modal);
+        	} else if (typeof(on_show) == "function") {
+        		on_show(modal);
+        	}
         }
     } else {
         setTimeout(function(){
@@ -839,8 +886,12 @@ function showModal(a, onshow)
                 success: function(html) {
                     modal.children().find(".modal-body").html(html);
 
-			        if (on_load && typeof(window[on_load]) == "function") {
-			        	window[on_load](modal);
+			        if (on_show) {
+			        	if (typeof(window[on_show]) == "function") {
+			        		window[on_show](modal);
+			        	} else if (typeof(on_show) == "function") {
+			        		on_show(modal);
+			        	}
 			        }
                 },
                 error: function(data) {
@@ -933,5 +984,98 @@ function conversationPagination()
 
 function changeCustomerInit()
 {
-	alert(1);
+	$(document).ready(function() {
+		var input = $(".change-customer-input");
+		input.select2({
+			ajax: {
+				url: laroute.route('customers.ajax_search'),
+				dataType: 'json',
+				delay: 250,
+				cache: true,
+				data: function (params) {
+					return {
+						q: params.term,
+						exclude_email: input.attr('data-customer_email')
+						//use_id: true
+					};
+				}/*,
+				beforeSend: function(){
+			    	showSelect2Loader(input);
+			    },
+			    complete: function(){
+			    	hideSelect2Loader(input);
+			    }*/
+			},
+			containerCssClass: "select2-multi-container", // select2-with-loader
+     		dropdownCssClass: "select2-multi-dropdown",
+			dropdownParent: $('.modal-dialog:visible:first'),
+			multiple: true,
+			maximumSelectionLength: 1,
+			placeholder: input.attr('placeholder'),
+			minimumInputLength: 1
+		});
+
+		// Show confirmation dialog on customer select
+		input.on('select2:selecting', function (e) {
+			if (typeof(e.params) == "undefined" || typeof(e.params.args.data) == "undefined") {
+				console.log(e);
+				return;
+			}
+			var data = e.params.args.data;
+			//el.select2('close');
+
+			var confirm_html = '<div>'+
+				'<div class="text-center">'+
+				'<div class="text-larger margin-top-10">'+Lang.get("messages.confirm_change_customer", {customer_email: data.id})+'</div>'+
+				'<div class="form-group margin-top">'+
+        		'<button class="btn btn-primary change-customer-ok" data-customer_email='+data.id+'>OK</button>'+
+        		'<button class="btn btn-link" data-dismiss="modal">'+Lang.get("messages.cancel")+'</button>'+
+        		'</div>';
+        		'</div>';
+        		'</div>';
+
+			showModal(null, {
+				body: confirm_html,
+				width_auto: 'true',
+				no_header: 'true',
+				no_footer: 'true',
+				no_fade: 'true',
+				size: 'sm',
+				on_show: function(modal) {
+					modal.children().find('.change-customer-ok:first').click(function(e) {
+						fsAjax({
+								action: 'conversation_change_customer',
+								customer_email: $(this).attr('data-customer_email'),
+								conversation_id: getGlobalAttr('conversation_id')
+							}, 
+							laroute.route('conversations.ajax'), 
+							function(response) {
+								if (typeof(response.status) != "undefined" && response.status == 'success') {
+									if (typeof(response.redirect_url) != "undefined") {
+										window.location.href = response.redirect_url;
+									} else {
+										window.location.href = '';
+									}
+								} else {
+									showAjaxError(response);
+									loaderHide();
+								}
+							}
+						);
+					});
+				}
+			});
+		    e.preventDefault();
+		});
+	});
 }
+
+/*function showSelect2Loader(input)
+{
+	input.closest('.select2-with-loader:first').addClass('loading');
+}
+
+function hideSelect2Loader(input)
+{
+	input.closest('.select2-with-loader:first').removeClass('loading');
+}*/

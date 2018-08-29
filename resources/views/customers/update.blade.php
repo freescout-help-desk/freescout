@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title_full', $customer->getFullName().' - '.__('Customer Profile'))
+@section('title_full', $customer->getFullName(true).' - '.__('Customer Profile'))
 
 @section('sidebar')
     @include('customers/profile_snippet')
@@ -20,7 +20,7 @@
                         <label for="first_name" class="col-sm-2 control-label">{{ __('First Name') }}</label>
 
                         <div class="col-md-6">
-                            <input id="first_name" type="text" class="form-control input-sized2" name="first_name" value="{{ old('first_name', $customer->first_name) }}" maxlength="20" required autofocus>
+                            <input id="first_name" type="text" class="form-control input-sized2" name="first_name" value="{{ old('first_name', $customer->first_name) }}" maxlength="20">
 
                             @include('partials/field_error', ['field'=>'first_name'])
                         </div>
@@ -30,7 +30,7 @@
                         <label for="last_name" class="col-sm-2 control-label">{{ __('Last Name') }}</label>
 
                         <div class="col-md-6">
-                            <input id="last_name" type="text" class="form-control input-sized2" name="last_name" value="{{ old('last_name', $customer->last_name) }}" maxlength="30" required autofocus>
+                            <input id="last_name" type="text" class="form-control input-sized2" name="last_name" value="{{ old('last_name', $customer->last_name) }}" maxlength="30">
 
                             @include('partials/field_error', ['field'=>'last_name'])
                         </div>
@@ -46,21 +46,25 @@
                         </div>
                     </div>
 
-                    <div class="form-group{{ $errors->has('emails') ? ' has-error' : '' }} margin-bottom-0">
+                    <div class="form-group margin-bottom-0">
                         <label for="emails" class="col-sm-2 control-label">{{ __('Email') }}</label>
 
                         <div class="col-md-6">
                             <div class="multi-container">
-                                @foreach ($emails as $email)
-                                    <div class="multi-item">
-                                        <input id="emails" type="text" class="form-control input-sized2" name="emails[]" value="{{ $email }}" maxlength="100">
-                                        <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
+                                @foreach (old('emails', $emails) as $i => $email)
+                                    <div class="multi-item {{ $errors->has('emails.'.$i) ? ' has-error' : '' }}">
+                                        <div>
+                                            <input id="emails" type="text" class="form-control input-sized2" name="emails[]" value="{{ $email }}" maxlength="191">
+                                            <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
+                                        </div>
+
+                                        @include('partials/field_error', ['field'=>'emails.'.$i])
                                     </div>
                                 @endforeach
                                 <p class="block-help"><a href="javascript:void(0)" class="multi-add " tabindex="-1">{{ __('Add an email address') }}</a></p>
                             </div>
 
-                            @include('partials/field_error', ['field'=>'emails'])
+                            {{-- @include('partials/field_error', ['field'=>'emails.*']) --}}
                         </div>
                     </div>
 
@@ -71,8 +75,10 @@
                             <div class="multi-container">
                                 @foreach ($customer->getWebsites(true) as $website)
                                     <div class="multi-item">
-                                        <input id="websites" type="text" class="form-control input-sized2" name="websites[]" value="{{ $website }}" maxlength="100">
-                                        <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
+                                        <div>
+                                            <input id="websites" type="text" class="form-control input-sized2" name="websites[]" value="{{ $website }}" maxlength="100">
+                                            <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
+                                        </div>
                                     </div>
                                 @endforeach
                                 <p class="block-help"><a href="javascript:void(0)" class="multi-add" tabindex="-1">{{ __('Add a website') }}</a></p>

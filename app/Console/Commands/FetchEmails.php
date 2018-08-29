@@ -6,6 +6,7 @@ use App\Attachment;
 use App\Conversation;
 use App\Customer;
 use App\Email;
+use App\Events\ConversationCustomerChanged;
 use App\Events\CustomerCreatedConversation;
 use App\Events\CustomerReplied;
 use App\Events\UserReplied;
@@ -386,8 +387,10 @@ class FetchEmails extends Command
 
             // If reply came from another customer: change customer, add original as CC
             if ($conversation->customer_id != $customer->id) {
+                $prev_customer_id = $conversation->customer_id;
+                $prev_customer_email = $conversation->customer_email;
+
                 $cc[] = $conversation->customer_email;
-                // todo: trigger event
                 $conversation->customer_id = $customer->id;
             }
         } else {
@@ -450,6 +453,11 @@ class FetchEmails extends Command
             event(new CustomerCreatedConversation($conversation, $thread));
         } else {
             event(new CustomerReplied($conversation, $thread));
+        }
+
+        // Conversation customer changed
+        if ($prev_customer_id) {
+            event(new ConversationCustomerChanged($conversation, $prev_customer_id, $prev_customer_email, null, $customer));
         }
 
         return $thread->id;

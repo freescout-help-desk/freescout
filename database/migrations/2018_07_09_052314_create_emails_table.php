@@ -14,6 +14,7 @@ class CreateEmailsTable extends Migration
      */
     public function up()
     {
+        // Each email must be always connected to some customer
         Schema::create('emails', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('customer_id');

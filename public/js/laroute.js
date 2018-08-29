@@ -16,8 +16,12 @@
         "name": "conversations.upload"
     },
     {
-        "uri": "conversation\/ajax_html\/{action}",
+        "uri": "conversation\/ajax-html\/{action}",
         "name": "conversations.ajax_html"
+    },
+    {
+        "uri": "customer\/ajax-search",
+        "name": "customers.ajax_search"
     }
 ],
             prefix: '',

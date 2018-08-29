@@ -25,7 +25,8 @@ class CreateThreadsTable extends Migration
             $table->unsignedTinyInteger('state')->default(Thread::STATE_DRAFT);
             // Describes an optional action associated with the line item
             $table->unsignedTinyInteger('action_type')->nullable();
-            $table->string('action_text', 255)->nullable();
+            // Stores extra data for each action
+            $table->string('action_data', 255)->nullable();
             // lineitems do not have body
             $table->longText('body')->nullable();
             // Original body after thread text is changed

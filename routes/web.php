@@ -44,7 +44,7 @@ Route::post('/conversation/ajax', ['uses' => 'ConversationsController@ajax', 'la
 Route::post('/conversation/upload', ['uses' => 'ConversationsController@upload', 'laroute' => true])->name('conversations.upload');
 Route::get('/mailbox/{mailbox_id}/new-ticket', 'ConversationsController@create')->name('conversations.create');
 Route::get('/conversation/draft/{id}', 'ConversationsController@draft')->name('conversations.draft');
-Route::get('/conversation/ajax_html/{action}', ['uses' => 'ConversationsController@ajaxHtml', 'laroute' => true])->name('conversations.ajax_html');
+Route::get('/conversation/ajax-html/{action}', ['uses' => 'ConversationsController@ajaxHtml', 'laroute' => true])->name('conversations.ajax_html');
 Route::get('/search', 'ConversationsController@search')->name('conversations.search');
 
 // Mailboxes
@@ -68,3 +68,4 @@ Route::post('/settings/mailbox/{id}/auto-reply', 'MailboxesController@autoReplyS
 Route::get('/customer/{id}/edit', 'CustomersController@update')->name('customers.update');
 Route::post('/customer/{id}/edit', 'CustomersController@updateSave');
 Route::get('/customer/{id}/', 'CustomersController@conversations')->name('customers.conversations');
+Route::get('/customer/ajax-search', ['uses' => 'CustomersController@ajaxSearch', 'laroute' => true])->name('customers.ajax_search');

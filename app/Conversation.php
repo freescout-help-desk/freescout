@@ -2,7 +2,9 @@
 
 namespace App;
 
+use App\Events\ConversationCustomerChanged;
 use App\Folder;
+use App\Thread;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
 
@@ -709,5 +711,51 @@ class Conversation extends Model
 
         // Set variables
         return \App\Mail\Mail::replaceMailVars($this->mailbox->signature, $data);
+    }
+
+    /**
+     * Change conversation customer.
+     * Customer is changed using customer email, as each conversation has customer email.
+     * Method also creates line item thread if customer changed by user.
+     * Both by_user and by_customer can be null.
+     */
+    public function changeCustomer($customer_email, $customer = null, $by_user = null, $by_customer = null)
+    {
+        if (!$customer) {
+            $email = Email::where('email', $customer_email)->first();
+            if ($email) {
+                $customer = $email->customer;
+            } else {
+                return false;
+            }
+        }
+
+        $prev_customer_id = $this->customer_id;
+        $prev_customer_email = $this->customer_email;
+
+        $this->customer_email = $customer_email;
+        $this->customer_id = $customer->id;
+        $this->save();
+
+        // Create line item thread
+        if ($by_user) {
+            $thread = new Thread();
+            $thread->conversation_id = $this->id;
+            $thread->user_id = $this->user_id;
+            $thread->type = Thread::TYPE_LINEITEM;
+            $thread->state = Thread::STATE_PUBLISHED;
+            $thread->status = Thread::STATUS_NOCHANGE;
+            $thread->action_type = Thread::ACTION_TYPE_CUSTOMER_CHANGED;
+            $thread->action_data = $this->customer_email;
+            $thread->source_via = Thread::PERSON_USER;
+            $thread->source_type = Thread::SOURCE_TYPE_WEB;
+            $thread->customer_id = $this->customer_id;
+            $thread->created_by_user_id = $by_user->id;
+            $thread->save();
+        }
+
+        event(new ConversationCustomerChanged($this, $prev_customer_id, $prev_customer_email, $by_user, $by_customer));
+
+        return true;
     }
 }

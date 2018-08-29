@@ -10,8 +10,10 @@
 
     <title>@if ($__env->yieldContent('title_full')) @yield('title_full') @elseif ($__env->yieldContent('title')) @yield('title') - {{ config('app.name', 'FreeScout') }} @else {{ config('app.name', 'FreeScout') }} @endif</title>
 
-    <!-- Styles -->
-    {!! Minify::stylesheet(array('/css/fonts.css', '/css/bootstrap.css', '/css/style.css')) !!}
+    {{-- Styles --}}
+    {{-- Conversation page must open immediately, so we are loading scripts present on conversation page --}}
+    {{-- style.css must be the last to able to redefine styles --}}
+    {!! Minify::stylesheet(array('/css/fonts.css', '/css/bootstrap.css', '/css/select2/select2.min.css', '/css/style.css')) !!}
     @yield('stylesheets')
 </head>
 <body class="@if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class')" @yield('body_attrs')>
@@ -188,8 +190,8 @@
 
     @yield('body_bottom')
 
-    <!-- Scripts -->
-    {!! Minify::javascript(array('/js/jquery.js', '/js/bootstrap.js', '/js/laroute.js', '/js/lang.js', '/js/vars.js', '/js/parsley/parsley.min.js', '/js/parsley/i18n/'.Config::get('app.locale').'.js', '/js/main.js')) !!}
+    {{-- Scripts --}}
+    {!! Minify::javascript(array('/js/jquery.js', '/js/bootstrap.js', '/js/laroute.js', '/js/lang.js', '/js/vars.js', '/js/parsley/parsley.min.js', '/js/parsley/i18n/'.Config::get('app.locale').'.js', '/js/select2/select2.full.min.js', '/js/main.js')) !!}
     @yield('javascripts')
     @if ($__env->yieldContent('javascript'))
         <script type="text/javascript">

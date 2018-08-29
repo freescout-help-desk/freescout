@@ -102,8 +102,8 @@ class Thread extends Model
     const ACTION_TYPE_WORKFLOW_AUTO = 7;
     // The ticket was imported from an external Service
     const ACTION_TYPE_IMPORTED_EXTERNAL = 8;
-    // The customer associated with the ticket was changed
-    const ACTION_TYPE_CHANGED_TICKET_CUSTOMER = 9;
+    // Conversation customer changed
+    const ACTION_TYPE_CUSTOMER_CHANGED = 9;
     // The ticket was deleted
     const ACTION_TYPE_DELETED_TICKET = 10;
     // The ticket was restored
@@ -120,7 +120,7 @@ class Thread extends Model
         self::ACTION_TYPE_WORKFLOW_MANUAL         => 'manual-workflow',
         self::ACTION_TYPE_WORKFLOW_AUTO           => 'automatic-workflow',
         self::ACTION_TYPE_IMPORTED_EXTERNAL       => 'imported-external',
-        self::ACTION_TYPE_CHANGED_TICKET_CUSTOMER => 'changed-ticket-customer',
+        self::ACTION_TYPE_CUSTOMER_CHANGED        => 'changed-ticket-customer',
         self::ACTION_TYPE_DELETED_TICKET          => 'deleted-ticket',
         self::ACTION_TYPE_RESTORE_TICKET          => 'restore-ticket',
     ];
@@ -360,7 +360,7 @@ class Thread extends Model
      *
      * @return string
      */
-    public function getAssignedName($ucfirst = false, $user = null)
+    public function getAssigneeName($ucfirst = false, $user = null)
     {
         if (!$this->user_id) {
             if ($ucfirst) {

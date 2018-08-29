@@ -36,6 +36,10 @@ class CreateCustomersTable extends Migration
             $table->string('zip', 12)->nullable();
             $table->string('country', 2)->nullable();
             $table->timestamps();
+
+            // Indexes
+            // For ajax search
+            $table->index(['first_name', 'last_name']);
         });
     }
 

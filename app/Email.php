@@ -55,4 +55,9 @@ class Email extends Model
 
         return $email;
     }
+
+    public function getNameFromEmail()
+    {
+        return explode('@', $this->email)[0];
+    }
 }

@@ -1,5 +1,5 @@
 <div class="form-group">
-	<input type="text" class="form-control input-md input-ajax" name="customer_q" placeholder="{{ __('Search for a customer by name or email') }}…" autocomplete="off">
+	<select type="text" class="form-control input-md change-customer-input" data-customer_email="{{ $conversation->customer_email }}" placeholder="{{ __('Search for a customer by name or email') }}…" autocomplete="off"></select>
 </div>
 
 <div id="change-customer-suggestions" class="hidden">
@@ -35,5 +35,5 @@
 </div>
 
 <div class="margin-top" id="change-customer-create-trigger">
-	<a href="#">{{ __('Create a new customer') }}</a>
+	<a href="javascript:alert('todo: implement creating a new customer');void(0);">{{ __('Create a new customer') }}</a>
 </div>

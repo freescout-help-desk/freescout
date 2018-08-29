@@ -1,13 +1,13 @@
 {{ App\Mail\Mail::REPLY_SEPARATOR_TEXT }}
 
 @if (count($threads) == 1){{ __('Received a new conversation') }}@else @if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED){{ __(":person marked as :status conversation". ['person' => $thread->getCreatedBy()->getFullName(true), 'status' => $thread->getStatusName()]) }}@elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
-@include('emails/user/thread_by') {{ __("assigned to :person conversation", ['person' => $thread->getAssignedName(false, $user)]) }}@else
+@include('emails/user/thread_by') {{ __("assigned to :person conversation", ['person' => $thread->getAssigneeName(false, $user)]) }}@else
 {{ __(":person replied to conversation", ['person' => $thread->getCreatedBy()->getFullName(true)]) }}@endif @endif #{{ $conversation->number }}
 
 @foreach ($threads as $thread)
 -----------------------------------------------------------
 @if ($thread->type == App\Thread::TYPE_LINEITEM)
-## @include('emails/user/thread_by') @if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED) {{ __("marked as") }} {{ $thread->getStatusName() }} @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED){{ __("assigned to") }} {{ $thread->getAssignedName(false, $user) }}@endif, {{ __('on :date', ['date' => App\Customer::dateFormat($thread->created_at, 'M j @ H:i').' ('.\Config::get('app.timezone').')' ]) }}
+## @include('emails/user/thread_by') @if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED) {{ __("marked as") }} {{ $thread->getStatusName() }} @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED){{ __("assigned to") }} {{ $thread->getAssigneeName(false, $user) }}@endif, {{ __('on :date', ['date' => App\Customer::dateFormat($thread->created_at, 'M j @ H:i').' ('.\Config::get('app.timezone').')' ]) }}
 @else
 @if ($thread->type == App\Thread::TYPE_NOTE)
 ## {{ $thread->getCreatedBy()->getFullName(true) }} {{ __('added a note') }}, {{ __('on :date', ['date' => App\Customer::dateFormat($thread->created_at, 'M j @ H:i').' ('.\Config::get('app.timezone').')' ]) }}@else

@@ -494,8 +494,9 @@ class Customer extends Model
      */
     public function getNameFromEmail()
     {
-        if (count($this->emails)) {
-            return explode('@', $this->emails[0]->email)[0];
+        $email = $this->emails()->first();
+        if ($email) {
+            return explode('@', $email->email)[0];
         } else {
             return '';
         }

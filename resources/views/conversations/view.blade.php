@@ -151,7 +151,7 @@
                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                         <li role="presentation"><a href="{{ route('customers.update', ['id' => $customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
                         <li role="presentation"><a href="{{ route('conversations.ajax_html', ['action' => 
-                                        'change_customer']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Change Customer") }}" data-modal-no-footer="true" data-modal-on-load="changeCustomerInit" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
+                                        'change_customer']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Change Customer") }}" data-modal-no-footer="true" data-modal-on-show="changeCustomerInit" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
                         <li role="presentation" class="customer-hist-trigger"><a data-toggle="collapse" href="#collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
                     </ul>
                 </div>
@@ -190,7 +190,9 @@
                                     @if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED)
                                         {{ __("marked as") }} {{ $thread->getStatusName() }}
                                     @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
-                                         {{ __("assigned to") }} {{ $thread->getAssignedName() }}
+                                         {{ __("assigned to") }} {{ $thread->getAssigneeName() }}
+                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_CUSTOMER_CHANGED)
+                                         {{ __("changed the customer to") }} <a href="{{  $thread->customer->url() }}" title="{{ $thread->action_data }}" class="link-black">{{ $thread->customer->getFullName(true) }}</a>
                                     @endif
                                 </div>
                                 <div class="thread-info">

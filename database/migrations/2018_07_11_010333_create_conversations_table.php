@@ -28,6 +28,7 @@ class CreateConversationsTable extends Migration
             $table->unsignedTinyInteger('state')->default(Conversation::STATE_DRAFT);
             $table->string('subject', 998);
             // Customer's email to which replies from users are sent.
+            // Not used when fetching emails.
             // Customer may have several emails, so we need to know which 
             // email to use for each conversation.
             $table->string('customer_email', 191)->nullable();

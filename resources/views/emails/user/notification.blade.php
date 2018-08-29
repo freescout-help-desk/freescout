@@ -66,7 +66,7 @@
 			                                        {!! __(":person marked as :status conversation". ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>', 'status' => $thread->getStatusName()]) !!}
 			                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
 				                                    <strong>@include('emails/user/thread_by')</strong>  
-													{{ __("assigned to :person conversation", ['person' => $thread->getAssignedName(false, $user)]) }}
+													{{ __("assigned to :person conversation", ['person' => $thread->getAssigneeName(false, $user)]) }}
 			                                    @else
 			                                    	{!! __(":person replied to conversation", ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>']) !!}
 			                                    @endif
@@ -123,7 +123,7 @@
 							                                    @if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED)
 							                                        {{ __("marked as") }} {{ $thread->getStatusName() }}
 							                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
-							                                         {{ __("assigned to") }} {{ $thread->getAssignedName(false, $user) }}
+							                                         {{ __("assigned to") }} {{ $thread->getAssigneeName(false, $user) }}
 							                                    @endif
 															</div>
 														</td>
@@ -159,7 +159,7 @@
 
 															@if ($thread->type != App\Thread::TYPE_NOTE)
 																<p style="display:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; font-size:11.5px; line-height:18px; margin:0;">
-															    	@if ($thread->user_id){{ __('Assigned:') }} {{ $thread->getAssignedName(true, $user) }} &nbsp;&nbsp;&nbsp; @endif{{ __('Status:') }} {{ $thread->getStatusName() }}<br>
+															    	@if ($thread->user_id){{ __('Assigned:') }} {{ $thread->getAssigneeName(true, $user) }} &nbsp;&nbsp;&nbsp; @endif{{ __('Status:') }} {{ $thread->getStatusName() }}<br>
 															    </p>
 															@endif
 									                    </td>

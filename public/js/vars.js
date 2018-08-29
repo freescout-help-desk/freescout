@@ -18,6 +18,7 @@ var lang_messages = {
             "save_draft": "Save Draft",
             "discard": "Discard",
             "close": "Close",
+            "cancel": "Cancel",
             "settings_saved": "Settings saved",
             "insert_var": "Insert variable",
             "mailbox": "Mailbox",
@@ -30,6 +31,7 @@ var lang_messages = {
             "first_name": "First Name",
             "last_name": "Last Name",
             "email_addr": "Email Address",
+            "confirm_change_customer": "Change the customer to :customer_email?",
 
             "drag_image_file": "Drag image or file here"
         }    };
