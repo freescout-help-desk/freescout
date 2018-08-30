@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Mailbox;
+use App\Option;
 
 class Mail
 {
@@ -94,5 +95,25 @@ class Mail
     public static function removeEmailFromArray($list, $email)
     {
         return array_diff($list, [$email]);
+    }
+
+    /**
+     * From address for sending system emails.
+     */
+    public static function getSystemMailFrom()
+    {
+        $mail_from = Option::get('mail_from', env('MAIL_FROM_ADDRESS'));
+        if (!$mail_from) {
+            $mail_from = 'freescout@'.parse_url(\Config::get('app.url'), PHP_URL_HOST);
+        }
+        return $mail_from;
+    }
+
+    /**
+     * Mail driver for sending system emails.
+     */
+    public static function getSystemMailDriver()
+    {
+        return Option::get('mail_driver', 'mail');
     }
 }

@@ -2190,6 +2190,7 @@ table.table-conversations td.conv-attachment {
     font-size: 15px;
     top: 3px;
 }
+a.help-icon:focus,
 a.help-icon:hover {
     color: #a5b2bd;
     text-decoration: none;

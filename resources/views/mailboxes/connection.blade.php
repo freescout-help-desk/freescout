@@ -24,7 +24,7 @@
                     {{ csrf_field() }}
 
                     <div class="form-group margin-top">
-                        <label for="email" class="col-sm-2 control-label">{{ __('Method') }} <a href="https://github.com/freescout-helpdesk/freescout/wiki/Sending-Methods" target="blank" class="glyphicon glyphicon-info-sign help-icon" data-toggle="tooltip" title="{{ __("Click to read more about sending methods") }}"></a></label>
+                        <label for="email" class="col-sm-2 control-label">{{ __('Method') }} <a href="https://github.com/freescout-helpdesk/freescout/wiki/Sending-emails" target="blank" class="glyphicon glyphicon-info-sign help-icon" data-toggle="tooltip" title="{{ __("Click to read more about sending methods") }}"></a></label>
 
                         <div class="col-sm-6">
                             <div class="control-group">

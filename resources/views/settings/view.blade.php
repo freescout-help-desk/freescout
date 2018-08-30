@@ -1,0 +1,32 @@
+@extends('layouts.app')
+
+@section('title_full', __('Settings').' - '.$section_name)
+
+@section('sidebar')
+    @include('partials/sidebar_menu_toggle')
+    <div class="sidebar-title">
+        {{ __('Settings') }}
+    </div>
+    <ul class="sidebar-menu">
+        @foreach ($sections as $item_name => $item_info)
+            <li @if ($item_name == $section)class="active"@endif><i class="glyphicon glyphicon-menu-right"></i> <a href="{{ route('settings', ['section' => $item_name]) }}">{{ $item_info['title'] }}</a></li>
+        @endforeach
+    </ul>
+@endsection
+
+@section('content')
+    <div class="section-heading">
+        {{ $section_name }}
+    </div>
+
+    @include('partials/flash_messages')
+
+    <div class="row-container">
+        <div class="row">
+            <div class="col-xs-12">
+                @include('settings/'.$section)
+            </div>
+        </div>
+    </div>
+
+@endsection

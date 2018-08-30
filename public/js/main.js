@@ -258,6 +258,24 @@ function mailboxConnectionInit(out_method_smtp)
 	});
 }
 
+function mailSettingsInit()
+{
+	$(document).ready(function(){
+	    $(':input[name="settings[mail_driver]"]').on('change', function(event) {
+	    	var method = $(':input[name="settings[mail_driver]"]').val();
+	    	console.log(method);
+			$('.mail_driver_options').addClass('hidden');
+			$('#mail_driver_options_'+method).removeClass('hidden');
+
+			if (parseInt(method) == 'smtp') {
+				$('#mail_driver_options_smtp :input').attr('required', 'required');
+			} else {
+				$('#mail_driver_options_smtp :input').removeAttr('required');
+			}
+		});
+	});
+}
+
 function userCreateInit()
 {
 	$(document).ready(function(){
@@ -372,9 +390,11 @@ function fsFloatingAlertsInit()
 	});
 
 	if (alerts.length) {
-		$('body').click(function() {
-			alerts.remove();
-		});
+		setTimeout(function(){
+		    $('body').click(function() {
+				alerts.remove();
+			});
+		}, 2000);
 	}
 }
 
