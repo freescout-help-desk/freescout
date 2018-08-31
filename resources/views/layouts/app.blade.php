@@ -48,7 +48,7 @@
                             @endphp
                             @if (count($mailboxes) == 1)
                                 <li><a href="{{ route('mailboxes.view', ['id'=>$mailboxes[0]->id]) }}" @if (Route::currentRouteName() == 'mailboxes.view')class="active"@endif>{{ __('Mailbox') }}</a></li>
-                            @else
+                            @elseif (count($mailboxes) > 1) 
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
                                         {{ __('Mailbox') }} <span class="caret"></span>
@@ -179,7 +179,7 @@
 
         @if (!in_array(Route::currentRouteName(), array('mailboxes.view')))
             <div class="footer">
-                &copy; {{ date('Y') }}, <a href="{{ config('app.freescout_url') }}" target="blank">FreeScout</a> — Free open source help desk &amp; shared mailbox<br/>v{{ config('app.version') }}
+                &copy; {{ date('Y') }} <a href="{{ config('app.freescout_url') }}" target="blank">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk &amp; shared mailbox' ) }}<br/>{{ config('app.version') }}
             </div>
         @endif
     </div>

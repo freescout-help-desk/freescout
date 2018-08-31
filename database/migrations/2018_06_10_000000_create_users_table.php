@@ -25,7 +25,10 @@ class CreateUsersTable extends Migration
             $table->string('timezone', 255)->default('UTC');
             $table->string('photo_url', 255)->nullable();
             $table->unsignedTinyInteger('type')->default(User::TYPE_USER); // team/user
-            $table->unsignedTinyInteger('invite_state')->default(1); // 1 - not invited
+            $table->unsignedTinyInteger('invite_state')->default(User::INVITE_STATE_NOT_INVITED);
+            $table->string('invite_hash', 100)->nullable();
+            // It is not clear how alternate user emails should be used.
+            // For now they are not used in the app and there is no uniqueness check.
             $table->string('emails', 100)->nullable();
             $table->string('job_title', 100)->nullable();
             $table->string('phone', 60)->nullable();

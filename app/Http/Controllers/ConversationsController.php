@@ -585,6 +585,8 @@ class ConversationsController extends Controller
                 $response['status'] = 'success';
                 \Session::flash('flash_success_floating', __('Customer changed'));
 
+                break;
+
             default:
                 $response['msg'] = 'Unknown action';
                 break;

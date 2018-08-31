@@ -43,6 +43,8 @@ var lang_messages = {
             "last_name": "{{ __("Last Name") }}",
             "email_addr": "{{ __("Email Address") }}",
             "confirm_change_customer": "{{ __("Change the customer to :customer_email?") }}",
+            "invite_sent": "{{ __("Invite email has been sent") }}",
+            "invite_resent": "{{ __("Invite email has been resent") }}",
 
             "drag_image_file": "{{ __("Drag image or file here") }}"
         }@if (!$loop->last),@endif

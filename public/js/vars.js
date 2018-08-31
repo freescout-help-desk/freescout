@@ -32,6 +32,8 @@ var lang_messages = {
             "last_name": "Last Name",
             "email_addr": "Email Address",
             "confirm_change_customer": "Change the customer to :customer_email?",
+            "invite_sent": "Invite email has been sent",
+            "invite_resent": "Invite email has been resent",
 
             "drag_image_file": "Drag image or file here"
         }    };

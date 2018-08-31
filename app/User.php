@@ -6,10 +6,12 @@
 
 namespace App;
 
+use App\Mail\UserInvite;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -35,9 +37,9 @@ class User extends Authenticatable
     /**
      * Invite states.
      */
-    const INVITE_STATE_ACTIVATED = 0;
-    const INVITE_STATE_NOT_INVITED = 1;
+    const INVITE_STATE_ACTIVATED = 1;
     const INVITE_STATE_SENT = 2;
+    const INVITE_STATE_NOT_INVITED = 3;
 
     /**
      * Time formats.
@@ -219,6 +221,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Get URL for settings up an account from invitation.
+     *
+     * @return string
+     */
+    public function urlSetup()
+    {
+        return route('user_setup', ['hash' => $this->invite_hash]);
+    }
+
+    /**
      * Create personal folders for user mailboxes.
      *
      * @param int   $mailbox_id
@@ -343,6 +355,41 @@ class User extends Authenticatable
             return $user_permission_names[$user_permission];
         } else {
             return \Event::fire('filter.user_permission_name', [$user_permission]);
+        }
+    }
+
+    public function getInviteStateName()
+    {
+        $names = [
+            self::INVITE_STATE_ACTIVATED => __('Active'),
+            self::INVITE_STATE_SENT => __('Invited'),
+            self::INVITE_STATE_NOT_INVITED => __('Not Invited'),
+        ];
+        if (!isset($names[$this->invite_state])) {
+            return $names[self::INVITE_STATE_ACTIVATED];
+        } else {
+            return $names[$this->invite_state];
+        }
+    }
+
+    /**
+     * Send invitation to this user.
+     */
+    public function sendInvite()
+    {
+        // We are using remember_token as a hash for invite
+        if (!$this->invite_hash) {
+            $this->invite_hash = Str::random(60);
+            $this->save();
+        }
+
+        \App\Mail\Mail::setSystemMailDriver();
+
+        \Mail::to([['name' => $this->getFullName(), 'email' => $this->email]])
+            ->send(new UserInvite($this));
+
+        if (\Mail::failures()) {
+            throw new Exception(__("Error occured sending email to :email. Please check logs for more details.", ['email' => $this->email]), 1);
         }
     }
 }

@@ -3445,7 +3445,8 @@ fieldset[disabled] .btn-link {
 fieldset[disabled] .btn-link:hover,
 .btn-link[disabled]:focus,
 fieldset[disabled] .btn-link:focus {
-  color: #777;
+  /*color: #777;*/
+  color: #7abce4;
   text-decoration: none;
 }
 .btn-lg,

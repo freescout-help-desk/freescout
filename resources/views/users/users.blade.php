@@ -24,6 +24,9 @@
                 @endif
                 <h4>{{ $user->first_name }} {{ $user->last_name }}</h4>
                 <p>{{ $user->getRoleName(true) }}</p>
+                @if ($user->invite_state == App\User::INVITE_STATE_SENT || $user->invite_state == App\User::INVITE_STATE_NOT_INVITED)
+                    <i class="invite-state glyphicon @if ($user->invite_state == App\User::INVITE_STATE_SENT) glyphicon-hourglass invited @else glyphicon-remove not-invited @endif" data-toggle="tooltip" data-placement="bottom" title="{{ $user->getInviteStateName() }}"></i>
+                @endif
             </a>
         @endforeach
     </div>

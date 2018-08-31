@@ -119,6 +119,7 @@ class UsersController extends Controller
         $user = User::findOrFail($id);
         $this->authorize('update', $user);
 
+        // This is also present in PublicController::userSetup
         $validator = Validator::make($request->all(), [
             'first_name'  => 'required|string|max:20',
             'last_name'   => 'required|string|max:30',
@@ -147,7 +148,7 @@ class UsersController extends Controller
 
         $user->save();
 
-        \Session::flash('flash_success', __('Profile saved successfully'));
+        \Session::flash('flash_success_floating', __('Profile saved successfully'));
 
         return redirect()->route('users.profile', ['id' => $id]);
     }
@@ -222,5 +223,63 @@ class UsersController extends Controller
         \Session::flash('flash_success', __('Notifications saved successfully'));
 
         return redirect()->route('users.notifications', ['id' => $id]);
+    }
+
+    /**
+     * Users ajax controller.
+     */
+    public function ajax(Request $request)
+    {
+        $response = [
+            'status' => 'error',
+            'msg'    => '', // this is error message
+        ];
+
+        switch ($request->action) {
+
+            // Both send and resend
+            case 'send_invite':
+                if (!auth()->user()->isAdmin()) {
+                     $response['msg'] = __('Not enough permissions');
+                }
+                if (empty($request->user_id)) {
+                     $response['msg'] = __('Incorrect user');
+                }
+                if (!$response['msg']) {
+                    $user = User::find($request->user_id);
+                    if (!$user) {
+                        $response['msg'] = __('User not found');
+                    } elseif ($user->invite_state == User::INVITE_STATE_ACTIVATED) {
+                        $response['msg'] = __('User already accepted invitation');
+                    }
+                }
+
+                if (!$response['msg']) {
+                    try {
+                        $user->sendInvite();
+
+                        $response['status'] = 'success';
+                    } catch (\Exception $e) {
+                        // Admin is allowed to see exceptions
+                        $response['msg'] = $e->getMessage();
+                    }
+                }
+
+                if ($response['status'] == 'success' && $user->invite_state != User::INVITE_STATE_SENT) {
+                    $user->invite_state = User::INVITE_STATE_SENT;
+                    $user->save();
+                }
+                break;
+
+            default:
+                $response['msg'] = 'Unknown action';
+                break;
+        }
+
+        if ($response['status'] == 'error' && empty($response['msg'])) {
+            $response['msg'] = 'Unknown error occured';
+        }
+
+        return \Response::json($response);
     }
 }

@@ -480,6 +480,7 @@ select[multiple].input-md {
     border-radius: 3px;
     box-sizing: border-box;
     display: block;
+    position: relative;
     margin: 0 18px 18px 0;
     margin: 0 18px 18px 0;
     padding: 18px;
@@ -547,6 +548,31 @@ a h4 {
 }
 .card-inactive {
     border-top: 4px solid #93a1af;
+}
+.card .invite-state {
+    background-color: #fff;
+    border-radius: 100%;
+    color: #5cb85c;
+    display: block;
+    padding-top: 5px;
+    padding-left: 5px;
+    font-size: 14px;
+    height: 24px;
+    position: absolute;
+    left: 51px;
+    top: 50px;
+    width: 24px;
+    z-index: 1;
+}
+.card .invite-state.invited {
+    padding-top: 6px;
+    /*color: #5cb85c;*/
+    color: #333;
+    font-size: 13px;
+}
+.card .invite-state.not-invited {
+    color: #cc1f19;
+    padding-left: 5px;
 }
 .dash-cards {
     box-sizing:border-box;
@@ -1481,6 +1507,13 @@ table.table-conversations td.conv-attachment {
 .thread-attachments a {
     display: inline-block;
 }
+.thread-attachments a.disabled,
+.thread-attachments a.disabled:hover,
+.thread-attachments a.disabled:focus {
+    color: #93a1af;
+    text-decoration: none;
+    cursor: default;
+ }
 .thread-attachments span {
     text-transform: lowercase;
 }
@@ -1856,7 +1889,7 @@ table.table-conversations td.conv-attachment {
     display: none;
     /*display: flex;*/
     font-size: 15px;
-    position: absolute;
+    position: fixed;
     text-align: center;
     top: 16px;
     transform: translate(-50%,0) translate(-1px,0);
@@ -1868,6 +1901,19 @@ table.table-conversations td.conv-attachment {
     -webkit-box-shadow: 4px 4px 12px rgba(0, 0, 0, .175);
     box-shadow: 4px 4px 12px rgba(0, 0, 0, .175);
     cursor: default;
+
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    /* This is the dangerous one in WebKit, as it breaks things wherever */
+    word-break: break-all;
+    /* Instead use this non-standard one: */
+    word-break: break-word;
+    /* Adds a hyphen where the word breaks, if supported (No Blink) */
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
 }
 .alert-floating.alert-danger,
 .alert-floating.alert-warning {
@@ -2089,7 +2135,7 @@ table.table-conversations td.conv-attachment {
  */
 .banner {
     text-align: center;
-    margin-top: 50px;
+    margin-top: 30px;
     margin-bottom: 50px;
 }
 .margin-top {
@@ -2238,15 +2284,25 @@ a.help-icon:hover {
     padding: 40px 50px 0;
     text-align: center;
 }
+.wizard-header-small {
+    padding: 25px 50px 0;
+}
 .wizard-header h1 {
     font-size: 24px;
     margin: 12px 0 10px;
     color: #2a3b47;
 }
+.wizard-header-small h1 {
+    font-size: 21px;
+}
 .wizard-header p {
     color: #93a1af;
     font-size: 15px;
     margin: 0;
+}
+.wizard-header .glyphicon {
+    position: relative;
+    top: 3px;
 }
 .wizard-body {
     padding: 10px 50px 0;
@@ -2362,6 +2418,9 @@ a.help-icon:hover {
 .text-charcoal {
     color: #2a3b47!important;
 }
+.text-warning-light {
+    color: #ffc646;
+}
 .text-large {
     font-size: 14px;
 }
@@ -2411,11 +2470,15 @@ a.text-danger:focus {
 a.disabled,
 a.disabled:hover,
 a.disabled:focus {
-    color: #93a1af;
+    color: #7abce4;
     text-decoration: none;
     cursor: default;
 }
 .pre-wrap {
     word-wrap: break-word;
     white-space: pre-wrap;
+}
+.panel-shaded {
+    -webkit-box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
+    box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
 }

@@ -10,7 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 | Every time you change routes, run the following command to make them available in JS:
-|     php artisan laroute:generate
+|     php artisan freescout:build
 */
 
 Auth::routes();
@@ -19,6 +19,8 @@ Auth::routes();
 Route::redirect('/home', '/', 301);
 
 // Public routes
+Route::get('/user-setup/{hash}', 'PublicController@userSetup')->name('user_setup');
+Route::post('/user-setup/{hash}', 'PublicController@userSetupSave');
 
 // General routes for logged in users
 Route::get('/', 'SecureController@dashboard')->name('dashboard');
@@ -41,6 +43,7 @@ Route::get('/users/permissions/{id}', 'UsersController@permissions')->name('user
 Route::post('/users/permissions/{id}', 'UsersController@permissionsSave');
 Route::get('/users/notifications/{id}', 'UsersController@notifications')->name('users.notifications');
 Route::post('/users/notifications/{id}', 'UsersController@notificationsSave');
+Route::post('/users/ajax', ['uses' => 'UsersController@ajax', 'laroute' => true])->name('users.ajax');
 
 // Conversations
 Route::get('/conversation/{id}', 'ConversationsController@view')->name('conversations.view');

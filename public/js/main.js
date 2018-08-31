@@ -263,7 +263,7 @@ function mailSettingsInit()
 	$(document).ready(function(){
 	    $(':input[name="settings[mail_driver]"]').on('change', function(event) {
 	    	var method = $(':input[name="settings[mail_driver]"]').val();
-	    	console.log(method);
+
 			$('.mail_driver_options').addClass('hidden');
 			$('#mail_driver_options_'+method).removeClass('hidden');
 
@@ -337,7 +337,10 @@ function fsAjax(data, url, success_callback, no_loader, error_callback)
 		error_callback = function() {
 			showFloatingAlert('error', Lang.get("messages.ajax_error"));
 			loaderHide();
-			$("button[data-loading-text!='']:disabled").button('reset');
+			// Buttons
+			$(".btn[data-loading-text!='']:disabled").button('reset');
+			// Links
+			$(".btn.disabled[data-loading-text!='']").button('reset');
 		};
 	}
 
@@ -384,9 +387,12 @@ function fsFloatingAlertsInit()
 			
 	alerts.each(function(i, obj) {
 		$(obj).css('display', 'flex');
-		setTimeout(function(){
-		    obj.remove(); 
-		}, 7000);
+		// If error do not close automatically
+		if (!$(obj).hasClass('alert-danger')) {
+			setTimeout(function(){
+			    obj.remove(); 
+			}, 7000);
+		}
 	});
 
 	if (alerts.length) {
@@ -728,7 +734,7 @@ function newConversationInit()
 		});
 
 		// Send reply or new conversation
-	    jQuery(".btn-reply-submit").click(function(e){
+	    $(".btn-reply-submit").click(function(e){
 	    	var button = $(this);
 
 	    	// Validate before sending
@@ -948,8 +954,6 @@ function saveAfterSend(el)
 	fsAjax(data, laroute.route('conversations.ajax'), function(response) {
 		if (typeof(response.status) != "undefined" && response.status == 'success') {
 			// Show selected option in the dropdown
-			console.log('.dropdown-after-send [data-after-send='+value+']:first');
-			console.log($('.dropdown-after-send [data-after-send='+value+']:first'));
 			$('.dropdown-after-send [data-after-send='+value+']:first').click();
 			showFloatingAlert('success', Lang.get("messages.settings_saved"));
 			$('.modal').modal('hide');
@@ -1099,3 +1103,40 @@ function hideSelect2Loader(input)
 {
 	input.closest('.select2-with-loader:first').removeClass('loading');
 }*/
+
+function userProfileInit()
+{
+	$(".send-invite-trigger, .resend-invite-trigger").click(function(e){
+		var button = $(this);
+		var is_resend = false;
+
+		button.button('loading');
+
+		if (button.hasClass('resend-invite-trigger')) {
+			is_resend = true;
+		}
+
+		fsAjax(
+			{
+				action: 'send_invite',
+				user_id: getGlobalAttr('user_id')
+			}, 
+			laroute.route('users.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == 'success') {
+					if (is_resend) {
+						showFloatingAlert('success', Lang.get("messages.invite_resent"));
+					} else {
+						showFloatingAlert('success', Lang.get("messages.invite_sent"));
+					}
+				} else {
+					showAjaxError(response);
+				}
+				button.button('reset');
+			},
+			true
+		);
+	
+		e.preventDefault();
+	});	
+}

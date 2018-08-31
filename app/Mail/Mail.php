@@ -62,6 +62,22 @@ class Mail
     }
 
     /**
+     * Set system mail driver for sending system emails to users.
+     *
+     * @param App\Mailbox $mailbox
+     */
+    public static function setSystemMailDriver()
+    {
+        \Config::set('mail.driver', self::getSystemMailDriver());
+        \Config::set('mail.from', [
+            'address' => self::getSystemMailFrom(), 
+            'name' => Option::get('company_name', \Config::get('app.name'))
+        ]);
+
+        (new \Illuminate\Mail\MailServiceProvider(app()))->register();
+    }
+
+    /**
      * Replace mail vars in the text.
      */
     public static function replaceMailVars($text, $data = [])
