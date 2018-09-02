@@ -28,7 +28,8 @@ class SendLog extends Model
     const MAIL_TYPE_EMAIL_TO_CUSTOMER = 1;
     const MAIL_TYPE_USER_NOTIFICATION = 2;
     const MAIL_TYPE_AUTO_REPLY        = 3;
-    const MAIL_TYPE_WRONG_USER_EMAIL_MESSAGE  = 4;
+    const MAIL_TYPE_INVITE            = 4;
+    const MAIL_TYPE_WRONG_USER_EMAIL_MESSAGE  = 5;
 
     /**
      * The attributes that are not mass assignable.
@@ -134,6 +135,8 @@ class SendLog extends Model
                 return __('User notification');
             case self::MAIL_TYPE_AUTO_REPLY:
                 return __('Auto reply to customer');
+            case self::MAIL_TYPE_INVITE:
+                return __('User invite');
             case self::MAIL_TYPE_WRONG_USER_EMAIL_MESSAGE:
                 return __('User using wrong email notification');
         }

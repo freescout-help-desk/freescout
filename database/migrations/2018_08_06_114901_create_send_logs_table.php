@@ -17,12 +17,12 @@ class CreateSendLogsTable extends Migration
     {
         Schema::create('send_logs', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('thread_id')->index();
+            $table->integer('thread_id')->nullable()->index();
             // Customer ID is set only if email sent to the main conversation customer
             $table->integer('customer_id')->nullable();
             $table->integer('user_id')->nullable();
             // Message-ID header of the outgoing email
-            $table->string('message_id', 998);
+            $table->string('message_id', 998)->nullable();
             // We have to keep email as customer's or user's email may change
             $table->string('email', 191);
             $table->unsignedTinyInteger('mail_type');

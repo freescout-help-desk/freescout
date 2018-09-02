@@ -7,6 +7,7 @@
 namespace App;
 
 use App\Mail\UserInvite;
+use App\SendLog;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -377,6 +378,10 @@ class User extends Authenticatable
      */
     public function sendInvite($throw_exceptions = false)
     {
+        function saveToSendLog($user, $status) {
+            SendLog::log(null, null, $user->email, SendLog::MAIL_TYPE_INVITE, $status, null, $user->id);
+        }
+
         if ($this->invite_state == self::INVITE_STATE_ACTIVATED) {
             return false;
         }
@@ -393,13 +398,16 @@ class User extends Authenticatable
                 ->send(new UserInvite($this));
         } catch (\Exception $e) {
             // We come here in case SMTP server unavailable for example
-            // activity()
-            //     ->causedBy($this->customer)
-            //     ->withProperties([
-            //         'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
-            //      ])
-            //     ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
-            //     ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
+            // But Mail does not through an exception if you specify incorrect SMTP details for example
+            activity()
+                ->causedBy($this)
+                ->withProperties([
+                    'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
+                 ])
+                ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
+                ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_INVITE);
+
+            saveToSendLog($this, SendLog::STATUS_SEND_ERROR);
 
             if ($throw_exceptions) {
                 throw $e;
@@ -409,8 +417,10 @@ class User extends Authenticatable
         }
 
         if (\Mail::failures()) {
+            saveToSendLog($this, SendLog::STATUS_SEND_ERROR);
+
             if ($throw_exceptions) {
-                throw new Exception(__("Error occured sending email to :email. Please check logs for more details.", ['email' => $this->email]), 1);
+                throw new \Exception(__("Error occured sending email to :email. Please check logs for more details.", ['email' => $this->email]), 1);
             } else {
                 return false;
             }
@@ -420,6 +430,9 @@ class User extends Authenticatable
             $this->invite_state = User::INVITE_STATE_SENT;
             $this->save();
         }
+
+        saveToSendLog($this, SendLog::STATUS_ACCEPTED);
+
         return true;
     }
 }
