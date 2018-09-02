@@ -7,6 +7,7 @@ use App\Subscription;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rule;
 use Validator;
 
@@ -265,6 +266,34 @@ class UsersController extends Controller
                     } catch (\Exception $e) {
                         // Admin is allowed to see exceptions
                         $response['msg'] = $e->getMessage();
+                    }
+                }
+                break;
+
+            // Reset password
+            case 'reset_password':
+                if (!auth()->user()->isAdmin()) {
+                     $response['msg'] = __('Not enough permissions');
+                }
+                if (empty($request->user_id)) {
+                     $response['msg'] = __('Incorrect user');
+                }
+                if (!$response['msg']) {
+                    $user = User::find($request->user_id);
+                    if (!$user) {
+                        $response['msg'] = __('User not found');
+                    }
+                }
+
+                if (!$response['msg']) {
+                    $reset_result = Password::broker()->sendResetLink(
+                        //['id' => $request->user_id]
+                        ['id' => $request->user_id]
+                    );
+
+                    if ($reset_result == Password::RESET_LINK_SENT) {
+                        $response['status'] = 'success';
+                        $response['success_msg'] = __('Password reset email has been sent');
                     }
                 }
                 break;

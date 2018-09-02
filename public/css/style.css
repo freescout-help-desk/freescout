@@ -1985,6 +1985,7 @@ table.table-conversations td.conv-attachment {
 .modal-width-auto {
     display: table;
     width: auto;
+    min-width: 320px;
 }
 /**
  * Attachments

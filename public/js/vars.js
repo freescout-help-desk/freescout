@@ -34,6 +34,7 @@ var lang_messages = {
             "confirm_change_customer": "Change the customer to :customer_email?",
             "invite_sent": "Invite email has been sent",
             "invite_resent": "Invite email has been resent",
+            "confirm_reset_password": "Reset this User&#039;s password?",
 
             "drag_image_file": "Drag image or file here"
         }    };

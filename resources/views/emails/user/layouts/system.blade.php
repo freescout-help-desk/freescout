@@ -43,7 +43,11 @@
           			<tr>
           				<td style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; padding: 40px 50px 30px; vertical-align: top" valign="top">
 
-          				@yield('content')
+                  @if (isset($slot))
+                    {{ Illuminate\Mail\Markdown::parse($slot) }}
+                  @else
+          				  @yield('content')
+                  @endif
 
           				</td>
           			</tr>
@@ -58,7 +62,7 @@
 							</tr>
 							<tr>
 								<td align="center" style="color: #8c93a0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 22px; mso-table-lspace: 0pt; mso-table-rspace: 0pt; text-align: center; vertical-align: top" valign="top">
-								<a href="{{ \Config::get('app.freescout_url') }}" style="border: 0; color: #8c93a0; text-decoration: underline">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk &amp; shared mailbox' ) }}
+								&copy; {{ date('Y') }} <a href="{{ \Config::get('app.freescout_url') }}" style="border: 0; color: #8c93a0; text-decoration: underline">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk &amp; shared mailbox' ) }}
 								</td>
 							</tr>
 							<tr>

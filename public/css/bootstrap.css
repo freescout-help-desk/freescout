@@ -5710,7 +5710,10 @@ button.list-group-item-danger.active:focus {
   border-color: #c1cbd4;
 }
 .panel-default > .panel-heading {
-  color: #86929e;
+  /*color: #86929e;*/
+  color: #253540;
+  font-size: 16px;
+  line-height: 30px;
   background-color: #f9fafa;
   border-color: #ddd;
 }

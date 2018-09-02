@@ -1104,6 +1104,24 @@ function changeCustomerInit()
 	});
 }
 
+function showModalDialog(body, options)
+{
+	var standard_options = {
+		body: body,
+		width_auto: 'true',
+		no_header: 'true',
+		no_footer: 'true',
+		no_fade: 'true',
+		size: 'sm'
+	};
+	if (typeof(options) == "undefined") {
+		options = {};
+	}
+	options = Object.assign(standard_options, options);
+	
+	showModal(null, options);
+}
+
 /*function showSelect2Loader(input)
 {
 	input.closest('.select2-with-loader:first').addClass('loading');
@@ -1116,6 +1134,7 @@ function hideSelect2Loader(input)
 
 function userProfileInit()
 {
+	// Send or re-send invite
 	$(".send-invite-trigger, .resend-invite-trigger").click(function(e){
 		var button = $(this);
 		var is_resend = false;
@@ -1148,5 +1167,56 @@ function userProfileInit()
 		);
 	
 		e.preventDefault();
+	});
+
+	// Reset password
+	$(".reset-password-trigger").click(function(e){
+
+		var button = $(this);
+
+		var confirm_html = '<div>'+
+			'<div class="text-center">'+
+			'<div class="text-larger margin-top-10">'+Lang.get("messages.confirm_reset_password")+'</div>'+
+			'<div class="form-group margin-top">'+
+    		'<button class="btn btn-primary reset-password-ok">OK</button>'+
+    		'<button class="btn btn-link" data-dismiss="modal">'+Lang.get("messages.cancel")+'</button>'+
+    		'</div>';
+    		'</div>';
+    		'</div>';
+
+		showModalDialog(confirm_html, {
+			on_show: function(modal) {
+				modal.children().find('.reset-password-ok:first').click(function(e) {
+					button.button('loading');
+					modal.modal('hide');
+					fsAjax(
+						{
+							action: 'reset_password',
+							user_id: getGlobalAttr('user_id')
+						}, 
+						laroute.route('users.ajax'),
+						function(response) {
+							showAjaxResult(response);
+							button.button('reset');
+						}
+					);
+				});
+			}
+		});
+
+		e.preventDefault();
 	});	
+}
+
+function showAjaxResult(response)
+{
+	loaderHide();
+	
+	if (typeof(response.status) != "undefined" && response.status == 'success') {
+		if (typeof(response['success_msg']) != "undefined") {
+			showFloatingAlert('success', response['success_msg']);
+		}
+	} else {
+		showAjaxError(response);
+	}
 }

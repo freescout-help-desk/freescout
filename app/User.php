@@ -10,6 +10,7 @@ use App\Mail\PasswordChanged;
 use App\Mail\UserInvite;
 use App\SendLog;
 use Carbon\Carbon;
+use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -474,5 +475,18 @@ class User extends Authenticatable
         saveToSendLog($this, SendLog::STATUS_ACCEPTED);
 
         return true;
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        \App\Mail\Mail::setSystemMailDriver();
+
+        $this->notify(new ResetPasswordNotification($token));
     }
 }
