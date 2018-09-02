@@ -375,21 +375,51 @@ class User extends Authenticatable
     /**
      * Send invitation to this user.
      */
-    public function sendInvite()
+    public function sendInvite($throw_exceptions = false)
     {
+        if ($this->invite_state == self::INVITE_STATE_ACTIVATED) {
+            return false;
+        }
         // We are using remember_token as a hash for invite
         if (!$this->invite_hash) {
             $this->invite_hash = Str::random(60);
             $this->save();
         }
 
-        \App\Mail\Mail::setSystemMailDriver();
+        try {
+            \App\Mail\Mail::setSystemMailDriver();
 
-        \Mail::to([['name' => $this->getFullName(), 'email' => $this->email]])
-            ->send(new UserInvite($this));
+            \Mail::to([['name' => $this->getFullName(), 'email' => $this->email]])
+                ->send(new UserInvite($this));
+        } catch (\Exception $e) {
+            // We come here in case SMTP server unavailable for example
+            // activity()
+            //     ->causedBy($this->customer)
+            //     ->withProperties([
+            //         'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
+            //      ])
+            //     ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
+            //     ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
+
+            if ($throw_exceptions) {
+                throw $e;
+            } else {
+                return false;
+            }
+        }
 
         if (\Mail::failures()) {
-            throw new Exception(__("Error occured sending email to :email. Please check logs for more details.", ['email' => $this->email]), 1);
+            if ($throw_exceptions) {
+                throw new Exception(__("Error occured sending email to :email. Please check logs for more details.", ['email' => $this->email]), 1);
+            } else {
+                return false;
+            }
         }
+
+        if ($this->invite_state != User::INVITE_STATE_SENT) {
+            $this->invite_state = User::INVITE_STATE_SENT;
+            $this->save();
+        }
+        return true;
     }
 }

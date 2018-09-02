@@ -72,12 +72,10 @@ class UsersController extends Controller
 
         $user = new User();
         $user->fill($request->all());
-
         if (!empty($request->send_invite)) {
             $password = $user->generatePassword();
         }
         $user->password = Hash::make($user->password);
-
         $user->save();
 
         $user->mailboxes()->sync($request->mailboxes);
@@ -85,7 +83,12 @@ class UsersController extends Controller
 
         // Send invite
         if (!empty($request->send_invite)) {
-            // todo
+            try {
+                $user->sendInvite(true);
+            } catch (\Exception $e) {
+                // Admin is allowed to see exceptions
+                \Session::flash('flash_error_floating', $e->getMessage());
+            }
         }
 
         \Session::flash('flash_success_floating', __('User created successfully'));
@@ -256,18 +259,13 @@ class UsersController extends Controller
 
                 if (!$response['msg']) {
                     try {
-                        $user->sendInvite();
+                        $user->sendInvite(true);
 
                         $response['status'] = 'success';
                     } catch (\Exception $e) {
                         // Admin is allowed to see exceptions
                         $response['msg'] = $e->getMessage();
                     }
-                }
-
-                if ($response['status'] == 'success' && $user->invite_state != User::INVITE_STATE_SENT) {
-                    $user->invite_state = User::INVITE_STATE_SENT;
-                    $user->save();
                 }
                 break;
 

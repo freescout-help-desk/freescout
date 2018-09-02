@@ -1931,9 +1931,9 @@ table.table-conversations td.conv-attachment {
     text-decoration: underline;
 }
 .alert-floating.alert-success {
-    background-color: #e4fbe6;
-    color: #4bc27d;
-    border: 1px solid #4bc27d;
+    background-color: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #3c763d;
 }
 .alert-floating.alert-danger {
     border: 1px solid #a94442;

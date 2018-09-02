@@ -385,12 +385,22 @@ function fsFloatingAlertsInit()
 {
 	var alerts = $(".alert-floating:hidden");
 			
-	alerts.each(function(i, obj) {
-		$(obj).css('display', 'flex');
+	alerts.each(function(i, el) {
+		// Stack alerts
+		var top = 0;
+		$(".alert-floating:visible").each(function(sub_i, sub_el) {
+			top = top + $(sub_el).position().top + $(sub_el).outerHeight(true);
+		});
+
+		if (top) {
+			$(el).css('top', top+'px');
+		}
+		$(el).css('display', 'flex');
+
 		// If error do not close automatically
-		if (!$(obj).hasClass('alert-danger')) {
+		if (!$(el).hasClass('alert-danger')) {
 			setTimeout(function(){
-			    obj.remove(); 
+			    el.remove(); 
 			}, 7000);
 		}
 	});
