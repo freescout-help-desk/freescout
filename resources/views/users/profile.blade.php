@@ -79,6 +79,17 @@
                         </div>
                     </div>
 
+                    @if ($user->id == Auth::user()->id)
+                        <div class="form-group">
+                            <label for="password" class="col-sm-2 control-label">{{ __('Password') }}</label>
+
+                            <div class="col-sm-6">
+                                <label class="control-label"><a href="{{ route('users.password', ['id' => $user->id]) }}">{{ __('Change your password') }}</a></label>
+                                
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="form-group{{ $errors->has('job_title') ? ' has-error' : '' }}">
                         <label for="job_title" class="col-sm-2 control-label">{{ __('Job Title') }}</label>
 

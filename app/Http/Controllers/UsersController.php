@@ -280,4 +280,64 @@ class UsersController extends Controller
 
         return \Response::json($response);
     }
+
+    /**
+     * Change user password.
+     */
+    public function password($id)
+    {
+        $user = User::findOrFail($id);
+        $this->authorize('update', $user);
+
+        $users = User::all()->except($id);
+
+        return view('users/password', ['user' => $user, 'users' => $users]);
+    }
+
+    /**
+     * Save changed user password.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function passwordSave($id, Request $request)
+    {
+        // It is allowed to edit only your own password
+        $user = auth()->user();
+        if ($user->id != $id) {
+            abort(403);
+        }
+
+        // This is also present in PublicController::userSetup
+        $validator = Validator::make($request->all(), [
+            'password_current' => 'required|string',
+            'password'         => 'required|string|min:8|confirmed',
+        ]);
+
+        $validator->after(function ($validator) use ($user, $request) {
+            // Check current password
+            if (!Hash::check($request->password_current, $user->password)) {
+                $validator->errors()->add('password_current', __('This password is incorrect.'));
+            } else if (Hash::check($request->password, $user->password)) {
+                // Check new password
+                $validator->errors()->add('password', __('The new password is the same as the old password.'));
+            }
+        });
+
+        if ($validator->fails()) {
+            return redirect()->route('users.password', ['id' => $id])
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        $user->sendPasswordChanged();
+
+        \Session::flash('flash_success_floating', __('Password saved successfully!'));
+
+        return redirect()->route('users.profile', ['id' => $id]);
+    }
 }

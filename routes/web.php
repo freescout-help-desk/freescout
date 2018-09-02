@@ -43,6 +43,8 @@ Route::get('/users/permissions/{id}', 'UsersController@permissions')->name('user
 Route::post('/users/permissions/{id}', 'UsersController@permissionsSave');
 Route::get('/users/notifications/{id}', 'UsersController@notifications')->name('users.notifications');
 Route::post('/users/notifications/{id}', 'UsersController@notificationsSave');
+Route::get('/users/password/{id}', 'UsersController@password')->name('users.password');
+Route::post('/users/password/{id}', 'UsersController@passwordSave');
 Route::post('/users/ajax', ['uses' => 'UsersController@ajax', 'laroute' => true])->name('users.ajax');
 
 // Conversations

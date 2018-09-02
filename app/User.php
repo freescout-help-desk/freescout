@@ -6,6 +6,7 @@
 
 namespace App;
 
+use App\Mail\PasswordChanged;
 use App\Mail\UserInvite;
 use App\SendLog;
 use Carbon\Carbon;
@@ -429,6 +430,45 @@ class User extends Authenticatable
         if ($this->invite_state != User::INVITE_STATE_SENT) {
             $this->invite_state = User::INVITE_STATE_SENT;
             $this->save();
+        }
+
+        saveToSendLog($this, SendLog::STATUS_ACCEPTED);
+
+        return true;
+    }
+
+    /**
+     * Send password changed noitfication.
+     */
+    public function sendPasswordChanged()
+    {
+        function saveToSendLog($user, $status) {
+            SendLog::log(null, null, $user->email, SendLog::MAIL_TYPE_PASSWORD_CHANGED, $status, null, $user->id);
+        }
+
+        try {
+            \App\Mail\Mail::setSystemMailDriver();
+
+            \Mail::to([['name' => $this->getFullName(), 'email' => $this->email]])
+                ->send(new PasswordChanged($this));
+        } catch (\Exception $e) {
+            // We come here in case SMTP server unavailable for example
+            // But Mail does not through an exception if you specify incorrect SMTP details for example
+            activity()
+                ->causedBy($this)
+                ->withProperties([
+                    'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
+                 ])
+                ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
+                ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_PASSWORD_CHANGED);
+
+            saveToSendLog($this, SendLog::STATUS_SEND_ERROR);
+            return false;
+        }
+
+        if (\Mail::failures()) {
+            saveToSendLog($this, SendLog::STATUS_SEND_ERROR);
+            return false;
         }
 
         saveToSendLog($this, SendLog::STATUS_ACCEPTED);
