@@ -222,6 +222,9 @@
         position: relative;
         height: 51px;
     }
+    .sidebar-no-height .sidebar-2col {
+        height: auto;
+    }
     .sidebar-menu {
         background-color: #f1f3f5;
         border-radius: 0 4px 4px 0;
@@ -1328,7 +1331,7 @@ table.table-conversations td.conv-attachment {
 .conv-customer-hist .accordion .panel-title a {
     color: #2a3b47;
     font-size: 13.4px;
-    font-weight: 500;
+    font-weight: bold;
 }
 .conv-customer-hist .accordion .panel-default > .panel-heading:hover {
     background-color: transparent;
@@ -1643,6 +1646,40 @@ table.table-conversations td.conv-attachment {
     background-color: #fff7dd;
     border-color: #fff7dd;
 }
+ul.prev-convs {
+    padding-left: 0;
+    list-style: none;
+    margin-bottom: 7px;
+}
+.prev-convs li {
+    margin-top: 4px;
+}
+.prev-convs li:first-child {
+    margin-top: 0;
+}
+.prev-convs .glyphicon {
+    margin-right: 4px;
+    position: relative;
+    top: 2px;
+}
+.conv-customer-hist .panel-body {
+    border-top: 0!important;
+    padding-top: 0;
+    padding-bottom: 6px;
+}
+.link-prev-convs {
+    margin-bottom: 4px;
+    display: inline-block;
+}
+.prev-convs-full {
+    display: block;
+}
+.prev-convs-mobile {
+    display: none;
+}
+.prev-convs-header2 {
+    display: none;
+}
 @media (max-width:700px) {
     .conv-info .btn-group button.conv-info-val span:first-child {
         display: none!important;
@@ -1780,6 +1817,9 @@ table.table-conversations td.conv-attachment {
     .customer-trigger {
         top: 16px;
     }
+    .profile-preview {
+        padding: 15px;
+    }
     /*.customer-email {
         width: 100%;
     }*/
@@ -1827,8 +1867,18 @@ table.table-conversations td.conv-attachment {
         margin: 0;
     }
     .conv-customer-hist .panel-body {
-        border-top: 1px solid #e3e8eb!important;
+        /*border-top: 1px solid #e3e8eb!important;*/
         border-bottom: 0;
+        padding-left: 83px;
+    }
+    .prev-convs-full {
+        display: none;
+    }
+    .prev-convs-mobile {
+        display: block;
+    }
+    .prev-convs-header2 {
+        display: block;
     }
 }
 @media (max-width:991px) {
@@ -1931,7 +1981,7 @@ table.table-conversations td.conv-attachment {
     text-decoration: underline;
 }
 .alert-floating.alert-success {
-    background-color: #dff0d8;
+    background-color: #dfffdf;
     color: #3c763d;
     border: 1px solid #3c763d;
 }
@@ -2271,6 +2321,14 @@ a.help-icon:hover {
     font-weight: bold;
 }
 .link-black:hover {
+    text-decoration: underline;
+}
+.link-blue,
+.link-blue:hover,
+.link-blue:focus {
+    color: #3197d6!important;
+}
+.link-blue:hover {
     text-decoration: underline;
 }
 .help-link,

@@ -152,31 +152,23 @@
                         <li role="presentation"><a href="{{ route('customers.update', ['id' => $customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
                         <li role="presentation"><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'change_customer']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Change Customer") }}" data-modal-no-footer="true" data-modal-on-show="changeCustomerInit" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
-                        <li role="presentation" class="customer-hist-trigger"><a data-toggle="collapse" href="#collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
+                        @if (count($prev_conversations))
+                            <li role="presentation" class="customer-hist-trigger"><a data-toggle="collapse" href=".collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
+                        @endif
                     </ul>
                 </div>
                 {{--<div data-toggle="collapse" href="#collapse-conv-prev" class="customer-hist-trigger">
                     <div class="glyphicon glyphicon-list-alt" data-toggle="tooltip" title="{{ __("Previous Conversations") }}"></div>
                 </div>--}}
             </div>
-            <div class="conv-customer-hist conv-sidebar-block">
-                <div class="panel-group accordion accordion-empty">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" href="#collapse-conv-prev">{{ __("Previous Conversations") }} 
-                                    <b class="caret"></b>
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="collapse-conv-prev" class="panel-collapse collapse {{-- in --}}">
-                            <div class="panel-body">
-                                <p>todo</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @if (count($prev_conversations))
+                {{-- 
+                    In mobile view previous conversations must be always hidden.
+                    So the only way to achieve this is to have two blocks.
+                --}}
+                @include('conversations/partials/prev_convs_short', ['in' => true])
+                @include('conversations/partials/prev_convs_short', ['mobile' => true])
+            @endif
         </div>
         <div id="conv-layout-main">
             @foreach ($threads as $thread)

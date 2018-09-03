@@ -21,6 +21,8 @@ use Validator;
 
 class ConversationsController extends Controller
 {
+    const PREV_CONVERSATIONS_LIMIT = 5;
+
     /**
      * Create a new controller instance.
      *
@@ -39,6 +41,8 @@ class ConversationsController extends Controller
         $conversation = Conversation::findOrFail($id);
         $this->authorize('view', $conversation);
 
+        $mailbox = $conversation->mailbox;
+        $customer = $conversation->customer;
         $user = auth()->user();
 
         // Detect folder
@@ -65,8 +69,6 @@ class ConversationsController extends Controller
         }
 
         $after_send = $conversation->mailbox->getUserSettings($user->id)->after_send;
-
-        $customer = $conversation->customer;
 
         // Detect customers and emails to which user can reply
         $to_customers = [];
@@ -99,6 +101,14 @@ class ConversationsController extends Controller
             }
         }
 
+        // Previous conversations
+        $prev_conversations = $mailbox->conversations()
+                                ->where('customer_id', $customer->id)
+                                ->where('id', '<>', $conversation->id)
+                                //->limit(self::PREV_CONVERSATIONS_LIMIT)
+                                ->orderBy('created_at', 'desc')
+                                ->paginate(self::PREV_CONVERSATIONS_LIMIT);
+
         return view('conversations/view', [
             'conversation' => $conversation,
             'mailbox'      => $conversation->mailbox,
@@ -108,6 +118,7 @@ class ConversationsController extends Controller
             'folders'      => $conversation->mailbox->getAssesibleFolders(),
             'after_send'   => $after_send,
             'to_customers' => $to_customers,
+            'prev_conversations' => $prev_conversations,
         ]);
     }
 

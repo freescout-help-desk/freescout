@@ -1,9 +1,12 @@
 @extends('layouts.app')
 
 @section('title_full', $customer->getFullName().' - '.__('Customer Profile'))
+@section('body_class', 'sidebar-no-height')
 
 @section('sidebar')
-    @include('customers/profile_snippet')
+    <div class="profile-preview">
+        @include('customers/profile_snippet')
+    </div>
 @endsection
 
 @section('content')
