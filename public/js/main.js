@@ -26,6 +26,7 @@ $.extend(window.ParsleyConfig, {
 });
 
 // Configuring editor
+
 var EditorAttachmentButton = function (context) {
 	var ui = $.summernote.ui;
 
@@ -153,6 +154,12 @@ $(document).ready(function(){
 	// Editor
 	(function($) {
 		if (typeof($.summernote) != "undefined") {
+			// DIV instead of P
+			// https://github.com/summernote/summernote/issues/546
+			// https://github.com/summernote/summernote/issues/702
+			// This causes TypeError: Cannot read property 'childNodes' of undefined
+			//$.summernote.dom.emptyPara = "<div><br></div>";
+
 			$.summernote.lang['en-US'].image.dragImageHere = Lang.get("messages.drag_image_file");
 			$.summernote.lang['en-US'].image.dropImage = Lang.get("messages.drag_image_file");
 		}
