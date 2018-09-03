@@ -1,5 +1,6 @@
 var fs_sidebar_menu_applied = false;
 var fs_loader_timeout;
+var fs_processing_send_reply = false;
 
 // Default validation options
 // https://devhints.io/parsley
@@ -751,13 +752,21 @@ function newConversationInit()
 		});
 
 		// Send reply or new conversation
-	    $(".btn-reply-submit").click(function(e){
+	    $(".btn-reply-submit").click(function(e) {
+	    	// This is extra protection from double click on Send button
+	    	// DOM operation are slow sometimes
+	    	if (fs_processing_send_reply) {
+	    		return;
+	    	}
+	    	fs_processing_send_reply = true;
+
 	    	var button = $(this);
 
 	    	// Validate before sending
 	    	form = $(".form-reply:first");
 
 	    	if (!form.parsley().validate()) {
+	    		fs_processing_send_reply = false;
 	    		return;
 	    	}
 
@@ -778,7 +787,14 @@ function newConversationInit()
 					button.button('reset');
 				}
 				loaderHide();
+				fs_processing_send_reply = false;
+			}, function() {
+				showFloatingAlert('error', Lang.get("messages.ajax_error"));
+				loaderHide();
+				button.button('reset');
+				fs_processing_send_reply = false;
 			});
+
 			e.preventDefault();
 		});
 	});
