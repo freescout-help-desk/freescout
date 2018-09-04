@@ -1012,12 +1012,25 @@ function searchInit()
 function conversationPagination()
 {
 	$(".table-conversations .pager-nav").click(function(e){
+
+		var filter = {
+			q: getQueryParam('q') // For search
+		};
+		var table = $(this).parents('.table-conversations:first');
+
+		var datas = table.data();
+		for (data_name in datas) {
+			if (/^filter_/.test(data_name)) {
+				filter[data_name.replace(/^filter_/, '')] = datas[data_name];
+			}
+		}
+
 		fsAjax(
 			{
 				action: 'conversations_pagination',
 				mailbox_id: getGlobalAttr('mailbox_id'),
 				folder_id: getGlobalAttr('folder_id'),
-				q: getQueryParam('q'), // For search
+				filter: filter,
 				page: $(this).attr('data-page')
 			}, 
 			laroute.route('conversations.ajax'),

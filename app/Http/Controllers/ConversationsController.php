@@ -569,8 +569,8 @@ class ConversationsController extends Controller
 
             // Conversations navigation
             case 'conversations_pagination':
-                if (!empty($request->q)) {
-                    $response = $this->ajaxSearch($request, $response, $user);
+                if (!empty($request->filter)) {
+                    $response = $this->ajaxConversationsFilter($request, $response, $user);
                 } else {
                     $response = $this->ajaxConversationsPagination($request, $response, $user);
                 }                
@@ -836,7 +836,7 @@ class ConversationsController extends Controller
 
         if (!$response['msg']) {
             $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
-            $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(50, ['*'], 'page', $request->page);
+            $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE, ['*'], 'page', $request->page);
         }
         
         $response['status'] = 'success';
@@ -873,7 +873,13 @@ class ConversationsController extends Controller
         // Get IDs of mailboxes to which user has access
         $mailbox_ids = $user->mailboxesIdsCanView();
 
-        $q = $request->q;
+        $q = '';
+        if (!empty($request->q)) {
+            $q = $request->q;
+        } elseif (!empty($request->filter) && !empty($request->filter['q'])) {
+            $q = $request->filter['q'];
+        }
+
         $like = '%'.mb_strtolower($q).'%';
 
         $query_conversations = Conversation::whereIn('conversations.mailbox_id', $mailbox_ids)
@@ -887,7 +893,7 @@ class ConversationsController extends Controller
             ->orWhere('threads.bcc', 'like', $like)
             ->orderBy('conversations.last_reply_at');
 
-        return $query_conversations->paginate(50);
+        return $query_conversations->paginate(Conversation::DEFAULT_LIST_SIZE);
     }
 
     /**
@@ -906,20 +912,39 @@ class ConversationsController extends Controller
     /**
      * Ajax conversations search.
      */
-    public function ajaxSearch(Request $request, $response, $user)
+    public function ajaxConversationsFilter(Request $request, $response, $user)
     {
-        $conversations = $this->searchQuery($request, $user);
-
-        // Dummy folder
-        $folder = $this->getSearchFolder($conversations);
+        if (!empty($request->filter['q'])) {
+            $conversations = $this->searchQuery($request, $user);
+        } else {
+            $conversations = $this->conversationsFilterQuery($request, $user);
+        }
 
         $response['status'] = 'success';
 
         $response['html'] = view('conversations/conversations_table', [
-            'folder'        => $folder,
             'conversations' => $conversations,
         ])->render();
 
         return $response;
+    }
+
+    public function conversationsFilterQuery($request, $user)
+    {
+        // Get IDs of mailboxes to which user has access
+        $mailbox_ids = $user->mailboxesIdsCanView();
+
+        $query_conversations = Conversation::whereIn('conversations.mailbox_id', $mailbox_ids)
+            ->orderBy('conversations.last_reply_at');
+
+        foreach ($request->filter as $field => $value) {
+            switch ($field) {
+                case 'customer_id':
+                    $query_conversations->where('customer_id', $value);
+                    break;
+            }
+        }
+
+        return $query_conversations->paginate(Conversation::DEFAULT_LIST_SIZE);
     }
 }

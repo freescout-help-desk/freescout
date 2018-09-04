@@ -276,7 +276,7 @@ class MailboxesController extends Controller
         $user = auth()->user();
 
         $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
-        $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(50);
+        $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE);
 
         return view('mailboxes/view', [
             'mailbox'       => $mailbox,

@@ -11,19 +11,10 @@
 
 @section('content')
     @include('customers/profile_menu')
-    @include('partials/flash_messages')
-
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <br/>
-                todo
-            </div>
-        </div>
-    </div>
+    @include('conversations/conversations_table', ['no_checkboxes' => true, 'no_customer' => true, 'conversations_filter' => ['customer_id' => $customer->id] ])
 @endsection
 
 @section('javascript')
     @parent
-    multiInputInit();
+    conversationPagination();
 @endsection

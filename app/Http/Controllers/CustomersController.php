@@ -205,7 +205,15 @@ class CustomersController extends Controller
     {
         $customer = Customer::findOrFail($id);
 
-        return view('customers/conversations', ['customer' => $customer]);
+        $conversations = $customer->conversations()
+            ->where('customer_id', $customer->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(Conversation::DEFAULT_LIST_SIZE);
+                                
+        return view('customers/conversations', [
+            'customer'      => $customer,
+            'conversations' => $conversations
+        ]);
     }
 
     /**

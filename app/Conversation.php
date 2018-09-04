@@ -130,6 +130,11 @@ class Conversation extends Model
     ];
 
     /**
+     * Default size of the conversations table.
+     */
+    const DEFAULT_LIST_SIZE = 50;
+
+    /**
      * Automatically converted into Carbon dates.
      */
     protected $dates = ['created_at', 'updated_at', 'last_reply_at', 'closed_at'];

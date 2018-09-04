@@ -1,8 +1,16 @@
-<table class="table-conversations table">
+@php
+    if (empty($folder)) {
+        // Create dummy folder
+        $folder = new App\Folder();
+        $folder->type = App\Folder::TYPE_ASSIGNED;
+    }
+@endphp
+<table class="table-conversations table" @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif >
     <colgroup>
-        <col class="conv-current">
-        <col class="conv-cb">
-        <col class="conv-customer">
+        {{-- todo: without this columns table becomes not 100% wide --}}
+        @if (empty($no_checkboxes))<col class="conv-current">@endif
+        @if (empty($no_checkboxes))<col class="conv-cb">@endif
+        @if (empty($no_customer))<col class="conv-customer">@endif
         <col class="conv-attachment">
         <col class="conv-subject">
         <col class="conv-thread-count">
@@ -14,10 +22,13 @@
     </colgroup>
     <thead>
     <tr>
-        <th class="conv-cb" colspan="2"><input type="checkbox" class="toggle-all"></th>
-        <th class="conv-customer">
-            <span>{{ __("Customer") }}</span>
-        </th>
+        @if (empty($no_checkboxes))<th class="conv-current">&nbsp;</th>@endif
+        @if (empty($no_checkboxes))<th class="conv-cb"><input type="checkbox" class="toggle-all"></th>@endif
+        @if (empty($no_customer))
+            <th class="conv-customer">
+                <span>{{ __("Customer") }}</span>
+            </th>
+        @endif
         <th class="conv-attachment">&nbsp;</th>
         <th class="conv-subject" colspan="2">
             <span>{{ __("Conversation") }}</span>
@@ -53,15 +64,34 @@
     <tbody>
         @foreach ($conversations as $conversation)
             <tr class="conv-row @if ($conversation->isActive()) conv-active @endif">
-                <td class="conv-current"></td>
-                <td class="conv-cb">
-                    <input type="checkbox" id="cb-{{ $conversation->id }}" name="cb_{{ $conversation->id }}" value="{{ $conversation->id }}">
-                </td>
-                <td class="conv-customer">
-                    <a href="{{ $conversation->url() }}">
-                        {{ $conversation->customer->getFullName(true)}}
-                    </a>    
-                </td>
+                @if (empty($no_checkboxes))<td class="conv-current"></td>@endif
+                @if (empty($no_checkboxes))
+                    <td class="conv-cb">
+                        <input type="checkbox" id="cb-{{ $conversation->id }}" name="cb_{{ $conversation->id }}" value="{{ $conversation->id }}">
+                    </td>
+                @endif
+                @if (empty($no_customer))
+                    <td class="conv-customer">
+                        <a href="{{ $conversation->url() }}">
+                            {{ $conversation->customer->getFullName(true)}}
+                            @if ($conversation->user)
+                                <small class="conv-owner-mobile text-help">
+                                    ({{ __('Assigned to') }}: {{ $conversation->user->getFullName() }})
+                                </small>
+                            @endif
+                        </a>
+                    </td>
+                @else
+                    {{-- Displayed in customer conversation history --}}
+                    <td class="conv-customer conv-owner-mobile">
+                        <a href="{{ $conversation->url() }}" class="help-link">
+                            <small class="glyphicon glyphicon-envelope"></small> 
+                            @if ($conversation->user)
+                                 <small>&nbsp;{{ __('Assigned to') }}: {{ $conversation->user->getFullName() }}</small> 
+                            @endif
+                        </a>
+                    </td>
+                @endif
                 <td class="conv-attachment">
                     @if ($conversation->has_attachments)
                         <i class="glyphicon glyphicon-paperclip"></i>
@@ -110,17 +140,22 @@
             @else
                 <td class="conv-totals" colspan="5">
             @endif
-                @if (isset($folder->total_count))
-                    <strong>{{ $folder->total_count }}</strong> {{ __('total conversations') }}&nbsp;|&nbsp; 
+                @if ($conversations->total())
+                    <strong>{{ $conversations->total() }}</strong> {{ __('total conversations') }}&nbsp;|&nbsp; 
                 @endif
                 @if (isset($folder->active_count))
                     <strong>{{ $folder->active_count }}</strong> {{ __('active') }}&nbsp;|&nbsp; 
                 @endif
-                {{ __('Viewing') }} <strong>{{ $conversations->firstItem() }}</strong>-<strong>{{ $conversations->lastItem() }}</strong>
+                @if ($conversations)
+                    {{ __('Viewing') }} <strong>{{ $conversations->firstItem() }}</strong>-<strong>{{ $conversations->lastItem() }}</
+                    strong>
+                @endif
             </td>
             <td colspan="3" class="conv-nav">
                 <div class="table-pager">
-                    {{ $conversations->links('conversations/conversations_pagination') }}
+                    @if ($conversations)
+                        {{ $conversations->links('conversations/conversations_pagination') }}
+                    @endif
                 </div>
             </td>
         </tr>

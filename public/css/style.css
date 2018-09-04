@@ -925,6 +925,9 @@ a h4 {
 .table.table-conversations th.conv-customer {
     padding-left: 0;
 }
+.table.table-conversations th.conv-subject {
+    padding-left: 3px;
+}
 .table-conversations .conv-cb {
     padding: 4px 0;
     text-align: center;
@@ -987,7 +990,8 @@ table.table-conversations td.conv-attachment {
 }
 .table-conversations td.conv-subject a {
     overflow: hidden;
-    padding: 8.4px 4px 7px 4px;
+    margin-top: 8.4px;
+    padding: 0 4px 7px 4px;
     position: relative;
     white-space: nowrap;
 }
@@ -1058,6 +1062,10 @@ table.table-conversations td.conv-attachment {
 .conv-subject-number {
     display: none;
 }
+.conv-owner-mobile {
+    display: none;
+    font-weight: normal;
+}
 @media (max-width:1000px) {
     /**
      * Make conversations table responsive
@@ -1104,6 +1112,12 @@ table.table-conversations td.conv-attachment {
     }
     .table-conversations .conv-fader {
         width: 80px;
+    }
+    .conv-owner {
+        display: none!important;
+    }
+    .conv-owner-mobile {
+        display: inline!important;
     }
     .conv-customer {
         position: absolute;
@@ -2540,4 +2554,29 @@ a.disabled:focus {
 .panel-shaded {
     -webkit-box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
     box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
+}
+
+/**
+ * Only main content is visible
+ */
+@media (max-width:991px) {
+    .1col-hidden {
+        display: none;
+    }
+}
+/**
+ * Left sidebar and main content are visible
+ */
+@media (max-width:1100px) {
+    .2col-hidden {
+        display: none;
+    }
+}
+/**
+ * Left sidebar, main content and right siderbar are visible
+ */
+@media (min-width:1101px) {
+    .3col-hidden {
+        display: none;
+    }
 }
