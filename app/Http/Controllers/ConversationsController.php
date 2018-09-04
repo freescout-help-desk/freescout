@@ -556,9 +556,12 @@ class ConversationsController extends Controller
                 if (!$response['msg']) {
                     $mailbox_user = $user->mailboxes()->where('mailbox_id', $request->mailbox_id)->first();
                     if (!$mailbox_user) {
-                        $mailbox_user = new MailboxUser();
-                        $mailbox_user->mailbox_id = $mailbox->id;
-                        $mailbox_user->user_id = $user->id;
+                        // Admin may not be connected to the mailbox yet
+                        $user->mailboxes()->attach($request->mailbox_id);
+                        // $mailbox_user = new MailboxUser();
+                        // $mailbox_user->mailbox_id = $mailbox->id;
+                        // $mailbox_user->user_id = $user->id;
+                        $mailbox_user = $user->mailboxes()->where('mailbox_id', $request->mailbox_id)->first();
                     }
                     $mailbox_user->settings->after_send = $request->value;
                     $mailbox_user->settings->save();
@@ -741,13 +744,7 @@ class ConversationsController extends Controller
                     $redirect_url = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
                     break;
                 case MailboxUser::AFTER_SEND_NEXT:
-                    $next_conversation = $conversation->getNearby();
-                    if ($next_conversation) {
-                        $redirect_url = $next_conversation->url();
-                    } else {
-                        // Show folder
-                        $redirect_url = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => Conversation::getCurrentFolder($conversation->folder_id)]);
-                    }
+                    $redirect_url = $conversation->urlNext();
                     break;
             }
         } else {

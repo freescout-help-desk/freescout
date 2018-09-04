@@ -417,6 +417,8 @@ class Conversation extends Model
      */
     public function getNearby($mode = 'closest')
     {
+        $conversation = null;
+
         $folder = $this->folder;
         $query = self::where('folder_id', $folder->id)
             ->where('id', '<>', $this->id);
@@ -435,6 +437,7 @@ class Conversation extends Model
                     $query_next->orderBy($field, $sort_order);
                 }
             }
+            $conversation = $query_next->first();
         }
         // echo 'folder_id'.$folder->id.'|';
         // echo 'id'.$this->id.'|';
@@ -443,7 +446,6 @@ class Conversation extends Model
         // echo '$this->last_reply_at'.$this->last_reply_at.'|';
         // echo $query_next->toSql();
         // exit();
-        $conversation = $query_next->first();
 
         if ($conversation || $mode == 'next') {
             return $conversation;
@@ -456,13 +458,43 @@ class Conversation extends Model
                 if ($sort_order == 'asc') {
                     $query_prev->where($field, '<=', $this->$field);
                 } else {
-                    $query_prev->where($field, '<=', $this->$field);
+                    $query_prev->where($field, '>=', $this->$field);
                 }
                 $query_prev->orderBy($field, $sort_order);
             }
         }
 
         return $query_prev->first();
+    }
+
+    /**
+     * Get URL of the next conversation.
+     */
+    public function urlNext()
+    {
+        $next_conversation = $this->getNearby('next');
+        if ($next_conversation) {
+            $url = $next_conversation->url();
+        } else {
+            // Show folder
+            $url = route('mailboxes.view.folder', ['id' => $this->mailbox_id, 'folder_id' => Conversation::getCurrentFolder($this->folder_id)]);
+        }
+        return $url;
+    }
+
+    /**
+     * Get URL of the previous conversation.
+     */
+    public function urlPrev()
+    {
+        $prev_conversation = $this->getNearby('prev');
+        if ($prev_conversation) {
+            $url = $prev_conversation->url();
+        } else {
+            // Show folder
+            $url = route('mailboxes.view.folder', ['id' => $this->mailbox_id, 'folder_id' => Conversation::getCurrentFolder($this->folder_id)]);
+        }
+        return $url;
     }
 
     /**

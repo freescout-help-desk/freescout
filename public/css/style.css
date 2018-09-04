@@ -1359,13 +1359,15 @@ table.table-conversations td.conv-attachment {
     vertical-align: middle;
     margin-right: 0!important;
 }
-.conv-next-prev i {
+.conv-next-prev a {
     font-size: 16px;
     color: #a5b2bd;
     position: relative;
     top: 3px;
+    text-decoration: none;
 }
-.conv-next-prev i:hover {
+.conv-next-prev a:hover,
+.conv-next-prev a:focus {
     cursor: pointer;
     color: #4f5d69;
 }
@@ -1723,14 +1725,14 @@ ul.prev-convs {
     .conv-info {
         margin-right: 6px;
     }
-    .conv-info > li {
+    /*.conv-info > li {
         margin: 0 2px;
-    }
+    }*/
     #conv-toolbar {
         padding-left: 6px;
     }
     .conv-actions .conv-action {
-        font-size: 15px;
+        font-size: 17px;
     }
     .thread-photo {
         padding-left: 15px;
@@ -1996,8 +1998,9 @@ ul.prev-convs {
 }
 .alert-floating.alert-success {
     background-color: #dfffdf;
-    color: #3c763d;
-    border: 1px solid #3c763d;
+    /*color: #3c763d;*/
+    color: #3eb670;
+    border: 1px solid #3eb670;
 }
 .alert-floating.alert-danger {
     border: 1px solid #a94442;
