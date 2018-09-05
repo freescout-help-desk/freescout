@@ -18,8 +18,11 @@ class CreateMailboxUserTable extends Migration
             $table->increments('id');
             $table->integer('mailbox_id');
             $table->integer('user_id');
-
             $table->unsignedTinyInteger('after_send')->default(MailboxUser::AFTER_SEND_NEXT);
+
+            // Indexes
+            $table->index(['user_id', 'mailbox_id']);
+            $table->index(['mailbox_id']);
         });
     }
 

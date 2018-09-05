@@ -147,6 +147,14 @@ class Thread extends Model
     }
 
     /**
+     * The user assigned to this thread (cached)
+     */
+    public function user_cached()
+    {
+        return $this->user()->rememberForever();
+    }
+
+    /**
      * Get the thread customer.
      */
     public function customer()
@@ -185,6 +193,14 @@ class Thread extends Model
     public function created_by_user()
     {
         return $this->belongsTo('App\User');
+    }
+
+    /**
+     * Get user who created the thread (cached)
+     */
+    public function created_by_user_cached()
+    {
+        return $this->created_by_user()->rememberForever()->first();
     }
 
     /**

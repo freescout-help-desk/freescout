@@ -1,9 +1,9 @@
-@if ($thread->created_by_user->id == Auth::user()->id)
+@if ($thread->created_by_user_cached()->id == Auth::user()->id)
     {{ __("you") }}
 @else
 	@if (empty($as_link))
-    	{{ $thread->created_by_user->getFullName() }}
+    	{{ $thread->created_by_user_cached()->getFullName() }}
     @else
-    	<a href="{{ $thread->created_by_user->url() }}">{{ $thread->created_by_user->getFullName() }}</a>
+    	<a href="{{ $thread->created_by_user_cached()->url() }}">{{ $thread->created_by_user_cached()->getFullName() }}</a>
     @endif
 @endif

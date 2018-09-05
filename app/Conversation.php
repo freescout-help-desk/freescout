@@ -795,4 +795,63 @@ class Conversation extends Model
 
         return true;
     }
+
+    /**
+     * Get all users for conversations in one query.
+     */
+    public static function loadUsers($conversations)
+    {
+        $user_ids = $conversations->pluck('user_id')->unique()->toArray();
+        if (!$user_ids) {
+            return;
+        }
+
+        $users = User::whereIn('id', $user_ids)->get();
+        if (!$users) {
+            return;
+        }
+
+        foreach ($conversations as $conversation) {
+
+            if (empty($conversation->user_id)) {
+                continue;
+            }
+            foreach ($users as $user) {
+                if ($user->id == $conversation->user_id) {
+                    $conversation->user = $user;
+
+                    continue 2;
+                }
+            }
+        }
+    }
+
+    /**
+     * Get all customers for conversations in one query.
+     */
+    public static function loadCustomers($conversations)
+    {
+        $ids = $conversations->pluck('customer_id')->unique()->toArray();
+        if (!$ids) {
+            return;
+        }
+
+        $customers = Customer::whereIn('id', $ids)->get();
+        if (!$customers) {
+            return;
+        }
+
+        foreach ($conversations as $conversation) {
+            if (empty($conversation->customer_id)) {
+                continue;
+            }
+            foreach ($customers as $customer) {
+                if ($customer->id == $conversation->customer_id) {
+                    $conversation->customer = $customer;
+
+                    continue 2;
+                }
+            }
+        }
+    }
 }

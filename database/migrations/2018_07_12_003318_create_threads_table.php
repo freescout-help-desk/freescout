@@ -69,6 +69,8 @@ class CreateThreadsTable extends Migration
 
             // https://github.com/laravel/framework/issues/9293#issuecomment-373229281
             $table->unique([DB::raw('message_id(191)')], 'threads_message_id_index');
+            // On conversation page
+            $table->index(['conversation_id', 'type', 'from', 'customer_id']);
         });
     }
 

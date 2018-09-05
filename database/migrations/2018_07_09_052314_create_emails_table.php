@@ -17,7 +17,7 @@ class CreateEmailsTable extends Migration
         // Each email must be always connected to some customer
         Schema::create('emails', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('customer_id');
+            $table->integer('customer_id')->index();
             // Max email length is 255, but if we specify 255, we get can not create an index:
             // SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes
             $table->string('email', 191)->unique();

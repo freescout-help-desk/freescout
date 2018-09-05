@@ -198,9 +198,11 @@ class ConversationsController extends Controller
                 if (!$response['msg']) {
                     // Determine redirect
                     // Must be done before updating current conversation's status or assignee.
+                    $redirect_same_page = false;
                     if ($new_user_id == $user->id) {
                         // If user assigned conversation to himself, stay on the current page
                         $response['redirect_url'] = $conversation->url();
+                        $redirect_same_page = true;
                     } else {
                         $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
                     }
@@ -229,15 +231,8 @@ class ConversationsController extends Controller
 
                     // Flash
                     $flash_message = __('Assignee updated');
-                    if ($new_user_id != $user->id) {
-                        $flash_message .= ' <a href="'.$conversation->url().'">'.__('View').'</a>';
-
-                        // if ($next_conversation) {
-                        //     $response['redirect_url'] = $next_conversation->url();
-                        // } else {
-                        //     // Show conversations list
-                        //     $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
-                        // }
+                    if (!$redirect_same_page || $response['redirect_url'] != $conversation->url()) {
+                        $flash_message .= ' &nbsp;<a href="'.$conversation->url().'">'.__('View').'</a>';
                     }
                     \Session::flash('flash_success_floating', $flash_message);
 

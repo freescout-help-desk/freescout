@@ -21,7 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('last_name', 30);
             $table->string('email', 100)->unique();
             $table->string('password', 255);
-            $table->unsignedTinyInteger('role')->default(User::ROLE_USER); // admin/user
+            $table->unsignedTinyInteger('role')->default(User::ROLE_USER)->index(); // admin/user
             $table->string('timezone', 255)->default('UTC');
             $table->string('photo_url', 255)->nullable();
             $table->unsignedTinyInteger('type')->default(User::TYPE_USER); // team/user

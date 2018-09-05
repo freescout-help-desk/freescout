@@ -4,6 +4,10 @@
         $folder = new App\Folder();
         $folder->type = App\Folder::TYPE_ASSIGNED;
     }
+
+    // Preload users and customers
+    App\Conversation::loadUsers($conversations);
+    App\Conversation::loadCustomers($conversations);
 @endphp
 <table class="table-conversations table" @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif >
     <colgroup>
@@ -74,7 +78,7 @@
                     <td class="conv-customer">
                         <a href="{{ $conversation->url() }}">
                             {{ $conversation->customer->getFullName(true)}}
-                            @if ($conversation->user)
+                            @if ($conversation->user_id)
                                 <small class="conv-owner-mobile text-help">
                                     ({{ __('Assigned to') }}: {{ $conversation->user->getFullName() }})
                                 </small>
@@ -86,7 +90,7 @@
                     <td class="conv-customer conv-owner-mobile">
                         <a href="{{ $conversation->url() }}" class="help-link">
                             <small class="glyphicon glyphicon-envelope"></small> 
-                            @if ($conversation->user)
+                            @if ($conversation->user_id)
                                  <small>&nbsp;{{ __('Assigned to') }}: {{ $conversation->user->getFullName() }}</small> 
                             @endif
                         </a>
@@ -111,7 +115,7 @@
                 </td>
                 @if ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED)
                     <td class="conv-owner">
-                        @if ($conversation->user)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}"> {{ $conversation->user->getFullName() }} </a>@else &nbsp;@endif
+                        @if ($conversation->user_id)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}"> {{ $conversation->user->getFullName() }} </a>@else &nbsp;@endif
                     </td>
                 @endif
                 <td class="conv-number">

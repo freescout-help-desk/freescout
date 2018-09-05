@@ -313,10 +313,10 @@ class Mailbox extends Model
     /**
      * Get users who have access to the mailbox.
      */
-    public function usersHavingAccess()
+    public function usersHavingAccess($cache = false)
     {
         $users = $this->users;
-        $admins = User::where('role', User::ROLE_ADMIN)->get();
+        $admins = User::where('role', User::ROLE_ADMIN)->remember(\App\Helpers\Misc::cacheTime($cache))->get();
 
         return $users->merge($admins)->unique();
     }

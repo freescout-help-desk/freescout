@@ -42,7 +42,7 @@
                             <ul class="dropdown-menu conv-user">
                                 <li @if (!$conversation->user_id) class="active" @endif><a href="#" data-user_id="-1">{{ __("Anyone") }}</a></li>
                                 <li @if ($conversation->user_id == Auth::user()->id) class="active" @endif><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
-                                @foreach ($mailbox->usersHavingAccess() as $user)
+                                @foreach ($mailbox->usersHavingAccess(true) as $user)
                                     @if ($user->id != Auth::user()->id)
                                         <li @if ($conversation->user_id == $user->id) class="active" @endif><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
                                     @endif
@@ -267,8 +267,8 @@
                                                 @endphp
                                             @endif
                                             @if ($loop->index == 0 || $thread->user_id != $threads[$loop->index-1]->user_id)
-                                                @if ($thread->user)
-                                                    {{ $thread->user->getFullName() }}@if (!empty($show_status)),@endif
+                                                @if ($thread->user_id)
+                                                    {{ $thread->user_cached->getFullName() }}@if (!empty($show_status)),@endif
                                                 @else
                                                     {{ __("Anyone") }}@if (!empty($show_status)),@endif
                                                 @endif
