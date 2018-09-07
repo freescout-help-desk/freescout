@@ -477,6 +477,9 @@ class ConversationsController extends Controller
                     } else {
                         $thread->type = Thread::TYPE_MESSAGE;
                     }
+                    if ($new) {
+                        $thread->first = true;
+                    }
                     $thread->status = $request->status;
                     $thread->state = Thread::STATE_PUBLISHED;
                     $thread->body = $request->body;

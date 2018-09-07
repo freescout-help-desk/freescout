@@ -1,6 +1,6 @@
 <div class="customer-snippet">
 	<div class="customer-photo-container">
-    	<img src="/img/default-avatar.png" alt="" class="customer-photo">
+    	<img src="{{ $customer->getPhotoUrl() }}" alt="" class="customer-photo">
     </div>
     <div class="customer-data">
     	@if ($customer->getFullName(true))

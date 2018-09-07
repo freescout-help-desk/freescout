@@ -56,6 +56,8 @@ class CreateThreadsTable extends Migration
             //  See source_via
             $table->integer('created_by_user_id')->nullable();
             $table->integer('created_by_customer_id')->nullable();
+            // First thread in conversation
+            $table->boolean('first')->default(false);
             // ID of Saved reply that was used to create this Thread (savedReplyId)
             $table->integer('saved_reply_id')->nullable();
             // Status of the email sent to the customer or user, to whom the thread is assigned

@@ -4,9 +4,14 @@ namespace App;
 
 use App\Email;
 use Illuminate\Database\Eloquent\Model;
+use Watson\Rememberable\Rememberable;
 
 class Customer extends Model
 {
+    use Rememberable;
+
+    public $rememberCacheDriver = 'array';
+
     /**
      * Genders.
      */
@@ -706,5 +711,11 @@ class Customer extends Model
     public static function dateFormat($date, $format = 'M j, Y H:i')
     {
         return $date->format($format);
+    }
+
+    public function getPhotoUrl()
+    {
+        // todo
+        return '/img/default-avatar.png';
     }
 }

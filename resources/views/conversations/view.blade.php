@@ -180,11 +180,11 @@
                                 <div class="thread-title">
                                     @include('conversations/thread_by') 
                                     @if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED)
-                                        {{ __("marked as") }} {{ $thread->getStatusName() }}
+                                        {{ __("marked as :status_name", ['status_name' => $thread->getStatusName()]) }}
                                     @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
-                                         {{ __("assigned to") }} {{ $thread->getAssigneeName() }}
+                                         {{ __("assigned to :assignee", ['assignee' => $thread->getAssigneeName()]) }}
                                     @elseif ($thread->action_type == App\Thread::ACTION_TYPE_CUSTOMER_CHANGED)
-                                         {{ __("changed the customer to") }} <a href="{{  $thread->customer->url() }}" title="{{ $thread->action_data }}" class="link-black">{{ $thread->customer->getFullName(true) }}</a>
+                                         {!! __("changed the customer to :customer", ['customer' => '<a href="'.$thread->customer->url().'" title="'.$thread->action_data.'" class="link-black">'.htmlspecialchars($thread->customer->getFullName(true)).'</a>']) !!}
                                     @endif
                                 </div>
                                 <div class="thread-info">
@@ -205,7 +205,7 @@
                 @else
                     <div class="thread thread-type-{{ $thread->getTypeName() }}" id="thread-{{ $thread->id }}">
                         <div class="thread-photo">
-                            <img src="/img/default-avatar.png" alt="">
+                            @include('partials/person_photo', ['person' => $thread->getPerson(true)])
                         </div>
                         <div class="thread-message">
                             <div class="thread-header">

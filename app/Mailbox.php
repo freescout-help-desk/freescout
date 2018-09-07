@@ -316,7 +316,7 @@ class Mailbox extends Model
     public function usersHavingAccess($cache = false)
     {
         $users = $this->users;
-        $admins = User::where('role', User::ROLE_ADMIN)->remember(\App\Helpers\Misc::cacheTime($cache))->get();
+        $admins = User::where('role', User::ROLE_ADMIN)->remember(\App\Misc\Helper::cacheTime($cache))->get();
 
         return $users->merge($admins)->unique();
     }

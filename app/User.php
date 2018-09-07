@@ -8,6 +8,7 @@ namespace App;
 
 use App\Mail\PasswordChanged;
 use App\Mail\UserInvite;
+use App\Notifications\WebsiteNotification;
 use App\SendLog;
 use Carbon\Carbon;
 use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
@@ -68,6 +69,9 @@ class User extends Authenticatable
         self::USER_PERM_EDIT_SAVED_REPLIES,
         self::USER_PERM_EDIT_TAGS,
     ];
+
+    const WEBSITE_NOTIFICATIONS_PAGE_SIZE = 25;
+    const WEBSITE_NOTIFICATIONS_PAGE_PARAM = 'wp_page';
 
     /**
      * The attributes that are not mass assignable.
@@ -492,5 +496,33 @@ class User extends Authenticatable
         \App\Mail\Mail::setSystemMailDriver();
 
         $this->notify(new ResetPasswordNotification($token));
+    }
+
+    public function getWebsiteNotifications()
+    {
+        return $this->notifications()->paginate(self::WEBSITE_NOTIFICATIONS_PAGE_SIZE, ['*'], self::WEBSITE_NOTIFICATIONS_PAGE_PARAM, request()->wn_page);
+    }
+
+    public function getWebsiteNotificationsInfo()
+    {
+        $info = [];
+
+        $notifications = $this->getWebsiteNotifications();
+
+        // Get from cache
+
+        $info = [
+            'data' => WebsiteNotification::fetchNotificationsData($notifications),
+            'notifications' => $notifications,
+            'unread_count' => $this->unreadNotifications()->count()
+        ];
+
+        return $info;
+    }
+
+    public function getPhotoUrl()
+    {
+        // todo
+        return '/img/default-avatar.png';
     }
 }

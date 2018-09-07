@@ -30,6 +30,12 @@ return [
 
     'connections' => [
 
+        'polycast' => [
+            'driver' => 'polycast',
+            // this deletes old events after 2 minutes, this can be changed to leave them in the db longer if required
+            'delete_old' => 2, 
+        ],
+
         'pusher' => [
             'driver'  => 'pusher',
             'key'     => env('PUSHER_APP_KEY'),

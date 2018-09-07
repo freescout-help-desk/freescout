@@ -276,29 +276,7 @@ class Conversation extends Model
             }
         }
 
-        // Remove all kinds of spaces after tags
-        // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
-        $text = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $text);
-
-        $text = strip_tags($text);
-        $text = preg_replace('/\s+/mu', ' ', $text);
-
-        // Trim
-        $text = trim($text);
-        $text = preg_replace('/^\s+/mu', '', $text);
-
-        // Causes "General error: 1366 Incorrect string value"
-        // Remove "undetectable" whitespaces
-        // $whitespaces = ['%81', '%7F', '%C5%8D', '%8D', '%8F', '%C2%90', '%C2', '%90', '%9D', '%C2%A0', '%A0', '%C2%AD', '%AD', '%08', '%09', '%0A', '%0D'];
-        // $text = urlencode($text);
-        // foreach ($whitespaces as $char) {
-        //     $text = str_replace($char, ' ', $text);
-        // }
-        // $text = urldecode($text);
-
-        $text = trim(preg_replace('/[ ]+/', ' ', $text));
-
-        $this->preview = mb_substr($text, 0, self::PREVIEW_MAXLENGTH);
+        $this->preview = \App\Misc\Helper::textPreview($text, self::PREVIEW_MAXLENGTH);
 
         return $this->preview;
     }
@@ -620,7 +598,7 @@ class Conversation extends Model
      *
      * @return string
      */
-    public function url($folder_id = null)
+    public function url($folder_id = null, $thread_id = null)
     {
         $params = ['id' => $this->id];
         if (!$folder_id) {
@@ -628,7 +606,13 @@ class Conversation extends Model
         }
         $params['folder_id'] = $folder_id;
 
-        return route('conversations.view', $params);
+        $url = route('conversations.view', $params);
+
+        if ($thread_id) {
+            $url .= '#thread-'.$thread_id;
+        }
+
+        return $url;
     }
 
     /**

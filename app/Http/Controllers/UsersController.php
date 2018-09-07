@@ -162,8 +162,12 @@ class UsersController extends Controller
      */
     public function permissions($id)
     {
+        $user = auth()->user();
+        if (!$user->isAdmin()) {
+            abort(403);
+        }
+
         $user = User::findOrFail($id);
-        $this->authorize('update', $user);
 
         $mailboxes = Mailbox::all();
 
@@ -178,13 +182,17 @@ class UsersController extends Controller
      */
     public function permissionsSave($id, Request $request)
     {
+        $user = auth()->user();
+        if (!$user->isAdmin()) {
+            abort(403);
+        }
+        
         $user = User::findOrFail($id);
-        $this->authorize('update', $user);
 
         $user->mailboxes()->sync($request->mailboxes);
         $user->syncPersonalFolders($request->mailboxes);
 
-        \Session::flash('flash_success', __('Permissions saved successfully'));
+        \Session::flash('flash_success_floating', __('Permissions saved successfully'));
 
         return redirect()->route('users.permissions', ['id' => $id]);
     }
@@ -224,7 +232,7 @@ class UsersController extends Controller
 
         Subscription::saveFromArray($request->subscriptions, $user->id);
 
-        \Session::flash('flash_success', __('Notifications saved successfully'));
+        \Session::flash('flash_success_floating', __('Notifications saved successfully'));
 
         return redirect()->route('users.notifications', ['id' => $id]);
     }
@@ -239,11 +247,13 @@ class UsersController extends Controller
             'msg'    => '', // this is error message
         ];
 
+        $auth_user = auth()->user();
+
         switch ($request->action) {
 
             // Both send and resend
             case 'send_invite':
-                if (!auth()->user()->isAdmin()) {
+                if (!$auth_user->isAdmin()) {
                      $response['msg'] = __('Not enough permissions');
                 }
                 if (empty($request->user_id)) {
@@ -295,6 +305,23 @@ class UsersController extends Controller
                         $response['status'] = 'success';
                         $response['success_msg'] = __('Password reset email has been sent');
                     }
+                }
+                break;
+
+            // Load website notifications
+            case 'web_notifications':
+                if (!$auth_user) {
+                     $response['msg'] = __('User not logged in');
+                }
+                if (!$response['msg']) {
+                    $web_notifications_info = $auth_user->getWebsiteNotificationsInfo();
+                    $response['html'] = view('partials/web_notifications', [
+                        'web_notifications_info' => $web_notifications_info,
+                    ])->render();
+
+                    $response['has_more_pages'] = (int)$web_notifications_info['notifications']->hasMorePages();
+                    
+                    $response['status'] = 'success';
                 }
                 break;
 

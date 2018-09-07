@@ -5,6 +5,7 @@
 
 namespace App;
 
+use App\Notifications\WebsiteNotification;
 use Illuminate\Database\Eloquent\Model;
 
 class Subscription extends Model
@@ -34,7 +35,7 @@ class Subscription extends Model
     const EVENT_USER_REPLIED_TO_ASSIGNED = 9;
 
     // Mediums
-    const MEDIUM_EMAIL = 1;
+    const MEDIUM_EMAIL = 1; // This is also website notifications
     const MEDIUM_BROWSER = 2;
     const MEDIUM_MOBILE = 3;
 
@@ -303,13 +304,21 @@ class Subscription extends Model
             }
         }
 
-        // Notify by email
+        // Notify by email and on the website
         if (!empty($notify[self::MEDIUM_EMAIL])) {
+            // Email notification (better to create them first)
             foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
                 \App\Jobs\SendNotificationToUsers::dispatch($notify_info['users'], $notify_info['conversation'], $notify_info['threads'])->onQueue('emails');
             }
+
+            // Notification on the website
+            foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
+                \Notification::send($notify_info['users'], new WebsiteNotification($notify_info['conversation'], $notify_info['threads'][0]));
+            }
         }
+
         // todo: mobile notification
+        
         self::$occured_events = [];
     }
 

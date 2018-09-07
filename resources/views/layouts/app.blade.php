@@ -115,8 +115,59 @@
                             @guest
                                 {{-- <li><a href="{{ route('login') }}">{{ __('Login') }}</a></li> --}}&nbsp;
                             @else
+                                <li class="dropdown web-notifications">
+                                    @php
+                                        $web_notifications_info = Auth::user()->getWebsiteNotificationsInfo();
+                                    @endphp
+                                    <a href="#" class="dropdown-toggle dropdown-toggle-icon @if ($web_notifications_info['unread_count']) @if ($web_notifications_info['unread_count']) has-unread @endif @endif" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre title="{{ __('Notifications') }}">
+                                        <i class="glyphicon glyphicon-bell"></i>
+                                    </a>
+
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <div class="web-notifications-header">
+                                                <h1>
+                                                    {{ __('Notifications') }}
+                                                    @if (count($web_notifications_info['data']))
+                                                        <small class="web-notifications-count" title="{{ __('Unread Notifications') }}" data-toggle="tooltip">@if ($web_notifications_info['unread_count']){{ $web_notifications_info['unread_count'] }}@endif</small>
+                                                    @endif
+                                                </h1>
+                                                @if (count($web_notifications_info['data']))
+                                                    <a href="#" class="web-notifications-mark-read">
+                                                        {{ __('Mark all as read') }}
+                                                    </a>
+                                                @endif
+                                            </div>
+                                            <ul class="web-notifications-list">
+                                                @if (count($web_notifications_info['data']))
+                                                    @include('partials/web_notifications')
+
+                                                    @if ($web_notifications_info['notifications']->hasMorePages())
+                                                        <li class="web-notification-more">
+                                                            <button class="btn btn-link btn-block link-dark" data-loading-text="{{ __('Loading') }}…">
+                                                                {{ __('Load more') }}
+                                                            </button>
+                                                        </li>
+                                                    @endif
+                                                @else
+                                                    <div class="text-center margin-top-40 margin-bottom-40">
+                                                        <i class="glyphicon glyphicon-bullhorn icon-large"></i>
+                                                        <p class="block-help text-large">
+                                                            {{ __('Notifications will start showing up here soon') }}
+                                                        </p>
+                                                        <a href="{{ route('users.notifications', ['id' => Auth::user()->id]) }}">{{ __('Update your notification settings') }}</a>
+                                                    </div>
+                                                @endif
+                                            </ul>
+                                        </li>
+                                        
+                                    </ul>
+                                </li>
+                                                                
+
                                 <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle dropdown-toggle-icon" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre title="{{ __('Account') }}">
+
+                                    <a href="#" class="dropdown-toggle dropdown-toggle-icon dropdown-toggle-account" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre title="{{ __('Account') }}">
                                         <i class="glyphicon glyphicon-user"></i> <span class="nav-user">{{ Auth::user()->first_name }}</span> <span class="caret"></span>
                                     </a>
 
@@ -191,7 +242,7 @@
     @yield('body_bottom')
 
     {{-- Scripts --}}
-    {!! Minify::javascript(array('/js/jquery.js', '/js/bootstrap.js', '/js/laroute.js', '/js/lang.js', '/js/vars.js', '/js/parsley/parsley.min.js', '/js/parsley/i18n/'.Config::get('app.locale').'.js', '/js/select2/select2.full.min.js', '/js/main.js')) !!}
+    {!! Minify::javascript(array('/js/jquery.js', '/js/bootstrap.js', '/js/laroute.js', '/js/lang.js', '/js/vars.js', '/js/parsley/parsley.min.js', '/js/parsley/i18n/'.Config::get('app.locale').'.js', '/js/select2/select2.full.min.js', '/js/polycast/polycast.min.js', '/js/push/push.min.js', '/js/main.js')) !!}
     @yield('javascripts')
     @if ($__env->yieldContent('javascript'))
         <script type="text/javascript">

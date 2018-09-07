@@ -2,6 +2,9 @@ var fs_sidebar_menu_applied = false;
 var fs_loader_timeout;
 var fs_processing_send_reply = false;
 
+// Ajax based notifications;
+var poly;
+
 // Default validation options
 // https://devhints.io/parsley
 window.ParsleyConfig = window.ParsleyConfig || {};
@@ -165,6 +168,9 @@ $(document).ready(function(){
 			$.summernote.lang['en-US'].image.dropImage = Lang.get("messages.drag_image_file");
 		}
 	})(jQuery);
+
+	polycastInit();
+	webNotificationsInit();
 });
 
 function triggersInit()
@@ -462,10 +468,11 @@ function conversationInit()
 						}
 					} else if (typeof(response.msg) != "undefined") {
 						showFloatingAlert('error', response.msg);
+						loaderHide();
 					} else {
 						showFloatingAlert('error', Lang.get("messages.error_occured"));
+						loaderHide();
 					}
-					loaderHide();
 				});
 			}
 			e.preventDefault();
@@ -593,7 +600,7 @@ function ajaxSetup()
 {
 	$.ajaxSetup({
 		headers: {
-	    	'X-CSRF-TOKEN': $('meta[name="csrf-token"]:first').attr('content')
+	    	'X-CSRF-TOKEN': getCsrfToken()
 		}
 	});
 }
@@ -1255,4 +1262,100 @@ function showAjaxResult(response)
 	} else {
 		showAjaxError(response);
 	}
+}
+
+function getCsrfToken()
+{
+	return $('meta[name="csrf-token"]:first').attr('content');
+}
+
+function polycastInit()
+{
+	return;
+	// create the connection
+    poly = new Polycast('/polycast', {
+        token: getCsrfToken()
+    });
+
+    // register callbacks for connection events
+    poly.on('connect', function(obj){
+        console.log('connect event fired!');
+        console.log(obj);
+    });
+
+    poly.on('disconnect', function(obj){
+        console.log('disconnect event fired!');
+        console.log(obj);
+    });
+
+    // subscribe to channel(s)
+    var channel1 = poly.subscribe('channel1');
+    var channel2 = poly.subscribe('channel2');
+
+    // fire when event on channel 1 is received
+    channel1.on('Event1WasFired', function(data){
+        console.log(data);
+    });
+
+    // fire when event on channel 2 is received, optionally accessing the event object
+    channel2.on('Event2WasFired', function(data, event){
+        /*
+            event.id = mysql id
+            event.channels = array of channels
+            event.event = event name
+            event.payload = object containing event data (same as the first data argument)
+            event.created_at = timestamp from mysql
+            event.requested_at = when the ajax request was performed
+            event.delay = the delay in seconds from when the request was made and when the event happened (used internally to delay callbacks)
+        */
+
+        var body = document.getElementById('body');
+        body.innerHTML = body.innerHTML + JSON.stringify(data);
+    });
+
+
+    // at any point you can disconnect
+    //poly.disconnect();
+
+    // and when you disconnect, you can again at any point reconnect
+    //poly.reconnect();
+}
+
+// Display notification in the menu
+function webNotificationsInit()
+{
+	var button = $('.web-notification-more:first .btn:first');
+
+	button.click(function(e) {
+		button.button('loading');
+
+		var wn_page = parseInt(button.attr('data-wn_page'));
+		if (isNaN(wn_page)) {
+			wn_page = 2;
+		}
+
+		fsAjax(
+			{
+				action: 'web_notifications',
+				wn_page: wn_page,
+				user_id: getGlobalAttr('auth_user_id')
+			}, 
+			laroute.route('users.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == "success") {
+					$(response.html).insertBefore(button.parent());
+				} else {
+					showAjaxError(response);
+				}
+				if (typeof(response.has_more_pages) == "undefined" || !response.has_more_pages) {
+					button.parent().hide();
+				}
+				button.button('reset');
+				button.attr('data-wn_page', wn_page+1);
+			},
+			true
+		);
+		e.preventDefault();
+		e.stopPropagation();
+	});
 }

@@ -73,7 +73,7 @@ class MailboxesController extends Controller
         $mailbox->users()->sync($request->users);
         $mailbox->syncPersonalFolders($request->users);
 
-        \Session::flash('flash_success', __('Mailbox created successfully'));
+        \Session::flash('flash_success_floating', __('Mailbox created successfully'));
 
         return redirect()->route('mailboxes.update', ['id' => $mailbox->id]);
     }
@@ -127,7 +127,7 @@ class MailboxesController extends Controller
 
         $mailbox->save();
 
-        \Session::flash('flash_success', __('Mailbox settings saved'));
+        \Session::flash('flash_success_floating', __('Mailbox settings saved'));
 
         return redirect()->route('mailboxes.update', ['id' => $id]);
     }
@@ -160,7 +160,7 @@ class MailboxesController extends Controller
         $mailbox->users()->sync($request->users);
         $mailbox->syncPersonalFolders($request->users);
 
-        \Session::flash('flash_success', __('Mailbox permissions saved!'));
+        \Session::flash('flash_success_floating', __('Mailbox permissions saved!'));
 
         return redirect()->route('mailboxes.permissions', ['id' => $id]);
     }
@@ -243,7 +243,7 @@ class MailboxesController extends Controller
         $mailbox->fill($request->all());
         $mailbox->save();
 
-        \Session::flash('flash_success', __('Connection settings saved!'));
+        \Session::flash('flash_success_floating', __('Connection settings saved!'));
 
         return redirect()->route('mailboxes.connection.incoming', ['id' => $id]);
     }

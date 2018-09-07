@@ -441,6 +441,9 @@ class FetchEmails extends Command
         $thread->source_type = Thread::SOURCE_TYPE_EMAIL;
         $thread->customer_id = $customer->id;
         $thread->created_by_customer_id = $customer->id;
+        if ($new) {
+            $thread->first = true;
+        }
         $thread->save();
 
         $has_attachments = $this->saveAttachments($attachments, $thread->id);

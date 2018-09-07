@@ -147,7 +147,7 @@ class Thread extends Model
     }
 
     /**
-     * The user assigned to this thread (cached)
+     * The user assigned to this thread (cached).
      */
     public function user_cached()
     {
@@ -160,6 +160,14 @@ class Thread extends Model
     public function customer()
     {
         return $this->belongsTo('App\Customer');
+    }
+
+    /**
+     * Get the thread customer (cached).
+     */
+    public function customer_cached()
+    {
+        return $this->customer()->rememberForever();
     }
 
     /**
@@ -200,7 +208,7 @@ class Thread extends Model
      */
     public function created_by_user_cached()
     {
-        return $this->created_by_user()->rememberForever()->first();
+        return $this->created_by_user()->rememberForever();
     }
 
     /**
@@ -405,5 +413,76 @@ class Thread extends Model
         } else {
             return $this->created_by_customer;
         }
+    }
+
+    /**
+     * Get creator of the thread.
+     */
+    public function getPerson($cached = false)
+    {
+        if ($this->type == Thread::TYPE_CUSTOMER) {
+            if ($cached) {
+                return $this->customer_cached;
+            } else {
+                return $this->customer;
+            }
+        } else {
+            if ($cached) {
+                return $this->created_by_user_cached;
+            } else {
+                return $this->created_by_user;
+            }
+        }
+    }
+
+    /**
+     * Description of what happened.
+     */
+    public function getActionDescription($conversation_number, $escape = true)
+    {
+        $person = '';
+        $did_this = '';
+
+        // Person
+        if ($this->type == Thread::TYPE_CUSTOMER) {
+            $person = $this->customer->getFullName(true);
+        } else {
+            if ($this->created_by_user_id && $this->created_by_user_cached->id == auth()->user()->id) {
+                $person = __("you");
+            } else {
+                $person = $this->created_by_user_cached->getFullName();
+            }
+        }
+
+        // Did this
+        if ($this->type == Thread::TYPE_LINEITEM) {
+            if ($this->action_type == Thread::ACTION_TYPE_STATUS_CHANGED) {
+                $did_this = __("marked as :status_name conversation #:conversation_number", ['status_name' => $this->getStatusName(), 'conversation_number' => $conversation_number]);
+            } elseif ($this->action_type == Thread::ACTION_TYPE_USER_CHANGED) {
+                $did_this = __("assigned :assignee convsersation #:conversation_number", ['assignee' => $this->getAssigneeName(), 'conversation_number' => $conversation_number]);
+            } elseif ($this->action_type == Thread::ACTION_TYPE_CUSTOMER_CHANGED) {
+               $did_this = __("changed the customer to :customer in conversation #:conversation_number", ['customer' => $this->customer->getFullName(true), 'conversation_number' => $conversation_number]);
+            }
+        } else {  
+            if ($this->first) {
+                $did_this = __("started a new conversation #:conversation_number", ['conversation_number' => $conversation_number]);
+            } elseif ($this->type == Thread::TYPE_NOTE) {
+                $did_this = __("added a note to conversation #:conversation_number", ['conversation_number' => $conversation_number]);
+            } else {
+                $did_this = __("replied to conversation #:conversation_number", ['conversation_number' => $conversation_number]);
+            }
+        }
+
+        $description = ':person_tag_start:person:person_tag_end :did_this';
+        if ($escape) {
+            $description = htmlspecialchars($description);
+        }
+
+        return __($description, [
+            'person' => $person,
+            'person_tag_start' => '<strong>',
+            'person_tag_end' => '</strong>',
+            'did_this' => $did_this
+        ]);
     }
 }
