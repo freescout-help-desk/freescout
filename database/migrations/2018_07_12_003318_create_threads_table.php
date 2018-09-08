@@ -73,6 +73,7 @@ class CreateThreadsTable extends Migration
             $table->unique([DB::raw('message_id(191)')], 'threads_message_id_index');
             // On conversation page
             $table->index(['conversation_id', 'type', 'from', 'customer_id']);
+            $table->index(['conversation_id', 'created_at']);
         });
     }
 

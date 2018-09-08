@@ -73,7 +73,6 @@ class CreateConversationsTable extends Migration
             // Indexes
             $table->index(['folder_id', 'status']);
             $table->index(['mailbox_id', 'customer_id']);
-            $table->index(['conversation_id', 'created_at']);
         });
     }
 

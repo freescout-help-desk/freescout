@@ -32,7 +32,7 @@ class CreateUsersTable extends Migration
             $table->string('emails', 100)->nullable();
             $table->string('job_title', 100)->nullable();
             $table->string('phone', 60)->nullable();
-            $table->unsignedTinyInteger('time_format')->default(Userr::TIME_FORMAT_24);
+            $table->unsignedTinyInteger('time_format')->default(User::TIME_FORMAT_24);
             $table->boolean('enable_kb_shortcuts')->default(true);
             //$table->boolean('is_user_workflow_related')->default(false);
             $table->boolean('locked')->default(false);
