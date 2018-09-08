@@ -51,21 +51,21 @@ class PolycastBroadcaster implements Broadcaster
      * @param  \Illuminate\Http\Request  $request
      * @return mixed
      */
-    public function auth($request) {
-        // Copied from Illuminate\Broadcasting\Broadcasters\PusherBroadcaster
-        if (Str::startsWith($request->channel_name, ['private-', 'presence-']) &&
-            ! $request->user()) {
-            throw new AccessDeniedHttpException;
-        }
+    // public function auth($request) {
+    //     // Copied from Illuminate\Broadcasting\Broadcasters\PusherBroadcaster
+    //     if (Str::startsWith($request->channel_name, ['private-', 'presence-']) &&
+    //         ! $request->user()) {
+    //         throw new AccessDeniedHttpException;
+    //     }
 
-        $channelName = Str::startsWith($request->channel_name, 'private-')
-                            ? Str::replaceFirst('private-', '', $request->channel_name)
-                            : Str::replaceFirst('presence-', '', $request->channel_name);
+    //     $channelName = Str::startsWith($request->channel_name, 'private-')
+    //                         ? Str::replaceFirst('private-', '', $request->channel_name)
+    //                         : Str::replaceFirst('presence-', '', $request->channel_name);
 
-        return parent::verifyUserCanAccessChannel(
-            $request, $channelName
-        );
-    }
+    //     return parent::verifyUserCanAccessChannel(
+    //         $request, $channelName
+    //     );
+    // }
 
     /**
      * Return the valid authentication response.
@@ -74,17 +74,17 @@ class PolycastBroadcaster implements Broadcaster
      * @param  mixed  $result
      * @return mixed
      */
-    public function validAuthenticationResponse($request, $result) {
-        // Copied from Illuminate\Broadcasting\Broadcasters\RedisBroadcaster
-        if (is_bool($result)) {
-            return json_encode($result);
-        }
+    // public function validAuthenticationResponse($request, $result) {
+    //     // Copied from Illuminate\Broadcasting\Broadcasters\RedisBroadcaster
+    //     if (is_bool($result)) {
+    //         return json_encode($result);
+    //     }
 
-        return json_encode(['channel_data' => [
-            'user_id' => $request->user()->getAuthIdentifier(),
-            'user_info' => $result,
-        ]]);
-    }
+    //     return json_encode(['channel_data' => [
+    //         'user_id' => $request->user()->getAuthIdentifier(),
+    //         'user_info' => $result,
+    //     ]]);
+    // }
 
      public function isDeferred()
      {

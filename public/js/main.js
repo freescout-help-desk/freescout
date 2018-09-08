@@ -795,7 +795,9 @@ function newConversationInit()
 				}
 				loaderHide();
 				fs_processing_send_reply = false;
-			}, function() {
+			}, 
+			true,
+			function() {
 				showFloatingAlert('error', Lang.get("messages.ajax_error"));
 				loaderHide();
 				button.button('reset');
@@ -1271,7 +1273,11 @@ function getCsrfToken()
 
 function polycastInit()
 {
-	return;
+	var auth_user_id = getGlobalAttr('auth_user_id');
+	if (!auth_user_id) {
+		return;
+	}
+
 	// create the connection
     poly = new Polycast('/polycast', {
         token: getCsrfToken()
@@ -1289,16 +1295,10 @@ function polycastInit()
     });
 
     // subscribe to channel(s)
-    var channel1 = poly.subscribe('channel1');
-    var channel2 = poly.subscribe('channel2');
+    var channel = poly.subscribe('App.User.'+auth_user_id);
 
     // fire when event on channel 1 is received
-    channel1.on('Event1WasFired', function(data){
-        console.log(data);
-    });
-
-    // fire when event on channel 2 is received, optionally accessing the event object
-    channel2.on('Event2WasFired', function(data, event){
+    channel.on('Event1WasFired', function(data, event){
         /*
             event.id = mysql id
             event.channels = array of channels
@@ -1308,11 +1308,9 @@ function polycastInit()
             event.requested_at = when the ajax request was performed
             event.delay = the delay in seconds from when the request was made and when the event happened (used internally to delay callbacks)
         */
-
-        var body = document.getElementById('body');
-        body.innerHTML = body.innerHTML + JSON.stringify(data);
+       
+        console.log(data);
     });
-
 
     // at any point you can disconnect
     //poly.disconnect();

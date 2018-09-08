@@ -5,6 +5,7 @@
 
 namespace App;
 
+use App\Events\NeedBroadcastNotification;
 use App\Notifications\WebsiteNotification;
 use Illuminate\Database\Eloquent\Model;
 
@@ -314,6 +315,11 @@ class Subscription extends Model
             // Notification on the website
             foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
                 \Notification::send($notify_info['users'], new WebsiteNotification($notify_info['conversation'], $notify_info['threads'][0]));
+
+                // Send broadcast notification
+                foreach ($notify_info['users'] as $user) {
+                    event(new NeedBroadcastNotification($user->id, $notify_info['conversation'], $notify_info['threads'][0]));
+                }
             }
         }
 

@@ -16,7 +16,7 @@
     {!! Minify::stylesheet(array('/css/fonts.css', '/css/bootstrap.css', '/css/select2/select2.min.css', '/css/style.css')) !!}
     @yield('stylesheets')
 </head>
-<body class="@if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class')" @yield('body_attrs')>
+<body class="@if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class')" @yield('body_attrs') @if (Auth::user()) data-auth_user_id="{{ Auth::user()->id }}" @endif>
     <div id="app">
 
         @if (Auth::user())
