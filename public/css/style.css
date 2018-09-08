@@ -2249,10 +2249,13 @@ ul.prev-convs {
     max-height: 70vh;
 }
 .web-notifications-header {
+    background-color: #fff;
     border-bottom: 1px solid #e3e8eb;
     -webkit-box-shadow: 0 2px 3px -1px rgba(0,0,0,.05);
     box-shadow: 0 2px 3px -1px rgba(0,0,0,.05);
     padding: 13px 16px 10px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
 }
 .web-notifications-header h1 {
     font-size: 18px;
@@ -2273,6 +2276,7 @@ ul.prev-convs {
     margin-left: 3px;
     position: relative;
     top: -1px;
+    cursor: default;
 }
 .web-notifications-mark-read {
     float: right;
@@ -2362,6 +2366,28 @@ ul.prev-convs {
 }
 .web-notification-more .btn.disabled {
     cursor: default;
+}
+/* Take notifications bell out of the dropdown menu */
+.navbar-header .web-notifications {
+    position: absolute;
+    top: 1px;
+    right: 71px;
+    display: block;
+}
+.navbar-header .web-notifications .dropdown-menu {
+    right: 0;
+    left: auto;
+    width: calc(90vw - 71px);
+}
+.navbar-header .web-notifications > a {
+    color: #83b8db;
+    font-size: 18px;
+    display: block;
+    padding: 13px 15px;
+}
+.navbar-header .web-notifications > a:focus,
+.navbar-header .web-notifications > a:hover {
+    color: #fff!important;
 }
 
 /**

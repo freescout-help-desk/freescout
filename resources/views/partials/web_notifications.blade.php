@@ -10,7 +10,13 @@
         </li>
     @endif
     <li class="web-notification @if (!$web_notification_data['notification']->read_at) is-unread @endif">
-        <a href="{{ $web_notification_data['conversation']->url(null, $web_notification_data['thread']->id) }}" title="{{ __('View conversation') }}">
+        @php
+            $conv_params = [];
+            if (!$web_notification_data['notification']->read_at) {
+                $conv_params['mark_as_read'] = $web_notification_data['notification']->id;
+            }
+        @endphp
+        <a href="{{ $web_notification_data['conversation']->url(null, $web_notification_data['thread']->id, $conv_params) }}" title="{{ __('View conversation') }}">
         	<div class="web-notification-img">
                 @include('partials/person_photo', ['person' => $web_notification_data['thread']->getPerson(true)])
             </div>

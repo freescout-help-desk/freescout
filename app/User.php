@@ -503,21 +503,38 @@ class User extends Authenticatable
         return $this->notifications()->paginate(self::WEBSITE_NOTIFICATIONS_PAGE_SIZE, ['*'], self::WEBSITE_NOTIFICATIONS_PAGE_PARAM, request()->wn_page);
     }
 
-    public function getWebsiteNotificationsInfo()
+    public function getWebsiteNotificationsInfo($cache = true)
     {
-        $info = [];
+        if ($cache) {
+            // Get from cache
+            $user = $this;
+            return \Cache::rememberForever('user_web_notifications_'.$user->id, function() use ($user) {
+                $notifications = $user->getWebsiteNotifications();
 
-        $notifications = $this->getWebsiteNotifications();
+                $info = [
+                    'data' => WebsiteNotification::fetchNotificationsData($notifications),
+                    'notifications' => $notifications,
+                    'unread_count' => $user->unreadNotifications()->count()
+                ];
 
-        // Get from cache
+                return $info;
+            });
+        } else {
+            $notifications = $this->getWebsiteNotifications();
 
-        $info = [
-            'data' => WebsiteNotification::fetchNotificationsData($notifications),
-            'notifications' => $notifications,
-            'unread_count' => $this->unreadNotifications()->count()
-        ];
+            $info = [
+                'data' => WebsiteNotification::fetchNotificationsData($notifications),
+                'notifications' => $notifications,
+                'unread_count' => $this->unreadNotifications()->count()
+            ];
 
-        return $info;
+            return $info;
+        }
+    }
+
+    public function clearWebsiteNotificationsCache()
+    {
+        \Cache::forget('user_web_notifications_'.$this->id);
     }
 
     public function getPhotoUrl()

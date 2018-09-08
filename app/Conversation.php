@@ -598,9 +598,9 @@ class Conversation extends Model
      *
      * @return string
      */
-    public function url($folder_id = null, $thread_id = null)
+    public function url($folder_id = null, $thread_id = null, $params = [])
     {
-        $params = ['id' => $this->id];
+        $params = array_merge($params, ['id' => $this->id]);
         if (!$folder_id) {
             $folder_id = self::getCurrentFolder();
         }

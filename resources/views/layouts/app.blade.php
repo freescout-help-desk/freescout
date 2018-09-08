@@ -128,12 +128,12 @@
                                             <div class="web-notifications-header">
                                                 <h1>
                                                     {{ __('Notifications') }}
-                                                    @if (count($web_notifications_info['data']))
+                                                    @if ((int)$web_notifications_info['unread_count'])
                                                         <small class="web-notifications-count" title="{{ __('Unread Notifications') }}" data-toggle="tooltip">@if ($web_notifications_info['unread_count']){{ $web_notifications_info['unread_count'] }}@endif</small>
                                                     @endif
                                                 </h1>
-                                                @if (count($web_notifications_info['data']))
-                                                    <a href="#" class="web-notifications-mark-read">
+                                                @if ((int)$web_notifications_info['unread_count'])
+                                                    <a href="#" class="web-notifications-mark-read" data-loading-text="{{ __('Processing') }}…">
                                                         {{ __('Mark all as read') }}
                                                     </a>
                                                 @endif

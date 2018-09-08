@@ -311,16 +311,29 @@ class UsersController extends Controller
             // Load website notifications
             case 'web_notifications':
                 if (!$auth_user) {
-                     $response['msg'] = __('User not logged in');
+                     $response['msg'] = __('You are not logged in');
                 }
                 if (!$response['msg']) {
-                    $web_notifications_info = $auth_user->getWebsiteNotificationsInfo();
+                    $web_notifications_info = $auth_user->getWebsiteNotificationsInfo(false);
                     $response['html'] = view('partials/web_notifications', [
                         'web_notifications_info' => $web_notifications_info,
                     ])->render();
 
                     $response['has_more_pages'] = (int)$web_notifications_info['notifications']->hasMorePages();
                     
+                    $response['status'] = 'success';
+                }
+                break;
+
+            // Mark all user website notifications as read
+            case 'mark_notifications_as_read':
+                if (!$auth_user) {
+                     $response['msg'] = __('You are not logged in');
+                }
+                if (!$response['msg']) {
+                    $auth_user->unreadNotifications()->update(['read_at' => now()]);
+                    $auth_user->clearWebsiteNotificationsCache();
+
                     $response['status'] = 'success';
                 }
                 break;

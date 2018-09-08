@@ -1321,9 +1321,34 @@ function polycastInit()
     //poly.reconnect();
 }
 
+// Take notifications bell out of the dropdown menu
+function takeNotificationsOut()
+{
+	if ($(window).width() >= 768) {
+		// Move to the menu
+		var container = $('.navbar-header .web-notifications:first');
+		if (container) {
+			container.prependTo(".navbar-right:first");
+		}
+	} else {
+		// Move to the header
+		var container = $('.navbar-right .web-notifications:first');
+		if (container) {
+			container.prependTo(".navbar-header:first");
+		}
+	}
+}
+
 // Display notification in the menu
 function webNotificationsInit()
 {
+	// Take notifications bell out of the dropdown menu
+	takeNotificationsOut();
+	$(window).on('resize', function(){
+		takeNotificationsOut();
+	});
+
+	// Load more
 	var button = $('.web-notification-more:first .btn:first');
 
 	button.click(function(e) {
@@ -1337,8 +1362,7 @@ function webNotificationsInit()
 		fsAjax(
 			{
 				action: 'web_notifications',
-				wn_page: wn_page,
-				user_id: getGlobalAttr('auth_user_id')
+				wn_page: wn_page
 			}, 
 			laroute.route('users.ajax'),
 			function(response) {
@@ -1358,4 +1382,42 @@ function webNotificationsInit()
 		e.preventDefault();
 		e.stopPropagation();
 	});
+
+	// Mark all as read
+	$('.web-notifications-mark-read:first').click(function(e) {
+		var mark_button = $(this);
+
+		if (mark_button.hasClass('disabled')) {
+			return;
+		}
+
+		mark_button.button('loading');
+
+		fsAjax(
+			{
+				action: 'mark_notifications_as_read'
+			}, 
+			laroute.route('users.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == "success") {
+					mark_button.remove();
+					$('.web-notifications-count:first').remove();
+					$('.web-notification.is-unread').removeClass('is-unread');
+					$('.web-notifications .dropdown-toggle.has-unread:first').removeClass('has-unread');
+				} else {
+					showAjaxError(response);
+				}
+				mark_button.button('reset');
+			},
+			true
+		);
+		e.preventDefault();
+		e.stopPropagation();
+	});
+
+	// Mark notification as read on click
+	// $('.web-notifications:first .web-notification a').click(function(e) {
+	// 	$(this).parent().removeClass('is-unread');
+	// });
+	
 }

@@ -45,6 +45,12 @@ class ConversationsController extends Controller
         $customer = $conversation->customer;
         $user = auth()->user();
 
+        // Mark notification as read
+        if (!empty($request->mark_as_read)) {
+            $user->unreadNotifications()->where('id', $request->mark_as_read)->update(['read_at' => now()]);
+            $user->clearWebsiteNotificationsCache();
+        }
+
         // Detect folder
         $folder = null;
         if (Conversation::getFolderParam()) {
