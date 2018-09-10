@@ -384,7 +384,7 @@ class Thread extends Model
      *
      * @return string
      */
-    public function getAssigneeName($ucfirst = false, $user = null)
+    public function getAssigneeName($ucfirst = false, $user = null, $self = true)
     {
         if (!$this->user_id) {
             if ($ucfirst) {
@@ -393,11 +393,23 @@ class Thread extends Model
                 return __('anyone');
             }
         } elseif (($user && $this->user_id == $user->id) || (!$user && auth()->user() && $this->user_id == auth()->user()->id)) {
+
+            // Not using mb_ucfirst to avoid possible problems with encoding
             if ($ucfirst) {
-                return __('Yourself');
+                if ($self) {
+                    $name = __('Yourself');
+                } else {
+                    $name = __('You');
+                }
             } else {
-                return __('yourself');
+                if ($self) {
+                    $name = __('yourself');
+                } else {
+                    $name = __('you');
+                }
             }
+
+            return $name;
         } else {
             return $this->user->getFullName();
         }
@@ -459,7 +471,7 @@ class Thread extends Model
             if ($this->action_type == Thread::ACTION_TYPE_STATUS_CHANGED) {
                 $did_this = __("marked as :status_name conversation #:conversation_number", ['status_name' => $this->getStatusName(), 'conversation_number' => $conversation_number]);
             } elseif ($this->action_type == Thread::ACTION_TYPE_USER_CHANGED) {
-                $did_this = __("assigned :assignee convsersation #:conversation_number", ['assignee' => $this->getAssigneeName(), 'conversation_number' => $conversation_number]);
+                $did_this = __("assigned :assignee convsersation #:conversation_number", ['assignee' => $this->getAssigneeName(false, null, false), 'conversation_number' => $conversation_number]);
             } elseif ($this->action_type == Thread::ACTION_TYPE_CUSTOMER_CHANGED) {
                $did_this = __("changed the customer to :customer in conversation #:conversation_number", ['customer' => $this->customer->getFullName(true), 'conversation_number' => $conversation_number]);
             }

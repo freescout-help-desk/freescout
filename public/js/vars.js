@@ -35,6 +35,7 @@ var lang_messages = {
             "invite_sent": "Invite email has been sent",
             "invite_resent": "Invite email has been resent",
             "confirm_reset_password": "Reset this User&#039;s password?",
+            "push_protocol_alert": "HTTPS protocol is required for the browser push notifications to work.",
 
             "drag_image_file": "Drag image or file here"
         }    };

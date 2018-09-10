@@ -1,5 +1,6 @@
 /**
  * Push v1.0
+ * https://github.com/Nickersoft/push.js
  * =========
  * A compact, cross-browser solution for the JavaScript Notifications API
  *

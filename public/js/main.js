@@ -29,6 +29,16 @@ $.extend(window.ParsleyConfig, {
     errorTemplate: '<div></div>'
 });
 
+// Push notifications
+/*Push.config({
+    serviceWorker: './customServiceWorker.js', // Sets a custom service worker script
+    fallback: function(payload) {
+        // Code that executes on browsers with no notification support
+        // "payload" is an object containing the 
+        // title, body, tag, and icon of the notification 
+    }
+});*/
+
 // Configuring editor
 
 var EditorAttachmentButton = function (context) {
@@ -814,11 +824,47 @@ function notificationsInit()
 	$(document).ready(function() {
 	    $('.sel-all').click(function(event) {
 	    	if ($(this).is(':checked')) {
+	    		if ($(this).val() == 'browser' && !Push.Permission.has()) {
+	    			return;
+	    		}
 				$(".subscriptions-"+$(this).val()+" input").attr('checked', 'checked');
 			} else {
 				$(".subscriptions-"+$(this).val()+" input").removeAttr('checked');
 			}
 		});
+
+		// Browser push-notifications permissions
+		if (getGlobalAttr('own_profile')) {
+			$('.sel-all[value="browser"], .subscriptions-browser input').click(function(event) {
+				var checkbox = $(this);
+		    	if ($(this).is(':checked')) {
+
+		    		// Check protocol
+		    		if (location.protocol != 'https:') {
+		    			var alert_html = '<div>'+
+							'<div class="text-center">'+
+							'<div class="text-larger margin-top-10">'+Lang.get("messages.push_protocol_alert")+'</div>'+
+							'<div class="form-group margin-top">'+
+				    		'<button class="btn btn-primary reset-password-ok" data-dismiss="modal">OK</button>'+
+				    		'</div>';
+				    		'</div>';
+				    		'</div>';
+
+						showModalDialog(alert_html);
+
+						checkbox.prop('checked', false);
+						return;
+		    		}
+
+					if (!Push.Permission.has()) {
+						Push.Permission.request(function() {}, function() {
+							$.featherlight($('<img src="'+Vars.public_url+'/img/enable-push.png" />'), {});
+							checkbox.prop('checked', false);
+						});
+					}
+				}
+			});
+		}
 	});
 }
 
@@ -1312,14 +1358,24 @@ function polycastInit()
         // console.log(data);
         // console.log(event);
         	console.log(event);
-        // Show notification in the menu
-        if (typeof(event.data) != "undefined" 
-        	&& typeof(event.data.web) != "undefined" 
-        	&& typeof(event.data.web.html) != "undefined" 
-        	&& event.data.web.html
-        ) {
-        	showMenuNotification(event.data.web.html);
-        }
+        
+        if (typeof(event.data) != "undefined") {
+        	// Show notification in the menu
+        	if (typeof(event.data.web) != "undefined" 
+	        	&& typeof(event.data.web.html) != "undefined" 
+	        	&& event.data.web.html
+	        ) {
+	        	showMenuNotification(event.data.web.html);
+	        }
+
+	        // Browser push-notification
+	        if (typeof(event.data.browser) != "undefined" 
+	        	&& typeof(event.data.browser.text) != "undefined" 
+	        	&& event.data.browser.text
+	        ) {
+	        	showBrowserNotification(event.data.browser.text, event.data.browser.url);
+	        }
+	    }
     });
 
     // at any point you can disconnect
@@ -1350,6 +1406,26 @@ function showMenuNotification(html)
 	var first_date = $('.web-notification-date:first');
 	$('.web-notification-date[data-date="'+first_date.attr('data-date')+'"]:gt(0)').remove();
 	$('.web-notifications .dropdown-toggle:first').addClass('has-unread');
+}
+
+// Show browser push-notification
+function showBrowserNotification(text, url)
+{
+	Push.create("", {
+	    body: text,
+	    icon: Vars.public_url+'/img/logo-icon-white-300.png',
+	    tag: url,
+	    timeout: 4000,
+	    //requireInteraction: true
+	    onClick: function () {
+	    	if (url) {
+	        	var win = window.open(url, '_blank');
+  				win.focus();
+  				this.close();
+  				//Push.close(url);
+	        }
+	    }
+	});
 }
 
 // Take notifications bell out of the dropdown menu

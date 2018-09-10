@@ -170,6 +170,15 @@ return [
     */
     'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/ 'json', 'openssl', 'tokenizer'/*, 'dom', 'xmlwriter', 'tokenizer', 'libxml', 'phar'*/],
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable if using CloudFlare "Flexible SSL":
+    | https://support.cloudflare.com/hc/en-us/articles/200170416-What-do-the-SSL-options-mean-
+    |-------------------------------------------------------------------------
+    */
+    'force_https' => env('APP_FORCE_HTTPS', false),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
