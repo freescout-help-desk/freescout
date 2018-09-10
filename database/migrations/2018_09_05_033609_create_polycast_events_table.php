@@ -20,7 +20,7 @@ class CreatePolycastEventsTable extends Migration {
             $table->text('channels');
             $table->text('event');
             $table->text('payload');
-            $table->timestamp('created_at')->nullable();
+            $table->timestamp('created_at')->nullable()->index();
         });
     }
 

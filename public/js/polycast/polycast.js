@@ -106,15 +106,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
 	            xhr.open('POST', this.options.url + '/connect');
 	            xhr.onreadystatechange = function() {
-	                if (xhr.readyState > 3 && xhr.status === 200) {
-	                    response = JSON.parse(xhr.responseText);
-	                    if(response.status == 'success'){
-	                        PolycastObject.connected = true;
-	                        PolycastObject.setTime(response.time);
-	                        PolycastObject.setTimeout();
-	                        console.log('Polycast connection established!');
-	                        PolycastObject.fire('connect', PolycastObject);
-	                    }
+	                if (xhr.readyState > 3) {
+	                	if (xhr.status === 200) {
+		                    response = JSON.parse(xhr.responseText);
+		                    if (response.status == 'success'){
+		                        PolycastObject.connected = true;
+		                        PolycastObject.setTime(response.time);
+		                        PolycastObject.setTimeout();
+		                        console.log('Polycast connection established!');
+		                        PolycastObject.fire('connect', PolycastObject);
+		                    }
+		                } else {
+		                	// Try to reinit on error
+		                	setTimeout(function(){
+				                PolycastObject.init();
+				            }, (PolycastObject.options.polling * 1000));
+		                }
 	                }
 	            };
 	            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -207,8 +214,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
 	            xhr.open('POST', this.options.url + '/receive');
 	            xhr.onreadystatechange = function() {
-	                if (xhr.readyState > 3 && xhr.status === 200) {
+	                if (xhr.readyState > 3 /*&& xhr.status === 200*/) {
 	                    PolycastObject.parseResponse(xhr.responseText);
+	                } else {
+	                	// Continue
+	                	//PolycastObject.setTimeout();
 	                }
 	            };
 	            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -230,8 +240,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return str.join("&");
 	        },
 	        parseResponse: function(response){
-	            response = JSON.parse(response);
-	            if(response.status == 'success'){
+
+	        	try {
+	            	response = JSON.parse(response);
+	            } catch (e) {
+	            	this.setTimeout();
+	            	return;
+	            }
+
+	            if (response.status == 'success'){
 	                //do something
 	                this.setTime(response.time);
 
@@ -239,9 +256,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    if (response.payloads.hasOwnProperty(payload)) {
 	                        //foreach payload channels defer to channel class
 	                        for (i = 0; i < response.payloads[payload]['channels'].length; ++i) {
-	                            var channel = response.payloads[payload]['channels'][i];
+	                            //var channel = response.payloads[payload]['channels'][i];
+	                            var channel = response.payloads[payload]['channels'][i].name;
 	                            //console.log('Polycast channel: ' + channel + ' received event: ' + response.payloads[payload]['event']);
-	                            for(index = 0; index < this.channels[channel].length; ++index){
+	                            for (index = 0; index < this.channels[channel].length; ++index){
 	                                //console.log(response.payloads[payload]);
 	                                this.channels[channel][index].fire(response.payloads[payload]);
 	                                //this.channels[channel][index].fire(response.payloads[payload]['event'], response.payloads[payload]['payload'], response.payloads[payload]['delay']);
@@ -251,8 +269,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                //lets do it again!
-	                this.setTimeout();
+	                //this.setTimeout();
 	            }
+
+	            // Continue in any case
+	            this.setTimeout();
 	        },
 	        subscribe: function(channel){
 
@@ -303,15 +324,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return this;
 	        },
 	        fire: function(event){
-	            for(var e in this.events){
+	            for (var e in this.events){
 	                if (this.events.hasOwnProperty(e)) {
 	                    if(e == event.event){
 	                        var func = this.events[e];
-	                        if(event.delay != 0){
+	                        if (event.delay != 0) {
 	                            setTimeout(function(){
 	                                func[0](event.payload, event);
 	                            }, (event.delay * 1000));
-	                        }else{
+	                        } else {
 	                            func[0](event.payload, event);
 	                        }
 	                    }

@@ -5,7 +5,7 @@
 
 namespace App;
 
-use App\Events\NeedBroadcastNotification;
+use App\Notifications\BroadcastNotification;
 use App\Notifications\WebsiteNotification;
 use Illuminate\Database\Eloquent\Model;
 
@@ -37,7 +37,7 @@ class Subscription extends Model
 
     // Mediums
     const MEDIUM_EMAIL = 1; // This is also website notifications
-    const MEDIUM_BROWSER = 2;
+    const MEDIUM_BROWSER = 2; // Browser push notification
     const MEDIUM_MOBILE = 3;
 
     public static $mediums = [
@@ -311,16 +311,41 @@ class Subscription extends Model
             foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
                 \App\Jobs\SendNotificationToUsers::dispatch($notify_info['users'], $notify_info['conversation'], $notify_info['threads'])->onQueue('emails');
             }
-
-            // Notification on the website
+            // - DB Notification
             foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
                 \Notification::send($notify_info['users'], new WebsiteNotification($notify_info['conversation'], $notify_info['threads'][0]));
+            }
+        }
 
-                // Send broadcast notification
+        // Send broadcast notifications:
+        // - Real-time notification in the menu
+        // - Browser push notification
+        $broadcasts = [];
+        foreach ([self::MEDIUM_EMAIL, self::MEDIUM_BROWSER] as $medium) {
+            if (empty($notify[$medium])) {
+                continue;
+            }
+            foreach ($notify[$medium] as $notify_info) {
+                
+                $thread_id = $notify_info['threads'][0]->id;
+
                 foreach ($notify_info['users'] as $user) {
-                    event(new NeedBroadcastNotification($user->id, $notify_info['conversation'], $notify_info['threads'][0]));
+                    $mediums = [$medium];
+                    if (!empty($broadcasts[$notify_info['threads'][0]->id]['mediums'])) {
+                        $mediums = array_unique(array_merge($mediums, $broadcasts[$thread_id]['mediums']));
+                    }
+                    $broadcasts[$thread_id] = [
+                        'user'         => $user,
+                        'conversation' => $notify_info['conversation'],
+                        'threads'      => $notify_info['threads'],
+                        'mediums'      => $mediums,
+                    ];   
                 }
             }
+        }
+        // \Notification::sendNow($notify_info['users'], new BroadcastNotification($notify_info['conversation'], $notify_info['threads'][0]));
+        foreach ($broadcasts as $thread_id => $to_broadcast) {
+            $to_broadcast['user']->notify(new BroadcastNotification($to_broadcast['conversation'], $to_broadcast['threads'][0], $to_broadcast['mediums']));
         }
 
         // todo: mobile notification

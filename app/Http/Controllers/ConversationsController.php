@@ -45,9 +45,14 @@ class ConversationsController extends Controller
         $customer = $conversation->customer;
         $user = auth()->user();
 
-        // Mark notification as read
+        // Mark notifications as read
         if (!empty($request->mark_as_read)) {
-            $user->unreadNotifications()->where('id', $request->mark_as_read)->update(['read_at' => now()]);
+            $mark_read_result = $user->unreadNotifications()->where('id', $request->mark_as_read)->update(['read_at' => now()]);
+            $user->clearWebsiteNotificationsCache();
+        } else {
+            $mark_read_result = $user->unreadNotifications()->where('data', 'like', '%"conversation_id":'.$conversation->id.'%')->update(['read_at' => now()]);
+        }
+        if ($mark_read_result) {
             $user->clearWebsiteNotificationsCache();
         }
 

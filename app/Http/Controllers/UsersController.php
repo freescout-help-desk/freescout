@@ -315,8 +315,8 @@ class UsersController extends Controller
                 }
                 if (!$response['msg']) {
                     $web_notifications_info = $auth_user->getWebsiteNotificationsInfo(false);
-                    $response['html'] = view('partials/web_notifications', [
-                        'web_notifications_info' => $web_notifications_info,
+                    $response['html'] = view('users/partials/web_notifications', [
+                        'web_notifications_info_data' => $web_notifications_info['data'],
                     ])->render();
 
                     $response['has_more_pages'] = (int)$web_notifications_info['notifications']->hasMorePages();

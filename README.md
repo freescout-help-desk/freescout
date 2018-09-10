@@ -30,7 +30,7 @@ FreeScout is being developed from scratch and is not using any copyrighted Help 
 
 ![FreeScout](https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/banner.png)
 
-[FreeScout](https://github.com/freescout-helpdesk/freescout) will provide the same set of features as a HelpScout: help desk tools, email management and analytics. Also **FreeScout** will provide some extra features:
+[FreeScout](https://github.com/freescout-helpdesk/freescout) will provide the same set of features as a HelpScout: help desk tools, email management and analytics. **FreeScout** will also provide some extra features:
 
   * 100% Mobile-friendly.
   * Starred conversations.
@@ -41,6 +41,8 @@ FreeScout is being developed from scratch and is not using any copyrighted Help 
 Need anything else? Suggest features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular)
 
 ## Requirements
+
+FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a shared hosting.
 
   * Nginx / Apache / IIS
   * PHP 7.0+

@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Website notification (DB notification).
+ */
 namespace App\Notifications;
 
 use App\Conversation;
@@ -44,6 +46,7 @@ class WebsiteNotification extends Notification
     {
         return [
             'thread_id' => $this->thread->id,
+            'conversation_id' => $this->conversation->id,
         ];
     }
 

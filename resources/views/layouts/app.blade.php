@@ -128,19 +128,15 @@
                                             <div class="web-notifications-header">
                                                 <h1>
                                                     {{ __('Notifications') }}
-                                                    @if ((int)$web_notifications_info['unread_count'])
-                                                        <small class="web-notifications-count" title="{{ __('Unread Notifications') }}" data-toggle="tooltip">@if ($web_notifications_info['unread_count']){{ $web_notifications_info['unread_count'] }}@endif</small>
-                                                    @endif
+                                                    <small class="web-notifications-count  @if (!(int)$web_notifications_info['unread_count']) hidden @endif" title="{{ __('Unread Notifications') }}" data-toggle="tooltip">@if ($web_notifications_info['unread_count']){{ $web_notifications_info['unread_count'] }}@endif</small>
                                                 </h1>
-                                                @if ((int)$web_notifications_info['unread_count'])
-                                                    <a href="#" class="web-notifications-mark-read" data-loading-text="{{ __('Processing') }}…">
-                                                        {{ __('Mark all as read') }}
-                                                    </a>
-                                                @endif
+                                                <a href="#" class="web-notifications-mark-read @if (!(int)$web_notifications_info['unread_count']) hidden @endif" data-loading-text="{{ __('Processing') }}…">
+                                                    {{ __('Mark all as read') }}
+                                                </a>
                                             </div>
                                             <ul class="web-notifications-list">
                                                 @if (count($web_notifications_info['data']))
-                                                    @include('partials/web_notifications')
+                                                    @include('users/partials/web_notifications', ['web_notifications_info_data' => $web_notifications_info['data']])
 
                                                     @if ($web_notifications_info['notifications']->hasMorePages())
                                                         <li class="web-notification-more">
@@ -242,7 +238,7 @@
     @yield('body_bottom')
 
     {{-- Scripts --}}
-    {!! Minify::javascript(array('/js/jquery.js', '/js/bootstrap.js', '/js/laroute.js', '/js/lang.js', '/js/vars.js', '/js/parsley/parsley.min.js', '/js/parsley/i18n/'.Config::get('app.locale').'.js', '/js/select2/select2.full.min.js', '/js/polycast/polycast.min.js', '/js/push/push.min.js', '/js/main.js')) !!}
+    {!! Minify::javascript(array('/js/jquery.js', '/js/bootstrap.js', '/js/laroute.js', '/js/lang.js', '/js/vars.js', '/js/parsley/parsley.min.js', '/js/parsley/i18n/'.Config::get('app.locale').'.js', '/js/select2/select2.full.min.js', '/js/polycast/polycast.js', '/js/push/push.min.js', '/js/main.js')) !!}
     @yield('javascripts')
     @if ($__env->yieldContent('javascript'))
         <script type="text/javascript">

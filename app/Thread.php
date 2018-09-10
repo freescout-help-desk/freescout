@@ -392,7 +392,7 @@ class Thread extends Model
             } else {
                 return __('anyone');
             }
-        } elseif (($user && $this->user_id == $user->id) || (!$user && $this->user_id == auth()->user()->id)) {
+        } elseif (($user && $this->user_id == $user->id) || (!$user && auth()->user() && $this->user_id == auth()->user()->id)) {
             if ($ucfirst) {
                 return __('Yourself');
             } else {
@@ -447,7 +447,7 @@ class Thread extends Model
         if ($this->type == Thread::TYPE_CUSTOMER) {
             $person = $this->customer->getFullName(true);
         } else {
-            if ($this->created_by_user_id && $this->created_by_user_cached->id == auth()->user()->id) {
+            if ($this->created_by_user_id && auth()->user() && $this->created_by_user_cached->id == auth()->user()->id) {
                 $person = __("you");
             } else {
                 $person = $this->created_by_user_cached->getFullName();

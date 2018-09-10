@@ -1271,6 +1271,7 @@ function getCsrfToken()
 	return $('meta[name="csrf-token"]:first').attr('content');
 }
 
+// Real-time website notifications in the menu and browser push notifications
 function polycastInit()
 {
 	var auth_user_id = getGlobalAttr('auth_user_id');
@@ -1284,21 +1285,21 @@ function polycastInit()
     });
 
     // register callbacks for connection events
-    poly.on('connect', function(obj){
-        console.log('connect event fired!');
-        console.log(obj);
-    });
+    // poly.on('connect', function(obj){
+    //     console.log('connect event fired!');
+    //     console.log(obj);
+    // });
 
-    poly.on('disconnect', function(obj){
-        console.log('disconnect event fired!');
-        console.log(obj);
-    });
+    // poly.on('disconnect', function(obj){
+    //     console.log('disconnect event fired!');
+    //     console.log(obj);
+    // });
 
     // subscribe to channel(s)
-    var channel = poly.subscribe('App.User.'+auth_user_id);
+    var channel = poly.subscribe('private-App.User.'+auth_user_id);
 
-    // fire when event on channel 1 is received
-    channel.on('Event1WasFired', function(data, event){
+    // fired when event on channel is received
+    channel.on('App\\Events\\RealtimeBroadcastNotificationCreated', function(data, event){
         /*
             event.id = mysql id
             event.channels = array of channels
@@ -1308,8 +1309,17 @@ function polycastInit()
             event.requested_at = when the ajax request was performed
             event.delay = the delay in seconds from when the request was made and when the event happened (used internally to delay callbacks)
         */
-       
-        console.log(data);
+        // console.log(data);
+        // console.log(event);
+        	console.log(event);
+        // Show notification in the menu
+        if (typeof(event.data) != "undefined" 
+        	&& typeof(event.data.web) != "undefined" 
+        	&& typeof(event.data.web.html) != "undefined" 
+        	&& event.data.web.html
+        ) {
+        	showMenuNotification(event.data.web.html);
+        }
     });
 
     // at any point you can disconnect
@@ -1317,6 +1327,29 @@ function polycastInit()
 
     // and when you disconnect, you can again at any point reconnect
     //poly.reconnect();
+}
+
+// Show notification in the menu
+function showMenuNotification(html)
+{
+	$(html).prependTo($(".web-notifications-list:first"));
+
+	var counter = $('.web-notifications-count:first');
+	if (counter) {
+		var count = parseInt($('.web-notifications-count:first').text());
+		if (isNaN(count)) {
+			count = 0;
+		}
+		count++;
+		counter.text(count).removeClass('hidden');
+	}
+
+	$('.web-notifications-mark-read:first').removeClass('hidden');
+
+	// Remove double TODAY
+	var first_date = $('.web-notification-date:first');
+	$('.web-notification-date[data-date="'+first_date.attr('data-date')+'"]:gt(0)').remove();
+	$('.web-notifications .dropdown-toggle:first').addClass('has-unread');
 }
 
 // Take notifications bell out of the dropdown menu
@@ -1399,7 +1432,7 @@ function webNotificationsInit()
 			function(response) {
 				if (typeof(response.status) != "undefined" && response.status == "success") {
 					mark_button.remove();
-					$('.web-notifications-count:first').remove();
+					$('.web-notifications-count:first').addClass('hidden');
 					$('.web-notification.is-unread').removeClass('is-unread');
 					$('.web-notifications .dropdown-toggle.has-unread:first').removeClass('has-unread');
 				} else {

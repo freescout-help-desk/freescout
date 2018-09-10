@@ -1,15 +1,19 @@
-@foreach ($web_notifications_info['data'] as $web_notification_data)
-    @if ($loop->first || \App\User::dateFormat($web_notifications_info['data'][$loop->index-1]['created_at'], 'M j, Y') != \App\User::dateFormat($web_notification_data['created_at'], 'M j, Y'))
+@foreach ($web_notifications_info_data as $web_notification_data)
+    @if ($loop->first || \App\User::dateFormat($web_notifications_info_data[$loop->index-1]['created_at'], 'M j, Y') != \App\User::dateFormat($web_notification_data['created_at'], 'M j, Y'))
 
-        <li class="web-notification-date">
-            @if (\App\User::dateFormat($web_notification_data['created_at'], 'M j, Y') == \App\User::dateFormat(\Carbon\Carbon::now(), 'M j, Y'))
+
+        @php
+            $notification_date = \App\User::dateFormat($web_notification_data['created_at'], 'M j, Y');
+        @endphp
+        <li class="web-notification-date" data-date="{{ $notification_date }}">
+            @if ($notification_date == \App\User::dateFormat(\Carbon\Carbon::now(), 'M j, Y'))
                 {{ __('Today') }}
             @else
-                {{ \App\User::dateFormat($web_notification_data['created_at'], 'M j, Y') }}
+                {{ $notification_date }}
             @endif
         </li>
     @endif
-    <li class="web-notification @if (!$web_notification_data['notification']->read_at) is-unread @endif">
+    <li class="web-notification @if (empty($web_notification_data['notification']->read_at)) is-unread @endif" data-notification_id="{{ $web_notification_data['notification']->id }}">
         @php
             $conv_params = [];
             if (!$web_notification_data['notification']->read_at) {
