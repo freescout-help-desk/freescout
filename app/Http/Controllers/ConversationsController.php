@@ -272,7 +272,14 @@ class ConversationsController extends Controller
                 if (!$response['msg']) {
                     // Determine redirect
                     // Must be done before updating current conversation's status or assignee.
+                    $redirect_same_page = false;
+                    // if ($new_status == Conversation::STATUS_ACTIVE) {
+                    //     // If status is ACTIVE, stay on the current page
+                    //     $response['redirect_url'] = $conversation->url();
+                    //     $redirect_same_page = true;
+                    // } else {
                     $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+                    //}
 
                     $conversation->setStatus($new_status, $user);
                     $conversation->save();
@@ -295,18 +302,10 @@ class ConversationsController extends Controller
                     event(new ConversationStatusChanged($conversation));
 
                     $response['status'] = 'success';
-
                     // Flash
                     $flash_message = __('Status updated');
-                    if ($new_status != Conversation::STATUS_ACTIVE) {
-                        $flash_message .= ' <a href="'.$conversation->url().'">'.__('View').'</a>';
-
-                        // if ($next_conversation) {
-                        //     $response['redirect_url'] = $next_conversation->url();
-                        // } else {
-                        //     // Show conversations list
-                        //     $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
-                        // }
+                    if (!$redirect_same_page || $response['redirect_url'] != $conversation->url()) {
+                        $flash_message .= ' &nbsp;<a href="'.$conversation->url().'">'.__('View').'</a>';
                     }
                     \Session::flash('flash_success_floating', $flash_message);
 

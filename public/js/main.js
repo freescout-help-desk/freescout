@@ -421,12 +421,14 @@ function fsFloatingAlertsInit()
 		}
 		$(el).css('display', 'flex');
 
-		// If error do not close automatically
+
+		var close_after = 7000;
 		if (!$(el).hasClass('alert-danger')) {
-			setTimeout(function(){
-			    el.remove(); 
-			}, 7000);
+			close_after = 10000;
 		}
+		setTimeout(function(){
+		    el.remove(); 
+		}, close_after);
 	});
 
 	if (alerts.length) {
@@ -1357,7 +1359,6 @@ function polycastInit()
         */
         // console.log(data);
         // console.log(event);
-        	console.log(event);
         
         if (typeof(event.data) != "undefined") {
         	// Show notification in the menu
