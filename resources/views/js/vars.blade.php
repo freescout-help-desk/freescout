@@ -47,6 +47,8 @@ var lang_messages = {
             "invite_resent": "{{ __("Invite email has been resent") }}",
             "confirm_reset_password": "{{ __("Reset this User's password?") }}",
             "push_protocol_alert": "{{ __("HTTPS protocol is required for the browser push notifications to work.") }}",
+            "lost_connection": "{{ __("Lost internet connection") }}",
+            "connection_restored": "{{ __("Connection restored") }}",
 
             "drag_image_file": "{{ __("Drag image or file here") }}"
         }@if (!$loop->last),@endif

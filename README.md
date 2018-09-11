@@ -33,8 +33,9 @@ FreeScout is being developed from scratch and is not using any copyrighted Help 
 [FreeScout](https://github.com/freescout-helpdesk/freescout) will provide the same set of features as a HelpScout: help desk tools, email management and analytics. **FreeScout** will also provide some extra features:
 
   * 100% Mobile-friendly.
+  * Multilingual.
   * Starred conversations.
-  * Sending message to multiple customers at once.
+  * Sending messages to multiple customers at once.
   * Pasting screenshots from the clipboard into the reply area.
   * Dragging images into the reply area.
   

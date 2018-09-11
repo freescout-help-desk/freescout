@@ -1,6 +1,7 @@
 var fs_sidebar_menu_applied = false;
 var fs_loader_timeout;
 var fs_processing_send_reply = false;
+var fs_connection_errors = 0;
 
 // Ajax based notifications;
 var poly;
@@ -1539,4 +1540,21 @@ function systemInit()
 			'<div class="alert alert-danger margin-top">'+Lang.get("messages.push_protocol_alert")+'</div>';
 		$('#system-app-protocol').html(html);
 	}
+}
+
+// Called from polycast
+function maybeShowConnectionError()
+{
+	fs_connection_errors++;
+	if (fs_connection_errors == 3) {
+		showFloatingAlert('error', Lang.get("messages.lost_connection"));
+	}
+}
+
+function maybeShowConnectionRestored()
+{
+	if (fs_connection_errors >= 3) {
+		showFloatingAlert('success', Lang.get("messages.connection_restored"));
+	}
+	fs_connection_errors = 0;
 }

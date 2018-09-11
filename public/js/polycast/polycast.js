@@ -108,6 +108,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            xhr.onreadystatechange = function() {
 	                if (xhr.readyState > 3) {
 	                	if (xhr.status === 200) {
+	                		maybeShowConnectionRestored();
 		                    response = JSON.parse(xhr.responseText);
 		                    if (response.status == 'success'){
 		                        PolycastObject.connected = true;
@@ -117,6 +118,9 @@ return /******/ (function(modules) { // webpackBootstrap
 		                        PolycastObject.fire('connect', PolycastObject);
 		                    }
 		                } else {
+		                	console.log(xhr);
+		                	maybeShowConnectionError();
+
 		                	// Try to reinit on error
 		                	setTimeout(function(){
 				                PolycastObject.init();
@@ -215,6 +219,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            xhr.open('POST', this.options.url + '/receive');
 	            xhr.onreadystatechange = function() {
 	                if (xhr.readyState > 3 /*&& xhr.status === 200*/) {
+	                	if (xhr.status !== 200) {
+		                	maybeShowConnectionError();
+	                	} else {
+	                		maybeShowConnectionRestored();
+	                	}
 	                    PolycastObject.parseResponse(xhr.responseText);
 	                } else {
 	                	// Continue
