@@ -31,6 +31,10 @@
                 <th>{{ __('Timezone') }}</th>
                 <td class="table-main-col">{{ \Config::get('app.timezone') }} (GMT{{ date('O') }})</td>
             </tr>
+            <tr>
+                <th>{{ __('Protocol') }}</th>
+                <td class="table-main-col" id="system-app-protocol"></td>
+            </tr>
         </tbody>
     </table>
 
@@ -41,6 +45,10 @@
             <tr>
                 <th>{{ __('Name') }}</th>
                 <td class="table-main-col">@if (!empty($_SERVER['SERVER_SOFTWARE'])){{ $_SERVER['SERVER_SOFTWARE'] }}@else ? @endif</td>
+            </tr>
+            <tr>
+                <th>{{ __('Protocol') }}</th>
+                <td class="table-main-col">@if (!empty($_SERVER['HTTPS']))HTTPS @else HTTP @endif</td>
             </tr>
         </tbody>
     </table>
@@ -157,4 +165,9 @@
     </table>
 
 </div>
+@endsection
+
+@section('javascript')
+    @parent
+    systemInit();
 @endsection

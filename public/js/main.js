@@ -1528,3 +1528,14 @@ function webNotificationsInit()
 	// });
 	
 }
+
+function systemInit()
+{
+	if (location.protocol == 'https:') {
+		$('#system-app-protocol').text('HTTPS');
+	} else {
+		var html = 'HTTP'+
+			'<div class="alert alert-danger margin-top">'+Lang.get("messages.push_protocol_alert")+'</div>';
+		$('#system-app-protocol').html(html);
+	}
+}

@@ -22,3 +22,4 @@ Thumbs.db
 /.htaccess
 public/css/builds/
 public/js/builds/
+public/.well-known
