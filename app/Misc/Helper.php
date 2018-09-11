@@ -18,6 +18,46 @@ class Helper
     const PREVIEW_MAXLENGTH = 255;
 
     /**
+     * Menu structure used to display active menu item.
+     * Array are mnemonic names, strings - route names.
+     * Menu has 2 levels.
+     */
+    public static $menu = [
+        'dashboard' => 'dashboard',
+        'mailbox' => [
+            'mailboxes.view',
+            'conversations.view', 
+            'conversations.create', 
+            'conversations.draft', 
+            'conversations.search', 
+        ],
+        'manage' => [
+            'settings' => 'settings',
+            'mailboxes' => [
+                'mailboxes', 
+                'mailboxes.update', 
+                'mailboxes.create', 
+                'mailboxes.connection', 
+                'mailboxes.connection.incoming', 
+                'mailboxes.permissions', 
+                'mailboxes.auto_reply', 
+            ],
+            'users' => [
+                'users', 
+                'users.create', 
+                'users.profile', 
+                'users.permissions', 
+                'users.notifications', 
+                'users.password', 
+            ],
+            'logs' => 'logs',
+            'system' => 'system',
+        ],
+        // No menu item selected
+        'customers' => []
+    ];
+
+    /**
      * Cache time of the DB query.
      */
     public static function cacheTime($enabled = true)
@@ -59,5 +99,59 @@ class Helper
         $text = mb_substr($text, 0, $length);
 
         return $text;
+    }
+
+    /**
+     * Check if passed route name equals to the current one.
+     */
+    public static function isCurrentRoute($route_name)
+    {
+        if (\Request::route()->getName() == $route_name) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if menu item is selected.
+     * Each menu item has a mnemonic name.
+     */
+    public static function isMenuSelected($menu_item_name)
+    {
+        $current_route = \Request::route()->getName();
+
+        foreach (self::$menu as $primary_name => $primary_items) {
+            if (!is_array($primary_items)) {
+                if ($current_route == $primary_items) {
+                    return ($primary_name == $menu_item_name);
+                }
+                if ($primary_name == $menu_item_name) {
+                    return false;
+                }
+                continue;
+            }
+            foreach ($primary_items as $secondary_name => $secondary_routes) {
+                if (is_array($secondary_routes)) {
+                    if (in_array($current_route, $secondary_routes)) {
+                        return ($secondary_name == $menu_item_name || $primary_name == $menu_item_name);
+                    }
+                } else {
+                    if ($current_route == $secondary_routes) {
+                        return ($secondary_name == $menu_item_name || $primary_name == $menu_item_name);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static function menuSelectedHtml($menu_item_name)
+    {
+        if (self::isMenuSelected($menu_item_name)) {
+            return 'active';
+        } else {
+            return '';
+        }
     }
 }

@@ -253,6 +253,8 @@ class MailboxesController extends Controller
      */
     public function view($id, $folder_id = null)
     {
+        //auth()->guard()->attempt(['email' => '', 'password' => '']);
+
         $mailbox = Mailbox::findOrFail($id);
         $this->authorize('view', $mailbox);
 

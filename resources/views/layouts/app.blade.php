@@ -34,7 +34,7 @@
                         </button>
 
                         <!-- Branding Image -->
-                        <a class="navbar-brand @if (Route::currentRouteName() == 'dashboard')active @endif" href="{{ url('/') }}" title="{{ __('Dashboard') }}">
+                        <a class="navbar-brand {{ \App\Misc\Helper::menuSelectedHtml('dashboard') }}" href="{{ url('/') }}" title="{{ __('Dashboard') }}">
                             <img src="/img/logo-brand.png" />
                             {{-- config('app.name', 'FreeScout') --}}
                         </a>
@@ -47,15 +47,15 @@
                                 $mailboxes = Auth::user()->mailboxesCanView();
                             @endphp
                             @if (count($mailboxes) == 1)
-                                <li><a href="{{ route('mailboxes.view', ['id'=>$mailboxes[0]->id]) }}" @if (Route::currentRouteName() == 'mailboxes.view')class="active"@endif>{{ __('Mailbox') }}</a></li>
+                                <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}"><a href="{{ route('mailboxes.view', ['id'=>$mailboxes[0]->id]) }}">{{ __('Mailbox') }}</a></li>
                             @elseif (count($mailboxes) > 1) 
-                                <li class="dropdown">
+                                <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
                                         {{ __('Mailbox') }} <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu">
                                         @foreach ($mailboxes as $mailbox_item)
-                                            <li @if ($mailbox_item->id == app('request')->input('id'))class="active"@endif><a href="{{ route('mailboxes.view', ['id' => $mailbox_item->id]) }}">{{ $mailbox_item->name }}</a></li>
+                                            <li @if ($mailbox_item->id == app('request')->id)class="active"@endif><a href="{{ route('mailboxes.view', ['id' => $mailbox_item->id]) }}">{{ $mailbox_item->name }}</a></li>
                                         @endforeach
                                     </ul>
                                 </li>
@@ -85,7 +85,7 @@
                                     </ul>
                                 </li>
                             @endif--}}
-                            <li class="dropdown">
+                            <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('manage') }}">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
                                     {{ __('Manage') }} <span class="caret"></span>
                                 </a>
@@ -93,17 +93,17 @@
                                 <ul class="dropdown-menu">
                                     @if (Auth::user()->isAdmin())
                                         {{--<li><a href="#">{{ __('Apps') }} (todo)</a></li>--}}
-                                        <li><a href="{{ route('settings') }}">{{ __('Settings') }}</a></li>
+                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('settings') }}"><a href="{{ route('settings') }}">{{ __('Settings') }}</a></li>
                                         {{--<li><a href="#">{{ __('Docs') }} (todo)</a></li>--}}
-                                        <li><a href="{{ route('mailboxes') }}">{{ __('Mailboxes') }}</a></li>
+                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailboxes') }}"><a href="{{ route('mailboxes') }}">{{ __('Mailboxes') }}</a></li>
                                     @endif
-                                    <li><a href="#">{{ __('Tags') }} (todo)</a></li>
+                                    <li class="{{ \App\Misc\Helper::menuSelectedHtml('tags') }}"><a href="#">{{ __('Tags') }} (todo)</a></li>
                                     @if (Auth::user()->isAdmin())
                                         {{--<li><a href="#">{{ __('Teams') }} (todo)</a></li>--}}
-                                        <li><a href="{{ route('users') }}">{{ __('Users') }}</a></li>
-                                        <li><a href="#">{{ __('Plugins') }} (todo)</a></li>
-                                        <li><a href="{{ route('logs') }}">{{ __('Logs') }}</a></li>
-                                        <li><a href="{{ route('system') }}">{{ __('System') }}</a></li>
+                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('users') }}"><a href="{{ route('users') }}">{{ __('Users') }}</a></li>
+                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('plugins') }}"><a href="#">{{ __('Plugins') }} (todo)</a></li>
+                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('logs') }}"><a href="{{ route('logs') }}">{{ __('Logs') }}</a></li>
+                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('system') }}"><a href="{{ route('system') }}">{{ __('System') }}</a></li>
                                     @endif
                                 </ul>
                             </li>
