@@ -81,6 +81,18 @@ class BroadcastNotification extends Notification
 
             $web_notifications_info = [];
 
+            // Get last reply or note of the conversation to display it's text
+            $last_thread_body = '';
+            $last_thread = Thread::where('conversation_id', $thread->conversation_id)
+                ->select(['body'])
+                ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
+                ->orderBy('created_at')
+                ->first();
+
+            if ($last_thread) {
+                $last_thread_body = $last_thread->body;
+            }
+
             //$db_notification->id = 'dummy';
             $web_notifications_info['notification'] = $db_notification;
             $web_notifications_info['created_at'] = \Carbon\Carbon::now();
@@ -88,7 +100,7 @@ class BroadcastNotification extends Notification
             // ['notification']->id
             $web_notifications_info['conversation'] = $thread->conversation;
             $web_notifications_info['thread'] = $thread;
-            $web_notifications_info['last_thread_body'] = $thread->body;
+            $web_notifications_info['last_thread_body'] = $last_thread_body;
 
             $data['web']['html'] = view('users/partials/web_notifications', [
                 'web_notifications_info_data' => [$web_notifications_info],

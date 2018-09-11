@@ -14,7 +14,7 @@ class HttpsRedirect {
 
     public function handle($request, Closure $next)
     {
-        if (\Config::get('app.force_https')) {
+        if (\Config::get('app.force_https') == 'true') {
             $request->setTrustedProxies( [ $request->getClientIp() ] ); 
             if (!$request->secure() /*&& App::environment() === 'production'*/) {
                 return redirect()->secure($request->getRequestUri());
