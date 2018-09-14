@@ -45,7 +45,7 @@
 					                                {{--<br><br>How would you rate my reply?<br><a href="" style="color:#50bc1c;">Great</a> &nbsp;&nbsp; <a href="" style="color:#555555;">Okay</a> &nbsp;&nbsp; <a href="" style="color:#f10000;">Not Good</a>
 					                                --}}
 					                                @if ($thread->source_via == App\Thread::PERSON_USER)
-						                                {!! $conversation->getSignatureProcessed() !!}
+						                                <br>{!! $conversation->getSignatureProcessed() !!}
 						                                <br><br>
 						                            @endif
 	                                            </div>
@@ -62,6 +62,13 @@
 						    <td height="20"></td>
 						</tr>
 					@endforeach
+					@if (\App\Option::get('email_branding'))
+						<tr>
+		                    <td height="0" style="font-size:12px; line-height:18px; font-family:Arial,'Helvetica Neue',Helvetica,Tahoma,sans-serif; color: #aaaaaa;">
+							{!! __('Support powered by :app_name — Free open source help desk & shared mailbox', ['app_name' => '<a href="'.Config::get('app.freescout_url').'">'.\Config::get('app.name').'</a>']) !!}
+							</td>
+						</tr>
+					@endif
 	                <tr>
 	                    <td height="0" style="font-size: 0px; line-height: 0px; color:#ffffff;">
 	                    	{{-- todo: view tracking --}}

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Option extends Model
 {
+    // todo: cache in file (see WordPress)
+    public static $cache = [];
+
     public $timestamps = false;
 
     /**
@@ -62,18 +65,28 @@ class Option extends Model
      * @param  string  $name
      * @return string
      */
-    public static function get($name, $default = false, $decode = true)
+    public static function get($name, $default = false, $decode = true, $cache = false)
     {
+        if ($cache && isset(self::$cache[$name])) {
+            return self::$cache[$name];
+        }
+
         $option = Option::where('name', (string)$name)->first();
         if ($option) {
             if ($decode) {
-                return self::maybeUnserialize($option->value);
+                $value = self::maybeUnserialize($option->value);
             } else {
-                return $option->value;
+                $value = $option->value;
             }
         } else {
-            return $default;
+            $value = $default;
         }
+
+        if ($cache) {
+            self::$cache[$name] = $value;
+        }
+
+        return $value;
     }
 
     public static function remove($name)
