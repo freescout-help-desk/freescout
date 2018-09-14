@@ -26,7 +26,8 @@ class CreateConversationsTable extends Migration
             $table->integer('folder_id');
             $table->unsignedTinyInteger('status')->default(Conversation::STATUS_ACTIVE);
             $table->unsignedTinyInteger('state')->default(Conversation::STATE_DRAFT);
-            $table->string('subject', 998);
+            // It has to be optional in order to create empty drafts.
+            $table->string('subject', 998)->nullable();
             // Customer's email to which replies from users are sent.
             // Not used when fetching emails.
             // Customer may have several emails, so we need to know which 
@@ -46,7 +47,8 @@ class CreateConversationsTable extends Migration
             // assignee - Who the conversation is assigned to
             $table->integer('user_id')->nullable();
             // primaryCustomer
-            $table->integer('customer_id');
+            // It has to be optional in order to create empty drafts.
+            $table->integer('customer_id')->nullable();
             // Originating source of the conversation - user or customer
             // ID of the customer or user who created the conversation
             // createdBy in the API

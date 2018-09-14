@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Attachment;
 use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model
@@ -196,6 +197,14 @@ class Thread extends Model
     }
 
     /**
+     * All kinds of attachments including embedded.
+     */
+    public function all_attachments()
+    {
+        return $this->hasMany('App\Attachment');
+    }
+
+    /**
      * Get user who created the thread.
      */
     public function created_by_user()
@@ -217,6 +226,14 @@ class Thread extends Model
     public function created_by_customer()
     {
         return $this->belongsTo('App\Customer');
+    }
+
+    /**
+     * Get user who edited draft.
+     */
+    public function edited_by_user()
+    {
+        return $this->belongsTo('App\User');
     }
 
     /**
@@ -253,6 +270,20 @@ class Thread extends Model
         }
     }
 
+    public function getToString($exclude_array = [])
+    {
+        return implode(', ', $this->getToArray($exclude_array));
+    }
+
+    /**
+     * Get first address from the To list.
+     */
+    public function getToFirst()
+    {  
+        $to = $this->getToArray();
+        return array_shift($to);
+    }
+    
     /**
      * Get type name.
      */
@@ -279,6 +310,11 @@ class Thread extends Model
         }
     }
 
+    public function getCcString($exclude_array = [])
+    {
+        return implode(', ', $this->getCcArray($exclude_array));
+    }
+
     /**
      * Get thread BCC recipients.
      *
@@ -295,6 +331,11 @@ class Thread extends Model
         } else {
             return [];
         }
+    }
+
+    public function getBccString($exclude_array = [])
+    {
+        return implode(', ', $this->getBccArray($exclude_array));
     }
 
     /**
@@ -458,6 +499,13 @@ class Thread extends Model
         // Person
         if ($this->type == Thread::TYPE_CUSTOMER) {
             $person = $this->customer->getFullName(true);
+        } elseif ($this->state == Thread::STATE_DRAFT && !empty($this->edited_by_user_id)) {
+            // Draft
+            if (auth()->user() && $this->edited_by_user_id == auth()->user()->id) {
+                $person = __("you");
+            } else {
+                $person = $this->edited_by_user->getFullName();
+            }
         } else {
             if ($this->created_by_user_id && auth()->user() && $this->created_by_user_cached->id == auth()->user()->id) {
                 $person = __("you");
@@ -474,6 +522,12 @@ class Thread extends Model
                 $did_this = __("assigned :assignee convsersation #:conversation_number", ['assignee' => $this->getAssigneeName(false, null, false), 'conversation_number' => $conversation_number]);
             } elseif ($this->action_type == Thread::ACTION_TYPE_CUSTOMER_CHANGED) {
                $did_this = __("changed the customer to :customer in conversation #:conversation_number", ['customer' => $this->customer->getFullName(true), 'conversation_number' => $conversation_number]);
+            }
+        } elseif ($this->state == Thread::STATE_DRAFT) {
+            if (empty($this->edited_by_user_id)) {
+                $did_this = __("created a draft");
+            } else {
+                $did_this = __("edited :creator's draft", ['creator' => $this->created_by_user_cached->getFirstName()]);
             }
         } else {  
             if ($this->first) {
@@ -496,5 +550,27 @@ class Thread extends Model
             'person_tag_end' => '</strong>',
             'did_this' => $did_this
         ]);
+    }
+
+    /**
+     * Get thread state name.
+     */
+    public function getStateName()
+    {
+        return self::$states[$this->state];
+    }
+
+    public function deleteThread()
+    {
+        $this->deteleAttachments();
+        $this->delete();
+    }
+
+    /**
+     * Delete thread attachments.
+     */
+    public function deteleAttachments()
+    {
+        Attachment::deleteByIds($this->all_attachments()->pluck('id')->toArray());
     }
 }

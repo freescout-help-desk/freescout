@@ -49,6 +49,9 @@ var lang_messages = {
             "push_protocol_alert": "{{ __("HTTPS protocol is required for the browser push notifications to work.") }}",
             "lost_connection": "{{ __("Lost internet connection") }}",
             "connection_restored": "{{ __("Connection restored") }}",
+            "saved": "{{ __("Saved") }}",
+            "confirm_discard_draft": "{{ __("Discard this draft?") }}",
+            "yes": "{{ __("Yes") }}",
 
             "drag_image_file": "{{ __("Drag image or file here") }}"
         }@if (!$loop->last),@endif

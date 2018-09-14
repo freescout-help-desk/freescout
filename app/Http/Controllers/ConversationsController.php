@@ -8,6 +8,8 @@ use App\Customer;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
 use App\Events\UserCreatedConversation;
+use App\Events\UserCreatedConversationDraft;
+use App\Events\UserCreatedThreadDraft;
 use App\Events\UserAddedNote;
 use App\Events\UserReplied;
 use App\Folder;
@@ -84,7 +86,10 @@ class ConversationsController extends Controller
         // Detect customers and emails to which user can reply
         $to_customers = [];
         // Add all customer emails
-        $customer_emails = $customer->emails;
+        $customer_emails = [];
+        if ($customer) {
+            $customer_emails = $customer->emails;
+        }
         $distinct_emails = [];
         if (count($customer_emails) > 1) {
             foreach ($customer_emails as $customer_email) {
@@ -96,12 +101,15 @@ class ConversationsController extends Controller
             }
         }
         // Add emails of customers from whom there were replies in the conversation
-        $prev_customers_emails = Thread::select('from', 'customer_id')
-            ->where('conversation_id', $id)
-            ->where('type', Thread::TYPE_CUSTOMER)
-            ->where('from', '<>', $conversation->customer_email)
-            ->groupBy(['from', 'customer_id'])
-            ->get();
+        $prev_customers_emails = [];
+        if ($conversation->customer_email) {
+            $prev_customers_emails = Thread::select('from', 'customer_id')
+                ->where('conversation_id', $id)
+                ->where('type', Thread::TYPE_CUSTOMER)
+                ->where('from', '<>', $conversation->customer_email)
+                ->groupBy(['from', 'customer_id'])
+                ->get();
+        }
 
         foreach ($prev_customers_emails as $prev_customer) {
             if (!in_array($prev_customer->from, $distinct_emails) && $prev_customer->customer && $prev_customer->from) {
@@ -113,14 +121,22 @@ class ConversationsController extends Controller
         }
 
         // Previous conversations
-        $prev_conversations = $mailbox->conversations()
-                                ->where('customer_id', $customer->id)
-                                ->where('id', '<>', $conversation->id)
-                                //->limit(self::PREV_CONVERSATIONS_LIMIT)
-                                ->orderBy('created_at', 'desc')
-                                ->paginate(self::PREV_CONVERSATIONS_LIMIT);
+        $prev_conversations = [];
+        if ($customer) {
+            $prev_conversations = $mailbox->conversations()
+                                    ->where('customer_id', $customer->id)
+                                    ->where('id', '<>', $conversation->id)
+                                    //->limit(self::PREV_CONVERSATIONS_LIMIT)
+                                    ->orderBy('created_at', 'desc')
+                                    ->paginate(self::PREV_CONVERSATIONS_LIMIT);
+        }
 
-        return view('conversations/view', [
+        $template = 'conversations/view';
+        if ($conversation->state == Conversation::STATE_DRAFT) {
+            $template = 'conversations/create';
+        }
+
+        return view($template, [
             'conversation' => $conversation,
             'mailbox'      => $conversation->mailbox,
             'customer'     => $customer,
@@ -160,19 +176,19 @@ class ConversationsController extends Controller
     /**
      * Conversation draft.
      */
-    public function draft($id)
-    {
-        $conversation = Conversation::findOrFail($id);
+    // public function draft($id)
+    // {
+    //     $conversation = Conversation::findOrFail($id);
 
-        $this->authorize('view', $conversation);
+    //     $this->authorize('view', $conversation);
 
-        return view('conversations/create', [
-            'conversation' => $conversation,
-            'mailbox'      => $conversation->mailbox,
-            'folder'       => $conversation->folder,
-            'folders'      => $conversation->mailbox->getAssesibleFolders(),
-        ]);
-    }
+    //     return view('conversations/create', [
+    //         'conversation' => $conversation,
+    //         'mailbox'      => $conversation->mailbox,
+    //         'folder'       => $conversation->folder,
+    //         'folders'      => $conversation->mailbox->getAssesibleFolders(),
+    //     ]);
+    // }
 
     /**
      * Conversations ajax controller.
@@ -313,7 +329,7 @@ class ConversationsController extends Controller
                 }
                 break;
 
-             // Send reply or new conversation
+            // Send reply or new conversation
             case 'send_reply':
 
                 $mailbox = Mailbox::findOrFail($request->mailbox_id);
@@ -377,24 +393,9 @@ class ConversationsController extends Controller
                 }
 
                 if (!$response['msg']) {
-                    // Check attachments
-                    $has_attachments = false;
-                    $attachments = [];
-                    if (!empty($request->attachments_all)) {
-                        $embeds = [];
-                        if (!empty($request->attachments)) {
-                            $attachments = $request->attachments;
-                        }
-                        if (!empty($request->embeds)) {
-                            $embeds = $request->embeds;
-                        }
-                        if (count($attachments) != count($embeds)) {
-                            $has_attachments = true;
-                        }
-                        $attachments_to_remove = array_diff($request->attachments_all, $attachments);
-                        $attachments_to_remove = array_diff($attachments_to_remove, $embeds);
-                        Attachment::deleteByIds($attachments_to_remove);
-                    }
+                    
+                    // Get attachments info
+                    $attachments_info = $this->processReplyAttachments($request);
 
                     // Determine redirect. 
                     // Must be done before updating current conversation's status or assignee.
@@ -413,11 +414,9 @@ class ConversationsController extends Controller
 
                         $conversation = new Conversation();
                         $conversation->type = Conversation::TYPE_EMAIL;
-                        $conversation->state = Conversation::STATE_PUBLISHED;
                         $conversation->subject = $request->subject;
-                        // CC and BCC are set on thread create
                         $conversation->setPreview($request->body);
-                        if ($has_attachments) {
+                        if ($attachments_info['has_attachments']) {
                             $conversation->has_attachments = true;
                         }
                         $conversation->mailbox_id = $request->mailbox_id;
@@ -435,6 +434,8 @@ class ConversationsController extends Controller
                         }
                     }
                     $conversation->status = $request->status;
+                    // We need to set state, as it may have been a draft
+                    $conversation->state = Conversation::STATE_PUBLISHED;
                     if ((int) $request->user_id != -1) {
                         // Check if user has access to the current mailbox
                         if ((int) $conversation->user_id != (int) $request->user_id && $mailbox->userHasAccess($request->user_id)) {
@@ -501,16 +502,29 @@ class ConversationsController extends Controller
                     $thread->source_type = Thread::SOURCE_TYPE_WEB;
                     $thread->customer_id = $customer->id;
                     $thread->created_by_user_id = auth()->user()->id;
-                    if ($has_attachments) {
+                    $thread->edited_by_user_id = null;
+                    $thread->edited_at = null;
+                    if ($attachments_info['has_attachments']) {
                         $thread->has_attachments = true;
                     }
                     $thread->save();
 
+                    // If thread has been created from draft, remove the draft
+                    if ($request->thread_id) {
+                        $draft_thread = Thread::find($request->thread_id);
+                        if ($draft_thread) {
+                            $draft_thread->delete();
+
+                            // Remove conversation from drafts folder if needed
+                            $conversation->maybeRemoveFromDrafts();
+                        }
+                    }
+
                     $response['status'] = 'success';
 
                     // Set thread_id for uploaded attachments
-                    if ($attachments) {
-                        Attachment::whereIn('id', $attachments)->update(['thread_id' => $thread->id]);
+                    if ($attachments_info['attachments']) {
+                        Attachment::whereIn('id', $attachments_info['attachments'])->update(['thread_id' => $thread->id]);
                     }
 
                     if ($new) {
@@ -530,7 +544,7 @@ class ConversationsController extends Controller
                             $flash_type = 'success';
                             $flash_message = __(
                                 ':%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%',
-                                ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.draft', ['id' => $conversation->id]).'" class="text-danger">']
+                                ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.view', ['id' => $conversation->id]).'" class="text-danger">']
                             );
                         }
                     } else {
@@ -544,12 +558,230 @@ class ConversationsController extends Controller
                             $flash_type = 'success';
                             $flash_message = __(
                                 ':%tag_start%Email Sent:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%',
-                                ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.draft', ['id' => $conversation->id]).'" class="text-danger">']
+                                ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.view', ['id' => $conversation->id]).'" class="text-danger">']
                             );
                         }
                     }
 
                     \Session::flash('flash_'.$flash_type.'_floating', $flash_message);
+                }
+                break;
+
+            // Save draft (automatically or by click)
+            case 'save_draft':
+
+                $mailbox = Mailbox::findOrFail($request->mailbox_id);
+
+                if (!$response['msg'] && !$user->can('view', $mailbox)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                $conversation = null;
+                $new = true;
+                if (!$response['msg'] && !empty($request->conversation_id)) {
+                    $conversation = Conversation::find($request->conversation_id);
+                    if ($conversation && !$user->can('view', $conversation)) {
+                        $response['msg'] = __('Not enough permissions');
+                    } else {
+                        $new = false;
+                    }
+                }
+
+                $thread = null;
+                $new_thread = true;
+                if (!$response['msg'] && !empty($request->thread_id)) {
+                    $thread = Thread::find($request->thread_id);
+                    if ($thread && (!$conversation || $thread->conversation_id != $conversation->id)) {
+                        $response['msg'] = __('Incorrect thread');
+                    } else {
+                        $new_thread = false;
+                    }
+                }
+
+                // Validation is not needed on draft create, fields can be empty
+
+                if (!$response['msg']) {
+
+                    // Get attachments info
+                    $attachments_info = $this->processReplyAttachments($request);
+
+                    // Conversation
+                    $now = date('Y-m-d H:i:s');
+
+                    if ($new) {
+                        $conversation = new Conversation();
+                    }
+
+                    if ($new || !empty($request->is_create)) {
+                        // New conversation
+                        $customer_email = '';
+                        $to_array = Conversation::sanitizeEmails($request->to);
+                        if (count($to_array)) {
+                            $customer_email = $to_array[0];
+                        }
+                        $customer = Customer::create($customer_email);
+
+                        $conversation->type = Conversation::TYPE_EMAIL;
+                        $conversation->state = Conversation::STATE_DRAFT;
+                        $conversation->subject = $request->subject;
+                        $conversation->setPreview($request->body);
+                        if ($attachments_info['has_attachments']) {
+                            $conversation->has_attachments = true;
+                        }
+                        $conversation->mailbox_id = $request->mailbox_id;
+                        // Customer may be empty in draft
+                        if ($customer) {
+                            $conversation->customer_id = $customer->id;
+                        }
+                        $conversation->customer_email = $customer_email;
+                        $conversation->created_by_user_id = auth()->user()->id;
+                        $conversation->source_via = Conversation::PERSON_USER;
+                        $conversation->source_type = Conversation::SOURCE_TYPE_WEB;
+                    } else {
+                        // Reply
+                        $customer = $conversation->customer;
+                    }
+                    $conversation->status = $request->status;
+                    // New draft conversation is not assigned to anybody
+                    //$conversation->user_id = null;
+
+                    // To is a single email string
+                    $to = '';
+                    if (!empty($request->to)) {
+                        $to = $request->to;
+                    } else {
+                        $to = $conversation->customer_email;
+                    }
+
+                    // Save extra recipients to CC
+                    $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                    $conversation->setBcc($request->bcc);
+                    // $conversation->last_reply_at = $now;
+                    // $conversation->last_reply_from = Conversation::PERSON_USER;
+                    // $conversation->user_updated_at = $now;
+                    $conversation->updateFolder();
+
+                    $conversation->save();
+
+                    // Create thread
+                    if (empty($thread)) {
+                        $thread = new Thread();
+                        $thread->conversation_id = $conversation->id;
+                        $thread->user_id = auth()->user()->id;
+                        $thread->type = Thread::TYPE_MESSAGE;
+                        if ($new) {
+                            $thread->first = true;
+                        }
+                        //$thread->status = $request->status;
+                        $thread->state = Thread::STATE_DRAFT;
+                        
+                        $thread->source_via = Thread::PERSON_USER;
+                        $thread->source_type = Thread::SOURCE_TYPE_WEB;
+                        if ($customer) {
+                            $thread->customer_id = $customer->id;
+                        }
+                        $thread->created_by_user_id = auth()->user()->id;
+                    }
+                    if ($attachments_info['has_attachments']) {
+                        $thread->has_attachments = true;
+                    }
+                    $thread->body = $request->body;
+                    $thread->setTo($to);
+                    // We save CC and BCC as is and filter emails when sending replies
+                    $thread->setCc($request->cc);
+                    $thread->setBcc($request->bcc);
+                    // Set edited info
+                    if ($thread->created_by_user_id != $user->id) {
+                        $thread->edited_by_user_id = $user->id;
+                        $thread->edited_at = $now;
+                    }
+                    $thread->save();
+
+                    $conversation->addToFolder(Folder::TYPE_DRAFTS);
+
+                    $response['conversation_id'] = $conversation->id;
+                    $response['thread_id'] = $thread->id;
+
+                    $response['status'] = 'success';
+
+                    // Set thread_id for uploaded attachments
+                    if ($attachments_info['attachments']) {
+                        Attachment::whereIn('id', $attachments_info['attachments'])->update(['thread_id' => $thread->id]);
+                    }
+
+                    if ($new) {
+                        event(new UserCreatedConversationDraft($conversation, $thread));
+                    } elseif ($new_thread) {
+                        event(new UserCreatedThreadDraft($conversation, $thread));
+                    }
+
+                    $response['status'] = 'success';
+                }
+                break;
+
+            // Discard draft (from new conversation, from reply or conversation)
+            case 'discard_draft':
+
+                $thread = Thread::find($request->thread_id);
+                
+                if (!$thread) {
+                    $response['msg'] = __('Thread not found');
+                }
+                if (!$response['msg'] && !$user->can('view', $thread->conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    $conversation = $thread->conversation;
+                    
+                    if ($conversation->state == Conversation::STATE_DRAFT) {
+                        // New conversation draft being discarded
+                        $folder_id = $conversation->getCurrentFolder();
+                        $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $folder_id]);
+
+                        $conversation->removeFromFolder(Folder::TYPE_DRAFTS);
+                        $conversation->mailbox->updateFoldersCounters();
+                        $conversation->deleteThreads();
+                        $conversation->delete();
+
+                        $flash_message = __('Deleted draft');
+                        \Session::flash('flash_success_floating', $flash_message);
+                    } else {
+                        // Just remove the thread, no need to reload the page
+                        $thread->deleteThread();
+                        // Remove conversation from drafts folder if needed
+                        $removed_from_folder = $conversation->maybeRemoveFromDrafts();
+                        if ($removed_from_folder) {
+                            $conversation->mailbox->updateFoldersCounters();
+                        }
+                    }
+                    
+                    $response['status'] = 'success';
+                }
+                break;
+
+            // Save draft (automatically or by click)
+            case 'load_draft':
+                $thread = Thread::find($request->thread_id);
+                if (!$thread) {
+                    $response['msg'] = __('Thread not found');
+                } elseif ($thread->state != Thread::STATE_DRAFT) {
+                    $response['msg'] = __('Thread is not in a draft state');
+                } else {
+                    if (!$user->can('view', $thread->conversation)) {
+                        $response['msg'] = __('Not enough permissions');
+                    }
+                }
+
+                if (!$response['msg']) {
+                    $response['data'] = [
+                        'thread_id' => $thread->id,
+                        'to' => $thread->getToFirst(),
+                        'cc' => $thread->getCcString(),
+                        'bcc' => $thread->getBccString(),
+                        'body' => $thread->body,
+                    ];
+                    $response['status'] = 'success';
                 }
                 break;
 
@@ -951,5 +1183,34 @@ class ConversationsController extends Controller
         }
 
         return $query_conversations->paginate(Conversation::DEFAULT_LIST_SIZE);
+    }
+
+    /**
+     * Process attachments on reply, new conversation, saving draft.
+     */
+    public function processReplyAttachments($request)
+    {
+        $has_attachments = false;
+        $attachments = [];
+        if (!empty($request->attachments_all)) {
+            $embeds = [];
+            if (!empty($request->attachments)) {
+                $attachments = $request->attachments;
+            }
+            if (!empty($request->embeds)) {
+                $embeds = $request->embeds;
+            }
+            if (count($attachments) != count($embeds)) {
+                $has_attachments = true;
+            }
+            $attachments_to_remove = array_diff($request->attachments_all, $attachments);
+            $attachments_to_remove = array_diff($attachments_to_remove, $embeds);
+            Attachment::deleteByIds($attachments_to_remove);
+        }
+
+        return [
+            'has_attachments' => $has_attachments,
+            'attachments' => $attachments,
+        ];
     }
 }

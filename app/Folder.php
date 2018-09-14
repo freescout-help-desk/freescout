@@ -55,9 +55,16 @@ class Folder extends Model
         self::TYPE_DELETED,
     ];
 
-    // Folder types which belong to specific user
+    // Folder types which belong to specific user.
+    // These folders has user_id specified.
     public static $personal_types = [
         self::TYPE_MINE,
+        self::TYPE_STARRED,
+    ];
+
+    // Folder types to which conversations are added via conversation_folder table.
+    public static $indirect_types = [
+        self::TYPE_DRAFTS,
         self::TYPE_STARRED,
     ];
 
@@ -150,5 +157,13 @@ class Folder extends Model
         }
 
         return $query;
+    }
+
+    /**
+     * Is this folder accumulates conversations via conversation_folder table.
+     */
+    public function isIndirect()
+    {
+        return in_array($this->type, Folder::$indirect_types);
     }
 }

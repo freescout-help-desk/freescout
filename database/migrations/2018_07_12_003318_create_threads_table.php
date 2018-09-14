@@ -29,8 +29,6 @@ class CreateThreadsTable extends Migration
             $table->string('action_data', 255)->nullable();
             // lineitems do not have body
             $table->longText('body')->nullable();
-            // Original body after thread text is changed
-            $table->longText('body_original')->nullable();
             $table->text('headers')->nullable();
             // Email from
             $table->string('from', 191)->nullable();
@@ -51,11 +49,17 @@ class CreateThreadsTable extends Migration
             $table->unsignedTinyInteger('source_type');
             // customer - If thread type is message, this is the customer associated with the thread.
             // If thread type is customer, this is the the customer who initiated the thread.
-            $table->integer('customer_id');
+            // It has to be optional in order to create empty drafts.
+            $table->integer('customer_id')->nullable();
             //  Who created this thread. The source_via property will specify whether it was created by a user or a customer.
             //  See source_via
             $table->integer('created_by_user_id')->nullable();
             $table->integer('created_by_customer_id')->nullable();
+            // Thread has been adited by user
+            $table->integer('edited_by_user_id')->nullable();
+            $table->timestamp('edited_at')->nullable();
+            // Original body after thread text is changed
+            $table->longText('body_original')->nullable();
             // First thread in conversation
             $table->boolean('first')->default(false);
             // ID of Saved reply that was used to create this Thread (savedReplyId)

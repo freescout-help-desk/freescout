@@ -11,6 +11,13 @@
 @section('content')
     @include('partials/flash_messages')
 
+    @php
+        $thread = $conversation->threads()->first();
+        if (!$thread) {
+            $thread = new App\Thread();
+        }
+    @endphp
+
     <div id="conv-layout" class="conv-new">
         <div id="conv-layout-header">
             <div id="conv-toolbar">
@@ -25,7 +32,7 @@
                 </div>
 
                 <div class="conv-info">
-                    #<strong class="conv-new-number">{{ __("Pending") }}</strong>
+                    #@if ($conversation->number)<strong>{{ $conversation->number }}</strong>@else<strong class="conv-new-number">{{ __("Pending") }}@endif</strong>
                 </div>
 
                 <div class="clearfix"></div>
@@ -41,25 +48,29 @@
                             {{ csrf_field() }}
                             <input type="hidden" name="conversation_id" value="{{ $conversation->id }}"/>
                             <input type="hidden" name="mailbox_id" value="{{ $mailbox->id }}"/>
+                            {{-- For drafts --}}
+                            <input type="hidden" name="thread_id" value="{{ $thread->id }}"/>
+                            <input type="hidden" name="is_create" value="1"/>
+                            
                             <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }}">
                                 <label for="to" class="col-sm-2 control-label">{{ __('To') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="to" type="text" class="form-control" name="to" value="{{ old('to', $conversation->to) }}" required autofocus>
+                                    <input id="to" type="text" class="form-control" name="to" value="{{ old('to', $thread->getToString()) }}" required autofocus>
 
                                     @include('partials/field_error', ['field'=>'to'])
                                 </div>
                             </div>
 
-                            <div class="col-sm-9 col-sm-offset-2 toggle-cc @if ($conversation->cc || $conversation->bcc) hidden @endif">
+                            <div class="col-sm-9 col-sm-offset-2 toggle-cc @if ($conversation->cc || $thread->bcc) hidden @endif">
                                 <a href="javascript:void(0);" class="help-link">Cc/Bcc</a>
                             </div>
 
-                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} @if (!$conversation->cc) hidden @endif field-cc">
+                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} @if (!$thread->cc) hidden @endif field-cc">
                                 <label for="cc" class="col-sm-2 control-label">{{ __('Cc') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', $conversation->cc) }}">
+                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', $thread->getCcString()) }}">
 
                                     @include('partials/field_error', ['field'=>'cc'])
                                 </div>
@@ -69,7 +80,7 @@
                                 <label for="bcc" class="col-sm-2 control-label">{{ __('Bcc') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', $conversation->bcc) }}">
+                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', $thread->getBccString()) }}">
 
                                     @include('partials/field_error', ['field'=>'bcc'])
                                 </div>
@@ -91,7 +102,7 @@
 
                             <div class="form-group{{ $errors->has('body') ? ' has-error' : '' }} conv-reply-body">
                                 <div class="col-sm-12">
-                                    <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}">{{ old('body', $conversation->body) }}</textarea>
+                                    <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}">{{ old('body', $thread->body) }}</textarea>
                                     <div class="help-block">
                                         @include('partials/field_error', ['field'=>'body'])
                                     </div>
@@ -104,7 +115,7 @@
             </div>
         </div>
     </div>
-    @include('conversations/editor_bottom_toolbar')
+    @include('conversations/editor_bottom_toolbar', ['new_converstion' => true])
 @endsection
 
 @include('partials/editor')

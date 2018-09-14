@@ -38,6 +38,9 @@ var lang_messages = {
             "push_protocol_alert": "HTTPS protocol is required for the browser push notifications to work.",
             "lost_connection": "Lost internet connection",
             "connection_restored": "Connection restored",
+            "saved": "Saved",
+            "confirm_discard_draft": "Discard this draft?",
+            "yes": "Yes",
 
             "drag_image_file": "Drag image or file here"
         }    };

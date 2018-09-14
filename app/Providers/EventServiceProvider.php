@@ -48,6 +48,14 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\SendNotificationToUsers',
         ],
 
+        'App\Events\UserCreatedConversationDraft' => [
+            'App\Listeners\UpdateMailboxCounters',
+        ],
+
+        'App\Events\UserCreatedThreadDraft' => [
+            'App\Listeners\UpdateMailboxCounters',
+        ],
+        
         'App\Events\UserReplied' => [
              'App\Listeners\SendReplyToCustomer',
              'App\Listeners\SendNotificationToUsers',

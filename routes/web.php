@@ -48,11 +48,11 @@ Route::post('/users/password/{id}', 'UsersController@passwordSave');
 Route::post('/users/ajax', ['uses' => 'UsersController@ajax', 'laroute' => true])->name('users.ajax');
 
 // Conversations
-Route::get('/conversation/{id}', 'ConversationsController@view')->name('conversations.view');
+Route::get('/conversation/{id}', ['uses' => 'ConversationsController@view', 'laroute' => true])->name('conversations.view');
 Route::post('/conversation/ajax', ['uses' => 'ConversationsController@ajax', 'laroute' => true])->name('conversations.ajax');
 Route::post('/conversation/upload', ['uses' => 'ConversationsController@upload', 'laroute' => true])->name('conversations.upload');
 Route::get('/mailbox/{mailbox_id}/new-ticket', 'ConversationsController@create')->name('conversations.create');
-Route::get('/conversation/draft/{id}', 'ConversationsController@draft')->name('conversations.draft');
+//Route::get('/conversation/draft/{id}', 'ConversationsController@draft')->name('conversations.draft');
 Route::get('/conversation/ajax-html/{action}', ['uses' => 'ConversationsController@ajaxHtml', 'laroute' => true])->name('conversations.ajax_html');
 Route::get('/search', 'ConversationsController@search')->name('conversations.search');
 

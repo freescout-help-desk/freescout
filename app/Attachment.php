@@ -227,10 +227,14 @@ class Attachment extends Model
      */
     public static function deleteByIds($attachment_ids)
     {
-        $attachments = Attachment::whereIn('id', $attachment_ids);
+        if (!count($attachment_ids)) {
+            return;
+        }
+        $attachments = Attachment::whereIn('id', $attachment_ids)->get();
 
         // Delete from disk
         foreach ($attachments as $attachment) {
+            echo $attachment->getStorageFilePath().' ';
             Storage::delete($attachment->getStorageFilePath());
         }
 

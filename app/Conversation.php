@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Events\ConversationCustomerChanged;
+use App\ConversationFolder;
 use App\Folder;
 use App\Thread;
 use Illuminate\Database\Eloquent\Model;
@@ -162,11 +163,19 @@ class Conversation extends Model
     }
 
     /**
-     * Get the folder to which conversation belongs.
+     * Get the folder to which conversation belongs via folder field.
      */
     public function folder()
     {
         return $this->belongsTo('App\Folder');
+    }
+
+    /**
+     * Get the folder to which conversation belongs via conversation_folder table.
+     */
+    public function folders()
+    {
+        return $this->belongsToMany('App\Folder');
     }
 
     /**
@@ -704,13 +713,23 @@ class Conversation extends Model
     {
         if ($folder->type == Folder::TYPE_MINE) {
             // Get conversations from personal folder
+            // Draft conversations do not have assignee yet, so need to add extra condition.
             $query_conversations = Conversation::where('user_id', $user_id)
                 ->whereIn('status', [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING]);
         } elseif ($folder->type == Folder::TYPE_ASSIGNED) {
             // Assigned - do not show my conversations
+            // Draft conversations do not have assignee yet, so need to add extra condition.
             $query_conversations = $folder->conversations()->where('user_id', '<>', $user_id);
+        } elseif ($folder->isIndirect()) {
+            // Conversations are connected to folder via conversation_folder table.
+            $query_conversations = Conversation::select('conversations.*')
+                ->join('conversation_folder', 'conversations.id', '=', 'conversation_folder.conversation_id')
+                ->where('conversation_folder.folder_id', $folder->id);
+            if ($folder->type != Folder::TYPE_DRAFTS) {
+                $query_conversations->where('state', Conversation::STATE_PUBLISHED);
+            }
         } else {
-            $query_conversations = $folder->conversations();
+            $query_conversations = $folder->conversations()->where('state', Conversation::STATE_PUBLISHED);
         }
 
         return $query_conversations;
@@ -837,5 +856,84 @@ class Conversation extends Model
                 }
             }
         }
+    }
+
+    public function getSubject()
+    {
+        if ($this->subject) {
+            return $this->subject;
+        } else {
+            return __('(no subject)');
+        }
+    }
+
+    /**
+     * Add conversation to folder via conversation_folder table.
+     */
+    public function addToFolder($folder_type)
+    {
+        // Find folder
+        $folder = Folder::where('mailbox_id', $this->mailbox_id)
+                    ->where('type', $folder_type)
+                    ->first();
+        if (!$folder) {
+            return false;
+        }
+
+        $values = [
+            'folder_id' => $folder->id,
+            'conversation_id' => $this->id,
+        ];
+        $folder_exists = ConversationFolder::select('id')->where($values)->first();
+        if (!$folder_exists) {
+            // This throws an exception if record exists
+            $this->folders()->attach($folder->id);
+        }
+        
+        // updateOrCreate does not create properly with ManyToMany
+        // $values = [
+        //     'folder_id' => $folder->id,
+        //     'conversation_id' => $this->id,
+        // ];
+        // ConversationFolder::updateOrCreate($values, $values);
+    }
+
+    public function removeFromFolder($folder_type)
+    {
+        // Find folder
+        $folder = Folder::where('mailbox_id', $this->mailbox_id)
+                    ->where('type', $folder_type)
+                    ->first();
+        if (!$folder) {
+            return false;
+        }
+
+        $this->folders()->detach($folder->id);
+    }
+
+    /**
+     * Remove conversation from drafts folder if there are no draft threads in conversation.
+     */
+    public function maybeRemoveFromDrafts()
+    {
+        $has_drafts = Thread::where('conversation_id', $this->id)
+                        ->where('state', Thread::STATE_DRAFT)
+                        ->select('id')
+                        ->first();
+        if (!$has_drafts) {
+            $this->removeFromFolder(Folder::TYPE_DRAFTS);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Delete threads and everything connected to threads.
+     */
+    public function deleteThreads()
+    {
+        $this->threads->each(function ($thread, $i) {
+            $thread->deleteThread();
+        });
     }
 }

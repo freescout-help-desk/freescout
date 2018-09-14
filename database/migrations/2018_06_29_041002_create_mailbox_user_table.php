@@ -21,7 +21,7 @@ class CreateMailboxUserTable extends Migration
             $table->unsignedTinyInteger('after_send')->default(MailboxUser::AFTER_SEND_NEXT);
 
             // Indexes
-            $table->index(['user_id', 'mailbox_id']);
+            $table->unique(['user_id', 'mailbox_id']);
             $table->index(['mailbox_id']);
         });
     }

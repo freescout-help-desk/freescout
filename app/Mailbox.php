@@ -260,6 +260,9 @@ class Mailbox extends Model
                     ->count();
                 $folder->total_count = Conversation::where('user_id', $folder->user_id)
                     ->count();
+            } elseif ($folder->isIndirect()) {
+                $folder->active_count = ConversationFolder::where('folder_id', $folder->id)->count();
+                $folder->total_count = $folder->active_count;
             } else {
                 $folder->active_count = $folder->conversations()
                     ->where('status', Conversation::STATUS_ACTIVE)

@@ -1,7 +1,9 @@
 var fs_sidebar_menu_applied = false;
 var fs_loader_timeout;
 var fs_processing_send_reply = false;
+var fs_processing_save_draft = false;
 var fs_connection_errors = 0;
+var fs_editor_change_timeout = -1;
 
 // Ajax based notifications;
 var poly;
@@ -89,11 +91,11 @@ var EditorSaveDraftButton = function (context) {
 
 	// create button
 	var button = ui.button({
-		contents: '<i class="glyphicon glyphicon-ok-circle"></i>',
+		contents: '<i class="glyphicon glyphicon-ok"></i>',
 		tooltip: Lang.get("messages.save_draft"),
 		container: 'body',
 		click: function () {
-			alert('todo: implement saving draft');
+			saveDraft(true);
 		}
 	});
 
@@ -108,8 +110,7 @@ var EditorDiscardButton = function (context) {
 		tooltip: Lang.get("messages.discard"),
 		container: 'body',
 		click: function () {
-			$(".conv-action-block").addClass('hidden');
-			$(".conv-action").removeClass('inactive');
+			discardDraft();
 		}
 	});
 
@@ -522,15 +523,7 @@ function conversationInit()
 	    jQuery(".conv-reply").click(function(e){
 	    	if ($(".conv-reply-block").hasClass('hidden') || $(this).hasClass('inactive')) {
 	    		// Show
-				$(".conv-action-block").addClass('hidden');
-				$(".conv-reply-block").removeClass('hidden')
-					.removeClass('conv-note-block')
-					.children().find(":input[name='is_note']:first").val('')
-				$(".conv-action").addClass('inactive');
-				$(this).removeClass('inactive');
-				if (!$('#to').length) {
-					$('#body').summernote('focus');
-				}
+				showReplyForm();
 			} else {
 				// Hide
 				$(".conv-action-block").addClass('hidden');
@@ -547,8 +540,11 @@ function conversationInit()
 				$(".conv-reply-block").removeClass('hidden')
 					.addClass('conv-note-block')
 					.children().find(":input[name='is_note']:first").val(1);
+				$(".conv-reply-block").children().find(":input[name='thread_id']:first").val('');
+				//$(".conv-reply-block").children().find(":input[name='body']:first").val('');
 				$(".conv-action").addClass('inactive');
 				$(this).removeClass('inactive');
+				//$('#body').summernote("code", '');
 				$('#body').summernote('focus');
 			} else {
 				// Hide
@@ -566,7 +562,69 @@ function conversationInit()
 	    	}
 			e.preventDefault();
 		});
+
+		// Edit draft
+		jQuery(".edit-draft-trigger").click(function(e){
+			var button = $(this);
+			var thread_container = button.parents('.thread:first');
+
+			fsAjax({
+					action: 'load_draft',
+					thread_id: thread_container.attr('data-thread_id')
+				}, 
+				laroute.route('conversations.ajax'),
+				function(response) {
+					loaderHide();
+					if (typeof(response.status) != "undefined" && response.status == 'success') {
+						response.data.is_note = '';
+						showReplyForm(response.data);
+						// Show all drafts
+						$('.thread.thread-type-draft').show();
+						// Hide current draft
+						thread_container.hide();
+						$("html, body").animate({ scrollTop: $('.navbar:first').height() }, "slow");
+					} else {
+						showAjaxError(response);
+					}
+				}
+			);
+			e.preventDefault();
+		});
+		
+		// Discard draft
+		jQuery(".discard-draft-trigger").click(function(e){
+			discardDraft($(this).parents('.thread:first').attr('data-thread_id'));
+			e.preventDefault();
+		});
 	});
+}
+
+function showReplyForm(data)
+{
+	$(".conv-action-block").addClass('hidden');
+	$(".conv-reply-block").removeClass('hidden')
+		.removeClass('conv-note-block')
+		.children().find(":input[name='is_note']:first").val('');
+	$(".conv-reply-block :input[name='thread_id']:first").val('');
+	
+	// When switching from note to reply, body has to be preserved
+	//$(".conv-reply-block").children().find(":input[name='body']:first").val(body_val);
+	$(".conv-action").addClass('inactive');
+	$(".conv-reply:first").removeClass('inactive');
+
+	if (typeof(data) != "undefined" && data) {
+		for (field in data) {
+			$(".conv-reply-block form:first :input[name='"+field+"']").val(data[field]);
+			if (field == 'body') {
+				// Display body value in editor
+				$('#body').summernote("code", data[field]);
+			}
+		}
+	}
+
+	if (!$('#to').length) {
+		$('#body').summernote('focus');
+	}
 }
 
 function getGlobalAttr(attr)
@@ -602,11 +660,25 @@ function convEditorInit()
 	            for (var i = 0; i < files.length; i++) {
 					editorSendFile(files[i]);	
 	            }
-	        }
+	        },
+	        onBlur: function() {
+	        	onReplyBlur();
+		    },
+		    onChange: function(contents, $editable) {
+		    	onReplyChange();
+		    }
 	    }
 	});
 	var html = $('#editor_bottom_toolbar').html();
 	$('.note-statusbar').addClass('note-statusbar-toolbar form-inline').html(html);
+
+	// Track changes to save draft
+	$("#to, #cc, #bcc, #subject").on('keyup keypress', function(event) {
+		onReplyChange();
+	});
+	$("#to, #cc, #bcc, #subject").blur(function(event) {
+	    onReplyBlur();
+	});
 }
 
 function ajaxSetup()
@@ -618,13 +690,44 @@ function ajaxSetup()
 	});
 }
 
+function onReplyChange()
+{	
+	// Mark draft as unsaved
+	if (fs_editor_change_timeout && fs_editor_change_timeout != -1) {
+		return;
+	}
+	fs_editor_change_timeout = setTimeout(function(){
+		// Do not save note
+		if ($(".form-reply:first :input[name='is_note']:first").val()) {
+			return;
+		}
+	
+		$('.form-reply:first .note-actions .note-btn:first').removeClass('text-success');
+		fs_editor_change_timeout = null;
+	}, 100);
+}
+
+function onReplyBlur()
+{
+	// Do not save note
+	if ($(".form-reply:first :input[name='is_note']:first").val()) {
+		return;
+	}
+
+	// Save draft on focus out
+	// Save only after changing
+	if (!fs_editor_change_timeout || fs_editor_change_timeout == null) {
+  		saveDraft(false, true);
+  	}
+}
+
 // Generate random unique ID
 function generateDummyId()
 {
-  // Math.random should be unique because of its seeding algorithm.
-  // Convert it to base 36 (numbers + letters), and grab the first 9 characters
-  // after the decimal.
-  return '_' + Math.random().toString(36).substr(2, 9);
+	// Math.random should be unique because of its seeding algorithm.
+	// Convert it to base 36 (numbers + letters), and grab the first 9 characters
+	// after the decimal.
+	return '_' + Math.random().toString(36).substr(2, 9);
 }
 
 // Save file uploaded in editor
@@ -1323,6 +1426,7 @@ function getCsrfToken()
 // Real-time website notifications in the menu and browser push notifications
 function polycastInit()
 {
+	return;
 	var auth_user_id = getGlobalAttr('auth_user_id');
 	if (!auth_user_id) {
 		return;
@@ -1557,4 +1661,143 @@ function maybeShowConnectionRestored()
 		showFloatingAlert('success', Lang.get("messages.connection_restored"));
 	}
 	fs_connection_errors = 0;
+}
+
+function saveDraft(allow_reload, no_loader)
+{
+	if (!allow_reload && fs_processing_save_draft) {
+		return;
+	}
+	fs_processing_save_draft = true;
+
+	// Validation is not needed
+	var form = $(".form-reply:first");
+	var button = form.children().find('.note-actions .note-btn:first');
+	var new_conversation = false;
+
+	if (typeof(no_loader) == "undefined") {
+		no_loader = false;
+	}
+
+	if ($('#conv-layout-main .thread:first').length == 0) {
+		new_conversation = true;
+	}
+
+	// When replying click Save draft always reloads conversation
+	if ((new_conversation || !allow_reload) && button.hasClass('text-success')) {
+		return;
+	}
+
+	data = form.serialize();
+	data += '&action=save_draft';
+
+	fsAjax(data, laroute.route('conversations.ajax'), function(response) {
+		if (typeof(response.status) != "undefined" && response.status == 'success') {
+			if (allow_reload && !new_conversation) {
+				// Reload the conversation
+				window.location.href = '';
+			} else {
+				button.addClass('text-success');
+				// Show Saved
+				var saved_text = form.children().find('.draft-saved:first');
+				if (!saved_text.length || !saved_text.is(':visible')) {
+					if (!saved_text.length) {
+						saved_text = $('<span class="draft-saved">'+Lang.get("messages.saved")+'</span>');
+						saved_text.insertBefore(button);
+					} else {
+						saved_text.show();
+					}
+					
+					setTimeout(function() {
+						saved_text.fadeOut(1000);
+				    }, 4000);
+				}
+				// If conversation returned, set conversation info
+				if (typeof(response.conversation_id) != "undefined" && response.conversation_id) {
+					form.children().find(':input[name="conversation_id"][val=""]').val(response.conversation_id);
+					form.children().find(':input[name="thread_id"]').val(response.thread_id);
+					$('.conv-new-number:first').text(response.conversation_id);
+
+					// Set URL
+					setUrl(laroute.route('conversations.view', {id: response.conversation_id}));
+				}
+			}
+		} else {
+			showAjaxError(response);
+		}
+		loaderHide();
+		fs_processing_save_draft = false;
+	}, 
+	no_loader,
+	function() {
+		showFloatingAlert('error', Lang.get("messages.ajax_error"));
+		loaderHide();
+		fs_processing_save_draft = false;
+	});
+}
+
+function setUrl(url)
+{
+	if (window.history && typeof(window.history.replaceState) != "undefined") {
+        window.history.replaceState({isMine:true}, 'title',  url);
+    }
+}
+
+function discardDraft(thread_id)
+{
+	if (typeof(thread_id) == "undefined" || !thread_id) {
+		thread_id = $('.form-reply :input[name="thread_id"]').val();
+	}
+
+	var confirm_html = '<div>'+
+		'<div class="text-center">'+
+		'<div class="text-larger margin-top-10">'+Lang.get("messages.confirm_discard_draft")+'</div>'+
+		'<div class="form-group margin-top">'+
+		'<button class="btn btn-primary discard-draft-confirm">'+Lang.get("messages.yes")+'</button>'+
+		'<button class="btn btn-link" data-dismiss="modal">'+Lang.get("messages.cancel")+'</button>'+
+		'</div>';
+		'</div>';
+		'</div>';
+
+	showModalDialog(confirm_html, {
+		on_show: function(modal) {
+			modal.children().find('.discard-draft-confirm:first').click(function(e) {
+				fsAjax(
+					{
+						action: 'discard_draft',
+						thread_id: thread_id
+					}, 
+					laroute.route('conversations.ajax'),
+					function(response) {
+						modal.modal('hide');
+						if (typeof(response.status) != "undefined" && response.status == "success") {
+							if (typeof(response.redirect_url) != "undefined" && response.redirect_url) {
+								window.location.href = response.redirect_url;
+								return;
+							}
+							var thread_container = $('#thread-'+thread_id+':visible');
+							if (thread_container.length) {
+								// Remove draft from conversation
+								thread_container.remove();
+							} else {
+								// Hide editor
+								$(".conv-action-block").addClass('hidden');
+								$(".conv-action").removeClass('inactive');
+								$(".conv-reply-block :input[name='to']:first").val(
+									$(".conv-reply-block :input[name='to']:first option:first").val()
+								);
+								$(".conv-reply-block :input[name='cc']:first").val('');
+								$(".conv-reply-block :input[name='bcc']:first").val('');
+								$(".conv-reply-block :input[name='body']:first").val('');
+								$('#body').summernote("code", '');
+							}
+						} else {
+							showAjaxError(response);
+						}
+						loaderHide();
+					}
+				);
+			});
+		}
+	});
 }

@@ -12,6 +12,10 @@
         "name": "users.ajax"
     },
     {
+        "uri": "conversation\/{id}",
+        "name": "conversations.view"
+    },
+    {
         "uri": "conversation\/ajax",
         "name": "conversations.ajax"
     },

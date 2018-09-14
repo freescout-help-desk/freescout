@@ -494,6 +494,15 @@ textarea.input-md,
 select[multiple].input-md {
     height: auto;
 }
+.btn-group-xs .btn-default {
+    color: #72808e;
+}
+.btn-group-xs .btn-default:hover {
+    color: #4f5d6b;
+}
+.btn-xs, .btn-group-xs > .btn {
+    padding: 1px 7px;
+}
 
 /**
  * Cards
@@ -749,6 +758,13 @@ a h4 {
 .note-editor.panel {
     margin: 0;
 }
+.note-btn,
+.note-btn.btn.active,
+.note-btn:focus {
+    outline: none!important;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
 .note-btn i.glyphicon {
     position: relative;
     top: 2px;
@@ -757,10 +773,6 @@ a h4 {
     font-size: 14px;
     line-height: 18px;
 }
-.note-btn.btn.active {
-    -webkit-box-shadow: none;
-    box-shadow: none;
-}
 .note-actions {
     float: right;
 }
@@ -768,6 +780,7 @@ a h4 {
     font-size: 16px;
 }
 .note-actions-select {
+    margin-top: 3px!important;
     float: right;
 }
 .note-actions-select select {
@@ -815,15 +828,54 @@ a h4 {
 .btn-send-text {
     min-width: 94px;
 }
+.btn-reply-submit {
+    font-size: 13.4px;
+}
 .note-statusbar-toolbar select.form-control {
     height: 24px;
     line-height: 24px;
+    width: auto;
+    display: inline-block;
     padding-top: 2px;
     padding-bottom: 1px;
 }
+.note-editor .btn-default.text-success {
+    color: #3eb670;
+}
+.draft-saved {
+    color: #a5b2bd;
+    font-size: 13.4px;
+    float: left;
+    position: relative;
+    top: 2px;
+}
+@media (max-width:390px) {
+    .note-bottom-div {
+        display: none;
+    }
+    .note-statusbar-toolbar select.form-control {
+        width: 85px;
+    }
+}
 @media (max-width:582px) {
+    .note-actions,
     .note-actions-select {
         float: none;
+    }
+    .note-btn .glyphicon-paperclip {
+        font-size: 13px;
+    }
+    .btn-sm, .btn-group-sm > .btn {
+        padding: 5px 9px!important;
+    }
+    .panel-heading.note-toolbar>.btn-group {
+        margin-right: 1px!important;
+    }
+    .panel-heading.note-toolbar {
+        padding: 0 0 4px 1px!important;
+    }
+    .editor-btm-text {
+        display: none;
     }
 }
 
@@ -1457,6 +1509,7 @@ table.table-conversations td.conv-attachment {
     color: #8494a4;
     font-size: 18px;
     line-height: 1.2em;
+    display: inline-block;
     margin-bottom: 12px;
     overflow-wrap: break-word;
     word-wrap: break-word;
@@ -1470,6 +1523,10 @@ table.table-conversations td.conv-attachment {
 .thread-person strong a:hover,
 .thread-person strong a:focus {
     color: #253540;
+}
+.draft-actions {
+    display: inline-block;
+    margin-bottom: 5px;
 }
 .thread-info {
     color: #a5b2bd;
@@ -1535,6 +1592,17 @@ table.table-conversations td.conv-attachment {
 }
 .thread-type-note .thread-person {
     color: #f7b126;
+}
+.thread-type-draft {
+    -webkit-box-shadow:inset 5px 0 0 0 #3197d6;
+    box-shadow:inset 5px 0 0 0 #3197d6
+}
+.thread-type-draft .thread-person {
+    color: #3197d6;
+    margin-right: 10px;
+}
+.thread-type-draft .thread-header {
+    padding-top: 2px;
 }
 .thread-attachments ul {
     list-style: none;
@@ -1689,6 +1757,9 @@ table.table-conversations td.conv-attachment {
     border-color: #ffd56d;
     background-color: #fff7dd;
     color: #d79400;
+}
+.conv-note-block .note-actions .note-btn:first-child {
+    display: none;
 }
 .conv-note-block .note-editor .btn-default {
     color: #b37100;

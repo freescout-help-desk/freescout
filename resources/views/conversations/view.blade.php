@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title_full', '#'.$conversation->number.' '.$conversation->subject.' - '.$conversation->customer->getFullName(true))
+@section('title_full', '#'.$conversation->number.' '.$conversation->getSubject().($customer ? ' - '.$customer->getFullName(true) : ''))
 @section('body_class', 'body-conv')
 @section('body_attrs')@parent data-conversation_id="{{ $conversation->id }}"@endsection
 
@@ -89,6 +89,8 @@
                             {{ csrf_field() }}
                             <input type="hidden" name="conversation_id" value="{{ $conversation->id }}"/>
                             <input type="hidden" name="mailbox_id" value="{{ $mailbox->id }}"/>
+                            {{-- For drafts --}}
+                            <input type="hidden" name="thread_id" value=""/>
                             <input type="hidden" name="is_note" value=""/>
 
                             @if (!empty($to_customers))
@@ -143,38 +145,41 @@
                 </div>
             </div>
         </div>
+
         <div id="conv-layout-customer">
-            <div class="conv-customer-block conv-sidebar-block">
-                @include('customers/profile_snippet', ['customer' => $customer, 'main_email' => $conversation->customer_email])
-                <div class="dropdown customer-trigger" data-toggle="tooltip" title="{{ __("Settings") }}">
-                    <a href="javascript:void(0)" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
-                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                        <li role="presentation"><a href="{{ route('customers.update', ['id' => $customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
-                        <li role="presentation"><a href="{{ route('conversations.ajax_html', ['action' => 
-                                        'change_customer']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Change Customer") }}" data-modal-no-footer="true" data-modal-on-show="changeCustomerInit" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
-                        @if (count($prev_conversations))
-                            <li role="presentation" class="customer-hist-trigger"><a data-toggle="collapse" href=".collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
-                        @endif
-                    </ul>
+            @if ($customer)
+                <div class="conv-customer-block conv-sidebar-block">
+                    @include('customers/profile_snippet', ['customer' => $customer, 'main_email' => $conversation->customer_email])
+                    <div class="dropdown customer-trigger" data-toggle="tooltip" title="{{ __("Settings") }}">
+                        <a href="javascript:void(0)" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
+                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                            <li role="presentation"><a href="{{ route('customers.update', ['id' => $customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
+                            <li role="presentation"><a href="{{ route('conversations.ajax_html', ['action' => 
+                                            'change_customer']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Change Customer") }}" data-modal-no-footer="true" data-modal-on-show="changeCustomerInit" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
+                            @if (count($prev_conversations))
+                                <li role="presentation" class="customer-hist-trigger"><a data-toggle="collapse" href=".collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
+                            @endif
+                        </ul>
+                    </div>
+                    {{--<div data-toggle="collapse" href="#collapse-conv-prev" class="customer-hist-trigger">
+                        <div class="glyphicon glyphicon-list-alt" data-toggle="tooltip" title="{{ __("Previous Conversations") }}"></div>
+                    </div>--}}
                 </div>
-                {{--<div data-toggle="collapse" href="#collapse-conv-prev" class="customer-hist-trigger">
-                    <div class="glyphicon glyphicon-list-alt" data-toggle="tooltip" title="{{ __("Previous Conversations") }}"></div>
-                </div>--}}
-            </div>
-            @if (count($prev_conversations))
-                {{-- 
-                    In mobile view previous conversations must be always hidden.
-                    So the only way to achieve this is to have two blocks.
-                --}}
-                @include('conversations/partials/prev_convs_short', ['in' => true])
-                @include('conversations/partials/prev_convs_short', ['mobile' => true])
+                @if (count($prev_conversations))
+                    {{-- 
+                        In mobile view previous conversations must be always hidden.
+                        So the only way to achieve this is to have two blocks.
+                    --}}
+                    @include('conversations/partials/prev_convs_short', ['in' => true])
+                    @include('conversations/partials/prev_convs_short', ['mobile' => true])
+                @endif
             @endif
         </div>
         <div id="conv-layout-main">
             @foreach ($threads as $thread)
                 
                 @if ($thread->type == App\Thread::TYPE_LINEITEM)
-                    <div class="thread thread-type-{{ $thread->getTypeName() }}" id="thread-{{ $thread->id }}">
+                    <div class="thread thread-type-{{ $thread->getTypeName() }} thread-state-{{ $thread->getStateName() }}" id="thread-{{ $thread->id }}">
                         <div class="thread-message">
                             <div class="thread-header">
                                 <div class="thread-title">
@@ -202,6 +207,29 @@
                             @endif
                         </div>
                     </div>
+                @elseif ($thread->type == App\Thread::TYPE_MESSAGE && $thread->status == App\Thread::STATE_DRAFT)
+                    <div class="thread thread-type-draft" id="thread-{{ $thread->id }}" data-thread_id="{{ $thread->id }}">
+                        <div class="thread-message">
+                            <div class="thread-header">
+                                <div class="thread-title">
+                                    <div class="thread-person">
+                                        {!! $thread->getActionDescription($conversation->number) !!}
+                                    </div>
+                                    <div class="btn-group btn-group-xs draft-actions">
+                                        <a class="btn btn-default edit-draft-trigger" href="javascript:void(0);">Edit</a>
+                                        <a class="btn btn-default discard-draft-trigger" href="javascript:void(0)">Discard</a>
+                                    </div>
+                                </div>
+                                <div class="thread-info">
+                                    <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
+                                </div>
+                            </div>
+                            <div class="thread-body">
+                                {!! $thread->getCleanBody() !!}
+                            </div>
+                            @include('conversations/partials/thread_attachments')
+                        </div>
+                    </div>
                 @else
                     <div class="thread thread-type-{{ $thread->getTypeName() }}" id="thread-{{ $thread->id }}">
                         <div class="thread-photo">
@@ -226,36 +254,38 @@
                                             {{ __("replied") }}
                                         @endif
                                     </div>
-                                    <div class="thread-recipients">
-                                        @if ($loop->last 
-                                            || ($thread->type == App\Thread::TYPE_CUSTOMER && count($thread->getToArray($mailbox->getEmails())))
-                                            || ($thread->type == App\Thread::TYPE_MESSAGE && !in_array($conversation->customer_email, $thread->getToArray()))
-                                            || ($thread->type == App\Thread::TYPE_MESSAGE && count($customer->emails) > 1)
-                                        )
-                                            <div>
-                                                <strong>
-                                                    {{ __("To") }}:
-                                                </strong>
-                                                {{ implode(', ', $thread->getToArray()) }}
-                                            </div>
-                                        @endif
-                                        @if ($thread->getCcArray($mailbox->getEmails()))
-                                            <div>
-                                                <strong>
-                                                    {{ __("Cc") }}:
-                                                </strong>
-                                                {{ implode(', ', $thread->getCcArray()) }}
-                                            </div>
-                                        @endif
-                                        @if ($thread->getBccArray($mailbox->getEmails()))
-                                            <div>
-                                                <strong>
-                                                    {{ __("Bcc") }}:
-                                                </strong>
-                                                {{ implode(', ', $thread->getBccArray()) }}
-                                            </div>
-                                        @endif
-                                    </div>
+                                    @if ($thread->type != App\Thread::TYPE_NOTE)
+                                        <div class="thread-recipients">
+                                            @if ($loop->last 
+                                                || ($thread->type == App\Thread::TYPE_CUSTOMER && count($thread->getToArray($mailbox->getEmails())))
+                                                || ($thread->type == App\Thread::TYPE_MESSAGE && !in_array($conversation->customer_email, $thread->getToArray()))
+                                                || ($thread->type == App\Thread::TYPE_MESSAGE && count($customer->emails) > 1)
+                                            )
+                                                <div>
+                                                    <strong>
+                                                        {{ __("To") }}:
+                                                    </strong>
+                                                    {{ implode(', ', $thread->getToArray()) }}
+                                                </div>
+                                            @endif
+                                            @if ($thread->getCcArray($mailbox->getEmails()))
+                                                <div>
+                                                    <strong>
+                                                        {{ __("Cc") }}:
+                                                    </strong>
+                                                    {{ implode(', ', $thread->getCcArray()) }}
+                                                </div>
+                                            @endif
+                                            @if ($thread->getBccArray($mailbox->getEmails()))
+                                                <div>
+                                                    <strong>
+                                                        {{ __("Bcc") }}:
+                                                    </strong>
+                                                    {{ implode(', ', $thread->getBccArray()) }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="thread-info">
                                     <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
