@@ -10,6 +10,7 @@ class ActivityLog extends Activity
     const NAME_OUT_EMAILS = 'out_emails'; // used to display send_log in Logs
     const NAME_EMAILS_SENDING = 'send_errors';
     const NAME_EMAILS_FETCHING = 'fetch_errors';
+    const NAME_SYSTEM = 'system';
 
     const DESCRIPTION_USER_LOGIN = 'login';
     const DESCRIPTION_USER_LOGOUT = 'logout';
@@ -22,6 +23,7 @@ class ActivityLog extends Activity
     const DESCRIPTION_EMAILS_SENDING_ERROR_INVITE = 'error_sending_invite_to_user';
     const DESCRIPTION_EMAILS_SENDING_ERROR_PASSWORD_CHANGED = 'error_sending_password_changed';
     const DESCRIPTION_EMAILS_FETCHING_ERROR = 'error_fetching_email';
+    const DESCRIPTION_SYSTEM_ERROR = 'system_error';
 
     public function getEventDescription()
     {
@@ -48,6 +50,8 @@ class ActivityLog extends Activity
                 return __('Error sending password changed notification to user');
             case self::DESCRIPTION_EMAILS_FETCHING_ERROR:
                 return __('Error fetching email');
+            case self::DESCRIPTION_SYSTEM_ERROR:
+                return __('System error');
             default:
                 return $this->description;
                 break;
@@ -68,6 +72,8 @@ class ActivityLog extends Activity
                 return __('Send Errors');
             case self::NAME_EMAILS_FETCHING:
                 return __('Fetch Errors');
+            case self::NAME_SYSTEM:
+                return __('System');
             default:
                 return ucfirst($log_name);
         }

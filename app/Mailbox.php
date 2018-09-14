@@ -249,27 +249,15 @@ class Mailbox extends Model
     /**
      * Update total and active counters for folders.
      */
-    public function updateFoldersCounters()
+    public function updateFoldersCounters($folder_type = null)
     {
-        $folders = $this->folders;
+        if (!$folder_type) {
+            $folders = $this->folders;
+        } else {
+            $folders = $this->folders()->where('folders.type', $folder_type)->get();
+        }
         foreach ($folders as $folder) {
-            // todo: starred conversations counting
-            if ($folder->type == Folder::TYPE_MINE && $folder->user_id) {
-                $folder->active_count = Conversation::where('status', Conversation::STATUS_ACTIVE)
-                    ->where('user_id', $folder->user_id)
-                    ->count();
-                $folder->total_count = Conversation::where('user_id', $folder->user_id)
-                    ->count();
-            } elseif ($folder->isIndirect()) {
-                $folder->active_count = ConversationFolder::where('folder_id', $folder->id)->count();
-                $folder->total_count = $folder->active_count;
-            } else {
-                $folder->active_count = $folder->conversations()
-                    ->where('status', Conversation::STATUS_ACTIVE)
-                    ->count();
-                $folder->total_count = $folder->conversations()->count();
-            }
-            $folder->save();
+            $folder->updateCounters();
         }
     }
 

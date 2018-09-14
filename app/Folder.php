@@ -122,7 +122,9 @@ class Folder extends Model
                 break;
 
             case self::TYPE_STARRED:
-                $order_by = [['conversation_folder.id' => 'desc']];
+                $order_by[] = ['status' => 'asc'];
+                $order_by[] = ['last_reply_at' => 'desc'];
+                //$order_by = [['conversation_folder.id' => 'desc']];
                 break;
 
             case self::TYPE_DRAFTS:
@@ -165,5 +167,29 @@ class Folder extends Model
     public function isIndirect()
     {
         return in_array($this->type, Folder::$indirect_types);
+    }
+
+    public function updateCounters()
+    {
+        if ($this->type == Folder::TYPE_MINE && $this->user_id) {
+            $this->active_count = Conversation::where('status', Conversation::STATUS_ACTIVE)
+                ->where('user_id', $this->user_id)
+                ->count();
+            $this->total_count = Conversation::where('user_id', $this->user_id)
+                ->count();
+        } elseif ($this->type == Folder::TYPE_STARRED) {
+            $this->active_count = count(Conversation::getUserStarredConversationIds($this->mailbox_id, $this->user_id));
+            $this->total_count = $this->active_count;
+        } elseif ($this->isIndirect()) {
+            // Conversation are connected to folder via conversation_folder table.
+            $this->active_count = ConversationFolder::where('folder_id', $this->id)->count();
+            $this->total_count = $this->active_count;
+        } else {
+            $this->active_count = $this->conversations()
+                ->where('status', Conversation::STATUS_ACTIVE)
+                ->count();
+            $this->total_count = $this->conversations()->count();
+        }
+        $this->save();
     }
 }

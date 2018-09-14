@@ -596,6 +596,8 @@ function conversationInit()
 			discardDraft($(this).parents('.thread:first').attr('data-thread_id'));
 			e.preventDefault();
 		});
+
+		starConversationInit();
 	});
 }
 
@@ -1161,6 +1163,7 @@ function saveAfterSend(el)
 function viewMailboxInit()
 {
 	conversationPagination();
+	starConversationInit();
 }
 
 function searchInit()
@@ -1168,6 +1171,7 @@ function searchInit()
 	// Open all links in new window
 	$(".conv-row a").attr('target', '_blank');
 	conversationPagination();
+	starConversationInit();
 }
 
 function conversationPagination()
@@ -1200,6 +1204,7 @@ function conversationPagination()
 					if (typeof(response.html) != "undefined") {
 						$(".table-conversations:first").html(response.html);
 						conversationPagination();
+						starConversationInit();
 						triggersInit();
 					}
 				} else {
@@ -1426,7 +1431,6 @@ function getCsrfToken()
 // Real-time website notifications in the menu and browser push notifications
 function polycastInit()
 {
-	return;
 	var auth_user_id = getGlobalAttr('auth_user_id');
 	if (!auth_user_id) {
 		return;
@@ -1799,5 +1803,53 @@ function discardDraft(thread_id)
 				);
 			});
 		}
+	});
+}
+
+// Star/unstar processing from the list or conversation
+function starConversationInit()
+{
+	$('.conv-star').click(function(event) {
+		var trigger = $(this);
+		var conversation_id = getGlobalAttr('conversation_id');
+
+		if (!conversation_id) {
+			// In the list
+			conversation_id = trigger.parents('.conv-row:first').attr('data-conversation_id');
+		}
+		if (!conversation_id) {
+			// Something went wrong
+			return false;
+		}
+
+		var sub_action = 'star';
+		if (trigger.hasClass('glyphicon-star')) {
+			sub_action = 'unstar';
+		}
+		fsAjax(
+			{
+				action: 'star_conversation',
+				conversation_id: conversation_id,
+				sub_action: sub_action
+			}, 
+			laroute.route('conversations.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == "success") {
+					// In the list there are two stars for desktop and monile
+					if (trigger.parents('.conv-row:first').length) {
+						trigger = trigger.parents('.conv-row:first').children().find('.conv-star');
+					}
+					if (sub_action == 'star') {
+						trigger.addClass('glyphicon-star');
+						trigger.removeClass('glyphicon-star-empty');
+					} else {
+						trigger.addClass('glyphicon-star-empty');
+						trigger.removeClass('glyphicon-star');
+					}
+				} else {
+					showAjaxError(response);
+				}
+			}, true
+		);
 	});
 }

@@ -136,6 +136,12 @@ class Conversation extends Model
     const DEFAULT_LIST_SIZE = 50;
 
     /**
+     * Cache of the conversations starred by user.
+     * @var array
+     */
+    public static $starred_conversation_ids = null;
+
+    /**
      * Automatically converted into Carbon dates.
      */
     protected $dates = ['created_at', 'updated_at', 'last_reply_at', 'closed_at'];
@@ -683,6 +689,75 @@ class Conversation extends Model
     }
 
     /**
+     * Check if conversation is starred.
+     * For each user starred conversations are cached.
+     */
+    public function isStarredByUser($user_id = null)
+    {   
+        if (!$user_id) {
+            $user = auth()->user();
+            if ($user) {
+                $user_id = $user->id;
+            } else {
+                return false;
+            }
+        }
+        // Get ids of all the conversations starred by user and cache them
+        if (self::$starred_conversation_ids === null) {
+            $mailbox_id = $this->mailbox_id;
+            self::$starred_conversation_ids = self::getUserStarredConversationIds($mailbox_id, $user_id);
+        }
+
+        if (self::$starred_conversation_ids) {
+            return in_array($this->id, self::$starred_conversation_ids);
+        } else {
+            return false;
+        }
+    }
+
+    public static function clearStarredByUserCache($user_id)
+    {
+        if (!$user_id) {
+            $user = auth()->user();
+            if ($user) {
+                $user_id = $user->id;
+            } else {
+                return false;
+            }
+        }
+        \Cache::forget('user_starred_conversations_'.$user_id);
+    }
+
+    /**
+     * Get IDs of the conversations starred by user.
+     */
+    public static function getUserStarredConversationIds($mailbox_id, $user_id = null)
+    {
+        return \Cache::rememberForever('user_starred_conversations_'.$user_id, function() use ($mailbox_id, $user_id) {
+            // Get user's folder
+            $folder = Folder::select('id')
+                        ->where('mailbox_id', $mailbox_id)
+                        ->where('user_id', $user_id)
+                        ->where('type', Folder::TYPE_STARRED)
+                        ->first();
+
+            if ($folder) {
+                return ConversationFolder::where('folder_id', $folder->id)
+                    ->pluck('conversation_id')
+                    ->toArray();
+            } else {
+                activity()
+                    ->withProperties([
+                        'error'    => "Folder not found (mailbox_id: $mailbox_id, user_id: $user_id)",
+                     ])
+                    ->useLog(\App\ActivityLog::NAME_SYSTEM)
+                    ->log(\App\ActivityLog::DESCRIPTION_SYSTEM_ERROR);
+                return [];
+            }
+        });
+    }
+
+    /**
      * Get text for the assignee.
      *
      * @return string
@@ -720,6 +795,9 @@ class Conversation extends Model
             // Assigned - do not show my conversations
             // Draft conversations do not have assignee yet, so need to add extra condition.
             $query_conversations = $folder->conversations()->where('user_id', '<>', $user_id);
+        } elseif ($folder->type == Folder::TYPE_STARRED) {
+            $starred_conversation_ids = Conversation::getUserStarredConversationIds($folder->mailbox_id, $user_id);
+            $query_conversations = Conversation::whereIn('id', $starred_conversation_ids);
         } elseif ($folder->isIndirect()) {
             // Conversations are connected to folder via conversation_folder table.
             $query_conversations = Conversation::select('conversations.*')

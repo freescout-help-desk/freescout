@@ -49,11 +49,11 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         'App\Events\UserCreatedConversationDraft' => [
-            'App\Listeners\UpdateMailboxCounters',
+            
         ],
 
         'App\Events\UserCreatedThreadDraft' => [
-            'App\Listeners\UpdateMailboxCounters',
+            
         ],
         
         'App\Events\UserReplied' => [

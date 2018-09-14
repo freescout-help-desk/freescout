@@ -709,6 +709,9 @@ class ConversationsController extends Controller
                         Attachment::whereIn('id', $attachments_info['attachments'])->update(['thread_id' => $thread->id]);
                     }
 
+                    // Update folder coutner
+                    $conversation->mailbox->updateFoldersCounters(Folder::TYPE_DRAFTS);
+
                     if ($new) {
                         event(new UserCreatedConversationDraft($conversation, $thread));
                     } elseif ($new_thread) {
@@ -740,7 +743,7 @@ class ConversationsController extends Controller
                         $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $folder_id]);
 
                         $conversation->removeFromFolder(Folder::TYPE_DRAFTS);
-                        $conversation->mailbox->updateFoldersCounters();
+                        $conversation->mailbox->updateFoldersCounters(Folder::TYPE_DRAFTS);
                         $conversation->deleteThreads();
                         $conversation->delete();
 
@@ -752,7 +755,7 @@ class ConversationsController extends Controller
                         // Remove conversation from drafts folder if needed
                         $removed_from_folder = $conversation->maybeRemoveFromDrafts();
                         if ($removed_from_folder) {
-                            $conversation->mailbox->updateFoldersCounters();
+                            $conversation->mailbox->updateFoldersCounters(Folder::TYPE_DRAFTS);
                         }
                     }
                     
@@ -839,6 +842,27 @@ class ConversationsController extends Controller
                 $response['status'] = 'success';
                 \Session::flash('flash_success_floating', __('Customer changed'));
 
+                break;
+
+            // Star/unstar conversation
+            case 'star_conversation':
+                $conversation = Conversation::find($request->conversation_id);
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                } elseif (!$user->can('view', $conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    if ($request->sub_action == 'star') {
+                        $conversation->addToFolder(Folder::TYPE_STARRED);
+                    } else {
+                        $conversation->removeFromFolder(Folder::TYPE_STARRED);
+                    }
+                    Conversation::clearStarredByUserCache($user->id);
+                    $conversation->mailbox->updateFoldersCounters(Folder::TYPE_STARRED);
+                    $response['status'] = 'success';
+                }
                 break;
 
             default:

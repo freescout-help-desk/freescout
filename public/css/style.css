@@ -1102,8 +1102,16 @@ table.table-conversations td.conv-attachment {
 .table-conversations .conv-attachment {
     width: 20px;
 }
+.table-conversations .conv-attachment .conv-star {
+    font-size: 15px;
+    margin-bottom: 6px;
+}
+.table-conversations .conv-attachment .glyphicon-star-empty {
+    color: #d6dbe0;
+}
 .table-conversations .conv-thread-count {
     width: 42px;
+    text-align: right;
 }
 .table-conversations .conv-thread-count span {
     background: #f1f3f5;
@@ -1113,6 +1121,14 @@ table.table-conversations td.conv-attachment {
     font-weight: 400;
     padding: .1em .4em;
     border-radius: 4px;
+}
+.table-conversations .conv-thread-count a {
+    padding: 0;
+}
+.table-conversations .conv-thread-count .conv-star {
+    font-size: 14px;
+    margin-top: 2px;
+    padding-bottom: 8px;
 }
 .table-conversations .conv-number {
     width: 86px;
@@ -1251,7 +1267,8 @@ table.table-conversations td.conv-attachment {
         z-index: 999;
         text-align: right;
     }
-    .conv-thread-count a {
+    .conv-thread-count a,
+    .conv-thread-count .conv-star {
         padding-right: 5px!important;
     }
     .table.table-conversations tfoot tr {
@@ -1367,8 +1384,11 @@ table.table-conversations td.conv-attachment {
 .conv-star {
     color: #bbc4cc;
 }
-.conv-starred {
+.conv-star.glyphicon-star {
     color: #ffd76e;
+}
+.conv-star:hover {
+    color: #f4b400!important;
 }
 .conv-info {
     overflow: visible;
@@ -1800,6 +1820,9 @@ ul.prev-convs {
 .prev-convs-header2 {
     display: none;
 }
+.conv-star {
+    cursor: pointer;
+}
 @media (max-width:700px) {
     .conv-info .btn-group button.conv-info-val span:first-child {
         display: none!important;
@@ -2005,10 +2028,16 @@ ul.prev-convs {
     .conv-info .btn-group button.conv-info-val {
         max-width: 148px;
     }
+    .conv-attachment .conv-star {
+        display: none;
+    }
 }
 @media (min-width:992px) {
     .conv-info .btn-group button.conv-info-val {
         max-width: 170px;
+    }
+    .conv-thread-count .conv-star {
+        display: none;
     }
 }
 @media (min-width:1100px) and (max-width:1239px) {
