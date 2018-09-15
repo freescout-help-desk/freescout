@@ -885,8 +885,8 @@ function newConversationInit()
 			showModal($(this));
 		});
 
-		// Send reply or new conversation
-	    $(".btn-reply-submit:first").click(function(e) {
+		// Send reply, new conversation or note
+	    $(".btn-reply-submit").click(function(e) {
 	    	// This is extra protection from double click on Send button
 	    	// DOM operation are slow sometimes
 	    	if (fs_processing_send_reply) {
@@ -1766,6 +1766,13 @@ function setUrl(url)
 
 function discardDraft(thread_id)
 {
+	// Discard note
+	if ($(".form-reply:first :input[name='is_note']:first").val()) {
+		hideReplyEditor();
+		setReplyBody('');
+		return;
+	}
+
 	if (typeof(thread_id) == "undefined" || !thread_id) {
 		thread_id = $('.form-reply :input[name="thread_id"]').val();
 	}
@@ -1802,15 +1809,13 @@ function discardDraft(thread_id)
 								thread_container.remove();
 							} else {
 								// Hide editor
-								$(".conv-action-block").addClass('hidden');
-								$(".conv-action").removeClass('inactive');
+								hideReplyEditor();
 								$(".conv-reply-block :input[name='to']:first").val(
 									$(".conv-reply-block :input[name='to']:first option:first").val()
 								);
 								$(".conv-reply-block :input[name='cc']:first").val('');
 								$(".conv-reply-block :input[name='bcc']:first").val('');
-								$(".conv-reply-block :input[name='body']:first").val('');
-								$('#body').summernote("code", '');
+								setReplyBody('');
 							}
 						} else {
 							showAjaxError(response);
@@ -1821,6 +1826,18 @@ function discardDraft(thread_id)
 			});
 		}
 	});
+}
+
+function hideReplyEditor()
+{
+	$(".conv-action-block").addClass('hidden');
+	$(".conv-action").removeClass('inactive');
+}
+
+function setReplyBody(text)
+{
+	$(".conv-reply-block :input[name='body']:first").val(text);
+	$('#body').summernote("code", text);
 }
 
 // Star/unstar processing from the list or conversation
