@@ -18,7 +18,9 @@ class Subscription extends Model
     const EVENT_TYPE_UPDATED = 3;
     const EVENT_TYPE_CUSTOMER_REPLIED = 4;
     const EVENT_TYPE_USER_REPLIED = 5;
+    const EVENT_TYPE_USER_ADDED_NOTE = 6;
 
+    // Events
     // Notify me when…
     const EVENT_NEW_CONVERSATION = 1;
     const EVENT_CONVERSATION_ASSIGNED_TO_ME = 2;
@@ -186,6 +188,7 @@ class Subscription extends Model
                 break;
 
             case self::EVENT_TYPE_USER_REPLIED:
+            case self::EVENT_TYPE_USER_ADDED_NOTE:
                 $events[] = self::EVENT_FOLLOWED_CONVERSATION_UPDATED;
                 if (!empty($prev_thread) && $prev_thread->user_id) {
                     $events[] = self::EVENT_USER_REPLIED_TO_MY;

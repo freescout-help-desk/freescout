@@ -83,7 +83,7 @@ class SendNotificationToUsers implements ShouldQueue
 
             try {
                 Mail::to([['name' => $user->getFullName(), 'email' => $user->email]])
-                    ->send(new UserNotification($user, $this->conversation, $this->threads, $headers, $from));
+                    ->send(new UserNotification($user, $this->conversation, $this->threads, $headers, $from, $mailbox));
             } catch (\Exception $e) {
                 // We come here in case SMTP server unavailable for example
                 activity()

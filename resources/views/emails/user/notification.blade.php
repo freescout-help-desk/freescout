@@ -40,16 +40,19 @@
 				                        <p style="display:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#444; line-height:22px; font-size:16px; margin:0;">
                                             {{ __('Replying to this notification will email :name', ['name' => $customer->getFirstName(true)]) }} (<a href="mailto:{{ $conversation->customer_email }}" style="color:#3f8abf; text-decoration:none;">{{ $conversation->customer_email }}</a>)
                                         </p>
+
+                                        <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; font-size:14px; color:#B5B9BD; line-height:16px; margin:0; margin-top: 2px;">
+                                        	{{ $mailbox->name }}
+                                        </p>
 				                    </td>
 				                </tr>
 				            </table>
 				        </td>
 				    </tr>
 				    <tr>
-				        <td height="25"></td>
+				        <td height="12"></td>
 				    </tr>
 				</table>
-
 
 				{{-- START header --}}
 				<table id="wrapper" align="center" width="95%" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff" style="border: 1px solid #d4d9dd; max-width: 650px; border-bottom: 0; margin: 0 auto;">

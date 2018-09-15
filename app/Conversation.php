@@ -62,8 +62,8 @@ class Conversation extends Model
      * https://glyphicons.bootstrapcheatsheets.com/.
      */
     public static $status_icons = [
-        self::STATUS_ACTIVE  => 'ok',
-        self::STATUS_PENDING => 'hourglass',
+        self::STATUS_ACTIVE  => 'flag',
+        self::STATUS_PENDING => 'time',
         self::STATUS_CLOSED  => 'lock',
         self::STATUS_SPAM    => 'ban-circle',
         //self::STATUS_OPEN => 'folder-open',

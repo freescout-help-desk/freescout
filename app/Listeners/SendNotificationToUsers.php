@@ -30,6 +30,10 @@ class SendNotificationToUsers
                 $caused_by_user_id = $event->thread->created_by_user_id;
                 $event_type = Subscription::EVENT_TYPE_USER_REPLIED;
                 break;
+            case 'App\Events\UserAddedNote':
+                $caused_by_user_id = $event->thread->created_by_user_id;
+                $event_type = Subscription::EVENT_TYPE_USER_ADDED_NOTE;
+                break;
             case 'App\Events\UserCreatedConversation':
                 $caused_by_user_id = $event->conversation->created_by_user_id;
                 $event_type = Subscription::EVENT_TYPE_NEW;
