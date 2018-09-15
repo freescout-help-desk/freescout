@@ -88,11 +88,14 @@ class Mail
             '{%mailbox.email%}'       => $data['mailbox']->email,
             '{%mailbox.name%}'        => $data['mailbox']->name,
             '{%conversation.number%}' => $data['conversation']->number,
-            '{%customer.fullName%}'   => $data['customer']->getFullName(true),
-            '{%customer.firstName%}'  => $data['customer']->getFirstName(true),
-            '{%customer.lastName%}'   => $data['customer']->last_name,
             '{%customer.email%}'      => $data['conversation']->customer_email
         ];
+
+        if ($data['customer']) {
+            $vars['{%customer.fullName%}']  = $data['customer']->getFullName(true);
+            $vars['{%customer.firstName%}'] = $data['customer']->getFirstName(true);
+            $vars['{%customer.lastName%}']  = $data['customer']->last_name;
+        }
 
         return strtr($text, $vars);
     }

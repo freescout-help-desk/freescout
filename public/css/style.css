@@ -801,7 +801,7 @@ a h4 {
     outline: none;
 }
 .note-editor.note-frame .note-statusbar.note-statusbar-toolbar {
-    border-top: 1px solid #ddd;
+    /*border-top: 1px solid #ddd;*/
     background-color: #f9fafa;
     text-align: right;
     color: #72808e;
@@ -848,6 +848,15 @@ a h4 {
     float: left;
     position: relative;
     top: 2px;
+}
+#editor_signature {
+    text-align: left;
+    font-size: 14px;
+    line-height: 20px;
+    background-color: #fff;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    color: #394956;
 }
 @media (max-width:390px) {
     .note-bottom-div {
@@ -1787,6 +1796,9 @@ table.table-conversations td.conv-attachment {
     border-color: #fff7dd;
 }
 .conv-note-block .alert-switch-to-note {
+    display: none;
+}
+.conv-note-block #editor_signature {
     display: none;
 }
 .alert-switch-to-note {

@@ -159,6 +159,7 @@ class ConversationsController extends Controller
 
         $conversation = new Conversation();
         $conversation->body = '';
+        $conversation->mailbox = $mailbox;
 
         $folder = $mailbox->folders()->where('type', Folder::TYPE_DRAFTS)->first();
 
@@ -731,7 +732,10 @@ class ConversationsController extends Controller
                 $thread = Thread::find($request->thread_id);
                 
                 if (!$thread) {
-                    $response['msg'] = __('Thread not found');
+                    // Discarding nont saved yet draft
+                    $response['status'] = 'success';
+                    break;
+                    //$response['msg'] = __('Thread not found');
                 }
                 if (!$response['msg'] && !$user->can('view', $thread->conversation)) {
                     $response['msg'] = __('Not enough permissions');

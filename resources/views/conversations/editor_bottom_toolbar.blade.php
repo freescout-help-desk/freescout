@@ -1,6 +1,11 @@
 @section('body_attrs')@parent data-mailbox_id="{{ $mailbox->id }}"@endsection
 
 <div id="editor_bottom_toolbar" style="display:none">
+    <div id="editor_signature">
+        @if ($mailbox->signature)
+            {!! $conversation->getSignatureProcessed() !!}
+        @endif
+    </div>
 	<span class="editor-btm-text">{{ __('Status') }}:</span> 
 	<select name="status" class="form-control" data-parsley-exclude="true">
         <option value="{{ App\Mailbox::TICKET_STATUS_ACTIVE }}" @if (old('status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_ACTIVE)selected="selected"@endif>{{ __('Active') }}</option>
