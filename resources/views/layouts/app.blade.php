@@ -226,7 +226,11 @@
 
         @if (!in_array(Route::currentRouteName(), array('mailboxes.view')))
             <div class="footer">
-                &copy; {{ date('Y') }} <a href="{{ config('app.freescout_url') }}" target="blank">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk &amp; shared mailbox' ) }}<br/>{{ config('app.version') }}
+                &copy; {{ date('Y') }} <a href="{{ config('app.freescout_url') }}" target="blank">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk &amp; shared mailbox' ) }}
+                    {{-- Hide version from hackers --}}
+                    @if (Auth::user())
+                        <br/>{{ config('app.version') }}
+                    @endif
             </div>
         @endif
     </div>
