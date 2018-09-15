@@ -1887,3 +1887,8 @@ function starConversationInit()
 		);
 	});
 }
+
+function switchToNote()
+{
+	$('.conv-add-note:first').click();
+}

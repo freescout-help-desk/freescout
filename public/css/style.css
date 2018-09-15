@@ -1786,6 +1786,29 @@ table.table-conversations td.conv-attachment {
     background-color: #fff7dd;
     border-color: #fff7dd;
 }
+.conv-note-block .alert-switch-to-note {
+    display: none;
+}
+.alert-switch-to-note {
+    -webkit-box-shadow: inset 5px 0 0 0 #ffc646;
+    box-shadow: inset 5px 0 0 0 #ffc646;
+    margin: 8px -15px -9px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+.alert-switch-to-note .glyphicon {
+    font-size: 15px;
+    position: relative;
+    top: 2px;
+    margin-left: 3px;
+    margin-right: 5px;
+}
+.alert-switch-to-note a,
+.alert-switch-to-note a:hover,
+.alert-switch-to-note a:focus {
+    color: #b37100;
+    text-decoration: underline;
+}
 ul.prev-convs {
     padding-left: 0;
     list-style: none;
