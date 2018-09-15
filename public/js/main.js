@@ -1530,11 +1530,13 @@ function showMenuNotification(html)
 // Show browser push-notification
 function showBrowserNotification(text, url)
 {
-	Push.create("", {
-	    body: text,
+	// Push notification body limits: https://www.mobify.com/insights/web-push-character-limits/
+	// If we place text into the body and keep title empty, it is being cropped in Chrome
+	Push.create(text, {
+	    body: "",
 	    icon: Vars.public_url+'/img/logo-icon-white-300.png',
 	    tag: url,
-	    timeout: 4000,
+	    timeout: 5000,
 	    //requireInteraction: true
 	    onClick: function () {
 	    	if (url) {

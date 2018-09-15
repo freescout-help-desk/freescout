@@ -383,10 +383,9 @@ class ConversationsController extends Controller
                     }
                 }
 
+                $to_array = Conversation::sanitizeEmails($request->to);
                 // Check To
                 if (!$response['msg'] && $new) {
-                    $to_array = Conversation::sanitizeEmails($request->to);
-
                     if (!$to_array) {
                         $response['msg'] .= __('Incorrect recipients');
                     }
@@ -409,9 +408,6 @@ class ConversationsController extends Controller
                     $user_changed = false;
                     if ($new) {
                         // New conversation
-                        $customer_email = $to_array[0];
-                        $customer = Customer::create($customer_email);
-
                         $conversation = new Conversation();
                         $conversation->type = Conversation::TYPE_EMAIL;
                         $conversation->subject = $request->subject;
@@ -420,19 +416,26 @@ class ConversationsController extends Controller
                             $conversation->has_attachments = true;
                         }
                         $conversation->mailbox_id = $request->mailbox_id;
-                        $conversation->customer_id = $customer->id;
-                        $conversation->customer_email = $customer_email;
                         $conversation->created_by_user_id = auth()->user()->id;
                         $conversation->source_via = Conversation::PERSON_USER;
                         $conversation->source_type = Conversation::SOURCE_TYPE_WEB;
                     } else {
                         // Reply or note
-                        $customer = $conversation->customer;
-
                         if ((int) $request->status != (int) $conversation->status) {
                             $status_changed = true;
                         }
                     }
+
+                    // Customer can be empty in existing conversation if this is a draft
+                    if (!$conversation->customer_id) {
+                        $customer_email = $to_array[0];
+                        $customer = Customer::create($customer_email);
+                        $conversation->customer_id = $customer->id;
+                        $conversation->customer_email = $customer_email;
+                    } else {
+                        $customer = $conversation->customer;
+                    }
+
                     $conversation->status = $request->status;
                     // We need to set state, as it may have been a draft
                     $conversation->state = Conversation::STATE_PUBLISHED;
