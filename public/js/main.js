@@ -715,12 +715,21 @@ function onReplyBlur()
 	if ($(".form-reply:first :input[name='is_note']:first").val()) {
 		return;
 	}
+	
+	// If start saving draft immediately, then on Send Reply click
+	// two ajax requests will be sent at the same time.
+	setTimeout(function() {
+		// Do not save if user clicked Send Reply button	
+		if (fs_processing_send_reply) {
+			return;
+		}
 
-	// Save draft on focus out
-	// Save only after changing
-	if (!fs_editor_change_timeout || fs_editor_change_timeout == null) {
-  		saveDraft(false, true);
-  	}
+		// Save draft on focus out
+		// Save only after changing
+		if (!fs_editor_change_timeout || fs_editor_change_timeout == null) {
+	  		saveDraft(false, true);
+	  	}
+	  }, 200);
 }
 
 // Generate random unique ID
@@ -877,7 +886,7 @@ function newConversationInit()
 		});
 
 		// Send reply or new conversation
-	    $(".btn-reply-submit").click(function(e) {
+	    $(".btn-reply-submit:first").click(function(e) {
 	    	// This is extra protection from double click on Send button
 	    	// DOM operation are slow sometimes
 	    	if (fs_processing_send_reply) {
@@ -1672,6 +1681,10 @@ function saveDraft(allow_reload, no_loader)
 	if (!allow_reload && fs_processing_save_draft) {
 		return;
 	}
+	// User clicked Send Reply button
+	if (fs_processing_send_reply) {
+		return;
+	}
 	fs_processing_save_draft = true;
 
 	// Validation is not needed
@@ -1718,12 +1731,14 @@ function saveDraft(allow_reload, no_loader)
 				}
 				// If conversation returned, set conversation info
 				if (typeof(response.conversation_id) != "undefined" && response.conversation_id) {
-					form.children().find(':input[name="conversation_id"][val=""]').val(response.conversation_id);
-					form.children().find(':input[name="thread_id"]').val(response.thread_id);
+					form.children(':input[name="conversation_id"][value=""]').val(response.conversation_id);
+					form.children(':input[name="thread_id"]').val(response.thread_id);
 					$('.conv-new-number:first').text(response.conversation_id);
 
-					// Set URL
-					setUrl(laroute.route('conversations.view', {id: response.conversation_id}));
+					// Set URL if this is a new conversation
+					if (new_conversation) {
+						setUrl(laroute.route('conversations.view', {id: response.conversation_id}));
+					}
 				}
 			}
 		} else {
