@@ -724,6 +724,11 @@ class ConversationsController extends Controller
 
                     $response['status'] = 'success';
                 }
+
+                // Reflash session data - otherwise on reply flash alert is not displayed
+                // https://stackoverflow.com/questions/37019294/laravel-ajax-call-deletes-session-flash-data
+                \Session::reflash();
+
                 break;
 
             // Discard draft (from new conversation, from reply or conversation)
