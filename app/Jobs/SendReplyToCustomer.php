@@ -59,6 +59,11 @@ class SendReplyToCustomer implements ShouldQueue
         $this->last_thread = $this->threads->first();
         $prev_thread = null;
 
+        // If thread is draft, it means it has been undone
+        if ($this->last_thread->isDraft()) {
+            return;
+        }
+
         // Configure mail driver according to Mailbox settings
         \App\Mail\Mail::setMailDriver($mailbox, $this->last_thread->created_by_user);
 

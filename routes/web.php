@@ -55,6 +55,7 @@ Route::get('/mailbox/{mailbox_id}/new-ticket', 'ConversationsController@create')
 //Route::get('/conversation/draft/{id}', 'ConversationsController@draft')->name('conversations.draft');
 Route::get('/conversation/ajax-html/{action}', ['uses' => 'ConversationsController@ajaxHtml', 'laroute' => true])->name('conversations.ajax_html');
 Route::get('/search', 'ConversationsController@search')->name('conversations.search');
+Route::get('/conversation/undo-reply/{thread_id}', 'ConversationsController@undoReply')->name('conversations.undo');
 
 // Mailboxes
 Route::get('/settings/mailboxes', 'MailboxesController@mailboxes')->name('mailboxes');

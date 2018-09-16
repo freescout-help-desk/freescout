@@ -54,6 +54,11 @@ class SendNotificationToUsers implements ShouldQueue
         $headers = [];
         $last_thread = $this->threads->first();
 
+        // If thread is draft, it means it has been undone
+        if ($last_thread->isDraft()) {
+            return;
+        }
+
         // All notification for the same conversation has same dummy Message-ID
         $prev_message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY.'-'.$this->conversation->id.'-'.md5($this->conversation->id).'@'.$mailbox->getEmailDomain();
         $headers['In-Reply-To'] = '<'.$prev_message_id.'>';

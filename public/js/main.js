@@ -429,6 +429,7 @@ function fsFloatingAlertsInit()
 
 		var close_after = 7000;
 		if (!$(el).hasClass('alert-danger')) {
+			// This has to be less than Conversation::UNDO_TIMOUT
 			close_after = 10000;
 		}
 		setTimeout(function(){
@@ -602,6 +603,7 @@ function conversationInit()
 
 		starConversationInit();
 		maybeShowStoredNote();
+		maybeShowDraft();
 	});
 }
 
@@ -725,15 +727,15 @@ function onReplyBlur()
 		}
 
 		// Save only after changing
-		if (!fs_editor_change_timeout || fs_editor_change_timeout == null) {
-			if ($(".form-reply:first :input[name='is_note']:first").val()) {
-				// Save note
-				rememberNote();
-			} else {
-	  			saveDraft(false, true);
-	  		}
-	  	}
-	  }, 200);
+		//if (!fs_editor_change_timeout || fs_editor_change_timeout == null) {
+		if ($(".form-reply:first :input[name='is_note']:first").val()) {
+			// Save note
+			rememberNote();
+		} else {
+  			saveDraft(false, true);
+  		}
+	  	//}
+	  }, 500);
 }
 
 // Generate random unique ID
@@ -1957,6 +1959,33 @@ function maybeShowStoredNote()
 			switchToNote();
 		}
 	}
+}
+
+// Happens after Undo
+function maybeShowDraft()
+{
+	var thread_id = getQueryParam('show_draft');
+
+	if (!thread_id) {
+		return;
+	}
+
+	fsAjax({
+			action: 'load_draft',
+			thread_id: thread_id
+		}, 
+		laroute.route('conversations.ajax'),
+		function(response) {
+			loaderHide();
+			if (typeof(response.status) != "undefined" && response.status == 'success') {
+				response.data.is_note = '';
+				showReplyForm(response.data);
+				$('#thread-'+thread_id).hide();
+			} else {
+				showAjaxError(response);
+			}
+		}
+	);
 }
 
 function forgetNote(conversation_id)

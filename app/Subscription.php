@@ -5,6 +5,7 @@
 
 namespace App;
 
+use App\Conversation;
 use App\Notifications\BroadcastNotification;
 use App\Notifications\WebsiteNotification;
 use Illuminate\Database\Eloquent\Model;
@@ -312,7 +313,9 @@ class Subscription extends Model
         if (!empty($notify[self::MEDIUM_EMAIL])) {
             // Email notification (better to create them first)
             foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
-                \App\Jobs\SendNotificationToUsers::dispatch($notify_info['users'], $notify_info['conversation'], $notify_info['threads'])->onQueue('emails');
+                \App\Jobs\SendNotificationToUsers::dispatch($notify_info['users'], $notify_info['conversation'], $notify_info['threads'])
+                    ->delay(now()->addSeconds(Conversation::UNDO_TIMOUT))
+                    ->onQueue('emails');
             }
             // - DB Notification
             foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {

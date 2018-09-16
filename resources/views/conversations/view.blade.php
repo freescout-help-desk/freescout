@@ -211,7 +211,7 @@
                             @endif
                         </div>
                     </div>
-                @elseif ($thread->type == App\Thread::TYPE_MESSAGE && $thread->status == App\Thread::STATE_DRAFT)
+                @elseif ($thread->type == App\Thread::TYPE_MESSAGE && $thread->state == App\Thread::STATE_DRAFT)
                     <div class="thread thread-type-draft" id="thread-{{ $thread->id }}" data-thread_id="{{ $thread->id }}">
                         <div class="thread-message">
                             <div class="thread-header">

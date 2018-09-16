@@ -548,7 +548,7 @@ class ConversationsController extends Controller
                             $flash_type = 'success';
                             $flash_message = __(
                                 ':%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%',
-                                ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.view', ['id' => $conversation->id]).'" class="text-danger">']
+                                ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.undo', ['thread_id' => $thread->id]).'" class="text-danger">']
                             );
                         }
                     } else {
@@ -562,7 +562,7 @@ class ConversationsController extends Controller
                             $flash_type = 'success';
                             $flash_message = __(
                                 ':%tag_start%Email Sent:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%',
-                                ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.view', ['id' => $conversation->id]).'" class="text-danger">']
+                                ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.undo', ['thread_id' => $thread->id]).'" class="text-danger">']
                             );
                         }
                     }
@@ -1248,5 +1248,58 @@ class ConversationsController extends Controller
             'has_attachments' => $has_attachments,
             'attachments' => $attachments,
         ];
+    }
+
+    /**
+     * Undo reply.
+     */
+    public function undoReply(Request $request, $thread_id)
+    {
+        $thread = Thread::findOrFail($thread_id);
+
+        if (!$thread) {
+            abort(404);
+        }
+
+        $conversation = $thread->conversation;
+        $this->authorize('view', $conversation);
+
+        // Check undo timeout
+        if ($thread->created_at->diffInSeconds(now()) > Conversation::UNDO_TIMOUT) {
+            \Session::flash('flash_error_floating', __('Sending can not be undone'));
+            return redirect()->away($conversation->url($conversation->folder_id));
+        }
+
+        // Convert reply into draft
+        $thread->state = Thread::STATE_DRAFT;
+        $thread->save();
+
+        // Get penultimate reply
+        $last_thread = $conversation->threads()
+            ->where('id', '<>', $thread->id)
+            ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE])
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $folder_id = $conversation->folder_id;
+
+        // Restore conversation data from penultimate thread
+        if ($last_thread) {
+            $conversation->setCc($last_thread->cc);
+            $conversation->setBcc($last_thread->bcc);
+            $conversation->last_reply_at = $last_thread->created_at;
+            $conversation->last_reply_from = $last_thread->source_via;
+            $conversation->user_updated_at = date('Y-m-d H:i:s');
+        }
+        if ($thread->first) {
+            // This was a new conversation, move it to drafts
+            $conversation->state = Thread::STATE_DRAFT;
+            $conversation->updateFolder();
+            $conversation->mailbox->updateFoldersCounters();
+            $folder_id = null;
+        }
+        $conversation->save();
+
+        return redirect()->away($conversation->url($folder_id, null, ['show_draft' => $thread->id]));
     }
 }

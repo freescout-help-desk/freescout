@@ -2,6 +2,8 @@
 
 namespace App\Listeners;
 
+use App\Conversation;
+
 class SendReplyToCustomer
 {
     /**
@@ -23,7 +25,8 @@ class SendReplyToCustomer
 
         if (!$conversation->imported) {
             \App\Jobs\SendReplyToCustomer::dispatch($conversation, $conversation->getReplies(), $conversation->customer)
-            ->onQueue('emails');
+                ->delay(now()->addSeconds(Conversation::UNDO_TIMOUT))
+                ->onQueue('emails');
         }
     }
 }

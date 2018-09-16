@@ -573,4 +573,9 @@ class Thread extends Model
     {
         Attachment::deleteByIds($this->all_attachments()->pluck('id')->toArray());
     }
+
+    public function isDraft()
+    {
+        return $this->state == Thread::STATE_DRAFT;
+    }
 }

@@ -12,6 +12,17 @@ use Illuminate\Support\Facades\Input;
 class Conversation extends Model
 {
     /**
+     * Max length of the preview.
+     */
+    const PREVIEW_MAXLENGTH = 255;
+
+    /**
+     * Conversation reply undo timeout in seconds.
+     * Value has to be larger than close_after in fsFloatingAlertsInit.
+     */
+    const UNDO_TIMOUT = 15;
+
+    /**
      * By whom action performed (used in fields: source_via, last_reply_from).
      */
     const PERSON_CUSTOMER = 1;
@@ -21,11 +32,6 @@ class Conversation extends Model
         self::PERSON_CUSTOMER => 'customer',
         self::PERSON_USER     => 'user',
     ];
-
-    /**
-     * Max length of the preview.
-     */
-    const PREVIEW_MAXLENGTH = 255;
 
     /**
      * Conversation types.
@@ -788,13 +794,13 @@ class Conversation extends Model
     {
         if ($folder->type == Folder::TYPE_MINE) {
             // Get conversations from personal folder
-            // Draft conversations do not have assignee yet, so need to add extra condition.
             $query_conversations = Conversation::where('user_id', $user_id)
                 ->whereIn('status', [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING]);
+            $query_conversations->where('state', Conversation::STATE_PUBLISHED);
         } elseif ($folder->type == Folder::TYPE_ASSIGNED) {
             // Assigned - do not show my conversations
-            // Draft conversations do not have assignee yet, so need to add extra condition.
             $query_conversations = $folder->conversations()->where('user_id', '<>', $user_id);
+            $query_conversations->where('state', Conversation::STATE_PUBLISHED);
         } elseif ($folder->type == Folder::TYPE_STARRED) {
             $starred_conversation_ids = Conversation::getUserStarredConversationIds($folder->mailbox_id, $user_id);
             $query_conversations = Conversation::whereIn('id', $starred_conversation_ids);

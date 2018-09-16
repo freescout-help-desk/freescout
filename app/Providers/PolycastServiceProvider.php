@@ -87,6 +87,10 @@ class PolycastServiceProvider extends ServiceProvider
                     return $item;
                 });
 
+                // Reflash session data - otherwise on reply flash alert is not displayed
+                // https://stackoverflow.com/questions/37019294/laravel-ajax-call-deletes-session-flash-data
+                \Session::reflash();
+
                 return ['status' => 'success', 'time' => Carbon::now()->toDateTimeString(), 'payloads' => $payload];
             });
         });
