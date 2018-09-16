@@ -69,7 +69,7 @@ class Conversation extends Model
      */
     public static $status_icons = [
         self::STATUS_ACTIVE  => 'flag',
-        self::STATUS_PENDING => 'time',
+        self::STATUS_PENDING => 'hourglass',
         self::STATUS_CLOSED  => 'lock',
         self::STATUS_SPAM    => 'ban-circle',
         //self::STATUS_OPEN => 'folder-open',
