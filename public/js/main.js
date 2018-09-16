@@ -4,6 +4,8 @@ var fs_processing_send_reply = false;
 var fs_processing_save_draft = false;
 var fs_connection_errors = 0;
 var fs_editor_change_timeout = -1;
+// For how long to remember conversation note drafts
+var fs_keep_conversation_notes = 30; // days
 
 // Ajax based notifications;
 var poly;
@@ -91,6 +93,7 @@ var EditorSaveDraftButton = function (context) {
 
 	// create button
 	var button = ui.button({
+		className: 'note-btn-save-draft',
 		contents: '<i class="glyphicon glyphicon-ok"></i>',
 		tooltip: Lang.get("messages.save_draft"),
 		container: 'body',
@@ -598,6 +601,7 @@ function conversationInit()
 		});
 
 		starConversationInit();
+		maybeShowStoredNote();
 	});
 }
 
@@ -700,22 +704,18 @@ function onReplyChange()
 	}
 	fs_editor_change_timeout = setTimeout(function(){
 		// Do not save note
-		if ($(".form-reply:first :input[name='is_note']:first").val()) {
+		/*if ($(".form-reply:first :input[name='is_note']:first").val()) {
 			return;
-		}
+		}*/
 	
 		$('.form-reply:first .note-actions .note-btn:first').removeClass('text-success');
 		fs_editor_change_timeout = null;
 	}, 100);
 }
 
+// Save reply draft or note on form focus out
 function onReplyBlur()
 {
-	// Do not save note
-	if ($(".form-reply:first :input[name='is_note']:first").val()) {
-		return;
-	}
-	
 	// If start saving draft immediately, then on Send Reply click
 	// two ajax requests will be sent at the same time.
 	setTimeout(function() {
@@ -724,10 +724,14 @@ function onReplyBlur()
 			return;
 		}
 
-		// Save draft on focus out
 		// Save only after changing
 		if (!fs_editor_change_timeout || fs_editor_change_timeout == null) {
-	  		saveDraft(false, true);
+			if ($(".form-reply:first :input[name='is_note']:first").val()) {
+				// Save note
+				rememberNote();
+			} else {
+	  			saveDraft(false, true);
+	  		}
 	  	}
 	  }, 200);
 }
@@ -1766,17 +1770,6 @@ function setUrl(url)
 
 function discardDraft(thread_id)
 {
-	// Discard note
-	if ($(".form-reply:first :input[name='is_note']:first").val()) {
-		hideReplyEditor();
-		setReplyBody('');
-		return;
-	}
-
-	if (typeof(thread_id) == "undefined" || !thread_id) {
-		thread_id = $('.form-reply :input[name="thread_id"]').val();
-	}
-
 	var confirm_html = '<div>'+
 		'<div class="text-center">'+
 		'<div class="text-larger margin-top-10">'+Lang.get("messages.confirm_discard_draft")+'</div>'+
@@ -1786,6 +1779,25 @@ function discardDraft(thread_id)
 		'</div>';
 		'</div>';
 		'</div>';
+
+	// Discard note
+	if ($(".form-reply:first :input[name='is_note']:first").val()) {
+		showModalDialog(confirm_html, {
+			on_show: function(modal) {
+				modal.children().find('.discard-draft-confirm:first').click(function(e) {
+					hideReplyEditor();
+					setReplyBody('');
+					forgetNote();
+					modal.modal('hide');
+				});
+			}
+		});
+		return;
+	}
+
+	if (typeof(thread_id) == "undefined" || !thread_id) {
+		thread_id = $('.form-reply :input[name="thread_id"]').val();
+	}
 
 	showModalDialog(confirm_html, {
 		on_show: function(modal) {
@@ -1891,4 +1903,126 @@ function starConversationInit()
 function switchToNote()
 {
 	$('.conv-add-note:first').click();
+}
+
+function rememberNote()
+{
+	var conversation_id = getGlobalAttr('conversation_id');
+	if (!conversation_id) {
+		return;
+	}
+
+	var note = $('#body').val();
+	var note_plain = stripTags(note);
+
+	var conversation_notes = loadNotesFromStorage(conversation_id);
+
+	// Remove old items from browser storage
+	for (var i in conversation_notes) {
+		if (conversation_notes[i].time) {
+			if (conversation_notes[i].time < (new Date()).getTime() - fs_keep_conversation_notes*24*60*60*1000) {
+				delete conversation_notes[i];
+			}
+		}
+	}
+
+	if (!note || !note_plain.trim()) {
+		delete conversation_notes[conversation_id];
+	} else {
+		// Remember current note
+		conversation_notes[conversation_id] = {
+			note: note,
+			time: (new Date()).getTime()
+		};
+	}
+
+	saveNoteToStorage(conversation_notes);
+}
+
+function maybeShowStoredNote()
+{
+	var conversation_id = getGlobalAttr('conversation_id');
+	if (!conversation_id) {
+		return;
+	}
+	// Get stored note fom browser storage
+	var conversation_notes = loadNotesFromStorage(conversation_id);
+
+	if (conversation_notes) {
+		if (typeof(conversation_notes[conversation_id]) != 'undefined' &&
+			typeof(conversation_notes[conversation_id].note) != 'undefined' &&
+			conversation_notes[conversation_id].note.trim()
+		) {
+			setReplyBody(conversation_notes[conversation_id].note);
+			switchToNote();
+		}
+	}
+}
+
+function forgetNote(conversation_id)
+{
+	var conversation_id = getGlobalAttr('conversation_id');
+	var conversation_notes = loadNotesFromStorage(conversation_id);
+	if (conversation_notes && typeof(conversation_notes[conversation_id]) != 'undefined') {
+		delete conversation_notes[conversation_id];
+		saveNoteToStorage(conversation_notes);
+	}
+}
+
+function saveNoteToStorage(conversation_notes)
+{
+	localStorageSet('conversation_notes', JSON.stringify(conversation_notes));
+}
+
+function loadNotesFromStorage(conversation_id)
+{
+	var conversation_notes_json = localStorageGet('conversation_notes');
+	
+	if (conversation_notes_json) {
+		var conversation_notes = {};
+		try {
+			conversation_notes = JSON.parse(conversation_notes_json);
+		} catch (e) {}
+		if (conversation_notes && typeof(conversation_notes) == 'object') {
+			return conversation_notes;
+		} else {
+			return {};
+		}
+	} else {
+		return {};
+	}
+}
+
+function localStorageSet(key, value)
+{
+	if (typeof(localStorage) != "undefined") {
+		localStorage.setItem(key, value);
+	} else {
+		return false;
+	}
+}
+
+function localStorageGet(key)
+{
+	if (typeof(localStorage) != "undefined") {
+		return localStorage.getItem(key);
+	} else {
+		return false;
+	}
+}
+
+function localStorageRemove(key)
+{
+	if (typeof(localStorage) != "undefined") {
+		localStorage.removeItem(key);
+	} else {
+		return false;
+	}
+}
+
+function stripTags(html)
+{
+	var div = document.createElement("div");
+	div.innerHTML = html;
+	return text = div.textContent || div.innerText || "";
 }

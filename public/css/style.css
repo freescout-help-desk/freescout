@@ -776,7 +776,7 @@ a h4 {
 .note-actions {
     float: right;
 }
-.note-actions .note-btn:first-child {
+.note-actions .note-btn-save-draft {
     font-size: 16px;
 }
 .note-actions-select {
@@ -1339,9 +1339,9 @@ table.table-conversations td.conv-attachment {
 }
 .conv-actions .conv-action {
     display: inline-block;
-    padding: 17px 14px 9px;
+    padding: 16px 16px 9px;
     color: #4f5d69;
-    font-size: 17px;
+    font-size: 19px;
     cursor: pointer;
 }
 .conv-actions .conv-action:hover {
@@ -1352,6 +1352,10 @@ table.table-conversations td.conv-attachment {
 }
 .conv-action.dropdown {
     padding: 0!important;
+}
+.conv-action .dropdown-toggle {
+    font-size: 17px;
+    padding-left: 13px;
 }
 #conv-subject {
     border-bottom: 1px solid #e3e8eb;
@@ -1787,7 +1791,8 @@ table.table-conversations td.conv-attachment {
     background-color: #fff7dd;
     color: #d79400;
 }
-.conv-note-block .note-actions .note-btn:first-child {
+.conv-note-block .note-actions .note-btn-save-draft,
+.conv-note-block .note-actions .draft-saved {
     display: none;
 }
 .conv-note-block .note-editor .btn-default {
@@ -1867,7 +1872,7 @@ ul.prev-convs {
         left: auto!important;
     }
     .conv-actions .conv-action {
-        padding: 17px 8px 9px;
+        padding: 18px 10px 9px;
     }
     .conv-subjtext {
         font-size: 20px;
