@@ -15,6 +15,7 @@ use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Watson\Rememberable\Rememberable;
 
@@ -24,6 +25,10 @@ class User extends Authenticatable
     use Rememberable;
 
     public $rememberCacheDriver = 'array';
+
+    const PHOTO_DIRECTORY = 'users';
+    const PHOTO_SIZE = 50; // px
+    const PHOTO_QUALITY = 77;
 
     /**
      * Roles.
@@ -539,7 +544,53 @@ class User extends Authenticatable
 
     public function getPhotoUrl()
     {
-        // todo
-        return '/img/default-avatar.png';
+        if (!empty($this->photo_url)) {
+            return Storage::url(User::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+        } else {
+            return '/img/default-avatar.png';
+        }
+    }
+
+    /**
+     * Resize and save user photo.
+     */
+    public function savePhoto($uploaded_file)
+    {
+        $resized_image = \App\Misc\Helper::resizeImage($uploaded_file->getRealPath(), $uploaded_file->getMimeType(), self::PHOTO_SIZE, self::PHOTO_SIZE) ;
+
+        if (!$resized_image) {
+            return false;
+        }
+
+        $file_name = md5(Hash::make($this->id)).'.jpg';
+        $dest_path = Storage::path(User::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
+
+        $dest_dir = pathinfo($dest_path, PATHINFO_DIRNAME);
+        if (!file_exists($dest_dir)) {
+            \File::makeDirectory($dest_dir, 0755);
+        }
+
+        // Remove current photo
+        if ($this->photo_url) {
+            Storage::delete(User::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+        }
+
+        imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
+        // $photo_url = $request->file('photo_url')->storeAs(
+        //     User::PHOTO_DIRECTORY, !Hash::make($user->id).'.jpg'
+        // );
+        
+        return $file_name;
+    }
+
+    /**
+     * Remove user photo.
+     */
+    public function removePhoto()
+    {
+        if ($this->photo_url) {
+            Storage::delete(User::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+        }
+        $this->photo_url = '';
     }
 }

@@ -969,9 +969,9 @@ function notificationsInit()
 							'<div class="text-larger margin-top-10">'+Lang.get("messages.push_protocol_alert")+'</div>'+
 							'<div class="form-group margin-top">'+
 				    		'<button class="btn btn-primary reset-password-ok" data-dismiss="modal">OK</button>'+
-				    		'</div>';
-				    		'</div>';
-				    		'</div>';
+			        		'</div>'+
+			        		'</div>'+
+			        		'</div>';
 
 						showModalDialog(alert_html);
 
@@ -1281,8 +1281,8 @@ function changeCustomerInit()
 				'<div class="form-group margin-top">'+
         		'<button class="btn btn-primary change-customer-ok" data-customer_email='+data.id+'>OK</button>'+
         		'<button class="btn btn-link" data-dismiss="modal">'+Lang.get("messages.cancel")+'</button>'+
-        		'</div>';
-        		'</div>';
+        		'</div>'+
+        		'</div>'+
         		'</div>';
 
 			showModal(null, {
@@ -1397,8 +1397,8 @@ function userProfileInit()
 			'<div class="form-group margin-top">'+
     		'<button class="btn btn-primary reset-password-ok">OK</button>'+
     		'<button class="btn btn-link" data-dismiss="modal">'+Lang.get("messages.cancel")+'</button>'+
-    		'</div>';
-    		'</div>';
+    		'</div>'+
+    		'</div>'+
     		'</div>';
 
 		showModalDialog(confirm_html, {
@@ -1423,6 +1423,43 @@ function userProfileInit()
 
 		e.preventDefault();
 	});	
+
+	// Delete profile photo
+	$("#user-photo-delete").click(function(e) {
+		var button = $(this);
+
+		var confirm_html = '<div>'+
+			'<div class="text-center">'+
+			'<div class="text-larger margin-top-10">'+Lang.get("messages.confirm_delete_photo")+'</div>'+
+			'<div class="form-group margin-top">'+
+    		'<button class="btn btn-primary reset-password-ok">'+Lang.get("messages.delete")+'</button>'+
+    		'<button class="btn btn-link" data-dismiss="modal">'+Lang.get("messages.cancel")+'</button>'+
+    		'</div>'+
+    		'</div>'+
+    		'</div>';
+
+		showModalDialog(confirm_html, {
+			on_show: function(modal) {
+				modal.children().find('.reset-password-ok:first').click(function(e) {
+					button.button('loading');
+					modal.modal('hide');
+					fsAjax(
+						{
+							action: 'delete_photo',
+							user_id: getGlobalAttr('user_id')
+						}, 
+						laroute.route('users.ajax'),
+						function(response) {
+							$('#user-profile-photo').remove();
+							button.button('reset');
+						}, 
+						true
+					);
+				});
+			}
+		});
+		e.preventDefault();
+	});
 }
 
 function showAjaxResult(response)
@@ -1778,8 +1815,8 @@ function discardDraft(thread_id)
 		'<div class="form-group margin-top">'+
 		'<button class="btn btn-primary discard-draft-confirm">'+Lang.get("messages.yes")+'</button>'+
 		'<button class="btn btn-link" data-dismiss="modal">'+Lang.get("messages.cancel")+'</button>'+
-		'</div>';
-		'</div>';
+		'</div>'+
+		'</div>'+
 		'</div>';
 
 	// Discard note

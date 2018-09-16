@@ -41,6 +41,8 @@ var lang_messages = {
             "saved": "Saved",
             "confirm_discard_draft": "Discard this draft?",
             "yes": "Yes",
+            "confirm_delete_photo": "Delete this photo?",
+            "delete": "Delete",
 
             "drag_image_file": "Drag image or file here"
         }    };

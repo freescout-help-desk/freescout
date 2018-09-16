@@ -52,6 +52,8 @@ var lang_messages = {
             "saved": "{{ __("Saved") }}",
             "confirm_discard_draft": "{{ __("Discard this draft?") }}",
             "yes": "{{ __("Yes") }}",
+            "confirm_delete_photo": "{{ __("Delete this photo?") }}",
+            "delete": "{{ __("Delete") }}",
 
             "drag_image_file": "{{ __("Drag image or file here") }}"
         }@if (!$loop->last),@endif

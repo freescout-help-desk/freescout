@@ -2904,6 +2904,9 @@ a.disabled:focus {
     font-size: 57px;
     color: #a5b2bd;
 }
+#user-photo-delete {
+    line-height: 25px;
+}
 
 /**
  * Only main content is visible

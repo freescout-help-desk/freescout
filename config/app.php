@@ -168,7 +168,7 @@ return [
     | PHP extensions required by the app
     |-------------------------------------------------------------------------
     */
-    'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/ 'json', 'openssl', 'tokenizer'/*, 'dom', 'xmlwriter', 'tokenizer', 'libxml', 'phar'*/],
+    'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/ 'json', 'gd', 'fileinfo', 'openssl', 'tokenizer'/*, 'dom', 'xmlwriter', 'libxml', 'phar'*/],
 
 
     /*

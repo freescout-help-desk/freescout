@@ -154,4 +154,54 @@ class Helper
             return '';
         }
     }
+
+
+    /**
+     * Resize image without using Intervention package.
+     */
+    public static function resizeImage($file, $mime_type, $thumb_width, $thumb_height)
+    {
+        list($width, $height) = getimagesize($file);
+        if (!$width) {
+            return false;
+        }
+
+        if (preg_match('/png/i', $mime_type)) {
+            $src = imagecreatefrompng($file);
+        } else if (preg_match('/gif/i', $mime_type)) {
+            $src = imagecreatefromgif($file);
+        } else if (preg_match('/bmp/i', $mime_type)) {
+            $src = imagecreatefrombmp($file);
+        } else {
+            $src = imagecreatefromjpeg($file);
+        }
+        
+        $original_aspect = $width / $height;
+        $thumb_aspect = $thumb_width / $thumb_height;
+        if ( $original_aspect == $thumb_aspect ) {
+            $new_height = $thumb_height;
+            $new_width = $thumb_width;
+        } elseif ( $original_aspect > $thumb_aspect ) {
+           // If image is wider than thumbnail (in aspect ratio sense)
+           $new_height = $thumb_height;
+           $new_width = $width / ($height / $thumb_height);
+        } else {
+           // If the thumbnail is wider than the image
+           $new_width = $thumb_width;
+           $new_height = $height / ($width / $thumb_width);
+        }
+
+        $thumb = imagecreatetruecolor($thumb_width, $thumb_height);
+        // Resize and crop
+        imagecopyresampled($thumb,
+                           $src,
+                           0 - ($new_width - $thumb_width) / 2, // Center the image horizontally
+                           0 - ($new_height - $thumb_height) / 2, // Center the image vertically
+                           0, 0,
+                           $new_width, $new_height,
+                           $width, $height);
+        imagedestroy($src);
+
+        return $thumb;
+    }
 }

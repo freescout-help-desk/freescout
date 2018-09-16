@@ -18,7 +18,7 @@
         @foreach ($users as $user)
             <a href="{{ route('users.profile', ['id'=>$user->id]) }}" class="card">
                 @if ($user->photo_url)
-                    <img src="{{ $user->photo_url }}" />
+                    <img src="{{ $user->getPhotoUrl() }}" />
                 @else
                     <i class="card-avatar" data-initial="{{ strtoupper($user->first_name[0]) }}{{ strtoupper($user->last_name[0]) }}"></i>
                 @endif

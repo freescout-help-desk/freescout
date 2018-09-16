@@ -134,9 +134,24 @@ class UsersController extends Controller
             'timezone'    => 'required|string|max:255',
             'time_format' => 'required',
             'role'        => ['required', Rule::in(array_keys(User::$roles))],
+            'photo_url'   => 'nullable|image|mimes:jpeg,png,jpg,gif',
+        ]);
+        $validator->setAttributeNames([
+            'photo_url'   => __('Photo'),
         ]);
 
-        //event(new Registered($user = $this->create($request->all())));
+        // Photo
+        $validator->after(function ($validator) use ($user, $request) {
+            if ($request->hasFile('photo_url')) {
+                $path_url = $user->savePhoto($request->file('photo_url'));
+
+                if ($path_url) {
+                    $user->photo_url = $path_url;
+                } else {
+                    $validator->errors()->add('photo_url', __('Error occured processing the image. Make sure that PHP GD extension is enabled.'));
+                }
+            }
+        });
 
         if ($validator->fails()) {
             return redirect()->route('users.profile', ['id' => $id])
@@ -144,7 +159,12 @@ class UsersController extends Controller
                         ->withInput();
         }
 
-        $user->fill($request->all());
+        $request_data = $request->all();
+
+        if (isset($request_data['photo_url'])) {
+            unset($request_data['photo_url']);
+        }
+        $user->fill($request_data);
 
         if (empty($request->input('enable_kb_shortcuts'))) {
             $user->enable_kb_shortcuts = false;
@@ -333,6 +353,23 @@ class UsersController extends Controller
                 if (!$response['msg']) {
                     $auth_user->unreadNotifications()->update(['read_at' => now()]);
                     $auth_user->clearWebsiteNotificationsCache();
+
+                    $response['status'] = 'success';
+                }
+                break;
+
+            // Delete user photo
+            case 'delete_photo':
+                $user = User::find($request->user_id);
+
+                if (!$user) {
+                    $response['msg'] = __('User not found');
+                } elseif (!$auth_user->can('update', $user)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+                if (!$response['msg']) {
+                    $user->removePhoto();
+                    $user->save();
 
                     $response['status'] = 'success';
                 }
