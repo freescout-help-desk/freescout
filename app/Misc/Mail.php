@@ -5,6 +5,7 @@ namespace App\Misc;
 use App\Mailbox;
 use App\Option;
 use App\SendLog;
+use Webklex\IMAP\Client;
 
 class Mail
 {
@@ -162,6 +163,40 @@ class Mail
             }
         } else {
             SendLog::log(null, null, $to, SendLog::MAIL_TYPE_TEST, SendLog::STATUS_ACCEPTED);
+            return true;
+        }
+    }
+
+    /**
+     * Check POP3/IMAP connection to the mailbox.
+     */
+    public static function fetchTest($mailbox)
+    {
+        $client = new Client([
+            'host'          => $mailbox->in_server,
+            'port'          => $mailbox->in_port,
+            'encryption'    => $mailbox->getInEncryptionName(),
+            'validate_cert' => true,
+            'username'      => $mailbox->in_username,
+            'password'      => $mailbox->in_password,
+            'protocol'      => $mailbox->getInProtocolName(),
+        ]);
+
+        // Connect to the Server
+        $client->connect();
+
+        // Get folder
+        $folder = $client->getFolder('INBOX');
+
+        if (!$folder) {
+            throw new \Exception('Could not get mailbox folder: INBOX', 1);
+        }
+        // Get unseen messages for a period
+        $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
+
+        if ($client->getLastError()) {
+            throw new \Exception($client->getLastError(), 1);
+        } else {
             return true;
         }
     }

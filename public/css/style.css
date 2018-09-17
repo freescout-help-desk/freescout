@@ -754,6 +754,12 @@ a h4 {
 .note-editor .btn-default:hover {
     background-color: #e6e6e6;
     border-color: #e6e6e6;
+    color: #72808e;
+}
+.note-editor .note-actions .btn-default.active,
+.note-editor .note-actions .btn-default:hover {
+    background-color: transparent;
+    border-color: transparent;
 }
 .note-editor.panel {
     margin: 0;

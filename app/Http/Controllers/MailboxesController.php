@@ -385,7 +385,7 @@ class MailboxesController extends Controller
                 $mailbox = Mailbox::find($request->mailbox_id);
 
                 if (!$mailbox) {
-                    $response['msg'] = __('Conversation not found');
+                    $response['msg'] = __('Mailbox not found');
                 } elseif (!$user->can('update', $mailbox)) {
                     $response['msg'] = __('Not enough permissions');
                 } elseif (empty($request->to)) {
@@ -414,6 +414,36 @@ class MailboxesController extends Controller
                 if (!empty($request->to)) {
                     \App\Option::set('send_test_to', $request->to);
                 }
+                break;
+
+            // Test sending emails from mailbox
+            case 'fetch_test':
+                $mailbox = Mailbox::find($request->mailbox_id);
+
+                if (!$mailbox) {
+                    $response['msg'] = __('Conversation not found');
+                } elseif (!$user->can('update', $mailbox)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    $test_result = false;
+
+                    try {
+                        $test_result = \App\Misc\Mail::fetchTest($mailbox);
+                    } catch (\Exception $e) {
+                        $response['msg'] = $e->getMessage();
+                    }
+
+                    if (!$test_result && !$response['msg']) {
+                        $response['msg'] = __('Error occurend connecting to the server');
+                    }
+                }
+
+                if (!$response['msg']) {
+                    $response['status'] = 'success';
+                }
+
                 break;
 
             default:

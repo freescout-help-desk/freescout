@@ -2,6 +2,8 @@
 
 @section('title_full', __('Connection Settings').' - '.$mailbox->name)
 
+@section('body_attrs')@parent data-mailbox_id="{{ $mailbox->id }}"@endsection
+
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
     @include('mailboxes/sidebar_menu')
@@ -88,24 +90,16 @@
                     </div>
 
                     <div class="form-group{{ $errors->has('in_encryption') ? ' has-error' : '' }}">
-                            <label for="in_encryption" class="col-sm-2 control-label">{{ __('Encryption') }}</label>
+                        <label for="in_encryption" class="col-sm-2 control-label">{{ __('Encryption') }}</label>
 
-                            <div class="col-md-6">
-                                <select id="in_encryption" class="form-control input-sized" name="in_encryption" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
-                                    <option value="{{ App\Mailbox::IN_ENCRYPTION_NONE }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_NONE)selected="selected"@endif>{{ __('None') }}</option>
-                                    <option value="{{ App\Mailbox::IN_ENCRYPTION_SSL }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_SSL)selected="selected"@endif>{{ __('SSL') }}</option>
-                                    <option value="{{ App\Mailbox::IN_ENCRYPTION_TLS }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_TLS)selected="selected"@endif>{{ __('TLS') }}</option>
-                                </select>
+                        <div class="col-md-6">
+                            <select id="in_encryption" class="form-control input-sized" name="in_encryption" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
+                                <option value="{{ App\Mailbox::IN_ENCRYPTION_NONE }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_NONE)selected="selected"@endif>{{ __('None') }}</option>
+                                <option value="{{ App\Mailbox::IN_ENCRYPTION_SSL }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_SSL)selected="selected"@endif>{{ __('SSL') }}</option>
+                                <option value="{{ App\Mailbox::IN_ENCRYPTION_TLS }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_TLS)selected="selected"@endif>{{ __('TLS') }}</option>
+                            </select>
 
-                                @include('partials/field_error', ['field'=>'in_encryption'])
-                            </div>
-                        </div>
-
-                    <div class="form-group margin-top">
-                        <div class="col-md-6 col-sm-offset-2">
-                            <button type="button" class="btn btn-default btn-sm">
-                                {{ __('Check Connection') }}
-                            </button>
+                            @include('partials/field_error', ['field'=>'in_encryption'])
                         </div>
                     </div>
 
@@ -113,6 +107,10 @@
                         <div class="col-md-6 col-sm-offset-2">
                             <button type="submit" class="btn btn-primary">
                                 {{ __('Save Settings') }}
+                            </button>
+                            &nbsp;
+                            <button type="button" class="btn btn-default btn-sm" id="check-connection" data-loading-text="{{ __('Connecting') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>
+                                {{ __('Check Connection') }}
                             </button>
                         </div>
                     </div>
@@ -127,4 +125,5 @@
 @section('javascript')
     @parent
     mailboxConnectionInit('{{ App\Mailbox::OUT_METHOD_SMTP }}');
+    mailboxConnectionIncomingInit();
 @endsection

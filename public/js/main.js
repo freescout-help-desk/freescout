@@ -309,6 +309,32 @@ function mailboxConnectionInit(out_method_smtp)
 	});
 }
 
+function mailboxConnectionIncomingInit()
+{
+	$(document).ready(function(){
+	    $('#check-connection').click(function(event) {
+	    	var button = $(this);
+	    	button.button('loading');
+	    	fsAjax(
+				{
+					action: 'fetch_test',
+					mailbox_id: getGlobalAttr('mailbox_id')
+				}, 
+				laroute.route('mailboxes.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == 'success') {
+						showFloatingAlert('success', Lang.get("messages.connection_established"));
+					} else {
+						showAjaxError(response);
+					}
+					button.button('reset');
+				}, 
+				true
+			);
+		});
+	});
+}
+
 function mailSettingsInit()
 {
 	$(document).ready(function(){
