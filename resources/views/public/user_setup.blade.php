@@ -28,7 +28,7 @@
                                {{ __("Let's setup your profile.") }}
                             </p>
                         </div>
-                        <form class="form-horizontal margin-top" method="POST" action="">
+                        <form class="form-horizontal margin-top" method="POST" action="" enctype="multipart/form-data">
                             {{ csrf_field() }}
 
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
@@ -110,11 +110,19 @@
                             </div>
 
                             <div class="form-group{{ $errors->has('photo_url') ? ' has-error' : '' }}">
-                                <label for="photo_url" class="col-sm-4 control-label">{{ __('Photo') }} (todo)</label>
+                                <label for="photo_url" class="col-sm-4 control-label">{{ __('Photo') }}</label>
 
                                 <div class="col-sm-7">
-                                    <input type="file" name="photo" id="photo" disabled="disabled">
-                                    <p class="block-help">{{ __('Only visible in :app_name.', ['app_name' => \Config::get('app.name')]) }} {{ __('Image will be re-sized to 200x200. JPG, GIF, PNG accepted.') }}</p>
+                                    <div class="controls">
+                                        @if ($user->photo_url)
+                                            <div id="user-profile-photo">
+                                                <img src="{{ $user->getPhotoUrl() }}" alt="{{ __('Profile Image') }}" width="50" height="50"><br/>
+                                                <a href="#" id="user-photo-delete" data-loading-text="{{ __('Deleting') }}…">{{ __('Delete Photo') }}</a>
+                                            </div>
+                                        @endif
+                                        <input type="file" name="photo_url">
+                                        <p class="block-help">{{ __('Only visible in :app_name.', ['app_name' => \Config::get('app.name')]) }} {{ __('Image will be re-sized to 200x200. JPG, GIF, PNG accepted.') }}</p>
+                                    </div>
                                     @include('partials/field_error', ['field'=>'photo_url'])
                                 </div>
                             </div>

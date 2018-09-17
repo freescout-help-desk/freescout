@@ -27,6 +27,9 @@ class PublicController extends Controller
      */
     public function userSetup($hash)
     {
+        if (auth()->user()) {
+            return redirect()->route('dashboard');
+        }
         $user = User::where('invite_hash', $hash)->first();
 
         return view('public/user_setup', ['user' => $user]);
@@ -38,6 +41,9 @@ class PublicController extends Controller
      */
     public function userSetupSave($hash, Request $request)
     {
+        if (auth()->user()) {
+            return redirect()->route('dashboard');
+        }
         $user = User::where('invite_hash', $hash)->first();
 
         if (!$user) {
@@ -51,7 +57,24 @@ class PublicController extends Controller
             'phone'       => 'max:60',
             'timezone'    => 'required|string|max:255',
             'time_format' => 'required',
+            'photo_url'   => 'nullable|image|mimes:jpeg,png,jpg,gif',
         ]);
+        $validator->setAttributeNames([
+            'photo_url'   => __('Photo'),
+        ]);
+
+        // Photo
+        $validator->after(function ($validator) use ($user, $request) {
+            if ($request->hasFile('photo_url')) {
+                $path_url = $user->savePhoto($request->file('photo_url'));
+
+                if ($path_url) {
+                    $user->photo_url = $path_url;
+                } else {
+                    $validator->errors()->add('photo_url', __('Error occured processing the image. Make sure that PHP GD extension is enabled.'));
+                }
+            }
+        });
 
         if ($validator->fails()) {
             return redirect()->route('user_setup', ['hash' => $hash])
@@ -59,7 +82,11 @@ class PublicController extends Controller
                         ->withInput();
         }
 
-        $user->fill($request->all());
+        $request_data = $request->all();
+        if (isset($request_data['photo_url'])) {
+            unset($request_data['photo_url']);
+        }
+        $user->fill($request_data);
 
         $user->password = bcrypt($request->password);
 
