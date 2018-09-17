@@ -1,4 +1,4 @@
-{{ App\Mail\Mail::REPLY_SEPARATOR_TEXT }}
+{{ App\Misc\Mail::REPLY_SEPARATOR_TEXT }}
 @foreach ($threads as $thread)
 -----------------------------------------------------------
 ## {{ $thread->getCreatedBy()->getFirstName(true) }} @if ($loop->last){{ __('sent a message') }}@else {{ __('replied') }}@endif, {{ __('on :date', ['date' => App\Customer::dateFormat($thread->created_at, 'M j @ H:i')]) }} ({{ \Config::get('app.timezone') }}):

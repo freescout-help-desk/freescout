@@ -284,6 +284,28 @@ function mailboxConnectionInit(out_method_smtp)
 				$('#out_method_'+out_method_smtp+'_options :input').removeAttr('required');
 			}
 		});
+
+	    $('#send-test-trigger').click(function(event) {
+	    	var button = $(this);
+	    	button.button('loading');
+	    	fsAjax(
+				{
+					action: 'send_test',
+					mailbox_id: getGlobalAttr('mailbox_id'),
+					to: $('#send_test').val()
+				}, 
+				laroute.route('mailboxes.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == 'success') {
+						showFloatingAlert('success', Lang.get("messages.email_sent"));
+					} else {
+						showAjaxError(response);
+					}
+					button.button('reset');
+				}, 
+				true
+			);
+		});
 	});
 }
 

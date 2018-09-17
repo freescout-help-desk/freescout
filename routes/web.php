@@ -73,6 +73,7 @@ Route::get('/settings/connection-settings/{id}/incoming', 'MailboxesController@c
 Route::post('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncomingSave');
 Route::get('/settings/mailbox/{id}/auto-reply', 'MailboxesController@autoReply')->name('mailboxes.auto_reply');
 Route::post('/settings/mailbox/{id}/auto-reply', 'MailboxesController@autoReplySave');
+Route::post('/mailbox/ajax', ['uses' => 'MailboxesController@ajax', 'laroute' => true])->name('mailboxes.ajax');
 
 // Customers
 Route::get('/customer/{id}/edit', 'CustomersController@update')->name('customers.update');

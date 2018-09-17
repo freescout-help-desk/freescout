@@ -67,8 +67,8 @@ class AutoReply extends Mailable
         ];
 
         // Set variables
-        $subject = \App\Mail\Mail::replaceMailVars($this->mailbox->auto_reply_subject, $data);
-        $view_params['auto_reply_message'] = \App\Mail\Mail::replaceMailVars($this->mailbox->auto_reply_message, $data);
+        $subject = \App\Misc\Mail::replaceMailVars($this->mailbox->auto_reply_subject, $data);
+        $view_params['auto_reply_message'] = \App\Misc\Mail::replaceMailVars($this->mailbox->auto_reply_message, $data);
 
         $message = $this->subject($subject)
                     ->view('emails/customer/auto_reply', $view_params)

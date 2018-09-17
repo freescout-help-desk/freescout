@@ -54,6 +54,7 @@ var lang_messages = {
             "yes": "{{ __("Yes") }}",
             "confirm_delete_photo": "{{ __("Delete this photo?") }}",
             "delete": "{{ __("Delete") }}",
+            "email_sent": "{{ __("Email passed for delivery. If you don't receive a test email, check your mail server logs.") }}",
 
             "drag_image_file": "{{ __("Drag image or file here") }}"
         }@if (!$loop->last),@endif

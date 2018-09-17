@@ -44,7 +44,7 @@ class SendNotificationToUsers implements ShouldQueue
         $mailbox = $this->conversation->mailbox;
 
         // Configure mail driver according to Mailbox settings
-        \App\Mail\Mail::setMailDriver($mailbox);
+        \App\Misc\Mail::setMailDriver($mailbox);
 
         // Threads has to be sorted here, if sorted before, they come here in wrong order
         $this->threads = $this->threads->sortByDesc(function ($item, $key) {
@@ -60,7 +60,7 @@ class SendNotificationToUsers implements ShouldQueue
         }
 
         // All notification for the same conversation has same dummy Message-ID
-        $prev_message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY.'-'.$this->conversation->id.'-'.md5($this->conversation->id).'@'.$mailbox->getEmailDomain();
+        $prev_message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY.'-'.$this->conversation->id.'-'.md5($this->conversation->id).'@'.$mailbox->getEmailDomain();
         $headers['In-Reply-To'] = '<'.$prev_message_id.'>';
         $headers['References'] = '<'.$prev_message_id.'>';
 
@@ -68,7 +68,7 @@ class SendNotificationToUsers implements ShouldQueue
         $global_exception = null;
 
         foreach ($this->users as $user) {
-            $message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION.'-'.$last_thread->id.'-'.$user->id.'-'.time().'@'.$mailbox->getEmailDomain();
+            $message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_NOTIFICATION.'-'.$last_thread->id.'-'.$user->id.'-'.time().'@'.$mailbox->getEmailDomain();
             $headers['Message-ID'] = $message_id;
 
             // If this is notification on message from customer set customer as sender name

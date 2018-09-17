@@ -2,6 +2,8 @@
 
 @section('title_full', __('Connection Settings').' - '.$mailbox->name)
 
+@section('body_attrs')@parent data-mailbox_id="{{ $mailbox->id }}"@endsection
+
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
     @include('mailboxes/sidebar_menu')
@@ -121,7 +123,7 @@
                     </div>
                     
                     <div class="form-group margin-bottom-0">
-                        <label for="send_test" class="col-sm-2 control-label">{{ __('Improve Delivery') }}</label>
+                        <label class="col-sm-2 control-label">{{ __('Improve Delivery') }}</label>
 
                         <div class="col-sm-6">
                             <div class="panel-group accordion">
@@ -181,9 +183,9 @@
 
                         <div class="col-md-6">
                             <div class="input-group input-sized">
-                                <input id="send_test" type="email" class="form-control" value="{{ old('email', $mailbox->email) }}" maxlength="128">
+                                <input id="send_test" type="email" class="form-control" value="{{ old('email', \App\Option::get('send_test_to', $mailbox->email)) }}" maxlength="128">
                                 <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button">{{ __('Send Test') }}</button>
+                                    <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…">{{ __('Send Test') }}</button>
                                 </span>
                             </div>
                         </div>

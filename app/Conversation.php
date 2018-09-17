@@ -824,7 +824,7 @@ class Conversation extends Model
      */
     public function getSignatureProcessed()
     {
-        if (!\App\Mail\Mail::hasVars($this->mailbox->signature)) {
+        if (!\App\Misc\Mail::hasVars($this->mailbox->signature)) {
             return $this->mailbox->signature;
         }
         $data = [
@@ -834,7 +834,7 @@ class Conversation extends Model
         ];
 
         // Set variables
-        return \App\Mail\Mail::replaceMailVars($this->mailbox->signature, $data);
+        return \App\Misc\Mail::replaceMailVars($this->mailbox->signature, $data);
     }
 
     /**

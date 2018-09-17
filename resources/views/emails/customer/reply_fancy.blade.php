@@ -13,7 +13,7 @@
 	<table cellspacing="0" border="0" cellpadding="0" width="100%">
 	    <tr>
 	        <td>
-	            <table id="{{ App\Mail\Mail::REPLY_SEPARATOR_HTML }}" class="{{ App\Mail\Mail::REPLY_SEPARATOR_HTML }}" width="100%" border="0" cellspacing="0" cellpadding="0">
+	            <table id="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" class="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" width="100%" border="0" cellspacing="0" cellpadding="0">
 	            	@foreach ($threads as $thread)
 		            	<tr>
 						    <td>

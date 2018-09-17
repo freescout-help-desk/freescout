@@ -31,6 +31,7 @@ class SendLog extends Model
     const MAIL_TYPE_INVITE            = 4;
     const MAIL_TYPE_PASSWORD_CHANGED  = 5;
     const MAIL_TYPE_WRONG_USER_EMAIL_MESSAGE = 6;
+    const MAIL_TYPE_TEST = 7;
 
     /**
      * The attributes that are not mass assignable.
@@ -142,6 +143,8 @@ class SendLog extends Model
                 return __('Password changed notification');
             case self::MAIL_TYPE_WRONG_USER_EMAIL_MESSAGE:
                 return __('User using wrong email notification');
+            case self::MAIL_TYPE_TEST:
+                return __('Test email');
         }
     }
 }

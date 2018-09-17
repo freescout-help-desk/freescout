@@ -101,7 +101,7 @@ class SettingsController extends Controller
                 break;
             case 'emails':
                 $settings = [
-                    'mail_from' => \App\Mail\Mail::getSystemMailFrom(),
+                    'mail_from' => \App\Misc\Mail::getSystemMailFrom(),
                     'mail_driver' => Option::get('mail_driver', \Config::get('mail.driver')),
                     'mail_host' => Option::get('mail_host', \Config::get('mail.host')),
                     'mail_port' => Option::get('mail_port', \Config::get('mail.port')),

@@ -10,7 +10,7 @@ use App\Events\ConversationCustomerChanged;
 use App\Events\CustomerCreatedConversation;
 use App\Events\CustomerReplied;
 use App\Events\UserReplied;
-use App\Mail\Mail;
+use App\Misc\Mail;
 use App\Mailbox;
 use App\Option;
 use App\Subscription;
@@ -218,7 +218,7 @@ class FetchEmails extends Command
                     }
 
                     // Is it a message from Customer or User replied to the notification
-                    preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $in_reply_to, $m);
+                    preg_match('/^'.\App\Misc\Mail::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $in_reply_to, $m);
 
                     if (!$is_bounce && !empty($m[1]) && !empty($m[2])) {
                         // Reply from User to the notification
@@ -260,14 +260,14 @@ class FetchEmails extends Command
                                 $prev_thread_id = '';
 
                                 // Customer replied to the email from user
-                                preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
+                                preg_match('/^'.\App\Misc\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
                                 if (!empty($m[1])) {
                                     $prev_thread_id = $m[1];
                                 }
 
                                 // Customer replied to the auto reply
                                 if (!$prev_thread_id) {
-                                    preg_match('/^'.\App\Mail\Mail::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-/", $prev_message_id, $m);
+                                    preg_match('/^'.\App\Misc\Mail::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-/", $prev_message_id, $m);
                                     if (!empty($m[1])) {
                                         $prev_thread_id = $m[1];
                                     }

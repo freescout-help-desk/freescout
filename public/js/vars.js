@@ -43,6 +43,7 @@ var lang_messages = {
             "yes": "Yes",
             "confirm_delete_photo": "Delete this photo?",
             "delete": "Delete",
+            "email_sent": "Email passed for delivery. If you don&#039;t receive a test email, check your mail server logs.",
 
             "drag_image_file": "Drag image or file here"
         }    };

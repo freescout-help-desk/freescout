@@ -407,7 +407,7 @@ class User extends Authenticatable
         }
 
         try {
-            \App\Mail\Mail::setSystemMailDriver();
+            \App\Misc\Mail::setSystemMailDriver();
 
             \Mail::to([['name' => $this->getFullName(), 'email' => $this->email]])
                 ->send(new UserInvite($this));
@@ -461,7 +461,7 @@ class User extends Authenticatable
         }
 
         try {
-            \App\Mail\Mail::setSystemMailDriver();
+            \App\Misc\Mail::setSystemMailDriver();
 
             \Mail::to([['name' => $this->getFullName(), 'email' => $this->email]])
                 ->send(new PasswordChanged($this));
@@ -498,7 +498,7 @@ class User extends Authenticatable
      */
     public function sendPasswordResetNotification($token)
     {
-        \App\Mail\Mail::setSystemMailDriver();
+        \App\Misc\Mail::setSystemMailDriver();
 
         $this->notify(new ResetPasswordNotification($token));
     }

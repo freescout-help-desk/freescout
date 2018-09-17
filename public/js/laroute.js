@@ -28,6 +28,10 @@
         "name": "conversations.ajax_html"
     },
     {
+        "uri": "mailbox\/ajax",
+        "name": "mailboxes.ajax"
+    },
+    {
         "uri": "customer\/ajax-search",
         "name": "customers.ajax_search"
     }

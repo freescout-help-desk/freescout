@@ -65,7 +65,7 @@ class SendReplyToCustomer implements ShouldQueue
         }
 
         // Configure mail driver according to Mailbox settings
-        \App\Mail\Mail::setMailDriver($mailbox, $this->last_thread->created_by_user);
+        \App\Misc\Mail::setMailDriver($mailbox, $this->last_thread->created_by_user);
 
         if (count($this->threads) == 1) {
             $new = true;
@@ -84,7 +84,7 @@ class SendReplyToCustomer implements ShouldQueue
             $headers['In-Reply-To'] = '<'.$prev_thread->message_id.'>';
             $headers['References'] = '<'.$prev_thread->message_id.'>';
         }
-        $this->message_id = \App\Mail\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER.'-'.$this->last_thread->id.'-'.md5($this->last_thread->id).'@'.$mailbox->getEmailDomain();
+        $this->message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER.'-'.$this->last_thread->id.'-'.md5($this->last_thread->id).'@'.$mailbox->getEmailDomain();
         $headers['Message-ID'] = $this->message_id;
 
         $this->customer_email = $this->conversation->customer_email;
@@ -92,12 +92,12 @@ class SendReplyToCustomer implements ShouldQueue
         $bcc_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getBccArray());
 
         // Remove customer email from CC and BCC
-        $cc_array = \App\Mail\Mail::removeEmailFromArray($cc_array, $this->customer_email);
-        $bcc_array = \App\Mail\Mail::removeEmailFromArray($bcc_array, $this->customer_email);
+        $cc_array = \App\Misc\Mail::removeEmailFromArray($cc_array, $this->customer_email);
+        $bcc_array = \App\Misc\Mail::removeEmailFromArray($bcc_array, $this->customer_email);
 
         // Remove from BCC emails which are present in CC
         foreach ($cc_array as $cc_email) {
-            $bcc_array = \App\Mail\Mail::removeEmailFromArray($bcc_array, $cc_email);
+            $bcc_array = \App\Misc\Mail::removeEmailFromArray($bcc_array, $cc_email);
         }
 
         $this->recipients = array_merge([$this->customer_email], $cc_array, $bcc_array);

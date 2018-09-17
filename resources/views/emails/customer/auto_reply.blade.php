@@ -3,7 +3,7 @@
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 </head>
 <body bgcolor="#ffffff">
-    <div id="{{ App\Mail\Mail::REPLY_SEPARATOR_HTML }}" class="{{ App\Mail\Mail::REPLY_SEPARATOR_HTML }}">
+    <div id="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" class="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}">
     	<div style="font-family:sans-serif;">
         	{!! $auto_reply_message !!}
 		</div>

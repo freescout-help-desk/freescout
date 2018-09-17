@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Mail;
+namespace App\Misc;
 
 use App\Mailbox;
 use App\Option;
+use App\SendLog;
 
 class Mail
 {
@@ -134,5 +135,34 @@ class Mail
     public static function getSystemMailDriver()
     {
         return Option::get('mail_driver', 'mail');
+    }
+
+    /**
+     * Send test email from mailbox.
+     */
+    public static function sendTestMail($mailbox, $to)
+    {
+        // Configure mail driver according to Mailbox settings
+        \App\Misc\Mail::setMailDriver($mailbox);
+
+        $status_message = '';
+        try {
+            \Mail::to([$to])->send(new \App\Mail\Test($mailbox));
+        } catch (\Exception $e) {
+            // We come here in case SMTP server unavailable for example
+            $status_message = $e->getMessage();
+        }
+
+        if (\Mail::failures() || $status_message) {
+            SendLog::log(null, null, $to, SendLog::MAIL_TYPE_TEST, SendLog::STATUS_SEND_ERROR, null, null, $status_message);
+            if ($status_message) {
+                throw new \Exception($status_message, 1);
+            } else {
+                return false;
+            }
+        } else {
+            SendLog::log(null, null, $to, SendLog::MAIL_TYPE_TEST, SendLog::STATUS_ACCEPTED);
+            return true;
+        }
     }
 }
