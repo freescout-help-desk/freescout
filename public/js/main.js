@@ -644,7 +644,7 @@ function getGlobalAttr(attr)
 function convEditorInit()
 {
 	$('#body').summernote({
-		minHeight: 200,
+		minHeight: 170,
 		dialogsInBody: true,
 		dialogsFade: true,
 		disableResizeEditor: true,

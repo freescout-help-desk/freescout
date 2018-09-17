@@ -105,6 +105,9 @@ class WebsiteNotification extends Notification
 
             if (!empty($notification->data['thread_id'])) {
                 $thread = $threads->firstWhere('id', $notification->data['thread_id']);
+                if (empty($thread)) {
+                    continue;
+                }
                 if ($thread->user_id) {
                     $user = $thread->user;
                 }
@@ -114,17 +117,20 @@ class WebsiteNotification extends Notification
                 if ($thread->created_by_customer_id) {
                     $created_by_customer = $thread->created_by_customer_id;
                 }
+            } else {
+                continue;
             }
 
             $last_thread_body = '';
             $conversation = null;
 
-            if (!empty($thread)) {
-                $last_thread = $last_threads->firstWhere('conversation_id', $thread->conversation_id);
-                if ($last_thread) {
-                    $last_thread_body = $last_thread->body;
-                    $conversation = $last_thread->conversation;
-                }
+            $last_thread = $last_threads->firstWhere('conversation_id', $thread->conversation_id);
+            if ($last_thread) {
+                $last_thread_body = $last_thread->body;
+                $conversation = $last_thread->conversation;
+            }
+            if (empty($conversation)) {
+                continue;
             }
 
             $data[] = [

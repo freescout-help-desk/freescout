@@ -346,7 +346,6 @@ class ConversationsController extends Controller
                         $response['msg'] = __('Not enough permissions');
                     }
                 }
-
                 $new = false;
                 if (empty($request->conversation_id)) {
                     $new = true;
@@ -355,6 +354,18 @@ class ConversationsController extends Controller
                 $is_note = false;
                 if (!empty($request->is_note)) {
                     $is_note = true;
+                }
+
+                // If reply is being created from draft, there is already thread created
+                $thread = null;
+                $from_draft = false;
+                if (!$is_note && !$response['msg'] && !empty($request->thread_id)) {
+                    $thread = Thread::find($request->thread_id);
+                    if ($thread && (!$conversation || $thread->conversation_id != $conversation->id)) {
+                        $response['msg'] = __('Incorrect thread');
+                    } else {
+                        $from_draft = false;
+                    }
                 }
 
                 // Validate form
@@ -484,44 +495,51 @@ class ConversationsController extends Controller
                     }
 
                     // Create thread
-                    $thread = new Thread();
-                    $thread->conversation_id = $conversation->id;
-                    $thread->user_id = auth()->user()->id;
-                    if ($is_note) {
-                        $thread->type = Thread::TYPE_NOTE;
+                    if (!$thread) {
+                        $thread = new Thread();
+                        $thread->conversation_id = $conversation->id;
+                        if ($is_note) {
+                            $thread->type = Thread::TYPE_NOTE;
+                        } else {
+                            $thread->type = Thread::TYPE_MESSAGE;
+                        }
+                        $thread->source_via = Thread::PERSON_USER;
+                        $thread->source_type = Thread::SOURCE_TYPE_WEB;
                     } else {
                         $thread->type = Thread::TYPE_MESSAGE;
+                        $thread->created_at = $now;
                     }
                     if ($new) {
                         $thread->first = true;
                     }
+                    $thread->user_id = auth()->user()->id;
                     $thread->status = $request->status;
                     $thread->state = Thread::STATE_PUBLISHED;
+                    $thread->customer_id = $customer->id;
+                    $thread->created_by_user_id = auth()->user()->id;
+                    $thread->edited_by_user_id = null;
+                    $thread->edited_at = null;
                     $thread->body = $request->body;
                     $thread->setTo($to);
                     // We save CC and BCC as is and filter emails when sending replies
                     $thread->setCc($request->cc);
                     $thread->setBcc($request->bcc);
-                    $thread->source_via = Thread::PERSON_USER;
-                    $thread->source_type = Thread::SOURCE_TYPE_WEB;
-                    $thread->customer_id = $customer->id;
-                    $thread->created_by_user_id = auth()->user()->id;
-                    $thread->edited_by_user_id = null;
-                    $thread->edited_at = null;
                     if ($attachments_info['has_attachments']) {
                         $thread->has_attachments = true;
                     }
                     $thread->save();
 
                     // If thread has been created from draft, remove the draft
-                    if ($request->thread_id) {
-                        $draft_thread = Thread::find($request->thread_id);
-                        if ($draft_thread) {
-                            $draft_thread->delete();
+                    // if ($request->thread_id) {
+                    //     $draft_thread = Thread::find($request->thread_id);
+                    //     if ($draft_thread) {
+                    //         $draft_thread->delete();
+                    //     }
+                    // }
 
-                            // Remove conversation from drafts folder if needed
-                            $conversation->maybeRemoveFromDrafts();
-                        }
+                    if ($from_draft) {
+                        // Remove conversation from drafts folder if needed
+                        $conversation->maybeRemoveFromDrafts();
                     }
 
                     $response['status'] = 'success';
