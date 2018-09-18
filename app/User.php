@@ -220,11 +220,9 @@ class User extends Authenticatable
      *
      * @return string
      */
-    public function generatePassword($length = 8)
+    public static function generateRandomPassword($length = 8)
     {
-        $this->password = Hash::make(str_random($length));
-
-        return $this->password;
+        return str_random($length);
     }
 
     /**

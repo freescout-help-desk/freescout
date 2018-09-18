@@ -73,10 +73,13 @@ class UsersController extends Controller
 
         $user = new User();
         $user->fill($request->all());
-        if (!empty($request->send_invite)) {
-            $password = $user->generatePassword();
+        if (empty($request->send_invite)) {
+            // Set password from request
+            $user->password = Hash::make($request->password);
+        } else {
+            // Set some random password before sending invite
+            $user->password = Hash::make($user->generateRandomPassword());
         }
-        $user->password = Hash::make($user->password);
         $user->save();
 
         $user->mailboxes()->sync($request->mailboxes);
