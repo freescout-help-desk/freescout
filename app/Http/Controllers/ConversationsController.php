@@ -895,6 +895,33 @@ class ConversationsController extends Controller
                 }
                 break;
 
+            // Delete conversation (move to DELETED folder)
+            case 'delete_conversation':
+                $conversation = Conversation::find($request->conversation_id);
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                } elseif (!$user->can('delete', $conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    $folder_id = $conversation->folder_id;
+                    $conversation->state = Conversation::STATE_DELETED;
+                    $conversation->user_updated_at = date('Y-m-d H:i:s');
+                    $conversation->updateFolder();
+                    $conversation->save();
+
+                    // Recalculate only old and new folders
+                    $conversation->mailbox->updateFoldersCounters();
+
+                    $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $folder_id]);
+
+                    $response['status'] = 'success';
+
+                    \Session::flash('flash_success_floating', __('Conversation deleted'));
+                }
+                break;
+
             default:
                 $response['msg'] = 'Unknown action';
                 break;

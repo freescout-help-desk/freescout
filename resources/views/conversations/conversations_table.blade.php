@@ -127,13 +127,13 @@
                         <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}">{{ $conversation->number }}</a>
                     </td>
                     <td class="conv-date">
-                        <a href="{{ $conversation->url() }}" @if (!in_array($conversation->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED])) data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conversation->getDateTitle() }}"@else title="{{ __('View conversation') }}" @endif >
+                        <a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED])) data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conversation->getDateTitle() }}"@else title="{{ __('View conversation') }}" @endif >
                             @if ($folder->type == App\Folder::TYPE_CLOSED)
                                 {{ App\User::dateDiffForHumans($conversation->closed_at) }}
                             @elseif ($folder->type == App\Folder::TYPE_DRAFTS)
                                 {{ App\User::dateDiffForHumans($conversation->updated_at) }}
                             @elseif ($folder->type == App\Folder::TYPE_DELETED)
-                                {{ App\User::dateDiffForHumans($conversation->updated_at) }}
+                                {{ App\User::dateDiffForHumans($conversation->user_updated_at) }}
                             @else
                                 {{ App\User::dateDiffForHumans($conversation->last_reply_at) }}
                             @endif

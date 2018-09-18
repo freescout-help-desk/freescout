@@ -45,6 +45,7 @@ var lang_messages = {
             "delete": "Delete",
             "email_sent": "Email passed for delivery. If you don&#039;t receive a test email, check your mail server logs.",
             "connection_established": "Connection established!",
+            "confirm_delete_conversation": "Delete this conversation?",
 
             "drag_image_file": "Drag image or file here"
         }    };

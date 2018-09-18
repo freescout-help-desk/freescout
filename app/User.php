@@ -8,6 +8,7 @@ namespace App;
 
 use App\Mail\PasswordChanged;
 use App\Mail\UserInvite;
+use App\Option;
 use App\Notifications\WebsiteNotification;
 use App\SendLog;
 use Carbon\Carbon;
@@ -592,5 +593,15 @@ class User extends Authenticatable
             Storage::delete(User::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
         $this->photo_url = '';
+    }
+
+    public function hasPermission($permission)
+    {
+        $permissions = Option::get('user_permissions');
+        if (!empty($permissions) && is_array($permissions) && in_array($permission, $permissions)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

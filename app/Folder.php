@@ -174,11 +174,16 @@ class Folder extends Model
         if ($this->type == Folder::TYPE_MINE && $this->user_id) {
             $this->active_count = Conversation::where('status', Conversation::STATUS_ACTIVE)
                 ->where('user_id', $this->user_id)
+                ->where('state', Conversation::STATE_PUBLISHED)
                 ->count();
             $this->total_count = Conversation::where('user_id', $this->user_id)
+                ->where('state', Conversation::STATE_PUBLISHED)
                 ->count();
         } elseif ($this->type == Folder::TYPE_STARRED) {
             $this->active_count = count(Conversation::getUserStarredConversationIds($this->mailbox_id, $this->user_id));
+            $this->total_count = $this->active_count;
+        } elseif ($this->type == Folder::TYPE_DELETED) {
+            $this->active_count = Conversation::where('state', Conversation::STATE_DELETED)->count();
             $this->total_count = $this->active_count;
         } elseif ($this->isIndirect()) {
             // Conversation are connected to folder via conversation_folder table.
@@ -186,6 +191,7 @@ class Folder extends Model
             $this->total_count = $this->active_count;
         } else {
             $this->active_count = $this->conversations()
+                ->where('state', Conversation::STATE_PUBLISHED)
                 ->where('status', Conversation::STATUS_ACTIVE)
                 ->count();
             $this->total_count = $this->conversations()->count();

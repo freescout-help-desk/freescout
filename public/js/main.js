@@ -649,6 +649,46 @@ function conversationInit()
 			e.preventDefault();
 		});
 
+	    // Delete conversation
+	    jQuery(".conv-delete").click(function(e){
+	    	var confirm_html = '<div>'+
+			'<div class="text-center">'+
+			'<div class="text-larger margin-top-10">'+Lang.get("messages.confirm_delete_conversation")+'</div>'+
+			'<div class="form-group margin-top">'+
+    		'<button class="btn btn-primary delete-conversation-ok">'+Lang.get("messages.delete")+'</button>'+
+    		'<button class="btn btn-link" data-dismiss="modal">'+Lang.get("messages.cancel")+'</button>'+
+    		'</div>'+
+    		'</div>'+
+    		'</div>';
+
+			showModalDialog(confirm_html, {
+				on_show: function(modal) {
+					modal.children().find('.delete-conversation-ok:first').click(function(e) {
+						modal.modal('hide');
+						fsAjax(
+							{
+								action: 'delete_conversation',
+								conversation_id: getGlobalAttr('conversation_id')
+							}, 
+							laroute.route('conversations.ajax'),
+							function(response) {
+								if (typeof(response.status) != "undefined" && response.status == "success" 
+									&& typeof(response.redirect_url) != "undefined"
+								) {
+									window.location.href = response.redirect_url;
+									return;
+								} else {
+									showAjaxError(response);
+								}
+								loaderHide();
+							}
+						);
+						e.preventDefault();
+					});
+				}
+			});
+		});
+
 		starConversationInit();
 		maybeShowStoredNote();
 		maybeShowDraft();

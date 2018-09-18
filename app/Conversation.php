@@ -150,7 +150,7 @@ class Conversation extends Model
     /**
      * Automatically converted into Carbon dates.
      */
-    protected $dates = ['created_at', 'updated_at', 'last_reply_at', 'closed_at'];
+    protected $dates = ['created_at', 'updated_at', 'last_reply_at', 'closed_at', 'user_updated_at'];
 
     /**
      * Attributes which are not fillable using fill() method.
@@ -428,6 +428,9 @@ class Conversation extends Model
             $query_next = $query;
             foreach ($order_bys as $order_by) {
                 foreach ($order_by as $field => $sort_order) {
+                    if (!$this->$field) {
+                        continue;
+                    }
                     if ($sort_order == 'asc') {
                         $query_next->where($field, '>=', $this->$field);
                     } else {
@@ -454,6 +457,9 @@ class Conversation extends Model
         $query_prev = $query;
         foreach ($order_bys as $order_by) {
             foreach ($order_by as $field => $sort_order) {
+                if (!$this->$field) {
+                    continue;
+                }
                 if ($sort_order == 'asc') {
                     $query_prev->where($field, '<=', $this->$field);
                 } else {
@@ -812,6 +818,8 @@ class Conversation extends Model
             if ($folder->type != Folder::TYPE_DRAFTS) {
                 $query_conversations->where('state', Conversation::STATE_PUBLISHED);
             }
+        } elseif ($folder->type == Folder::TYPE_DELETED) {
+            $query_conversations = $folder->conversations()->where('state', Conversation::STATE_DELETED);
         } else {
             $query_conversations = $folder->conversations()->where('state', Conversation::STATE_PUBLISHED);
         }

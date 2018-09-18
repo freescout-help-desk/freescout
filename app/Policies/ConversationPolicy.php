@@ -51,4 +51,16 @@ class ConversationPolicy
             }
         }
     }
+
+    /**
+     * Check if user can delete conversation.
+     */
+    public function delete(User $user, Conversation $conversation)
+    {
+        if ($user->isAdmin()) {
+            return true;
+        } else {
+            return $user->hasPermission(User::USER_PERM_DELETE_CONVERSATIONS);
+        }
+    }
 }
