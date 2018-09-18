@@ -29,35 +29,47 @@
                 </div>
 
                 <ul class="conv-info">
-                    <li>
-                        <div class="btn-group" data-toggle="tooltip" title="{{ __("Assignee") }}: {{ $conversation->getAssigneeName(true) }}">
-                            <button type="button" class="btn btn-default conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i></button>
-                            <button type="button" class="btn btn-default dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span>{{ $conversation->getAssigneeName(true) }}</span> 
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu conv-user">
-                                <li @if (!$conversation->user_id) class="active" @endif><a href="#" data-user_id="-1">{{ __("Anyone") }}</a></li>
-                                <li @if ($conversation->user_id == Auth::user()->id) class="active" @endif><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
-                                @foreach ($mailbox->usersHavingAccess(true) as $user)
-                                    @if ($user->id != Auth::user()->id)
-                                        <li @if ($conversation->user_id == $user->id) class="active" @endif><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
-                                    @endif
-                                @endforeach
-                            </ul>
-                        </div>
-                    </li>
+                    @if ($conversation->state != App\Conversation::STATE_DELETED)
+                        <li>
+                            <div class="btn-group" data-toggle="tooltip" title="{{ __("Assignee") }}: {{ $conversation->getAssigneeName(true) }}">
+                                <button type="button" class="btn btn-default conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i></button>
+                                <button type="button" class="btn btn-default dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span>{{ $conversation->getAssigneeName(true) }}</span> 
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu conv-user">
+                                    <li @if (!$conversation->user_id) class="active" @endif><a href="#" data-user_id="-1">{{ __("Anyone") }}</a></li>
+                                    <li @if ($conversation->user_id == Auth::user()->id) class="active" @endif><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
+                                    @foreach ($mailbox->usersHavingAccess(true) as $user)
+                                        @if ($user->id != Auth::user()->id)
+                                            <li @if ($conversation->user_id == $user->id) class="active" @endif><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
+                                        @endif
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </li>
+                    @endif
                     <li>
                         <div class="btn-group" data-toggle="tooltip" title="{{ __("Status") }}: {{ $conversation->getStatusName() }}">
-                            <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
-                            <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span>{{ $conversation->getStatusName() }}</span> <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu conv-status">
-                                @foreach (App\Conversation::$statuses as $status => $dummy)
-                                    <li @if ($conversation->status == $status) class="active" @endif><a href="#" data-status="{{ $status }}">{{ App\Conversation::statusCodeToName($status) }}</a></li>
-                                @endforeach
-                            </ul>
+                            @if ($conversation->state != App\Conversation::STATE_DELETED)
+                                <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
+                                <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span>{{ $conversation->getStatusName() }}</span> <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu conv-status">
+                                    @foreach (App\Conversation::$statuses as $status => $dummy)
+                                        <li @if ($conversation->status == $status) class="active" @endif><a href="#" data-status="{{ $status }}">{{ App\Conversation::statusCodeToName($status) }}</a></li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <button type="button" class="btn btn-grey btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-trash"></i></button>
+                                <button type="button" class="btn btn-grey btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span>{{ __('Deleted') }}</span> <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu conv-status">
+                                    <li><a href="#" class="conv-restore-trigger">{{ __('Restore') }}</a></li>
+                                </ul>
+                            @endif
                         </div>
                     </li><li class="conv-next-prev">
                         <a href="{{ $conversation->urlPrev() }}" class="glyphicon glyphicon-menu-left" data-toggle="tooltip" title="{{ __("Newer") }}"></a>

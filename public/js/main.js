@@ -547,9 +547,14 @@ function conversationInit()
 		// Change conversation status
 	    jQuery(".conv-status li > a").click(function(e){
 			if (!$(this).hasClass('active')) {
+				var status = $(this).attr('data-status');
+				// Restore conversation button does not have a status
+				if (!status) {
+					return;
+				}
 				fsAjax({
 					action: 'conversation_change_status',
-					status: $(this).attr('data-status'),
+					status: status,
 					conversation_id: getGlobalAttr('conversation_id')
 				}, 
 				laroute.route('conversations.ajax'),
