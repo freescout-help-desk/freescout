@@ -379,6 +379,7 @@ class FetchEmails extends Command
         // Find conversation
         $new = false;
         $conversation = null;
+        $prev_customer_id = null;
         $now = date('Y-m-d H:i:s');
 
         $customer = Customer::create($from);
