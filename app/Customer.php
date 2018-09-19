@@ -467,8 +467,12 @@ class Customer extends Model
      */
     public function getFullName($email_if_empty = false)
     {
-        if ($this->first_name || $this->last_name) {
+        if ($this->first_name && $this->last_name) {
             return $this->first_name.' '.$this->last_name;
+        } elseif (!$this->last_name) {
+            return $this->first_name;
+        } elseif (!$this->first_name) {
+            return $this->last_name;
         } elseif ($email_if_empty) {
             return $this->getMainEmail();
         }

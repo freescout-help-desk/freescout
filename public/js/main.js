@@ -2238,7 +2238,8 @@ function stripTags(html)
 {
 	var div = document.createElement("div");
 	div.innerHTML = html;
-	return text = div.textContent || div.innerText || "";
+	var text = div.textContent || div.innerText || "";
+	return text;
 }
 
 function htmlDecode(input){
