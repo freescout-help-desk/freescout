@@ -81,4 +81,11 @@ class ActivityLog extends Activity
                 return ucfirst($log_name);
         }
     }
+
+    public static function formatColTitle($col)
+    {
+        $col = str_replace('_', ' ', $col);
+        $col = ucfirst($col);
+        return $col;
+    }
 }

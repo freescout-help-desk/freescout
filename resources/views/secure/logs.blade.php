@@ -28,7 +28,7 @@
             <thead>
                 <tr>
                     @foreach ($cols as $col)
-                        <th>{{ ucfirst($col) }}</th>
+                        <th>{{ App\ActivityLog::formatColTitle($col) }}</th>
                     @endforeach
                 </tr>
             </thead>
