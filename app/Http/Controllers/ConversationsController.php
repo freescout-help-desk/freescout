@@ -58,16 +58,23 @@ class ConversationsController extends Controller
             $user->clearWebsiteNotificationsCache();
         }
 
-        // Detect folder
+        // Detect folder and redirect if needed
         $folder = null;
         if (Conversation::getFolderParam()) {
             $folder = $conversation->mailbox->folders()->where('folders.id', Conversation::getFolderParam())->first();
 
-            // Check if conversation can be located in the passed folder_id
-            if (!$conversation->isInFolderAllowed($folder)) {
-                $request->session()->reflash();
+            if ($folder) {
+                // Check if conversation can be located in the passed folder_id
+                if (!$conversation->isInFolderAllowed($folder)) {
+                    $request->session()->reflash();
 
-                return redirect()->away($conversation->url($conversation->folder_id));
+                    return redirect()->away($conversation->url($conversation->folder_id));
+                }
+                // If conversation assigned to user, select Mine folder instead of Assigned
+                if ($folder->type == Folder::TYPE_ASSIGNED && $conversation->user_id == $user->id) {
+                    $folder = $conversation->mailbox->folders()->where('type', Folder::TYPE_MINE)->first();
+                    return redirect()->away($conversation->url($folder->id));
+                }
             }
         }
 
