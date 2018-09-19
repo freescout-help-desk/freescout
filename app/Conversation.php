@@ -567,7 +567,7 @@ class Conversation extends Model
     public function getCcArray($exclude_array = [])
     {
         if ($this->cc) {
-            $cc_array = json_decode($this->cc);
+            $cc_array = json_decode($this->cc, true);
             if ($cc_array && $exclude_array) {
                 $cc_array = array_diff($cc_array, $exclude_array);
             }
@@ -585,7 +585,7 @@ class Conversation extends Model
     public function getBccArray($exclude_array = [])
     {
         if ($this->bcc) {
-            $bcc_array = json_decode($this->bcc);
+            $bcc_array = json_decode($this->bcc, true);
             if ($bcc_array && $exclude_array) {
                 $bcc_array = array_diff($bcc_array, $exclude_array);
             }

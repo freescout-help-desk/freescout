@@ -6,6 +6,8 @@ var fs_connection_errors = 0;
 var fs_editor_change_timeout = -1;
 // For how long to remember conversation note drafts
 var fs_keep_conversation_notes = 30; // days
+var fs_draft_autosave_period = 12; // seconds
+var fs_reply_changed = false;
 
 // Ajax based notifications;
 var poly;
@@ -780,6 +782,15 @@ function convEditorInit()
 	$("#to, #cc, #bcc, #subject").blur(function(event) {
 	    onReplyBlur();
 	});
+
+	// Autosave draft periodically
+	autosaveDraft();
+}
+
+function autosaveDraft()
+{
+	saveDraft(false, true);
+	setTimeout(function(){ autosaveDraft() }, fs_draft_autosave_period*1000);
 }
 
 function ajaxSetup()
@@ -805,13 +816,14 @@ function onReplyChange()
 	
 		$('.form-reply:first .note-actions .note-btn:first').removeClass('text-success');
 		fs_editor_change_timeout = null;
+		fs_reply_changed = true;
 	}, 100);
 }
 
 // Save reply draft or note on form focus out
 function onReplyBlur()
 {
-	// If start saving draft immediately, then on Send Reply click
+	// If start saving draft immediately, then when Send Reply is clicked
 	// two ajax requests will be sent at the same time.
 	setTimeout(function() {
 		// Do not save if user clicked Send Reply button	
@@ -1869,6 +1881,10 @@ function maybeShowConnectionRestored()
 	fs_connection_errors = 0;
 }
 
+/**
+ * Save draft automatically, on reply change or on click.
+ * Validation is not needed.
+ */
 function saveDraft(allow_reload, no_loader)
 {
 	if (!allow_reload && fs_processing_save_draft) {
@@ -1878,10 +1894,15 @@ function saveDraft(allow_reload, no_loader)
 	if (fs_processing_send_reply) {
 		return;
 	}
+
 	fs_processing_save_draft = true;
 
-	// Validation is not needed
-	var form = $(".form-reply:first");
+	var form = $(".form-reply:visible:first");
+	if (!form || !form.length) {
+		fs_processing_save_draft = false;
+		return;
+	}
+
 	var button = form.children().find('.note-actions .note-btn:first');
 	var new_conversation = false;
 
@@ -1894,7 +1915,8 @@ function saveDraft(allow_reload, no_loader)
 	}
 
 	// When replying click Save draft always reloads conversation
-	if ((new_conversation || !allow_reload) && button.hasClass('text-success')) {
+	if ((new_conversation || !allow_reload) && !fs_reply_changed) {
+		fs_processing_save_draft = false;
 		return;
 	}
 
@@ -1908,6 +1930,7 @@ function saveDraft(allow_reload, no_loader)
 				window.location.href = '';
 			} else {
 				button.addClass('text-success');
+				fs_reply_changed = false;
 				// Show Saved
 				var saved_text = form.children().find('.draft-saved:first');
 				if (!saved_text.length || !saved_text.is(':visible')) {

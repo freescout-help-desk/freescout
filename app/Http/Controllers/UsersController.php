@@ -47,7 +47,7 @@ class UsersController extends Controller
     }
 
     /**
-     * Create new mailbox.
+     * Create new user.
      *
      * @param \Illuminate\Http\Request $request
      */
