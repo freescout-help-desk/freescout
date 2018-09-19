@@ -8,6 +8,10 @@
             rootUrl: '',
             routes : [
     {
+        "uri": "users",
+        "name": "users"
+    },
+    {
         "uri": "users\/ajax",
         "name": "users.ajax"
     },

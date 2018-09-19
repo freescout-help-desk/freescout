@@ -46,6 +46,8 @@ var lang_messages = {
             "email_sent": "Email passed for delivery. If you don&#039;t receive a test email, check your mail server logs.",
             "connection_established": "Connection established!",
             "confirm_delete_conversation": "Delete this conversation?",
+            "confirm_delete_user": "Deleting this User will deactivate workflows they are tied to and unassign their conversations. If you are sure, type :delete and click the red button.",
+            "type_delete": "Type :delete",
 
             "drag_image_file": "Drag image or file here"
         }    };

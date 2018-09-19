@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserDeleted;
+use App\Folder;
 use App\Mailbox;
 use App\Subscription;
 use App\User;
@@ -373,6 +375,77 @@ class UsersController extends Controller
                 if (!$response['msg']) {
                     $user->removePhoto();
                     $user->save();
+
+                    $response['status'] = 'success';
+                }
+                break;
+
+            // Delete user
+            case 'delete_user':
+                $user = User::find($request->user_id);
+
+                if (!$user) {
+                    $response['msg'] = __('User not found');
+                } elseif (!$auth_user->can('delete', $user)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                // Check if the user is the only one admin
+                if (!$response['msg'] && $user->isAdmin()) {
+                    $admins_count = User::where('role', User::ROLE_ADMIN)->count();
+                    if ($admins_count < 2) {
+                        $response['msg'] = __('Administrator can not be deleted');
+                    }
+                }
+
+                if (!$response['msg']) {
+                    
+                    event(new UserDeleted($user, $auth_user));
+
+                    // We have to process conversations one by one to set move them to Unassigned folder,
+                    // as conversations may be in different mailboxes
+                    // $user->conversations()->update(['user_id' => null, 'folder_id' => ]);
+                    $mailbox_unassigned_folders = [];
+                    $user->conversations()->each(function ($conversation) {
+                        // We don't fire ConversationUserChanged event to avoid sending notifications to users
+                        $conversation->user_id = null;
+
+                        $folder_id = null;
+                        if (!empty($mailbox_unassigned_folders[$conversation->mailbox_id])) {
+                            $folder_id = $mailbox_unassigned_folders[$conversation->mailbox_id];
+                        } else {
+                            $folder = $conversation->mailbox->folders()
+                                ->where('type', Folder::TYPE_UNASSIGNED)
+                                ->first();
+
+                            if ($folder) {
+                                $folder_id = $folder->id;
+                                $mailbox_unassigned_folders[$conversation->mailbox_id] = $folder_id;
+                            }
+                        }
+                        if ($folder_id) {
+                            $conversation->folder_id = $folder_id;
+                        }
+                        $conversation->save();
+                    });
+
+                    // Recalculate counters for folders
+                    if ($user->isAdmin()) {
+                        // Admin has access to all mailboxes
+                        Mailbox::all()->each(function ($mailbox) {
+                            $mailbox->updateFoldersCounters();
+                        });
+                    } else {
+                        $user->mailboxes->each(function ($mailbox) {
+                            $mailbox->updateFoldersCounters();
+                        });
+                    }
+
+                    $user->mailboxes()->sync([]);
+                    $user->folders()->delete();
+                    $user->delete();
+
+                    \Session::flash('flash_success_floating', __('User deleted'));
 
                     $response['status'] = 'success';
                 }

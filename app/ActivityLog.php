@@ -24,6 +24,7 @@ class ActivityLog extends Activity
     const DESCRIPTION_EMAILS_SENDING_ERROR_PASSWORD_CHANGED = 'error_sending_password_changed';
     const DESCRIPTION_EMAILS_FETCHING_ERROR = 'error_fetching_email';
     const DESCRIPTION_SYSTEM_ERROR = 'system_error';
+    const DESCRIPTION_USER_DELETED = 'user_deleted';
 
     public function getEventDescription()
     {
@@ -52,6 +53,8 @@ class ActivityLog extends Activity
                 return __('Error fetching email');
             case self::DESCRIPTION_SYSTEM_ERROR:
                 return __('System error');
+            case self::DESCRIPTION_USER_DELETED:
+                return __('Deleted user');
             default:
                 return $this->description;
                 break;

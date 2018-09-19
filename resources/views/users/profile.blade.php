@@ -175,15 +175,19 @@
                             
                             @if (Auth::user()->isAdmin())
                                 @if ($user->invite_state == App\User::INVITE_STATE_ACTIVATED)
-                                    <a href="#" class="btn btn-link reset-password-trigger" data-loading-text="{{ __('Resettings password') }}…">{{ __('Reset password') }}</a>
+                                    @if ($user->id != Auth::user()->id)
+                                        <a href="#" class="btn btn-link reset-password-trigger" data-loading-text="{{ __('Resettings password') }}…">{{ __('Reset password') }}</a>
+                                    @endif
                                 @elseif ($user->invite_state == App\User::INVITE_STATE_SENT)
                                     <a href="#" class="btn btn-link resend-invite-trigger" data-loading-text="{{ __('Resending') }}…">{{ __('Re-send invite email') }}</a>
                                 @elseif ($user->invite_state == App\User::INVITE_STATE_NOT_INVITED)
                                     <a href="#" class="btn btn-link send-invite-trigger" data-loading-text="{{ __('Sending') }}…">{{ __('Send invite email') }}</a>
                                 @endif
                             @endif 
-                       
-                            <a href="#" class="btn btn-link is-error">{{ __('Delete user') }} (todo)</a>
+                            
+                            @if (Auth::user()->can('delete', $user))
+                                <a href="#" id="delete-user-trigger" class="btn btn-link is-error">{{ __('Delete user') }}</a>
+                            @endif
                         </div>
                     </div>
                 </form>

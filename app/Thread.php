@@ -452,7 +452,12 @@ class Thread extends Model
 
             return $name;
         } else {
-            return $this->user->getFullName();
+            // User may be deleted
+            if ($this->user) {
+                return $this->user->getFullName();
+            } else {
+                return '';
+            }
         }
     }
 

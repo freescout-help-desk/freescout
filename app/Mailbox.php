@@ -256,6 +256,7 @@ class Mailbox extends Model
         } else {
             $folders = $this->folders()->where('folders.type', $folder_type)->get();
         }
+
         foreach ($folders as $folder) {
             $folder->updateCounters();
         }

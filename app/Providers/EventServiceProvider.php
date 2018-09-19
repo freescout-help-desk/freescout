@@ -39,6 +39,10 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\SendPasswordChanged',
         ],
 
+        'App\Events\UserDeleted' => [
+            'App\Listeners\LogUserDeletion',
+        ],
+
         'App\Events\ConversationStatusChanged' => [
             'App\Listeners\UpdateMailboxCounters',
         ],

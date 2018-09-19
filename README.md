@@ -1,4 +1,4 @@
-# FreeScout — Free Self-Hosted HelpScout Alternative
+# FreeScout — Free Self-Hosted Help Scout Alternative
 
 <div align="center">
 
@@ -13,6 +13,8 @@
 **FreeScout** is a free open source help desk and shared inbox written in PHP7 (Laravel 5.5 framework), full analog of HelpScout. As you may know, Help Scout on **November 29, 2018** will force all free accounts to upgrade to the paid plan, so developing a free open source alternative is kind of urgent.
 
 FreeScout is being developed from scratch and is not using any copyrighted Help Scout materials to comply with GitHub's [DMCA Policy](https://help.github.com/articles/dmca-takedown-policy/) (trademark, logos, icons, CSS, JS, HTML files are copyrighted; idea, look and feel cannot be copyrighted). FreeScout is currently under active development. If you would like to join efforts, just fork [this repo](https://github.com/freescout-helpdesk/freescout) and follow [instructions](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide).
+
+Now you can enjoy a self hosted clone of Help Scout without giving up privacy or locking you into a service you don't control.
 
 ![Dashboard](https://freescout-helpdesk.github.io/img/screenshots/dashboard.png)
 
@@ -50,9 +52,9 @@ FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on 
   * MySQL/MariaDB 5.0+
   * Git (optional, for easier upgrading in the future)
 
-## Release Date
+## News & Updates
 
-If you would like to be notified by email when **FreeScout** will be released, you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
+If you would like to be notified about new releases, news and updates you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
 
 ## Documentation
 

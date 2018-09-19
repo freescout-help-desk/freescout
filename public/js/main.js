@@ -1146,6 +1146,9 @@ function showModal(a, params)
     	params.no_fade = a.attr('data-modal-no-fade');
     }
     var modal_class = a.attr('data-modal-class');
+    if (typeof(modal_class) == "undefined") {
+    	modal_class = '';
+    }
     var on_show = a.attr('data-modal-on-show');
     if (typeof(params.on_show) != "undefined") {
     	on_show = params.on_show;
@@ -1421,8 +1424,8 @@ function showModalDialog(body, options)
 		width_auto: 'true',
 		no_header: 'true',
 		no_footer: 'true',
-		no_fade: 'true',
-		size: 'sm'
+		no_fade: 'true'
+		//size: 'sm'
 	};
 	if (typeof(options) == "undefined") {
 		options = {};
@@ -1552,6 +1555,58 @@ function userProfileInit()
 			}
 		});
 		e.preventDefault();
+	});
+
+	// Delete user
+    jQuery("#delete-user-trigger").click(function(e){
+    	var confirm_html = '<div>'+
+		'<div class="text-center">'+
+			'<div class="text-large margin-top-10">'+Lang.get("messages.confirm_delete_user", {delete: '<span class="text-danger">DELETE</span>'})+'</div>'+
+			'<div class="col-sm-6 col-sm-offset-3 margin-top margin-bottom">'+
+				'<div class="input-group">'+
+				    '<input type="text" class="form-control input-delete-user" placeholder="'+Lang.get("messages.type_delete", {delete: '&quot;DELETE&quot;'})+'">'+
+				    '<span class="input-group-btn">'+
+				    	'<button class="btn btn-danger button-delete-user" disabled="disabled"><i class="glyphicon glyphicon-ok"></i></button>'+
+				    '</span>'+
+				'</div>'+
+			'</div>'+
+			'<div class="clearfix"></div>'+
+		'</div>'+
+		'</div>';
+
+		showModalDialog(confirm_html, {
+			width_auto: false,
+			on_show: function(modal) {
+				modal.children().find('.input-delete-user:first').on('keyup keypress', function(e) {
+					if ($(this).val() == 'DELETE') {
+						modal.children().find('.button-delete-user:first').removeAttr('disabled');
+					} else {
+						modal.children().find('.button-delete-user:first').attr('disabled', 'disabled');
+					}
+				});
+
+				modal.children().find('.button-delete-user:first').click(function(e) {
+					modal.modal('hide');
+					fsAjax(
+						{
+							action: 'delete_user',
+							user_id: getGlobalAttr('user_id')
+						}, 
+						laroute.route('users.ajax'),
+						function(response) {
+							if (typeof(response.status) != "undefined" && response.status == "success") {
+								window.location.href = laroute.route('users');
+								return;
+							} else {
+								showAjaxError(response);
+							}
+							loaderHide();
+						}
+					);
+					e.preventDefault();
+				});
+			}
+		});
 	});
 }
 
@@ -2184,4 +2239,11 @@ function stripTags(html)
 	var div = document.createElement("div");
 	div.innerHTML = html;
 	return text = div.textContent || div.innerText || "";
+}
+
+function htmlDecode(input){
+	var e = document.createElement('div');
+	e.innerHTML = input;
+	// handle case of empty input
+	return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
 }

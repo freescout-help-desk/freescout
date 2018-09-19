@@ -57,6 +57,8 @@ var lang_messages = {
             "email_sent": "{{ __("Email passed for delivery. If you don't receive a test email, check your mail server logs.") }}",
             "connection_established": "{{ __("Connection established!") }}",
             "confirm_delete_conversation": "{{ __("Delete this conversation?") }}",
+            "confirm_delete_user": "{{ __("Deleting this User will deactivate workflows they are tied to and unassign their conversations. If you are sure, type :delete and click the red button.") }}",
+            "type_delete": "{{ __("Type :delete") }}",
 
             "drag_image_file": "{{ __("Drag image or file here") }}"
         }@if (!$loop->last),@endif
