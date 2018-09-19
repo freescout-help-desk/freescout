@@ -478,6 +478,10 @@ class ConversationsController extends Controller
                         $conversation->user_updated_at = $now;
                         $conversation->updateFolder();
                     }
+                    if ($from_draft) {
+                        // Increment number of replies in conversation
+                        $conversation->threads_count++;
+                    }
                     $conversation->save();
 
                     if ($new) {
@@ -645,6 +649,7 @@ class ConversationsController extends Controller
 
                         $conversation->type = Conversation::TYPE_EMAIL;
                         $conversation->state = Conversation::STATE_DRAFT;
+                        $conversation->status = $request->status;
                         $conversation->subject = $request->subject;
                         $conversation->setPreview($request->body);
                         if ($attachments_info['has_attachments']) {
@@ -663,7 +668,7 @@ class ConversationsController extends Controller
                         // Reply
                         $customer = $conversation->customer;
                     }
-                    $conversation->status = $request->status;
+
                     // New draft conversation is not assigned to anybody
                     //$conversation->user_id = null;
 

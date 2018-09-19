@@ -18,13 +18,13 @@ class ThreadObserver
         $conversation = $thread->conversation;
 
         $now = date('Y-m-d H:i:s');
-        if (!in_array($thread->type, [Thread::TYPE_LINEITEM, Thread::TYPE_NOTE])) {
+        if (!in_array($thread->type, [Thread::TYPE_LINEITEM, Thread::TYPE_NOTE]) && $thread->state == Thread::STATE_PUBLISHED) {
             $conversation->threads_count++;
         }
         if (!in_array($thread->type, [Thread::TYPE_CUSTOMER])) {
             $conversation->user_updated_at = $now;
         }
-        if (in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE])) {
+        if (in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE]) && $thread->state == Thread::STATE_PUBLISHED) {
             // $conversation->cc = $thread->cc;
             // $conversation->bcc = $thread->bcc;
             $conversation->last_reply_at = $now;
