@@ -1068,6 +1068,11 @@ class ConversationsController extends Controller
      */
     public function getRedirectUrl($request, $conversation, $user)
     {
+        // If conversation is a draft, we always display Drafts folder
+        if ($conversation->state == Conversation::STATE_DRAFT) {
+            return route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
+        }
+
         if (!empty($request->after_send)) {
             $after_send = $request->after_send;
         } else {

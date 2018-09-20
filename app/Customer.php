@@ -469,9 +469,9 @@ class Customer extends Model
     {
         if ($this->first_name && $this->last_name) {
             return $this->first_name.' '.$this->last_name;
-        } elseif (!$this->last_name) {
+        } elseif (!$this->last_name && $this->first_name) {
             return $this->first_name;
-        } elseif (!$this->first_name) {
+        } elseif (!$this->first_name && $this->last_name) {
             return $this->last_name;
         } elseif ($email_if_empty) {
             return $this->getMainEmail();

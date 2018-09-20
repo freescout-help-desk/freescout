@@ -162,7 +162,7 @@ class Conversation extends Model
         parent::boot();
 
         self::creating(function (Conversation $model) {
-            $model->number = Conversation::where('mailbox_id', $model->mailbox_id)->max('number') + 1;
+            $model->number = Conversation::max('number') + 1;
         });
     }
 
@@ -785,26 +785,39 @@ class Conversation extends Model
         if ($folder->type == Folder::TYPE_MINE) {
             // Get conversations from personal folder
             $query_conversations = Conversation::where('user_id', $user_id)
-                ->whereIn('status', [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING]);
-            $query_conversations->where('state', Conversation::STATE_PUBLISHED);
+                ->where('mailbox_id', $folder->mailbox_id)
+                ->whereIn('status', [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING])
+                ->where('state', Conversation::STATE_PUBLISHED);
+
         } elseif ($folder->type == Folder::TYPE_ASSIGNED) {
+
             // Assigned - do not show my conversations
-            $query_conversations = $folder->conversations()->where('user_id', '<>', $user_id);
-            $query_conversations->where('state', Conversation::STATE_PUBLISHED);
+            $query_conversations = $folder->conversations()
+                ->where('user_id', '<>', $user_id)
+                ->where('state', Conversation::STATE_PUBLISHED);
+
         } elseif ($folder->type == Folder::TYPE_STARRED) {
+
             $starred_conversation_ids = Conversation::getUserStarredConversationIds($folder->mailbox_id, $user_id);
-            $query_conversations = Conversation::whereIn('id', $starred_conversation_ids);
+            $query_conversations = Converation::whereIn('id', $starred_conversation_ids);
+
         } elseif ($folder->isIndirect()) {
+
             // Conversations are connected to folder via conversation_folder table.
             $query_conversations = Conversation::select('conversations.*')
+                ->where('conversations.mailbox_id', $folder->mailbox_id)
                 ->join('conversation_folder', 'conversations.id', '=', 'conversation_folder.conversation_id')
                 ->where('conversation_folder.folder_id', $folder->id);
             if ($folder->type != Folder::TYPE_DRAFTS) {
                 $query_conversations->where('state', Conversation::STATE_PUBLISHED);
             }
+
         } elseif ($folder->type == Folder::TYPE_DELETED) {
+
             $query_conversations = $folder->conversations()->where('state', Conversation::STATE_DELETED);
+
         } else {
+
             $query_conversations = $folder->conversations()->where('state', Conversation::STATE_PUBLISHED);
         }
 
