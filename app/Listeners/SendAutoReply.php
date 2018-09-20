@@ -23,7 +23,7 @@ class SendAutoReply
     {
         $conversation = $event->conversation;
 
-        if (!$conversation->imported && $conversation->mailbox->auto_reply_enabled) {
+        if (/*!$conversation->imported &&*/ $conversation->mailbox->auto_reply_enabled) {
 
             // Send auto reply once in 24h
             $created_at = \Illuminate\Support\Carbon::now()->subDays(1);

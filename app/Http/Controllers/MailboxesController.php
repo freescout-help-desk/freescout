@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Conversation;
 use App\Folder;
 use App\Mailbox;
+use App\Thread;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -459,9 +460,16 @@ class MailboxesController extends Controller
                 }
 
                 if (!$response['msg']) {
-                    // $user->mailboxes()->sync([]);
-                    // $user->folders()->delete();
-                    // $user->delete();
+
+                    // Remove threads and conversations
+                    Thread::whereIn('conversation_id', $mailbox->conversations()->pluck('id')->toArray())
+                        ->delete();
+                    $mailbox->conversations()->delete();
+                    $mailbox->users()->sync([]);
+                    $mailbox->folders()->delete();
+                    // Maybe remove notifications on events in this mailbox?
+                    
+                    $mailbox->delete();
 
                     \Session::flash('flash_success_floating', __('Mailbox deleted'));
 

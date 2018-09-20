@@ -406,7 +406,7 @@ class UsersController extends Controller
                     // as conversations may be in different mailboxes
                     // $user->conversations()->update(['user_id' => null, 'folder_id' => ]);
                     $mailbox_unassigned_folders = [];
-                    $user->conversations()->each(function ($conversation) {
+                    $user->conversations->each(function ($conversation) {
                         // We don't fire ConversationUserChanged event to avoid sending notifications to users
                         $conversation->user_id = null;
 

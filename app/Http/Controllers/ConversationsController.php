@@ -72,7 +72,10 @@ class ConversationsController extends Controller
                 }
                 // If conversation assigned to user, select Mine folder instead of Assigned
                 if ($folder->type == Folder::TYPE_ASSIGNED && $conversation->user_id == $user->id) {
-                    $folder = $conversation->mailbox->folders()->where('type', Folder::TYPE_MINE)->first();
+                    $folder = $conversation->mailbox->folders()
+                        ->where('type', Folder::TYPE_MINE)
+                        ->where('user_id', $user->id)
+                        ->first();
                     return redirect()->away($conversation->url($folder->id));
                 }
             }
@@ -80,7 +83,10 @@ class ConversationsController extends Controller
 
         if (!$folder) {
             if ($conversation->user_id == $user->id) {
-                $folder = $conversation->mailbox->folders()->where('type', Folder::TYPE_MINE)->first();
+                $folder = $conversation->mailbox->folders()
+                    ->where('type', Folder::TYPE_MINE)
+                    ->where('user_id', $user->id)
+                    ->first();
             } else {
                 $folder = $conversation->folder;
             }
