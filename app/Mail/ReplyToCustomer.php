@@ -12,8 +12,6 @@ use Illuminate\Queue\SerializesModels;
 //abstract class AbstractMessage extends Mailable
 class ReplyToCustomer extends Mailable
 {
-    use Queueable, SerializesModels;
-
     /**
      * Conversation to send.
      *

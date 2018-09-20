@@ -323,10 +323,10 @@ class FetchEmails extends Command
                         if (Email::sanitizeEmail($user->email) != Email::sanitizeEmail($from)) {
                             $this->logError("From address {$from} is not the same as user {$user->id} email: ".$user->email);
                             $message->setFlag(['Seen']);
-                            // todo: send email with information
-                            // Unable to process your update
-                            // Your email update couldn't be processed
-                            // If you are trying to update a conversation, remember you must respond from the same email address that's on your account. To send your update, please try again and send from your account email address (the email you login with).
+
+                            // Send "Unable to process your update email" to user
+                            \App\Jobs\SendEmailReplyError::dispatch($from, $user, $mailbox)->onQueue('emails');
+
                             continue;
                         }
 

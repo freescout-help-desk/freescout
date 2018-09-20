@@ -11,8 +11,6 @@ use Illuminate\Queue\SerializesModels;
 
 class UserInvite extends Mailable
 {
-    use Queueable, SerializesModels;
-
     /**
      * User to whom invitation is sent.
      */

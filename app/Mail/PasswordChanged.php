@@ -11,8 +11,6 @@ use Illuminate\Queue\SerializesModels;
 
 class PasswordChanged extends Mailable
 {
-    use Queueable, SerializesModels;
-
     /**
      * User to whom email is sent.
      */

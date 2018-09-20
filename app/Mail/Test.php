@@ -8,7 +8,6 @@ use Illuminate\Mail\Mailable;
 
 class Test extends Mailable
 {
-
     public $mailbox;
 
     /**

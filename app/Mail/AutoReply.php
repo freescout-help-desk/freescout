@@ -10,8 +10,6 @@ use Illuminate\Queue\SerializesModels;
 
 class AutoReply extends Mailable
 {
-    use Queueable, SerializesModels;
-
     /**
      * Conversation created by customer.
      *

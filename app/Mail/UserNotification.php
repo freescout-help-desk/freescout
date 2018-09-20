@@ -8,8 +8,6 @@ use Illuminate\Queue\SerializesModels;
 
 class UserNotification extends Mailable
 {
-    use Queueable, SerializesModels;
-
     /**
      * Recipient.
      *
