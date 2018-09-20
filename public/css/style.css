@@ -873,6 +873,9 @@ a h4 {
     }
 }
 @media (max-width:582px) {
+    .draft-saved {
+        display: none!important;
+    }
     .note-actions,
     .note-actions-select {
         float: none;
