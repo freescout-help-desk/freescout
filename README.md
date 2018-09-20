@@ -16,7 +16,7 @@ FreeScout is being developed from scratch and is not using any copyrighted Help 
 
 Now you can enjoy a self hosted clone of Help Scout without giving up privacy or locking you into a service you don't control.
 
-![Conversations](https://freescout-helpdesk.github.io/img/screenshots/mailbox.png)
+![FreeScout](https://freescout-helpdesk.github.io/img/screenshots/screenshot.png)
 
 ## Table of Contents
    * [Features](#features)

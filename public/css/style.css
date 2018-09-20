@@ -1883,8 +1883,11 @@ ul.prev-convs {
     .conv-subjtext {
         font-size: 20px;
     }
+    .conv-subjwrap {
+        padding-right: 90px;
+    }
     .conv-subj-block {
-        padding: 16px 2px 24px 13px;
+        padding: 16px 2px 18px 13px;
     }
     .conv-customer-block {
         padding-left: 15px;
@@ -1910,6 +1913,9 @@ ul.prev-convs {
     .thread-photo {
         padding-left: 15px;
         padding-right: 15px;
+    }
+    .conv-customer-block {
+        padding: 15px;
     }
     .thread-message {
         margin-right: 15px;
@@ -1982,7 +1988,10 @@ ul.prev-convs {
         padding: 15px 20px 15px;
     }
     .customer-data {
-        margin: 0 0 0 45px;
+        margin: 0 0 0 42px;
+    }
+    .thread-person {
+        font-size: 16px;
     }
     .customer-contacts {
         margin: 0;

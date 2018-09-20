@@ -204,4 +204,20 @@ class Helper
 
         return $thumb;
     }
+
+    public static function jsonToArray($json, $exclude_array = [])
+    {
+        if ($json) {
+            $array = json_decode($json, true);
+            if (json_last_error()) {
+                $array = [$json];
+            }
+            if ($array && $exclude_array) {
+                $array = array_diff($array, $exclude_array);
+            }
+            return $array;
+        } else {
+            return [];
+        }
+    }
 }
