@@ -32,6 +32,10 @@
         "name": "conversations.ajax_html"
     },
     {
+        "uri": "settings\/mailboxes",
+        "name": "mailboxes"
+    },
+    {
         "uri": "mailbox\/ajax",
         "name": "mailboxes.ajax"
     },

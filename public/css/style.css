@@ -2562,17 +2562,20 @@ ul.prev-convs {
 .margin-bottom {
     margin-bottom: 20px !important;
 }
-.margin-0 {
-    margin: 0 !important;
-}
-.margin-top-0 {
-    margin-top: 0 !important;
-}
 .margin-bottom-0 {
     margin-bottom: 0 !important;
 }
 .margin-bottom-40 {
     margin-bottom: 40px !important;
+}
+.margin-bottom-5 {
+    margin-bottom: 5px !important;
+}
+.margin-0 {
+    margin: 0 !important;
+}
+.margin-top-0 {
+    margin-top: 0 !important;
 }
 .padding-top-0 {
     padding-top: 0 !important;
@@ -2621,9 +2624,6 @@ ul.prev-convs {
     max-width: 100%;
     min-width: 0;
     flex: 1;
-}
-.is-error {
-    color: #cc1f19 !important;
 }
 .icon-info {
     color: #a5b2bd;

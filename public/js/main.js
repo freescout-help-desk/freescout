@@ -223,6 +223,33 @@ function mailboxUpdateInit(from_name_custom)
 	});
 }
 
+// Delete mailbox
+function deleteMailboxModal(modal)
+{
+	modal.children().find('.button-delete-mailbox:first').click(function(e) {
+		var button = $(this);
+	    button.button('loading');
+		fsAjax(
+			{
+				action: 'delete_mailbox',
+				mailbox_id: getGlobalAttr('mailbox_id'),
+				password: $('.delete-mailbox-pass:visible:first').val()
+			}, 
+			laroute.route('mailboxes.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == "success") {
+					window.location.href = laroute.route('mailboxes');
+					return;
+				} else {
+					showAjaxError(response);
+					button.button('reset');
+				}
+			}, true
+		);
+		e.preventDefault();
+	});
+}
+
 // Init summernote editor with default settings
 // 
 // https://github.com/Studio-42/elFinder/wiki/Integration-with-Multiple-Summernote-%28fixed-functions%29
@@ -1120,8 +1147,6 @@ function getQueryParam(name, qs) {
 // Show bootstrap modal
 function showModal(a, params)
 {
-    var options = {};
-
     if (typeof(params) == "undefined") {
     	params = {};
     }
@@ -1132,6 +1157,9 @@ function showModal(a, params)
     }
 
     var title = a.attr('data-modal-title');
+    if (typeof(params.title) != "undefined") {
+    	title = params.title;
+    }
     if (title && title.charAt(0) == '#') {
         title = $(title).html();
     }
@@ -1209,7 +1237,7 @@ function showModal(a, params)
     //     modal.on('shown.bs.modal', onshow);
     // }
 
-    modal.modal(options);
+    modal.modal();
 
     if (body) {
     	var body_html = $(body).html();
@@ -1250,7 +1278,15 @@ function showModal(a, params)
 // Show floating error message on ajax error
 function showAjaxError(response)
 {
+	var msg = '';
+
 	if (typeof(response.msg) != "undefined") {
+		msg = response.msg;
+	} else if (typeof(response.message) != "undefined") {
+		// Standard Laravel error message is returned in [message]
+		msg = response.message;
+	}
+	if (msg) {
 		showFloatingAlert('error', response.msg);
 	} else {
 		showFloatingAlert('error', Lang.get("messages.error_occured"));

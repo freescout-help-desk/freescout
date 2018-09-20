@@ -2,6 +2,8 @@
 
 @section('title_full', __('Edit Mailbox'))
 
+@section('body_attrs')@parent data-mailbox_id="{{ $mailbox->id }}"@endsection
+
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
     @include('mailboxes/sidebar_menu')
@@ -137,11 +139,25 @@
                                 {{ __('Save') }}
                             </button>
 
-                            <a href="#" class="btn btn-link is-error">{{ __('Delete mailbox') }} (todo)</a>
+                            <a href="#" data-trigger="modal" data-modal-body="#delete_mailbox_modal" data-modal-no-footer="true" data-modal-title="{{ __('Delete the :mailbox_name mailbox?', ['mailbox_name' => $mailbox->name]) }}" data-modal-on-show="deleteMailboxModal" class="btn btn-link text-danger">{{ __('Delete mailbox') }}</a>
                         </div>
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <div id="delete_mailbox_modal" class="hidden">
+        <div class="text-large">{{ __('Deleting this mailbox will remove all historical data and deactivate related workflows and reports.') }}</div>
+        <div class="text-large margin-top margin-bottom-5">{{ __('Please confirm your password:') }}</div>
+        <div class="row">
+            <div class="col-xs-7">
+                <input type="password" class="form-control delete-mailbox-pass" />
+            </div>
+        </div>
+        <div class="margin-top margin-bottom-5">
+            <button class="btn btn-danger button-delete-mailbox" data-loading-text="{{ __('Processing') }}…">{{ __('Delete Mailbox') }}</button>
+            <button class="btn btn-link" data-dismiss="modal">{{ __('Cancel') }}</button>
         </div>
     </div>
 @endsection

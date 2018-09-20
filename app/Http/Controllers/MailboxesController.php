@@ -7,6 +7,7 @@ use App\Folder;
 use App\Mailbox;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Validator;
 
@@ -443,7 +444,29 @@ class MailboxesController extends Controller
                 if (!$response['msg']) {
                     $response['status'] = 'success';
                 }
+                break;
 
+            // Delete mailbox
+            case 'delete_mailbox':
+                $mailbox = Mailbox::find($request->mailbox_id);
+
+                if (!$mailbox) {
+                    $response['msg'] = __('Mailbox not found');
+                } elseif (!$user->can('update', $mailbox)) {
+                    $response['msg'] = __('Not enough permissions');
+                } elseif (!Hash::check($request->password, $user->password)) {
+                    $response['msg'] = __('Please double check your password, and try again');
+                }
+
+                if (!$response['msg']) {
+                    // $user->mailboxes()->sync([]);
+                    // $user->folders()->delete();
+                    // $user->delete();
+
+                    \Session::flash('flash_success_floating', __('Mailbox deleted'));
+
+                    $response['status'] = 'success';
+                }
                 break;
 
             default:

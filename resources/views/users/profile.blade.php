@@ -186,7 +186,7 @@
                             @endif 
                             
                             @if (Auth::user()->can('delete', $user))
-                                <a href="#" id="delete-user-trigger" class="btn btn-link is-error">{{ __('Delete user') }}</a>
+                                <a href="#" id="delete-user-trigger" class="btn btn-link text-danger">{{ __('Delete user') }}</a>
                             @endif
                         </div>
                     </div>

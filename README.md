@@ -6,7 +6,7 @@
 <br/><br/>
 
 [![PHP version](https://freescout-helpdesk.github.io/img/badges/PHP-7.0%2B-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) [![Laravel version](https://freescout-helpdesk.github.io/img/badges/Laravel-5.5-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) 
-[![Build Status](https://travis-ci.org/freescout-helpdesk/freescout.svg?branch=master)](https://travis-ci.org/freescout-helpdesk/freescout) [![Join the chat at https://gitter.im/freescout-helpdesk/Lobby](https://badges.gitter.im/freescout-helpdesk/Lobby.svg)](https://gitter.im/freescout-helpdesk/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout)
+[![Build Status](https://travis-ci.org/freescout-helpdesk/freescout.svg?branch=master)](https://freescout-helpdesk.github.io/img/badges/travis.svg) [![Join the chat at https://gitter.im/freescout-helpdesk/Lobby](https://badges.gitter.im/freescout-helpdesk/Lobby.svg)](https://gitter.im/freescout-helpdesk/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout)
 
 </div>
 
@@ -16,7 +16,7 @@ FreeScout is being developed from scratch and is not using any copyrighted Help 
 
 Now you can enjoy a self hosted clone of Help Scout without giving up privacy or locking you into a service you don't control.
 
-![Dashboard](https://freescout-helpdesk.github.io/img/screenshots/dashboard.png)
+![Conversations](https://freescout-helpdesk.github.io/img/screenshots/mailbox.png)
 
 ## Table of Contents
    * [Features](#features)
@@ -74,18 +74,19 @@ If you would like to be notified about new releases, news and updates you can su
 
 ## Screenshots
 
-Login page:
+Dashboard:
 
-![Login page](https://freescout-helpdesk.github.io/img/screenshots/freescout-login.png)
-
-Conversations list:
-
-![Conversations](https://freescout-helpdesk.github.io/img/screenshots/conversations.png)
+![Dashboard](https://freescout-helpdesk.github.io/img/screenshots/dashboard.png)
 
 Conversation:
 
 ![Conversation](https://freescout-helpdesk.github.io/img/screenshots/conversation.png)
 
+
 Mailbox connection settings page:
 
 ![Mailbox connection settings page](https://freescout-helpdesk.github.io/img/screenshots/mailbox-connection.png)
+
+Login page:
+
+![Login page](https://freescout-helpdesk.github.io/img/screenshots/freescout-login.png)

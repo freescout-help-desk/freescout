@@ -58,7 +58,7 @@ Route::get('/search', 'ConversationsController@search')->name('conversations.sea
 Route::get('/conversation/undo-reply/{thread_id}', 'ConversationsController@undoReply')->name('conversations.undo');
 
 // Mailboxes
-Route::get('/settings/mailboxes', 'MailboxesController@mailboxes')->name('mailboxes');
+Route::get('/settings/mailboxes', ['uses' => 'MailboxesController@mailboxes', 'laroute' => true])->name('mailboxes');
 Route::get('/settings/mailbox-new', 'MailboxesController@create')->name('mailboxes.create');
 Route::post('/settings/mailbox-new', 'MailboxesController@createSave');
 Route::get('/settings/mailbox/{id}', 'MailboxesController@update')->name('mailboxes.update');
