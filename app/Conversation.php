@@ -793,19 +793,20 @@ class Conversation extends Model
 
             // Assigned - do not show my conversations
             $query_conversations = $folder->conversations()
+                // This condition also removes from result records with user_id = null
                 ->where('user_id', '<>', $user_id)
                 ->where('state', Conversation::STATE_PUBLISHED);
 
         } elseif ($folder->type == Folder::TYPE_STARRED) {
 
             $starred_conversation_ids = Conversation::getUserStarredConversationIds($folder->mailbox_id, $user_id);
-            $query_conversations = Converation::whereIn('id', $starred_conversation_ids);
+            $query_conversations = Conversation::whereIn('id', $starred_conversation_ids);
 
         } elseif ($folder->isIndirect()) {
 
             // Conversations are connected to folder via conversation_folder table.
             $query_conversations = Conversation::select('conversations.*')
-                ->where('conversations.mailbox_id', $folder->mailbox_id)
+                //->where('conversations.mailbox_id', $folder->mailbox_id)
                 ->join('conversation_folder', 'conversations.id', '=', 'conversation_folder.conversation_id')
                 ->where('conversation_folder.folder_id', $folder->id);
             if ($folder->type != Folder::TYPE_DRAFTS) {

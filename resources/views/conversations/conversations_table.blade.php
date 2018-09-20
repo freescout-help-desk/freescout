@@ -153,11 +153,10 @@
                         <strong>{{ $conversations->total() }}</strong> {{ __('total conversations') }}&nbsp;|&nbsp; 
                     @endif
                     @if (isset($folder->active_count))
-                        <strong>{{ $folder->active_count }}</strong> {{ __('active') }}&nbsp;|&nbsp; 
+                        <strong>{{ $folder->getActiveCount() }}</strong> {{ __('active') }}&nbsp;|&nbsp; 
                     @endif
                     @if ($conversations)
-                        {{ __('Viewing') }} <strong>{{ $conversations->firstItem() }}</strong>-<strong>{{ $conversations->lastItem() }}</
-                        strong>
+                        {{ __('Viewing') }} <strong>{{ $conversations->firstItem() }}</strong>-<strong>{{ $conversations->lastItem() }}</strong>
                     @endif
                 </td>
                 <td colspan="3" class="conv-nav">
