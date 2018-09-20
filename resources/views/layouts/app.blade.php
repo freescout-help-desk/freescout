@@ -144,7 +144,11 @@
                                             </div>
                                             <ul class="web-notifications-list">
                                                 @if (count($web_notifications_info['data']))
-                                                    @include('users/partials/web_notifications', ['web_notifications_info_data' => $web_notifications_info['data']])
+                                                    @if (!empty($web_notifications_info['html']))
+                                                        {!! $web_notifications_info['html'] !!}
+                                                    @else
+                                                        @include('users/partials/web_notifications', ['web_notifications_info_data' => $web_notifications_info['data']])
+                                                    @endif
 
                                                     @if ($web_notifications_info['notifications']->hasMorePages())
                                                         <li class="web-notification-more">

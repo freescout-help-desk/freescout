@@ -516,10 +516,12 @@ class User extends Authenticatable
                 $notifications = $user->getWebsiteNotifications();
 
                 $info = [
-                    'data' => WebsiteNotification::fetchNotificationsData($notifications),
+                    'data'          => WebsiteNotification::fetchNotificationsData($notifications),
                     'notifications' => $notifications,
-                    'unread_count' => $user->unreadNotifications()->count()
+                    'unread_count'  => $user->unreadNotifications()->count()
                 ];
+
+                $info['html'] = view('users/partials/web_notifications', ['web_notifications_info_data' => $info['data']])->render();
 
                 return $info;
             });
