@@ -5,7 +5,8 @@
 # We are committing /vendor directory to make installation process super easy, even on a shared hosting:
 # - https://www.codeenigma.com/build/blog/do-you-really-need-composer-production
 # - https://getcomposer.org/doc/faqs/should-i-commit-the-dependencies-in-my-vendor-directory.md
-/vendor/**/.git
+#/vendor/**/.git
+/vendor
 /.idea
 /.vagrant
 Homestead.json
