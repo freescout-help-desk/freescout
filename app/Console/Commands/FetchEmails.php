@@ -22,16 +22,11 @@ use Webklex\IMAP\Client;
 class FetchEmails extends Command
 {
     /**
-     * Period in days for fetching emails from mailbox email.
-     */
-    const CHECK_PERIOD = 3;
-
-    /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'freescout:fetch-emails';
+    protected $signature = 'freescout:fetch-emails {--days=3}';
 
     /**
      * The console command description.
@@ -101,13 +96,13 @@ class FetchEmails extends Command
     public function fetch($mailbox)
     {
         $client = new Client([
-            'host'          => $mailbox->in_server,
-            'port'          => $mailbox->in_port,
-            'encryption'    => $mailbox->getInEncryptionName(),
+            'host' => $mailbox->in_server,
+            'port' => $mailbox->in_port,
+            'encryption' => $mailbox->getInEncryptionName(),
             'validate_cert' => true,
-            'username'      => $mailbox->in_username,
-            'password'      => $mailbox->in_password,
-            'protocol'      => $mailbox->getInProtocolName(),
+            'username' => $mailbox->in_username,
+            'password' => $mailbox->in_password,
+            'protocol' => $mailbox->getInProtocolName(),
         ]);
 
         // Connect to the Server
@@ -127,7 +122,7 @@ class FetchEmails extends Command
         //      ./cur
         //      ./new
         //      ./tmp
-        
+
         // $folders = [];
 
         // if ($mailbox->in_protocol == Mailbox::IN_PROTOCOL_IMAP) {
@@ -142,11 +137,10 @@ class FetchEmails extends Command
         // }
 
         foreach ($folders as $folder) {
-
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
 
             // Get unseen messages for a period
-            $messages = $folder->query()->unseen()->since(now()->subDays(self::CHECK_PERIOD))->leaveUnread()->get();
+            $messages = $folder->query()->unseen()->since(now()->subDays($this->option('days')))->leaveUnread()->get();
 
             if ($client->getLastError()) {
                 // Throw exception for INBOX only
@@ -235,7 +229,6 @@ class FetchEmails extends Command
                         }
                         $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
                     } elseif (!$is_bounce && ($user = User::where('email', $from)->first()) && $in_reply_to && ($prev_thread = Thread::where('message_id', $in_reply_to)->first()) && $prev_thread->created_by_user_id == $user->id) {
-
                         // Reply from customer to his reply to the notification
                         $user_id = $user->id;
                         $message_from_customer = false;
@@ -256,7 +249,6 @@ class FetchEmails extends Command
                                 $prev_message_id = $references[0];
                             }
                             if ($prev_message_id) {
-
                                 $prev_thread_id = '';
 
                                 // Customer replied to the email from user
@@ -272,7 +264,7 @@ class FetchEmails extends Command
                                         $prev_thread_id = $m[1];
                                     }
                                 }
-                                
+
                                 if ($prev_thread_id) {
                                     $prev_thread = Thread::find($prev_thread_id);
                                 } else {
@@ -361,8 +353,8 @@ class FetchEmails extends Command
         try {
             activity()
                 ->withProperties([
-                    'error'    => $message,
-                    'mailbox'  => $mailbox_name,
+                    'error' => $message,
+                    'mailbox' => $mailbox_name,
                 ])
                 ->useLog(\App\ActivityLog::NAME_EMAILS_FETCHING)
                 ->log(\App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR);
@@ -649,7 +641,7 @@ class FetchEmails extends Command
 
     /**
      * Create customers from emails.
-     * 
+     *
      * @param  array $emails_data
      */
     public function createCustomers($emails, $exclude_emails)
