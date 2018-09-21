@@ -1,0 +1,26 @@
+{
+	"name": "natxet/cssmin",
+	"description": "Minifying CSS",
+	"type": "library",
+	"keywords": ["css","minify"],
+	"homepage": "http://code.google.com/p/cssmin/",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Joe Scylla",
+			"email": "joe.scylla@gmail.com",
+			"homepage": "https://profiles.google.com/joe.scylla"
+		}
+	],
+	"require": {
+		"php": ">=5.0"
+	},
+	"autoload": {
+		"classmap": ["src/"]
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "3.0-dev"
+		}
+	}
+}
