@@ -282,6 +282,9 @@ return [
         'Validator'    => Illuminate\Support\Facades\Validator::class,
         'View'         => Illuminate\Support\Facades\View::class,
         'Minify'       => Devfactory\Minify\Facades\MinifyFacade::class,
+
+        // Custom
+        'Helper'       => App\Misc\Helper::class,
     ],
 
 ];
