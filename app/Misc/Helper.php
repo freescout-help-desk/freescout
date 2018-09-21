@@ -136,9 +136,13 @@ class Helper
                     if (in_array($current_route, $secondary_routes)) {
                         return ($secondary_name == $menu_item_name || $primary_name == $menu_item_name);
                     }
-                } else {
+                } elseif (is_string($secondary_name)) {
                     if ($current_route == $secondary_routes) {
                         return ($secondary_name == $menu_item_name || $primary_name == $menu_item_name);
+                    }
+                } else {
+                    if ($current_route == $secondary_routes) {
+                        return ($primary_name == $menu_item_name);
                     }
                 }
             }
