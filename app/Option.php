@@ -65,11 +65,11 @@ class Option extends Model
      * @param  string  $name
      * @return string
      */
-    public static function get($name, $default = false, $decode = true, $cache = false)
+    public static function get($name, $default = false, $decode = true)
     {
-        if ($cache && isset(self::$cache[$name])) {
-            return self::$cache[$name];
-        }
+        // if ($cache && isset(self::$cache[$name])) {
+        //     return self::$cache[$name];
+        // }
 
         $option = Option::where('name', (string)$name)->first();
         if ($option) {
@@ -82,9 +82,9 @@ class Option extends Model
             $value = $default;
         }
 
-        if ($cache) {
-            self::$cache[$name] = $value;
-        }
+        // if ($cache) {
+        //     self::$cache[$name] = $value;
+        // }
 
         return $value;
     }
