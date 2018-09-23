@@ -24,6 +24,7 @@ Now you can enjoy a self hosted clone of Help Scout without giving up privacy or
    * [News & Updates](#news--updates)
    * [Installation Guide](#installation-guide)
    * [Development Guide](#development-guide)
+   * [Modules](#modules)
    * [Contributing](#contributing)
    * [Screenshots](#screenshots)
 
@@ -65,7 +66,7 @@ If you would like to be notified about new releases, news and updates you can su
 
 ## Modules
 
-[Modules](https://github.com/freescout-helpdesk/freescout/wiki/FreeScout-Modules)
+FreeScout [Modules](https://github.com/freescout-helpdesk/freescout/wiki/FreeScout-Modules).
 
 ## Contributing
 
