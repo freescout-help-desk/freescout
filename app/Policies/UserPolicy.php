@@ -75,4 +75,20 @@ class UserPolicy
             return false;
         }
     }
+
+    /**
+     * Determine whether the user can change role of the user.
+     *
+     * @param \App\User $user
+     *
+     * @return mixed
+     */
+    public function changeRole(User $user, User $model)
+    {
+        if ($user->isAdmin()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

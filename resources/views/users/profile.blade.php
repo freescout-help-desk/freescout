@@ -22,22 +22,24 @@
                 <form class="form-horizontal margin-top" method="POST" action="" enctype="multipart/form-data">
                     {{ csrf_field() }}
 
-                    <div class="form-group{{ $errors->has('role') ? ' has-error' : '' }}">
-                        <label for="role" class="col-sm-2 control-label">{{ __('Role') }}</label>
+                    @if (auth()->user()->isAdmin())
+                        <div class="form-group{{ $errors->has('role') ? ' has-error' : '' }}">
+                            <label for="role" class="col-sm-2 control-label">{{ __('Role') }}</label>
 
-                        <div class="col-sm-6">
-                            <div class="flexy">
-                                <select id="role" type="text" class="form-control input-sized" name="role" required autofocus>
-                                    <option value="{{ App\User::ROLE_USER }}" @if (old('role', $user->role) == App\User::ROLE_USER)selected="selected"@endif>{{ __('User') }}</option>
-                                    <option value="{{ App\User::ROLE_ADMIN }}" @if (old('role', $user->role) == App\User::ROLE_ADMIN)selected="selected"@endif>{{ __('Administrator') }}</option>
-                                </select>
+                            <div class="col-sm-6">
+                                <div class="flexy">
+                                    <select id="role" type="text" class="form-control input-sized" name="role" required autofocus>
+                                        <option value="{{ App\User::ROLE_USER }}" @if (old('role', $user->role) == App\User::ROLE_USER)selected="selected"@endif>{{ __('User') }}</option>
+                                        <option value="{{ App\User::ROLE_ADMIN }}" @if (old('role', $user->role) == App\User::ROLE_ADMIN)selected="selected"@endif>{{ __('Administrator') }}</option>
+                                    </select>
 
-                                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left" data-title="{{ __('Roles') }}" data-content="{{ __('<strong>Administrators</strong> can create new users and have access to all mailboxes and settings <br><br><strong>Users</strong> have access to the mailbox(es) specified in their permissions') }}"></i>
+                                    <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left" data-title="{{ __('Roles') }}" data-content="{{ __('<strong>Administrators</strong> can create new users and have access to all mailboxes and settings <br><br><strong>Users</strong> have access to the mailbox(es) specified in their permissions') }}"></i>
+                                </div>
+
+                                @include('partials/field_error', ['field'=>'role'])
                             </div>
-
-                            @include('partials/field_error', ['field'=>'role'])
                         </div>
-                    </div>
+                    @endif
 
                     <div class="form-group{{ $errors->has('first_name') ? ' has-error' : '' }}">
                         <label for="first_name" class="col-sm-2 control-label">{{ __('First Name') }}</label>
