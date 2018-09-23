@@ -609,12 +609,16 @@ function conversationInit()
 	    jQuery(".conv-reply").click(function(e){
 	    	if ($(".conv-reply-block").hasClass('hidden') || $(this).hasClass('inactive')) {
 	    		// Show
+	    		// To prevent browser autocomplete, clean body
+	    		if (!$('.conv-action.inactive:first').length) {
+	    			setReplyBody('');
+	    		}
 				showReplyForm();
-			} else {
+			} /*else {
 				// Hide
 				$(".conv-action-block").addClass('hidden');
 				$(".conv-action").removeClass('inactive');
-			}
+			}*/
 			e.preventDefault();
 		});
 
@@ -632,11 +636,11 @@ function conversationInit()
 				$(this).removeClass('inactive');
 				//$('#body').summernote("code", '');
 				$('#body').summernote('focus');
-			} else {
+			} /*else {
 				// Hide
 				$(".conv-action-block").addClass('hidden');
 				$(".conv-action").removeClass('inactive');
-			}
+			}*/
 			e.preventDefault();
 		});
 

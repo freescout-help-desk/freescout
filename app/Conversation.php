@@ -979,6 +979,7 @@ class Conversation extends Model
             // This throws an exception if record exists
             $this->folders()->attach($folder->id);
         }
+        $folder->updateCounters();
         
         // updateOrCreate does not create properly with ManyToMany
         // $values = [
@@ -999,6 +1000,7 @@ class Conversation extends Model
         }
 
         $this->folders()->detach($folder->id);
+        $folder->updateCounters();
     }
 
     /**
