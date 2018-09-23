@@ -158,6 +158,14 @@ class UsersController extends Controller
                     $validator->errors()->add('photo_url', __('Error occured processing the image. Make sure that PHP GD extension is enabled.'));
                 }
             }
+
+            // Do not allow to remove last administrator
+            if ($user->isAdmin() && isset($request->role) && $request->role != User::ROLE_ADMIN) {
+                $admins_count = User::where('role', User::ROLE_ADMIN)->count();
+                if ($admins_count < 2) {
+                    $validator->errors()->add('role', __('Role of the only one administrator can not be changed.'));
+                }
+            }
         });
 
         if ($validator->fails()) {
@@ -173,8 +181,6 @@ class UsersController extends Controller
         }
         if (!auth()->user()->can('changeRole', $user)) {
             unset($request_data['role']);
-        } else {
-            // Do not allow to remove last administrator
         }
         $user->fill($request_data);
 
