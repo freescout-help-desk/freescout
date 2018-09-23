@@ -35,6 +35,16 @@
                 <th>{{ __('Protocol') }}</th>
                 <td class="table-main-col" id="system-app-protocol"></td>
             </tr>
+            <tr>
+                <th>{{ __('.env file') }}</th>
+                <td class="table-main-col">
+                    @if (\File::exists(base_path().DIRECTORY_SEPARATOR.'.env'))
+                        {{ 'Exists'}}
+                    @else
+                        <strong class="text-danger">{{ 'Not found'}}</strong>
+                    @endif
+                </td>
+            </tr>
         </tbody>
     </table>
 

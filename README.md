@@ -21,11 +21,10 @@ Now you can enjoy a self hosted clone of Help Scout without giving up privacy or
 ## Table of Contents
    * [Features](#features)
    * [Requirements](#requirements)
-   * [Release Date](#release-date)
-   * [Documentation](#documentation)
+   * [News & Updates](#news--updates)
    * [Installation Guide](#installation-guide)
    * [Development Guide](#development-guide)
-   * [Todo List](#todo-list)
+   * [Contributing](#contributing)
    * [Screenshots](#screenshots)
 
 ## Features
@@ -56,10 +55,6 @@ FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on 
 
 If you would like to be notified about new releases, news and updates you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
 
-## Documentation
-
-[Documentation](https://github.com/freescout-helpdesk/freescout/wiki)
-
 ## Installation Guide
 
 [Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
@@ -68,9 +63,14 @@ If you would like to be notified about new releases, news and updates you can su
 
 [Development Guide](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide)
 
-## Todo List
+## Modules
 
-[Todo List](https://github.com/freescout-helpdesk/freescout/projects/1)
+[Modules](https://github.com/freescout-helpdesk/freescout/wiki/FreeScout-Modules)
+
+## Contributing
+
+* [Todo list](https://github.com/freescout-helpdesk/freescout/projects/1)
+* [Support project by leaving a feedback](https://github.com/freescout-helpdesk/freescout/wiki#support-project)
 
 ## Screenshots
 
