@@ -111,7 +111,7 @@ class UsersController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $this->authorize('view', $user);
+        $this->authorize('update', $user);
 
         $users = User::all()->except($id);
 
