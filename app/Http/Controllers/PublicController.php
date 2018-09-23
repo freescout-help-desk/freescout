@@ -83,6 +83,10 @@ class PublicController extends Controller
         }
 
         $request_data = $request->all();
+        // Do not allow user to set his role
+        if (isset($request_data['role'])) {
+            unset($request_data['role']);
+        }
         if (isset($request_data['photo_url'])) {
             unset($request_data['photo_url']);
         }

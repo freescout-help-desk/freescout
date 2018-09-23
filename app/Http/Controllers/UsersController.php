@@ -30,6 +30,8 @@ class UsersController extends Controller
      */
     public function users()
     {
+        $this->authorize('create', 'App\User');
+
         $users = User::all();
 
         return view('users/users', ['users' => $users]);
@@ -138,7 +140,7 @@ class UsersController extends Controller
             'phone'       => 'max:60',
             'timezone'    => 'required|string|max:255',
             'time_format' => 'required',
-            'role'        => ['required', Rule::in(array_keys(User::$roles))],
+            'role'        => ['nullable', Rule::in(array_keys(User::$roles))],
             'photo_url'   => 'nullable|image|mimes:jpeg,png,jpg,gif',
         ]);
         $validator->setAttributeNames([
@@ -168,6 +170,11 @@ class UsersController extends Controller
 
         if (isset($request_data['photo_url'])) {
             unset($request_data['photo_url']);
+        }
+        if (!auth()->user()->can('changeRole', $user)) {
+            unset($request_data['role']);
+        } else {
+            // Do not allow to remove last administrator
         }
         $user->fill($request_data);
 
