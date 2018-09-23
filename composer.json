@@ -34,8 +34,12 @@
         ],
         "psr-4": {
             "App\\": "app/",
-            "Modules\\": "Modules/"
-        }
+            "Modules\\": "Modules/",
+            "Axn\\Laroute\\Routes\\": "overrides/Axn/Laroute/Routes"
+        },
+        "exclude-from-classmap": [
+            "vendor/axn/laravel-laroute/src/Routes/Collection.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

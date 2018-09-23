@@ -177,6 +177,13 @@
                 return routes.route(route, parameters);
             },
 
+            // Add route: used by modules
+            add_routes : function (new_routes) {
+                new_routes = new_routes || [];
+                
+                routes.routes = routes.routes.concat(new_routes);
+            },
+
             // Generate a fully qualified URL to the given path.
             // laroute.route('url', [params = {}])
             url : function (route, parameters) {

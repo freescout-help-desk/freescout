@@ -54,15 +54,17 @@ class ModuleBuild extends Command
                 $this->error('No modules found');
                 return;
             }
-            $all = $this->confirm('You have not specified a module alias, would you like to build all available modules ('.implode(', ', $modules_aliases).')?');
-            if (!$all) {
-                return;
-            }
+            $all = true;
+            // $all = $this->confirm('You have not specified a module alias, would you like to build all available modules ('.implode(', ', $modules_aliases).')?');
+            // if (!$all) {
+            //     return;
+            // }
         }
 
         if ($all) {
             foreach ($modules as $module) {
                 $this->buildModule($module);
+                $this->call('freescout:module-laroute', ['module_alias' => $module->getAlias()]);
             }
         } else {
             $module = \Module::findByAlias($module_alias);
@@ -71,6 +73,7 @@ class ModuleBuild extends Command
                 return;
             }
             $this->buildModule($module);
+            $this->call('freescout:module-laroute');
         }
     }
 

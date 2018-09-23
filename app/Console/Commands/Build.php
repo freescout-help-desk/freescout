@@ -37,7 +37,7 @@ class Build extends Command
      */
     public function handle()
     {
-        $this->call('freescout:generate-vars-js');
+        $this->call('freescout:generate-vars');
         $this->call('laroute:generate');
     }
 }
