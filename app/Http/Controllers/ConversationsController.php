@@ -377,7 +377,7 @@ class ConversationsController extends Controller
                     if ($thread && (!$conversation || $thread->conversation_id != $conversation->id)) {
                         $response['msg'] = __('Incorrect thread');
                     } else {
-                        $from_draft = false;
+                        $from_draft = true;
                     }
                 }
 
