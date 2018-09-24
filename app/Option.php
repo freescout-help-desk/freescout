@@ -67,6 +67,11 @@ class Option extends Model
      */
     public static function get($name, $default = false, $decode = true, $cache = false)
     {
+        // If not passed, get default value from config 
+        if (func_num_args() == 1) {
+            $default = self::getDefault($name, $default);
+        }
+
         if ($cache && isset(self::$cache[$name])) {
             return self::$cache[$name];
         }
@@ -87,6 +92,18 @@ class Option extends Model
         }
 
         return $value;
+    }
+
+    public static function getDefault($option_name, $default)
+    {
+
+        $options = \Config::get('app.options');
+
+        if (isset($options[$option_name]) && isset($options[$option_name]['default'])) {
+            return $options[$option_name]['default'];
+        } else {
+            return $default;
+        }
     }
 
     public static function remove($name)

@@ -224,4 +224,9 @@ class Helper
             return [];
         }
     }
+
+    public static function getDomain()
+    {
+        return parse_url(\Config::get('app.url'), PHP_URL_HOST);
+    }
 }

@@ -23,7 +23,7 @@
                         <label for="first_name" class="col-sm-2 control-label">{{ __('First Name') }}</label>
 
                         <div class="col-md-6">
-                            <input id="first_name" type="text" class="form-control input-sized2" name="first_name" value="{{ old('first_name', $customer->first_name) }}" maxlength="20">
+                            <input id="first_name" type="text" class="form-control input-sized-lg" name="first_name" value="{{ old('first_name', $customer->first_name) }}" maxlength="20">
 
                             @include('partials/field_error', ['field'=>'first_name'])
                         </div>
@@ -33,7 +33,7 @@
                         <label for="last_name" class="col-sm-2 control-label">{{ __('Last Name') }}</label>
 
                         <div class="col-md-6">
-                            <input id="last_name" type="text" class="form-control input-sized2" name="last_name" value="{{ old('last_name', $customer->last_name) }}" maxlength="30">
+                            <input id="last_name" type="text" class="form-control input-sized-lg" name="last_name" value="{{ old('last_name', $customer->last_name) }}" maxlength="30">
 
                             @include('partials/field_error', ['field'=>'last_name'])
                         </div>
@@ -43,7 +43,7 @@
                         <label for="job_title" class="col-sm-2 control-label">{{ __('Job Title') }}</label>
 
                         <div class="col-md-6">
-                            <input id="job_title" type="text" class="form-control input-sized2" name="job_title" value="{{ old('job_title', $customer->job_title) }}" placeholder="{{ __('(optional)') }}" maxlength="100">
+                            <input id="job_title" type="text" class="form-control input-sized-lg" name="job_title" value="{{ old('job_title', $customer->job_title) }}" placeholder="{{ __('(optional)') }}" maxlength="100">
 
                             @include('partials/field_error', ['field'=>'job_title'])
                         </div>
@@ -57,7 +57,7 @@
                                 @foreach (old('emails', $emails) as $i => $email)
                                     <div class="multi-item {{ $errors->has('emails.'.$i) ? ' has-error' : '' }}">
                                         <div>
-                                            <input id="emails" type="text" class="form-control input-sized2" name="emails[]" value="{{ $email }}" maxlength="191">
+                                            <input id="emails" type="text" class="form-control input-sized-lg" name="emails[]" value="{{ $email }}" maxlength="191">
                                             <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                         </div>
 
@@ -79,7 +79,7 @@
                                 @foreach ($customer->getWebsites(true) as $website)
                                     <div class="multi-item">
                                         <div>
-                                            <input id="websites" type="text" class="form-control input-sized2" name="websites[]" value="{{ $website }}" maxlength="100">
+                                            <input id="websites" type="text" class="form-control input-sized-lg" name="websites[]" value="{{ $website }}" maxlength="100">
                                             <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                         </div>
                                     </div>

@@ -22,6 +22,7 @@ class ActivityLog extends Activity
     const DESCRIPTION_EMAILS_SENDING_ERROR_TO_USER = 'error_sending_email_to_user';
     const DESCRIPTION_EMAILS_SENDING_ERROR_INVITE = 'error_sending_invite_to_user';
     const DESCRIPTION_EMAILS_SENDING_ERROR_PASSWORD_CHANGED = 'error_sending_password_changed';
+    const DESCRIPTION_EMAILS_SENDING_ERROR_ALERT = 'error_sending_alert';
     const DESCRIPTION_EMAILS_SENDING_WRONG_EMAIL = 'error_sending_wrong_email';
     const DESCRIPTION_EMAILS_FETCHING_ERROR = 'error_fetching_email';
     const DESCRIPTION_SYSTEM_ERROR = 'system_error';
@@ -50,6 +51,8 @@ class ActivityLog extends Activity
                 return __('Error sending invitation email to user');
             case self::DESCRIPTION_EMAILS_SENDING_ERROR_PASSWORD_CHANGED:
                 return __('Error sending password changed notification to user');
+            case self::DESCRIPTION_EMAILS_SENDING_ERROR_ALERT:
+                return __('Error sending alert');
             case self::DESCRIPTION_EMAILS_SENDING_WRONG_EMAIL:
                 return __('Error sending email to the user who replied to notiication from wrong email');
             case self::DESCRIPTION_EMAILS_FETCHING_ERROR:

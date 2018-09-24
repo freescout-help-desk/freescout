@@ -181,6 +181,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default options values for \Option::get()
+    |--------------------------------------------------------------------------
+    */
+    'options' => [
+        'alert_fetch' => ['default' => false],
+        'alert_fetch_period' => ['default' => 15], // min
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
@@ -285,6 +295,8 @@ return [
 
         // Custom
         'Helper'       => App\Misc\Helper::class,
+        'MailHelper'   => App\Misc\Mail::class,
+        'Option'       => App\Option::class,
     ],
 
 ];

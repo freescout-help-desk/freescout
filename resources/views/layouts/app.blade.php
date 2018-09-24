@@ -109,7 +109,7 @@
                                     @if (Auth::user()->isAdmin())
                                         {{--<li><a href="#">{{ __('Teams') }} (todo)</a></li>--}}
                                         <li class="{{ \App\Misc\Helper::menuSelectedHtml('users') }}"><a href="{{ route('users') }}">{{ __('Users') }}</a></li>
-                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('plugins') }}"><a href="#">{{ __('Plugins') }} (todo)</a></li>
+                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('plugins') }}"><a href="#">{{ __('Modules') }} (todo)</a></li>
                                         <li class="{{ \App\Misc\Helper::menuSelectedHtml('logs') }}"><a href="{{ route('logs') }}">{{ __('Logs') }}</a></li>
                                         <li class="{{ \App\Misc\Helper::menuSelectedHtml('system') }}"><a href="{{ route('system') }}">{{ __('System') }}</a></li>
                                     @endif

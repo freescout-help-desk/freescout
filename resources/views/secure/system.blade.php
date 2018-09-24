@@ -11,7 +11,7 @@
         <li><a href="#app"><i class="glyphicon glyphicon-menu-right"></i> {{ __('App') }}</a></li>
         <li><a href="#server"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Server') }}</a></li>
         <li><a href="#php"><i class="glyphicon glyphicon-menu-right"></i> PHP</a></li>
-        <li><a href="#tasks"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Cron Commands') }}</a></li>
+        <li><a href="#cron"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Cron Commands') }}</a></li>
         <li><a href="#jobs"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Background Jobs') }}</a></li>
     </ul>
 @endsection

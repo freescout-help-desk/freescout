@@ -200,4 +200,37 @@ class Mail
             return true;
         }
     }
+
+    /**
+     * Convert list of emails to array.
+     *
+     * @return array
+     */
+    public static function sanitizeEmails($emails)
+    {
+        $emails_array = [];
+
+        if (is_array($emails)) {
+            $emails_array = $emails;
+        } else {
+            $emails_array = explode(',', $emails);
+        }
+
+        foreach ($emails_array as $i => $email) {
+            $emails_array[$i] = \App\Email::sanitizeEmail($email);
+            if (!$emails_array[$i]) {
+                unset($emails_array[$i]);
+            }
+        }
+
+        return $emails_array;
+    }
+
+    /**
+     * Send system alert to super admin.
+     */
+    public static function sendAlertMail($text, $title = '')
+    {
+        \App\Jobs\SendAlert::dispatch($text, $title)->onQueue('emails');
+    }
 }

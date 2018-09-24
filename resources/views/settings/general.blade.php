@@ -7,7 +7,7 @@
         <div class="col-md-6">
             <input id="company_name" type="text" class="form-control input-sized" name="settings[company_name]" value="{{ old('settings[company_name]', $settings['company_name']) }}" maxlength="60" required autofocus>
 
-            @include('partials/field_error', ['field'=>'settings[company_name]'])
+            @include('partials/field_error', ['field'=>'settings.company_name'])
         </div>
     </div>
 
@@ -17,7 +17,7 @@
         <div class="col-md-6">
             <input id="next_ticket" type="number" class="form-control input-sized" name="settings[next_ticket]" value="{{ old('settings[next_ticket]', $settings['next_ticket']) }}" {{--required autofocus--}}>
 
-            @include('partials/field_error', ['field'=>'settings[next_ticket]'])
+            @include('partials/field_error', ['field'=>'settings.next_ticket'])
         </div>
     </div>
 
@@ -42,7 +42,7 @@
             <div class="controls">
                 <div class="onoffswitch-wrap">
                     <div class="onoffswitch">
-                        <input type="checkbox" name="settings[email_branding]" value="{{ App\Mailbox::TEMPLATE_FANCY }}" id="email_branding" class="onoffswitch-checkbox" @if (old('settings[email_branding]', $settings['email_branding']))checked="checked"@endif >
+                        <input type="checkbox" name="settings[email_branding]" value="1" id="email_branding" class="onoffswitch-checkbox" @if (old('settings[email_branding]', $settings['email_branding']))checked="checked"@endif >
                         <label class="onoffswitch-label" for="email_branding"></label>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
             <p class="help-block">
                 {{ __('Add "Powered by :app_name" footer text to the outgoing emails to invite more developers to the project and make application better.', ['app_name' => \Config::get('app.name')]) }}
             </p>
-            @include('partials/field_error', ['field'=>'settings[open_tracking]'])
+            @include('partials/field_error', ['field'=>'settings.email_branding'])
         </div>
     </div>
 
@@ -61,12 +61,12 @@
             <div class="controls">
                 <div class="onoffswitch-wrap">
                     <div class="onoffswitch">
-                        <input type="checkbox" name="settings[open_tracking]" value="{{ App\Mailbox::TEMPLATE_FANCY }}" id="open_tracking" class="onoffswitch-checkbox" @if (old('settings[open_tracking]', $settings['open_tracking']))checked="checked"@endif >
+                        <input type="checkbox" name="settings[open_tracking]" value="1" id="open_tracking" class="onoffswitch-checkbox" @if (old('settings[open_tracking]', $settings['open_tracking']))checked="checked"@endif >
                         <label class="onoffswitch-label" for="open_tracking"></label>
                     </div>
                 </div>
             </div>
-            @include('partials/field_error', ['field'=>'settings[open_tracking]'])
+            @include('partials/field_error', ['field'=>'settings.open_tracking'])
         </div>
     </div>
 
@@ -77,14 +77,14 @@
             <div class="controls">
                 <div class="onoffswitch-wrap">
                     <div class="onoffswitch">
-                        <input type="checkbox" name="settings[enrich_customer_data]" value="{{ App\Mailbox::TEMPLATE_FANCY }}" id="enrich_customer_data" class="onoffswitch-checkbox" @if (old('settings[enrich_customer_data]', $settings['enrich_customer_data']))checked="checked"@endif >
+                        <input type="checkbox" name="settings[enrich_customer_data]" value="1" id="enrich_customer_data" class="onoffswitch-checkbox" @if (old('settings[enrich_customer_data]', $settings['enrich_customer_data']))checked="checked"@endif >
                         <label class="onoffswitch-label" for="enrich_customer_data"></label>
                     </div>
 
                     <i class="glyphicon glyphicon-info-sign icon-info icon-info-inline" data-toggle="popover" data-trigger="hover" data-content="{{ __('Auto-update your customers profile with avatars, social, and location data.') }}"></i>
                 </div>
             </div>
-            @include('partials/field_error', ['field'=>'settings[enrich_customer_data]'])
+            @include('partials/field_error', ['field'=>'settings.enrich_customer_data'])
         </div>
     </div>
 
@@ -100,7 +100,7 @@
                 {{ __('Value is set in .env file using APP_TIMEZONE parameter.') }}
             </div>
 
-            @include('partials/field_error', ['field'=>'settings[timezone]'])
+            @include('partials/field_error', ['field'=>'settings.timezone'])
         </div>
     </div>
 
@@ -113,7 +113,7 @@
                 <label for="12hour" class="radio inline plain"><input type="radio" name="settings[time_format]" value="{{ App\User::TIME_FORMAT_12 }}" id="12hour" @if (old('settings[time_format]', $settings['time_format']) == App\User::TIME_FORMAT_12)checked="checked"@endif> {{ __('12-hour clock (e.g. 2:13pm)') }}</label>
                 <label for="24hour" class="radio inline"><input type="radio" name="settings[time_format]" value="{{ App\User::TIME_FORMAT_24 }}" id="24hour" @if (old('settings[time_format]', $settings['time_format']) == App\User::TIME_FORMAT_24 || !$settings['time_format'])checked="checked"@endif> {{ __('24-hour clock (e.g. 14:13)') }}</label>
             </div>
-            @include('partials/field_error', ['field'=>'settings[time_format]'])
+            @include('partials/field_error', ['field'=>'settings.time_format'])
         </div>
     </div>
 

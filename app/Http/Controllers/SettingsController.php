@@ -110,7 +110,14 @@ class SettingsController extends Controller
                     'mail_encryption' => Option::get('mail_encryption', \Config::get('mail.encryption')),
                 ];
                 break;
-            
+            case 'alerts':
+                $settings = [
+                    'alert_recipients'   => Option::get('alert_recipients'),
+                    'alert_fetch'        => Option::get('alert_fetch'),
+                    'alert_fetch_period' => Option::get('alert_fetch_period'),
+                    'alert_send'         => Option::get('alert_send'),
+                ];
+                break;
             default:
                 $settings = \Event::fire('filter.section_settings', [$section]);
                 break;
@@ -122,8 +129,10 @@ class SettingsController extends Controller
     public function getSections()
     {
         $sections = [
-            'general' => ['title' => __('General'), 'icon' => 'envelope'],
-            'emails'  => ['title' => __('Mail Settings'), 'icon' => 'cog'],
+            // todo: order
+            'general' => ['title' => __('General'), 'icon' => 'cog', 'order' => 100],
+            'emails'  => ['title' => __('Mail Settings'), 'icon' => 'transfer', 'order' => 200],
+            'alerts'  => ['title' => __('Alerts'), 'icon' => 'bell', 'order' => 300],
         ];
         //return \Event::fire('filter.settings_sections', [$sections]);
         return $sections;

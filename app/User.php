@@ -604,4 +604,14 @@ class User extends Authenticatable
             return false;
         }
     }
+
+    /**
+     * Todo: implement super admin role.
+     * For now we return just first admin.
+     * @return [type] [description]
+     */
+    public static function getSuperAdmin()
+    {
+        return User::where('role', User::ROLE_ADMIN)->first();
+    }
 }
