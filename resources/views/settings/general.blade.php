@@ -4,7 +4,7 @@
     <div class="form-group{{ $errors->has('settings[company_name]') ? ' has-error' : '' }}">
         <label for="company_name" class="col-sm-2 control-label">{{ __('Company Name') }}</label>
 
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <input id="company_name" type="text" class="form-control input-sized" name="settings[company_name]" value="{{ old('settings[company_name]', $settings['company_name']) }}" maxlength="60" required autofocus>
 
             @include('partials/field_error', ['field'=>'settings.company_name'])
@@ -14,7 +14,7 @@
     <div class="form-group{{ $errors->has('settings[next_ticket]') ? ' has-error' : '' }}">
         <label for="next_ticket" class="col-sm-2 control-label">{{ __('Next Conversation #') }} (todo)</label>
 
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <input id="next_ticket" type="number" class="form-control input-sized" name="settings[next_ticket]" value="{{ old('settings[next_ticket]', $settings['next_ticket']) }}" {{--required autofocus--}}>
 
             @include('partials/field_error', ['field'=>'settings.next_ticket'])
@@ -38,7 +38,7 @@
     <div class="form-group{{ $errors->has('settings[email_branding]') ? ' has-error' : '' }}">
         <label for="email_branding" class="col-sm-2 control-label">{{ __('Spread the Word', ['app_name' => \Config::get('app.name')]) }}</label>
 
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <div class="controls">
                 <div class="onoffswitch-wrap">
                     <div class="onoffswitch">
@@ -57,7 +57,7 @@
     <div class="form-group{{ $errors->has('settings[open_tracking]') ? ' has-error' : '' }}">
         <label for="open_tracking" class="col-sm-2 control-label">{{ __('Open Tracking') }} (todo)</label>
 
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <div class="controls">
                 <div class="onoffswitch-wrap">
                     <div class="onoffswitch">
@@ -73,7 +73,7 @@
     <div class="form-group{{ $errors->has('settings[enrich_customer_data]') ? ' has-error' : '' }}">
         <label for="enrich_customer_data" class="col-sm-2 control-label">{{ __('Enrich Customer Data') }} (todo)</label>
 
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <div class="controls">
                 <div class="onoffswitch-wrap">
                     <div class="onoffswitch">
@@ -91,7 +91,7 @@
     <div class="form-group{{ $errors->has('settings[timezone]') ? ' has-error' : '' }}">
         <label for="timezone" class="col-sm-2 control-label">{{ __('Timezone') }}</label>
 
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <select id="timezone" disabled="disabled" class="form-control input-sized" name="settings[timezone]" required autofocus>
                 @include('partials/timezone_options', ['current_timezone' => old('settings[timezone]', \Config::get('app.timezone'))])
             </select>
@@ -107,7 +107,7 @@
     <div class="form-group{{ $errors->has('settings[time_format]') ? ' has-error' : '' }}">
         <label for="time_format" class="col-sm-2 control-label">{{ __('Time Format') }}</label>
 
-        <div class="col-md-6">
+        <div class="col-sm-6">
 
             <div class="controls">
                 <label for="12hour" class="radio inline plain"><input type="radio" name="settings[time_format]" value="{{ App\User::TIME_FORMAT_12 }}" id="12hour" @if (old('settings[time_format]', $settings['time_format']) == App\User::TIME_FORMAT_12)checked="checked"@endif> {{ __('12-hour clock (e.g. 2:13pm)') }}</label>
@@ -118,7 +118,7 @@
     </div>
 
     <div class="form-group">
-        <div class="col-md-6 col-sm-offset-2">
+        <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">
                 {{ __('Save') }}
             </button>

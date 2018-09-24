@@ -8,7 +8,7 @@
     <div class="form-group{{ $errors->has('settings.mail_from') ? ' has-error' : '' }}">
         <label for="mail_from" class="col-sm-2 control-label">{{ __('Mail From') }}</label>
 
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <input id="mail_from" type="email" class="form-control input-sized" name="settings[mail_from]" value="{{ old('settings.mail_from', $settings['mail_from']) }}" required autofocus>
 
             @include('partials/field_error', ['field'=>'settings.mail_from'])
@@ -36,7 +36,7 @@
         <div class="form-group{{ $errors->has('settings.mail_host') ? ' has-error' : '' }}">
             <label for="mail_host" class="col-sm-2 control-label">{{ __('SMTP Server') }}</label>
 
-            <div class="col-md-6">
+            <div class="col-sm-6">
                 <input id="mail_host" type="text" class="form-control input-sized" name="settings[mail_host]" value="{{ old('settings.mail_host', $settings['mail_host']) }}" maxlength="255"  @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
 
                 @include('partials/field_error', ['field'=>'settings.mail_host'])
@@ -45,7 +45,7 @@
         <div class="form-group{{ $errors->has('settings.mail_port') ? ' has-error' : '' }}">
             <label for="mail_port" class="col-sm-2 control-label">{{ __('Port') }}</label>
 
-            <div class="col-md-6">
+            <div class="col-sm-6">
                 <input id="mail_port" type="number" class="form-control input-sized" name="settings[mail_port]" value="{{ old('settings.mail_port', $settings['mail_port']) }}" maxlength="5" @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
 
                 @include('partials/field_error', ['field'=>'settings.mail_port'])
@@ -54,7 +54,7 @@
         <div class="form-group{{ $errors->has('settings.mail_username') ? ' has-error' : '' }}">
             <label for="mail_username" class="col-sm-2 control-label">{{ __('Username') }}</label>
 
-            <div class="col-md-6">
+            <div class="col-sm-6">
                 <input id="mail_username" type="text" class="form-control input-sized" name="settings[mail_username]" value="{{ old('settings.mail_username', $settings['mail_username']) }}" maxlength="100" @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
 
                 @include('partials/field_error', ['field'=>'settings.mail_username'])
@@ -63,7 +63,7 @@
         <div class="form-group{{ $errors->has('settings.mail_password') ? ' has-error' : '' }}">
             <label for="mail_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
-            <div class="col-md-6">
+            <div class="col-sm-6">
                 <input id="mail_password" type="password" class="form-control input-sized" name="settings[mail_password]" value="{{ old('settings.mail_password', $settings['mail_password']) }}" maxlength="255" @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
 
                 @include('partials/field_error', ['field'=>'settings.mail_password'])
@@ -72,7 +72,7 @@
         <div class="form-group{{ $errors->has('settings.mail_encryption') ? ' has-error' : '' }}">
             <label for="mail_encryption" class="col-sm-2 control-label">{{ __('Encryption') }}</label>
 
-            <div class="col-md-6">
+            <div class="col-sm-6">
                 <select id="mail_encryption" class="form-control input-sized" name="settings[mail_encryption]" @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
                     <option value="{{ App\Mailbox::OUT_ENCRYPTION_NONE }}" @if (old('settings.mail_encryption', $settings['mail_encryption']) == 'none')selected="selected"@endif>{{ __('None') }}</option>
                     <option value="{{ App\Mailbox::OUT_ENCRYPTION_SSL }}" @if (old('settings.mail_encryption', $settings['mail_encryption']) == 'ssl')selected="selected"@endif>{{ __('SSL') }}</option>
@@ -86,7 +86,7 @@
     </div>
 
     <div class="form-group">
-        <div class="col-md-6 col-sm-offset-2">
+        <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">
                 {{ __('Save') }}
             </button>

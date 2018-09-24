@@ -24,7 +24,7 @@
                     <div class="form-group{{ $errors->has('auto_reply_enabled') ? ' has-error' : '' }}">
                         <label for="auto_reply_enabled" class="col-sm-2 control-label">{{ __('Enable Auto Reply') }}</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <div class="controls">
                                 <div class="onoffswitch-wrap">
                                     <div class="onoffswitch">
@@ -42,7 +42,7 @@
                     <div class="form-group{{ $errors->has('office_hours') ? ' has-error' : '' }}">
                         <label for="office_hours" class="col-sm-2 control-label">{{ __('Office Hours') }}</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <div class="controls">
                                 <label for="auto_reply_enabled" class="control-label text-help">
                                     {{ __('Not yet activated') }}
@@ -55,7 +55,7 @@
                     <div class="form-group{{ $errors->has('auto_reply_subject') ? ' has-error' : '' }}">
                         <label for="auto_reply_subject" class="col-sm-2 control-label">{{ __('Subject') }}</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <input id="auto_reply_subject" type="text" class="form-control input-sized" name="auto_reply_subject" value="{{ old('auto_reply_subject', $mailbox->auto_reply_subject) }}" maxlength="128" required autofocus>
 
                             @include('partials/field_error', ['field'=>'auto_reply_subject'])
@@ -65,7 +65,7 @@
                     <div class="form-group">
                         <label for="auto_reply_message" class="col-sm-2 control-label">{{ __('Message') }}</label>
 
-                        <div class="col-md-9 auto_reply_message-editor">
+                        <div class="col-sm-9 auto_reply_message-editor">
                             <textarea id="auto_reply_message" class="form-control" name="auto_reply_message" rows="8">{{ old('auto_reply_message', $mailbox->auto_reply_message) }}</textarea>
                             <p class="block-help">
                                 {{ __("Auto replies don't include your mailbox signature, so be sure to add your contact information if necessary.") }}
@@ -77,7 +77,7 @@
                     </div>
 
                     <div class="form-group">
-                        <div class="col-md-6 col-sm-offset-2">
+                        <div class="col-sm-6 col-sm-offset-2">
                             <button type="submit" class="btn btn-primary">
                                 {{ __('Save') }}
                             </button>

@@ -22,7 +22,7 @@
 				                    <div class="form-group{{ $errors->has('role') ? ' has-error' : '' }}">
 				                        <label for="role" class="col-sm-4 control-label">{{ __('Role') }}</label>
 
-				                        <div class="col-md-6">
+				                        <div class="col-sm-6">
 				                        	<div class="flexy">
 					                            <select id="role" type="text" class="form-control input-sized" name="role" required autofocus>
 					                                <option value="{{ App\User::ROLE_USER }}" @if (old('role') == App\User::ROLE_USER)selected="selected"@endif>{{ __('User') }}</option>
@@ -39,7 +39,7 @@
 									<div class="form-group{{ $errors->has('first_name') ? ' has-error' : '' }}">
 				                        <label for="first_name" class="col-sm-4 control-label">{{ __('First Name') }}</label>
 
-				                        <div class="col-md-6">
+				                        <div class="col-sm-6">
 				                            <input id="first_name" type="text" class="form-control input-sized" name="first_name" value="{{ old('first_name') }}" maxlength="20" required autofocus>
 
 				                            @include('partials/field_error', ['field'=>'first_name'])
@@ -49,7 +49,7 @@
 				                    <div class="form-group{{ $errors->has('last_name') ? ' has-error' : '' }}">
 				                        <label for="last_name" class="col-sm-4 control-label">{{ __('Last Name') }}</label>
 
-				                        <div class="col-md-6">
+				                        <div class="col-sm-6">
 				                            <input id="last_name" type="text" class="form-control input-sized" name="last_name" value="{{ old('last_name') }}" maxlength="30" required autofocus>
 
 				                            @include('partials/field_error', ['field'=>'last_name'])
@@ -59,7 +59,7 @@
 				                    <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
 				                        <label for="email" class="col-sm-4 control-label">{{ __('Email') }}</label>
 
-				                        <div class="col-md-6">
+				                        <div class="col-sm-6">
 				                            <input id="email" type="email" class="form-control input-sized" name="email" value="{{ old('email') }}" maxlength="100" required autofocus>
 
 				                            @include('partials/field_error', ['field'=>'email'])
@@ -69,7 +69,7 @@
 				                    <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}  @if (!empty(old('send_invite')) || empty(old('role'))) hidden @endif no-send-invite">
 				                        <label for="password" class="col-sm-4 control-label">{{ __('Password') }}</label>
 
-				                        <div class="col-md-6">
+				                        <div class="col-sm-6">
 				                            <input id="password" type="password" class="form-control input-sized" name="password" value="{{ old('password') }}" maxlength="255" @if (!empty(old('send_invite')) || empty(old('role'))) required autofocus @endif>
 
 				                            @include('partials/field_error', ['field'=>'password'])
@@ -80,7 +80,7 @@
 					                    <div class="form-group{{ $errors->has('users') ? ' has-error' : '' }} margin-bottom-0">
 					                        <label for="users" class="col-sm-4 control-label">{{ __('Which mailboxes will user use?') }}</label>
 
-					                        <div class="col-md-6 control-padded">
+					                        <div class="col-sm-6 control-padded">
 					                            <div><a href="javascript:void(0)" class="sel-all">{{ __('all') }}</a> / <a href="javascript:void(0)" class="sel-none">{{ __('none') }}</a></div>
 
 					                            <fieldset id="permissions-fields">
@@ -100,7 +100,7 @@
 					                    </div>
 				                    @endif
 
-									<div class="col-md-6 col-sm-offset-4">
+									<div class="col-sm-6 col-sm-offset-4">
 										<div class="input-sized">
 											<hr class="form-divider">
 										</div>
@@ -108,7 +108,7 @@
 
 									<div class="form-group">
 										<div class="controls send-email">
-											<div class="col-md-8 col-sm-offset-4">
+											<div class="col-sm-8 col-sm-offset-4">
 												<label class="checkbox">
 													{{-- Mark as checked if it has been checked before or if form has not been submitted yet --}}
 													<input type="checkbox" name="send_invite" id="send_invite" value="1" @if (!empty(old('send_invite')) || empty(old('role'))) checked="checked" @endif>
@@ -121,7 +121,7 @@
 							        </div>
 
 				                    <div class="form-group">
-				                        <div class="col-md-6 col-sm-offset-4">
+				                        <div class="col-sm-6 col-sm-offset-4">
 				                            <button type="submit" class="btn btn-primary">
 				                                {{ __('Create User') }}
 				                            </button>

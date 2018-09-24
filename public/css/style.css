@@ -401,9 +401,6 @@ select.form-control {
 .input-sized {
     width: 270px;
 }
-.input-sized-lg {
-    width: 387px;
-}
 .control-label {
     font-size: 13.4px;
 }
@@ -508,6 +505,11 @@ select[multiple].input-md {
 }
 .btn-xs, .btn-group-xs > .btn {
     padding: 1px 7px;
+}
+@media (min-width: 435px) {
+    .input-sized-lg {
+        width: 387px;
+    }
 }
 
 /**
@@ -2719,11 +2721,11 @@ a.help-icon:hover {
     text-decoration: underline;
 }
 .wizard-header {
-    padding: 40px 50px 0;
+    padding: 40px 0 0;
     text-align: center;
 }
 .wizard-header-small {
-    padding: 25px 50px 0;
+    padding: 25px 0 0;
 }
 .wizard-header h1 {
     font-size: 24px;
@@ -2743,7 +2745,7 @@ a.help-icon:hover {
     top: 3px;
 }
 .wizard-body {
-    padding: 10px 50px 0;
+    padding: 10px 0 0;
 }
 .wizard-footer {
     border-radius: 0 0 4px 4px;

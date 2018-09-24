@@ -73,7 +73,7 @@
                         <div class="form-group{{ $errors->has('out_server') ? ' has-error' : '' }}">
                             <label for="out_server" class="col-sm-2 control-label">{{ __('SMTP Server') }}</label>
 
-                            <div class="col-md-6">
+                            <div class="col-sm-6">
                                 <input id="out_server" type="text" class="form-control input-sized" name="out_server" value="{{ old('out_server', $mailbox->out_server) }}" maxlength="255"  @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
 
                                 @include('partials/field_error', ['field'=>'out_server'])
@@ -82,7 +82,7 @@
                         <div class="form-group{{ $errors->has('out_port') ? ' has-error' : '' }}">
                             <label for="out_port" class="col-sm-2 control-label">{{ __('Port') }}</label>
 
-                            <div class="col-md-6">
+                            <div class="col-sm-6">
                                 <input id="out_port" type="number" class="form-control input-sized" name="out_port" value="{{ old('out_port', $mailbox->out_port) }}" maxlength="5" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
 
                                 @include('partials/field_error', ['field'=>'out_port'])
@@ -91,7 +91,7 @@
                         <div class="form-group{{ $errors->has('out_username') ? ' has-error' : '' }}">
                             <label for="out_username" class="col-sm-2 control-label">{{ __('Username') }}</label>
 
-                            <div class="col-md-6">
+                            <div class="col-sm-6">
                                 <input id="out_username" type="text" class="form-control input-sized" name="out_username" value="{{ old('out_username', $mailbox->out_username) }}" maxlength="100" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
 
                                 @include('partials/field_error', ['field'=>'out_username'])
@@ -100,7 +100,7 @@
                         <div class="form-group{{ $errors->has('out_password') ? ' has-error' : '' }}">
                             <label for="out_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
-                            <div class="col-md-6">
+                            <div class="col-sm-6">
                                 <input id="out_password" type="password" class="form-control input-sized" name="out_password" value="{{ old('out_password', $mailbox->out_password) }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
 
                                 @include('partials/field_error', ['field'=>'out_password'])
@@ -109,7 +109,7 @@
                         <div class="form-group{{ $errors->has('out_encryption') ? ' has-error' : '' }}">
                             <label for="out_encryption" class="col-sm-2 control-label">{{ __('Encryption') }}</label>
 
-                            <div class="col-md-6">
+                            <div class="col-sm-6">
                                 <select id="out_encryption" class="form-control input-sized" name="out_encryption" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
                                     <option value="{{ App\Mailbox::OUT_ENCRYPTION_NONE }}" @if (old('out_encryption', $mailbox->out_encryption) == App\Mailbox::OUT_ENCRYPTION_NONE)selected="selected"@endif>{{ __('None') }}</option>
                                     <option value="{{ App\Mailbox::OUT_ENCRYPTION_SSL }}" @if (old('out_encryption', $mailbox->out_encryption) == App\Mailbox::OUT_ENCRYPTION_SSL)selected="selected"@endif>{{ __('SSL') }}</option>
@@ -181,7 +181,7 @@
                     <div class="form-group">
                         <label for="send_test" class="col-sm-2 control-label">{{ __('Test Email') }}</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <div class="input-group input-sized">
                                 <input id="send_test" type="email" class="form-control" value="{{ old('email', \App\Option::get('send_test_to', $mailbox->email)) }}" maxlength="128" @if (!$mailbox->isInActive()) disabled="disabled" @endif>
                                 <span class="input-group-btn">
@@ -192,7 +192,7 @@
                     </div>
 
                     <div class="form-group margin-top">
-                        <div class="col-md-6 col-sm-offset-2">
+                        <div class="col-sm-6 col-sm-offset-2">
                             <button type="submit" class="btn btn-primary">
                                 {{ __('Save Settings') }}
                             </button>

@@ -129,7 +129,7 @@
 
                             <div class="form-group">
                                 <div class="col-md-6 col-sm-offset-4">
-                                    <button type="submit" class="btn btn-primary btn-lg">
+                                    <button type="submit" class="btn btn-primary">
                                         {{ __('Save Profile') }}
                                     </button>
                                 </div>
