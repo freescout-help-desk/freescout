@@ -90,7 +90,7 @@
 							        <td align="right" valign="top">
 							            <table border="0" cellspacing="0" cellpadding="5" style="margin-top: 5px;">
 							                <tr>
-							                    <td height="10" bgcolor="{{ $conversation->getStatusColor() }}" style="color:#ffffff; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; line-height:12px; font-size:12px; margin-top: 3px;border-radius: 2px; @if ($conversation->status == App\Conversation::STATUS_PENDING)border: 1px solid #ccc; color: #333;@endif">{{ strtoupper($conversation->getStatusName()) }}</td>
+							                    <td height="10" bgcolor="{{ $conversation->getStatusColor() }}" style="color:#ffffff; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; line-height:12px; font-size:12px; margin-top: 3px;border-radius: 2px; @if ($conversation->status == App\Conversation::STATUS_PENDING)border: 1px solid #ccc; color: #727d87;@endif">{{ strtoupper($conversation->getStatusName()) }}</td>
 							                </tr>
 							            </table>
 							            @if ($conversation->user_id)
