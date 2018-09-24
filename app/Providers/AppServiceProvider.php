@@ -52,8 +52,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function registerModuleFunctions()
     {
-        \Module::macro('getOption', function($module_alias, $option_name) {
-            $default = \Config::get(strtolower($module_alias).'.'.$option_name);
+        \Module::macro('getOption', function($module_alias, $option_name, $default = false) {
+            // If not passed, get default value from config 
+            if (func_num_args() == 2) {
+                $options = \Config::get(strtolower($module_alias).'.options');
+
+                if (isset($options[$option_name]) && isset($options[$option_name]['default'])) {
+                    $default = $options[$option_name]['default'];
+                }
+            }
+
             return \Option::get($module_alias.'.'.$option_name, $default);
         });
         \Module::macro('setOption', function($module_alias, $option_name, $option_value) {
