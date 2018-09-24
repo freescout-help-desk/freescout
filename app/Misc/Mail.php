@@ -7,6 +7,7 @@ use App\Option;
 use App\SendLog;
 use Webklex\IMAP\Client;
 
+// todo: rename into MailHelper
 class Mail
 {
     /**
@@ -32,6 +33,7 @@ class Mail
         self::REPLY_SEPARATOR_TEXT,
         '<div class="gmail_quote">',
         '<blockquote',
+        '<!-- originalMessage -->',
     ];
 
     /**
