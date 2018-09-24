@@ -9,7 +9,7 @@
     </div>
     <ul class="sidebar-menu">
         @foreach ($sections as $item_name => $item_info)
-            <li @if ($item_name == $section)class="active"@endif><i class="glyphicon glyphicon-menu-right"></i> <a href="{{ route('settings', ['section' => $item_name]) }}">{{ $item_info['title'] }}</a></li>
+            <li @if ($item_name == $section)class="active"@endif><i class="glyphicon glyphicon-{{ $item_info['icon'] }}"></i> <a href="{{ route('settings', ['section' => $item_name]) }}">{{ $item_info['title'] }}</a></li>
         @endforeach
     </ul>
 @endsection

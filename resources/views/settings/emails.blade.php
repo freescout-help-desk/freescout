@@ -1,8 +1,8 @@
 <form class="form-horizontal margin-top" method="POST" action="">
     {{ csrf_field() }}
 
-    <div class="help-block">
-        {{ __("These settings are used to send system notifications to admin and invitation emails to users.") }}
+    <div class="help-block text-large margin-bottom">
+        {{ __("These settings are used to send system alerts to admin and invitation emails to users.") }}
     </div>
 
     <div class="form-group{{ $errors->has('settings.mail_from') ? ' has-error' : '' }}">
@@ -11,7 +11,7 @@
         <div class="col-md-6">
             <input id="mail_from" type="email" class="form-control input-sized" name="settings[mail_from]" value="{{ old('settings.mail_from', $settings['mail_from']) }}" required autofocus>
 
-            @include('partials/field_error', ['field'=>'settings[mail_from]'])
+            @include('partials/field_error', ['field'=>'settings.mail_from'])
         </div>
     </div>
 
@@ -39,7 +39,7 @@
             <div class="col-md-6">
                 <input id="mail_host" type="text" class="form-control input-sized" name="settings[mail_host]" value="{{ old('settings.mail_host', $settings['mail_host']) }}" maxlength="255"  @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
 
-                @include('partials/field_error', ['field'=>'mail_host'])
+                @include('partials/field_error', ['field'=>'settings.mail_host'])
             </div>
         </div>
         <div class="form-group{{ $errors->has('settings.mail_port') ? ' has-error' : '' }}">
@@ -48,7 +48,7 @@
             <div class="col-md-6">
                 <input id="mail_port" type="number" class="form-control input-sized" name="settings[mail_port]" value="{{ old('settings.mail_port', $settings['mail_port']) }}" maxlength="5" @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
 
-                @include('partials/field_error', ['field'=>'mail_port'])
+                @include('partials/field_error', ['field'=>'settings.mail_port'])
             </div>
         </div>
         <div class="form-group{{ $errors->has('settings.mail_username') ? ' has-error' : '' }}">
@@ -57,7 +57,7 @@
             <div class="col-md-6">
                 <input id="mail_username" type="text" class="form-control input-sized" name="settings[mail_username]" value="{{ old('settings.mail_username', $settings['mail_username']) }}" maxlength="100" @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
 
-                @include('partials/field_error', ['field'=>'mail_username'])
+                @include('partials/field_error', ['field'=>'settings.mail_username'])
             </div>
         </div>
         <div class="form-group{{ $errors->has('settings.mail_password') ? ' has-error' : '' }}">
@@ -66,7 +66,7 @@
             <div class="col-md-6">
                 <input id="mail_password" type="password" class="form-control input-sized" name="settings[mail_password]" value="{{ old('settings.mail_password', $settings['mail_password']) }}" maxlength="255" @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
 
-                @include('partials/field_error', ['field'=>'mail_password'])
+                @include('partials/field_error', ['field'=>'settings.mail_password'])
             </div>
         </div>
         <div class="form-group{{ $errors->has('settings.mail_encryption') ? ' has-error' : '' }}">
@@ -79,7 +79,7 @@
                     <option value="{{ App\Mailbox::OUT_ENCRYPTION_TLS }}" @if (old('settings.mail_encryption', $settings['mail_encryption']) == 'tls')selected="selected"@endif>{{ __('TLS') }}</option>
                 </select>
 
-                @include('partials/field_error', ['field'=>'mail_encryption'])
+                @include('partials/field_error', ['field'=>'settings.mail_encryption'])
             </div>
         </div>
         <hr/>

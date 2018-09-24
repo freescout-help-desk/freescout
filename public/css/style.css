@@ -392,10 +392,16 @@ select.form-control {
     height: 28px;
     line-height: 28px;
 }
+.input-sized-xs {
+    width: 87px;
+}
+.input-sized-sm {
+    width: 187px;
+}
 .input-sized {
     width: 270px;
 }
-.input-sized2 {
+.input-sized-lg {
     width: 387px;
 }
 .control-label {
@@ -2889,6 +2895,9 @@ a.text-danger:focus {
     -moz-hyphens: auto;
     -webkit-hyphens: auto;
     hyphens: auto;
+}
+.nowrap {
+    white-space: nowrap;
 }
 .row-container {
     padding-right: 15px;

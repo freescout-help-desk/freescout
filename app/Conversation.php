@@ -586,22 +586,7 @@ class Conversation extends Model
      */
     public static function sanitizeEmails($emails)
     {
-        $emails_array = [];
-
-        if (is_array($emails)) {
-            $emails_array = $emails;
-        } else {
-            $emails_array = explode(',', $emails);
-        }
-
-        foreach ($emails_array as $i => $email) {
-            $emails_array[$i] = Email::sanitizeEmail($email);
-            if (!$emails_array[$i]) {
-                unset($emails_array[$i]);
-            }
-        }
-
-        return $emails_array;
+        return \App\Misc\Mail::sanitizeEmails($emails);
     }
 
     /**
@@ -979,6 +964,7 @@ class Conversation extends Model
             // This throws an exception if record exists
             $this->folders()->attach($folder->id);
         }
+        $folder->updateCounters();
         
         // updateOrCreate does not create properly with ManyToMany
         // $values = [
@@ -999,6 +985,7 @@ class Conversation extends Model
         }
 
         $this->folders()->detach($folder->id);
+        $folder->updateCounters();
     }
 
     /**
