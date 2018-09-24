@@ -1128,27 +1128,27 @@
     },
     {
         "name": "league/flysystem",
-        "version": "1.0.46",
-        "version_normalized": "1.0.46.0",
+        "version": "1.0.47",
+        "version_normalized": "1.0.47.0",
         "source": {
             "type": "git",
             "url": "https://github.com/thephpleague/flysystem.git",
-            "reference": "f3e0d925c18b92cf3ce84ea5cc58d62a1762a2b2"
+            "reference": "a11e4a75f256bdacf99d20780ce42d3b8272975c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/f3e0d925c18b92cf3ce84ea5cc58d62a1762a2b2",
-            "reference": "f3e0d925c18b92cf3ce84ea5cc58d62a1762a2b2",
+            "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/a11e4a75f256bdacf99d20780ce42d3b8272975c",
+            "reference": "a11e4a75f256bdacf99d20780ce42d3b8272975c",
             "shasum": ""
         },
         "require": {
+            "ext-fileinfo": "*",
             "php": ">=5.5.9"
         },
         "conflict": {
             "league/flysystem-sftp": "<1.0.6"
         },
         "require-dev": {
-            "ext-fileinfo": "*",
             "phpspec/phpspec": "^3.4",
             "phpunit/phpunit": "^5.7.10"
         },
@@ -1168,7 +1168,7 @@
             "spatie/flysystem-dropbox": "Allows you to use Dropbox storage",
             "srmklive/flysystem-dropbox-v2": "Allows you to use Dropbox storage for PHP 5 applications"
         },
-        "time": "2018-08-22T07:45:22+00:00",
+        "time": "2018-09-14T15:30:29+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1697,17 +1697,17 @@
     },
     {
         "name": "nesbot/carbon",
-        "version": "1.33.0",
-        "version_normalized": "1.33.0.0",
+        "version": "1.34.0",
+        "version_normalized": "1.34.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/briannesbitt/Carbon.git",
-            "reference": "55667c1007a99e82030874b1bb14d24d07108413"
+            "reference": "1dbd3cb01c5645f3e7deda7aa46ef780d95fcc33"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/55667c1007a99e82030874b1bb14d24d07108413",
-            "reference": "55667c1007a99e82030874b1bb14d24d07108413",
+            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/1dbd3cb01c5645f3e7deda7aa46ef780d95fcc33",
+            "reference": "1dbd3cb01c5645f3e7deda7aa46ef780d95fcc33",
             "shasum": ""
         },
         "require": {
@@ -1718,7 +1718,7 @@
             "friendsofphp/php-cs-fixer": "~2",
             "phpunit/phpunit": "^4.8.35 || ^5.7"
         },
-        "time": "2018-08-07T08:39:47+00:00",
+        "time": "2018-09-20T19:36:25+00:00",
         "type": "library",
         "extra": {
             "laravel": {
@@ -1754,17 +1754,17 @@
     },
     {
         "name": "nikic/php-parser",
-        "version": "v4.0.3",
-        "version_normalized": "4.0.3.0",
+        "version": "v4.0.4",
+        "version_normalized": "4.0.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/nikic/PHP-Parser.git",
-            "reference": "bd088dc940a418f09cda079a9b5c7c478890fb8d"
+            "reference": "fa6ee28600d21d49b2b4e1006b48426cec8e579c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/bd088dc940a418f09cda079a9b5c7c478890fb8d",
-            "reference": "bd088dc940a418f09cda079a9b5c7c478890fb8d",
+            "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/fa6ee28600d21d49b2b4e1006b48426cec8e579c",
+            "reference": "fa6ee28600d21d49b2b4e1006b48426cec8e579c",
             "shasum": ""
         },
         "require": {
@@ -1774,7 +1774,7 @@
         "require-dev": {
             "phpunit/phpunit": "^6.5 || ^7.0"
         },
-        "time": "2018-07-15T17:25:16+00:00",
+        "time": "2018-09-18T07:03:24+00:00",
         "bin": [
             "bin/php-parse"
         ],
@@ -1803,6 +1803,77 @@
         "keywords": [
             "parser",
             "php"
+        ]
+    },
+    {
+        "name": "nwidart/laravel-modules",
+        "version": "2.7.0",
+        "version_normalized": "2.7.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/nWidart/laravel-modules.git",
+            "reference": "30c1475f99ef8b439a1cf7d8a9c55787c80bbf71"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/nWidart/laravel-modules/zipball/30c1475f99ef8b439a1cf7d8a9c55787c80bbf71",
+            "reference": "30c1475f99ef8b439a1cf7d8a9c55787c80bbf71",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=7.0"
+        },
+        "require-dev": {
+            "friendsofphp/php-cs-fixer": "^2.7",
+            "laravel/framework": "5.5.*",
+            "mockery/mockery": "~1.0",
+            "orchestra/testbench": "^3.5",
+            "phpunit/phpunit": "~6.0",
+            "spatie/phpunit-snapshot-assertions": "^1.0"
+        },
+        "time": "2018-01-13T20:11:46+00:00",
+        "type": "library",
+        "extra": {
+            "laravel": {
+                "providers": [
+                    "Nwidart\\Modules\\LaravelModulesServiceProvider"
+                ],
+                "aliases": {
+                    "Module": "Nwidart\\Modules\\Facades\\Module"
+                }
+            },
+            "branch-alias": {
+                "dev-master": "2.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Nwidart\\Modules\\": "src"
+            },
+            "files": [
+                "src/helpers.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Nicolas Widart",
+                "email": "n.widart@gmail.com",
+                "homepage": "https://nicolaswidart.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "Laravel Module management",
+        "keywords": [
+            "laravel",
+            "module",
+            "modules",
+            "nwidart",
+            "rad"
         ]
     },
     {
@@ -2800,17 +2871,17 @@
     },
     {
         "name": "psy/psysh",
-        "version": "v0.9.7",
-        "version_normalized": "0.9.7.0",
+        "version": "v0.9.8",
+        "version_normalized": "0.9.8.0",
         "source": {
             "type": "git",
             "url": "https://github.com/bobthecow/psysh.git",
-            "reference": "4f5b6c090948773a8bfeea6a0f07ab7d0b24e932"
+            "reference": "ed3c32c4304e1a678a6e0f9dc11dd2d927d89555"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/bobthecow/psysh/zipball/4f5b6c090948773a8bfeea6a0f07ab7d0b24e932",
-            "reference": "4f5b6c090948773a8bfeea6a0f07ab7d0b24e932",
+            "url": "https://api.github.com/repos/bobthecow/psysh/zipball/ed3c32c4304e1a678a6e0f9dc11dd2d927d89555",
+            "reference": "ed3c32c4304e1a678a6e0f9dc11dd2d927d89555",
             "shasum": ""
         },
         "require": {
@@ -2835,7 +2906,7 @@
             "ext-readline": "Enables support for arrow-key history navigation, and showing and manipulating command history.",
             "hoa/console": "A pure PHP readline implementation. You'll want this if your PHP install doesn't already support readline or libedit."
         },
-        "time": "2018-08-11T15:54:43+00:00",
+        "time": "2018-09-05T11:40:09+00:00",
         "bin": [
             "bin/psysh"
         ],
@@ -3668,17 +3739,17 @@
     },
     {
         "name": "swiftmailer/swiftmailer",
-        "version": "v6.1.2",
-        "version_normalized": "6.1.2.0",
+        "version": "v6.1.3",
+        "version_normalized": "6.1.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/swiftmailer/swiftmailer.git",
-            "reference": "7d760881d266d63c5e7a1155cbcf2ac656a31ca8"
+            "reference": "8ddcb66ac10c392d3beb54829eef8ac1438595f4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/7d760881d266d63c5e7a1155cbcf2ac656a31ca8",
-            "reference": "7d760881d266d63c5e7a1155cbcf2ac656a31ca8",
+            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/8ddcb66ac10c392d3beb54829eef8ac1438595f4",
+            "reference": "8ddcb66ac10c392d3beb54829eef8ac1438595f4",
             "shasum": ""
         },
         "require": {
@@ -3693,7 +3764,7 @@
             "ext-intl": "Needed to support internationalized email addresses",
             "true/punycode": "Needed to support internationalized email addresses, if ext-intl is not installed"
         },
-        "time": "2018-07-13T07:04:35+00:00",
+        "time": "2018-09-11T07:12:52+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -4629,17 +4700,17 @@
     },
     {
         "name": "tedivm/jshrink",
-        "version": "v1.3.0",
-        "version_normalized": "1.3.0.0",
+        "version": "v1.3.1",
+        "version_normalized": "1.3.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/tedious/JShrink.git",
-            "reference": "68ce379b213741e86f02bf6053b0d26b9f833448"
+            "reference": "21254058dc3ce6aba6bef458cff4bfa25cf8b198"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/tedious/JShrink/zipball/68ce379b213741e86f02bf6053b0d26b9f833448",
-            "reference": "68ce379b213741e86f02bf6053b0d26b9f833448",
+            "url": "https://api.github.com/repos/tedious/JShrink/zipball/21254058dc3ce6aba6bef458cff4bfa25cf8b198",
+            "reference": "21254058dc3ce6aba6bef458cff4bfa25cf8b198",
             "shasum": ""
         },
         "require": {
@@ -4650,7 +4721,7 @@
             "php-coveralls/php-coveralls": "^1.1.0",
             "phpunit/phpunit": "^6"
         },
-        "time": "2017-12-08T00:59:56+00:00",
+        "time": "2018-09-16T00:02:51+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -4765,6 +4836,72 @@
         ],
         "description": "CssToInlineStyles is a class that enables you to convert HTML-pages/files into HTML-pages/files with inline styles. This is very useful when you're sending emails.",
         "homepage": "https://github.com/tijsverkoyen/CssToInlineStyles"
+    },
+    {
+        "name": "tormjens/eventy",
+        "version": "0.5.4",
+        "version_normalized": "0.5.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/tormjens/eventy.git",
+            "reference": "ed48fe39107168c21199c8abfee558cd3370d971"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/tormjens/eventy/zipball/ed48fe39107168c21199c8abfee558cd3370d971",
+            "reference": "ed48fe39107168c21199c8abfee558cd3370d971",
+            "shasum": ""
+        },
+        "require": {
+            "illuminate/support": ">=5.3",
+            "php": ">=5.6.4"
+        },
+        "require-dev": {
+            "phpunit/phpunit": ">=5.0"
+        },
+        "time": "2018-03-14T13:04:12+00:00",
+        "type": "library",
+        "extra": {
+            "laravel": {
+                "providers": [
+                    "TorMorten\\Eventy\\EventServiceProvider",
+                    "TorMorten\\Eventy\\EventBladeServiceProvider"
+                ],
+                "aliases": {
+                    "Eventy": "TorMorten\\Eventy\\Facades\\Events"
+                }
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "TorMorten\\Eventy\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Tor Morten Jensen",
+                "homepage": "https://tormorten.no"
+            }
+        ],
+        "description": "The WordPress filter/action system in Laravel",
+        "homepage": "https://github.com/tormjens/eventy",
+        "keywords": [
+            "HOOK",
+            "action",
+            "actions",
+            "event",
+            "events",
+            "filter",
+            "filters",
+            "hooks",
+            "laravel",
+            "wordpress"
+        ]
     },
     {
         "name": "vlucas/phpdotenv",

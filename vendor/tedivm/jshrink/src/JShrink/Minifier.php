@@ -183,7 +183,7 @@ class Minifier
                 // new lines
                 case "\n":
                     // if the next line is something that can't stand alone preserve the newline
-                    if (strpos('(-+[@', $this->b) !== false) {
+                    if ($this->b !== false && strpos('(-+[@', $this->b) !== false) {
                         echo $this->a;
                         $this->saveString();
                         break;
@@ -231,7 +231,7 @@ class Minifier
                             // check for some regex that breaks stuff
                             if ($this->a === '/' && ($this->b === '\'' || $this->b === '"')) {
                                 $this->saveRegex();
-                                continue;
+                                continue 3;
                             }
 
                             echo $this->a;
@@ -274,9 +274,8 @@ class Minifier
         if (isset($this->c)) {
             $char = $this->c;
             unset($this->c);
-
-            // Otherwise we start pulling from the input.
         } else {
+            // Otherwise we start pulling from the input.
             $char = substr($this->input, $this->index, 1);
 
             // If the next character doesn't exist return false.
@@ -459,11 +458,8 @@ class Minifier
         echo $this->a;
 
         // Loop until the string is done
-        while (true) {
-
-            // Grab the very next character and load it into a
-            $this->a = $this->getChar();
-
+        // Grab the very next character and load it into a
+        while (($this->a = $this->getChar()) !== false) {
             switch ($this->a) {
 
                 // If the string opener (single or double quote) is used

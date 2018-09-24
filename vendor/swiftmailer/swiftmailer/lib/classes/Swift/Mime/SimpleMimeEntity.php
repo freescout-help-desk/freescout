@@ -164,6 +164,16 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_CharsetObserver, Swift_M
     }
 
     /**
+     * Get the Body Content-type of this entity.
+     *
+     * @return string
+     */
+    public function getBodyContentType()
+    {
+        return $this->userContentType;
+    }
+
+    /**
      * Set the Content-type of this entity.
      *
      * @param string $type
@@ -370,7 +380,7 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_CharsetObserver, Swift_M
         }
 
         $this->body = $body;
-        if (isset($contentType)) {
+        if (null !== $contentType) {
             $this->setContentType($contentType);
         }
 

@@ -25,15 +25,17 @@ class BuilderFactoryTest extends TestCase
 
     public function provideTestFactory() {
         return [
-            ['namespace', Builder\Namespace_::class],
-            ['class',     Builder\Class_::class],
-            ['interface', Builder\Interface_::class],
-            ['trait',     Builder\Trait_::class],
-            ['method',    Builder\Method::class],
-            ['function',  Builder\Function_::class],
-            ['property',  Builder\Property::class],
-            ['param',     Builder\Param::class],
-            ['use',       Builder\Use_::class],
+            ['namespace',   Builder\Namespace_::class],
+            ['class',       Builder\Class_::class],
+            ['interface',   Builder\Interface_::class],
+            ['trait',       Builder\Trait_::class],
+            ['method',      Builder\Method::class],
+            ['function',    Builder\Function_::class],
+            ['property',    Builder\Property::class],
+            ['param',       Builder\Param::class],
+            ['use',         Builder\Use_::class],
+            ['useFunction', Builder\Use_::class],
+            ['useConst',    Builder\Use_::class],
         ];
     }
 
@@ -188,6 +190,34 @@ class BuilderFactoryTest extends TestCase
         );
     }
 
+    public function testVar() {
+        $factory = new BuilderFactory();
+        $this->assertEquals(
+            new Expr\Variable("foo"),
+            $factory->var("foo")
+        );
+        $this->assertEquals(
+            new Expr\Variable(new Expr\Variable("foo")),
+            $factory->var($factory->var("foo"))
+        );
+    }
+
+    public function testPropertyFetch() {
+        $f = new BuilderFactory();
+        $this->assertEquals(
+            new Expr\PropertyFetch(new Expr\Variable('foo'), 'bar'),
+            $f->propertyFetch($f->var('foo'), 'bar')
+        );
+        $this->assertEquals(
+            new Expr\PropertyFetch(new Expr\Variable('foo'), 'bar'),
+            $f->propertyFetch($f->var('foo'), new Identifier('bar'))
+        );
+        $this->assertEquals(
+            new Expr\PropertyFetch(new Expr\Variable('foo'), new Expr\Variable('bar')),
+            $f->propertyFetch($f->var('foo'), $f->var('bar'))
+        );
+    }
+
     /**
      * @expectedException \LogicException
      * @expectedExceptionMessage Expected string or instance of Node\Identifier
@@ -212,23 +242,41 @@ class BuilderFactoryTest extends TestCase
         (new BuilderFactory())->funcCall(new Node\Stmt\Return_());
     }
 
+    /**
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Variable name must be string or Expr
+     */
+    public function testInvalidVar() {
+        (new BuilderFactory())->var(new Node\Stmt\Return_());
+    }
+
     public function testIntegration() {
         $factory = new BuilderFactory;
         $node = $factory->namespace('Name\Space')
             ->addStmt($factory->use('Foo\Bar\SomeOtherClass'))
             ->addStmt($factory->use('Foo\Bar')->as('A'))
+            ->addStmt($factory->useFunction('strlen'))
+            ->addStmt($factory->useConst('PHP_VERSION'))
             ->addStmt($factory
                 ->class('SomeClass')
                 ->extend('SomeOtherClass')
                 ->implement('A\Few', '\Interfaces')
                 ->makeAbstract()
 
+                ->addStmt($factory->useTrait('FirstTrait'))
+
+                ->addStmt($factory->useTrait('SecondTrait', 'ThirdTrait')
+                    ->and('AnotherTrait')
+                    ->with($factory->traitUseAdaptation('foo')->as('bar'))
+                    ->with($factory->traitUseAdaptation('AnotherTrait', 'baz')->as('test'))
+                    ->with($factory->traitUseAdaptation('AnotherTrait', 'func')->insteadof('SecondTrait')))
+
                 ->addStmt($factory->method('firstMethod'))
 
                 ->addStmt($factory->method('someMethod')
                     ->makePublic()
                     ->makeAbstract()
-                    ->addParam($factory->param('someParam')->setTypeHint('SomeClass'))
+                    ->addParam($factory->param('someParam')->setType('SomeClass'))
                     ->setDocComment('/**
                                       * This method does something.
                                       *
@@ -254,8 +302,16 @@ namespace Name\Space;
 
 use Foo\Bar\SomeOtherClass;
 use Foo\Bar as A;
+use function strlen;
+use const PHP_VERSION;
 abstract class SomeClass extends SomeOtherClass implements A\Few, \Interfaces
 {
+    use FirstTrait;
+    use SecondTrait, ThirdTrait, AnotherTrait {
+        foo as bar;
+        AnotherTrait::baz as test;
+        AnotherTrait::func insteadof SecondTrait;
+    }
     protected $someProperty;
     private $anotherProperty = array(1, 2, 3);
     function firstMethod()

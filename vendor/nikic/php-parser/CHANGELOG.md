@@ -1,7 +1,25 @@
-Version 4.0.4-dev
+Version 4.0.5-dev
 -----------------
 
 Nothing yet.
+
+Version 4.0.4 (2018-09-18)
+--------------------------
+
+### Added
+
+* The following methods have been added to `BuilderFactory`:
+  * `useTrait()` (fluent builder)
+  * `traitUseAdaptation()` (fluent builder)
+  * `useFunction()` (fluent builder)
+  * `useConst()` (fluent builder)
+  * `var()`
+  * `propertyFetch()`
+  
+### Deprecated
+
+* `Builder\Param::setTypeHint()` has been deprecated in favor of the newly introduced
+  `Builder\Param::setType()`.
 
 Version 4.0.3 (2018-07-15)
 --------------------------

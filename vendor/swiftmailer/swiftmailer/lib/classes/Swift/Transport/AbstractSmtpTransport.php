@@ -177,6 +177,10 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
      */
     public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
     {
+        if (!$this->isStarted()) {
+            $this->start();
+        }
+
         $sent = 0;
         $failedRecipients = (array) $failedRecipients;
 
@@ -188,10 +192,7 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         }
 
         if (!$reversePath = $this->getReversePath($message)) {
-            $this->throwException(new Swift_TransportException(
-                'Cannot send message without a sender address'
-                )
-            );
+            $this->throwException(new Swift_TransportException('Cannot send message without a sender address'));
         }
 
         $to = (array) $message->getTo();
@@ -204,12 +205,9 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         try {
             $sent += $this->sendTo($message, $reversePath, $tos, $failedRecipients);
             $sent += $this->sendBcc($message, $reversePath, $bcc, $failedRecipients);
-        } catch (Exception $e) {
+        } finally {
             $message->setBcc($bcc);
-            throw $e;
         }
-
-        $message->setBcc($bcc);
 
         if ($evt) {
             if ($sent == count($to) + count($cc) + count($bcc)) {
@@ -443,6 +441,10 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
     /** Throws an Exception if a response code is incorrect */
     protected function assertResponseCode($response, $wanted)
     {
+        if (!$response) {
+            $this->throwException(new Swift_TransportException('Expected response code '.implode('/', $wanted).' but got an empty response'));
+        }
+
         list($code) = sscanf($response, '%3d');
         $valid = (empty($wanted) || in_array($code, $wanted));
 
@@ -452,12 +454,7 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         }
 
         if (!$valid) {
-            $this->throwException(
-                new Swift_TransportException(
-                    'Expected response code '.implode('/', $wanted).' but got code '.
-                    '"'.$code.'", with message "'.$response.'"',
-                    $code)
-                );
+            $this->throwException(new Swift_TransportException('Expected response code '.implode('/', $wanted).' but got code "'.$code.'", with message "'.$response.'"', $code));
         }
     }
 
@@ -473,10 +470,7 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         } catch (Swift_TransportException $e) {
             $this->throwException($e);
         } catch (Swift_IoException $e) {
-            $this->throwException(
-                new Swift_TransportException(
-                    $e->getMessage())
-                );
+            $this->throwException(new Swift_TransportException($e->getMessage(), 0, $e));
         }
 
         return $response;
