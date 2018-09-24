@@ -607,7 +607,8 @@ function conversationInit()
 
 	    // Reply
 	    jQuery(".conv-reply").click(function(e){
-	    	if ($(".conv-reply-block").hasClass('hidden') || $(this).hasClass('inactive')) {
+	    	// We don't allow to switch between reply and note, as it creates multiple drafts
+	    	if ($(".conv-reply-block").hasClass('hidden') /* || $(this).hasClass('inactive')*/) {
 	    		// Show
 	    		// To prevent browser autocomplete, clean body
 	    		if (!$('.conv-action.inactive:first').length) {
@@ -624,7 +625,7 @@ function conversationInit()
 
 		// Add note
 	    jQuery(".conv-add-note").click(function(e){
-	    	if ($(".conv-reply-block").hasClass('hidden') || $(this).hasClass('inactive')) {
+	    	if ($(".conv-reply-block").hasClass('hidden')  /*|| $(this).hasClass('inactive')*/) {
 	    		// Show
 				$(".conv-action-block").addClass('hidden');
 				$(".conv-reply-block").removeClass('hidden')

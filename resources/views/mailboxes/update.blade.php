@@ -25,7 +25,7 @@
                     <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                         <label for="name" class="col-sm-2 control-label">{{ __('Mailbox Name') }}</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <input id="name" type="text" class="form-control input-sized" name="name" value="{{ old('name', $mailbox->name) }}" maxlength="40" required autofocus>
 
                             @include('partials/field_error', ['field'=>'name'])
@@ -35,7 +35,7 @@
                     <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                         <label for="email" class="col-sm-2 control-label">{{ __('Email Address') }}</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <input id="email" type="email" class="form-control input-sized" name="email" value="{{ old('email', $mailbox->email) }}" maxlength="128" required autofocus>
                             @include('partials/field_error', ['field'=>'email'])
                         </div>
@@ -44,7 +44,7 @@
                     <div class="form-group{{ $errors->has('aliases') ? ' has-error' : '' }}">
                         <label for="aliases" class="col-sm-2 control-label">{{ __('Aliases') }}</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <div class="flexy">
                                 <input id="aliases" type="text" class="form-control input-sized" name="aliases" value="{{ old('aliases', $mailbox->aliases) }}" maxlength="255" required autofocus>
 
@@ -58,7 +58,7 @@
                     <div class="form-group{{ $errors->has('from_name') ? ' has-error' : '' }}">
                         <label for="from_name" class="col-sm-2 control-label">{{ __('From Name') }}</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <div class="flexy">
                                 <select id="from_name" class="form-control input-sized" name="from_name" required autofocus>
                                     <option value="{{ App\Mailbox::FROM_NAME_MAILBOX }}" @if (old('from_name', $mailbox->from_name) == App\Mailbox::FROM_NAME_MAILBOX)selected="selected"@endif>{{ __('Mailbox Name') }}</option>
@@ -76,7 +76,7 @@
                     <div class="form-group{{ $errors->has('from_name_custom') ? ' has-error' : '' }}{{ old('from_name', $mailbox->from_name) != App\Mailbox::FROM_NAME_CUSTOM ? ' hidden' : '' }}" id="from_name_custom_container">
                         <label for="from_name_custom" class="col-sm-2 control-label">{{ __('Custom From Name') }}</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <input id="from_name_custom" type="text" class="form-control input-sized" name="from_name_custom" value="{{ old('from_name_custom', $mailbox->from_name_custom) }}" maxlength="128">
                             @include('partials/field_error', ['field'=>'from_name_custom'])
                         </div>
@@ -85,7 +85,7 @@
                     <div class="form-group{{ $errors->has('ticket_status') ? ' has-error' : '' }}">
                         <label for="ticket_status" class="col-sm-2 control-label">{{ __('Status After Replying') }}</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <select id="ticket_status" class="form-control input-sized" name="ticket_status" required autofocus>
                                 <option value="{{ App\Mailbox::TICKET_STATUS_ACTIVE }}" @if (old('ticket_status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_ACTIVE)selected="selected"@endif>{{ __('Active') }}</option>
                                 <option value="{{ App\Mailbox::TICKET_STATUS_PENDING }}" @if (old('ticket_status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_PENDING)selected="selected"@endif>{{ __('Pending') }}</option>
@@ -99,7 +99,7 @@
                     <div class="form-group{{ $errors->has('template') ? ' has-error' : '' }}">
                         <label for="template" class="col-sm-2 control-label">{{ __('Email Template') }} (todo)</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
      
                             <div class="controls">
                                 {{-- Afer implementing remove readonly--}}
@@ -113,7 +113,7 @@
                     <div class="form-group{{ $errors->has('ticket_assignee') ? ' has-error' : '' }}">
                         <label for="ticket_assignee" class="col-sm-2 control-label">{{ __('Default Assignee') }}</label>
 
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
                             <select id="ticket_assignee" class="form-control input-sized" name="ticket_assignee" required autofocus>
                                 <option value="{{ App\Mailbox::TICKET_ASSIGNEE_ANYONE }}" @if (old('ticket_assignee', $mailbox->ticket_assignee) == App\Mailbox::TICKET_ASSIGNEE_ANYONE)selected="selected"@endif>{{ __('Anyone') }}</option>
                                 <option value="{{ App\Mailbox::TICKET_ASSIGNEE_REPLYING_UNASSIGNED }}" @if (old('ticket_assignee', $mailbox->ticket_assignee) == App\Mailbox::TICKET_ASSIGNEE_REPLYING_UNASSIGNED)selected="selected"@endif>{{ __('Person Replying (if Unassigned)') }}</option>
@@ -134,7 +134,7 @@
                     </div>
 
                     <div class="form-group">
-                        <div class="col-md-6 col-sm-offset-2">
+                        <div class="col-sm-6 col-sm-offset-2">
                             <button type="submit" class="btn btn-primary">
                                 {{ __('Save') }}
                             </button>

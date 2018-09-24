@@ -26,12 +26,12 @@
 					                    <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
 					                        <label for="email" class="col-sm-4 control-label">{{ __('Email Address') }}</label>
 
-					                        <div class="col-md-6">
+					                        <div class="col-sm-6">
 					                            <input id="email" type="email" class="form-control input-sized" name="email" value="{{ old('email') }}" maxlength="128" required autofocus>
 					                            @include('partials/field_error', ['field'=>'email'])
 					                        </div>
 
-				                            <div class="col-sm-offset-4 col-md-6">
+				                            <div class="col-sm-offset-4 col-sm-6">
 				                            	<p class="block-help margin-bottom-0">{{ __('You can edit this later') }}</p>
 				                            </div>
 					                    </div>
@@ -39,7 +39,7 @@
 					                    <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
 					                        <label for="name" class="col-sm-4 control-label">{{ __('Mailbox Name') }}</label>
 
-					                        <div class="col-md-6">
+					                        <div class="col-sm-6">
 					                            <input id="name" type="text" class="form-control input-sized" name="name" value="{{ old('name') }}" maxlength="40" required autofocus>
 
 					                            @include('partials/field_error', ['field'=>'name'])
@@ -49,7 +49,7 @@
 					                    <div class="form-group{{ $errors->has('ratings') ? ' has-error' : '' }}">
 					                        <label for="ratings" class="col-sm-4 control-label">{{ __('Satisfaction Ratings') }}</label>
 
-					                        <div class="col-md-6">
+					                        <div class="col-sm-6">
 					                            <select id="ratings" class="form-control input-sized" name="ratings" required autofocus>
 					                                <option value="1" @if ((int)old('ratings'))selected="selected"@endif>{{ __('On') }}</option>
 					                                <option value="0" @if ((int)old('ratings'))selected="selected"@endif>{{ __('Off') }}</option>
@@ -62,7 +62,7 @@
 					                    <div class="form-group{{ $errors->has('users') ? ' has-error' : '' }}">
 					                        <label for="users" class="col-sm-4 control-label">{{ __('Who Else Will Use This Mailbox') }}</label>
 
-					                        <div class="col-md-6 control-padded">
+					                        <div class="col-sm-6 control-padded">
 					                            <div><a href="javascript:void(0)" class="sel-all">{{ __('all') }}</a> / <a href="javascript:void(0)" class="sel-none">{{ __('none') }}</a></div>
 
 					                            <fieldset id="permissions-fields">
@@ -82,7 +82,7 @@
 					                    </div>
 
 					                    <div class="form-group">
-					                        <div class="col-md-6 col-sm-offset-4">
+					                        <div class="col-sm-6 col-sm-offset-4">
 					                            <button type="submit" class="btn btn-primary">
 					                                {{ __('Create Mailbox') }}
 					                            </button>

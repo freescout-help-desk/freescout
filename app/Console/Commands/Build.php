@@ -18,7 +18,7 @@ class Build extends Command
      *
      * @var string
      */
-    protected $description = 'Run commands building app assets';
+    protected $description = 'Run commands building application assets';
 
     /**
      * Create a new command instance.
@@ -37,7 +37,7 @@ class Build extends Command
      */
     public function handle()
     {
-        $this->call('freescout:generate-vars-js');
+        $this->call('freescout:generate-vars');
         $this->call('laroute:generate');
     }
 }

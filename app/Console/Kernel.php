@@ -14,7 +14,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \App\Console\Commands\CreateUser::class,
+        // It is not clear what for this array
+        //\App\Console\Commands\CreateUser::class,
     ];
 
     /**
@@ -33,6 +34,10 @@ class Kernel extends ConsoleKernel
         // Restart processing queued jobs (just in case)
         $schedule->command('queue:restart')
             ->hourly();
+
+        $schedule->command('freescout:fetch-monitor')
+            ->everyMinute()
+            ->withoutOverlapping();
 
         // Fetch emails from mailboxes
         $schedule->command('freescout:fetch-emails')

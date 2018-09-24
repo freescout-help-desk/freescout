@@ -8,7 +8,7 @@ var Vars = {
 };
 
 
-var lang_messages = {
+var LangMessages = {
             "en.messages": {
             
             "ajax_error": "Error occured. Please check your internet connection and try again.",
@@ -54,5 +54,5 @@ var lang_messages = {
 
 (function () {
     Lang = new Lang();
-    Lang.setMessages(lang_messages);
+    Lang.setMessages(LangMessages);
 })();
