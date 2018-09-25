@@ -464,6 +464,7 @@ class ConversationsController extends Controller
                     $conversation->status = $request->status;
                     // We need to set state, as it may have been a draft
                     $conversation->state = Conversation::STATE_PUBLISHED;
+                    // Set assignee
                     if ((int) $request->user_id != -1) {
                         // Check if user has access to the current mailbox
                         if ((int) $conversation->user_id != (int) $request->user_id && $mailbox->userHasAccess($request->user_id)) {

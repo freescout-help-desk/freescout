@@ -614,6 +614,13 @@ function conversationInit()
 	    		if (!$('.conv-action.inactive:first').length) {
 	    			setReplyBody('');
 	    		}
+
+	    		// Set assignee in case it has been changed in the Note editor
+	    		var default_assignee = $(".conv-reply-block").children().find(":input[name='user_id']:first option[data-default='true']").attr('value');
+	    		if (default_assignee) {
+	    			$(".conv-reply-block").children().find(":input[name='user_id']:first").val(default_assignee);
+	    		}
+
 				showReplyForm();
 			} /*else {
 				// Hide
@@ -633,6 +640,12 @@ function conversationInit()
 					.children().find(":input[name='is_note']:first").val(1);
 				$(".conv-reply-block").children().find(":input[name='thread_id']:first").val('');
 				//$(".conv-reply-block").children().find(":input[name='body']:first").val('');
+				
+				// If this is unassigned conversation, we need to set Assignee=Anyone
+				if (getConvData('user_id') == '-1') {
+					$(".conv-reply-block").children().find(":input[name='user_id']:first").val('-1');
+				}
+
 				$(".conv-action").addClass('inactive');
 				$(this).removeClass('inactive');
 				//$('#body').summernote("code", '');
@@ -734,6 +747,15 @@ function conversationInit()
 	});
 }
 
+// Get current conversation assignee
+function getConvData(field)
+{
+	if (field == 'user_id') {
+		return $('.conv-user:first li.active a:first').attr('data-user_id');
+	}
+	return null;
+}
+
 function showReplyForm(data)
 {
 	$(".conv-action-block").addClass('hidden');
@@ -800,6 +822,10 @@ function convEditorInit()
 	        	onReplyBlur();
 		    },
 		    onChange: function(contents, $editable) {
+		    	// Return if reply body is empty and never changed before
+		    	if (!contents && !fs_reply_changed) {
+		    		return;
+		    	}
 		    	onReplyChange();
 		    }
 	    }
@@ -819,9 +845,12 @@ function convEditorInit()
 	autosaveDraft();
 }
 
+// Automatically save draft
 function autosaveDraft()
 {
-	saveDraft(false, true);
+	if (!isNote()) {
+		saveDraft(false, true);
+	}
 	setTimeout(function(){ autosaveDraft() }, fs_draft_autosave_period*1000);
 }
 
@@ -839,7 +868,8 @@ function onReplyChange()
 	// Mark draft as unsaved
 	if (fs_editor_change_timeout && fs_editor_change_timeout != -1) {
 		return;
-	}
+	}	
+
 	fs_editor_change_timeout = setTimeout(function(){
 		// Do not save note
 		/*if ($(".form-reply:first :input[name='is_note']:first").val()) {
@@ -865,7 +895,7 @@ function onReplyBlur()
 
 		// Save only after changing
 		//if (!fs_editor_change_timeout || fs_editor_change_timeout == null) {
-		if ($(".form-reply:first :input[name='is_note']:first").val()) {
+		if (isNote()) {
 			// Save note
 			rememberNote();
 		} else {
@@ -873,6 +903,12 @@ function onReplyBlur()
   		}
 	  	//}
 	  }, 500);
+}
+
+// Are we editing a note
+function isNote()
+{
+	return $(".form-reply:first :input[name='is_note']:first").val();
 }
 
 // Generate random unique ID
@@ -1054,6 +1090,10 @@ function newConversationInit()
 
 			fsAjax(data, laroute.route('conversations.ajax'), function(response) {
 				if (typeof(response.status) != "undefined" && response.status == 'success') {
+					// Forget note
+					if (button.hasClass('btn-add-note-text')) {
+						forgetNote(getGlobalAttr('conversation_id'));
+					}
 					if (typeof(response.redirect_url) != "undefined") {
 						window.location.href = response.redirect_url;
 					} else {
@@ -1926,9 +1966,9 @@ function maybeShowConnectionRestored()
  * Save draft automatically, on reply change or on click.
  * Validation is not needed.
  */
-function saveDraft(allow_reload, no_loader)
+function saveDraft(reload_page, no_loader)
 {
-	if (!allow_reload && fs_processing_save_draft) {
+	if (!reload_page && fs_processing_save_draft) {
 		return;
 	}
 	// User clicked Send Reply button
@@ -1938,6 +1978,7 @@ function saveDraft(allow_reload, no_loader)
 
 	fs_processing_save_draft = true;
 
+	// Do not autosave draft if reply form has been closed
 	var form = $(".form-reply:visible:first");
 	if (!form || !form.length) {
 		fs_processing_save_draft = false;
@@ -1951,12 +1992,14 @@ function saveDraft(allow_reload, no_loader)
 		no_loader = false;
 	}
 
+	// Are we sasving a draft of a new conversation
 	if ($('#conv-layout-main .thread:first').length == 0) {
 		new_conversation = true;
 	}
 
-	// When replying click Save draft always reloads conversation
-	if ((new_conversation || !allow_reload) && !fs_reply_changed) {
+	// Do not save unchanged draft
+	// When replying click on Save draft always reloads conversation
+	if ((new_conversation || !reload_page) && !fs_reply_changed) {
 		fs_processing_save_draft = false;
 		return;
 	}
@@ -1966,7 +2009,7 @@ function saveDraft(allow_reload, no_loader)
 
 	fsAjax(data, laroute.route('conversations.ajax'), function(response) {
 		if (typeof(response.status) != "undefined" && response.status == 'success') {
-			if (allow_reload && !new_conversation) {
+			if (reload_page && !new_conversation) {
 				// Reload the conversation
 				window.location.href = '';
 			} else {
@@ -2019,6 +2062,12 @@ function setUrl(url)
     }
 }
 
+// Discards:
+// - draft of an old reply
+// - current reply
+// - current note
+// 
+// If thread_id is passed, it means we are discarding an old reply draft
 function discardDraft(thread_id)
 {
 	var confirm_html = '<div>'+
@@ -2032,7 +2081,7 @@ function discardDraft(thread_id)
 		'</div>';
 
 	// Discard note
-	if ($(".form-reply:first :input[name='is_note']:first").val()) {
+	if (typeof(thread_id) == "undefined" && $(".form-reply:first :input[name='is_note']:first").val()) {
 		showModalDialog(confirm_html, {
 			on_show: function(modal) {
 				modal.children().find('.discard-draft-confirm:first').click(function(e) {

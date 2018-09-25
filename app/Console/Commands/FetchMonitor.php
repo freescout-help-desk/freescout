@@ -18,7 +18,7 @@ class FetchMonitor extends Command
      *
      * @var string
      */
-    protected $description = 'Check emails fetching and send alert if fething is not working';
+    protected $description = 'Check emails fetching and send alert if fething is not working or recovered';
 
     /**
      * Create a new command instance.
@@ -38,8 +38,9 @@ class FetchMonitor extends Command
     public function handle()
     {
         $now = time();
+
         $last_successful_run = \Option::get('fetch_emails_last_successful_run');
-        if (!$last_successful_run || $last_successful_run < $now - \Option::get('alert_fetch_period')*60) {
+        if ($last_successful_run && $last_successful_run < $now - \Option::get('alert_fetch_period')*60) {
 
             $mins_ago = floor(($now - $last_successful_run) / 60);
 
@@ -48,11 +49,18 @@ class FetchMonitor extends Command
             if (\Option::get('alert_fetch') && !\Option::get('alert_fetch_sent')) {
                 // We send alert only once
                 \Option::set('alert_fetch_sent', true);
-                \MailHelper::sendAlertMail($text, 'Fetching Problems on '.\Helper::getDomain());
+                \MailHelper::sendAlertMail($text, 'Fetching Problems');
             }
 
             $this->error('['.date('Y-m-d H:i:s').'] '.$text);
+        } elseif (!$last_successful_run) {
+            $this->line('['.date('Y-m-d H:i:s').'] Fetching has not been configured yet');
         } else {
+            if (\Option::get('alert_fetch_sent')) {
+                $text = 'Previously there were some problems fetching emails. Fetching recovered and functioning now!';
+
+                \MailHelper::sendAlertMail($text, 'Fetching Recovered');
+            }
             \Option::set('alert_fetch_sent', false);
 
             $this->info('['.date('Y-m-d H:i:s').'] Fetching is working');

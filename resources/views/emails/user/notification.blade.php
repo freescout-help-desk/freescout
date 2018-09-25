@@ -42,7 +42,7 @@
                                         </p>
 
                                         <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; font-size:14px; color:#B5B9BD; line-height:16px; margin:0; margin-top: 2px;">
-                                        	{{ $mailbox->name }}
+                                        	[{{ $mailbox->name }}]
                                         </p>
 				                    </td>
 				                </tr>
