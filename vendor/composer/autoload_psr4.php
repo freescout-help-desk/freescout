@@ -58,6 +58,7 @@ return array(
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
     'DebugBar\\' => array($vendorDir . '/maximebf/debugbar/src/DebugBar'),
     'Cron\\' => array($vendorDir . '/mtdowling/cron-expression/src/Cron'),
+    'Barryvdh\\TranslationManager\\' => array($vendorDir . '/barryvdh/laravel-translation-manager/src'),
     'Barryvdh\\Debugbar\\' => array($vendorDir . '/barryvdh/laravel-debugbar/src'),
     'Axn\\Laroute\\Routes\\' => array($baseDir . '/overrides/Axn/Laroute/Routes'),
     'Axn\\Laroute\\' => array($vendorDir . '/axn/laravel-laroute/src'),

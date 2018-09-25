@@ -16,12 +16,12 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
-        'e91d0dc994644828154ae2387ede1ca8' => __DIR__ . '/..' . '/spatie/string/src/string_functions.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
+        'e91d0dc994644828154ae2387ede1ca8' => __DIR__ . '/..' . '/spatie/string/src/string_functions.php',
         '4a1f389d6ce373bda9e57857d3b61c84' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/helpers.php',
         'cb61d74ad51d00867155534456b38b23' => __DIR__ . '/..' . '/mews/purifier/src/helpers.php',
-        '72b1e3f4a2af9b30b3f137b3ec2057fc' => __DIR__ . '/..' . '/spatie/laravel-activitylog/src/helpers.php',
         '9f394da3192a168c4633675768d80428' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/helpers.php',
+        '72b1e3f4a2af9b30b3f137b3ec2057fc' => __DIR__ . '/..' . '/spatie/laravel-activitylog/src/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -130,6 +130,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         ),
         'B' => 
         array (
+            'Barryvdh\\TranslationManager\\' => 28,
             'Barryvdh\\Debugbar\\' => 18,
         ),
         'A' => 
@@ -353,6 +354,10 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         array (
             0 => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron',
         ),
+        'Barryvdh\\TranslationManager\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src',
+        ),
         'Barryvdh\\Debugbar\\' => 
         array (
             0 => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src',
@@ -572,6 +577,18 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Barryvdh\\Debugbar\\Twig\\Extension\\Stopwatch' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/Twig/Extension/Stopwatch.php',
         'Barryvdh\\Debugbar\\Twig\\Node\\StopwatchNode' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/Twig/Node/StopwatchNode.php',
         'Barryvdh\\Debugbar\\Twig\\TokenParser\\StopwatchTokenParser' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/Twig/TokenParser/StopwatchTokenParser.php',
+        'Barryvdh\\TranslationManager\\Console\\CleanCommand' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Console/CleanCommand.php',
+        'Barryvdh\\TranslationManager\\Console\\ExportCommand' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Console/ExportCommand.php',
+        'Barryvdh\\TranslationManager\\Console\\FindCommand' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Console/FindCommand.php',
+        'Barryvdh\\TranslationManager\\Console\\ImportCommand' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Console/ImportCommand.php',
+        'Barryvdh\\TranslationManager\\Console\\ResetCommand' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Console/ResetCommand.php',
+        'Barryvdh\\TranslationManager\\Controller' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Controller.php',
+        'Barryvdh\\TranslationManager\\Events\\TranslationsExportedEvent' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Events/TranslationsExportedEvent.php',
+        'Barryvdh\\TranslationManager\\Manager' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Manager.php',
+        'Barryvdh\\TranslationManager\\ManagerServiceProvider' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/ManagerServiceProvider.php',
+        'Barryvdh\\TranslationManager\\Models\\Translation' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Models/Translation.php',
+        'Barryvdh\\TranslationManager\\TranslationServiceProvider' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/TranslationServiceProvider.php',
+        'Barryvdh\\TranslationManager\\Translator' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Translator.php',
         'Carbon\\Carbon' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Carbon.php',
         'Carbon\\CarbonInterval' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/CarbonInterval.php',
         'Carbon\\CarbonPeriod' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/CarbonPeriod.php',
@@ -2480,6 +2497,9 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Mockery\\Undefined' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Undefined.php',
         'Mockery\\VerificationDirector' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/VerificationDirector.php',
         'Mockery\\VerificationExpectation' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/VerificationExpectation.php',
+        'Modules\\SampleModule\\Database\\Seeders\\SampleModuleDatabaseSeeder' => __DIR__ . '/../..' . '/Modules/SampleModule/Database/Seeders/SampleModuleDatabaseSeeder.php',
+        'Modules\\SampleModule\\Http\\Controllers\\SampleModuleController' => __DIR__ . '/../..' . '/Modules/SampleModule/Http/Controllers/SampleModuleController.php',
+        'Modules\\SampleModule\\Providers\\SampleModuleServiceProvider' => __DIR__ . '/../..' . '/Modules/SampleModule/Providers/SampleModuleServiceProvider.php',
         'Monolog\\ErrorHandler' => __DIR__ . '/..' . '/monolog/monolog/src/Monolog/ErrorHandler.php',
         'Monolog\\Formatter\\ChromePHPFormatter' => __DIR__ . '/..' . '/monolog/monolog/src/Monolog/Formatter/ChromePHPFormatter.php',
         'Monolog\\Formatter\\ElasticaFormatter' => __DIR__ . '/..' . '/monolog/monolog/src/Monolog/Formatter/ElasticaFormatter.php',
