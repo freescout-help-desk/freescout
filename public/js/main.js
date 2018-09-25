@@ -2062,6 +2062,12 @@ function setUrl(url)
     }
 }
 
+// Discards:
+// - draft of an old reply
+// - current reply
+// - current note
+// 
+// If thread_id is passed, it means we are discarding an old reply draft
 function discardDraft(thread_id)
 {
 	var confirm_html = '<div>'+
@@ -2075,7 +2081,7 @@ function discardDraft(thread_id)
 		'</div>';
 
 	// Discard note
-	if ($(".form-reply:first :input[name='is_note']:first").val()) {
+	if (typeof(thread_id) == "undefined" && $(".form-reply:first :input[name='is_note']:first").val()) {
 		showModalDialog(confirm_html, {
 			on_show: function(modal) {
 				modal.children().find('.discard-draft-confirm:first').click(function(e) {
