@@ -52,6 +52,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function registerModuleFunctions()
     {
+        // At this stage class Module may be not defined yet, especially during upgrading
+        // Without this check, `php artisan cache:clear` command may fail:
+        //      In AppServiceProvider.php line XX:
+        //      Class 'Module' not found
+
+        if (!class_exists('Module')) {
+            return;
+        }
+
         \Module::macro('getOption', function($module_alias, $option_name, $default = false) {
             // If not passed, get default value from config 
             if (func_num_args() == 2) {
