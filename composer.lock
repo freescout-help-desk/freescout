@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e9bedf7c841c4216707e0f0640734c1e",
+    "content-hash": "d5f959d8a038d6e21b3bffb02d64fd30",
     "packages": [
         {
             "name": "anahkiasen/underscore-php",
@@ -100,6 +100,60 @@
             "description": "Extend aaronlord/laroute package.",
             "homepage": "https://github.com/AXN-Informatique/laravel-laroute",
             "time": "2018-07-04T10:38:09+00:00"
+        },
+        {
+            "name": "barryvdh/laravel-translation-manager",
+            "version": "v0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barryvdh/laravel-translation-manager.git",
+                "reference": "857334ea6ffa2511982442495460c9c3ff096160"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barryvdh/laravel-translation-manager/zipball/857334ea6ffa2511982442495460c9c3ff096160",
+                "reference": "857334ea6ffa2511982442495460c9c3ff096160",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "5.5.x|5.6.x|5.7.x",
+                "illuminate/translation": "5.5.x|5.6.x|5.7.x",
+                "php": ">=7",
+                "symfony/finder": "~3.0|~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.4-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Barryvdh\\TranslationManager\\ManagerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Barryvdh\\TranslationManager\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Barry vd. Heuvel",
+                    "email": "barryvdh@gmail.com"
+                }
+            ],
+            "description": "Manage Laravel Translations",
+            "keywords": [
+                "laravel",
+                "translations",
+                "translator"
+            ],
+            "time": "2018-08-31T13:25:15+00:00"
         },
         {
             "name": "devfactory/minify",

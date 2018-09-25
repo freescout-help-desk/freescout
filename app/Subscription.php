@@ -230,18 +230,24 @@ class Subscription extends Model
             $mailbox_user_ids = $conversation->mailbox->userIdsHavingAccess();
         }
 
-        $subscriptions = self::select(['user_id', 'medium'])
-            ->whereIn('user_id', $mailbox_user_ids)
+        $subscriptions = self::whereIn('user_id', $mailbox_user_ids)
             ->whereIn('event', $events)
             ->get();
 
         // Filter subscribers
         $users_to_notify = [];
         foreach ($subscriptions as $i => $subscription) {
+            // todo: follow conversation, for now jsut miss this event
+            if ($subscription->event == self::EVENT_FOLLOWED_CONVERSATION_UPDATED) {
+                continue;
+            }
+
+            // Actions on conversation where user is assignee
             if (in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY]) && $conversation->user_id != $subscription->user_id
             ) {
                 continue;
             }
+            
             $users_to_notify[$subscription->medium][] = $subscription->user;
             $users_to_notify[$subscription->medium] = array_unique($users_to_notify[$subscription->medium]);
         }
@@ -314,7 +320,7 @@ class Subscription extends Model
         // Notify by email and on the website
         if (!empty($notify[self::MEDIUM_EMAIL])) {
             // Email notification (better to create them first)
-            foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
+            foreach ($notify[self::MEDIUM_EMAIL] as $conversation_id => $notify_info) {
                 \App\Jobs\SendNotificationToUsers::dispatch($notify_info['users'], $notify_info['conversation'], $notify_info['threads'])
                     ->delay(now()->addSeconds(Conversation::UNDO_TIMOUT))
                     ->onQueue('emails');
