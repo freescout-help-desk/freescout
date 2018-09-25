@@ -822,6 +822,10 @@ function convEditorInit()
 	        	onReplyBlur();
 		    },
 		    onChange: function(contents, $editable) {
+		    	// Return if reply body is empty and never changed before
+		    	if (!contents && !fs_reply_changed) {
+		    		return;
+		    	}
 		    	onReplyChange();
 		    }
 	    }
@@ -861,7 +865,8 @@ function onReplyChange()
 	// Mark draft as unsaved
 	if (fs_editor_change_timeout && fs_editor_change_timeout != -1) {
 		return;
-	}
+	}	
+
 	fs_editor_change_timeout = setTimeout(function(){
 		// Do not save note
 		/*if ($(".form-reply:first :input[name='is_note']:first").val()) {
@@ -1948,9 +1953,9 @@ function maybeShowConnectionRestored()
  * Save draft automatically, on reply change or on click.
  * Validation is not needed.
  */
-function saveDraft(allow_reload, no_loader)
+function saveDraft(reload_page, no_loader)
 {
-	if (!allow_reload && fs_processing_save_draft) {
+	if (!reload_page && fs_processing_save_draft) {
 		return;
 	}
 	// User clicked Send Reply button
@@ -1960,6 +1965,7 @@ function saveDraft(allow_reload, no_loader)
 
 	fs_processing_save_draft = true;
 
+	// Do not autosave draft if reply form has been closed
 	var form = $(".form-reply:visible:first");
 	if (!form || !form.length) {
 		fs_processing_save_draft = false;
@@ -1973,12 +1979,14 @@ function saveDraft(allow_reload, no_loader)
 		no_loader = false;
 	}
 
+	// Are we sasving a draft of a new conversation
 	if ($('#conv-layout-main .thread:first').length == 0) {
 		new_conversation = true;
 	}
 
-	// When replying click Save draft always reloads conversation
-	if ((new_conversation || !allow_reload) && !fs_reply_changed) {
+	// Do not save unchanged draft
+	// When replying click on Save draft always reloads conversation
+	if ((new_conversation || !reload_page) && !fs_reply_changed) {
 		fs_processing_save_draft = false;
 		return;
 	}
@@ -1988,7 +1996,7 @@ function saveDraft(allow_reload, no_loader)
 
 	fsAjax(data, laroute.route('conversations.ajax'), function(response) {
 		if (typeof(response.status) != "undefined" && response.status == 'success') {
-			if (allow_reload && !new_conversation) {
+			if (reload_page && !new_conversation) {
 				// Reload the conversation
 				window.location.href = '';
 			} else {
