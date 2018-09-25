@@ -1081,6 +1081,10 @@ function newConversationInit()
 
 			fsAjax(data, laroute.route('conversations.ajax'), function(response) {
 				if (typeof(response.status) != "undefined" && response.status == 'success') {
+					// Forget note
+					if (button.hasClass('btn-add-note-text')) {
+						forgetNote(getGlobalAttr('conversation_id'));
+					}
 					if (typeof(response.redirect_url) != "undefined") {
 						window.location.href = response.redirect_url;
 					} else {
