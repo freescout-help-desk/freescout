@@ -66,7 +66,7 @@ If you would like to be notified about new releases, news and updates you can su
 
 ## Modules
 
-FreeScout [Modules](https://github.com/freescout-helpdesk/freescout/wiki/FreeScout-Modules).
+FreeScout [Modules](https://github.com/freescout-helpdesk/freescout/wiki/FreeScout-Modules)
 
 ## Contributing
 
