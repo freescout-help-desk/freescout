@@ -18,7 +18,7 @@ class FetchMonitor extends Command
      *
      * @var string
      */
-    protected $description = 'Check emails fetching and send alert if fething is not working';
+    protected $description = 'Check emails fetching and send alert if fething is not working or recovered';
 
     /**
      * Create a new command instance.
@@ -48,11 +48,16 @@ class FetchMonitor extends Command
             if (\Option::get('alert_fetch') && !\Option::get('alert_fetch_sent')) {
                 // We send alert only once
                 \Option::set('alert_fetch_sent', true);
-                \MailHelper::sendAlertMail($text, 'Fetching Problems on '.\Helper::getDomain());
+                \MailHelper::sendAlertMail($text, 'Fetching Problems');
             }
 
             $this->error('['.date('Y-m-d H:i:s').'] '.$text);
         } else {
+            if (\Option::get('alert_fetch_sent')) {
+                $text = 'Previously there were some problems fetching emails. Fetching recovered and functioning now!';
+
+                \MailHelper::sendAlertMail($text, 'Fetching Recovered');
+            }
             \Option::set('alert_fetch_sent', false);
 
             $this->info('['.date('Y-m-d H:i:s').'] Fetching is working');

@@ -8,6 +8,7 @@
 		@else
 			{{ __('System Alert') }}
 		@endif
+		 - {{ \Helper::getDomain() }}
 	</div>
 
 	<p style="color:#72808e;font:400 16px/26px 'Helvetica Neue',Helvetica,Arial,sans-serif;padding:0">

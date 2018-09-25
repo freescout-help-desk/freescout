@@ -42,6 +42,7 @@ class Alert extends Mailable
             // System emails are not translated
             $subject .= 'Alert';
         }
+        $subject .= ' - '.\Helper::getDomain();
         $message = $this->subject($subject)
                     ->view('emails/user/alert', ['text' => $this->text, 'title' => $this->title]);
 
