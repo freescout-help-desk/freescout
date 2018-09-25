@@ -18,7 +18,8 @@
         "webklex/laravel-imap": "1.2.7",
         "watson/rememberable": "2.0.4",
         "nwidart/laravel-modules": "2.7.0",
-        "tormjens/eventy": "0.5.4"
+        "tormjens/eventy": "0.5.4",
+        "barryvdh/laravel-translation-manager": "v0.5.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v2.4.3",
