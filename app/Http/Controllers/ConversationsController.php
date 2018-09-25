@@ -461,20 +461,18 @@ class ConversationsController extends Controller
                         $customer = $conversation->customer;
                     }
 
-                    if (!$is_note) {
-                        $conversation->status = $request->status;
-                        // We need to set state, as it may have been a draft
-                        $conversation->state = Conversation::STATE_PUBLISHED;
-                        // Set assignee
-                        if ((int) $request->user_id != -1) {
-                            // Check if user has access to the current mailbox
-                            if ((int) $conversation->user_id != (int) $request->user_id && $mailbox->userHasAccess($request->user_id)) {
-                                $conversation->user_id = $request->user_id;
-                                $user_changed = true;
-                            }
-                        } else {
-                            $conversation->user_id = null;
+                    $conversation->status = $request->status;
+                    // We need to set state, as it may have been a draft
+                    $conversation->state = Conversation::STATE_PUBLISHED;
+                    // Set assignee
+                    if ((int) $request->user_id != -1) {
+                        // Check if user has access to the current mailbox
+                        if ((int) $conversation->user_id != (int) $request->user_id && $mailbox->userHasAccess($request->user_id)) {
+                            $conversation->user_id = $request->user_id;
+                            $user_changed = true;
                         }
+                    } else {
+                        $conversation->user_id = null;
                     }
 
                     // To is a single email string
@@ -505,7 +503,7 @@ class ConversationsController extends Controller
                     }
 
                     // Fire events
-                    if (!$new && !$is_note) {
+                    if (!$new) {
                         if ($status_changed) {
                             event(new ConversationStatusChanged($conversation));
                         }

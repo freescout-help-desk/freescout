@@ -614,6 +614,13 @@ function conversationInit()
 	    		if (!$('.conv-action.inactive:first').length) {
 	    			setReplyBody('');
 	    		}
+
+	    		// Set assignee in case it has been changed in the Note editor
+	    		var default_assignee = $(".conv-reply-block").children().find(":input[name='user_id']:first option[data-default='true']").attr('value');
+	    		if (default_assignee) {
+	    			$(".conv-reply-block").children().find(":input[name='user_id']:first").val(default_assignee);
+	    		}
+
 				showReplyForm();
 			} /*else {
 				// Hide
@@ -633,6 +640,12 @@ function conversationInit()
 					.children().find(":input[name='is_note']:first").val(1);
 				$(".conv-reply-block").children().find(":input[name='thread_id']:first").val('');
 				//$(".conv-reply-block").children().find(":input[name='body']:first").val('');
+				
+				// If this is unassigned conversation, we need to set Assignee=Anyone
+				if (getConvData('user_id') == '-1') {
+					$(".conv-reply-block").children().find(":input[name='user_id']:first").val('-1');
+				}
+
 				$(".conv-action").addClass('inactive');
 				$(this).removeClass('inactive');
 				//$('#body').summernote("code", '');
@@ -732,6 +745,15 @@ function conversationInit()
 		maybeShowStoredNote();
 		maybeShowDraft();
 	});
+}
+
+// Get current conversation assignee
+function getConvData(field)
+{
+	if (field == 'user_id') {
+		return $('.conv-user:first li.active a:first').attr('data-user_id');
+	}
+	return null;
 }
 
 function showReplyForm(data)
