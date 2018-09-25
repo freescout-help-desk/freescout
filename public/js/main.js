@@ -845,9 +845,12 @@ function convEditorInit()
 	autosaveDraft();
 }
 
+// Automatically save draft
 function autosaveDraft()
 {
-	saveDraft(false, true);
+	if (!isNote()) {
+		saveDraft(false, true);
+	}
 	setTimeout(function(){ autosaveDraft() }, fs_draft_autosave_period*1000);
 }
 
@@ -892,7 +895,7 @@ function onReplyBlur()
 
 		// Save only after changing
 		//if (!fs_editor_change_timeout || fs_editor_change_timeout == null) {
-		if ($(".form-reply:first :input[name='is_note']:first").val()) {
+		if (isNote()) {
 			// Save note
 			rememberNote();
 		} else {
@@ -900,6 +903,12 @@ function onReplyBlur()
   		}
 	  	//}
 	  }, 500);
+}
+
+// Are we editing a note
+function isNote()
+{
+	return $(".form-reply:first :input[name='is_note']:first").val();
 }
 
 // Generate random unique ID
