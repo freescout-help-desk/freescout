@@ -113,9 +113,18 @@ class UsersController extends Controller
 
         $this->authorize('update', $user);
 
-        $users = User::all()->except($id);
+        $users = $this->getUsersForSidebar($id);
 
         return view('users/profile', ['user' => $user, 'users' => $users]);
+    }
+
+    public function getUsersForSidebar($except_id)
+    {
+        if (auth()->user()->isAdmin()) {
+            return User::all()->except($except_id);
+        } else {
+            return [];
+        }
     }
 
     /**
@@ -209,7 +218,14 @@ class UsersController extends Controller
 
         $mailboxes = Mailbox::all();
 
-        return view('users/permissions', ['user' => $user, 'mailboxes' => $mailboxes, 'user_mailboxes' => $user->mailboxes]);
+        $users = $this->getUsersForSidebar($id);
+
+        return view('users/permissions', [
+            'user'           => $user, 
+            'mailboxes'      => $mailboxes, 
+            'user_mailboxes' => $user->mailboxes,
+            'users'          => $users,
+        ]);
     }
 
     /**
@@ -250,10 +266,13 @@ class UsersController extends Controller
             $person = $user->getFirstName(true);
         }
 
+        $users = $this->getUsersForSidebar($id);
+
         return view('users/notifications', [
             'user'          => $user,
             'subscriptions' => $subscriptions,
             'person'        => $person,
+            'users'         => $users,
         ]);
     }
 
