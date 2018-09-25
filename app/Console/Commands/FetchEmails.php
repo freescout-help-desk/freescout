@@ -84,7 +84,7 @@ class FetchEmails extends Command
             }
         }
 
-        if ($successfully) {
+        if ($successfully && count($mailboxes)) {
             Option::set('fetch_emails_last_successful_run', $now);
         }
 

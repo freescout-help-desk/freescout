@@ -38,8 +38,9 @@ class FetchMonitor extends Command
     public function handle()
     {
         $now = time();
+
         $last_successful_run = \Option::get('fetch_emails_last_successful_run');
-        if (!$last_successful_run || $last_successful_run < $now - \Option::get('alert_fetch_period')*60) {
+        if ($last_successful_run && $last_successful_run < $now - \Option::get('alert_fetch_period')*60) {
 
             $mins_ago = floor(($now - $last_successful_run) / 60);
 
@@ -52,6 +53,8 @@ class FetchMonitor extends Command
             }
 
             $this->error('['.date('Y-m-d H:i:s').'] '.$text);
+        } elseif (!$last_successful_run) {
+            $this->line('['.date('Y-m-d H:i:s').'] Fetching has not been configured yet');
         } else {
             if (\Option::get('alert_fetch_sent')) {
                 $text = 'Previously there were some problems fetching emails. Fetching recovered and functioning now!';
