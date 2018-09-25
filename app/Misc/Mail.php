@@ -58,8 +58,8 @@ class Mail
             }
         } else {
             // Use default settings
-            \Config::set('mail.driver', env('MAIL_DRIVER'));
-            \Config::set('mail.from', ['address' => env('MAIL_FROM_ADDRESS'), 'name' => '']);
+            \Config::set('mail.driver', \Config::get('mail.driver'));
+            \Config::set('mail.from', ['address' => self::getSystemMailFrom(), 'name' => '']);
         }
 
         (new \Illuminate\Mail\MailServiceProvider(app()))->register();
@@ -125,9 +125,9 @@ class Mail
      */
     public static function getSystemMailFrom()
     {
-        $mail_from = Option::get('mail_from', env('MAIL_FROM_ADDRESS'));
+        $mail_from = Option::get('mail_from');
         if (!$mail_from) {
-            $mail_from = 'freescout@'.parse_url(\Config::get('app.url'), PHP_URL_HOST);
+            $mail_from = 'freescout@'.\Helper::getDomain();
         }
         return $mail_from;
     }
