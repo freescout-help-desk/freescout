@@ -554,4 +554,16 @@ class Thread extends Model
     {
         return $this->state == Thread::STATE_DRAFT;
     }
+
+    /**
+     * Get original body or body.
+     */
+    public function getBodyOriginal()
+    {
+        if (!empty($this->body_original)) {
+            return $this->body_original;
+        } else {
+            return $this->body;
+        }
+    }
 }

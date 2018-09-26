@@ -2771,6 +2771,11 @@ a.help-icon:hover {
 .nav-tabs-main {
     padding-left: 18px;
 }
+.nav-tabs-no-bottom {
+    position: relative;
+    top: -1px;
+    border-bottom: 0;
+}
 .accordion .panel-title > a {
     display: block;
     text-decoration: none;
