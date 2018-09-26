@@ -9,11 +9,11 @@
 @endsection
 
 @section('stylesheets')
-    <link href="{{ asset('js/bootstrap3-editable/css/bootstrap-editable.css') }}" rel="stylesheet">
+    {!! Minify::stylesheet(\Eventy::filter('stylesheets', array('/js/bootstrap3-editable/css/bootstrap-editable.css'))) !!}
 @endsection
 
 @section('javascripts')
-    <script src="{{ asset('js/bootstrap3-editable/js/bootstrap-editable.min.js') }}"></script>
+    {!! Minify::javascript(\Eventy::filter('javascripts', array('/js/bootstrap3-editable/js/bootstrap-editable.min.js'))) !!}
 @endsection
 
 @section('javascript')
@@ -84,6 +84,14 @@
 
         $('.form-publish-all').on('ajax:success', function (e, data) {
             $('div.success-publish-all').slideDown();
+        });
+
+        $('.form-send-translations').on('ajax:success', function (e, data) {
+            $('div.success-send-translations').slideDown();
+        });
+
+        $('.form-send-translations').on('ajax:error', function (e, data) {
+            $('div.error-send-translations').slideDown();
         });
 
     })

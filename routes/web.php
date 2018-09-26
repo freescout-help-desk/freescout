@@ -80,3 +80,6 @@ Route::get('/customer/{id}/edit', 'CustomersController@update')->name('customers
 Route::post('/customer/{id}/edit', 'CustomersController@updateSave');
 Route::get('/customer/{id}/', 'CustomersController@conversations')->name('customers.conversations');
 Route::get('/customer/ajax-search', ['uses' => 'CustomersController@ajaxSearch', 'laroute' => true])->name('customers.ajax_search');
+
+// Translate
+Route::post('/translations/send', ['uses' => 'TranslateController@postSend', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);

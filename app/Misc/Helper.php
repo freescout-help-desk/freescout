@@ -602,4 +602,43 @@ class Helper
     {
         return parse_url(\Config::get('app.url'), PHP_URL_HOST);
     }
+
+    /**
+     * Create zip archive.
+     * Source example: public/files/*
+     * File name example: test.zip
+     */
+    public static function createZipArchive($source, $file_name, $folder = '')
+    {
+        if (!$source || !$file_name) {
+            return false;
+        }
+        $files = glob($source);
+
+        //$dest_folder = storage_path().DIRECTORY_SEPARATOR.'app/zipper';
+        // if (!file_exists($dest_folder)) {
+        //     $mkdir_result = File::makeDirectory($dest_folder, 0755);
+        //     if (!$mkdir_result) {
+        //         return false;
+        //     }
+        // }
+
+        $storage_path = 'app/zipper'.DIRECTORY_SEPARATOR.$file_name;
+        $dest_path = storage_path().DIRECTORY_SEPARATOR.$storage_path;
+
+        // If file exists it has to be deleted, otherwise Zipper will add file to the existing archive
+        // By some reason \Storage not finding $storage_path file
+        // todo: use \Storage
+        if (\File::exists($dest_path)) {
+            \File::delete($dest_path);
+        }
+        \Chumper\Zipper\Facades\Zipper::make($dest_path)->folder($folder)->add($files)->close();
+
+        return $dest_path;
+    }
+
+    public static function formatException($e)
+    {
+        return 'Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')';
+    }
 }

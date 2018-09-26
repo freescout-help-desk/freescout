@@ -21,10 +21,7 @@
                 <p>Done searching for translations, found <strong class="counter">N</strong> items!</p>
             </div>
             <div class="alert alert-success success-publish" style="display:none;">
-                <p>Done publishing the translations for group '<?php echo $group ?>'!</p>
-            </div>
-            <div class="alert alert-success success-publish-all" style="display:none;">
-                <p>Done publishing the translations for all groups!</p>
+                <p>Done publishing translations for group '<?php echo $group ?>'!</p>
             </div>
             <?php if(Session::has('successPublish')) : ?>
                 <div class="alert alert-info">
@@ -201,11 +198,23 @@
                     <p class="block-help margin-bottom">
                         If you want your translations to be added to the application release, you can send translations to the <?php echo \Config::get('app.name') ?> team.
                     </p>
-                    <form class="form-inline form-publish-all" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', '*') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish all translations group? This will overwrite existing language files.">
+                    <div class="alert alert-success success-publish-all" style="display:none;">
+                        <p>Translations published!</p>
+                    </div>
+                    <div class="alert alert-success success-send-translations" style="display:none;">
+                        <p>Translations sent!</p>
+                    </div>
+                    <div class="alert alert-danger error-send-translations" style="display:none;">
+                        <p>Error occured sending translations. <a href="<?php echo route('system') ?>#php" target="_blank">Make sure</a> that you have PHP Zip extension enabled and check your <a href="<?php echo route('settings', ['section' => 'emails']) ?>" target="_blank">mail settings</a>.</p>
+                    </div>
+                    <form class="form-inline form-publish-all pull-left" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', '*') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish all translation groups? This will overwrite existing language files.">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                         <button type="submit" class="btn btn-primary" data-disable-with="Publishing…" >Publish translations</button>
+                    </form>
+                    <form class="form-inline form-send-translations pull-left" method="POST" action="<?php echo action('TranslateController@postSend') ?>" data-remote="true" role="form" data-confirm="This will publish translations and send them to <?php echo \Config::get('app.name') ?> team by email.">
+                        <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                         &nbsp;&nbsp;
-                        <button type="submit" class="btn btn-default" data-disable-with="Publishing…" >Send translations to <?php echo \Config::get('app.name') ?> team</button>
+                        <button type="submit" class="btn btn-default" data-disable-with="Sending…" >Send translations to <?php echo \Config::get('app.name') ?> team</button>
                     </form>
                 </fieldset>
 

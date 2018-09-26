@@ -71,6 +71,7 @@ FreeScout [Modules](https://github.com/freescout-helpdesk/freescout/wiki/FreeSco
 ## Contributing
 
 * [Todo list](https://github.com/freescout-helpdesk/freescout/projects/1)
+* [Translate](https://github.com/freescout-helpdesk/freescout/wiki/Translate) application
 * [Support project by leaving a feedback](https://github.com/freescout-helpdesk/freescout/wiki#support-project)
 
 ## Screenshots
@@ -91,3 +92,7 @@ Mailbox connection settings page:
 Login page:
 
 ![Login page](https://freescout-helpdesk.github.io/img/screenshots/freescout-login.png)
+
+## Contact Us
+
+<a href="mailto:freescout.helpdesk@gmail.com">freescout.helpdesk@gmail.com</a>

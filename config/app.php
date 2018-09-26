@@ -148,10 +148,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | FreeScout Repository
+    | FreeScout eepository
     |-------------------------------------------------------------------------
     */
     'freescout_repo' => 'https://github.com/freescout-helpdesk/freescout',
+
+    /*
+    |--------------------------------------------------------------------------
+    | FreeScout email
+    |-------------------------------------------------------------------------
+    */
+    'freescout_email' => 'freescout.helpdesk@gmail.com',
 
     /*
     |--------------------------------------------------------------------------
@@ -168,7 +175,7 @@ return [
     | PHP extensions required by the app
     |-------------------------------------------------------------------------
     */
-    'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/ 'json', 'gd', 'fileinfo', 'openssl', 'tokenizer'/*, 'dom', 'xmlwriter', 'libxml', 'phar'*/],
+    'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/ 'json', 'gd', 'fileinfo', 'openssl', 'zip', 'tokenizer'/*, 'dom', 'xmlwriter', 'libxml', 'phar'*/],
 
 
     /*
