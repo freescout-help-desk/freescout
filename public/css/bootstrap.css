@@ -5716,7 +5716,8 @@ button.list-group-item-danger.active:focus {
   /*color: #86929e;*/
   color: #253540;
   font-size: 16px;
-  line-height: 30px;
+  /*line-height: 30px;*/
+  line-height: 29px;
   background-color: #f9fafa;
   border-color: #ddd;
 }
