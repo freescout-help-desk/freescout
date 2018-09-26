@@ -355,7 +355,7 @@
                                 @endif
                                 @if ($thread->headers)
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
-                                        'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message headers") }}" data-trigger="modal" data-modal-title="{{ __("Original Message Headers") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
+                                        'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message") }}" data-trigger="modal" data-modal-title="{{ __("Original Message") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
                                 @endif
                             </ul>
                         </div>
