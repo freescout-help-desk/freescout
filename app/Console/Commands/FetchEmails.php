@@ -633,7 +633,11 @@ class FetchEmails extends Command
     public function sortMessage($messages)
     {
         $messages = $messages->sortBy(function ($message, $key) {
-            return $message->getDate()->timestamp;
+            if ($message->getDate()) {
+                return $message->getDate()->timestamp;
+            } else {
+                return 0;
+            }
         });
 
         return $messages;
