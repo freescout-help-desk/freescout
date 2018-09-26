@@ -71,7 +71,7 @@ FreeScout [Modules](https://github.com/freescout-helpdesk/freescout/wiki/FreeSco
 ## Contributing
 
 * [Todo list](https://github.com/freescout-helpdesk/freescout/projects/1)
-* [Translate](https://github.com/freescout-helpdesk/freescout/wiki/Translate) application
+* [Translate](https://github.com/freescout-helpdesk/freescout/wiki/Translate)
 * [Support project by leaving a feedback](https://github.com/freescout-helpdesk/freescout/wiki#support-project)
 
 ## Screenshots
