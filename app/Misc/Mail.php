@@ -235,4 +235,41 @@ class Mail
     {
         \App\Jobs\SendAlert::dispatch($text, $title)->onQueue('emails');
     }
+
+    /**
+     * Send email to developers team.
+     */
+    public static function sendEmailToDevs($subject, $body, $attachments = [], $from_user = null)
+    {
+        // Configure mail driver according to Mailbox settings
+        \App\Misc\Mail::setSystemMailDriver();
+
+        $status_message = '';
+        try {
+            \Mail::raw($body, function($message) use ($subject, $attachments, $from_user) {
+                $message
+                    ->subject($subject)
+                    ->to(\Config::get('app.freescout_email'));
+                if ($attachments) {
+                    foreach ($attachments as $attachment) {
+                        $message->attach($attachment);
+                    }
+                }
+                // Set user as Reply-To
+                if ($from_user) {
+                    $message->replyTo($from_user->email, $from_user->getFullName());
+                }
+            });
+        } catch (\Exception $e) {
+            \Log::error(\Helper::formatException($e));
+            // We come here in case SMTP server unavailable for example
+            return false;
+        }
+
+        if (\Mail::failures()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

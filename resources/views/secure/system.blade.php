@@ -56,10 +56,10 @@
                 <th>{{ __('Name') }}</th>
                 <td class="table-main-col">@if (!empty($_SERVER['SERVER_SOFTWARE'])){{ $_SERVER['SERVER_SOFTWARE'] }}@else ? @endif</td>
             </tr>
-            <tr>
+            {{--<tr>
                 <th>{{ __('Protocol') }}</th>
                 <td class="table-main-col">@if (!empty($_SERVER['HTTPS']))HTTPS @else HTTP @endif</td>
-            </tr>
+            </tr>--}}
         </tbody>
     </table>
 

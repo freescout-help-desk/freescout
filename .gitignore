@@ -27,3 +27,4 @@ public/.well-known
 /Modules
 /Modules/**/.git
 public/modules
+storage/.ignore_locales
