@@ -140,6 +140,7 @@ fi
 printf "\nClearing cache:\n"
 php artisan clear-compiled
 php artisan cache:clear
+php artisan view:clear
 php artisan config:cache
 #php artisan package:discover
 
