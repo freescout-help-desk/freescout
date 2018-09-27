@@ -66,6 +66,8 @@ class ConversationsController extends Controller
             if ($folder) {
                 // Check if conversation can be located in the passed folder_id
                 if (!$conversation->isInFolderAllowed($folder)) {
+
+                    // Without reflash green flash will not be displayed on assignee change
                     \Session::reflash();
                     //$request->session()->reflash();
                     return redirect()->away($conversation->url($conversation->folder_id));
