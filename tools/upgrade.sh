@@ -22,7 +22,7 @@ PROJECT_ROOT=`pwd`;
 echo -e "Application root: \e[32m${PROJECT_ROOT}\e[0m"
 
 if [ -f "${TOOLS_DIR}/pre_upgrade.sh" ]; then
-	echo "Including pre_upgrade.sh..."
+	echo "Including pre_upgrade.sh"
 	source "${TOOLS_DIR}/pre_upgrade.sh";
 fi
 
@@ -73,6 +73,8 @@ else
 	fi
 
 	echo -e "Current branch: \e[32m${branch}\e[0m";
+
+	git fetch
 
 	new_commits=`git log "$branch..origin/$branch" --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short | wc -l`;
 	if [ $new_commits = 0 ]; then

@@ -66,8 +66,10 @@ class ConversationsController extends Controller
             if ($folder) {
                 // Check if conversation can be located in the passed folder_id
                 if (!$conversation->isInFolderAllowed($folder)) {
-                    $request->session()->reflash();
 
+                    // Without reflash green flash will not be displayed on assignee change
+                    \Session::reflash();
+                    //$request->session()->reflash();
                     return redirect()->away($conversation->url($conversation->folder_id));
                 }
                 // If conversation assigned to user, select Mine folder instead of Assigned
@@ -76,11 +78,14 @@ class ConversationsController extends Controller
                         ->where('type', Folder::TYPE_MINE)
                         ->where('user_id', $user->id)
                         ->first();
+
+                    \Session::reflash();
                     return redirect()->away($conversation->url($folder->id));
                 }
             }
         }
 
+        // Add folder if empty
         if (!$folder) {
             if ($conversation->user_id == $user->id) {
                 $folder = $conversation->mailbox->folders()
@@ -91,6 +96,7 @@ class ConversationsController extends Controller
                 $folder = $conversation->folder;
             }
 
+            \Session::reflash();
             return redirect()->away($conversation->url($folder->id));
         }
 
