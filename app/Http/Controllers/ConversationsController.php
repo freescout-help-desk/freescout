@@ -566,6 +566,9 @@ class ConversationsController extends Controller
                         $conversation->maybeRemoveFromDrafts();
                     }
 
+                    // Update folders counters
+                    $conversation->mailbox->updateFoldersCounters();
+
                     $response['status'] = 'success';
 
                     // Set thread_id for uploaded attachments

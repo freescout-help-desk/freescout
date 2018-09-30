@@ -25,7 +25,8 @@ class ConversationObserver
      */
     public function created(Conversation $conversation)
     {
-        $conversation->mailbox->updateFoldersCounters();
+        // Better to do it manually
+        //$conversation->mailbox->updateFoldersCounters();
     }
 
     /**
