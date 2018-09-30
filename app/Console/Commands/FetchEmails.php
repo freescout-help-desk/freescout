@@ -416,6 +416,9 @@ class FetchEmails extends Command
         $conversation->updateFolder();
         $conversation->save();
 
+        // Update folders counters
+        $conversation->mailbox->updateFoldersCounters();
+
         // Thread
         $thread = new Thread();
         $thread->conversation_id = $conversation->id;
@@ -485,6 +488,9 @@ class FetchEmails extends Command
         // Set folder id
         $conversation->updateFolder();
         $conversation->save();
+
+        // Update folders counters
+        $conversation->mailbox->updateFoldersCounters();
 
         // Thread
         $thread = new Thread();
