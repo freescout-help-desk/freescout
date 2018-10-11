@@ -34,6 +34,7 @@ class Mail
         '<div class="gmail_quote">',
         '<blockquote',
         '<!-- originalMessage -->',
+        //'---Original---', // QQ separator, wait for emails from QQ and check
     ];
 
     /**
