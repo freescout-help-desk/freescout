@@ -1093,7 +1093,8 @@ table.table-conversations td.conv-subject {
     overflow: hidden;
     white-space: nowrap;
     vertical-align: top;
-    padding-bottom: 6px;
+    /* Probably not needed */
+    /*padding-bottom: 6px;*/
 }
 table.table-conversations td.conv-attachment {
     color: #93a1af;

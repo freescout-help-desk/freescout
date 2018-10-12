@@ -177,7 +177,7 @@ class Attachment extends Model
     }
 
     /**
-     * Get attachment public URL.
+     * Get attachment full public URL.
      *
      * @return string
      */

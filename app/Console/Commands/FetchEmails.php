@@ -279,8 +279,8 @@ class FetchEmails extends Command
                     }
 
                     if ($message->hasHTMLBody()) {
-                        // Get body and replace :cid with images URLs
-                        $body = $message->getHTMLBody(true);
+                        // Get body and do not replace :cid with images base64
+                        $body = $message->getHTMLBody(false);
                         $body = $this->separateReply($body, true, $is_reply);
                     } else {
                         $body = $message->getTextBody();
@@ -374,6 +374,7 @@ class FetchEmails extends Command
         $prev_customer_id = null;
         $now = date('Y-m-d H:i:s');
 
+        // Customers are created before with email and name
         $customer = Customer::create($from);
         if ($prev_thread) {
             $conversation = $prev_thread->conversation;
@@ -442,9 +443,13 @@ class FetchEmails extends Command
         }
         $thread->save();
 
-        $has_attachments = $this->saveAttachments($attachments, $thread->id);
-        if ($has_attachments) {
+        $saved_attachments = $this->saveAttachments($attachments, $thread->id);
+        if ($saved_attachments) {
             $thread->has_attachments = true;
+
+            // After attachments saved to the disk we can replace cids in body (for PLAIN and HTML body)
+            $thread->body = $this->replaceCidsWithAttachmentUrls($thread->body, $saved_attachments);
+
             $thread->save();
         }
 
@@ -513,9 +518,13 @@ class FetchEmails extends Command
         $thread->created_by_user_id = $user_id;
         $thread->save();
 
-        $has_attachments = $this->saveAttachments($attachments, $thread->id);
-        if ($has_attachments) {
+        $saved_attachments = $this->saveAttachments($attachments, $thread->id);
+        if ($saved_attachments) {
             $thread->has_attachments = true;
+
+            // After attachments saved to the disk we can replace cids in body (for PLAIN and HTML body)
+            $thread->body = $this->replaceCidsWithAttachmentUrls($thread->body, $saved_attachments);
+
             $thread->save();
         }
 
@@ -534,9 +543,9 @@ class FetchEmails extends Command
      */
     public function saveAttachments($email_attachments, $thread_id)
     {
-        $has_attachments = false;
+        $created_attachments = [];
         foreach ($email_attachments as $email_attachment) {
-            $create_result = Attachment::create(
+            $created_attachment = Attachment::create(
                 $email_attachment->getName(),
                 $email_attachment->getMimeType(),
                 Attachment::typeNameToInt($email_attachment->getType()),
@@ -545,12 +554,15 @@ class FetchEmails extends Command
                 false,
                 $thread_id
             );
-            if ($create_result) {
-                $has_attachments = true;
+            if ($created_attachment) {
+                $created_attachments[] = [
+                    'imap_attachment' => $email_attachment,
+                    'attachment'      => $created_attachment
+                ];
             }
         }
 
-        return $has_attachments;
+        return $created_attachments;
     }
 
     /**
@@ -606,6 +618,16 @@ class FetchEmails extends Command
             }
         }
 
+        return $body;
+    }
+
+    public function replaceCidsWithAttachmentUrls($body, $attachments)
+    {
+        foreach ($attachments as $attachment) {
+            if ($attachment['imap_attachment']->id && isset($attachment['imap_attachment']->img_src)) {
+                $body = str_replace('cid:'.$attachment['imap_attachment']->id, $attachment['attachment']->url(), $body);
+            }
+        }
         return $body;
     }
 
