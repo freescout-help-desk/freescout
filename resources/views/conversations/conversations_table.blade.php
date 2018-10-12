@@ -110,7 +110,7 @@
                         <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}">
                             <span class="conv-fader"></span>
                             <p><span class="conv-subject-number">#{{ $conversation->number }} </span>{{ $conversation->getSubject() }}</p>
-                            <p class="conv-preview">{{ $conversation->preview }}</p>
+                            <p class="conv-preview">@if ($conversation->preview){{ $conversation->preview }}@else&nbsp;@endif</p>
                         </a>
                     </td>
                     <td class="conv-thread-count">
