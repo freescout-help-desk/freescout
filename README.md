@@ -92,7 +92,3 @@ Mailbox connection settings page:
 Login page:
 
 ![Login page](https://freescout-helpdesk.github.io/img/screenshots/freescout-login.png)
-
-## Contact Us
-
-<a href="mailto:freescout.helpdesk@gmail.com">freescout.helpdesk@gmail.com</a>
