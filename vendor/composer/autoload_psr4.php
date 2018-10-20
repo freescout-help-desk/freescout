@@ -10,7 +10,7 @@ return array(
     'XdgBaseDir\\' => array($vendorDir . '/dnoegel/php-xdg-base-dir/src'),
     'Whoops\\' => array($vendorDir . '/filp/whoops/src/Whoops'),
     'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
-    'Webklex\\IMAP\\' => array($vendorDir . '/webklex/laravel-imap/src/IMAP'),
+    'Webklex\\IMAP\\' => array($baseDir . '/overrides/Webklex/IMAP', $vendorDir . '/webklex/laravel-imap/src/IMAP'),
     'Watson\\Rememberable\\' => array($vendorDir . '/watson/rememberable/src'),
     'Underscore\\' => array($vendorDir . '/anahkiasen/underscore-php/src', $vendorDir . '/anahkiasen/underscore-php/tests'),
     'TorMorten\\Eventy\\' => array($vendorDir . '/tormjens/eventy/src'),

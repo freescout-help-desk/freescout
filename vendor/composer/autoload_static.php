@@ -163,7 +163,8 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         ),
         'Webklex\\IMAP\\' => 
         array (
-            0 => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP',
+            0 => __DIR__ . '/../..' . '/overrides/Webklex/IMAP',
+            1 => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP',
         ),
         'Watson\\Rememberable\\' => 
         array (
@@ -4372,7 +4373,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Webklex\\IMAP\\Exceptions\\MethodNotFoundException' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Exceptions/MethodNotFoundException.php',
         'Webklex\\IMAP\\Facades\\Client' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Facades/Client.php',
         'Webklex\\IMAP\\Folder' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Folder.php',
-        'Webklex\\IMAP\\Message' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Message.php',
+        'Webklex\\IMAP\\Message' => __DIR__ . '/../..' . '/overrides/Webklex/IMAP/Message.php',
         'Webklex\\IMAP\\Providers\\LaravelServiceProvider' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Providers/LaravelServiceProvider.php',
         'Webklex\\IMAP\\Query\\Query' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Query/Query.php',
         'Webklex\\IMAP\\Query\\WhereQuery' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Query/WhereQuery.php',

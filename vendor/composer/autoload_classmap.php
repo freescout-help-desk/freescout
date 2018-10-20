@@ -3942,7 +3942,7 @@ return array(
     'Webklex\\IMAP\\Exceptions\\MethodNotFoundException' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Exceptions/MethodNotFoundException.php',
     'Webklex\\IMAP\\Facades\\Client' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Facades/Client.php',
     'Webklex\\IMAP\\Folder' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Folder.php',
-    'Webklex\\IMAP\\Message' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Message.php',
+    'Webklex\\IMAP\\Message' => $baseDir . '/overrides/Webklex/IMAP/Message.php',
     'Webklex\\IMAP\\Providers\\LaravelServiceProvider' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Providers/LaravelServiceProvider.php',
     'Webklex\\IMAP\\Query\\Query' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Query/Query.php',
     'Webklex\\IMAP\\Query\\WhereQuery' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Query/WhereQuery.php',
