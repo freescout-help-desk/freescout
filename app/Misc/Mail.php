@@ -25,6 +25,20 @@ class Mail
     const MESSAGE_ID_PREFIX_AUTO_REPLY = 'autoreply';
 
     /**
+     * Mail drivers.
+     */
+    const MAIL_DRIVER_MAIL = 'mail';
+    const MAIL_DRIVER_SENDMAIL = 'sendmail';
+    const MAIL_DRIVER_SMTP = 'smtp';
+
+    /**
+     * Encryptions.
+     */
+    const MAIL_ENCRYPTION_NONE = '';
+    const MAIL_ENCRYPTION_SSL  = 'ssl';
+    const MAIL_ENCRYPTION_TLS  = 'tls';
+
+    /**
      * If reply is not extracted properly from the incoming email, add here new separator.
      * Order is not important.
      */
@@ -78,6 +92,15 @@ class Mail
             'address' => self::getSystemMailFrom(), 
             'name' => Option::get('company_name', \Config::get('app.name'))
         ]);
+
+        // SMTP
+        if (\Config::get('mail.driver') == self::MAIL_DRIVER_SMTP) {
+            \Config::set('mail.host', Option::get('mail_host'));
+            \Config::set('mail.port', Option::get('mail_port'));
+            \Config::set('mail.username', Option::get('mail_username'));
+            \Config::set('mail.password', Option::get('mail_password'));
+            \Config::set('mail.encryption', Option::get('mail_encryption'));
+        }
 
         (new \Illuminate\Mail\MailServiceProvider(app()))->register();
     }
@@ -144,17 +167,31 @@ class Mail
     /**
      * Send test email from mailbox.
      */
-    public static function sendTestMail($mailbox, $to)
+    public static function sendTestMail($to, $mailbox = null)
     {
-        // Configure mail driver according to Mailbox settings
-        \App\Misc\Mail::setMailDriver($mailbox);
+        if ($mailbox) {
+            // Configure mail driver according to Mailbox settings
+            \MailHelper::setMailDriver($mailbox);
 
-        $status_message = '';
-        try {
-            \Mail::to([$to])->send(new \App\Mail\Test($mailbox));
-        } catch (\Exception $e) {
-            // We come here in case SMTP server unavailable for example
-            $status_message = $e->getMessage();
+            $status_message = '';
+            try {
+                \Mail::to([$to])->send(new \App\Mail\Test($mailbox));
+            } catch (\Exception $e) {
+                // We come here in case SMTP server unavailable for example
+                $status_message = $e->getMessage();
+            }
+        } else {
+            // System email
+            \MailHelper::setSystemMailDriver();
+
+            $status_message = '';
+            try {
+                \Mail::to([['name' => '', 'email' => $to]])
+                    ->send(new \App\Mail\Test());
+            } catch (\Exception $e) {
+                // We come here in case SMTP server unavailable for example
+                $status_message = $e->getMessage();
+            }
         }
 
         if (\Mail::failures() || $status_message) {
@@ -243,7 +280,7 @@ class Mail
     public static function sendEmailToDevs($subject, $body, $attachments = [], $from_user = null)
     {
         // Configure mail driver according to Mailbox settings
-        \App\Misc\Mail::setSystemMailDriver();
+        \MailHelper::setSystemMailDriver();
 
         $status_message = '';
         try {

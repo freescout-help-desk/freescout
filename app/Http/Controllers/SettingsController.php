@@ -180,4 +180,61 @@ class SettingsController extends Controller
 
         return redirect()->route('settings', ['section' => $section]);
     }
+
+    /**
+     * Users ajax controller.
+     */
+    public function ajax(Request $request)
+    {
+        $response = [
+            'status' => 'error',
+            'msg'    => '', // this is error message
+        ];
+
+        $user = auth()->user();
+
+        switch ($request->action) {
+
+            // Test sending emails from mailbox
+            case 'send_test':
+
+                if (empty($request->to)) {
+                    $response['msg'] = __('Please specify recipient of the test email');
+                }
+
+                if (!$response['msg']) {
+                    $test_result = false;
+
+                    try {
+                        $test_result = \MailHelper::sendTestMail($request->to);
+                    } catch (\Exception $e) {
+                        $response['msg'] = $e->getMessage();
+                    }
+
+                    if (!$test_result && !$response['msg']) {
+                        $response['msg'] = __('Error occurend sending email. Please check your mail server logs for more details.');
+                    }
+                }
+
+                if (!$response['msg']) {
+                    $response['status'] = 'success';
+                }
+
+                // Remember email address
+                if (!empty($request->to)) {
+                    \App\Option::set('send_test_to', $request->to);
+                }
+                break;
+
+            default:
+                $response['msg'] = 'Unknown action';
+                break;
+        }
+
+        if ($response['status'] == 'error' && empty($response['msg'])) {
+            $response['msg'] = 'Unknown error occured';
+        }
+
+        return \Response::json($response);
+    }
 }

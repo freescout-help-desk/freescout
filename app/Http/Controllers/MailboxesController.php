@@ -370,7 +370,7 @@ class MailboxesController extends Controller
         return redirect()->route('mailboxes.auto_reply', ['id' => $id]);
     }
 
-     /**
+    /**
      * Users ajax controller.
      */
     public function ajax(Request $request)
@@ -400,7 +400,7 @@ class MailboxesController extends Controller
                     $test_result = false;
 
                     try {
-                        $test_result = \App\Misc\Mail::sendTestMail($mailbox, $request->to);
+                        $test_result = \App\Misc\Mail::sendTestMail($request->to, $mailbox);
                     } catch (\Exception $e) {
                         $response['msg'] = $e->getMessage();
                     }

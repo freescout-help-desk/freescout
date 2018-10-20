@@ -25,8 +25,13 @@
                 <form class="form-horizontal" method="POST" action="">
                     {{ csrf_field() }}
 
+                    <div class="descr-block">
+                        {!! __("You can read more about sending emails :%a_begin%here:%a_end%.", ['%a_begin%' => '<a href="https://github.com/freescout-helpdesk/freescout/wiki/Sending-emails" target="_blank">', '%a_end%' =>'</a>']) !!}
+                         {!! __("To send system emails via webmail providers (Gmail, Yahoo, etc) use only SMTP method and make sure that SMTP username is equal to the mailbox email address (:%mailbox_email%), otherwise webmail provider won't send emails.", ['%mailbox_email%' => $mailbox->email]) !!}
+                    </div>
+
                     <div class="form-group margin-top">
-                        <label for="email" class="col-sm-2 control-label">{{ __('Method') }} <a href="https://github.com/freescout-helpdesk/freescout/wiki/Sending-emails" target="blank" class="glyphicon glyphicon-info-sign help-icon" data-toggle="tooltip" title="{{ __("Click to read more about sending methods") }}"></a></label>
+                        <label for="email" class="col-sm-2 control-label">{{ __('Method') }} {{--<a href="https://github.com/freescout-helpdesk/freescout/wiki/Sending-emails" target="blank" class="glyphicon glyphicon-info-sign help-icon" data-toggle="tooltip" title="{{ __("Click to read more about sending methods") }}"></a>--}}</label>
 
                         <div class="col-sm-6">
                             <div class="control-group">
@@ -47,12 +52,12 @@
                                     <input type="radio" name="out_method" value="{{ App\Mailbox::OUT_METHOD_SMTP }}" id="out_method_{{ App\Mailbox::OUT_METHOD_SMTP }}" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) checked="checked" @endif> {{ __("SMTP") }}
                                 </label>
                             </div>
-                            <div class="control-group">
+                            {{--<div class="control-group">
                                 <label class="radio disabled" for="out_method_elastic">
                                     <input type="radio" name="out_method" disabled value="elastic" id="out_method_elastic" @if ($mailbox->out_method == 'elastic') checked="checked" @endif> <a href="https://elasticemail.com/account#/create-account?r=bc0975e9-3d6b-462f-be7c-629e7672a4a8" target="_blank">Elastic Email</a><br/>
                                     <span class="text-help">{{ __("150,000 free emails per month") }}</span>
                                 </label>
-                            </div>
+                            </div>--}}
                             <div class="control-group">
                                 <label class="radio disabled" for="out_method_amazon">
                                     <input type="radio" name="out_method" disabled value="mailgun" id="out_method_amazon" @if ($mailbox->out_method == 'amazon') checked="checked" @endif> <a href="https://aws.amazon.com/ses/pricing/" target="_blank">Amazon SES</a><br/>
@@ -65,6 +70,12 @@
                                     <span class="text-help">{{ __("10,000 free emails per month") }}</span>
                                 </label>
                             </div>
+                            <div class="control-group">
+                                <label class="radio disabled" for="out_method_mailgun">
+                                    <input type="radio" name="out_method" disabled value="mailgun" id="out_method_mailgun" @if ($mailbox->out_method == 'sendinblue') checked="checked" @endif> <a href="https://www.sendinblue.com/?tap_a=30591-fb13f0&tap_s=294678-0b81e5" target="_blank">SendinBlue</a><br/>
+                                    <span class="text-help">{{ __("9,000 free emails per month") }}</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
@@ -75,6 +86,13 @@
 
                             <div class="col-sm-6">
                                 <input id="out_server" type="text" class="form-control input-sized" name="out_server" value="{{ old('out_server', $mailbox->out_server) }}" maxlength="255"  @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
+
+
+                                @if (strstr($mailbox->out_server, '.gmail.'))
+                                    <div class="form-help">
+                                        {!! __("Make sure to :%link_start%enable less secure apps:%link_end% in your Google account to send emails from Gmail.", ['%link_start%' => '<a href="https://myaccount.google.com/lesssecureapps?pli=1" target="_blank">', '%link_end%' => '</a>']) !!}
+                                    </div>
+                                @endif
 
                                 @include('partials/field_error', ['field'=>'out_server'])
                             </div>
