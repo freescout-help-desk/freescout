@@ -37,7 +37,8 @@
         "psr-4": {
             "App\\": "app/",
             "Modules\\": "Modules/",
-            "Axn\\Laroute\\Routes\\": "overrides/Axn/Laroute/Routes"
+            "Axn\\Laroute\\Routes\\": "overrides/Axn/Laroute/Routes",
+            "Webklex\\IMAP\\": "overrides/Webklex/IMAP"
         },
         "exclude-from-classmap": [
             "vendor/axn/laravel-laroute/src/Routes/Collection.php"
