@@ -379,6 +379,28 @@ function mailSettingsInit()
 				$('#mail_driver_options_smtp :input').removeAttr('required');
 			}
 		});
+
+	    // Test Email
+		$('#send-test-trigger').click(function(event) {
+	    	var button = $(this);
+	    	button.button('loading');
+	    	fsAjax(
+				{
+					action: 'send_test',
+					to: $('#send_test').val()
+				}, 
+				laroute.route('settings.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == 'success') {
+						showFloatingAlert('success', Lang.get("messages.email_sent"));
+					} else {
+						showAjaxError(response);
+					}
+					button.button('reset');
+				}, 
+				true
+			);
+		});
 	});
 }
 
@@ -431,6 +453,10 @@ function multiInputInit()
 
 function fsAjax(data, url, success_callback, no_loader, error_callback)
 {
+	if (!url) {
+		console.log('Empty URL');
+		return false;
+	}
     // Setup AJAX
 	ajaxSetup();
 

@@ -1,7 +1,7 @@
 <form class="form-horizontal margin-top" method="POST" action="">
     {{ csrf_field() }}
 
-    <div class="help-block text-large margin-bottom">
+    <div class="descr-block">
         {{ __("Send email alerts to super admin.") }}
     </div>
 

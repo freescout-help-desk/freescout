@@ -1,8 +1,13 @@
 <form class="form-horizontal margin-top" method="POST" action="">
     {{ csrf_field() }}
 
-    <div class="help-block text-large margin-bottom">
-        {{ __("These settings are used to send system alerts to admin and invitation emails to users.") }}
+    <div class="descr-block">
+        <p>{{ __("These settings are used to send system emails (alerts to admin and invitation emails to users).") }}</p>
+
+        <p>
+            {!! __("It is recommended to use :%tag_begin%PHP's mail() function:%tag_end%.", ['%tag_begin%' => '<strong>', '%tag_end%' =>'</strong>']) !!}
+            {{ __("If you want to send system emails via webmail providers (Gmail, Yahoo, etc), use only SMTP method and make sure that SMTP username is equal to 'Mail From', otherwise webmail provider won't send emails.") }}
+        </p>
     </div>
 
     <div class="form-group{{ $errors->has('settings.mail_from') ? ' has-error' : '' }}">
@@ -31,14 +36,18 @@
         </div>
     </div>
 
-    <div id="mail_driver_options_smtp" class="mail_driver_options @if ($settings['mail_driver'] != 'smtp') hidden @endif margin-top">
+    <div id="mail_driver_options_smtp" class="mail_driver_options @if ($settings['mail_driver'] != \MailHelper::MAIL_DRIVER_SMTP) hidden @endif margin-top">
         <hr/>
         <div class="form-group{{ $errors->has('settings.mail_host') ? ' has-error' : '' }}">
             <label for="mail_host" class="col-sm-2 control-label">{{ __('SMTP Server') }}</label>
 
             <div class="col-sm-6">
-                <input id="mail_host" type="text" class="form-control input-sized" name="settings[mail_host]" value="{{ old('settings.mail_host', $settings['mail_host']) }}" maxlength="255"  @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
-
+                <input id="mail_host" type="text" class="form-control input-sized" name="settings[mail_host]" value="{{ old('settings.mail_host', $settings['mail_host']) }}" maxlength="255"  @if ($settings['mail_driver'] == \MailHelper::MAIL_DRIVER_SMTP) required @endif autofocus>
+                @if (strstr($settings['mail_host'], '.gmail.'))
+                    <div class="form-help">
+                        {!! __("Make sure to :%link_start%enable less secure apps:%link_end% in your Google account to send emails from Gmail.", ['%link_start%' => '<a href="https://myaccount.google.com/lesssecureapps?pli=1" target="_blank">', '%link_end%' => '</a>']) !!}
+                    </div>
+                @endif
                 @include('partials/field_error', ['field'=>'settings.mail_host'])
             </div>
         </div>
@@ -46,7 +55,7 @@
             <label for="mail_port" class="col-sm-2 control-label">{{ __('Port') }}</label>
 
             <div class="col-sm-6">
-                <input id="mail_port" type="number" class="form-control input-sized" name="settings[mail_port]" value="{{ old('settings.mail_port', $settings['mail_port']) }}" maxlength="5" @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
+                <input id="mail_port" type="number" class="form-control input-sized" name="settings[mail_port]" value="{{ old('settings.mail_port', $settings['mail_port']) }}" maxlength="5" @if ($settings['mail_driver'] == \MailHelper::MAIL_DRIVER_SMTP) required @endif autofocus>
 
                 @include('partials/field_error', ['field'=>'settings.mail_port'])
             </div>
@@ -55,8 +64,7 @@
             <label for="mail_username" class="col-sm-2 control-label">{{ __('Username') }}</label>
 
             <div class="col-sm-6">
-                <input id="mail_username" type="text" class="form-control input-sized" name="settings[mail_username]" value="{{ old('settings.mail_username', $settings['mail_username']) }}" maxlength="100" @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
-
+                <input id="mail_username" type="text" class="form-control input-sized" name="settings[mail_username]" value="{{ old('settings.mail_username', $settings['mail_username']) }}" maxlength="100" @if ($settings['mail_driver'] == \MailHelper::MAIL_DRIVER_SMTP) required @endif autofocus>
                 @include('partials/field_error', ['field'=>'settings.mail_username'])
             </div>
         </div>
@@ -64,7 +72,7 @@
             <label for="mail_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
             <div class="col-sm-6">
-                <input id="mail_password" type="password" class="form-control input-sized" name="settings[mail_password]" value="{{ old('settings.mail_password', $settings['mail_password']) }}" maxlength="255" @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
+                <input id="mail_password" type="password" class="form-control input-sized" name="settings[mail_password]" value="{{ old('settings.mail_password', $settings['mail_password']) }}" maxlength="255" @if ($settings['mail_driver'] == \MailHelper::MAIL_DRIVER_SMTP) required @endif autofocus>
 
                 @include('partials/field_error', ['field'=>'settings.mail_password'])
             </div>
@@ -73,10 +81,10 @@
             <label for="mail_encryption" class="col-sm-2 control-label">{{ __('Encryption') }}</label>
 
             <div class="col-sm-6">
-                <select id="mail_encryption" class="form-control input-sized" name="settings[mail_encryption]" @if ($settings['mail_driver'] == 'smtp') required @endif autofocus>
-                    <option value="{{ App\Mailbox::OUT_ENCRYPTION_NONE }}" @if (old('settings.mail_encryption', $settings['mail_encryption']) == 'none')selected="selected"@endif>{{ __('None') }}</option>
-                    <option value="{{ App\Mailbox::OUT_ENCRYPTION_SSL }}" @if (old('settings.mail_encryption', $settings['mail_encryption']) == 'ssl')selected="selected"@endif>{{ __('SSL') }}</option>
-                    <option value="{{ App\Mailbox::OUT_ENCRYPTION_TLS }}" @if (old('settings.mail_encryption', $settings['mail_encryption']) == 'tls')selected="selected"@endif>{{ __('TLS') }}</option>
+                <select id="mail_encryption" class="form-control input-sized" name="settings[mail_encryption]" @if ($settings['mail_driver'] == \MailHelper::MAIL_DRIVER_SMTP) required autofocus @endif>
+                    <option value="{{ \MailHelper::MAIL_ENCRYPTION_NONE }}" @if (old('settings.mail_encryption', $settings['mail_encryption']) == \MailHelper::MAIL_ENCRYPTION_NONE)selected="selected"@endif>{{ __('None') }}</option>
+                    <option value="{{ \MailHelper::MAIL_ENCRYPTION_SSL }}" @if (old('settings.mail_encryption', $settings['mail_encryption']) ==  \MailHelper::MAIL_ENCRYPTION_SSL)selected="selected"@endif>{{ __('SSL') }}</option>
+                    <option value="{{ \MailHelper::MAIL_ENCRYPTION_TLS }}" @if (old('settings.mail_encryption', $settings['mail_encryption']) == \MailHelper::MAIL_ENCRYPTION_TLS)selected="selected"@endif>{{ __('TLS') }}</option>
                 </select>
 
                 @include('partials/field_error', ['field'=>'settings.mail_encryption'])
@@ -86,6 +94,19 @@
     </div>
 
     <div class="form-group">
+        <label for="send_test" class="col-sm-2 control-label">{{ __('Test Email') }}</label>
+
+        <div class="col-sm-6">
+            <div class="input-group input-sized">
+                <input id="send_test" type="email" class="form-control" value="{{ old('email', \App\Option::get('send_test_to')) }}" maxlength="128">
+                <span class="input-group-btn">
+                    <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…">{{ __('Send Test') }}</button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group margin-top">
         <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">
                 {{ __('Save') }}

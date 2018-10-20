@@ -8,6 +8,10 @@
             rootUrl: '',
             routes : [
     {
+        "uri": "app-settings\/ajax",
+        "name": "settings.ajax"
+    },
+    {
         "uri": "users",
         "name": "users"
     },

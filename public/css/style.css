@@ -514,6 +514,12 @@ select[multiple].input-md {
 .btn-xs, .btn-group-xs > .btn {
     padding: 1px 7px;
 }
+.form-help {
+    color: #93a1af;
+    display: block;
+    font-size: 13.4px;
+    margin: 4px 0 0;
+}
 @media (min-width: 435px) {
     .input-sized-lg {
         width: 387px;
@@ -2685,6 +2691,10 @@ a.help-icon:hover {
 .popover {
     color:#4f5d6b;
     font-size:13.4px
+}
+.descr-block {
+    margin: 20px;
+    color: #93a1af;
 }
 .block-help {
     color: #93a1af;
