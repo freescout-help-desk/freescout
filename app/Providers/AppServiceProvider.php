@@ -45,6 +45,13 @@ class AppServiceProvider extends ServiceProvider
             $_SERVER['SERVER_PORT'] = '443';
             $this->app['url']->forceScheme('https');
         }
+
+        // If APP_KEY is not set, redirect to /install.php
+        if (!\Config::get('app.key') && !app()->runningInConsole()) {
+            // Not defined here yet
+            //\Artisan::call("freescout:clear-cache");
+            redirect('/install.php')->send();
+        }
     }
 
     /**

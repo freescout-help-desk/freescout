@@ -20,7 +20,8 @@
         "nwidart/laravel-modules": "2.7.0",
         "tormjens/eventy": "0.5.4",
         "barryvdh/laravel-translation-manager": "v0.5.0",
-        "chumper/zipper": "v1.0.2"
+        "chumper/zipper": "v1.0.2",
+        "rachidlaasri/laravel-installer": "4.0.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v2.4.3",
@@ -37,11 +38,20 @@
         "psr-4": {
             "App\\": "app/",
             "Modules\\": "Modules/",
-            "Axn\\Laroute\\Routes\\": "overrides/Axn/Laroute/Routes",
-            "Webklex\\IMAP\\": "overrides/Webklex/IMAP"
+            "Axn\\Laroute\\Routes\\": "overrides/Axn/Laroute/Routes/",
+            "Webklex\\IMAP\\": "overrides/Webklex/IMAP/",
+            "RachidLaasri\\LaravelInstaller\\Helpers\\": "overrides/RachidLaasri/LaravelInstaller/Helpers/",
+            "RachidLaasri\\LaravelInstaller\\Middleware\\": "overrides/RachidLaasri/LaravelInstaller/Middleware/",
+            "RachidLaasri\\LaravelInstaller\\Controllers\\": "overrides/RachidLaasri/LaravelInstaller/Controllers/"
         },
         "exclude-from-classmap": [
-            "vendor/axn/laravel-laroute/src/Routes/Collection.php"
+            "vendor/axn/laravel-laroute/src/Routes/Collection.php",
+            "vendor/webklex/laravel-imap/src/IMAP/Message.php",
+            "vendor/rachidlaasri/laravel-installer/src/Helpers/PermissionsChecker.php",
+            "vendor/rachidlaasri/laravel-installer/src/Helpers/EnvironmentManager.php",
+            "vendor/rachidlaasri/laravel-installer/src/Helpers/FinalInstallManager.php",
+            "vendor/rachidlaasri/laravel-installer/src/Middleware/canInstall.php",
+            "vendor/rachidlaasri/laravel-installer/src/Controllers/EnvironmentController.php"
         ]
     },
     "autoload-dev": {

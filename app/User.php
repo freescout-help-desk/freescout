@@ -8,6 +8,7 @@ namespace App;
 
 use App\Mail\PasswordChanged;
 use App\Mail\UserInvite;
+use App\Email;
 use App\Option;
 use App\Notifications\WebsiteNotification;
 use App\SendLog;
@@ -613,5 +614,30 @@ class User extends Authenticatable
     public static function getSuperAdmin()
     {
         return User::where('role', User::ROLE_ADMIN)->first();
+    }
+
+    /**
+     * Create user.
+     */
+    public static function create($data)
+    {
+        $user = new User();
+
+        if (empty($data['email']) || empty($data['password'])) {
+            return false;
+        }
+
+        $user->fill($data);
+
+        $user->password = \Hash::make($data['password']);
+        $user->email = Email::sanitizeEmail($data['email']);
+
+        try {
+            $user->save();
+        } catch(\Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 }

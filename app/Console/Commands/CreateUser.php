@@ -19,7 +19,7 @@ class CreateUser extends Command
      *
      * @var string
      */
-    protected $description = 'Creates a new user';
+    protected $description = 'Create a new user';
 
     /**
      * Create a new command instance.
@@ -49,7 +49,7 @@ class CreateUser extends Command
         $fillables = ['role', 'first_name', 'last_name', 'email', 'password'];
         foreach ($fillables as $key => $fillable) {
             if ($fillable == 'password') {
-                $user->password = \Hash::make($this->secret(($key + 1).'/'.count($fillables)." User $fillable"));
+                $user->$fillable = \Hash::make($this->secret(($key + 1).'/'.count($fillables)." User $fillable"));
             } elseif ($fillable == 'role') {
                 $user->$fillable = $this->ask(($key + 1).'/'.count($fillables)." User $fillable (admin/user)", 'admin');
                 if (!$user->$fillable) {
