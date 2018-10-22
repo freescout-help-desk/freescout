@@ -1,0 +1,28 @@
+### OSX BOOGERS ###
+.DS_Store
+*._DS_Store
+._.DS_Store
+*._
+._*
+._.*
+
+### WINDOWS BOOGERS ###
+Thumbs.db
+
+### Sass ###
+/.sass-cache/*
+.sass-cache
+
+### SUBLIMETEXT BOOGERS ###
+*.sublime-workspace
+
+### PHPSTORM BOOGERS ###
+.idea/*
+/.idea/*
+
+### DIFFERENT TYPE OF MASTER CONFIGS ###
+composer.lock
+.env
+
+### ASSET EXCLUSIONS ###
+vendor/

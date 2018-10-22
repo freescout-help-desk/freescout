@@ -34,23 +34,21 @@ abstract class Bundle implements BundleInterface
     private $namespace;
 
     /**
-     * Boots the Bundle.
+     * {@inheritdoc}
      */
     public function boot()
     {
     }
 
     /**
-     * Shutdowns the Bundle.
+     * {@inheritdoc}
      */
     public function shutdown()
     {
     }
 
     /**
-     * Builds the bundle.
-     *
-     * It is only ever called once when the cache is empty.
+     * {@inheritdoc}
      *
      * This method can be overridden to register compilation passes,
      * other extensions, ...
@@ -81,10 +79,7 @@ abstract class Bundle implements BundleInterface
                 $expectedAlias = Container::underscore($basename);
 
                 if ($expectedAlias != $extension->getAlias()) {
-                    throw new \LogicException(sprintf(
-                        'Users will expect the alias of the default extension of a bundle to be the underscored version of the bundle name ("%s"). You can override "Bundle::getContainerExtension()" if you want to use "%s" or another alias.',
-                        $expectedAlias, $extension->getAlias()
-                    ));
+                    throw new \LogicException(sprintf('Users will expect the alias of the default extension of a bundle to be the underscored version of the bundle name ("%s"). You can override "Bundle::getContainerExtension()" if you want to use "%s" or another alias.', $expectedAlias, $extension->getAlias()));
                 }
 
                 $this->extension = $extension;
@@ -99,9 +94,7 @@ abstract class Bundle implements BundleInterface
     }
 
     /**
-     * Gets the Bundle namespace.
-     *
-     * @return string The Bundle namespace
+     * {@inheritdoc}
      */
     public function getNamespace()
     {
@@ -113,9 +106,7 @@ abstract class Bundle implements BundleInterface
     }
 
     /**
-     * Gets the Bundle directory path.
-     *
-     * @return string The Bundle absolute path
+     * {@inheritdoc}
      */
     public function getPath()
     {
@@ -128,18 +119,14 @@ abstract class Bundle implements BundleInterface
     }
 
     /**
-     * Returns the bundle parent name.
-     *
-     * @return string|null The Bundle parent name it overrides or null if no parent
+     * {@inheritdoc}
      */
     public function getParent()
     {
     }
 
     /**
-     * Returns the bundle name (the class short name).
-     *
-     * @return string The Bundle name
+     * {@inheritdoc}
      */
     final public function getName()
     {
