@@ -1,25 +1,21 @@
 @extends('layouts.app')
 
-@section('title', __('System'))
+@section('title', __('System Status'))
 
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
-    <div class="sidebar-title">
-        {{ __('System') }}
-    </div>
-    <ul class="sidebar-menu">
-        <li><a href="#app"><i class="glyphicon glyphicon-menu-right"></i> {{ __('App') }}</a></li>
-        <li><a href="#server"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Server') }}</a></li>
-        <li><a href="#php"><i class="glyphicon glyphicon-menu-right"></i> PHP</a></li>
-        <li><a href="#cron"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Cron Commands') }}</a></li>
-        <li><a href="#jobs"><i class="glyphicon glyphicon-menu-right"></i> {{ __('Background Jobs') }}</a></li>
-    </ul>
+    @include('system/sidebar_menu')
 @endsection
 
 @section('content')
+
+<div class="section-heading">
+    {{ __('System Status') }}
+</div>
+
 <div class="container">
 
-    <h3 id="app">{{ __('App') }}</h3>
+    <h3 id="app">{{ __('Info') }}</h3>
 
     <table class="table table-dark-header table-bordered table-responsive">
         <tbody>
@@ -35,7 +31,7 @@
                 <th>{{ __('Protocol') }}</th>
                 <td class="table-main-col" id="system-app-protocol"></td>
             </tr>
-            <tr>
+            {{--<tr>
                 <th>{{ __('.env file') }}</th>
                 <td class="table-main-col">
                     @if (\File::exists(base_path().DIRECTORY_SEPARATOR.'.env'))
@@ -44,37 +40,19 @@
                         <strong class="text-danger">{{ 'Not found'}}</strong>
                     @endif
                 </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <h3 id="server" class="margin-top-40">{{ __('Server') }}</h3>
-
-    <table class="table table-dark-header table-bordered table-responsive">
-        <tbody>
+            </tr>--}}
             <tr>
-                <th>{{ __('Name') }}</th>
+                <th>{{ __('Web Server') }}</th>
                 <td class="table-main-col">@if (!empty($_SERVER['SERVER_SOFTWARE'])){{ $_SERVER['SERVER_SOFTWARE'] }}@else ? @endif</td>
             </tr>
-            {{--<tr>
-                <th>{{ __('Protocol') }}</th>
-                <td class="table-main-col">@if (!empty($_SERVER['HTTPS']))HTTPS @else HTTP @endif</td>
-            </tr>--}}
-        </tbody>
-    </table>
-
-    <h3 id="php" class="margin-top-40">PHP</h3>
-    <table class="table table-dark-header table-bordered table-responsive">
-        <tbody>
             <tr>
-                <th>{{ __('Version') }}</th>
+                <th>{{ __('PHP Version') }}</th>
                 <td class="table-main-col">PHP {{ phpversion() }}</td>
             </tr>
         </tbody>
     </table>
-    <p>
-        {{ __('Required PHP extensions:') }}
-    </p>
+
+    <h3 id="php">{{ __('PHP Extensions') }}</h3>
     <table class="table table-dark-header table-bordered table-responsive">
         <tbody>
             @foreach ($php_extensions as $extension_name => $extension_status)
@@ -94,8 +72,8 @@
 
     <h3 id="cron" class="margin-top-40">Cron Commands</h3>
     <p>
-        {!! __('Commands are launched by <i>schedule:run</i> cron command. Make sure that you have the following line in your crontab:') !!}<br/>
-        <code>* * * * * php /var/www/html/artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code>
+        {!! __('Make sure that you have the following line in your crontab:') !!}<br/>
+        <code>* * * * * php {{ base_path() }}/artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code>
     </p>
     <table class="table table-dark-header table-bordered table-responsive">
         <tbody>
