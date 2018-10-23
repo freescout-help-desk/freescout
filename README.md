@@ -1,4 +1,4 @@
-# FreeScout — Free Self-Hosted Help Scout & Zendesk Alternative
+# Free Self-Hosted Zendesk & Help Scout Alternative
 
 <div align="center">
 

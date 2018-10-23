@@ -11,7 +11,7 @@ class ClearCache extends Command
      *
      * @var string
      */
-    protected $signature = 'freescout:clear-cache';
+    protected $signature = 'freescout:clear-cache {--doNotCacheConfig}';
 
     /**
      * The console command description.
@@ -40,6 +40,10 @@ class ClearCache extends Command
         $this->call('clear-compiled');
         $this->call('cache:clear');
         $this->call('view:clear');
-        $this->call('config:cache');
+        if ($this->option('doNotCacheConfig')) {
+            $this->call('config:clear');
+        } else {
+            $this->call('config:cache');
+        }
     }
 }

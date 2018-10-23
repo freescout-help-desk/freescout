@@ -40,7 +40,7 @@
             Admin
         </label>
 
-        <form method="post" action="{{ route('LaravelInstaller::environmentSaveWizard') }}" class="tabs-wrap">
+        <form method="post" action="{{ route('LaravelInstaller::environmentSaveWizard', [], false) }}" class="tabs-wrap">
             <div class="tab" id="tab1content">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
@@ -61,13 +61,19 @@
                     <label for="app_force_https">
                         Use HTTPS protocol
                     </label>
+                    @php
+                        $force_https = false;
+                        if (old('app_force_https') == 'true' || \Config::get('app.force_https')) {
+                            $force_https = true;
+                        }
+                    @endphp
                     <label for="app_force_https_true">
-                        <input type="radio" name="app_force_https" id="app_force_https_true" value="true" @if (old('app_force_https') == 'true' || \Config::get('app.force_https')) checked @endif />
-                        {{ trans('installer_messages.environment.wizard.form.app_debug_label_true') }}
+                        <input type="radio" name="app_force_https" id="app_force_https_true" value="true" @if ($force_https) checked @endif />
+                        Yes
                     </label>
                     <label for="app_force_https_false">
-                        <input type="radio" name="app_force_https" id="app_force_https_false" value="false" @if (old('app_force_https') == 'false' || !\Config::get('app.force_https')) checked @endif />
-                        {{ trans('installer_messages.environment.wizard.form.app_debug_label_false') }}
+                        <input type="radio" name="app_force_https" id="app_force_https_false" value="false" @if (!$force_https) checked @endif />
+                        No
                     </label>
                     @if ($errors->has('app_force_https'))
                         <span class="error-block">
@@ -86,7 +92,7 @@
             </div>
             <div class="tab" id="tab2content">
 
-                <div class="form-group {{ $errors->has('database_connection') ? ' has-error ' : '' }}">
+                <div class="form-group {{ $errors->has('database_connection') ? ' has-error ' : '' }}" style="display:none">
                     <label for="database_connection">
                         {{ trans('installer_messages.environment.wizard.form.db_connection_label') }}
                     </label>
@@ -119,7 +125,7 @@
 
                 <div class="form-group {{ $errors->has('database_port') ? ' has-error ' : '' }}">
                     <label for="database_port">
-                        {{ trans('installer_messages.environment.wizard.form.db_port_label') }}
+                        Port
                     </label>
                     <input type="number" name="database_port" id="database_port" value="{{ old('database_port', env('DB_PORT', '3306')) }}" />
                     @if ($errors->has('database_port'))
@@ -145,7 +151,7 @@
 
                 <div class="form-group {{ $errors->has('database_username') ? ' has-error ' : '' }}">
                     <label for="database_username">
-                        {{ trans('installer_messages.environment.wizard.form.db_username_label') }}
+                        Username
                     </label>
                     <input type="text" name="database_username" id="database_username" value="{{ old('database_username', env('DB_USERNAME')) }}" />
                     @if ($errors->has('database_username'))
@@ -158,7 +164,7 @@
 
                 <div class="form-group {{ $errors->has('database_password') ? ' has-error ' : '' }}">
                     <label for="database_password">
-                        {{ trans('installer_messages.environment.wizard.form.db_password_label') }}
+                        Password
                     </label>
                     <input type="text" name="database_password" id="database_password" value="{{ old('database_password', env('DB_PASSWORD')) }}" />
                     @if ($errors->has('database_password'))
@@ -245,7 +251,7 @@
                     <label for="admin_password">
                         Password
                     </label>
-                    <input type="password" name="admin_password" id="admin_password" value="{{ old('admin_password', env('DB_PASSWORD')) }}" />
+                    <input type="password" name="admin_password" id="admin_password" value="{{ old('admin_password') }}" />
                     @if ($errors->has('admin_password'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>

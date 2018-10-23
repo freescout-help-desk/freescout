@@ -50,8 +50,11 @@
             "vendor/rachidlaasri/laravel-installer/src/Helpers/PermissionsChecker.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/EnvironmentManager.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/FinalInstallManager.php",
+            "vendor/rachidlaasri/laravel-installer/src/Helpers/InstalledFileManager.php",
+            "vendor/rachidlaasri/laravel-installer/src/Helpers/DatabaseManager.php",
             "vendor/rachidlaasri/laravel-installer/src/Middleware/canInstall.php",
-            "vendor/rachidlaasri/laravel-installer/src/Controllers/EnvironmentController.php"
+            "vendor/rachidlaasri/laravel-installer/src/Controllers/EnvironmentController.php",
+            "vendor/rachidlaasri/laravel-installer/src/Controllers/FinalController.php"
         ]
     },
     "autoload-dev": {

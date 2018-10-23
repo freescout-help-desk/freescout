@@ -11,22 +11,39 @@
 
 @section('container')
 
-	<h4 style="margin-top:0">Final Step</h4>
-
+	<h4 style="margin-top:0">Success!</h4>
 	<p>
-		Now you need to set up a cron task (If you don't know how to do it, contact your hosting provider):
+		{{ \Config::get('app.name') }} has been successfully installed, now you need to set up a cron task:
 	</p>
-	<textarea rows="1" readonly="readonly" style="font-size:12px;">* * * * * php /home/user/artisan schedule:run >> /dev/null 2>&1</textarea>
+	<textarea rows="2" readonly="readonly" style="font-size:12px;">* * * * * php {{ base_path() }}/artisan schedule:run >> /dev/null 2>&1</textarea>
 	<p>
-		Make sure to replace <code>/home/user</code> with the path your installation. On some shared hostings you may need to specify full path to the PHP executable (for example, <code>/usr/local/bin/php-7.0</code>)
+		<small>If you don't know how to configure cron jobs, contact your hosting provider. On some shared hostings you may need to specify full path to the PHP executable (for example, <code>/usr/local/bin/php-7.0</code>)</small>
 	</p>
 	
+	@if ($dbMessage && !empty($dbMessage['status']) && $dbMessage['status'] == 'error' && !empty($dbMessage['message']))
+		<h4>Database Migration Error</h4>
+		<p>Error occured migrating database:</p>
+		<p>
+			<strong class="has-error">{{ $dbMessage['message'] }}</strong>
+		</p>
+
+		<p>
+			Please configure database access in <code>.env</code> file and run the following console commands:
+		</p>
+		<pre><code>php artisan freescout:clear-cache
+php artisan migrate</code></pre>
+	@endif
 
 	<h4>Admin Credentials</h4>
-
+	@php
+		$admin = \App\User::where('role', \App\User::ROLE_ADMIN)->orderBy('id', 'desc')->first();
+		if ($admin) {
+			$admin_email = $admin->email;
+		}
+	@endphp
 	<p>
-		<strong>Email:</strong> {{ old('admin_email') }}<br/>
-		<strong>Password:</strong> {{ old('admin_password') }}
+		<strong>Email:</strong> <span style="color: #93a1af;">{{ $admin_email }}</span><br/>
+		<strong>Password:</strong> <span style="color: #93a1af;">your chosen password</span>
 	</p>
 
     <div class="buttons">
@@ -36,18 +53,18 @@
 
     <h4>Installation Logs</h4>
 
-	@if(session('message')['dbOutputLog'])
-		<p><strong><small>{{ trans('installer_messages.final.migration') }}</small></strong></p>
-		<pre><code>{{ session('message')['dbOutputLog'] }}</code></pre>
+	@if ($dbMessage && !empty($dbMessage['dbOutputLog']))
+		<p>Database Migration:</p>
+		<pre><code>{{ $dbMessage['dbOutputLog'] }}</code></pre>
 	@endif
 
-	<p><strong><small>{{ trans('installer_messages.final.console') }}</small></strong></p>
+	<p>{{ trans('installer_messages.final.console') }}</p>
 	<pre><code>{{ $finalMessages }}</code></pre>
 
-	<p><strong><small>{{ trans('installer_messages.final.log') }}</small></strong></p>
+	<p>{{ trans('installer_messages.final.log') }}</p>
 	<pre><code>{{ $finalStatusMessage }}</code></pre>
 
-	<p><strong><small>{{ trans('installer_messages.final.env') }}</small></strong></p>
+	<p>{{ trans('installer_messages.final.env') }}</p>
 	<pre><code>{{ $finalEnvFile }}</code></pre>
 
 @endsection
