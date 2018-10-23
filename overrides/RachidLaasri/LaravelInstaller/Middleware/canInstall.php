@@ -58,7 +58,7 @@ class canInstall
     public function alreadyInstalled()
     {
         // If file exists, the app is 100% installed
-        if (file_exists(storage_path('installed'))) {
+        if (file_exists(storage_path('.installed'))) {
             return true;
         }
 

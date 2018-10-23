@@ -7,6 +7,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>@if (trim($__env->yieldContent('template_title')))@yield('template_title') | @endif {{ trans('installer_messages.title') }}</title>
         <link href="/css/fonts.css" rel="stylesheet"/>
+        <link href="/installer/css/fontawesome.css" rel="stylesheet"/>
         <link href="/installer/css/style.min.css" rel="stylesheet"/>
         @yield('style')
         <script>

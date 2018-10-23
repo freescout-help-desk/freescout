@@ -98,8 +98,12 @@ class EnvironmentManager
         //'APP_KEY=' . 'base64:bODi8VtmENqnjklBmNJzQcTTSC8jNjBysfnjQN59btE=' . "\n" .
         // 'APP_DEBUG=' . $request->app_debug . "\n" .
         // 'APP_LOG_LEVEL=' . $request->app_log_level . "\n" .
-        'APP_URL=' . $request->app_url . "\n" .
-        'APP_FORCE_HTTPS=' . $request->app_force_https . "\n" .
+        '# Every time you are making changes in .env file, in order changes to take an effect you need to run:' . "\n" .
+        '# php artisan freescout:clear-cache' . "\n\n" .
+        '# Application URL' . "\n" .
+        'APP_URL=' . $request->app_url . "\n\n" .
+        '# Use HTTP protocol and redirect to HTTPS' . "\n" .
+        'APP_FORCE_HTTPS=' . $request->app_force_https . "\n\n" .
         '# Timezones: https://github.com/freescout-helpdesk/freescout/wiki/PHP-Timezones' . "\n" .
         '# Comment it to use default timezone from php.ini' . "\n" .
         'APP_TIMEZONE=' . $request->app_timezone . "\n\n" .
@@ -111,7 +115,7 @@ class EnvironmentManager
         'DB_PASSWORD=' . $request->database_password . "\n\n" .
         '# Run the following console command to generate the key: php artisan key:generate' . "\n" .
         '# Otherwise application will show the following error: "Whoops, looks like something went wrong"' . "\n" .
-        'APP_KEY=' . \Config::get('app.key') . "\n" .
+        'APP_KEY=' . \Config::get('app.key') . "\n\n" .
         '# Uncomment to see errors in your browser, don\'t forget to comment it back when debugging finished' . "\n" .
         '#APP_DEBUG=' . 'true' . "\n";
         // 'BROADCAST_DRIVER=' . $request->broadcast_driver . "\n" .
@@ -139,7 +143,9 @@ class EnvironmentManager
         }
 
         // Clear and update cache
-        \Artisan::call('freescout:clear-cache');
+        // If we cache config here, it caches env data from memory
+        //\Artisan::call('freescout:clear-cache');
+        \Artisan::call('freescout:clear-cache', ["--doNotCacheConfig" => true]);
 
         return $results;
     }

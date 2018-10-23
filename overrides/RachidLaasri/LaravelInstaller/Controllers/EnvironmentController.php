@@ -76,6 +76,14 @@ class EnvironmentController extends Controller
                         ->with(['message' => $message]);
     }
 
+    // Save old values to sessions
+    public function rememberOldRequest($request)
+    {
+        foreach ($request->all() as $field => $value) {
+            session(['_old_input.'.$field => $value]);
+        }
+    }
+
     /**
      * Processes the newly saved environment configuration (Form Wizard).
      *
@@ -92,10 +100,11 @@ class EnvironmentController extends Controller
 
         $validator = Validator::make($request->all(), $rules, $messages);
 
-        // Save old values to sessions
-        foreach ($request->all() as $field => $value) {
-            session(['_old_input.'.$field => $value]);
+        if ($request->app_force_https == 'true') {
+            $request->merge(['app_url' => preg_replace("/^http:/i", 'https:', $request->app_url)]);
         }
+
+        $this->rememberOldRequest($request);
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -103,10 +112,19 @@ class EnvironmentController extends Controller
         }
 
         // Check DB connection
-        // Save data to config before checking connection
-        $this->EnvironmentManager->saveFileWizard($request);
+        //$this->EnvironmentManager->saveFileWizard($request);
         try {
-            \DB::connection()->getPdo();
+            \Config::set("database.connections.install", [
+                'driver'    => 'mysql',
+                "host"      => $request->database_hostname,
+                "database"  => $request->database_name,
+                "username"  => $request->database_username,
+                "password"  => $request->database_password,
+                'charset'   => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
+                'prefix'    => '',
+            ]);
+            \DB::connection('install')->getPdo();
         } catch (\Exception $e) {
 
             $validator->getMessageBag()->add('general', 'Could not establish database connection: '.$e->getMessage());
@@ -116,6 +134,9 @@ class EnvironmentController extends Controller
             $validator->getMessageBag()->add('database_username', 'Database User Name: Please check entered value.');
             $validator->getMessageBag()->add('database_password', 'Database Password: Please check entered value.');
             $errors = $validator->errors();
+
+            // We have to write request to session again, as saveFileWizard() clears the cache and session
+            $this->rememberOldRequest($request);
 
             return view('vendor.installer.environment-wizard', compact('errors', 'envConfig'));
         }
