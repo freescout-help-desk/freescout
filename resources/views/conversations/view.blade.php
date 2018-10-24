@@ -307,12 +307,13 @@
                                     <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
                                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                         <span class="thread-status">
-                                            @if ($loop->index == 0 || $thread->status != App\Thread::STATUS_NOCHANGE)
+                                            @if ($loop->last || $thread->status != App\Thread::STATUS_NOCHANGE)
                                                 @php
                                                     $show_status = true;
                                                 @endphp
                                             @endif
-                                            @if ($loop->index == 0 || $thread->user_id != $threads[$loop->index-1]->user_id)
+                                            @if ($loop->last || (!$loop->last && ($thread->user_id != $threads[$loop->index+1]->user_id || $threads[$loop->index+1]->action_type == App\Thread::ACTION_TYPE_USER_CHANGED))
+                                            )
                                                 @if ($thread->user_id)
                                                     {{ $thread->user_cached->getFullName() }}@if (!empty($show_status)),@endif
                                                 @else

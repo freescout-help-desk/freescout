@@ -536,7 +536,7 @@ class ConversationsController extends Controller
                     if ($new) {
                         $thread->first = true;
                     }
-                    $thread->user_id = auth()->user()->id;
+                    $thread->user_id = $conversation->user_id;
                     $thread->status = $request->status;
                     $thread->state = Thread::STATE_PUBLISHED;
                     $thread->customer_id = $customer->id;

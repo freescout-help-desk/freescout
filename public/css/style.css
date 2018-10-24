@@ -440,31 +440,31 @@ select.form-control {
     color: #fff;
     /*background-color: #87939f;
     border-color: #727f8b;*/
-    background-color: #808080;
-    border-color: #6b6b6b;
+    background-color: #6b6b6b;
+    border-color: #585858;
 }
 .btn-grey:focus,
 .btn-grey:hover {
     color: #fff;
     /*background-color: #64717b;
     border-color: #4f5d69;*/
-    background-color: #6b6b6b;
-    border-color: #585858;
+    background-color: #444444;
+    border-color: #292929;
 }
 .btn-lightgrey {
     color: #fff;
     /*background-color: #a5b2bd;
     border-color: #8796a1;*/
-    background-color: #aaaeb7;
-    border-color: #8e9299;
+    background-color: #9598a1;
+    border-color: #777b80;
 }
 .btn-lightgrey:focus,
 .btn-lightgrey:hover {
     color: #fff;
     /*background-color: #72808e;
     border-color: #72808e;*/
-    background-color: #9598a1;
-    border-color: #878b91;
+    background-color: #7e8088;
+    border-color: #676a6f;
 }
 .btn-success.btn-light {
     background-color: #71c171;
