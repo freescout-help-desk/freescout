@@ -76,19 +76,21 @@ class SystemController extends Controller
                     continue;
                 } elseif ($running_commands > 1) {
                     // queue:work command is stopped by settings a cache key
-                    \Cache::forever('illuminate:queue:restart', Carbon::now()->getTimestamp());
-                    $commands[] = [
-                        'name'        => $command_name,
-                        'status'      => 'error',
-                        'status_text' => __(':number commands were running at the same time. Commands have been restarted', ['number' => $running_commands]),
-                    ];
-
-                    //unset($pids[0]);
-                    // $commands[] = [
-                    //     'name'        => $command_name,
-                    //     'status'      => 'error',
-                    //     'status_text' => __(':number commands are running at the same time. Please stop extra commands by executing the following console command:', ['number' => $running_commands]).' kill '.implode(' | kill ', $pids),
-                    // ];
+                    if ($command_name == 'queue:work') {
+                        \Cache::forever('illuminate:queue:restart', Carbon::now()->getTimestamp());
+                        $commands[] = [
+                            'name'        => $command_name,
+                            'status'      => 'error',
+                            'status_text' => __(':number commands were running at the same time. Commands have been restarted', ['number' => $running_commands]),
+                        ];
+                    } else {
+                        unset($pids[0]);
+                        $commands[] = [
+                            'name'        => $command_name,
+                            'status'      => 'error',
+                            'status_text' => __(':number commands are running at the same time. Please stop extra commands by executing the following console command:', ['number' => $running_commands]).' kill '.implode(' | kill ', $pids),
+                        ];
+                    }
                     continue;
                 }
             }
@@ -117,10 +119,16 @@ class SystemController extends Controller
                 $status = 'success';
             }
 
+            // If queue:work is not running, clear cache to let it start if something is wrong with the mutex
+            if ($command_name == 'queue:work' && !$last_successful_run && function_exists('shell_exec')) {
+                $status_texts[] = __('Cleared cache to force command to start.');
+                \Artisan::call('cache:clear');
+            }
+
             $commands[] = [
                 'name'        => $command_name,
                 'status'      => $status,
-                'status_text' => implode(' / ', $status_texts),
+                'status_text' => implode(' ', $status_texts),
             ];
         }
 
