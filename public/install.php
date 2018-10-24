@@ -116,6 +116,6 @@ if (!empty($app_key)) {
 	// When APP_KEY generated, redirect to /install
 	header("Location: /install");
 } else {
-	echo 'Please run the following commands in SSH console:<br/><code>php artisan key:generate</code><br/><code>php artisan freescout:cc</code>';
+	echo 'Please run the following commands in SSH console:<br/><code>php artisan key:generate</code><br/><code>php artisan freescout:clear-cache</code>';
 }
 exit();
