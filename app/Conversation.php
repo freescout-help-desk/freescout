@@ -414,11 +414,15 @@ class Conversation extends Model
      *
      * @return Conversation
      */
-    public function getNearby($mode = 'closest')
+    public function getNearby($mode = 'closest', $folder_id = null)
     {
         $conversation = null;
 
-        $folder = $this->folder;
+        if ($folder_id) {
+            $folder = Folder::find($folder_id);
+        } else {
+            $folder = $this->folder;
+        }
         $query = self::where('folder_id', $folder->id)
             ->where('id', '<>', $this->id);
         $order_bys = $folder->getOrderByArray();
@@ -475,9 +479,9 @@ class Conversation extends Model
     /**
      * Get URL of the next conversation.
      */
-    public function urlNext()
+    public function urlNext($folder_id = null)
     {
-        $next_conversation = $this->getNearby('next');
+        $next_conversation = $this->getNearby('next', $folder_id);
         if ($next_conversation) {
             $url = $next_conversation->url();
         } else {
@@ -490,9 +494,9 @@ class Conversation extends Model
     /**
      * Get URL of the previous conversation.
      */
-    public function urlPrev()
+    public function urlPrev($folder_id = null)
     {
-        $prev_conversation = $this->getNearby('prev');
+        $prev_conversation = $this->getNearby('prev', $folder_id);
         if ($prev_conversation) {
             $url = $prev_conversation->url();
         } else {

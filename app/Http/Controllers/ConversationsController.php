@@ -1098,7 +1098,7 @@ class ConversationsController extends Controller
                     $redirect_url = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
                     break;
                 case MailboxUser::AFTER_SEND_NEXT:
-                    $redirect_url = $conversation->urlNext();
+                    $redirect_url = $conversation->urlNext(Conversation::getFolderParam());
                     break;
             }
         } else {
