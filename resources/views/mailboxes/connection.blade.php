@@ -203,9 +203,10 @@
                             <div class="input-group input-sized">
                                 <input id="send_test" type="email" class="form-control" value="{{ old('email', \App\Option::get('send_test_to', $mailbox->email)) }}" maxlength="128" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>
                                 <span class="input-group-btn">
-                                    <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>{{ __('Send Test') }}</button>
+                                    <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>{{ __('Send Test') }}</button> 
                                 </span>
                             </div>
+                            <div class="form-help">{!! __("Make sure to save settings before testing.") !!}</div>
                         </div>
                     </div>
 

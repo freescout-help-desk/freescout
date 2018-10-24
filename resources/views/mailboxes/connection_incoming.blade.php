@@ -104,6 +104,8 @@
                             </select>
 
                             @include('partials/field_error', ['field'=>'in_encryption'])
+
+                            <div class="form-help">{!! __("Make sure to save settings before checkig connection.") !!}</div>
                         </div>
                     </div>
 
