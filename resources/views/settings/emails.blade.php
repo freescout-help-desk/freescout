@@ -94,7 +94,7 @@
     </div>
 
     <div class="form-group">
-        <label for="send_test" class="col-sm-2 control-label">{{ __('Test Email') }}</label>
+        <label for="send_test" class="col-sm-2 control-label">{{ __('Send Test To') }}</label>
 
         <div class="col-sm-6">
             <div class="input-group input-sized">
