@@ -197,11 +197,11 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="send_test" class="col-sm-2 control-label">{{ __('Test Email') }}</label>
+                        <label for="send_test" class="col-sm-2 control-label">{{ __('Send Test To') }}</label>
 
                         <div class="col-sm-6">
                             <div class="input-group input-sized">
-                                <input id="send_test" type="email" class="form-control" value="{{ old('email', \App\Option::get('send_test_to', $mailbox->email)) }}" maxlength="128" @if (!$mailbox->isInActive()) disabled="disabled" @endif>
+                                <input id="send_test" type="email" class="form-control" value="{{ old('email', \App\Option::get('send_test_to', $mailbox->email)) }}" maxlength="128" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>
                                 <span class="input-group-btn">
                                     <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>{{ __('Send Test') }}</button>
                                 </span>

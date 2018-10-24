@@ -25,6 +25,10 @@
                 <form class="form-horizontal" method="POST" action="">
                     {{ csrf_field() }}
 
+                    <div class="descr-block">
+                        {!! __("You can read more about fetching emails :%a_begin%here:%a_end%.", ['%a_begin%' => '<a href="https://github.com/freescout-helpdesk/freescout/wiki/Fetching-Emails" target="_blank">', '%a_end%' =>'</a>']) !!}
+                    </div>
+
                     <div class="form-group margin-top">
                         <label for="email" class="col-sm-2 control-label">{{ __('Fetch From') }}</label>
 

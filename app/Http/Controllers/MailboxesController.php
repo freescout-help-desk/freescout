@@ -300,14 +300,14 @@ class MailboxesController extends Controller
             if (Route::currentRouteName() != 'mailboxes.connection' && !$mailbox->isOutActive()) {
                 $flashes[] = [
                     'type'      => 'warning',
-                    'text'      => __('Sending emails need to be configured for the mailbox in order to send emails to customers and support agents').' (<a href="'.route('mailboxes.connection', ['id' => $mailbox->id]).'">'.__('Connection Settings » Sending Emails').'</a>)',
+                    'text'      => __('Sending emails need to be configured for the mailbox in order to send emails to customers and support agents').' ('.__('Connection Settings').' » <a href="'.route('mailboxes.connection', ['id' => $mailbox->id]).'">'.__('Sending Emails').'</a>)',
                     'unescaped' => true,
                 ];
             }
             if (Route::currentRouteName() != 'mailboxes.connection.incoming' && !$mailbox->isInActive()) {
                 $flashes[] = [
                     'type'      => 'warning',
-                    'text'      => __('Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address').' (<a href="'.route('mailboxes.connection.incoming', ['id' => $mailbox->id]).'">'.__('Connection Settings » Receiving Emails').'</a>)',
+                    'text'      => __('Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address').' ('.__('Connection Settings').' » <a href="'.route('mailboxes.connection.incoming', ['id' => $mailbox->id]).'">'.__('Receiving Emails').'</a>)',
                     'unescaped' => true,
                 ];
             }
