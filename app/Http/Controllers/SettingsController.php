@@ -168,7 +168,8 @@ class SettingsController extends Controller
         $request = request();
 
         foreach ($settings as $i => $option_name) {
-            if (isset($request->settings[$option_name])) {
+            // By some reason isset() does not work for empty elements
+            if (array_key_exists($option_name, $request->settings)) {
                 $option_value = $request->settings[$option_name];
                 Option::set($option_name, $option_value);
             } else {
