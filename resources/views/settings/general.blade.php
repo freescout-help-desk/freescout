@@ -22,7 +22,7 @@
     </div>
 
     <div class="form-group margin-top">
-        <label for="email" class="col-sm-2 control-label">{{ __('User Permissions') }} (todo)</label>
+        <label for="email" class="col-sm-2 control-label">{{ __('User Permissions') }}</label>
 
         <div class="col-sm-6">
             @foreach (App\User::$user_permissions as $permission_id)

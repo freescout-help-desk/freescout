@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title_full', __('Edit Mailbox'))
+@section('title_full', __('Edit Mailbox').' - '.$mailbox->name)
 
 @section('body_attrs')@parent data-mailbox_id="{{ $mailbox->id }}"@endsection
 
