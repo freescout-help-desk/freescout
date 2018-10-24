@@ -106,7 +106,7 @@ class SendReplyToCustomer implements ShouldQueue
             Mail::to([['name' => $this->customer->getFullName(), 'email' => $this->customer_email]])
                 ->cc($cc_array)
                 ->bcc($bcc_array)
-                ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers));
+                ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox));
         } catch (\Exception $e) {
             // We come here in case SMTP server unavailable for example
             activity()

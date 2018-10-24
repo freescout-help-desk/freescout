@@ -566,4 +566,25 @@ class Thread extends Model
             return $this->body;
         }
     }
+
+    /**
+     * Get name for the reply to customer.
+     * @param  [type] $mailbox [description]
+     * @return [type]          [description]
+     */
+    public function getFromName($mailbox = null)
+    {
+        if (empty($mailbox)) {
+            $mailbox = $this->conversation->mailbox;
+        }
+         // Mailbox name by default
+        $name = $mailbox->name;
+
+        if ($mailbox->from_name == Mailbox::FROM_NAME_CUSTOM && $mailbox->from_name_custom) {
+            $name = $mailbox->from_name_custom;
+        } elseif ($mailbox->from_name == Mailbox::FROM_NAME_USER && $this->getCreatedBy()) {
+            $name = $this->getCreatedBy()->getFirstName(true);
+        }
+        return $name;
+    }
 }

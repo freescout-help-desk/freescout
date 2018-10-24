@@ -34,15 +34,23 @@ class ReplyToCustomer extends Mailable
     public $headers = [];
 
     /**
+     * Mailbox.
+     *
+     * @var array
+     */
+    public $mailbox;
+
+    /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($conversation, $threads, $headers)
+    public function __construct($conversation, $threads, $headers, $mailbox)
     {
         $this->conversation = $conversation;
         $this->threads = $threads;
         $this->headers = $headers;
+        $this->mailbox = $mailbox;
     }
 
     /**

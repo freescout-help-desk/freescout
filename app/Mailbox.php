@@ -348,11 +348,12 @@ class Mailbox extends Model
      */
     public function getMailFrom($from_user = null)
     {
+        // Mailbox name by default
         $name = $this->name;
 
         if ($this->from_name == self::FROM_NAME_CUSTOM && $this->from_name_custom) {
             $name = $this->from_name_custom;
-        } elseif ($this->from_name == self::FROM_NAME_CUSTOM && $from_user) {
+        } elseif ($this->from_name == self::FROM_NAME_USER && $from_user) {
             $name = $from_user->getFullName();
         }
 
