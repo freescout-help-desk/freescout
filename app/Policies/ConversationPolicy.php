@@ -60,7 +60,7 @@ class ConversationPolicy
         if ($user->isAdmin()) {
             return true;
         } else {
-            return $user->hasPermission(User::USER_PERM_DELETE_CONVERSATIONS);
+            return $user->hasPermission(User::PERM_DELETE_CONVERSATIONS);
         }
     }
 }

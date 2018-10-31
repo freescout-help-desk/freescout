@@ -551,6 +551,9 @@ class ConversationsController extends Controller
                     if ($attachments_info['has_attachments']) {
                         $thread->has_attachments = true;
                     }
+                    if (!empty($request->saved_reply_id)) {
+                        $thread->saved_reply_id = $request->saved_reply_id;
+                    }
                     $thread->save();
 
                     // If thread has been created from draft, remove the draft

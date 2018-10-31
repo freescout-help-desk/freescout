@@ -1,11 +1,14 @@
 <div class="dropdown sidebar-title">
+    @php
+        $menu_mailboxes = auth()->user()->mailboxesCanView();
+    @endphp
     <span class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
-        {{ $mailbox->name }} @if (isset($mailboxes) && count($mailboxes))<span class="caret"></span>@endif
+        {{ $mailbox->name }} @if (count($menu_mailboxes))<span class="caret"></span>@endif
     </span>
-    @if (isset($mailboxes) && count($mailboxes))
+    @if (count($menu_mailboxes))
         <ul class="dropdown-menu">
-            @foreach ($mailboxes as $mailbox_item)
-                <li @if ($mailbox_item->id == $mailbox->id)class="active"@endif><a href="{{ route('mailboxes.update', ['id'=>$mailbox_item->id]) }}">{{ $mailbox_item->name }}</a></li>
+            @foreach ($menu_mailboxes as $mailbox_item)
+                <li @if ($mailbox_item->id == $mailbox->id)class="active"@endif><a href="{{ route(Route::currentRouteName(), ['id'=>$mailbox_item->id]) }}">{{ $mailbox_item->name }}</a></li>
             @endforeach
         </ul>
     @endif

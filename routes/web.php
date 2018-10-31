@@ -58,21 +58,21 @@ Route::get('/search', 'ConversationsController@search')->name('conversations.sea
 Route::get('/conversation/undo-reply/{thread_id}', 'ConversationsController@undoReply')->name('conversations.undo');
 
 // Mailboxes
-Route::get('/settings/mailboxes', ['uses' => 'MailboxesController@mailboxes', 'laroute' => true])->name('mailboxes');
-Route::get('/settings/mailbox-new', 'MailboxesController@create')->name('mailboxes.create');
-Route::post('/settings/mailbox-new', 'MailboxesController@createSave');
-Route::get('/settings/mailbox/{id}', 'MailboxesController@update')->name('mailboxes.update');
-Route::post('/settings/mailbox/{id}', 'MailboxesController@updateSave');
-Route::get('/settings/permissions/{id}', 'MailboxesController@permissions')->name('mailboxes.permissions');
-Route::post('/settings/permissions/{id}', 'MailboxesController@permissionsSave');
+Route::get('/mailboxes', ['uses' => 'MailboxesController@mailboxes', 'laroute' => true])->name('mailboxes');
+Route::get('/mailbox/new', 'MailboxesController@create')->name('mailboxes.create');
+Route::post('/mailbox/new', 'MailboxesController@createSave');
+Route::get('/mailbox/settings/{id}', 'MailboxesController@update')->name('mailboxes.update');
+Route::post('/mailbox/settings/{id}', 'MailboxesController@updateSave');
+Route::get('/mailbox/permissions/{id}', 'MailboxesController@permissions')->name('mailboxes.permissions');
+Route::post('/mailbox/permissions/{id}', 'MailboxesController@permissionsSave');
 Route::get('/mailbox/{id}', 'MailboxesController@view')->name('mailboxes.view');
 Route::get('/mailbox/{id}/{folder_id}', 'MailboxesController@view')->name('mailboxes.view.folder');
-Route::get('/settings/connection-settings/{id}/outgoing', 'MailboxesController@connectionOutgoing')->name('mailboxes.connection');
-Route::post('/settings/connection-settings/{id}/outgoing', 'MailboxesController@connectionOutgoingSave');
-Route::get('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncoming')->name('mailboxes.connection.incoming');
-Route::post('/settings/connection-settings/{id}/incoming', 'MailboxesController@connectionIncomingSave');
-Route::get('/settings/mailbox/{id}/auto-reply', 'MailboxesController@autoReply')->name('mailboxes.auto_reply');
-Route::post('/settings/mailbox/{id}/auto-reply', 'MailboxesController@autoReplySave');
+Route::get('/mailbox/connection-settings/{id}/outgoing', 'MailboxesController@connectionOutgoing')->name('mailboxes.connection');
+Route::post('/mailbox/connection-settings/{id}/outgoing', 'MailboxesController@connectionOutgoingSave');
+Route::get('/mailbox/connection-settings/{id}/incoming', 'MailboxesController@connectionIncoming')->name('mailboxes.connection.incoming');
+Route::post('/mailbox/connection-settings/{id}/incoming', 'MailboxesController@connectionIncomingSave');
+Route::get('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReply')->name('mailboxes.auto_reply');
+Route::post('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReplySave');
 Route::post('/mailbox/ajax', ['uses' => 'MailboxesController@ajax', 'laroute' => true])->name('mailboxes.ajax');
 
 // Customers
