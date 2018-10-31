@@ -103,6 +103,7 @@
                     <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…">{{ __('Send Test') }}</button>
                 </span>
             </div>
+            <div class="form-help">{!! __("Make sure to save settings before testing.") !!}</div>
         </div>
     </div>
 
