@@ -92,6 +92,18 @@ Mailbox connection settings page:
 
 ![Mailbox connection settings page](https://freescout-helpdesk.github.io/img/screenshots/mailbox-connection.png)
 
+Notifications:
+
+![Notifications](https://freescout-helpdesk.github.io/img/screenshots/notifications.png)
+
+Push notification:
+
+![Push notification](https://freescout-helpdesk.github.io/img/screenshots/push.png)
+
+Web installer:
+
+![Web installer](https://freescout-helpdesk.github.io/img/screenshots/installer.png)
+
 Login page:
 
 ![Login page](https://freescout-helpdesk.github.io/img/screenshots/freescout-login.png)
