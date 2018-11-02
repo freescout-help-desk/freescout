@@ -45,10 +45,6 @@ class CreateMailboxesTable extends Migration
             $table->text('auto_reply_message')->nullable();
             // todo
             $table->boolean('office_hours_enabled')->default(false);
-            // todo: permissions
-            // todo: custom fields
-            // todo: saved replies
-            // todo: workflows
             $table->boolean('ratings')->default(false);
             $table->unsignedTinyInteger('ratings_placement')->default(Mailbox::RATINGS_PLACEMENT_ABOVE);
             $table->text('ratings_text')->nullable();

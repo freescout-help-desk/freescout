@@ -641,4 +641,9 @@ class Helper
     {
         return 'Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')';
     }
+
+    public static function denyAccess()
+    {
+        abort(403, 'This action is unauthorized.');
+    }
 }

@@ -360,7 +360,7 @@ class UsersController extends Controller
 
                     if ($reset_result == Password::RESET_LINK_SENT) {
                         $response['status'] = 'success';
-                        $response['success_msg'] = __('Password reset email has been sent');
+                        $response['msg_success'] = __('Password reset email has been sent');
                     }
                 }
                 break;

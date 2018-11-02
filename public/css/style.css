@@ -886,6 +886,12 @@ a h4 {
     border-bottom: 1px solid #ddd;
     color: #394956;
 }
+.note-toolbar .note-btn-group .note-btn {
+    border-radius: 0;
+}
+.note-toolbar .note-btn-group.open .note-btn {
+    border-color: #e6e6e6;
+}
 @media (max-width:390px) {
     .note-bottom-div {
         display: none;
@@ -2817,11 +2823,11 @@ a.help-icon:hover {
     top: -2px;
     font-style: normal;
 }
-.accordion .panel-default > .panel-heading {
+.accordion > .panel-default > .panel-heading {
     background-color: #fff;
     padding: 0;
 }
-.accordion .panel-default > .panel-heading:hover {
+.accordion > .panel-default > .panel-heading:hover {
     background-color: #f1f3f5;
 }
 .accordion-status {

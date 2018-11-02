@@ -73,8 +73,7 @@ class ModuleInstall extends Command
             $this->call('module:migrate "'.$module->getName().'"');
             $this->createModulePublicSymlink($module);
         }
-        $this->call('cache:clear');
-        $this->call('queue:restart');
+        $this->call('freescout:clear-cache');
     }
 
     public function createModulePublicSymlink($module)
