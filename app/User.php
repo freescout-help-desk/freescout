@@ -640,4 +640,17 @@ class User extends Authenticatable
 
         return true;
     }
+
+    /**
+     * Get dummy user, for example, when real user has been deleted
+     */
+    public static function getDeletedUser()
+    {
+        $user = new User();
+        $user->first_name = 'DELETED';
+        $user->last_name = 'DELETED';
+        $user->email = 'deleted@example.org';
+
+        return $user;
+    }
 }
