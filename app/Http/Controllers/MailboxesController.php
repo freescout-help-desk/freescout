@@ -29,9 +29,9 @@ class MailboxesController extends Controller
      */
     public function mailboxes()
     {
-        $this->authorize('create', 'App\Mailbox');
-        
-        $mailboxes = Mailbox::all();
+        //$this->authorize('create', 'App\Mailbox');
+        //$mailboxes = Mailbox::all();
+        $mailboxes = auth()->user()->mailboxesCanView();
 
         return view('mailboxes/mailboxes', ['mailboxes' => $mailboxes]);
     }
@@ -88,11 +88,19 @@ class MailboxesController extends Controller
     public function update($id)
     {
         $mailbox = Mailbox::findOrFail($id);
-        $this->authorize('update', $mailbox);
+        //$this->authorize('update', $mailbox);
+        if (!auth()->user()->can('update', $mailbox)) {
+            $accessible_route = \Eventy::filter('mailbox.accessible_settings_route', '', auth()->user(), $mailbox);
+            if ($accessible_route) {
+                return redirect()->route($accessible_route, ['id' => $mailbox->id]);
+            } else {
+                \Helper::denyAccess();
+            }
+        }
 
-        $mailboxes = Mailbox::all()->except($id);
+        //$mailboxes = Mailbox::all()->except($id);
 
-        return view('mailboxes/update', ['mailbox' => $mailbox, 'mailboxes' => $mailboxes, 'flashes' => $this->mailboxActiveWarning($mailbox)]);
+        return view('mailboxes/update', ['mailbox' => $mailbox, 'flashes' => $this->mailboxActiveWarning($mailbox)]);
     }
 
     /**

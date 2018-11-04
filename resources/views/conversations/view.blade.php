@@ -98,6 +98,7 @@
                             {{ csrf_field() }}
                             <input type="hidden" name="conversation_id" value="{{ $conversation->id }}"/>
                             <input type="hidden" name="mailbox_id" value="{{ $mailbox->id }}"/>
+                            <input type="hidden" name="saved_reply_id" value=""/>
                             {{-- For drafts --}}
                             <input type="hidden" name="thread_id" value=""/>
                             <input type="hidden" name="is_note" value=""/>
@@ -136,7 +137,7 @@
                                 </div>
                             </div>
 
-                            @if (!empty($threads[0]) && $threads[0]->type == App\Thread::TYPE_NOTE && $threads[0]->created_by_user_id != Auth::user()->id)
+                            @if (!empty($threads[0]) && $threads[0]->type == App\Thread::TYPE_NOTE && $threads[0]->created_by_user_id != Auth::user()->id && $threads[0]->created_by_user)
                                 <div class="alert alert-warning alert-switch-to-note">
                                     <i class="glyphicon glyphicon-exclamation-sign"></i> 
                                     {!! __('This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.', ['%switch_start%' => '<a href="javascript:switchToNote();void(0);">', 'switch_end' => '</a>', 'user_name' => $threads[0]->created_by_user->getFullName() ]) !!}
@@ -158,6 +159,7 @@
                     </div>
                     <div class="clearfix"></div>
                     @include('conversations/editor_bottom_toolbar')
+                    @action('reply_form.after', $conversation)
                 </div>
             </div>
         </div>
@@ -315,7 +317,9 @@
                                             @if ($loop->last || (!$loop->last && ($thread->user_id != $threads[$loop->index+1]->user_id || $threads[$loop->index+1]->action_type == App\Thread::ACTION_TYPE_USER_CHANGED))
                                             )
                                                 @if ($thread->user_id)
-                                                    {{ $thread->user_cached->getFullName() }}@if (!empty($show_status)),@endif
+                                                    @if ($thread->user_cached)
+                                                        {{ $thread->user_cached->getFullName() }}@if (!empty($show_status)),@endif
+                                                    @endif
                                                 @else
                                                     {{ __("Anyone") }}@if (!empty($show_status)),@endif
                                                 @endif

@@ -194,6 +194,7 @@
                                 </div>
                             </div>
                         </div>
+                        <hr class="clearfix"/>
                     </div>
 
                     <div class="form-group">

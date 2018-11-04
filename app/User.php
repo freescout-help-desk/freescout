@@ -65,16 +65,16 @@ class User extends Authenticatable
     /**
      * Global user permissions.
      */
-    const USER_PERM_DELETE_CONVERSATIONS = 1;
-    const USER_PERM_EDIT_CONVERSATIONS = 2;
-    const USER_PERM_EDIT_SAVED_REPLIES = 3;
-    const USER_PERM_EDIT_TAGS = 4;
+    const PERM_DELETE_CONVERSATIONS = 1;
+    const PERM_EDIT_CONVERSATIONS = 2;
+    const PERM_EDIT_SAVED_REPLIES = 3;
+    const PERM_EDIT_TAGS = 4;
 
     public static $user_permissions = [
-        self::USER_PERM_DELETE_CONVERSATIONS,
-        self::USER_PERM_EDIT_CONVERSATIONS,
-        self::USER_PERM_EDIT_SAVED_REPLIES,
-        self::USER_PERM_EDIT_TAGS,
+        self::PERM_DELETE_CONVERSATIONS,
+        self::PERM_EDIT_CONVERSATIONS,
+        self::PERM_EDIT_SAVED_REPLIES,
+        self::PERM_EDIT_TAGS,
     ];
 
     const WEBSITE_NOTIFICATIONS_PAGE_SIZE = 25;
@@ -361,10 +361,10 @@ class User extends Authenticatable
     public static function getUserPermissionName($user_permission)
     {
         $user_permission_names = [
-            self::USER_PERM_DELETE_CONVERSATIONS => __('Users are allowed to delete notes/conversations'),
-            self::USER_PERM_EDIT_CONVERSATIONS => __('Users are allowed to edit notes/threads'),
-            self::USER_PERM_EDIT_SAVED_REPLIES => __('Users are allowed to edit/delete saved replies'),
-            self::USER_PERM_EDIT_TAGS => __('Users are allowed to manage tags'),
+            self::PERM_DELETE_CONVERSATIONS => __('Users are allowed to delete notes/conversations'),
+            self::PERM_EDIT_CONVERSATIONS => __('Users are allowed to edit notes/threads'),
+            self::PERM_EDIT_SAVED_REPLIES => __('Users are allowed to edit/delete saved replies'),
+            self::PERM_EDIT_TAGS => __('Users are allowed to manage tags'),
         ];
 
         if (!empty($user_permission_names[$user_permission])) {

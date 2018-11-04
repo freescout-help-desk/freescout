@@ -91,4 +91,20 @@ class UserPolicy
             return false;
         }
     }
+
+    /**
+     * Determine whether the user can view mailboxes menu.
+     *
+     * @param \App\User $user
+     *
+     * @return mixed
+     */
+    public function viewMailboxMenu(User $user)
+    {
+        if ($user->isAdmin() || \Eventy::filter('user.can_view_mailbox_menu', false, $user)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

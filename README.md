@@ -10,7 +10,7 @@
 
 </div>
 
-**FreeScout** is the super lightweight free open source help desk and shared inbox written in PHP7 (Laravel 5.5 framework) – self hosted clone of HelpScout. Now you can enjoy [free Zendesk & Help Scout](https://freescout.net) without giving up privacy or locking you into a service you don't control.
+**FreeScout** is the super lightweight free open source help desk and shared inbox written in PHP7 (Laravel 5.5 framework) – self hosted clone of HelpScout. Now you can enjoy [free Zendesk & Help Scout](https://freescout.net) without giving up privacy or locking yourself into a service you don't control.
 
 FreeScout has been developed from scratch and is not using any copyrighted Help Scout materials to comply with GitHub's [DMCA Policy](https://help.github.com/articles/dmca-takedown-policy/) (trademark, logos, icons, CSS, JS, HTML files are copyrighted; idea, look and feel cannot be copyrighted).
 
@@ -20,8 +20,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
    * [Features](#features)
    * [Requirements](#requirements)
    * [News & Updates](#news--updates)
-   * [Installation Guide](#installation-guide)
-   * [Development Guide](#development-guide)
+   * [Installation](#installation)
    * [Modules](#modules)
    * [Contributing](#contributing)
    * [Screenshots](#screenshots)
@@ -44,8 +43,6 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
 
 Need anything else? Suggest features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular)
 
-Eventually [FreeScout](https://freescout.net) will provide the same set of features as a HelpScout: help desk tools, email management and analytics.
-
 ## Requirements
 
 FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a shared hosting.
@@ -59,13 +56,11 @@ FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on 
 
 If you would like to be notified about new releases, news and updates you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
 
-## Installation Guide
+## Installation
 
 [Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
 
-## Development Guide
-
-[Development Guide](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide)
+[Docker Image](http://freescout.net/docker/)
 
 ## Modules
 
@@ -73,6 +68,7 @@ FreeScout [Modules](https://github.com/freescout-helpdesk/freescout/wiki/FreeSco
 
 ## Contributing
 
+* [Development Guide](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide)
 * [Todo list](https://github.com/freescout-helpdesk/freescout/projects/1)
 * [Translate](https://github.com/freescout-helpdesk/freescout/wiki/Translate)
 * [Support project by leaving a feedback](https://github.com/freescout-helpdesk/freescout/wiki#support-project)

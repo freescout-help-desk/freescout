@@ -473,6 +473,7 @@ class Thread extends Model
         $did_this = '';
 
         // Person
+        $person = '';
         if ($this->type == Thread::TYPE_CUSTOMER) {
             $person = $this->customer_cached->getFullName(true);
         } elseif ($this->state == Thread::STATE_DRAFT && !empty($this->edited_by_user_id)) {
@@ -482,7 +483,7 @@ class Thread extends Model
             } else {
                 $person = $this->edited_by_user->getFullName();
             }
-        } else {
+        } elseif ($this->created_by_user_cached) {
             if ($this->created_by_user_id && auth()->user() && $this->created_by_user_cached->id == auth()->user()->id) {
                 $person = __("you");
             } else {
