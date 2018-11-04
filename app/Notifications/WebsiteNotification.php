@@ -81,7 +81,9 @@ class WebsiteNotification extends Notification
         // Get last reply or note of the conversation to display it's text
         if ($threads) {
             $last_threads = Thread::whereIn('conversation_id', $threads->pluck('conversation_id')->unique()->toArray())
-                ->select(['id', 'conversation_id', 'body'])
+                // Select must contain all fields from orderBy() to avoid:
+                // General error: 3065 Expression #1 of ORDER BY clause is not in SELECT
+                ->select(['id', 'conversation_id', 'body', 'created_at'])
                 ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
                 ->distinct('conversation_id')
                 ->orderBy('created_at')

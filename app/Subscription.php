@@ -325,14 +325,14 @@ class Subscription extends Model
                     ->delay(now()->addSeconds(Conversation::UNDO_TIMOUT))
                     ->onQueue('emails');
             }
-            // - DB Notification
+            // - Menu notification (uses same medium as for email)
             foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
                 \Notification::send($notify_info['users'], new WebsiteNotification($notify_info['conversation'], $notify_info['threads'][0]));
             }
         }
 
         // Send broadcast notifications:
-        // - Real-time notification in the menu
+        // - Real-time menu notification (uses same medium as for email)
         // - Browser push notification
         $broadcasts = [];
         foreach ([self::MEDIUM_EMAIL, self::MEDIUM_BROWSER] as $medium) {
