@@ -84,6 +84,10 @@ Route::get('/customer/ajax-search', ['uses' => 'CustomersController@ajaxSearch',
 // Translate
 Route::post('/translations/send', ['uses' => 'TranslateController@postSend', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);
 
+// Modules
+// There is a /public/modules folder, so route must have a different name
+Route::get('/modules/list', ['uses' => 'ModulesController@modules', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('modules');
+
 // System
 Route::get('/system/status', ['uses' => 'SystemController@status', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system');
 Route::get('/system/tools', ['uses' => 'SystemController@tools', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system.tools');

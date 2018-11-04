@@ -21,7 +21,8 @@
         "tormjens/eventy": "0.5.4",
         "barryvdh/laravel-translation-manager": "v0.5.0",
         "chumper/zipper": "v1.0.2",
-        "rachidlaasri/laravel-installer": "4.0.2"
+        "rachidlaasri/laravel-installer": "4.0.2",
+        "kitetail/zttp": "v0.4.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v2.4.3",
