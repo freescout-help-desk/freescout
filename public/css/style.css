@@ -537,7 +537,6 @@ select[multiple].input-md {
     display: block;
     position: relative;
     margin: 0 18px 18px 0;
-    margin: 0 18px 18px 0;
     padding: 18px;
     width: 250px;
     height: 90px;
@@ -2578,6 +2577,59 @@ ul.prev-convs {
 .navbar-header .web-notifications > a:focus,
 .navbar-header .web-notifications > a:hover {
     color: #fff!important;
+}
+
+/**
+ * Modules
+ */
+.module-card {
+    background-color: #f1f3f5;
+    border: 1px solid #c1cbd4;
+    border-left: 4px solid #93a1af;
+    border-radius: 3px;
+    box-sizing: border-box;
+    display: block;
+    position: relative;
+    margin: 0 18px 18px 0;
+    padding: 18px;
+    float: left;
+    -webkit-box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
+    box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
+    width: 100%;
+}
+.module-card.active {
+    border-left: 4px solid #5cb85c;
+    background-color: #dfffdf;
+}
+.module-card img {
+    width: 128px;
+    height: 128px;
+    float: left;
+}
+.module-card h4 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-top: 2px;
+}
+.module-details {
+    color: #93a1af;
+}
+.module-wrap {
+    margin-left: 144px;
+}
+.module-actions {
+    margin-top: 13px;
+}
+@media (max-width:582px) {
+    .module-card img {
+        float: none;
+    }
+    .module-wrap {
+        margin-left: 0;
+    }
+    .module-card h4 {
+        margin-top: 10px;
+    }
 }
 
 /**

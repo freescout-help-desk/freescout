@@ -144,7 +144,7 @@ return [
     | FreeScout website
     |-------------------------------------------------------------------------
     */
-    'freescout_url' => 'https://github.com/freescout-helpdesk/freescout',
+    'freescout_url' => 'https://freescout.net',
 
     /*
     |--------------------------------------------------------------------------
@@ -165,7 +165,7 @@ return [
     | FreeScout email
     |-------------------------------------------------------------------------
     */
-    'freescout_email' => 'freescout.helpdesk@gmail.com',
+    'freescout_email' => 'support@freescout.net',
 
     /*
     |--------------------------------------------------------------------------

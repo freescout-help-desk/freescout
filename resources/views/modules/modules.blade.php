@@ -8,26 +8,28 @@
 @endsection
 
 @section('content')
+    @if (count($installed_modules))
+        <div class="section-heading" id="installed">
+            {{ __('Installed Modules') }}
+        </div>
 
-<div class="section-heading">
-    {{ __('Installed Modules') }}
-</div>
+        <div class="row-container margin-top">
+            @foreach ($installed_modules as $module)
+                @include('modules/partials/module_card')
+            @endforeach
+        </div>
+        <div class="clearfix"></div>
+    @endif
+    @if (count($modules_directory))
+        <div class="section-heading" id="directory">
+            {{ __('Modules Directory') }}
+        </div>
 
-<div class="row-container">
-
-    
-
-</div>
-
-@if (count($available))
-    <div class="section-heading">
-        {{ __('Available Modules') }}
-    </div>
-
-    <div class="row-container">
-        @foreach ($available as $module)
-            @include('modules/partials/module_card')
-        @endforeach
-    </div>
-@endif
+        <div class="row-container margin-top">
+            @foreach ($modules_directory as $module)
+                @include('modules/partials/module_card')
+            @endforeach
+        </div>
+        <div class="clearfix"></div>
+    @endif
 @endsection

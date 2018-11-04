@@ -2,6 +2,10 @@
     {{ __('Modules') }}
 </div>
 <ul class="sidebar-menu">
-    <li><a href="#installed_modules"><i class="glyphicon glyphicon-list-alt"></i> {{ __('Installed') }}</a></li>
-    <li><a href="#available_modules"><i class="glyphicon glyphicon-list-alt"></i> {{ __('Available') }}</a></li>
+	@if (count($installed_modules))
+    	<li><a href="#installed"><i class="glyphicon glyphicon-saved"></i> {{ __('Installed Modules') }}</a></li>
+    @endif
+    @if (count($modules_directory))
+    	<li><a href="#directory"><i class="glyphicon glyphicon-briefcase"></i> {{ __('Modules Directory') }}</a></li>
+    @endif
 </ul>

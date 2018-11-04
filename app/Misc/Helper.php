@@ -646,4 +646,14 @@ class Helper
     {
         abort(403, 'This action is unauthorized.');
     }
+
+    /**
+     * Check if application version
+     * @param  [type] $ver [description]
+     * @return [type]      [description]
+     */
+    public static function checkAppVersion($version2, $operator = '>=')
+    {
+        return version_compare(\Config::get('app.version'), $version2, $operator);
+    }
 }
