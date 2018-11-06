@@ -2592,10 +2592,8 @@ ul.prev-convs {
     position: relative;
     margin: 0 18px 18px 0;
     padding: 18px;
-    float: left;
     -webkit-box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
     box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
-    width: 100%;
 }
 .module-card.active {
     border-left: 4px solid #5cb85c;
@@ -2620,15 +2618,22 @@ ul.prev-convs {
 .module-actions {
     margin-top: 13px;
 }
+.module-actions .input-group {
+    max-width: 378px;
+}
 @media (max-width:582px) {
     .module-card img {
         float: none;
+        width: 128px;
+        margin: 0 auto;
+        display: block;
     }
     .module-wrap {
         margin-left: 0;
     }
     .module-card h4 {
         margin-top: 10px;
+        text-align: center;
     }
 }
 
@@ -2672,6 +2677,9 @@ ul.prev-convs {
 }
 .margin-top-0 {
     margin-top: 0 !important;
+}
+.padding-0 {
+    padding: 0 !important;
 }
 .padding-top-0 {
     padding-top: 0 !important;

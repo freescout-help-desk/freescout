@@ -11,6 +11,8 @@ class Module extends Model
 {
     const IMG_DEFAULT = '/img/default-module.png';
 
+    public $timestamps = false;
+
     /**
      * Modules list cached in memory.
      */
@@ -51,6 +53,42 @@ class Module extends Model
         } else {
             return true;
         }
+    }
+
+    /**
+     * Activate module license.
+     * @param  [type]  $alias       [description]
+     * @param  [type]  $details_url [description]
+     * @return boolean              [description]
+     */
+    public static function activateLicense($alias, $license)
+    {
+        $module = self::getByAlias($alias);
+        if (!$module) {
+            $module = new Module();
+            $module->alias = $alias;
+        }
+        $module->license = $license;
+        $module->activated = true;
+        $module->save();
+    }
+
+    /**
+     * Get module license.
+     */
+    public static function getLicense($alias)
+    {
+        $module = self::getByAlias($alias);
+        if ($module) {
+            return $module->license;
+        } else {
+            return '';
+        }
+    }
+
+    public static function normalizeAlias($alias)
+    {
+        return trim(strtolower($alias));
     }
 
     public static function getByAlias($alias)

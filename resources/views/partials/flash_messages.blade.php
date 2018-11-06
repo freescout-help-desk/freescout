@@ -16,6 +16,12 @@
         {{ session('flash_error') }}
     </div>
 @endif
+@if (session('flash_error_unescaped'))
+    <div class="alert alert-danger">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        {!! session('flash_error_unescaped') !!}
+    </div>
+@endif
 
 {{-- Floating flash messages are displayed in layout --}}
 

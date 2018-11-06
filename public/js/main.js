@@ -2454,3 +2454,32 @@ function initAccordionHeading()
 	    $(e.target).parent().children('.panel-heading:first').css('background-color', '');
 	});
 }
+
+function initModulesList()
+{
+
+}
+
+function installModule(alias)
+{
+	var button = $('#module-'+alias).children().find('.install-trigger:first');
+	button.button('loading');
+	fsAjax(
+		{
+			action: button.attr('data-action'),
+			alias: alias,
+			license: $('#module-'+alias).children().find('.license-key:first').val()
+		}, 
+		laroute.route('modules.ajax'),
+		function(response) {
+			if ((typeof(response.status) != "undefined" && response.status == "success") ||
+				(typeof(response.reload) != "undefined" && response.reload))
+			{
+				window.location.href = '';
+			} else {
+				showAjaxError(response);
+				button.button('reset');
+			}
+		}, true
+	);
+}

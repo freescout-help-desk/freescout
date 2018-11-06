@@ -11,8 +11,9 @@ class WpApi
     const METHOD_GET = 'get';
     const METHOD_POST = 'post';
 
-    const ACTION_CHECK_LICENSE = 'check_license';
+    const ACTION_CHECK_LICENSE    = 'check_license';
     const ACTION_ACTIVATE_LICENSE = 'activate_license';
+    const ACTION_GET_VERSION      = 'get_version';
 
     public static $lastError;
 
@@ -39,7 +40,7 @@ class WpApi
         }
 
         // https://guzzle3.readthedocs.io/http-client/response.html
-        if ($response->getStatusCode() == 200) {
+        if ($response->status() < 500) {
             $json = $response->json();
             if (!empty($json['code']) && !empty($json['message']) && 
                 !empty($json['data']) && !empty($json['data']['status']) && $json['data']['status'] != 200
@@ -69,7 +70,14 @@ class WpApi
     public static function checkLicense($params)
     {
         $params['action'] = self::ACTION_CHECK_LICENSE;
-        return self::post(self::METHOD_GET, self::ENDPOINT_MODULES, $params);
+
+        $endpoint = self::ENDPOINT_MODULES;
+
+        if (!empty($params['module_alias'])) {
+            $endpoint .= '/'.$params['module_alias'];
+        }
+
+        return self::request(self::METHOD_POST, $endpoint, $params);
     }
 
     /**
@@ -78,6 +86,29 @@ class WpApi
     public static function activateLicense($params)
     {
         $params['action'] = self::ACTION_ACTIVATE_LICENSE;
-        return self::post(self::METHOD_GET, self::ENDPOINT_MODULES, $params);
+
+        $endpoint = self::ENDPOINT_MODULES;
+
+        if (!empty($params['module_alias'])) {
+            $endpoint .= '/'.$params['module_alias'];
+        }
+
+        return self::request(self::METHOD_POST, $endpoint, $params);
+    }
+
+    /**
+     * Get license details.
+     */
+    public static function getVersion($params)
+    {
+        $params['action'] = self::ACTION_GET_VERSION;
+
+        $endpoint = self::ENDPOINT_MODULES;
+
+        if (!empty($params['module_alias'])) {
+            $endpoint .= '/'.$params['module_alias'];
+        }
+
+        return self::request(self::METHOD_POST, $endpoint, $params);
     }
 }

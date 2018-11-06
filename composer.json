@@ -43,7 +43,8 @@
             "Webklex\\IMAP\\": "overrides/Webklex/IMAP/",
             "RachidLaasri\\LaravelInstaller\\Helpers\\": "overrides/RachidLaasri/LaravelInstaller/Helpers/",
             "RachidLaasri\\LaravelInstaller\\Middleware\\": "overrides/RachidLaasri/LaravelInstaller/Middleware/",
-            "RachidLaasri\\LaravelInstaller\\Controllers\\": "overrides/RachidLaasri/LaravelInstaller/Controllers/"
+            "RachidLaasri\\LaravelInstaller\\Controllers\\": "overrides/RachidLaasri/LaravelInstaller/Controllers/",
+            "Nwidart\\Modules\\": "overrides/Nwidart/Modules/"
         },
         "exclude-from-classmap": [
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
@@ -55,7 +56,8 @@
             "vendor/rachidlaasri/laravel-installer/src/Helpers/DatabaseManager.php",
             "vendor/rachidlaasri/laravel-installer/src/Middleware/canInstall.php",
             "vendor/rachidlaasri/laravel-installer/src/Controllers/EnvironmentController.php",
-            "vendor/rachidlaasri/laravel-installer/src/Controllers/FinalController.php"
+            "vendor/rachidlaasri/laravel-installer/src/Controllers/FinalController.php",
+            "vendor/nwidart/laravel-modules/src/Module.php"
         ]
     },
     "autoload-dev": {

@@ -17,6 +17,9 @@ class CreateModulesTable extends Migration
             $table->increments('id');
             $table->string('alias', 191)->unique();
             $table->boolean('active')->default(false);
+            // Module license is activated
+            $table->boolean('activated')->default(false);
+            $table->string('license', 32)->nullable();
         });
     }
 

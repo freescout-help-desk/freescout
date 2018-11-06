@@ -36,7 +36,7 @@
         "name": "conversations.ajax_html"
     },
     {
-        "uri": "settings\/mailboxes",
+        "uri": "mailboxes",
         "name": "mailboxes"
     },
     {
@@ -46,6 +46,10 @@
     {
         "uri": "customer\/ajax-search",
         "name": "customers.ajax_search"
+    },
+    {
+        "uri": "modules\/ajax",
+        "name": "modules.ajax"
     }
 ],
             prefix: '',
