@@ -29,6 +29,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Module functions
         $this->registerModuleFunctions();
+
+        // Process module registration error - disable module and show error to admin
+        \Eventy::addAction('modules.register_error', function($module, $exception) {
+            
+        });
     }
 
     /**

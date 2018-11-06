@@ -161,7 +161,8 @@ return [
         // Modules 'active' flag is stored in DB in modules, so we have to cache modules info
         'enabled' => true,
         'key' => 'laravel-modules',
-        'lifetime' => 3600,
+        // Minues
+        'lifetime' => 60,
     ],
     /*
     |--------------------------------------------------------------------------

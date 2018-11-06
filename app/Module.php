@@ -36,6 +36,20 @@ class Module extends Model
         }
     }
 
+    public static function setActive($alias, $active, $save = true)
+    {
+        $module = self::getByAlias($alias);
+        if ($module) {
+            $module->active = $active;
+            if ($save) {
+                $module->save();
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Is module license activated.
      */

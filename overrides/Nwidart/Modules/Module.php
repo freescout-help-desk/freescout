@@ -211,7 +211,26 @@ abstract class Module extends ServiceProvider
         }
 
         return array_get($this->moduleJson, $file, function () use ($file) {
-            return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->app['files']);
+            // In this Laravel-Modules package caching is not working, so we need to implement it.
+            // https://github.com/nWidart/laravel-modules/issues/659
+            
+            // Cache stores module.json files as arrays
+            $cachedManifestsArray = $this->app['cache']->get($this->app['config']->get('modules.cache.key'));
+
+            if ($cachedManifestsArray && count($cachedManifestsArray)) {
+                foreach ($cachedManifestsArray as $manifest) {
+                    // We found manifest data in cache
+                    if (!empty($manifest['name']) && $manifest['name'] == $this->getName()) {
+                        return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->app['files'], $manifest);
+                    }
+                }
+            }
+
+            // We have to set `active` flag from DB modules table.
+            $json = new Json($this->getPath() . '/' . $file, $this->app['files']);
+            $json->set('active', (int)\App\Module::isActive($json->get('alias')));
+            return $this->moduleJson[$file] = $json;
+            //return $this->moduleJson[$file] = new Json($this->getPath() . '/' . $file, $this->app['files']);
         });
     }
 
@@ -251,7 +270,7 @@ abstract class Module extends ServiceProvider
         try {
             $this->registerProviders();
         } catch (\Exception $e) {
-            \Eventy::action('modules.not_found', $this, $e);
+            \Eventy::action('modules.register_error', $this, $e);
         }
 
         if ($this->isLoadFilesOnBoot() === false) {
@@ -316,6 +335,10 @@ abstract class Module extends ServiceProvider
      */
     public function isStatus($status) : bool
     {
+        // echo "<pre>";
+        // print_r($this->json());
+        
+        //return (int)\App\Module::isActive($this->getAlias()) == $status;
         return $this->get('active', 0) === $status;
     }
 
@@ -326,8 +349,7 @@ abstract class Module extends ServiceProvider
      */
     public function enabled() : bool
     {
-        return \App\Module::isActive($this->getAlias());
-        //return $this->isStatus(1);
+        return $this->isStatus(1);
     }
 
     /**
@@ -338,8 +360,7 @@ abstract class Module extends ServiceProvider
      */
     public function active()
     {
-        return \App\Module::isActive($this->getAlias());
-        //return $this->isStatus(1);
+        return $this->isStatus(1);
     }
 
     /**
@@ -372,7 +393,8 @@ abstract class Module extends ServiceProvider
      */
     public function setActive($active)
     {
-        return $this->json()->set('active', $active)->save();
+        \App\Module::setActive($this->getAlias(), $active);
+        //return $this->json()->set('active', $active)->save();
     }
 
     /**

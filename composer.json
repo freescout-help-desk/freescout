@@ -57,7 +57,9 @@
             "vendor/rachidlaasri/laravel-installer/src/Middleware/canInstall.php",
             "vendor/rachidlaasri/laravel-installer/src/Controllers/EnvironmentController.php",
             "vendor/rachidlaasri/laravel-installer/src/Controllers/FinalController.php",
-            "vendor/nwidart/laravel-modules/src/Module.php"
+            "vendor/nwidart/laravel-modules/src/Module.php",
+            "vendor/nwidart/laravel-modules/src/Repository.php",
+            "vendor/nwidart/laravel-modules/src/Json.php"
         ]
     },
     "autoload-dev": {
