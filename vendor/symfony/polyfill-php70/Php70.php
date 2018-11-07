@@ -53,7 +53,7 @@ final class Php70
     {
         static $handler;
         if (!$handler) {
-             $handler = function() { return false; };
+            $handler = function () { return false; };
         }
         set_error_handler($handler);
         @trigger_error('');
@@ -66,7 +66,7 @@ final class Php70
             return $value;
         }
         if (!\is_numeric($value) || PHP_INT_MAX <= ($value += 0) || ~PHP_INT_MAX >= $value) {
-            throw new \TypeError(sprintf('%s() expects parameter %d to be integer, %s given', $caller, $pos, gettype($value)));
+            throw new \TypeError(sprintf('%s() expects parameter %d to be integer, %s given', $caller, $pos, \gettype($value)));
         }
 
         return (int) $value;
