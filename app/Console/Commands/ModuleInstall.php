@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * php artisan freescout:module-install modulealias
+ */
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -40,6 +42,9 @@ class ModuleInstall extends Command
         $install_all = false;
         $modules = [];
 
+        // We have to clear modules cache first to update modules cache
+        $this->call('cache:clear');
+
         // Create a symlink for the module (or all modules)
         $module_alias = $this->argument('module_alias');
         if (!$module_alias) {
@@ -60,8 +65,9 @@ class ModuleInstall extends Command
         }
 
         if ($install_all) {
-            $this->call('module:migrate');
             foreach ($modules as $module) {
+                $this->line('Module: '.$module->getName());
+                $this->call('module:migrate', ['module' => $module->getName()]);
                 $this->createModulePublicSymlink($module);
             }
         } else {
@@ -70,9 +76,10 @@ class ModuleInstall extends Command
                 $this->error('Module with the specified alias not found: '.$module_alias);
                 return;
             }
-            $this->call('module:migrate "'.$module->getName().'"');
+            $this->call('module:migrate', ['module' => $module->getName()]);
             $this->createModulePublicSymlink($module);
         }
+        $this->line('Clearing cache...');
         $this->call('freescout:clear-cache');
     }
 

@@ -138,6 +138,7 @@ class SecureController extends Controller
         }
 
         array_unshift($names, ActivityLog::NAME_OUT_EMAILS);
+        array_push($names, ActivityLog::NAME_APP_LOGS);
 
         if (!in_array($name, $names)) {
             $names[] = $name;

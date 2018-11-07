@@ -21,3 +21,23 @@
         </div>
     @endsection
 @endif
+
+@if (!empty(session('flashes_floating')) && is_array(session('flashes_floating')))
+    @foreach (session('flashes_floating') as $flash)
+        @if (!empty($flash['text']) && (empty($flash['role']) || \App\User::checkRole($flash['role'])))
+            <div class="alert alert-{{ $flash['type'] }} alert-floating alert-noautohide">
+                <div>
+                    @if (!empty($flash['unescaped']))
+                        {!! $flash['text'] !!}
+                    @else
+                        {{ $flash['text'] }}
+                    @endif
+                </div>
+            </div>
+        @endif
+    @endforeach
+    {{-- Flashes set in service provider may not be removed --}}
+    @php
+        Session::forget('flashes_floating');
+    @endphp
+@endif

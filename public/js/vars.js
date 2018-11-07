@@ -49,7 +49,8 @@ var LangMessages = {
             "confirm_delete_user": "Deleting this User will deactivate workflows they are tied to and unassign their conversations. If you are sure, type :delete and click the red button.",
             "type_delete": "Type :delete",
 
-            "drag_image_file": "Drag image or file here"
+            "drag_image_file": "Drag image or file here",
+            "confirm_delete_module": "Delete this module?"
         }    };
 
 (function () {

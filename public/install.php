@@ -88,7 +88,11 @@ if (empty($app_key)) {
 		copy($root_dir.'.env.example', $root_dir.'.env');
 
 		if (!file_exists($root_dir.'.env')) {
-			echo 'Please copy <code>.env.example</code> file to <code>.env</code> and reload this page.';
+			//echo 'Please copy <code>.env.example</code> file to <code>.env</code> and reload this page.';
+			$root_dir_no_slash = realpath(__DIR__.'/..');
+			echo 'Web installer will need to create <code>.env</code> file in the root folder of your application. Please run the following commands in SSH console to allow the web server to write to the root folder:<br/><br/>
+<code>sudo chgrp '.get_current_user().' '.$root_dir_no_slash.'<br/>
+sudo chmod ug+rwx '.$root_dir_no_slash.'</code>';
 			exit();
 		}
 	}
@@ -98,7 +102,7 @@ if (empty($app_key)) {
 	if (!preg_match("/^APP_KEY=/m", file_get_contents($root_dir.'.env'))) {
 		$append_result = file_put_contents($root_dir.'.env', PHP_EOL.'APP_KEY=', FILE_APPEND);
 		if (!$append_result) {
-			echo 'Could not write APP_KEY to .env file.';
+			echo 'Could not write APP_KEY to .env file. Please run the following commands in SSH console:<br/><code>php artisan key:generate</code><br/><code>php artisan freescout:clear-cache</code>';
 			exit();
 		}
 	}

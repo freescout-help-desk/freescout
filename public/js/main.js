@@ -527,15 +527,16 @@ function fsFloatingAlertsInit()
 		}
 		$(el).css('display', 'flex');
 
-
-		var close_after = 7000;
-		if (!$(el).hasClass('alert-danger')) {
-			// This has to be less than Conversation::UNDO_TIMOUT
-			close_after = 10000;
+		if (!$(el).hasClass('alert-noautohide')) {
+			var close_after = 7000;
+			if (!$(el).hasClass('alert-danger')) {
+				// This has to be less than Conversation::UNDO_TIMOUT
+				close_after = 10000;
+			}
+			setTimeout(function(){
+			    el.remove(); 
+			}, close_after);
 		}
-		setTimeout(function(){
-		    el.remove(); 
-		}, close_after);
 	});
 
 	if (alerts.length) {
@@ -2453,4 +2454,103 @@ function initAccordionHeading()
 	    // change heading background when hide
 	    $(e.target).parent().children('.panel-heading:first').css('background-color', '');
 	});
+}
+
+function initModulesList()
+{
+	$(document).ready(function(){
+		$('.activate-trigger').click(function(e) {
+			var button = $(this);
+			button.button('loading');
+			var alias = button.parents('.module-card:first').attr('data-alias');
+			fsAjax(
+				{
+					action: 'activate',
+					alias: alias
+				}, 
+				laroute.route('modules.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == "success") {
+						window.location.href = '';
+					} else {
+						showAjaxError(response);
+						button.button('reset');
+					}
+				}, true
+			);
+		});
+		$('.deactivate-trigger').click(function(e) {
+			var button = $(this);
+			button.button('loading');
+			var alias = button.parents('.module-card:first').attr('data-alias');
+			fsAjax(
+				{
+					action: 'deactivate',
+					alias: alias
+				}, 
+				laroute.route('modules.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == "success") {
+						window.location.href = '';
+					} else {
+						showAjaxError(response);
+						button.button('reset');
+					}
+				}, true
+			);
+		});
+		$('.delete-module-trigger').click(function(e) {
+			var button = $(this);
+			showModalConfirm(Lang.get("messages.confirm_delete_module"), 'confirm-delete-module', {
+				on_show: function(modal) {
+					modal.children().find('.confirm-delete-module:first').click(function(e) {
+						button.button('loading');
+						modal.modal('hide');
+						var alias = button.parents('.module-card:first').attr('data-alias');
+						fsAjax(
+							{
+								action: 'delete',
+								alias: alias
+							}, 
+							laroute.route('modules.ajax'),
+							function(response) {
+								if (typeof(response.status) != "undefined" && response.status == "success") {
+									window.location.href = '';
+								} else {
+									showAjaxError(response);
+									button.button('reset');
+								}
+							}, true
+						);
+					});
+				}
+			}, Lang.get("messages.delete"));
+
+			e.preventDefault();
+		});
+	});
+}
+
+function installModule(alias)
+{
+	var button = $('#module-'+alias).children().find('.install-trigger:first');
+	button.button('loading');
+	fsAjax(
+		{
+			action: button.attr('data-action'),
+			alias: alias,
+			license: $('#module-'+alias).children().find('.license-key:first').val()
+		}, 
+		laroute.route('modules.ajax'),
+		function(response) {
+			if ((typeof(response.status) != "undefined" && response.status == "success") ||
+				(typeof(response.reload) != "undefined" && response.reload))
+			{
+				window.location.href = '';
+			} else {
+				showAjaxError(response);
+				button.button('reset');
+			}
+		}, true
+	);
 }

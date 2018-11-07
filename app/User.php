@@ -640,4 +640,30 @@ class User extends Authenticatable
 
         return true;
     }
+
+    /**
+     * Check if current user's role is higher than passed.
+     */
+    public static function checkRole($role)
+    {
+        $user = auth()->user();
+        if ($user) {
+            return ($user->role >= $role);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get dummy user, for example, when real user has been deleted
+     */
+    public static function getDeletedUser()
+    {
+        $user = new User();
+        $user->first_name = 'DELETED';
+        $user->last_name = 'DELETED';
+        $user->email = 'deleted@example.org';
+
+        return $user;
+    }
 }

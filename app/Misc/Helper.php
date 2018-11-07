@@ -646,4 +646,34 @@ class Helper
     {
         abort(403, 'This action is unauthorized.');
     }
+
+    /**
+     * Check if application version
+     * @param  [type] $ver [description]
+     * @return [type]      [description]
+     */
+    public static function checkAppVersion($version2, $operator = '>=')
+    {
+        return version_compare(\Config::get('app.version'), $version2, $operator);
+    }
+
+    /**
+     * Download remote file and save as file.
+     */
+    public static function downloadRemoteFile($url, $destinationFilePath)
+    {
+        $client = new \GuzzleHttp\Client();
+        $client->request('GET', $url, [
+            'sink' => $destinationFilePath,
+        ]);
+    }
+
+    /**
+     * Extract ZIP archive.
+     * to: must be apsolute path, otherwise extracted into /public/$to
+     */
+    public static function unzip($archive, $to)
+    {
+        \Chumper\Zipper\Facades\Zipper::make($archive)->extractTo($to);
+    }
 }

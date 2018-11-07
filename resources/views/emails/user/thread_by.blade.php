@@ -1,1 +1,1 @@
-@if ($thread->created_by_user_id == $user->id){{ __("you") }}@else{{ $thread->created_by_user->getFullName(true) }}@endif
+@if ($thread->created_by_user_id == $user->id){{ __("you") }}@elseif ($thread->created_by_user){{ $thread->created_by_user->getFullName(true) }}@endif

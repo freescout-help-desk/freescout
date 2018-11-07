@@ -438,7 +438,12 @@ class Thread extends Model
     public function getCreatedBy()
     {
         if (!empty($this->created_by_user_id)) {
-            return $this->created_by_user;
+            // User can be deleted
+            if ($this->created_by_user) {
+                return $this->created_by_user;
+            } else {
+                return \App\User::getDeletedUser();
+            }
         } else {
             return $this->created_by_customer;
         }

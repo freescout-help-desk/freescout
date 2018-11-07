@@ -135,16 +135,23 @@ return [
     |
     */
 
-    'log' => env('APP_LOG', 'single'),
+    'log' => env('APP_LOG', 'daily'), // by default logs for 5 days are kept
 
-    'log_level' => env('APP_LOG_LEVEL', 'debug'),
+    'log_level' => env('APP_LOG_LEVEL', 'error'),
 
     /*
     |--------------------------------------------------------------------------
     | FreeScout website
     |-------------------------------------------------------------------------
     */
-    'freescout_url' => 'https://github.com/freescout-helpdesk/freescout',
+    'freescout_url' => 'https://freescout.net',
+
+    /*
+    |--------------------------------------------------------------------------
+    | FreeScout API
+    |-------------------------------------------------------------------------
+    */
+    'freescout_api' => 'https://freescout.net/wp-json/',
 
     /*
     |--------------------------------------------------------------------------
@@ -158,7 +165,7 @@ return [
     | FreeScout email
     |-------------------------------------------------------------------------
     */
-    'freescout_email' => 'freescout.helpdesk@gmail.com',
+    'freescout_email' => 'support@freescout.net',
 
     /*
     |--------------------------------------------------------------------------

@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@if ($__env->yieldContent('title_full')) @yield('title_full') @elseif ($__env->yieldContent('title')) @yield('title') - {{ config('app.name', 'FreeScout') }} @else {{ config('app.name', 'FreeScout') }} @endif</title>
+    <title>@if ($__env->yieldContent('title_full'))@yield('title_full') @elseif ($__env->yieldContent('title'))@yield('title') - {{ config('app.name', 'FreeScout') }} @else{{ config('app.name', 'FreeScout') }}@endif</title>
     
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     {{--<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -111,7 +111,7 @@
                                     @if (Auth::user()->isAdmin())
                                         {{--<li><a href="#">{{ __('Teams') }} (todo)</a></li>--}}
                                         <li class="{{ \App\Misc\Helper::menuSelectedHtml('users') }}"><a href="{{ route('users') }}">{{ __('Users') }}</a></li>
-                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('plugins') }}"><a href="#">{{ __('Modules') }} (todo)</a></li>
+                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('modules') }}"><a href="{{ route('modules') }}">{{ __('Modules') }}</a></li>
                                         <li class=""><a href="/translations">{{ __('Translate') }}</a></li>
                                         <li class="{{ \App\Misc\Helper::menuSelectedHtml('logs') }}"><a href="{{ route('logs') }}">{{ __('Logs') }}</a></li>
                                         <li class="{{ \App\Misc\Helper::menuSelectedHtml('system') }}"><a href="{{ route('system') }}">{{ __('System') }}</a></li>
