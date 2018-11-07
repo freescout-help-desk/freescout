@@ -2501,23 +2501,31 @@ function initModulesList()
 		});
 		$('.delete-module-trigger').click(function(e) {
 			var button = $(this);
-			button.button('loading');
-			var alias = button.parents('.module-card:first').attr('data-alias');
-			fsAjax(
-				{
-					action: 'delete',
-					alias: alias
-				}, 
-				laroute.route('modules.ajax'),
-				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
-						window.location.href = '';
-					} else {
-						showAjaxError(response);
-						button.button('reset');
-					}
-				}, true
-			);
+			showModalConfirm(Lang.get("messages.confirm_delete_module"), 'confirm-delete-module', {
+				on_show: function(modal) {
+					modal.children().find('.confirm-delete-module:first').click(function(e) {
+						button.button('loading');
+						modal.modal('hide');
+						var alias = button.parents('.module-card:first').attr('data-alias');
+						fsAjax(
+							{
+								action: 'delete',
+								alias: alias
+							}, 
+							laroute.route('modules.ajax'),
+							function(response) {
+								if (typeof(response.status) != "undefined" && response.status == "success") {
+									window.location.href = '';
+								} else {
+									showAjaxError(response);
+									button.button('reset');
+								}
+							}, true
+						);
+					});
+				}
+			}, Lang.get("messages.delete"));
+
 			e.preventDefault();
 		});
 	});

@@ -83,6 +83,14 @@ class Module extends Model
         $module->save();
     }
 
+    public static function deactivateLicense($alias, $license)
+    {
+        $module = self::getByAliasOrCreate($alias);
+        $module->license = $license;
+        $module->activated = false;
+        $module->save();
+    }
+
     public static function getByAliasOrCreate($alias)
     {
         $module = self::getByAlias($alias);

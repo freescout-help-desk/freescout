@@ -34,7 +34,7 @@
 				@else
 					<form action="javascript:installModule('{{ $module['alias'] }}');">
 					<div class="input-group">
-						<input type="text" class="form-control license-key" placeholder="{{ __('License Key') }}" required="required">
+						<input type="text" class="form-control license-key" placeholder="{{ __('License Key') }}" value="{{ App\Module::getLicense($module['alias']) }}" required="required">
 						<span class="input-group-btn">
 							<button class="btn btn-primary install-trigger" type="submit" @if (!empty($module['installed']))data-action="{{ 'activate_license' }}" data-loading-text="{{ __('Activating license') }}…" @else data-action="{{ 'install' }}" data-loading-text="{{ __('Installing') }}…" @endif >@if (!empty($module['installed'])){{ __('Activate License') }}@else{{ __('Install Module') }}@endif</button>
 						</span>

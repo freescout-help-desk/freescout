@@ -152,29 +152,34 @@ class ModulesController extends Controller
                                     $response['msg'] = $license_details['message'];
                                 } elseif (!empty($license_details['download_link'])) {
                                     // Download module
-                                    $module_file_path = \Module::getPath().DIRECTORY_SEPARATOR.$alias.'.zip';
+                                    $module_archive = \Module::getPath().DIRECTORY_SEPARATOR.$alias.'.zip';
                                     try {
-                                        \Helper::downloadRemoteFile($license_details['download_link'], $module_file_path);
+                                        \Helper::downloadRemoteFile($license_details['download_link'], $module_archive);
                                     } catch(\Exception $e) {
                                         $response['msg'] = $e->getMessage();
                                     }
 
                                     $download_error = false;
-                                    if (!file_exists($module_file_path)) {
+                                    if (!file_exists($module_archive)) {
                                         $download_error = true;
                                     } else {
                                         // Extract
                                         try {
-                                            \Helper::unzip($module_file_path, \Module::getPath());
+                                            \Helper::unzip($module_archive, \Module::getPath());
                                         } catch(\Exception $e) {
                                             $response['msg'] = $e->getMessage();
                                         }
                                         // Check if extracted module exists
-                                        \Module::scan();
+                                        \Module::clearCache();
                                         $module = \Module::findByAlias($alias);
                                         if (!$module) {
                                             $download_error = true;
                                         }
+                                    }
+
+                                    // Remove archive
+                                    if (file_exists($module_archive)) {
+                                        \File::delete($module_archive);
                                     }
 
                                     if (!$response['msg'] && !$download_error) {
@@ -192,7 +197,7 @@ class ModulesController extends Controller
                                             \Session::flash('flash_error_floating', $response['msg']);
                                         }
 
-                                        \Session::flash('flash_error_unescaped', __('Error occured downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => \Module::getPath()]));
+                                        \Session::flash('flash_error_unescaped', __('Error occured downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']));
                                     }
                                 } else {
                                     $response['msg'] = __('Error occured, please try again later.');
@@ -305,6 +310,9 @@ class ModulesController extends Controller
                 $module = \Module::findByAlias($alias);
 
                 if ($module) {
+
+                    //\App\Module::deactivateLicense($alias, $license);
+
                     $module->delete();
                     \Session::flash('flash_success_floating', __('Module deleted'));
                 } else {
