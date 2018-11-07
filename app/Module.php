@@ -21,7 +21,12 @@ class Module extends Model
     public static function getCached()
     {
     	if (!self::$modules) {
-    		self::$modules = Module::all();
+            // At this stage modules table may not exist
+            try {
+    		  self::$modules = Module::all();
+            } catch (\Exception $e) {
+                // Do nothing
+            }
     	}
     	return self::$modules;
     }
