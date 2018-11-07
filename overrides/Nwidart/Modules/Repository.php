@@ -161,13 +161,21 @@ abstract class Repository implements RepositoryInterface, Countable
      *
      * @return array
      */
-    public function all() : array
+    public function all($forceScan = false) : array
     {
-        if (!$this->config('cache.enabled')) {
+        if (!$this->config('cache.enabled') || $forceScan) {
             return $this->scan();
         }
 
         return $this->formatCached($this->getCached());
+    }
+
+    /**
+     * Clear modules cache.
+     */
+    public function clearCache()
+    {
+        $this->app['cache']->forget($this->config('cache.key'));
     }
 
     /**
@@ -364,7 +372,8 @@ abstract class Repository implements RepositoryInterface, Countable
     public function findByAlias($alias)
     {
         foreach ($this->all() as $module) {
-            if ($module->getAlias() === $alias) {
+            if (strtolower($module->getAlias()) === $alias) {
+            //if ($module->getAlias() === $alias) {
                 return $module;
             }
         }

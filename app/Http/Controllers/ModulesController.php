@@ -29,6 +29,13 @@ class ModulesController extends Controller
         $installed_modules = [];
         $modules_directory = [];
 
+        $flashes = [];
+        $flash = \Cache::get('modules_flash');
+        if ($flash) {
+            $flashes[] = $flash;
+            \Cache::forget('modules_flash');
+        }
+
         // Get available modules and cache them
         if (\Cache::has('modules_directory')) {
             $modules_directory = \Cache::get('modules_directory');
@@ -36,12 +43,13 @@ class ModulesController extends Controller
 
         if (!$modules_directory) {
             $modules_directory = WpApi::getModules();
-            if ($modules_directory) {
+            if ($modules_directory && is_array($modules_directory) && count($modules_directory)) {
                 \Cache::put('modules_directory', $modules_directory, now()->addMinutes(15));
             }
         }
 
         // Get installed modules
+        \Module::clearCache();
         $modules = \Module::all();
         foreach ($modules as $module) {
             $img = '';
@@ -57,7 +65,7 @@ class ModulesController extends Controller
                 'img'                => $img,
                 'active'             => $module->active(), //\App\Module::isActive($module->getAlias()),
                 'installed'          => true,
-                'activated'          => \App\Module::isLicenseActivated($module->getAlias(), $module->get('detailsUrl')),
+                'activated'          => \App\Module::isLicenseActivated($module->getAlias(), $module->get('authorUrl')),
                 'license'            => \App\Module::getLicense($module->getAlias()),
             ];
         }
@@ -69,23 +77,32 @@ class ModulesController extends Controller
         // }
 
         // Prepare directory modules
-        foreach ($modules_directory as $i_dir => $dir_module) {
-            // Remove installed modules from modules directory
-            foreach ($installed_modules as $i_installed => $module) {
-                if ($dir_module['alias'] == $module['alias']) {
-                    // Set image from director
-                    $installed_modules[$i_installed]['img'] = $dir_module['img'];
-                    unset($modules_directory[$i_dir]);
-                    continue 2;
+        if (is_array($modules_directory)) {
+            foreach ($modules_directory as $i_dir => $dir_module) {
+                // Remove installed modules from modules directory
+                foreach ($installed_modules as $i_installed => $module) {
+                    if ($dir_module['alias'] == $module['alias']) {
+                        // Set image from director
+                        $installed_modules[$i_installed]['img'] = $dir_module['img'];
+                        unset($modules_directory[$i_dir]);
+                        continue 2;
+                    }
                 }
+
+                if (empty($dir_module['authorUrl']) || !\App\Module::isOfficial($dir_module['authorUrl'])) {
+                    unset($modules_directory[$i_dir]);
+                    continue;
+                }
+
+                $modules_directory[$i_dir]['active'] = \App\Module::isActive($dir_module['alias']);
+                $modules_directory[$i_dir]['activated'] = false;
             }
-            $modules_directory[$i_dir]['active'] = \App\Module::isActive($dir_module['alias']);
-            $modules_directory[$i_dir]['activated'] = false;
         }
 
         return view('modules/modules', [
             'installed_modules' => $installed_modules,
-            'modules_directory' => $modules_directory
+            'modules_directory' => $modules_directory,
+            'flashes'           => $flashes
         ]);
     }
 
@@ -220,6 +237,81 @@ class ModulesController extends Controller
                         }
                     }
                 }
+                break;
+
+            case 'activate':
+                $alias = $request->alias;
+                \App\Module::setActive($alias, true);
+
+                $outputLog = new BufferedOutput;
+                \Artisan::call('freescout:module-install', ['module_alias' => $alias], $outputLog);
+                $output = $outputLog->fetch();
+
+                $type = 'danger';
+                $msg = __('Error occured activating module');
+                if (session('flashes_floating') && is_array(session('flashes_floating'))) {
+                    // If there was any error, module has been deactivate via modules.register_error filter
+                    $msg = '';
+                    foreach (session('flashes_floating') as $flash) {
+                        $msg .= $flash['text'].' ';
+                    }
+                } elseif (strstr($output, 'Configuration cached successfully')) {
+                    $type = 'success';
+                    $msg = __('Module successfully activated!');
+                } else {
+                    // Deactivate module
+                    \App\Module::setActive($alias, false);
+                    \Artisan::call('freescout:clear-cache');
+                }
+
+                // \Session::flash does not work after BufferedOutput
+                $flash = [
+                    'text'      => '<strong>'.$msg.'</strong><pre class="margin-top">'.$output.'</pre>',
+                    'unescaped' => true,
+                    'type'      => $type,
+                ];
+                \Cache::forever('modules_flash', $flash);
+                $response['status'] = 'success';
+                break;
+
+            case 'deactivate':
+                $alias = $request->alias;
+                \App\Module::setActive($alias, false);
+
+                $outputLog = new BufferedOutput;
+                \Artisan::call('freescout:clear-cache', [], $outputLog);
+                $output = $outputLog->fetch();
+
+                $type = 'danger';
+                $msg = __('Error occured deactivating module');
+                if (strstr($output, 'Configuration cached successfully')) {
+                    $type = 'success';
+                    $msg = __('Module successfully deactivated!');
+                }
+
+                // \Session::flash does not work after BufferedOutput
+                $flash = [
+                    'text'      => '<strong>'.$msg.'</strong><pre class="margin-top">'.$output.'</pre>',
+                    'unescaped' => true,
+                    'type'      => $type,
+                ];
+                \Cache::forever('modules_flash', $flash);
+                $response['status'] = 'success';
+                break;
+
+            case 'delete':
+                $alias = $request->alias;
+
+                $module = \Module::findByAlias($alias);
+
+                if ($module) {
+                    $module->delete();
+                    \Session::flash('flash_success_floating', __('Module deleted'));
+                } else {
+                    $response['msg'] = __("Module not found").': '.$alias;
+                }
+
+                $response['status'] = 'success';
                 break;
 
             default:

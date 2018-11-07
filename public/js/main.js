@@ -527,15 +527,16 @@ function fsFloatingAlertsInit()
 		}
 		$(el).css('display', 'flex');
 
-
-		var close_after = 7000;
-		if (!$(el).hasClass('alert-danger')) {
-			// This has to be less than Conversation::UNDO_TIMOUT
-			close_after = 10000;
+		if (!$(el).hasClass('alert-noautohide')) {
+			var close_after = 7000;
+			if (!$(el).hasClass('alert-danger')) {
+				// This has to be less than Conversation::UNDO_TIMOUT
+				close_after = 10000;
+			}
+			setTimeout(function(){
+			    el.remove(); 
+			}, close_after);
 		}
-		setTimeout(function(){
-		    el.remove(); 
-		}, close_after);
 	});
 
 	if (alerts.length) {
@@ -2457,7 +2458,69 @@ function initAccordionHeading()
 
 function initModulesList()
 {
-
+	$(document).ready(function(){
+		$('.activate-trigger').click(function(e) {
+			var button = $(this);
+			button.button('loading');
+			var alias = button.parents('.module-card:first').attr('data-alias');
+			fsAjax(
+				{
+					action: 'activate',
+					alias: alias
+				}, 
+				laroute.route('modules.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == "success") {
+						window.location.href = '';
+					} else {
+						showAjaxError(response);
+						button.button('reset');
+					}
+				}, true
+			);
+		});
+		$('.deactivate-trigger').click(function(e) {
+			var button = $(this);
+			button.button('loading');
+			var alias = button.parents('.module-card:first').attr('data-alias');
+			fsAjax(
+				{
+					action: 'deactivate',
+					alias: alias
+				}, 
+				laroute.route('modules.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == "success") {
+						window.location.href = '';
+					} else {
+						showAjaxError(response);
+						button.button('reset');
+					}
+				}, true
+			);
+		});
+		$('.delete-module-trigger').click(function(e) {
+			var button = $(this);
+			button.button('loading');
+			var alias = button.parents('.module-card:first').attr('data-alias');
+			fsAjax(
+				{
+					action: 'delete',
+					alias: alias
+				}, 
+				laroute.route('modules.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == "success") {
+						window.location.href = '';
+					} else {
+						showAjaxError(response);
+						button.button('reset');
+					}
+				}, true
+			);
+			e.preventDefault();
+		});
+	});
 }
 
 function installModule(alias)

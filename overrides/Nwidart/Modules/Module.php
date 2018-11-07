@@ -270,7 +270,10 @@ abstract class Module extends ServiceProvider
         try {
             $this->registerProviders();
         } catch (\Exception $e) {
-            \Eventy::action('modules.register_error', $this, $e);
+            $e = \Eventy::filter('modules.register_error', $e, $this);
+            if ($e) {
+                throw $e;
+            }
         }
 
         if ($this->isLoadFilesOnBoot() === false) {

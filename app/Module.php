@@ -38,26 +38,21 @@ class Module extends Model
 
     public static function setActive($alias, $active, $save = true)
     {
-        $module = self::getByAlias($alias);
-        if ($module) {
-            $module->active = $active;
-            if ($save) {
-                $module->save();
-            }
-            return true;
-        } else {
-            return false;
+        $module = self::getByAliasOrCreate($alias);
+        $module->active = $active;
+        if ($save) {
+            $module->save();
         }
+        return true;
     }
 
     /**
      * Is module license activated.
      */
-    public static function isLicenseActivated($alias, $details_url)
+    public static function isLicenseActivated($alias, $author_url)
     {
         // If module is from modules directory, license activation is required
-        if ($details_url && parse_url($details_url, PHP_URL_HOST) == parse_url(\Config::get('app.freescout_url'), PHP_URL_HOST)) 
-        {
+        if ($author_url && self::isOfficial($author_url)) {
             $module = self::getByAlias($alias);
             if ($module) {
                 return $module->activated;
@@ -69,6 +64,11 @@ class Module extends Model
         }
     }
 
+    public static function isOfficial($author_url)
+    {
+        return parse_url($author_url, PHP_URL_HOST) == parse_url(\Config::get('app.freescout_url'), PHP_URL_HOST);
+    }
+
     /**
      * Activate module license.
      * @param  [type]  $alias       [description]
@@ -77,14 +77,20 @@ class Module extends Model
      */
     public static function activateLicense($alias, $license)
     {
+        $module = self::getByAliasOrCreate($alias);
+        $module->license = $license;
+        $module->activated = true;
+        $module->save();
+    }
+
+    public static function getByAliasOrCreate($alias)
+    {
         $module = self::getByAlias($alias);
         if (!$module) {
             $module = new Module();
             $module->alias = $alias;
         }
-        $module->license = $license;
-        $module->activated = true;
-        $module->save();
+        return $module;
     }
 
     /**
@@ -108,5 +114,15 @@ class Module extends Model
     public static function getByAlias($alias)
     {
     	return self::getCached()->where('alias', $alias)->first();
+    }
+
+    /**
+     * Deactivate module and update modules cache.
+     */
+    public static function deactiveModule($alias)
+    {
+        self::setActive($alias, false);
+        // Update modules cache
+        \Module::clearCache();
     }
 }

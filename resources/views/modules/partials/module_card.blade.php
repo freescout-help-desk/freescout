@@ -1,4 +1,4 @@
-<div class="module-card col-sm-10 col-md-8 @if (!empty($module['active'])) active @endif" id="module-{{ $module['alias'] }}">
+<div class="module-card col-sm-10 col-md-8 @if (!empty($module['active'])) active @endif" id="module-{{ $module['alias'] }}" data-alias="{{ $module['alias'] }}">
 	@if (!empty($module['img']))
 		<img src="{{ $module['img'] }}" />
 	@else
@@ -27,12 +27,10 @@
 		@if (\Helper::checkAppVersion($module['version']) || !empty($module['active']))
 			<div class="module-actions form-horizontal">
 				
-				@if (!empty($module['activated']))
-					@if (empty($module['active']))
-						<button type="submit" class="btn btn-primary">{{ __('Activate') }}</button>
-					@else
-						<button type="submit" class="btn btn-default">{{ __('Deactivate') }}</button>
-					@endif
+				@if (!empty($module['active']))
+					<button type="submit" class="btn btn-default deactivate-trigger" data-loading-text="{{ __('Deactivating') }}…">{{ __('Deactivate') }}</button>
+				@elseif (!empty($module['activated']))
+					<button type="submit" class="btn btn-primary activate-trigger" data-loading-text="{{ __('Activating') }}…">{{ __('Activate') }}</button>
 				@else
 					<form action="javascript:installModule('{{ $module['alias'] }}');">
 					<div class="input-group">

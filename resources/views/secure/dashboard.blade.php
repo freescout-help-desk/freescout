@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
     <div class="heading">{{ App\Option::getCompanyName() }} {{ __('Dashboard') }}</div>
-    @filter('before_dashboard', '')
+    @filter('dashboard.before', '')
     @if (count($mailboxes))
         <div class="dash-cards margin-top">
             @foreach ($mailboxes as $mailbox)
@@ -56,6 +56,6 @@
     @else
         @include('partials/empty', ['icon' => 'home', 'empty_text' => __("Welcome home!")])
     @endif
-    @filter('after_dashboard', '')
+    @filter('dashboard.after', '')
 </div>
 @endsection
