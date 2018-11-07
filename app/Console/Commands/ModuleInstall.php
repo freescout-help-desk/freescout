@@ -76,7 +76,7 @@ class ModuleInstall extends Command
                 $this->error('Module with the specified alias not found: '.$module_alias);
                 return;
             }
-            $this->call('module:migrate', ['module' => $module->getName()]);
+            $this->call('module:migrate', ['module' => $module->getName(), '--force' => true]);
             $this->createModulePublicSymlink($module);
         }
         $this->line('Clearing cache...');

@@ -97,6 +97,8 @@ class ModulesController extends Controller
                 $modules_directory[$i_dir]['active'] = \App\Module::isActive($dir_module['alias']);
                 $modules_directory[$i_dir]['activated'] = false;
             }
+        } else {
+            $modules_directory = [];
         }
 
         return view('modules/modules', [
