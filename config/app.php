@@ -135,7 +135,7 @@ return [
     |
     */
 
-    'log' => env('APP_LOG', 'single'),
+    'log' => env('APP_LOG', 'daily'), // by default logs for 5 days are kept
 
     'log_level' => env('APP_LOG_LEVEL', 'error'),
 

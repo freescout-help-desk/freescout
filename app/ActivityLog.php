@@ -11,6 +11,7 @@ class ActivityLog extends Activity
     const NAME_EMAILS_SENDING = 'send_errors';
     const NAME_EMAILS_FETCHING = 'fetch_errors';
     const NAME_SYSTEM = 'system';
+    const NAME_APP_LOGS = 'app';
 
     const DESCRIPTION_USER_LOGIN = 'login';
     const DESCRIPTION_USER_LOGOUT = 'logout';
@@ -83,6 +84,8 @@ class ActivityLog extends Activity
                 return __('Fetch Errors');
             case self::NAME_SYSTEM:
                 return __('System');
+            case self::NAME_APP_LOGS:
+                return __('App Logs');
             default:
                 return ucfirst($log_name);
         }

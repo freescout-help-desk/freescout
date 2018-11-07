@@ -20,7 +20,7 @@ composer.phar
 #composer.lock
 .DS_Store
 Thumbs.db
-/.htaccess
+#/.htaccess
 /public/css/builds/
 /public/js/builds/
 /public/.well-known

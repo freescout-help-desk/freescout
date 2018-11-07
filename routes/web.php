@@ -24,6 +24,7 @@ Route::post('/user-setup/{hash}', 'PublicController@userSetupSave');
 
 // General routes for logged in users
 Route::get('/', 'SecureController@dashboard')->name('dashboard');
+Route::get('/logs/app', ['uses' => '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs.app');
 Route::get('/logs/{name?}', ['uses' => 'SecureController@logs', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs');
 Route::post('/logs/{name?}', ['uses' => 'SecureController@logsSubmit', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);
 
