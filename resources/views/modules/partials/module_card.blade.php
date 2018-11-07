@@ -14,8 +14,11 @@
 			@if (!empty($module['license']))
 		    	<span>| {{ __('License') }}: <small>{{ $module['license'] }}</small></span>
 		    @endif
-		    @if (!\Helper::checkAppVersion($module['version']))
-		    	| <span class="text-danger">{{ __('Required app version') }}: {{ $module['requiredAppVersion'] }}</span>
+		    @if (!empty($module['requiredAppVersion']) && !\Helper::checkAppVersion($module['requiredAppVersion']))
+		    	@php
+		    		$wrong_app_verion = true;
+		    	@endphp
+		    	| <span class="text-danger">{{ __('Required :app_name version', ['app_name' => \Config::get('app.name')]) }}: {{ $module['requiredAppVersion'] }}</span>
 		    @endif
 		    @if (!empty($module['detailsUrl']))
 		    	| <a href="{{ $module['detailsUrl'] }}" target="_blank">{{ __('View details') }}</a>
@@ -24,9 +27,9 @@
 				| <a href="javascript" class="text-danger delete-module-trigger" data-loading-text="{{ __('Deleting') }}…">{{ __('Delete') }}</a>
 			@endif
 		</div>
-		@if (\Helper::checkAppVersion($module['version']) || !empty($module['active']))
-			<div class="module-actions form-horizontal">
-				
+		<div class="module-actions form-horizontal">
+			
+			@if (empty($wrong_app_verion) || !empty($module['active']))
 				@if (!empty($module['active']))
 					<button type="submit" class="btn btn-default deactivate-trigger" data-loading-text="{{ __('Deactivating') }}…">{{ __('Deactivate') }}</button>
 				@elseif (!empty($module['activated']))
@@ -42,12 +45,12 @@
 				    </form>
 				    <small><a href="{{ $module['detailsUrl'] }}" target="_blank">{{ __('Get license key') }}</a></small>
 				@endif
+			@endif
 
-				@if (!empty($module['installed']) && empty($module['active']) && !empty($module['activated']))
-					<a href="javascript" class="btn btn-link text-danger delete-module-trigger" data-loading-text="{{ __('Deleting') }}…">{{ __('Delete') }}</a>
-				@endif
-				
-			</div>
-		@endif
+			@if (!empty($module['installed']) && empty($module['active']) && !empty($module['activated']))
+				<a href="javascript" class="btn btn-link text-danger delete-module-trigger" data-loading-text="{{ __('Deleting') }}…">{{ __('Delete') }}</a>
+			@endif
+			
+		</div>
 	</div>
 </div>

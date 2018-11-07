@@ -126,7 +126,12 @@ class Module extends Model
 
     public static function getByAlias($alias)
     {
-    	return self::getCached()->where('alias', $alias)->first();
+        $modules = self::getCached();
+        if ($modules) {
+            return self::getCached()->where('alias', $alias)->first();
+        } else {
+            return null;
+        }
     }
 
     /**
