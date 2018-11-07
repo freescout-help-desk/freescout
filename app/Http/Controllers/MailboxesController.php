@@ -349,6 +349,11 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
 
         $this->authorize('update', $mailbox);
+ 
+        $request->merge([
+            'auto_reply_enabled'     => ($request->filled('auto_reply_enabled') ?? false),
+            'always_send_auto_reply' => ($request->filled('always_send_auto_reply') ?? false)
+        ]);
 
         if ($request->auto_reply_enabled) {
             $post = $request->all();

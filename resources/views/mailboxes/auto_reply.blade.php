@@ -39,6 +39,24 @@
                         </div>
                     </div>
 
+                    <div class="form-group{{ $errors->has('always_send_auto_reply') ? ' has-error' : '' }}">
+                        <label for="always_send_auto_reply" class="col-sm-2 control-label">{{ __('Always send auto reply on new conversations') }}</label>
+
+                        <div class="col-sm-6">
+                            <div class="controls">
+                                <div class="onoffswitch-wrap">
+                                    <div class="onoffswitch">
+                                        <input type="checkbox" name="always_send_auto_reply" value="1" id="always_send_auto_reply" class="onoffswitch-checkbox" @if (old('always_send_auto_reply', $mailbox->always_send_auto_reply))checked="checked"@endif >
+                                        <label class="onoffswitch-label" for="always_send_auto_reply"></label>
+                                    </div>
+
+                                    <i class="glyphicon glyphicon-info-sign icon-info icon-info-inline" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left" data-title="{{ __('Always send auto reply on new conversations') }}" data-content="{{ __('When a customer emails this mailbox with a new conversation, always send an auto reply to the customer regardless the 24-hours limit.') }}"></i>
+                                </div>
+                            </div>
+                            @include('partials/field_error', ['field'=>'always_send_auto_reply'])
+                        </div>
+                    </div>
+
                     <div class="form-group{{ $errors->has('office_hours') ? ' has-error' : '' }}">
                         <label for="office_hours" class="col-sm-2 control-label">{{ __('Office Hours') }}</label>
 
