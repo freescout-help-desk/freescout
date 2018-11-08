@@ -89,7 +89,7 @@ class Mailbox extends Model
     /**
      * Default signature set when mailbox created.
      */
-    const DEFAULT_SIGNATURE = '<span style="color:#808080;">--<br>
+    const DEFAULT_SIGNATURE = '<br><span style="color:#808080;">--<br>
 {%mailbox.name%}<br></span>';
 
     /**
