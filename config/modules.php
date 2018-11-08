@@ -23,8 +23,8 @@ return [
     */
 
     'stubs' => [
-        'enabled' => false,
-        'path' => base_path() . '/vendor/nwidart/laravel-modules/src/Commands/stubs',
+        'enabled' => true,
+        'path' => base_path() . '/overrides/Nwidart/Modules/Commands/stubs',
         'files' => [
             'start' => 'start.php',
             'routes' => 'Http/routes.php',

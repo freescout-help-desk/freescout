@@ -28,7 +28,7 @@
                             <div class="controls">
                                 <div class="onoffswitch-wrap">
                                     <div class="onoffswitch">
-                                        <input type="checkbox" name="auto_reply_enabled" value="{{ App\Mailbox::TEMPLATE_FANCY }}" id="auto_reply_enabled" class="onoffswitch-checkbox" @if (old('auto_reply_enabled', $mailbox->auto_reply_enabled))checked="checked"@endif >
+                                        <input type="checkbox" name="auto_reply_enabled" value="1" id="auto_reply_enabled" class="onoffswitch-checkbox" @if (old('auto_reply_enabled', $mailbox->auto_reply_enabled))checked="checked"@endif >
                                         <label class="onoffswitch-label" for="auto_reply_enabled"></label>
                                     </div>
 
