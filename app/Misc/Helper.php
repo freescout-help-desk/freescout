@@ -50,8 +50,14 @@ class Helper
                 'users.notifications', 
                 'users.password', 
             ],
-            'logs' => 'logs',
-            'system' => 'system',
+            'logs' => [
+                'logs', 
+                'logs.app',
+            ],
+            'system' => [
+                'system', 
+                'system.tools',
+            ],
         ],
         // No menu item selected
         'customers' => []
