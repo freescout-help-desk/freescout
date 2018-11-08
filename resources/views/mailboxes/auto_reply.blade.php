@@ -32,7 +32,7 @@
                                         <label class="onoffswitch-label" for="auto_reply_enabled"></label>
                                     </div>
 
-                                    <i class="glyphicon glyphicon-info-sign icon-info icon-info-inline" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left" data-title="{{ __('Auto Reply') }}" data-content="{{ __('When a customer emails this mailbox, application can send an auto reply to the customer immediately.<br/><br/>One auto-reply is sent per conversation and a customer won\'t receive more than one in a 24-hour period.') }}"></i>
+                                    <i class="glyphicon glyphicon-info-sign icon-info icon-info-inline" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left" data-title="{{ __('Auto Reply') }}" data-content="{{ __('When a customer emails this mailbox, application can send an auto reply to the customer immediately.<br/><br/>Only one auto-reply is sent per new conversation.') }}"></i>
                                 </div>
                             </div>
                             @include('partials/field_error', ['field'=>'auto_reply_enabled'])
