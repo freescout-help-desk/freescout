@@ -202,6 +202,7 @@ return [
         'alert_fetch' => ['default' => false],
         'alert_fetch_period' => ['default' => 15], // min
         'email_branding' => ['default' => true],
+        'conversation_number_format' => 'sequential'
     ],
 
     /*

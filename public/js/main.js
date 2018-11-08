@@ -2554,3 +2554,13 @@ function installModule(alias)
 		}, true
 	);
 }
+
+function initGeneralSettings()
+{
+	$(function() {
+        $('select#conversation_number_format').on('change', function() {
+            var display = ( this.value != 'sequential' ) ? 'none' : 'block';
+            $('.next_ticket_container').css({display:display});
+        }).trigger('change');
+    });
+}

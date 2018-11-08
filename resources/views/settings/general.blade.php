@@ -11,11 +11,23 @@
         </div>
     </div>
 
-    <div class="form-group{{ $errors->has('settings[next_ticket]') ? ' has-error' : '' }}">
-        <label for="next_ticket" class="col-sm-2 control-label">{{ __('Next Conversation #') }} (todo)</label>
+    <div class="form-group{{ $errors->has('settings[conversation_number_format]') ? ' has-error' : '' }}">
+        <label for="conversation_number_format" class="col-sm-2 control-label">{{ __('Conversation number format') }}</label>
 
         <div class="col-sm-6">
-            <input id="next_ticket" type="number" class="form-control input-sized" name="settings[next_ticket]" value="{{ old('settings[next_ticket]', $settings['next_ticket']) }}" {{--required autofocus--}}>
+            <select id="conversation_number_format" class="form-control input-sized" name="settings[conversation_number_format]" required autofocus>
+                @include('partials/conversation_number_format_options', ['current_conversation_number_format' => old('settings[conversation_number_format]', $settings['conversation_number_format'])])
+            </select>
+
+            @include('partials/field_error', ['field'=>'settings.conversation_number_format'])
+        </div>
+    </div>
+
+    <div class="next_ticket_container form-group{{ $errors->has('settings[next_ticket]') ? ' has-error' : '' }}">
+        <label for="next_ticket" class="col-sm-2 control-label">{{ __('Next Conversation #') }}</label>
+
+        <div class="col-sm-6">
+            <input id="next_ticket" type="number" maxlength="7" class="form-control input-sized" name="settings[next_ticket]" value="{{ old('settings[next_ticket]', $settings['next_ticket']) }}" {{--required autofocus--}}>
 
             @include('partials/field_error', ['field'=>'settings.next_ticket'])
         </div>
@@ -125,3 +137,8 @@
         </div>
     </div>
 </form>
+
+@section('javascript')
+    @parent
+    initGeneralSettings();
+@endsection

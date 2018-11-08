@@ -5,6 +5,7 @@ namespace App;
 use App\Events\ConversationCustomerChanged;
 use App\ConversationFolder;
 use App\Folder;
+use App\Option;
 use App\Thread;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
@@ -162,7 +163,48 @@ class Conversation extends Model
         parent::boot();
 
         self::creating(function (Conversation $model) {
-            $model->number = Conversation::max('number') + 1;
+            $length = 7;
+
+            $conversation_number_format = Option::get('conversation_number_format');
+
+            /*
+             * Sequential numbering
+             */
+            if ( $conversation_number_format == 'sequential' ) {
+                $next_ticket = Option::get('next_ticket');
+
+                // If next_ticket is set and available, set that.
+                if ( $next_ticket && is_numeric($next_ticket) && !Conversation::where('number', $next_ticket)->count() ) {
+                    $model->number = $next_ticket;
+                } else {
+                    $current_number = \DB::table($model->getTable())->selectRaw('MAX(CAST(`number` AS UNSIGNED)) AS `number`')->value('number') ?: 0;
+                    $model->number  = $current_number +1;
+                }
+               
+            /*
+             * Random numeric [0-9]
+             */
+            } else if ( $conversation_number_format == 'random_numeric' ) {
+                do {
+                    $model->number = '';
+                    for($i = 0; $i < $length; $i++) {
+                        $model->number .= mt_rand(0, 9);
+                    }
+                } while ( Conversation::where('number', $model->number)->count() > 0 );
+
+            /*
+             * Random alphanumeric, letters [A-Z] and numbers [0-9]
+             */
+            } else if ( $conversation_number_format == 'random_alphanumeric' ) {
+                do {
+                    $model->number = strtoupper(str_random($length));
+                } while ( Conversation::where('number', $model->number)->count() > 0 );
+            }
+            
+            // We had a next_ticket set, clean it just before using it
+            if ( !empty($next_ticket) && $conversation_number_format == 'sequential' ) {
+                Option::set('next_ticket', '');
+            }
         });
     }
 

@@ -1,0 +1,3 @@
+<option value="sequential" @if ($current_conversation_number_format == 'sequential')selected="selected"@endif>{{ __('Sequential') }}</option>
+<option value="random_numeric" @if ($current_conversation_number_format == 'random_numeric')selected="selected"@endif>{{ __('Random numeric') }}</option>
+<option value="random_alphanumeric" @if ($current_conversation_number_format == 'random_alphanumeric')selected="selected"@endif>{{ __('Random alphanumeric') }}</option>
