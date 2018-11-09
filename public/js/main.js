@@ -1999,7 +1999,7 @@ function webNotificationsInit()
 	
 }
 
-function systemInit()
+function initSystemStatus()
 {
 	if (location.protocol == 'https:') {
 		$('#system-app-protocol').text('HTTPS');
@@ -2008,6 +2008,34 @@ function systemInit()
 			'<div class="alert alert-danger margin-top">'+Lang.get("messages.push_protocol_alert")+'</div>';
 		$('#system-app-protocol').html(html);
 	}
+
+	$('.update-trigger').click(function(e) {
+		var button = $(this);
+		showModalConfirm('<span class="text-danger"><i class="glyphicon glyphicon-exclamation-sign"></i> '+Lang.get("messages.confirm_update")+'</span>', 'confirm-update', {
+			on_show: function(modal) {
+				modal.children().find('.confirm-update:first').click(function(e) {
+					button.button('loading');
+					modal.modal('hide');
+					
+					fsAjax(
+						{
+							action: 'update',
+							alias: alias
+						}, 
+						laroute.route('system.ajax'),
+						function(response) {
+							if (typeof(response.status) != "undefined" && response.status == "success") {
+								window.location.href = '';
+							} else {
+								showAjaxError(response);
+								button.button('reset');
+							}
+						}, true
+					);
+				});
+			}
+		}, Lang.get("messages.update"));
+	});
 }
 
 // Called from polycast

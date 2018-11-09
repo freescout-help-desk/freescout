@@ -138,10 +138,7 @@ fi
 
 
 printf "\nClearing cache:\n"
-php artisan clear-compiled
-php artisan cache:clear
-php artisan view:clear
-php artisan config:cache
+php artisan freescout:clear-cache
 #php artisan package:discover
 
 printf "Run DB migration and continue? (Y/n) [n]:"

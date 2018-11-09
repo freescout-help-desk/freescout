@@ -23,7 +23,8 @@
         "chumper/zipper": "v1.0.2",
         "rachidlaasri/laravel-installer": "4.0.2",
         "kitetail/zttp": "v0.4.0",
-        "rap2hpoutre/laravel-log-viewer": "v0.22.1"
+        "rap2hpoutre/laravel-log-viewer": "v0.22.1",
+        "codedge/laravel-selfupdater": "1.4.3"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v2.4.3",
