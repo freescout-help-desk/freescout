@@ -22,7 +22,7 @@
             <tr id="version">
                 <th>{{ __('App Version') }}</th>
                 <td class="table-main-col">
-                    @if (!\Updater::isNewVersionAvailable(\Config::get('app.version')))
+                    @if (\Updater::isNewVersionAvailable(\Config::get('app.version')))
                         <strong class="text-danger">{{ \Config::get('app.version') }}</strong>
                         <div class="alert alert-danger margin-top-10">
                             {!! __('A new version [:new_version] is available.', ['new_version' => '<a href="'.config('app.freescout_repo').'/releases" target="_blank"><strong>'.\Updater::getVersionAvailable().'</strong></a>']) !!}

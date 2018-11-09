@@ -205,7 +205,8 @@ class SystemController extends Controller
                     $response['msg'] = $e->getMessage();
                 }
                 if (!$response['msg'] && $status) {
-                    \Session::flash('flash_success_floating', __('Application successfully updated').': '.Artisan::output());
+                    // Adding session flash is useless as cache is cleated
+                    $response['msg_success'] __('Application successfully updated'));
                     $response['status'] = 'success';
                 }
                 break;

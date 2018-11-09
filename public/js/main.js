@@ -2019,8 +2019,7 @@ function initSystemStatus()
 					
 					fsAjax(
 						{
-							action: 'update',
-							alias: alias
+							action: 'update'
 						}, 
 						laroute.route('system.ajax'),
 						function(response) {
