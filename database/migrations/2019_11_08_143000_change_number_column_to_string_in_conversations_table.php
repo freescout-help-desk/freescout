@@ -13,10 +13,8 @@ class ChangeNumberColumnToStringInConversationsTable extends Migration
      */
     public function up()
     {
-        Schema::table('conversations', function (Blueprint $table) {
-            $table->string('number', 7)->change();
-            $table->unique('number');
-        });
+        \DB::statement('ALTER TABLE `conversations` MODIFY `number` VARCHAR(7);');
+        \DB::statement('CREATE UNIQUE INDEX `idx_number` ON `conversations` (`number`)');
     }
 
     /**
@@ -26,8 +24,7 @@ class ChangeNumberColumnToStringInConversationsTable extends Migration
      */
     public function down()
     {
-        Schema::table('conversations', function (Blueprint $table) {
-            $table->integer('number')->change();
-        });
+        \DB::statement('ALTER TABLE `conversations` DROP INDEX `idx_number`');
+        \DB::statement('ALTER TABLE `conversations` MODIFY `number` INT(10) UNSIGNED;');
     }
 }
