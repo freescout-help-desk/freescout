@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Conversation;
 use App\Option;
 use App\User;
 use Illuminate\Http\Request;
@@ -91,7 +92,7 @@ class SettingsController extends Controller
             case 'general':
                 $settings = [
                     'company_name'         => Option::get('company_name', \Config::get('app.name')),
-                    'next_ticket'          => Option::get('next_ticket'),
+                    'next_ticket'          => (Option::get('next_ticket') >= Conversation::max('number') + 1) ? Option::get('next_ticket') : Conversation::max('number') + 1,
                     'user_permissions'     => Option::get('user_permissions', []),
                     'email_branding'       => Option::get('email_branding'),
                     'open_tracking'        => Option::get('open_tracking'),
