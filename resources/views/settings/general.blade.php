@@ -55,7 +55,7 @@
     </div>
 
     <div class="form-group{{ $errors->has('settings[open_tracking]') ? ' has-error' : '' }}">
-        <label for="open_tracking" class="col-sm-2 control-label">{{ __('Open Tracking') }} (todo)</label>
+        <label for="open_tracking" class="col-sm-2 control-label">{{ __('Open Tracking') }}</label>
 
         <div class="col-sm-6">
             <div class="controls">

@@ -1383,4 +1383,14 @@ class ConversationsController extends Controller
 
         return redirect()->away($conversation->url($folder_id, null, ['show_draft' => $thread->id]));
     }
+
+    /*
+     * Set a conversation as read by customer
+     */
+    public function setRead($conversation_id, $thread_id) {
+        $conversation = Conversation::findOrFail($conversation_id);
+        $thread       = Thread::findOrFail($thread_id);
+        $thread->opened_at = date('Y-m-d H:i:s');
+        $thread->save();
+    }
 }

@@ -1,7 +1,6 @@
 <?php
 
 namespace App;
-
 use App\Attachment;
 use Illuminate\Database\Eloquent\Model;
 
@@ -138,6 +137,13 @@ class Thread extends Model
         self::SOURCE_TYPE_WEB   => 'web',
         self::SOURCE_TYPE_API   => 'api',
     ];
+
+    protected $dates = [
+        'opened_at',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];    
 
     /**
      * The user assigned to this thread (assignedTo).
