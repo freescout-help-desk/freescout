@@ -19,7 +19,7 @@ class Sendmail extends Model
     /**
      * Customer.
      */
-    public function user()
+    public function customer()
     {
         return $this->belongsTo('App\Customer');
     }
