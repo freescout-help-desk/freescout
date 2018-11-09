@@ -244,7 +244,7 @@
                 &copy; {{ date('Y') }} <a href="{{ config('app.freescout_url') }}" target="blank">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk &amp; shared mailbox' ) }}
                     {{-- Hide version from hackers --}}
                     @if (Auth::user())
-                        <br/>{{ config('app.version') }}
+                        <br/><a href="{{ \Config::get('app.freescout_repo') }}/releases" target="_blank">{{ config('app.version') }}</a>
                     @endif
             </div>
         @endif
