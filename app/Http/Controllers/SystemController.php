@@ -206,7 +206,7 @@ class SystemController extends Controller
                 }
                 if (!$response['msg'] && $status) {
                     // Adding session flash is useless as cache is cleated
-                    $response['msg_success'] __('Application successfully updated'));
+                    $response['msg_success'] = __('Application successfully updated');
                     $response['status'] = 'success';
                 }
                 break;

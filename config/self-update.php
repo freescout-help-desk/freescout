@@ -41,7 +41,7 @@ return [
             'repository_vendor' => 'freescout-helpdesk', //env('SELF_UPDATER_REPO_VENDOR', ''),
             'repository_name' => 'freescout', //env('SELF_UPDATER_REPO_NAME', ''),
             'repository_url' => '',
-            'download_path' => env('SELF_UPDATER_DOWNLOAD_PATH', sys_get_temp_dir()),
+            'download_path' => storage_path().DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'updater', //env('SELF_UPDATER_DOWNLOAD_PATH', sys_get_temp_dir()),
         ],
     ],
 
@@ -66,7 +66,7 @@ return [
         'storage/framework',
         'storage/logs',
         'storage/self-update',
-        //'vendor',
+        'vendor',
     ],
 
     /*
