@@ -66,38 +66,62 @@ if (!empty($_POST)) {
 		$errors['app_key'] = 'Invalid App Key';
 	} else {
 		clearCache($root_dir);
-		if (!function_exists('shell_exec')) {
+		if ($_POST['action'] == 'cc') {
 			$alerts[] = [
-				'type' => 'danger',
-				'text' => '<code>shell_exec</code> function is unavailable. Can not run updating.',
-			];
+				'type' => 'success',
+				'text' => 'Cache cleared successfully.',
+			];	
 		} else {
-			try {
-				$php_path = 'php';
-				if (!empty($_POST['php_path'])) {
-					$php_path = $_POST['php_path'];
-				}
-
-				// First check PHP version
-				$version_output = shell_exec($php_path.' -v');
-				
-				if (!strstr($version_output, 'PHP 7.')) {
-					$alerts[] = [
-						'type' => 'danger',
-						'text' => 'Incorrect PHP version (7.x is required):<br/><pre>'.htmlspecialchars($version_output).'</pre>',
-					];
-				} else {
-					$output = shell_exec($php_path.' '.$root_dir.'artisan freescout:update --force');
-					$alerts[] = [
-						'type' => 'success',
-						'text' => 'Updating finished:<br/><pre>'.htmlspecialchars($output).'</pre>',
-					];
-				}
-			} catch (\Exception $e) {
+			if (!function_exists('shell_exec')) {
 				$alerts[] = [
 					'type' => 'danger',
-					'text' => 'Error occured: '.htmlspecialchars($e->getMessage()),
+					'text' => '<code>shell_exec</code> function is unavailable. Can not run updating.',
 				];
+			} else {
+				try {
+					$php_path = 'php';
+					if (!empty($_POST['php_path'])) {
+						$php_path = $_POST['php_path'];
+					}
+
+					// First check PHP version
+					$version_output = shell_exec($php_path.' -v');
+					
+					if (!strstr($version_output, 'PHP 7.')) {
+						$alerts[] = [
+							'type' => 'danger',
+							'text' => 'Incorrect PHP version (7.x is required):<br/><br/><pre>'.htmlspecialchars($version_output).'</pre>',
+						];
+					} else {
+						if ($_POST['action'] == 'update') {
+							// Update Now
+							$output = shell_exec($php_path.' '.$root_dir.'artisan freescout:update --force');
+							if (strstr($output, 'Broadcasting queue restart signal')) {
+								$alerts[] = [
+									'type' => 'success',
+									'text' => 'Updating finished:<br/><pre>'.htmlspecialchars($output).'</pre>',
+								];	
+							} else {
+								$alerts[] = [
+									'type' => 'danger',
+									'text' => 'Something went wrong... Please <strong><a href="https://freescout.net/download/" target="_blank">download</a></strong> the latest version and extract it into your application folder replacing existing files. After that click "Migrate DB" button.<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
+								];
+							}
+						} else {
+							// Migreate DB
+							$output = shell_exec($php_path.' '.$root_dir.'artisan migrate --force');
+							$alerts[] = [
+								'type' => 'success',
+								'text' => 'Migrating finished:<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
+							];	
+						}
+					}
+				} catch (\Exception $e) {
+					$alerts[] = [
+						'type' => 'danger',
+						'text' => 'Error occured: '.htmlspecialchars($e->getMessage()),
+					];
+				}
 			}
 		}
 	}
@@ -110,7 +134,7 @@ if (!empty($_POST)) {
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>FreeScout Updater</title>
+        <title>FreeScout Tools</title>
         <link href="/css/fonts.css" rel="stylesheet"/>
         <link href="/installer/css/fontawesome.css" rel="stylesheet"/>
         <link href="/installer/css/style.min.css" rel="stylesheet"/>
@@ -119,7 +143,7 @@ if (!empty($_POST)) {
     	<div class="master">
             <div class="box">
                 <div class="header">
-                    <h1 class="header__title">FreeScout Updater</h1>
+                    <h1 class="header__title">FreeScout Tools</h1>
                 </div>
                 <div class="main">
 
@@ -157,8 +181,15 @@ if (!empty($_POST)) {
 		                    <?php endif ?>
 		                </div>
 		                <div class="buttons">
-		                    <button class="button" type="submit">
-		                        Update App
+		                    <button class="button" type="submit" name="action" value="update">
+		                        Update Now
+		                    </button>
+		                    <br/>
+		                    <button class="button" type="submit" name="action" value="cc">
+		                        Clear Cache
+		                    </button>
+		                    <button class="button" type="submit" name="action" value="migrate">
+		                        Migrate DB
 		                    </button>
 		                </div>
 	                </form>

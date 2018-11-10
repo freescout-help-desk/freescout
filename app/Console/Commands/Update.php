@@ -43,10 +43,14 @@ class Update extends Command
         if (!$this->confirmToProceed()) {
             return;
         }
+        
+        @ini_set('memory_limit', '128M');
 
         if (\Updater::isNewVersionAvailable(config('app.version'))) {
             $this->info('Updating... This may take several minutes');
             try {
+                // Script may fail here and stop with the error:
+                // PHP Fatal error:  Allowed memory size of 94371840 bytes exhausted
                 \Updater::update();
                 $this->call('freescout:after-app-update');
             } catch (\Exception $e) {
