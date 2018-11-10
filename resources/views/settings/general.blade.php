@@ -12,7 +12,7 @@
     </div>
 
     <div class="form-group{{ $errors->has('settings[next_ticket]') ? ' has-error' : '' }}">
-        <label for="next_ticket" class="col-sm-2 control-label">{{ __('Next Conversation #') }} (todo)</label>
+        <label for="next_ticket" class="col-sm-2 control-label">{{ __('Next Conversation #') }}</label>
 
         <div class="col-sm-6">
             <input id="next_ticket" type="number" class="form-control input-sized" name="settings[next_ticket]" value="{{ old('settings[next_ticket]', $settings['next_ticket']) }}" {{--required autofocus--}}>

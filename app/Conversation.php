@@ -162,7 +162,18 @@ class Conversation extends Model
         parent::boot();
 
         self::creating(function (Conversation $model) {
-            $model->number = Conversation::max('number') + 1;
+            $next_ticket    = (int)Option::get('next_ticket');
+            $current_number = Conversation::max('number');
+
+            if ( $next_ticket ) {
+                Option::remove('next_ticket');
+            }
+
+            if ( $next_ticket && !Conversation::where('number', $next_ticket)->exists() && $next_ticket >= ($current_number +1) ) {
+                $model->number = $next_ticket;
+            } else {
+                $model->number = $current_number +1;
+            }
         });
     }
 
