@@ -14,10 +14,10 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
-        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         'e91d0dc994644828154ae2387ede1ca8' => __DIR__ . '/..' . '/spatie/string/src/string_functions.php',
@@ -148,6 +148,8 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'C' => 
         array (
             'Cron\\' => 5,
+            'Codedge\\Updater\\SourceRepositoryTypes\\' => 38,
+            'Codedge\\Updater\\' => 16,
             'Chumper\\Zipper\\' => 15,
         ),
         'B' => 
@@ -418,6 +420,14 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         array (
             0 => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron',
         ),
+        'Codedge\\Updater\\SourceRepositoryTypes\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/Codedge/Updater/SourceRepositoryTypes',
+        ),
+        'Codedge\\Updater\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src',
+        ),
         'Chumper\\Zipper\\' => 
         array (
             0 => __DIR__ . '/..' . '/chumper/zipper/src/Chumper/Zipper',
@@ -502,6 +512,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'App\\Attachment' => __DIR__ . '/../..' . '/app/Attachment.php',
         'App\\Broadcasting\\Broadcasters\\PolycastBroadcaster' => __DIR__ . '/../..' . '/app/Broadcasting/Broadcasters/PolycastBroadcaster.php',
         'App\\Channels\\RealtimeBroadcastChannel' => __DIR__ . '/../..' . '/app/Channels/RealtimeBroadcastChannel.php',
+        'App\\Console\\Commands\\AfterAppUpdate' => __DIR__ . '/../..' . '/app/Console/Commands/AfterAppUpdate.php',
         'App\\Console\\Commands\\Build' => __DIR__ . '/../..' . '/app/Console/Commands/Build.php',
         'App\\Console\\Commands\\ClearCache' => __DIR__ . '/../..' . '/app/Console/Commands/ClearCache.php',
         'App\\Console\\Commands\\CreateUser' => __DIR__ . '/../..' . '/app/Console/Commands/CreateUser.php',
@@ -673,6 +684,21 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Chumper\\Zipper\\Repositories\\ZipRepository' => __DIR__ . '/..' . '/chumper/zipper/src/Chumper/Zipper/Repositories/ZipRepository.php',
         'Chumper\\Zipper\\Zipper' => __DIR__ . '/..' . '/chumper/zipper/src/Chumper/Zipper/Zipper.php',
         'Chumper\\Zipper\\ZipperServiceProvider' => __DIR__ . '/..' . '/chumper/zipper/src/Chumper/Zipper/ZipperServiceProvider.php',
+        'Codedge\\Updater\\AbstractRepositoryType' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/AbstractRepositoryType.php',
+        'Codedge\\Updater\\Commands\\CheckForUpdate' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/Commands/CheckForUpdate.php',
+        'Codedge\\Updater\\Contracts\\SourceRepositoryTypeContract' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/Contracts/SourceRepositoryTypeContract.php',
+        'Codedge\\Updater\\Contracts\\UpdaterContract' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/Contracts/UpdaterContract.php',
+        'Codedge\\Updater\\Events\\HasWrongPermissions' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/Events/HasWrongPermissions.php',
+        'Codedge\\Updater\\Events\\UpdateAvailable' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/Events/UpdateAvailable.php',
+        'Codedge\\Updater\\Events\\UpdateFailed' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/Events/UpdateFailed.php',
+        'Codedge\\Updater\\Events\\UpdateSucceeded' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/Events/UpdateSucceeded.php',
+        'Codedge\\Updater\\Listeners\\SendUpdateAvailableNotification' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/Listeners/SendUpdateAvailableNotification.php',
+        'Codedge\\Updater\\Listeners\\SendUpdateSucceededNotification' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/Listeners/SendUpdateSucceededNotification.php',
+        'Codedge\\Updater\\SourceRepository' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/SourceRepository.php',
+        'Codedge\\Updater\\SourceRepositoryTypes\\GithubRepositoryType' => __DIR__ . '/../..' . '/overrides/Codedge/Updater/SourceRepositoryTypes/GithubRepositoryType.php',
+        'Codedge\\Updater\\UpdaterFacade' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/UpdaterFacade.php',
+        'Codedge\\Updater\\UpdaterManager' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/UpdaterManager.php',
+        'Codedge\\Updater\\UpdaterServiceProvider' => __DIR__ . '/..' . '/codedge/laravel-selfupdater/src/UpdaterServiceProvider.php',
         'Cron\\AbstractField' => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron/AbstractField.php',
         'Cron\\CronExpression' => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron/CronExpression.php',
         'Cron\\DayOfMonthField' => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron/DayOfMonthField.php',

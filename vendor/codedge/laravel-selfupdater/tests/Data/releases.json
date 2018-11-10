@@ -1,0 +1,38 @@
+[
+  {
+    "name": "v2.6.10",
+    "zipball_url": "https://api.github.com/repos/invoiceninja/invoiceninja/zipball/v2.6.10",
+    "tarball_url": "https://api.github.com/repos/invoiceninja/invoiceninja/tarball/v2.6.10",
+    "commit": {
+      "sha": "53c59b79e393241efaacc93eb22e95d0d292463a",
+      "url": "https://api.github.com/repos/invoiceninja/invoiceninja/commits/53c59b79e393241efaacc93eb22e95d0d292463a"
+    }
+  },
+  {
+    "name": "v2.6.9",
+    "zipball_url": "https://api.github.com/repos/invoiceninja/invoiceninja/zipball/v2.6.9",
+    "tarball_url": "https://api.github.com/repos/invoiceninja/invoiceninja/tarball/v2.6.9",
+    "commit": {
+      "sha": "c7c253fbd8667ca0974cd5ad1aedc00e285a0b97",
+      "url": "https://api.github.com/repos/invoiceninja/invoiceninja/commits/c7c253fbd8667ca0974cd5ad1aedc00e285a0b97"
+    }
+  },
+  {
+    "name": "v2.6.8",
+    "zipball_url": "https://api.github.com/repos/invoiceninja/invoiceninja/zipball/v2.6.8",
+    "tarball_url": "https://api.github.com/repos/invoiceninja/invoiceninja/tarball/v2.6.8",
+    "commit": {
+      "sha": "1d12f58a37ecb00ed997408553897742ccda6ab2",
+      "url": "https://api.github.com/repos/invoiceninja/invoiceninja/commits/1d12f58a37ecb00ed997408553897742ccda6ab2"
+    }
+  },
+  {
+    "name": "v2.6.7",
+    "zipball_url": "https://api.github.com/repos/invoiceninja/invoiceninja/zipball/v2.6.7",
+    "tarball_url": "https://api.github.com/repos/invoiceninja/invoiceninja/tarball/v2.6.7",
+    "commit": {
+      "sha": "7d84c527348daa2e1b3ce2d60209df507e3cdb2b",
+      "url": "https://api.github.com/repos/invoiceninja/invoiceninja/commits/7d84c527348daa2e1b3ce2d60209df507e3cdb2b"
+    }
+  }
+]
