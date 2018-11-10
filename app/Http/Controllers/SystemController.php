@@ -137,7 +137,8 @@ class SystemController extends Controller
         $latest_version = \Cache::remember('latest_version', 15, function() {
             return \Updater::getVersionAvailable();
         });
-        if ($latest_version && $latest_version != \Config::get('app.version')) {
+
+        if ($latest_version && version_compare($latest_version, \Config::get('app.version'), '>')) {
             $new_version_available = true;
         }
 
@@ -147,6 +148,7 @@ class SystemController extends Controller
             'failed_jobs'    => $failed_jobs,
             'php_extensions' => $php_extensions,
             'new_version_available' => $new_version_available,
+            'latest_version' => $latest_version,
         ]);
     }
 
