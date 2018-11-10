@@ -133,9 +133,13 @@ class SystemController extends Controller
         }
 
         // Check new version
-        $new_version_available = \Cache::remember('new_version_available', 15, function() {
-            return \Updater::isNewVersionAvailable(\Config::get('app.version'));
+        $new_version_available = false;
+        $latest_version = \Cache::remember('latest_version', 15, function() {
+            return \Updater::getVersionAvailable();
         });
+        if ($latest_version && $latest_version != \Config::get('app.version')) {
+            $new_version_available = true;
+        }
 
         return view('system/status', [
             'commands'       => $commands,
@@ -208,7 +212,7 @@ class SystemController extends Controller
                     $status = \Updater::update();
                     // Artisan::output()
                 } catch (\Exception $e) {
-                    $response['msg'] = $e->getMessage();
+                    $response['msg'] = __('Error occured').': '.$e->getMessage();
                 }
                 if (!$response['msg'] && $status) {
                     // Adding session flash is useless as cache is cleated
@@ -220,10 +224,9 @@ class SystemController extends Controller
             case 'check_updates':
                 try {
                     $response['new_version_available'] = \Updater::isNewVersionAvailable(config('app.version'));
-                    \Cache::put('new_version_available', $response['new_version_available'], 15);
                     $response['status'] = 'success';
                 } catch (\Exception $e) {
-                    $response['msg'] = $e->getMessage();
+                    $response['msg'] = __('Error occured').': '.$e->getMessage();
                 }
                 if (!$response['msg'] && !$response['new_version_available']) {
                     // Adding session flash is useless as cache is cleated
