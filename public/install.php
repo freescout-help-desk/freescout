@@ -79,6 +79,45 @@ function clearCache($root_dir)
 	}
 }
 
+function showError($msg)
+{
+	echo <<<HTML
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>FreeScout Installer</title>
+        <link href="/css/fonts.css" rel="stylesheet"/>
+        <link href="/installer/css/fontawesome.css" rel="stylesheet"/>
+        <link href="/installer/css/style.min.css" rel="stylesheet"/>
+    </head>
+    <body>
+    	<div class="master">
+            <div class="box">
+                <div class="header">
+                    <h1 class="header__title">FreeScout Installer</h1>
+                </div>
+                <div class="main">
+                	$msg
+               	</div>
+            </div>
+        </div>
+    </body>
+</html>
+HTML;
+}
+
+function showPermissionsError()
+{
+	$root_dir_no_slash = realpath(__DIR__.'/..');
+
+	showError('Web installer could not write data into <strong>'.$root_dir_no_slash.'/.env</strong> file. Please give your web server user (<strong>'.get_current_user().'</strong>) write permissions in <code>'.$root_dir_no_slash.'</code> folder:<br/><br/>
+<textarea rows="4" readonly="readonly" style="font-size:12px;">sudo chgrp '.get_current_user().' '.$root_dir_no_slash.'
+sudo chmod ug+rwx '.$root_dir_no_slash.'</textarea><br/>If it does not help, please follow <a href="http://freescout.net/install/#82-manual-installation" target="_blank">Manual installation</a> instructions.');
+}
+
 $app_key = getAppKey($root_dir);
 
 // Generate APP_KEY
@@ -89,10 +128,7 @@ if (empty($app_key)) {
 
 		if (!file_exists($root_dir.'.env')) {
 			//echo 'Please copy <code>.env.example</code> file to <code>.env</code> and reload this page.';
-			$root_dir_no_slash = realpath(__DIR__.'/..');
-			echo 'Web installer will need to create <code>.env</code> file in the root folder of your application. Please run the following commands in SSH console to allow the web server to write to the root folder:<br/><br/>
-<code>sudo chgrp '.get_current_user().' '.$root_dir_no_slash.'<br/>
-sudo chmod ug+rwx '.$root_dir_no_slash.'</code>';
+			showPermissionsError();
 			exit();
 		}
 	}
@@ -102,7 +138,8 @@ sudo chmod ug+rwx '.$root_dir_no_slash.'</code>';
 	if (!preg_match("/^APP_KEY=/m", file_get_contents($root_dir.'.env'))) {
 		$append_result = file_put_contents($root_dir.'.env', PHP_EOL.'APP_KEY=', FILE_APPEND);
 		if (!$append_result) {
-			echo 'Could not write APP_KEY to .env file. Please run the following commands in SSH console:<br/><code>php artisan key:generate</code><br/><code>php artisan freescout:clear-cache</code>';
+			//showError('Could not write APP_KEY to .env file. Please run the following commands in SSH console:<br/><code>php artisan key:generate</code><br/><code>php artisan freescout:clear-cache</code>');
+			showPermissionsError();
 			exit();
 		}
 	}
@@ -120,6 +157,6 @@ if (!empty($app_key)) {
 	// When APP_KEY generated, redirect to /install
 	header("Location: /install");
 } else {
-	echo 'Please run the following commands in SSH console:<br/><code>php artisan key:generate</code><br/><code>php artisan freescout:clear-cache</code>';
+	showPermissionsError();
 }
 exit();

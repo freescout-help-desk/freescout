@@ -6,5 +6,4 @@
 	<li @if (Route::currentRouteName() == 'mailboxes.auto_reply')class="active"@endif><a href="{{ route('mailboxes.auto_reply', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-share"></i> {{ __('Auto Reply') }}</a></li>
 @endif
 @action('mailboxes.settings.menu', $mailbox)
-{{--<li @if (Route::currentRouteName() == 'mailboxes.workflows')class="active"@endif><a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-random"></i> {{ __('Workflows') }} (todo)</a></li>
-<li @if (Route::currentRouteName() == 'mailboxes.ratings')class="active"@endif><a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-thumbs-up"></i> {{ __('Sat. Ratings') }} (todo)</a></li>--}}
+{{--<li @if (Route::currentRouteName() == 'mailboxes.workflows')class="active"@endif><a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-random"></i> {{ __('Workflows') }} (todo)</a></li>--}}

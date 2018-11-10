@@ -60,11 +60,16 @@ class Attachment extends Model
             return false;
         }
 
-        // Check extension
+        // Check extension.
         $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
         if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $extension)) {
+            // Add underscore to the extension if file has restricted extension.
             $file_name = $file_name.'_';
         }
+
+        // Replace some symbols in file name.
+        // Gmail can not load image if it contains spaces.
+        $file_name = str_replace(' ', '-', $file_name);
 
         if (!$type) {
             $type = self::detectType($mime_type);

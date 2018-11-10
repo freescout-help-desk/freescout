@@ -1999,7 +1999,7 @@ function webNotificationsInit()
 	
 }
 
-function systemInit()
+function initSystemStatus()
 {
 	if (location.protocol == 'https:') {
 		$('#system-app-protocol').text('HTTPS');
@@ -2008,6 +2008,62 @@ function systemInit()
 			'<div class="alert alert-danger margin-top">'+Lang.get("messages.push_protocol_alert")+'</div>';
 		$('#system-app-protocol').html(html);
 	}
+
+	$('.update-trigger').click(function(e) {
+		var button = $(this);
+		showModalConfirm('<span class="text-danger"><i class="glyphicon glyphicon-exclamation-sign"></i> '+Lang.get("messages.confirm_update")+'</span>', 'confirm-update', {
+			on_show: function(modal) {
+				modal.children().find('.confirm-update:first').click(function(e) {
+					button.button('loading');
+					modal.modal('hide');
+					// Disable Polycast not to receive 'Internet connection broken' messages
+					poly.disconnect();
+
+					fsAjax(
+						{
+							action: 'update'
+						}, 
+						laroute.route('system.ajax'),
+						function(response) {
+							if (typeof(response.status) != "undefined" && response.status == "success") {
+								showAjaxResult(response);
+								window.location.href = '';
+							} else {
+								showAjaxError(response);
+								button.button('reset');
+							}
+						}, true
+					);
+				});
+			}
+		}, Lang.get("messages.update"));
+	});
+
+	$('.check-updates-trigger').click(function(e) {
+		var button = $(this);
+		button.button('loading');
+		fsAjax(
+			{
+				action: 'check_updates'
+			}, 
+			laroute.route('system.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (typeof(response.new_version_available) != "undefined" && response.new_version_available) {
+						// There are updates
+						window.location.href = '';
+					} else {
+						showAjaxResult(response);
+						button.button('reset');
+					}
+				} else {
+					showAjaxError(response);
+					button.button('reset');
+				}
+			}, true
+		);
+		e.preventDefault();
+	});
 }
 
 // Called from polycast

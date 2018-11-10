@@ -50,6 +50,10 @@
     {
         "uri": "modules\/ajax",
         "name": "modules.ajax"
+    },
+    {
+        "uri": "system\/ajax",
+        "name": "system.ajax"
     }
 ],
             prefix: '',

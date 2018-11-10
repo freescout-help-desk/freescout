@@ -25,8 +25,9 @@ class SendAutoReply
 
         if (/*!$conversation->imported &&*/ $conversation->mailbox->auto_reply_enabled) {
 
+            // 24h limit has been disabled: https://github.com/freescout-helpdesk/freescout/pull/95
             // Send auto reply once in 24h
-            $created_at = \Illuminate\Support\Carbon::now()->subDays(1);
+            /*$created_at = \Illuminate\Support\Carbon::now()->subDays(1);
             $auto_reply_sent = SendLog::where('customer_id', $conversation->customer_id)
                 ->where('mail_type', SendLog::MAIL_TYPE_AUTO_REPLY)
                 ->where('created_at', '>', $created_at)
@@ -34,7 +35,7 @@ class SendAutoReply
 
             if ($auto_reply_sent) {
                 return;
-            }
+            }*/
 
             \App\Jobs\SendAutoReply::dispatch($conversation, $conversation->threads()->first(), $conversation->mailbox, $conversation->customer)
             ->onQueue('emails');

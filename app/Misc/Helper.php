@@ -50,8 +50,14 @@ class Helper
                 'users.notifications', 
                 'users.password', 
             ],
-            'logs' => 'logs',
-            'system' => 'system',
+            'logs' => [
+                'logs', 
+                'logs.app',
+            ],
+            'system' => [
+                'system', 
+                'system.tools',
+            ],
         ],
         // No menu item selected
         'customers' => []
@@ -494,7 +500,9 @@ class Helper
     {
         $current_route = \Request::route()->getName();
 
-        foreach (self::$menu as $primary_name => $primary_items) {
+        $menu = \Eventy::filter('menu.selected', self::$menu);
+
+        foreach ($menu as $primary_name => $primary_items) {
             if (!is_array($primary_items)) {
                 if ($current_route == $primary_items) {
                     return ($primary_name == $menu_item_name);

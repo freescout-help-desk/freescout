@@ -2660,6 +2660,9 @@ ul.prev-convs {
 .margin-left {
     margin-left: 20px !important;
 }
+.margin-right {
+    margin-right: 20px !important;
+}
 .margin-bottom {
     margin-bottom: 20px !important;
 }
@@ -3035,8 +3038,11 @@ a.disabled:focus {
     color: #ccc;
     display: block;
     padding: 5px;
-    white-space: pre;
-    overflow-x: auto;
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 
 /**
