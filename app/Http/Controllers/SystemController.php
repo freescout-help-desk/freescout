@@ -132,11 +132,17 @@ class SystemController extends Controller
             ];
         }
 
+        // Check new version
+        $new_version_available = \Cache::remember('new_version_available', 15, function() {
+            return \Updater::isNewVersionAvailable(\Config::get('app.version'));
+        });
+
         return view('system/status', [
             'commands'       => $commands,
             'queued_jobs'    => $queued_jobs,
             'failed_jobs'    => $failed_jobs,
             'php_extensions' => $php_extensions,
+            'new_version_available' => $new_version_available,
         ]);
     }
 
@@ -208,6 +214,20 @@ class SystemController extends Controller
                     // Adding session flash is useless as cache is cleated
                     $response['msg_success'] = __('Application successfully updated');
                     $response['status'] = 'success';
+                }
+                break;
+
+            case 'check_updates':
+                try {
+                    $response['new_version_available'] = true; //\Updater::isNewVersionAvailable(config('app.version'));
+                    \Cache::put('new_version_available', $response['new_version_available'], 15);
+                    $response['status'] = 'success';
+                } catch (\Exception $e) {
+                    $response['msg'] = $e->getMessage();
+                }
+                if (!$response['msg'] && !$response['new_version_available']) {
+                    // Adding session flash is useless as cache is cleated
+                    $response['msg_success'] = __('You have the latest version of :app_name', ['app_name' => config('app.name')]);
                 }
                 break;
 

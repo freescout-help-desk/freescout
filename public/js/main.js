@@ -2016,7 +2016,9 @@ function initSystemStatus()
 				modal.children().find('.confirm-update:first').click(function(e) {
 					button.button('loading');
 					modal.modal('hide');
-					
+					// Disable Polycast not to receive 'Internet connection broken' messages
+					poly.disconnect();
+
 					fsAjax(
 						{
 							action: 'update'
@@ -2024,6 +2026,7 @@ function initSystemStatus()
 						laroute.route('system.ajax'),
 						function(response) {
 							if (typeof(response.status) != "undefined" && response.status == "success") {
+								showAjaxResult(response);
 								window.location.href = '';
 							} else {
 								showAjaxError(response);
@@ -2034,6 +2037,32 @@ function initSystemStatus()
 				});
 			}
 		}, Lang.get("messages.update"));
+	});
+
+	$('.check-updates-trigger').click(function(e) {
+		var button = $(this);
+		button.button('loading');
+		fsAjax(
+			{
+				action: 'check_updates'
+			}, 
+			laroute.route('system.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (typeof(response.new_version_available) != "undefined" && response.new_version_available) {
+						// There are updates
+						window.location.href = '';
+					} else {
+						showAjaxResult(response);
+						button.button('reset');
+					}
+				} else {
+					showAjaxError(response);
+					button.button('reset');
+				}
+			}, true
+		);
+		e.preventDefault();
 	});
 }
 
