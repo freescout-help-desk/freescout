@@ -219,7 +219,7 @@ class SystemController extends Controller
 
             case 'check_updates':
                 try {
-                    $response['new_version_available'] = true; //\Updater::isNewVersionAvailable(config('app.version'));
+                    $response['new_version_available'] = \Updater::isNewVersionAvailable(config('app.version'));
                     \Cache::put('new_version_available', $response['new_version_available'], 15);
                     $response['status'] = 'success';
                 } catch (\Exception $e) {
