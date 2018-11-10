@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Conversation;
 use App\Mailbox;
 use App\SavedReply;
-use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Route;
 use Validator;
 
 class SavedRepliesController extends Controller
@@ -36,9 +32,9 @@ class SavedRepliesController extends Controller
         $replies = SavedReply::where('mailbox_id', $mailbox->id)->orderBy('name', 'asc')->get();
 
         return view('saved_replies/saved_replies', [
-            'mailbox' => $mailbox,
-            'replies' => $replies,
-            'is_new' => $request->query->has('is_new'),
+            'mailbox'  => $mailbox,
+            'replies'  => $replies,
+            'is_new'   => $request->query->has('is_new'),
             'reply_id' => $request->query->get('id', null)
         ]);
     }
@@ -53,9 +49,9 @@ class SavedRepliesController extends Controller
         $this->authorize('create', 'App\SavedReply');
 
         $validator = Validator::make($request->all(), [
-            'name'  => 'required|string|max:80',
+            'name'       => 'required|string|max:80',
             'mailbox_id' => 'required', 
-            'body' => 'required',
+            'body'       => 'required',
         ]);
 
         $mailbox_id = $request->request->get('mailbox_id');
@@ -89,13 +85,13 @@ class SavedRepliesController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name'  => 'required|string|max:80',
-            'body' => 'required',
+            'body'  => 'required',
         ]);
 
 
         if ($validator->fails()) {
             return redirect()->route('savedreplies', ['mailbox_id' => $mailbox->id, 'id' => $savedReply->id])
-                        ->withErrors($validator, 'updateSave'+$id)
+                        ->withErrors($validator, 'updateSave' . $id)
                         ->withInput();
         }
 
@@ -127,14 +123,15 @@ class SavedRepliesController extends Controller
     }
 
     /**
-     * 
+     * Ajax Get one saved reply
      */
     public function ajaxGet($id, Request $request)
     {
         $savedReply = SavedReply::find($request->id);
         
-        if (!$savedReply)
+        if (!$savedReply) {
             return ['status' => 'error', 'msg' => __('Saved Reply not found')];
+        }
 
         return \Response::json(['status' => 'success', 'data' => $savedReply->toArray()]);
 
