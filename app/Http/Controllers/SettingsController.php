@@ -167,6 +167,12 @@ class SettingsController extends Controller
 
         $request = request();
 
+        $request->settings = array_merge($request->settings, [
+            'email_branding'       => !empty($request->settings['email_branding'])       ? $request->settings['email_branding']       : 0,
+            'open_tracking'        => !empty($request->settings['open_tracking'])        ? $request->settings['open_tracking']        : 0,
+            'enrich_customer_data' => !empty($request->settings['enrich_customer_data']) ? $request->settings['enrich_customer_data'] : 0,
+        ]);
+
         foreach ($settings as $i => $option_name) {
             // By some reason isset() does not work for empty elements
             if (array_key_exists($option_name, $request->settings)) {
