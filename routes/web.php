@@ -58,6 +58,13 @@ Route::get('/conversation/ajax-html/{action}', ['uses' => 'ConversationsControll
 Route::get('/search', 'ConversationsController@search')->name('conversations.search');
 Route::get('/conversation/undo-reply/{thread_id}', 'ConversationsController@undoReply')->name('conversations.undo');
 
+//Saved Replies
+Route::get('/mailbox/{mailbox_id}/saved-replies', 'SavedRepliesController@savedReplies')->name('savedreplies');
+Route::post('/saved-replies/new', 'SavedRepliesController@createSave')->name('savedreplies.create');
+Route::post('/saved-replies/delete', ['uses' => 'SavedRepliesController@delete', 'laroute' => true])->name('savedreplies.delete');
+Route::get('/saved-replies/ajax-get/{id}', ['uses' => 'SavedRepliesController@ajaxGet', 'laroute' => true])->name('savedreplies.ajax_get');
+Route::post('/saved-replies/{id}', 'SavedRepliesController@updateSave')->name('savedreplies.update');
+
 // Mailboxes
 Route::get('/mailboxes', ['uses' => 'MailboxesController@mailboxes', 'laroute' => true])->name('mailboxes');
 Route::get('/mailbox/new', 'MailboxesController@create')->name('mailboxes.create');

@@ -4,6 +4,7 @@
 	<li @if (Route::currentRouteName() == 'mailboxes.permissions')class="active"@endif><a href="{{ route('mailboxes.permissions', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-ok"></i> {{ __('Permissions') }}</a></li>
 	{{--<li @if (Route::currentRouteName() == 'mailboxes.fields')class="active"@endif><a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-list"></i> {{ __('Custom Fields') }} (todo)</a></li>--}}
 	<li @if (Route::currentRouteName() == 'mailboxes.auto_reply')class="active"@endif><a href="{{ route('mailboxes.auto_reply', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-share"></i> {{ __('Auto Reply') }}</a></li>
+	<li @if (Route::currentRouteName() == 'savedreplies')class="active"@endif><a href="{{ route('savedreplies', ['mailbox_id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-list-alt"></i> {{ __('Saved Replies') }}</a></li>
 @endif
 @action('mailboxes.settings.menu', $mailbox)
 {{--<li @if (Route::currentRouteName() == 'mailboxes.workflows')class="active"@endif><a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-random"></i> {{ __('Workflows') }} (todo)</a></li>--}}

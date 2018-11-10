@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Attachment;
 use App\Conversation;
 use App\Customer;
+use App\SavedReply;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
 use App\Events\UserCreatedConversation;
@@ -150,6 +151,8 @@ class ConversationsController extends Controller
                                     ->paginate(self::PREV_CONVERSATIONS_LIMIT);
         }
 
+        $saved_replies = SavedReply::where('mailbox_id', $mailbox->id)->orderBy('name', 'asc')->get();
+
         $template = 'conversations/view';
         if ($conversation->state == Conversation::STATE_DRAFT) {
             $template = 'conversations/create';
@@ -165,6 +168,7 @@ class ConversationsController extends Controller
             'after_send'   => $after_send,
             'to_customers' => $to_customers,
             'prev_conversations' => $prev_conversations,
+            'saved_replies' => $saved_replies
         ]);
     }
 
@@ -755,7 +759,6 @@ class ConversationsController extends Controller
                     $response['conversation_id'] = $conversation->id;
                     $response['thread_id'] = $thread->id;
                     $response['number'] = $conversation->number;
-
                     $response['status'] = 'success';
 
                     // Set thread_id for uploaded attachments

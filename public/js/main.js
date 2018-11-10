@@ -10,8 +10,12 @@ var fs_draft_autosave_period = 12; // seconds
 var fs_reply_changed = false;
 var fs_conv_editor_buttons = {};
 var fs_conv_editor_toolbar = [
-    ['style', ['attachment', 'bold', 'italic', 'underline', 'ul', 'ol', 'link', 'picture', 'codeview']],
+    ['style', ['attachment', 'bold', 'italic', 'underline', 'ul', 'ol', 'link', 'picture', 'codeview', 'savedreplies']],
     ['actions', ['savedraft', 'discard']],
+];
+
+var fs_saved_reply_editor_toolbar = [
+        ['style', ['bold', 'italic', 'underline', 'ul', 'ol', 'link']],
 ];
 
 // Ajax based notifications;
@@ -139,6 +143,50 @@ var EditorInsertVarButton = function (context) {
 		tooltip: Lang.get("messages.insert_var"),
 		container: 'body'
 	});
+
+	return button.render();   // return button as jquery object
+}
+
+var EditorSavedRepliesButton = function (context) {
+	var ui = $.summernote.ui;
+
+	var saved_replies = $('#saved-replies-list').html();
+
+	// create button
+	var button = ui.buttonGroup([
+		ui.button({
+			contents: '<i class="glyphicon glyphicon-list-alt"></i>',
+			tooltip: Lang.get("messages.saved_replies"),
+			data: {
+			    toggle: 'dropdown'
+			}
+		}),
+        ui.dropdown({
+            items: saved_replies,
+            click: function (event) {
+                event.preventDefault();
+
+                var $button = $(event.target);
+                var id = $button.data('id');
+
+                fsAjax(
+                	{}, 
+                	laroute.route('savedreplies.ajax_get', {id: id}),
+                	function(response) {
+                		loaderHide();
+                		if (typeof(response.status) != "undefined" && response.status == "success") {
+                			var saved_reply = response.data;
+                			context.invoke('editor.pasteHTML', saved_reply.body);
+                			return;
+                		} else {
+                			showAjaxError(response);
+                			button.button('reset');
+                		}
+                	}, false, null, 'get'
+                );
+            }
+		})
+	]);
 
 	return button.render();   // return button as jquery object
 }
@@ -449,7 +497,7 @@ function multiInputInit()
 	} );
 }
 
-function fsAjax(data, url, success_callback, no_loader, error_callback)
+function fsAjax(data, url, success_callback, no_loader, error_callback, method)
 {
 	if (!url) {
 		console.log('Empty URL');
@@ -484,7 +532,7 @@ function fsAjax(data, url, success_callback, no_loader, error_callback)
 
 	$.ajax({
 		url: url,
-		method: 'post',
+		method: method ? method : 'post',
 		dataType: 'json',
 		data: data,
 		success: success_callback,
@@ -819,6 +867,7 @@ function convEditorInit()
 {
 	$.extend(fs_conv_editor_buttons, {
 	    attachment: EditorAttachmentButton,
+	    savedreplies: EditorSavedRepliesButton,
 	    savedraft: EditorSaveDraftButton,
 	    discard: EditorDiscardButton
 	});
@@ -865,6 +914,23 @@ function convEditorInit()
 
 	// Autosave draft periodically
 	autosaveDraft();
+}
+
+// Initialize saved reply body editor
+function savedReplyEditorInit()
+{
+	$('.saved-reply-body').summernote({
+		minHeight: 120,
+		dialogsInBody: true,
+		dialogsFade: true,
+		disableResizeEditor: true,
+		followingToolbar: false,
+		toolbar: fs_saved_reply_editor_toolbar,
+	});
+/*
+	var html = $('#editor_bottom_toolbar').html();
+	$('.note-statusbar').addClass('note-statusbar-toolbar form-inline').html(html);
+*/
 }
 
 // Automatically save draft
@@ -1137,6 +1203,32 @@ function newConversationInit()
 			});
 
 			e.preventDefault();
+		});
+	});
+}
+
+// Saved Replies page
+function savedRepliesInit()
+{
+	$(document).ready(function() {
+
+		savedReplyEditorInit();
+
+	    // Delete saved reply
+	    $(".button-delete-saved-reply").click(function(e) {
+	    	var button = $(this);
+	    	var reply_id = button.data('id');
+	    	confirm_html = jQuery("#delete_saved_reply_modal").html();
+
+			showModalDialog(confirm_html, {
+				on_show: function(modal) {
+					modal.children().find('.delete-saved-reply-ok:first').click(function(e) {
+						modal.modal('hide');
+						$.redirect(laroute.route('savedreplies.delete'), {id: reply_id, '_token': getCsrfToken()}, 'POST'); 
+						e.preventDefault();
+					});
+				}
+			});
 		});
 	});
 }

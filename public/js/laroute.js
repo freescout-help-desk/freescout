@@ -36,6 +36,14 @@
         "name": "conversations.ajax_html"
     },
     {
+        "uri": "saved-replies\/delete",
+        "name": "savedreplies.delete"
+    },
+    {
+        "uri": "saved-replies\/ajax-get\/{id}",
+        "name": "savedreplies.ajax_get"
+    },
+    {
         "uri": "mailboxes",
         "name": "mailboxes"
     },

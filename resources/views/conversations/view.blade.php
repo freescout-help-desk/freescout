@@ -369,6 +369,14 @@
             @endforeach
         </div>
     </div>
+
+    <ul id="saved-replies-list" class="hidden">
+        @foreach ($saved_replies as $saved_reply)
+        <li>
+            <a href="#" data-id="{{ $saved_reply->id }}">{{ $saved_reply->name }}</a>
+        </li>
+        @endforeach
+    </ul>
 @endsection
 
 @include('partials/editor')
