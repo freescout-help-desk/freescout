@@ -754,6 +754,7 @@ class ConversationsController extends Controller
 
                     $response['conversation_id'] = $conversation->id;
                     $response['thread_id'] = $thread->id;
+                    $response['number'] = $conversation->number;
 
                     $response['status'] = 'success';
 

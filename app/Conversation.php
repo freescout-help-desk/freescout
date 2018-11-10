@@ -165,11 +165,11 @@ class Conversation extends Model
             $next_ticket    = (int)Option::get('next_ticket');
             $current_number = Conversation::max('number');
 
-            if ( $next_ticket ) {
+            if ($next_ticket) {
                 Option::remove('next_ticket');
             }
 
-            if ( $next_ticket && !Conversation::where('number', $next_ticket)->exists() && $next_ticket >= ($current_number +1) ) {
+            if ($next_ticket && $next_ticket >= ($current_number +1) && !Conversation::where('number', $next_ticket)->exists()) {
                 $model->number = $next_ticket;
             } else {
                 $model->number = $current_number +1;
