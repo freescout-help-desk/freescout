@@ -227,7 +227,7 @@ class SystemController extends Controller
                 }
                 if (!$response['msg'] && !$response['new_version_available']) {
                     // Adding session flash is useless as cache is cleated
-                    $response['msg_success'] = __('You have the latest version of :app_name', ['app_name' => config('app.name')]);
+                    $response['msg_success'] = __('You have the latest version installed');
                 }
                 break;
 
