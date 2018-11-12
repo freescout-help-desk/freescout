@@ -473,4 +473,22 @@ abstract class Module extends ServiceProvider
             // force register method if option == boot && app is AsgardCms
             !class_exists('\Modules\Core\Foundation\AsgardCms');
     }
+
+    /**
+     * Check if module is official.
+     * @return boolean [description]
+     */
+    public function isOfficial()
+    {
+        return \App\Module::isOfficial($this->get('authorUrl'));
+    }
+
+    /**
+     * Get module license from DB.
+     * @return [type] [description]
+     */
+    public function getLicense()
+    {
+        return \App\Module::getLicense($this->getAlias());
+    }
 }

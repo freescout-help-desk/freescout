@@ -133,7 +133,7 @@ class ModulesController extends Controller
                     $params = [
                         'license'      => $license,
                         'module_alias' => $alias,
-                        'url'          => $request->getHttpHost(),
+                        'url'          => \App\Module::getAppUrl(),
                     ];
                     $result = WpApi::activateLicense($params);
 
@@ -245,37 +245,89 @@ class ModulesController extends Controller
 
             case 'activate':
                 $alias = $request->alias;
-                \App\Module::setActive($alias, true);
+                $module = \Module::findByAlias($alias);
 
-                $outputLog = new BufferedOutput();
-                \Artisan::call('freescout:module-install', ['module_alias' => $alias], $outputLog);
-                $output = $outputLog->fetch();
-
-                $type = 'danger';
-                $msg = __('Error occured activating module');
-                if (session('flashes_floating') && is_array(session('flashes_floating'))) {
-                    // If there was any error, module has been deactivate via modules.register_error filter
-                    $msg = '';
-                    foreach (session('flashes_floating') as $flash) {
-                        $msg .= $flash['text'].' ';
-                    }
-                } elseif (strstr($output, 'Configuration cached successfully')) {
-                    $type = 'success';
-                    $msg = __('Module successfully activated!');
-                } else {
-                    // Deactivate module
-                    \App\Module::setActive($alias, false);
-                    \Artisan::call('freescout:clear-cache');
+                if (!$module) {
+                    $response['msg'] = __('Module not found').': '.$alias;
                 }
 
-                // \Session::flash does not work after BufferedOutput
-                $flash = [
-                    'text'      => '<strong>'.$msg.'</strong><pre class="margin-top">'.$output.'</pre>',
-                    'unescaped' => true,
-                    'type'      => $type,
-                ];
-                \Cache::forever('modules_flash', $flash);
-                $response['status'] = 'success';
+                // Check license
+                if (!$response['msg']) {
+                    if (!empty($module->get('authorUrl')) && $module->isOfficial()) {
+                        $params = [
+                            'license'      => $module->getLicense(),
+                            'module_alias' => $alias,
+                            'url'          => \App\Module::getAppUrl()
+                        ];
+                        $license_result = WpApi::checkLicense($params);
+                        
+                        if (!empty($license_result['code']) && !empty($license_result['message'])) {
+                            // Remove remembered license key and deactivate license in DB
+                            \App\Module::deactivateLicense($alias, '');
+
+                            $response['msg'] = $license_result['message'];
+                        } elseif (!empty($license_result['status']) && $license_result['status'] != 'valid' && $license_result['status'] != 'inactive')
+                        {
+                            // Remove remembered license key and deactivate license in DB
+                            \App\Module::deactivateLicense($alias, '');
+
+                            switch ($license_result['status']) {
+                                case 'expired':
+                                    $response['msg'] = __('License key has expired');
+                                    break;
+                                case 'disabled':
+                                    $response['msg'] = __('License key has been revoked');
+                                    break;
+                                case 'inactive':
+                                    $response['msg'] = __('License key has not been activated yet');
+                                case 'site_inactive':
+                                    $response['msg'] = __('This app has not been activated yet');
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                if (!$response['msg']) {
+                    \App\Module::setActive($alias, true);
+
+                    $outputLog = new BufferedOutput();
+                    \Artisan::call('freescout:module-install', ['module_alias' => $alias], $outputLog);
+                    $output = $outputLog->fetch();
+
+                    // Get module name
+                    $name = '?';
+                    if ($module) {
+                        $name = $module->getName();
+                    }
+
+                    $type = 'danger';
+                    $msg = __('Error occured activating ":name" module', ['name' => $name]);
+                    if (session('flashes_floating') && is_array(session('flashes_floating'))) {
+                        // If there was any error, module has been deactivated via modules.register_error filter
+                        $msg = '';
+                        foreach (session('flashes_floating') as $flash) {
+                            $msg .= $flash['text'].' ';
+                        }
+                    } elseif (strstr($output, 'Configuration cached successfully')) {
+                        $type = 'success';
+                        $msg = __('":name" module successfully activated!', ['name' => $name]);
+                    } else {
+                        // Deactivate module
+                        \App\Module::setActive($alias, false);
+                        \Artisan::call('freescout:clear-cache');
+                    }
+
+                    // \Session::flash does not work after BufferedOutput
+                    $flash = [
+                        'text'      => '<strong>'.$msg.'</strong><pre class="margin-top">'.$output.'</pre>',
+                        'unescaped' => true,
+                        'type'      => $type,
+                    ];
+                    \Cache::forever('modules_flash', $flash);
+                    $response['status'] = 'success';
+                }
+
                 break;
 
             case 'deactivate':
@@ -286,11 +338,18 @@ class ModulesController extends Controller
                 \Artisan::call('freescout:clear-cache', [], $outputLog);
                 $output = $outputLog->fetch();
 
+                // Get module name
+                $module = \Module::findByAlias($alias);
+                $name = '?';
+                if ($module) {
+                    $name = $module->getName();
+                }
+
                 $type = 'danger';
-                $msg = __('Error occured deactivating module');
+                $msg = __('Error occured deactivating :name module', ['name' => $name]);
                 if (strstr($output, 'Configuration cached successfully')) {
                     $type = 'success';
-                    $msg = __('Module successfully deactivated!');
+                    $msg = __('":name" module successfully DEactivated!', ['name' => $name]);
                 }
 
                 // \Session::flash does not work after BufferedOutput

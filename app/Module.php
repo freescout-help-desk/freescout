@@ -74,7 +74,7 @@ class Module extends Model
 
     public static function isOfficial($author_url)
     {
-        return parse_url($author_url, PHP_URL_HOST) == parse_url(\Config::get('app.freescout_url'), PHP_URL_HOST);
+        return parse_url($author_url, PHP_URL_HOST) == self::getAppUrl();
     }
 
     /**
@@ -125,6 +125,13 @@ class Module extends Model
         }
     }
 
+    public static function setLicense($alias, $license)
+    {
+        $module = self::getByAliasOrCreate($alias);
+        $module->license = $license;
+        $module->save();
+    }
+
     public static function normalizeAlias($alias)
     {
         return trim(strtolower($alias));
@@ -143,10 +150,22 @@ class Module extends Model
     /**
      * Deactivate module and update modules cache.
      */
-    public static function deactiveModule($alias)
+    public static function deactiveModule($alias, $clear_app_cache = true)
     {
         self::setActive($alias, false);
         // Update modules cache
         \Module::clearCache();
+        if ($clear_app_cache) {
+            \Artisan::call('freescout:clear-cache');
+        }
+    }
+
+    /**
+     * Get URL used to active and check license.
+     * @return [type] [description]
+     */
+    public static function getAppUrl()
+    {
+        return parse_url(\Config::get('app.freescout_url'), PHP_URL_HOST);
     }
 }

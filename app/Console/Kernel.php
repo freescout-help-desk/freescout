@@ -39,6 +39,9 @@ class Kernel extends ConsoleKernel
             ->everyMinute()
             ->withoutOverlapping();
 
+        $schedule->command('freescout:module-check-licenses')
+            ->daily();
+
         // Fetch emails from mailboxes
         $schedule->command('freescout:fetch-emails')
             ->everyMinute()
