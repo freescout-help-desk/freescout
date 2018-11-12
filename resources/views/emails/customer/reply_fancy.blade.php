@@ -71,7 +71,7 @@
 					@if (\App\Option::get('open_tracking'))
 						<tr>
 							<td height="0" style="font-size: 0px; line-height: 0px; color:#ffffff;">	                    	
-								<img src="{{ Config::get('app.url') }}/notification/convo/read/{{$threads->first()->conversation_id}}/{{$threads->first()->id}}/" alt="" />
+								<img src="{{ route('open_tracking.set_read', ['conversation_id' => $threads->first()->conversation_id, 'thread_id' => $threads->first()->id]) }}/" alt="" />
 								<div style="font-size: 0px; line-height: 0px; color:#ffffff !important; display:none;">{#FS:123-123#}</div>
 							</td>
 						</tr>

@@ -246,7 +246,7 @@
                                 {!! $thread->getCleanBody() !!}
 
                                 @if ( $thread->opened_at )
-                                    <span class='thread-opened-at'><span class="glyphicon glyphicon-eye-open"></span> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</span>
+                                    <span class='thread-opened-at' title='{{ App\User::dateFormat($thread->opened_at) }}'><span class="glyphicon glyphicon-eye-open"></span> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</span>
                                 @endif
                             </div>
                             @include('conversations/partials/thread_attachments')
@@ -339,7 +339,7 @@
                                 {!! $thread->getCleanBody() !!}
 
                                 @if ( $thread->opened_at )
-                                    <span class='thread-opened-at'><span class="glyphicon glyphicon-eye-open"></span> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</span>
+                                    <span class='thread-opened-at' title='{{ App\User::dateFormat($thread->opened_at) }}'><span class="glyphicon glyphicon-eye-open"></span> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</span>
                                 @endif
                             </div>
                             @if ($thread->has_attachments)

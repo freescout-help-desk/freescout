@@ -95,5 +95,5 @@ Route::get('/system/status', ['uses' => 'SystemController@status', 'middleware' 
 Route::get('/system/tools', ['uses' => 'SystemController@tools', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system.tools');
 Route::post('/system/tools', ['uses' => 'SystemController@toolsExecute', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);
 
-// Notifications
-Route::get('/notification/convo/read/{conversation_id}/{thread_id}', 'ConversationsController@setRead');
+// Open tracking
+Route::get('/notification/convo/read/{conversation_id}/{thread_id}', 'PublicController@setThreadAsRead')->name('open_tracking.set_read');
