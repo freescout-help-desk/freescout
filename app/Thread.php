@@ -1,11 +1,7 @@
 <?php
 
 namespace App;
-<<<<<<< HEAD
 use App\Attachment;
-=======
-
->>>>>>> master
 use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model
