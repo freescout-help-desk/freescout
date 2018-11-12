@@ -26,9 +26,6 @@ class AppServiceProvider extends ServiceProvider
         \App\Conversation::observe(\App\Observers\ConversationObserver::class);
         \App\Thread::observe(\App\Observers\ThreadObserver::class);
         \Illuminate\Notifications\DatabaseNotification::observe(\App\Observers\DatabaseNotificationObserver::class);
-
-        // Module functions
-        $this->registerModuleFunctions();
     }
 
     /**
@@ -91,36 +88,5 @@ class AppServiceProvider extends ServiceProvider
 
             return $exception;
         }, 10, 2);
-    }
-
-    /**
-     * Register functions allowing modules to get/set their options.
-     */
-    public function registerModuleFunctions()
-    {
-        // At this stage class Module may be not defined yet, especially during upgrading
-        // Without this check, `php artisan cache:clear` command may fail:
-        //      In AppServiceProvider.php line XX:
-        //      Class 'Module' not found
-
-        if (!class_exists('Module')) {
-            return;
-        }
-
-        \Module::macro('getOption', function($module_alias, $option_name, $default = false) {
-            // If not passed, get default value from config 
-            if (func_num_args() == 2) {
-                $options = \Config::get(strtolower($module_alias).'.options');
-
-                if (isset($options[$option_name]) && isset($options[$option_name]['default'])) {
-                    $default = $options[$option_name]['default'];
-                }
-            }
-
-            return \Option::get($module_alias.'.'.$option_name, $default);
-        });
-        \Module::macro('setOption', function($module_alias, $option_name, $option_value) {
-            return \Option::set(strtolower($module_alias).'.'.$option_name, $option_value);
-        });
     }
 }

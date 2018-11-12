@@ -43,6 +43,12 @@ abstract class Repository implements RepositoryInterface, Countable
     protected $stubPath;
 
     /**
+     * Cache in memory.
+     * @var [type]
+     */
+    protected $cache;
+
+    /**
      * The constructor.
      *
      * @param Container $app
@@ -175,6 +181,7 @@ abstract class Repository implements RepositoryInterface, Countable
      */
     public function clearCache()
     {
+        $this->cache = null;
         $this->app['cache']->forget($this->config('cache.key'));
     }
 
@@ -205,6 +212,9 @@ abstract class Repository implements RepositoryInterface, Countable
      */
     public function getCached()
     {
+        if ($this->cache) {
+            return $this->cache;
+        }
         return $this->app['cache']->remember($this->config('cache.key'), $this->config('cache.lifetime'), function () {
 
             // By some reason when Nwidart\Modules\Module is converted into array
@@ -215,6 +225,9 @@ abstract class Repository implements RepositoryInterface, Countable
                     $item['active'] = (int)\App\Module::isActive($item['alias']);
                 }
             }
+
+            // Remember in memory cache to avoid reading cache file
+            $this->cache = $array;
 
             return $array;
         });
@@ -381,6 +394,21 @@ abstract class Repository implements RepositoryInterface, Countable
         return;
     }
 
+    /**
+     * Check by alias if module is active.
+     * @param  [type]  $alias [description]
+     * @return boolean        [description]
+     */
+    public function isActive($alias)
+    {
+        $module = $this->findByAlias($alias);
+        if ($module && $module->active()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * Find all modules that are required by a module. If the module cannot be found, throw an exception.
      *
@@ -704,5 +732,35 @@ abstract class Repository implements RepositoryInterface, Countable
         $this->stubPath = $stubPath;
 
         return $this;
+    }
+
+    /**
+     * Get module option.
+     * @param  [type]  $module_alias [description]
+     * @param  [type]  $option_name  [description]
+     * @param  boolean $default      [description]
+     * @return [type]                [description]
+     */
+    public function getOption($module_alias, $option_name, $default = false) {
+        // If not passed, get default value from config 
+        if (func_num_args() == 2) {
+            $options = \Config::get(strtolower($module_alias).'.options');
+
+            if (isset($options[$option_name]) && isset($options[$option_name]['default'])) {
+                $default = $options[$option_name]['default'];
+            }
+        }
+
+        return \Option::get($module_alias.'.'.$option_name, $default);
+    }
+
+    /**
+     * Set module option.
+     * @param [type] $module_alias [description]
+     * @param [type] $option_name  [description]
+     * @param [type] $option_value [description]
+     */
+    public function setOption($module_alias, $option_name, $option_value) {
+        return \Option::set(strtolower($module_alias).'.'.$option_name, $option_value);
     }
 }
