@@ -6,7 +6,6 @@ use App\Conversation;
 use App\Customer;
 use App\Email;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Validator;
 
 class CustomersController extends Controller
@@ -73,7 +72,7 @@ class CustomersController extends Controller
             //'emails.1'   => __('Email'),
             'emails.*'   => __('Email'),
         ]);
-    
+
         if ($validator->fails()) {
             return redirect()->route('customers.update', ['id' => $id])
                         ->withErrors($validator)
@@ -96,12 +95,12 @@ class CustomersController extends Controller
         foreach ($new_emails as $new_email) {
             $email = Email::where('email', $new_email)->first();
             if ($email && $email->customer) {
-                // If customer whose email is removed does not have first name and other emails 
+                // If customer whose email is removed does not have first name and other emails
                 // we have to create first name for this customer
                 if (!$email->customer->first_name && count($email->customer->emails) == 1) {
                     if ($request->first_name) {
                         $email->customer->first_name = $request->first_name;
-                    } else if ($customer->first_name) {
+                    } elseif ($customer->first_name) {
                         $email->customer->first_name = $customer->first_name;
                     } else {
                         $email->customer->first_name = mb_ucfirst($email->getNameFromEmail());
@@ -110,12 +109,12 @@ class CustomersController extends Controller
                 }
 
                 $flash_message .= __('Email :tag_email_begin:email:tag_email_end has been moved from another customer:  :a_begin:customer:a_end.', [
-                    'email' => $email->email,
+                    'email'           => $email->email,
                     'tag_email_begin' => '<strong>',
-                    'tag_email_end' => '</strong>',
-                    'customer' => $email->customer->getFullName(),
-                    'a_begin' => '<strong><a href="'.$email->customer->url().'" target="_blank">',
-                    'a_end' => '</a></strong>',
+                    'tag_email_end'   => '</strong>',
+                    'customer'        => $email->customer->getFullName(),
+                    'a_begin'         => '<strong><a href="'.$email->customer->url().'" target="_blank">',
+                    'a_end'           => '</a></strong>',
                 ]).' ';
 
                 $new_emails_change_customer[] = $email->email;
@@ -209,10 +208,10 @@ class CustomersController extends Controller
             ->where('customer_id', $customer->id)
             ->orderBy('created_at', 'desc')
             ->paginate(Conversation::DEFAULT_LIST_SIZE);
-                                
+
         return view('customers/conversations', [
             'customer'      => $customer,
-            'conversations' => $conversations
+            'conversations' => $conversations,
         ]);
     }
 
@@ -222,8 +221,8 @@ class CustomersController extends Controller
     public function ajaxSearch(Request $request)
     {
         $response = [
-            'results' => [],
-            'pagination' => ['more' => false]
+            'results'    => [],
+            'pagination' => ['more' => false],
         ];
 
         $q = $request->q;
@@ -247,8 +246,8 @@ class CustomersController extends Controller
                 $id = $customer->email;
             }
             $response['results'][] = [
-                'id' => $id,
-                'text' => $text
+                'id'   => $id,
+                'text' => $text,
             ];
         }
 

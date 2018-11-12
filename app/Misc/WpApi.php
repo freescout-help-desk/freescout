@@ -11,9 +11,9 @@ class WpApi
     const METHOD_GET = 'get';
     const METHOD_POST = 'post';
 
-    const ACTION_CHECK_LICENSE    = 'check_license';
+    const ACTION_CHECK_LICENSE = 'check_license';
     const ACTION_ACTIVATE_LICENSE = 'activate_license';
-    const ACTION_GET_VERSION      = 'get_version';
+    const ACTION_GET_VERSION = 'get_version';
 
     public static $lastError;
 
@@ -32,17 +32,18 @@ class WpApi
         try {
             $response = Zttp::$method(self::url($endpoint), $params);
         } catch (\Exception $e) {
-            self::$lastError = array(
-                'code' => $e->getCode(),
+            self::$lastError = [
+                'code'    => $e->getCode(),
                 'message' => $e->getMessage(),
-            );
+            ];
+
             return [];
         }
 
         // https://guzzle3.readthedocs.io/http-client/response.html
         if ($response->status() < 500) {
             $json = $response->json();
-            if (!empty($json['code']) && !empty($json['message']) && 
+            if (!empty($json['code']) && !empty($json['message']) &&
                 !empty($json['data']) && !empty($json['data']['status']) && $json['data']['status'] != 200
             ) {
                 self::$lastError = $json;

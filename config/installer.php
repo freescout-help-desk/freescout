@@ -1,4 +1,5 @@
 <?php
+
 // Causes:
 // Call to undefined method Illuminate\Validation\Rules\In::__set_state()
 //use Illuminate\Validation\Rule;
@@ -16,12 +17,12 @@ return [
     |
     */
     'core' => [
-        'minPhpVersion' => '7.0.0'
+        'minPhpVersion' => '7.0.0',
     ],
     'final' => [
-        'key' => false,
-        'publish' => false
-    ],    
+        'key'     => false,
+        'publish' => false,
+    ],
     'requirements' => [
         'php' => [
             'OpenSSL',
@@ -51,13 +52,13 @@ return [
     |
     */
     'permissions' => [
-        'storage/app/'           => '775',
-        'storage/framework/'     => '775',
+        'storage/app/'                      => '775',
+        'storage/framework/'                => '775',
         'storage/framework/cache/data/'     => '775',
-        'storage/logs/'          => '775',
-        'bootstrap/cache/'       => '775',
-        'public/css/builds/'     => '775',
-        'public/js/builds/'      => '775',
+        'storage/logs/'                     => '775',
+        'bootstrap/cache/'                  => '775',
+        'public/css/builds/'                => '775',
+        'public/js/builds/'                 => '775',
     ],
 
     /*
@@ -130,7 +131,7 @@ return [
             ],
             'dump' => [
                 'data' => 'Dumping a not found message.',
-            ]
+            ],
         ],
     ],
 

@@ -2,8 +2,6 @@
 
 namespace App\Mail;
 
-use Illuminate\Container\Container;
-use Illuminate\Contracts\Mail\Mailer as MailerContract;
 use Illuminate\Mail\Mailable;
 
 class Alert extends Mailable
@@ -20,7 +18,6 @@ class Alert extends Mailable
 
     /**
      * Create a new message instance.
-     *
      */
     public function __construct($text, $title = '')
     {

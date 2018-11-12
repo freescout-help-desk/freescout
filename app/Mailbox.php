@@ -440,7 +440,7 @@ class Mailbox extends Model
 
     /**
      * Get main email and aliases.
-     * 
+     *
      * @return array
      */
     public function getEmails()
@@ -456,13 +456,14 @@ class Mailbox extends Model
                 }
             }
         }
+
         return $emails;
     }
 
     /**
      * Remove mailbox email and aliases from the list of emails.
      *
-     * @param array  $list
+     * @param array   $list
      * @param Mailbox $mailbox
      *
      * @return array

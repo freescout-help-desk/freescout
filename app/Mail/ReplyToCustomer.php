@@ -2,11 +2,9 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Mail\Mailer as MailerContract;
 use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
 
 // https://medium.com/@guysmilez/queuing-mailables-with-custom-headers-in-laravel-5-4-ab615f022f17
 //abstract class AbstractMessage extends Mailable
@@ -92,7 +90,7 @@ class ReplyToCustomer extends Mailable
 
         if ($this->threads->first()->has_attachments) {
             foreach ($this->threads->first()->attachments as $attachment) {
-                $message->attach($attachment->getLocalFilePath());  
+                $message->attach($attachment->getLocalFilePath());
             }
         }
 

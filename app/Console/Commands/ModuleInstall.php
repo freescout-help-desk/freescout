@@ -1,7 +1,8 @@
 <?php
 /**
- * php artisan freescout:module-install modulealias
+ * php artisan freescout:module-install modulealias.
  */
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -56,6 +57,7 @@ class ModuleInstall extends Command
             }
             if (!$modules_aliases) {
                 $this->error('No modules found');
+
                 return;
             }
             $install_all = $this->confirm('You have not specified a module alias, would you like to install all available modules ('.implode(', ', $modules_aliases).')?');
@@ -74,6 +76,7 @@ class ModuleInstall extends Command
             $module = \Module::findByAlias($module_alias);
             if (!$module) {
                 $this->error('Module with the specified alias not found: '.$module_alias);
+
                 return;
             }
             $this->call('module:migrate', ['module' => $module->getName(), '--force' => true]);
@@ -91,7 +94,7 @@ class ModuleInstall extends Command
         if (file_exists($from)) {
             return $this->info('Public symlink already exists');
         }
-        
+
         try {
             symlink($to, $from);
         } catch (\Exception $e) {

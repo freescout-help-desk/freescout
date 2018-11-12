@@ -57,7 +57,7 @@ class SendNotificationToUsers
         // We can not check imported here, as after conversation has been imported via API
         // notifications has to be sent.
         //if (!$conversation->imported) {
-        
+
         // Using the last argument you can make event to be processed immediately
         Subscription::registerEvent($event_type, $conversation, $caused_by_user_id/*, true*/);
     }

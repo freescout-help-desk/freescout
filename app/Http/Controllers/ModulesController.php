@@ -104,7 +104,7 @@ class ModulesController extends Controller
         return view('modules/modules', [
             'installed_modules' => $installed_modules,
             'modules_directory' => $modules_directory,
-            'flashes'           => $flashes
+            'flashes'           => $flashes,
         ]);
     }
 
@@ -123,7 +123,7 @@ class ModulesController extends Controller
             case 'install':
             case 'activate_license':
                 $license = $request->license;
-                $alias   = $request->alias;
+                $alias = $request->alias;
 
                 if (!$license) {
                     $response['msg'] = __('Empty license key');
@@ -139,25 +139,25 @@ class ModulesController extends Controller
 
                     if (WpApi::$lastError) {
                         $response['msg'] = WpApi::$lastError['message'];
-                    } else if (!empty($result['code']) && !empty($result['message'])) {
+                    } elseif (!empty($result['code']) && !empty($result['message'])) {
                         $response['msg'] = $result['message'];
                     } else {
                         if (!empty($result['status']) && $result['status'] == 'valid') {
-
                             if ($request->action == 'install') {
                                 // Download and install module
                                 $license_details = WpApi::getVersion($params);
-                                
+
                                 if (WpApi::$lastError) {
                                     $response['msg'] = WpApi::$lastError['message'];
-                                } else if (!empty($license_details['code']) && !empty($license_details['message'])) {
+                                } elseif (!empty($license_details['code']) && !empty($license_details['message'])) {
                                     $response['msg'] = $license_details['message'];
                                 } elseif (!empty($license_details['download_link'])) {
                                     // Download module
                                     $module_archive = \Module::getPath().DIRECTORY_SEPARATOR.$alias.'.zip';
+
                                     try {
                                         \Helper::downloadRemoteFile($license_details['download_link'], $module_archive);
-                                    } catch(\Exception $e) {
+                                    } catch (\Exception $e) {
                                         $response['msg'] = $e->getMessage();
                                     }
 
@@ -168,7 +168,7 @@ class ModulesController extends Controller
                                         // Extract
                                         try {
                                             \Helper::unzip($module_archive, \Module::getPath());
-                                        } catch(\Exception $e) {
+                                        } catch (\Exception $e) {
                                             $response['msg'] = $e->getMessage();
                                         }
                                         // Check if extracted module exists
@@ -190,9 +190,7 @@ class ModulesController extends Controller
 
                                         \Session::flash('flash_success_floating', __('Module successfully installed!'));
                                         $response['status'] = 'success';
-
                                     } elseif ($download_error) {
-
                                         $response['reload'] = true;
 
                                         if ($response['msg']) {
@@ -211,7 +209,6 @@ class ModulesController extends Controller
                                 \Session::flash('flash_success_floating', __('License successfully activated!'));
                                 $response['status'] = 'success';
                             }
-
                         } elseif (!empty($result['error'])) {
                             switch ($result['error']) {
                                 case 'missing':
@@ -221,19 +218,19 @@ class ModulesController extends Controller
                                     $response['msg'] = __("You have to activate each bundle's module separately");
                                     break;
                                 case 'disabled':
-                                    $response['msg'] = __("License key has been revoked");
+                                    $response['msg'] = __('License key has been revoked');
                                     break;
                                 case 'no_activations_left':
-                                    $response['msg'] = __("No activations left for this license key");
+                                    $response['msg'] = __('No activations left for this license key');
                                     break;
                                 case 'expired':
-                                    $response['msg'] = __("License key has expired");
+                                    $response['msg'] = __('License key has expired');
                                     break;
                                 case 'key_mismatch':
-                                    $response['msg'] = __("License key belongs to another module");
+                                    $response['msg'] = __('License key belongs to another module');
                                     break;
                                 case 'invalid_item_id':
-                                    $response['msg'] = __("Module not found in the modules directory");
+                                    $response['msg'] = __('Module not found in the modules directory');
                                     break;
                                 default:
                                     $response['msg'] = __('Error code:'.' '.$result['error']);
@@ -250,7 +247,7 @@ class ModulesController extends Controller
                 $alias = $request->alias;
                 \App\Module::setActive($alias, true);
 
-                $outputLog = new BufferedOutput;
+                $outputLog = new BufferedOutput();
                 \Artisan::call('freescout:module-install', ['module_alias' => $alias], $outputLog);
                 $output = $outputLog->fetch();
 
@@ -285,7 +282,7 @@ class ModulesController extends Controller
                 $alias = $request->alias;
                 \App\Module::setActive($alias, false);
 
-                $outputLog = new BufferedOutput;
+                $outputLog = new BufferedOutput();
                 \Artisan::call('freescout:clear-cache', [], $outputLog);
                 $output = $outputLog->fetch();
 
@@ -318,7 +315,7 @@ class ModulesController extends Controller
                     $module->delete();
                     \Session::flash('flash_success_floating', __('Module deleted'));
                 } else {
-                    $response['msg'] = __("Module not found").': '.$alias;
+                    $response['msg'] = __('Module not found').': '.$alias;
                 }
 
                 $response['status'] = 'success';

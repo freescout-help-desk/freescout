@@ -18,7 +18,7 @@ class DatabaseManager
      */
     public function migrateAndSeed()
     {
-        $outputLog = new BufferedOutput;
+        $outputLog = new BufferedOutput();
 
         $this->sqlite($outputLog);
 
@@ -29,18 +29,18 @@ class DatabaseManager
      * Run the migration and call the seeder.
      *
      * @param collection $outputLog
+     *
      * @return collection
      */
     private function migrate($outputLog)
     {
-        try{
-            Artisan::call('migrate', ["--force"=> true], $outputLog);
-        }
-        catch(Exception $e){
+        try {
+            Artisan::call('migrate', ['--force'=> true], $outputLog);
+        } catch (Exception $e) {
             return $this->response($e->getMessage(), 'error', $outputLog);
         }
 
-        return $this->response(trans('installer_messages.final.finished'), 'success', $outputLog);;
+        return $this->response(trans('installer_messages.final.finished'), 'success', $outputLog);
         //return $this->seed($outputLog);
     }
 
@@ -48,14 +48,14 @@ class DatabaseManager
      * Seed the database.
      *
      * @param collection $outputLog
+     *
      * @return array
      */
     private function seed($outputLog)
     {
-        try{
+        try {
             Artisan::call('db:seed', ['--force' => true], $outputLog);
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return $this->response($e->getMessage(), 'error', $outputLog);
         }
 
@@ -66,16 +66,17 @@ class DatabaseManager
      * Return a formatted error messages.
      *
      * @param $message
-     * @param string $status
+     * @param string     $status
      * @param collection $outputLog
+     *
      * @return array
      */
-    private function response($message, $status = 'danger', $outputLog)
+    private function response($message, $status, $outputLog)
     {
         return [
-            'status' => $status,
-            'message' => $message,
-            'dbOutputLog' => $outputLog->fetch()
+            'status'      => $status,
+            'message'     => $message,
+            'dbOutputLog' => $outputLog->fetch(),
         ];
     }
 
@@ -86,13 +87,13 @@ class DatabaseManager
      */
     private function sqlite($outputLog)
     {
-        if(DB::connection() instanceof SQLiteConnection) {
+        if (DB::connection() instanceof SQLiteConnection) {
             $database = DB::connection()->getDatabaseName();
-            if(!file_exists($database)) {
+            if (!file_exists($database)) {
                 touch($database);
                 DB::reconnect(Config::get('database.default'));
             }
-            $outputLog->write('Using SqlLite database: ' . $database, 1);
+            $outputLog->write('Using SqlLite database: '.$database, 1);
         }
     }
 }
