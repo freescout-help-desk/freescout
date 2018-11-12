@@ -41,12 +41,12 @@
 						                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color: #232323; font-size:13px; line-height:19px; margin:0;">
 					                                {!! $thread->body !!}
 
-					                                @action('reply_email.before_signature', $mailbox, $conversation, $thread)
+					                                @action('reply_email.before_signature', $thread, $loop, $threads, $conversation, $mailbox)
 					                                @if ($thread->source_via == App\Thread::PERSON_USER)
 						                                <br>{!! $conversation->getSignatureProcessed() !!}
-						                                <br><br>
 						                            @endif
-						                            @action('reply_email.after_signature', $mailbox, $conversation, $thread)
+						                            @action('reply_email.after_signature', $thread, $loop, $threads, $conversation, $mailbox)
+						                            <br><br>
 	                                            </div>
 	                                        </div>
 						                </td>

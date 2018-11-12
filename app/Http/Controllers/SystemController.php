@@ -132,11 +132,23 @@ class SystemController extends Controller
             ];
         }
 
+        // Check new version
+        $new_version_available = false;
+        $latest_version = \Cache::remember('latest_version', 15, function () {
+            return \Updater::getVersionAvailable();
+        });
+
+        if ($latest_version && version_compare($latest_version, \Config::get('app.version'), '>')) {
+            $new_version_available = true;
+        }
+
         return view('system/status', [
-            'commands'       => $commands,
-            'queued_jobs'    => $queued_jobs,
-            'failed_jobs'    => $failed_jobs,
-            'php_extensions' => $php_extensions,
+            'commands'              => $commands,
+            'queued_jobs'           => $queued_jobs,
+            'failed_jobs'           => $failed_jobs,
+            'php_extensions'        => $php_extensions,
+            'new_version_available' => $new_version_available,
+            'latest_version'        => $latest_version,
         ]);
     }
 
@@ -151,18 +163,20 @@ class SystemController extends Controller
         }
 
         return view('system/tools', [
-            'output' => $output
+            'output' => $output,
         ]);
     }
 
     /**
      * Execute tools action.
-     * @param  Request $request [description]
-     * @return [type]           [description]
+     *
+     * @param Request $request [description]
+     *
+     * @return [type] [description]
      */
     public function toolsExecute(Request $request)
     {
-        $outputLog = new BufferedOutput;
+        $outputLog = new BufferedOutput();
 
         switch ($request->action) {
             case 'clear_cache':
@@ -183,5 +197,56 @@ class SystemController extends Controller
         }
 
         return redirect()->route('system.tools');
+    }
+
+    /**
+     * Ajax.
+     */
+    public function ajax(Request $request)
+    {
+        $response = [
+            'status' => 'error',
+            'msg'    => '', // this is error message
+        ];
+
+        switch ($request->action) {
+
+            case 'update':
+                try {
+                    $status = \Updater::update();
+                    // Artisan::output()
+                } catch (\Exception $e) {
+                    $response['msg'] = __('Error occured').': '.$e->getMessage();
+                }
+                if (!$response['msg'] && $status) {
+                    // Adding session flash is useless as cache is cleated
+                    $response['msg_success'] = __('Application successfully updated');
+                    $response['status'] = 'success';
+                }
+                break;
+
+            case 'check_updates':
+                try {
+                    $response['new_version_available'] = \Updater::isNewVersionAvailable(config('app.version'));
+                    $response['status'] = 'success';
+                } catch (\Exception $e) {
+                    $response['msg'] = __('Error occured').': '.$e->getMessage();
+                }
+                if (!$response['msg'] && !$response['new_version_available']) {
+                    // Adding session flash is useless as cache is cleated
+                    $response['msg_success'] = __('You have the latest version installed');
+                }
+                break;
+
+            default:
+                $response['msg'] = 'Unknown action';
+                break;
+        }
+
+        if ($response['status'] == 'error' && empty($response['msg'])) {
+            $response['msg'] = 'Unknown error occured';
+        }
+
+        return \Response::json($response);
     }
 }

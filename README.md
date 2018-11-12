@@ -50,7 +50,6 @@ FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on 
   * Nginx / Apache / IIS
   * PHP 7.0+
   * MySQL/MariaDB 5.0+
-  * Git (optional, for easier upgrading in the future)
 
 ## News & Updates
 

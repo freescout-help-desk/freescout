@@ -49,7 +49,8 @@ class EnvironmentManager
      *
      * @return string
      */
-    public function getEnvPath() {
+    public function getEnvPath()
+    {
         return $this->envPath;
     }
 
@@ -58,7 +59,8 @@ class EnvironmentManager
      *
      * @return string
      */
-    public function getEnvExamplePath() {
+    public function getEnvExamplePath()
+    {
         return $this->envExamplePath;
     }
 
@@ -66,6 +68,7 @@ class EnvironmentManager
      * Save the edited content to the .env file.
      *
      * @param Request $input
+     *
      * @return string
      */
     public function saveFileClassic(Request $input)
@@ -74,8 +77,7 @@ class EnvironmentManager
 
         try {
             file_put_contents($this->envPath, $input->get('envConfig'));
-        }
-        catch(Exception $e) {
+        } catch (Exception $e) {
             $message = trans('installer_messages.environment.errors');
         }
 
@@ -86,6 +88,7 @@ class EnvironmentManager
      * Save the form content to the .env file.
      *
      * @param Request $request
+     *
      * @return string
      */
     public function saveFileWizard(Request $request)
@@ -98,26 +101,26 @@ class EnvironmentManager
         //'APP_KEY=' . 'base64:bODi8VtmENqnjklBmNJzQcTTSC8jNjBysfnjQN59btE=' . "\n" .
         // 'APP_DEBUG=' . $request->app_debug . "\n" .
         // 'APP_LOG_LEVEL=' . $request->app_log_level . "\n" .
-        '# Every time you are making changes in .env file, in order changes to take an effect you need to run:' . "\n" .
-        '# php artisan freescout:clear-cache' . "\n\n" .
-        '# Application URL' . "\n" .
-        'APP_URL=' . $request->app_url . "\n\n" .
-        '# Use HTTP protocol and redirect to HTTPS' . "\n" .
-        'APP_FORCE_HTTPS=' . $request->app_force_https . "\n\n" .
-        '# Timezones: https://github.com/freescout-helpdesk/freescout/wiki/PHP-Timezones' . "\n" .
-        '# Comment it to use default timezone from php.ini' . "\n" .
-        'APP_TIMEZONE=' . $request->app_timezone . "\n\n" .
-        'DB_CONNECTION=' . $request->database_connection . "\n" .
-        'DB_HOST=' . $request->database_hostname . "\n" .
-        'DB_PORT=' . $request->database_port . "\n" .
-        'DB_DATABASE=' . $request->database_name . "\n" .
-        'DB_USERNAME=' . $request->database_username . "\n" .
-        'DB_PASSWORD=' . $request->database_password . "\n\n" .
-        '# Run the following console command to generate the key: php artisan key:generate' . "\n" .
-        '# Otherwise application will show the following error: "Whoops, looks like something went wrong"' . "\n" .
-        'APP_KEY=' . \Config::get('app.key') . "\n\n" .
-        '# Uncomment to see errors in your browser, don\'t forget to comment it back when debugging finished' . "\n" .
-        '#APP_DEBUG=' . 'true' . "\n";
+        '# Every time you are making changes in .env file, in order changes to take an effect you need to run:'."\n".
+        '# php artisan freescout:clear-cache'."\n\n".
+        '# Application URL'."\n".
+        'APP_URL='.$request->app_url."\n\n".
+        '# Use HTTP protocol and redirect to HTTPS'."\n".
+        'APP_FORCE_HTTPS='.$request->app_force_https."\n\n".
+        '# Timezones: https://github.com/freescout-helpdesk/freescout/wiki/PHP-Timezones'."\n".
+        '# Comment it to use default timezone from php.ini'."\n".
+        'APP_TIMEZONE='.$request->app_timezone."\n\n".
+        'DB_CONNECTION='.$request->database_connection."\n".
+        'DB_HOST='.$request->database_hostname."\n".
+        'DB_PORT='.$request->database_port."\n".
+        'DB_DATABASE='.$request->database_name."\n".
+        'DB_USERNAME='.$request->database_username."\n".
+        'DB_PASSWORD='.$request->database_password."\n\n".
+        '# Run the following console command to generate the key: php artisan key:generate'."\n".
+        '# Otherwise application will show the following error: "Whoops, looks like something went wrong"'."\n".
+        'APP_KEY='.\Config::get('app.key')."\n\n".
+        '# Uncomment to see errors in your browser, don\'t forget to comment it back when debugging finished'."\n".
+        '#APP_DEBUG='.'true'."\n";
         // 'BROADCAST_DRIVER=' . $request->broadcast_driver . "\n" .
         // 'CACHE_DRIVER=' . $request->cache_driver . "\n" .
         // 'SESSION_DRIVER=' . $request->session_driver . "\n" .
@@ -137,15 +140,14 @@ class EnvironmentManager
 
         try {
             file_put_contents($this->envPath, $envFileData);
-        }
-        catch(Exception $e) {
+        } catch (Exception $e) {
             $results = trans('installer_messages.environment.errors');
         }
 
         // Clear and update cache
         // If we cache config here, it caches env data from memory
         //\Artisan::call('freescout:clear-cache');
-        \Artisan::call('freescout:clear-cache', ["--doNotCacheConfig" => true]);
+        \Artisan::call('freescout:clear-cache', ['--doNotCacheConfig' => true]);
 
         return $results;
     }

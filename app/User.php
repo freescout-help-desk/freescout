@@ -8,10 +8,7 @@ namespace App;
 
 use App\Mail\PasswordChanged;
 use App\Mail\UserInvite;
-use App\Email;
-use App\Option;
 use App\Notifications\WebsiteNotification;
-use App\SendLog;
 use Carbon\Carbon;
 use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -385,9 +382,9 @@ class User extends Authenticatable
     {
         $user_permission_names = [
             self::PERM_DELETE_CONVERSATIONS => __('Users are allowed to delete notes/conversations'),
-            self::PERM_EDIT_CONVERSATIONS => __('Users are allowed to edit notes/threads'),
-            self::PERM_EDIT_SAVED_REPLIES => __('Users are allowed to edit/delete saved replies'),
-            self::PERM_EDIT_TAGS => __('Users are allowed to manage tags'),
+            self::PERM_EDIT_CONVERSATIONS   => __('Users are allowed to edit notes/threads'),
+            self::PERM_EDIT_SAVED_REPLIES   => __('Users are allowed to edit/delete saved replies'),
+            self::PERM_EDIT_TAGS            => __('Users are allowed to manage tags'),
         ];
 
         if (!empty($user_permission_names[$user_permission])) {
@@ -400,8 +397,8 @@ class User extends Authenticatable
     public function getInviteStateName()
     {
         $names = [
-            self::INVITE_STATE_ACTIVATED => __('Active'),
-            self::INVITE_STATE_SENT => __('Invited'),
+            self::INVITE_STATE_ACTIVATED   => __('Active'),
+            self::INVITE_STATE_SENT        => __('Invited'),
             self::INVITE_STATE_NOT_INVITED => __('Not Invited'),
         ];
         if (!isset($names[$this->invite_state])) {
@@ -416,7 +413,8 @@ class User extends Authenticatable
      */
     public function sendInvite($throw_exceptions = false)
     {
-        function saveToSendLog($user, $status) {
+        function saveToSendLog($user, $status)
+        {
             SendLog::log(null, null, $user->email, SendLog::MAIL_TYPE_INVITE, $status, null, $user->id);
         }
 
@@ -458,14 +456,14 @@ class User extends Authenticatable
             saveToSendLog($this, SendLog::STATUS_SEND_ERROR);
 
             if ($throw_exceptions) {
-                throw new \Exception(__("Error occured sending email to :email. Please check logs for more details.", ['email' => $this->email]), 1);
+                throw new \Exception(__('Error occured sending email to :email. Please check logs for more details.', ['email' => $this->email]), 1);
             } else {
                 return false;
             }
         }
 
-        if ($this->invite_state != User::INVITE_STATE_SENT) {
-            $this->invite_state = User::INVITE_STATE_SENT;
+        if ($this->invite_state != self::INVITE_STATE_SENT) {
+            $this->invite_state = self::INVITE_STATE_SENT;
             $this->save();
         }
 
@@ -479,7 +477,8 @@ class User extends Authenticatable
      */
     public function sendPasswordChanged()
     {
-        function saveToSendLog($user, $status) {
+        function saveToSendLog($user, $status)
+        {
             SendLog::log(null, null, $user->email, SendLog::MAIL_TYPE_PASSWORD_CHANGED, $status, null, $user->id);
         }
 
@@ -500,11 +499,13 @@ class User extends Authenticatable
                 ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_PASSWORD_CHANGED);
 
             saveToSendLog($this, SendLog::STATUS_SEND_ERROR);
+
             return false;
         }
 
         if (\Mail::failures()) {
             saveToSendLog($this, SendLog::STATUS_SEND_ERROR);
+
             return false;
         }
 
@@ -516,7 +517,8 @@ class User extends Authenticatable
     /**
      * Send the password reset notification.
      *
-     * @param  string  $token
+     * @param string $token
+     *
      * @return void
      */
     public function sendPasswordResetNotification($token)
@@ -536,13 +538,14 @@ class User extends Authenticatable
         if ($cache) {
             // Get from cache
             $user = $this;
-            return \Cache::rememberForever('user_web_notifications_'.$user->id, function() use ($user) {
+
+            return \Cache::rememberForever('user_web_notifications_'.$user->id, function () use ($user) {
                 $notifications = $user->getWebsiteNotifications();
 
                 $info = [
                     'data'          => WebsiteNotification::fetchNotificationsData($notifications),
                     'notifications' => $notifications,
-                    'unread_count'  => $user->unreadNotifications()->count()
+                    'unread_count'  => $user->unreadNotifications()->count(),
                 ];
 
                 $info['html'] = view('users/partials/web_notifications', ['web_notifications_info_data' => $info['data']])->render();
@@ -553,9 +556,9 @@ class User extends Authenticatable
             $notifications = $this->getWebsiteNotifications();
 
             $info = [
-                'data' => WebsiteNotification::fetchNotificationsData($notifications),
+                'data'          => WebsiteNotification::fetchNotificationsData($notifications),
                 'notifications' => $notifications,
-                'unread_count' => $this->unreadNotifications()->count()
+                'unread_count'  => $this->unreadNotifications()->count(),
             ];
 
             return $info;
@@ -570,7 +573,7 @@ class User extends Authenticatable
     public function getPhotoUrl()
     {
         if (!empty($this->photo_url)) {
-            return Storage::url(User::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+            return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         } else {
             return '/img/default-avatar.png';
         }
@@ -581,14 +584,14 @@ class User extends Authenticatable
      */
     public function savePhoto($uploaded_file)
     {
-        $resized_image = \App\Misc\Helper::resizeImage($uploaded_file->getRealPath(), $uploaded_file->getMimeType(), self::PHOTO_SIZE, self::PHOTO_SIZE) ;
+        $resized_image = \App\Misc\Helper::resizeImage($uploaded_file->getRealPath(), $uploaded_file->getMimeType(), self::PHOTO_SIZE, self::PHOTO_SIZE);
 
         if (!$resized_image) {
             return false;
         }
 
         $file_name = md5(Hash::make($this->id)).'.jpg';
-        $dest_path = Storage::path(User::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
+        $dest_path = Storage::path(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
 
         $dest_dir = pathinfo($dest_path, PATHINFO_DIRNAME);
         if (!file_exists($dest_dir)) {
@@ -597,14 +600,14 @@ class User extends Authenticatable
 
         // Remove current photo
         if ($this->photo_url) {
-            Storage::delete(User::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+            Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
 
         imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
         // $photo_url = $request->file('photo_url')->storeAs(
         //     User::PHOTO_DIRECTORY, !Hash::make($user->id).'.jpg'
         // );
-        
+
         return $file_name;
     }
 
@@ -614,7 +617,7 @@ class User extends Authenticatable
     public function removePhoto()
     {
         if ($this->photo_url) {
-            Storage::delete(User::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+            Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
         $this->photo_url = '';
     }
@@ -632,11 +635,12 @@ class User extends Authenticatable
     /**
      * Todo: implement super admin role.
      * For now we return just first admin.
+     *
      * @return [type] [description]
      */
     public static function getSuperAdmin()
     {
-        return User::where('role', User::ROLE_ADMIN)->first();
+        return self::where('role', self::ROLE_ADMIN)->first();
     }
 
     /**
@@ -644,7 +648,7 @@ class User extends Authenticatable
      */
     public static function create($data)
     {
-        $user = new User();
+        $user = new self();
 
         if (empty($data['email']) || empty($data['password'])) {
             return false;
@@ -657,7 +661,7 @@ class User extends Authenticatable
 
         try {
             $user->save();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
 
@@ -671,18 +675,18 @@ class User extends Authenticatable
     {
         $user = auth()->user();
         if ($user) {
-            return ($user->role >= $role);
+            return $user->role >= $role;
         } else {
             return false;
         }
     }
 
     /**
-     * Get dummy user, for example, when real user has been deleted
+     * Get dummy user, for example, when real user has been deleted.
      */
     public static function getDeletedUser()
     {
-        $user = new User();
+        $user = new self();
         $user->first_name = 'DELETED';
         $user->last_name = 'DELETED';
         $user->email = 'deleted@example.org';

@@ -61,7 +61,9 @@ var LangMessages = {
             "type_delete": "{{ __("Type :delete") }}",
 
             "drag_image_file": "{{ __("Drag image or file here") }}",
-            "confirm_delete_module": "{{ __("Delete this module?") }}"
+            "confirm_delete_module": "{{ __("Delete this module?") }}",
+            "confirm_update": "{{ __("Please backup application files and database before you continue.") }}",
+            "update": "{{ __("Update") }}"
         }@if (!$loop->last),@endif
     @endforeach
 };

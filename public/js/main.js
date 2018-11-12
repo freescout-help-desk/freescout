@@ -1999,7 +1999,7 @@ function webNotificationsInit()
 	
 }
 
-function systemInit()
+function initSystemStatus()
 {
 	if (location.protocol == 'https:') {
 		$('#system-app-protocol').text('HTTPS');
@@ -2008,6 +2008,62 @@ function systemInit()
 			'<div class="alert alert-danger margin-top">'+Lang.get("messages.push_protocol_alert")+'</div>';
 		$('#system-app-protocol').html(html);
 	}
+
+	$('.update-trigger').click(function(e) {
+		var button = $(this);
+		showModalConfirm('<span class="text-danger"><i class="glyphicon glyphicon-exclamation-sign"></i> '+Lang.get("messages.confirm_update")+'</span>', 'confirm-update', {
+			on_show: function(modal) {
+				modal.children().find('.confirm-update:first').click(function(e) {
+					button.button('loading');
+					modal.modal('hide');
+					// Disable Polycast not to receive 'Internet connection broken' messages
+					poly.disconnect();
+
+					fsAjax(
+						{
+							action: 'update'
+						}, 
+						laroute.route('system.ajax'),
+						function(response) {
+							if (typeof(response.status) != "undefined" && response.status == "success") {
+								showAjaxResult(response);
+								window.location.href = '';
+							} else {
+								showAjaxError(response);
+								button.button('reset');
+							}
+						}, true
+					);
+				});
+			}
+		}, Lang.get("messages.update"));
+	});
+
+	$('.check-updates-trigger').click(function(e) {
+		var button = $(this);
+		button.button('loading');
+		fsAjax(
+			{
+				action: 'check_updates'
+			}, 
+			laroute.route('system.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (typeof(response.new_version_available) != "undefined" && response.new_version_available) {
+						// There are updates
+						window.location.href = '';
+					} else {
+						showAjaxResult(response);
+						button.button('reset');
+					}
+				} else {
+					showAjaxError(response);
+					button.button('reset');
+				}
+			}, true
+		);
+		e.preventDefault();
+	});
 }
 
 // Called from polycast
@@ -2098,7 +2154,7 @@ function saveDraft(reload_page, no_loader)
 				if (typeof(response.conversation_id) != "undefined" && response.conversation_id) {
 					form.children(':input[name="conversation_id"][value=""]').val(response.conversation_id);
 					form.children(':input[name="thread_id"]').val(response.thread_id);
-					$('.conv-new-number:first').text(response.conversation_id);
+					$('.conv-new-number:first').text(response.number);
 
 					// Set URL if this is a new conversation
 					if (new_conversation) {
@@ -2220,6 +2276,12 @@ function setReplyBody(text)
 {
 	$(".conv-reply-block :input[name='body']:first").val(text);
 	$('#body').summernote("code", text);
+}
+
+// Set text in summernote editor
+function setSummernoteText(jtextarea, text)
+{
+	jtextarea.summernote("code", text);
 }
 
 // Star/unstar processing from the list or conversation
