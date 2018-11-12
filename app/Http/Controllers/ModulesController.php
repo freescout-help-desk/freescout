@@ -257,17 +257,16 @@ class ModulesController extends Controller
                         $params = [
                             'license'      => $module->getLicense(),
                             'module_alias' => $alias,
-                            'url'          => \App\Module::getAppUrl()
+                            'url'          => \App\Module::getAppUrl(),
                         ];
                         $license_result = WpApi::checkLicense($params);
-                        
+
                         if (!empty($license_result['code']) && !empty($license_result['message'])) {
                             // Remove remembered license key and deactivate license in DB
                             \App\Module::deactivateLicense($alias, '');
 
                             $response['msg'] = $license_result['message'];
-                        } elseif (!empty($license_result['status']) && $license_result['status'] != 'valid' && $license_result['status'] != 'inactive')
-                        {
+                        } elseif (!empty($license_result['status']) && $license_result['status'] != 'valid' && $license_result['status'] != 'inactive') {
                             // Remove remembered license key and deactivate license in DB
                             \App\Module::deactivateLicense($alias, '');
 

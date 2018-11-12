@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Misc\WpApi;
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
 
 class ModuleCheckLicenses extends Command
 {
@@ -41,23 +40,22 @@ class ModuleCheckLicenses extends Command
     {
         // Get active official modules and check validity of their licenses
         $modules = \Module::getActive();
-        
+
         $this->info('Active modules found: '.count($modules));
 
         foreach ($modules as $module) {
             $license = $module->getLicense();
-            
+
             if (!$module->isOfficial() || !$license) {
                 continue;
             }
             $params = [
                 'license'      => $license,
                 'module_alias' => $module->getAlias(),
-                'url'          => \App\Module::getAppUrl()
+                'url'          => \App\Module::getAppUrl(),
             ];
             $result = WpApi::checkLicense($params);
             if (!empty($result['status']) && $result['status'] != 'valid') {
-
                 $msg = 'Module '.$module->getName().' has been deactivated due to invalid license: '.json_encode($result);
 
                 $this->error($module->getName().': '.$msg);
