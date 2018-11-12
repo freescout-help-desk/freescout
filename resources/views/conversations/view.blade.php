@@ -211,7 +211,7 @@
                                     @endif
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
+                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -239,14 +239,14 @@
                                     </div>
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
+                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
                                 </div>
                             </div>
                             <div class="thread-body">
                                 {!! $thread->getCleanBody() !!}
 
                                 @if ( $thread->opened_at )
-                                    <span class='thread-opened-at' title='{{ App\User::dateFormat($thread->opened_at) }}'><span class="glyphicon glyphicon-eye-open"></span> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</span>
+                                    <span class='thread-opened-at' data-toggle="tooltip" title='{{ App\User::dateFormat($thread->opened_at) }}'><span class="glyphicon glyphicon-eye-open"></span> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</span>
                                 @endif
                             </div>
                             @include('conversations/partials/thread_attachments')
@@ -310,7 +310,7 @@
                                     @endif
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
+                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
                                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                         <span class="thread-status">
                                             @if ($loop->last || $thread->status != App\Thread::STATUS_NOCHANGE)
@@ -339,7 +339,7 @@
                                 {!! $thread->getCleanBody() !!}
 
                                 @if ( $thread->opened_at )
-                                    <span class='thread-opened-at' title='{{ App\User::dateFormat($thread->opened_at) }}'><span class="glyphicon glyphicon-eye-open"></span> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</span>
+                                    <span class='thread-opened-at' data-toggle="tooltip" title='{{ App\User::dateFormat($thread->opened_at) }}'><span class="glyphicon glyphicon-eye-open"></span> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</span>
                                 @endif
                             </div>
                             @if ($thread->has_attachments)
