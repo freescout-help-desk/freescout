@@ -171,7 +171,7 @@ return [
     |--------------------------------------------------------------------------
     | Parameters used to run queued jobs processing.
     | Checks for new jobs every 5 seconds.
-    | Do not set more than 1 retry, as it may lead to sending repeated emails if one recipient fails 
+    | Do not set more than 1 retry, as it may lead to sending repeated emails if one recipient fails
     | and another succeeds.
     |-------------------------------------------------------------------------
     */
@@ -183,7 +183,6 @@ return [
     |-------------------------------------------------------------------------
     */
     'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/ 'json', 'gd', 'fileinfo', 'openssl', 'zip', 'tokenizer'/*, 'dom', 'xmlwriter', 'libxml', 'phar'*/],
-
 
     /*
     |--------------------------------------------------------------------------
@@ -199,9 +198,9 @@ return [
     |--------------------------------------------------------------------------
     */
     'options' => [
-        'alert_fetch' => ['default' => false],
+        'alert_fetch'        => ['default' => false],
         'alert_fetch_period' => ['default' => 15], // min
-        'email_branding' => ['default' => true],
+        'email_branding'     => ['default' => true],
     ],
 
     /*
@@ -267,7 +266,7 @@ return [
         // If we remove some service provider file from here and from disk,
         // when updating the app, users will receive "Class '...' not found" error,
         // because their cached config still has this service provider listed.
-        
+
         // Autodiscovery did not work for this one, becasuse it's composer.json
         // does not have a `extra` section.
         Codedge\Updater\UpdaterServiceProvider::class,

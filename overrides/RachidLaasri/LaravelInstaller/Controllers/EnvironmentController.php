@@ -5,10 +5,9 @@ namespace RachidLaasri\LaravelInstaller\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
-use RachidLaasri\LaravelInstaller\Helpers\EnvironmentManager;
 use RachidLaasri\LaravelInstaller\Events\EnvironmentSaved;
+use RachidLaasri\LaravelInstaller\Helpers\EnvironmentManager;
 use Validator;
-use Illuminate\Validation\Rule;
 
 class EnvironmentController extends Controller
 {
@@ -62,8 +61,9 @@ class EnvironmentController extends Controller
     /**
      * Processes the newly saved environment configuration (Classic).
      *
-     * @param Request $input
+     * @param Request    $input
      * @param Redirector $redirect
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function saveClassic(Request $input, Redirector $redirect)
@@ -87,8 +87,9 @@ class EnvironmentController extends Controller
     /**
      * Processes the newly saved environment configuration (Form Wizard).
      *
-     * @param Request $request
+     * @param Request    $request
      * @param Redirector $redirect
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function saveWizard(Request $request, Redirector $redirect)
@@ -101,32 +102,32 @@ class EnvironmentController extends Controller
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($request->app_force_https == 'true') {
-            $request->merge(['app_url' => preg_replace("/^http:/i", 'https:', $request->app_url)]);
+            $request->merge(['app_url' => preg_replace('/^http:/i', 'https:', $request->app_url)]);
         }
 
         $this->rememberOldRequest($request);
 
         if ($validator->fails()) {
             $errors = $validator->errors();
+
             return view('vendor.installer.environment-wizard', compact('errors', 'envConfig'));
         }
 
         // Check DB connection
         //$this->EnvironmentManager->saveFileWizard($request);
         try {
-            \Config::set("database.connections.install", [
+            \Config::set('database.connections.install', [
                 'driver'    => 'mysql',
-                "host"      => $request->database_hostname,
-                "database"  => $request->database_name,
-                "username"  => $request->database_username,
-                "password"  => $request->database_password,
+                'host'      => $request->database_hostname,
+                'database'  => $request->database_name,
+                'username'  => $request->database_username,
+                'password'  => $request->database_password,
                 'charset'   => 'utf8mb4',
                 'collation' => 'utf8mb4_unicode_ci',
                 'prefix'    => '',
             ]);
             \DB::connection('install')->getPdo();
         } catch (\Exception $e) {
-
             $validator->getMessageBag()->add('general', 'Could not establish database connection: '.$e->getMessage());
             $validator->getMessageBag()->add('database_hostname', 'Database Host: Please check entered value.');
             $validator->getMessageBag()->add('database_port', 'Database Port: Please check entered value.');

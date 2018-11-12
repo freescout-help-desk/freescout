@@ -35,8 +35,8 @@ class Mail
      * Encryptions.
      */
     const MAIL_ENCRYPTION_NONE = '';
-    const MAIL_ENCRYPTION_SSL  = 'ssl';
-    const MAIL_ENCRYPTION_TLS  = 'tls';
+    const MAIL_ENCRYPTION_SSL = 'ssl';
+    const MAIL_ENCRYPTION_TLS = 'tls';
 
     /**
      * If reply is not extracted properly from the incoming email, add here new separator.
@@ -89,8 +89,8 @@ class Mail
     {
         \Config::set('mail.driver', self::getSystemMailDriver());
         \Config::set('mail.from', [
-            'address' => self::getSystemMailFrom(), 
-            'name' => Option::get('company_name', \Config::get('app.name'))
+            'address' => self::getSystemMailFrom(),
+            'name'    => Option::get('company_name', \Config::get('app.name')),
         ]);
 
         // SMTP
@@ -114,18 +114,18 @@ class Mail
         $vars = [];
 
         if (!empty($data['conversation'])) {
-            $vars['{%subject%}']              =  $data['conversation']->subject;
-            $vars['{%conversation.number%}']  =  $data['conversation']->number;
-            $vars['{%customer.email%}']       =  $data['conversation']->customer_email;
+            $vars['{%subject%}'] = $data['conversation']->subject;
+            $vars['{%conversation.number%}'] = $data['conversation']->number;
+            $vars['{%customer.email%}'] = $data['conversation']->customer_email;
         }
         if (!empty($data['mailbox'])) {
-            $vars['{%mailbox.email%}'] =  $data['mailbox']->email;
-            $vars['{%mailbox.name%}']  =  $data['mailbox']->name;
+            $vars['{%mailbox.email%}'] = $data['mailbox']->email;
+            $vars['{%mailbox.name%}'] = $data['mailbox']->name;
         }
         if (!empty($data['customer'])) {
-            $vars['{%customer.fullName%}']  = $data['customer']->getFullName(true);
+            $vars['{%customer.fullName%}'] = $data['customer']->getFullName(true);
             $vars['{%customer.firstName%}'] = $data['customer']->getFirstName(true);
-            $vars['{%customer.lastName%}']  = $data['customer']->last_name;
+            $vars['{%customer.lastName%}'] = $data['customer']->last_name;
         }
 
         return strtr($text, $vars);
@@ -136,7 +136,7 @@ class Mail
      */
     public static function hasVars($text)
     {
-        return preg_match("/({%|%})/", $text);
+        return preg_match('/({%|%})/', $text);
     }
 
     /**
@@ -156,6 +156,7 @@ class Mail
         if (!$mail_from) {
             $mail_from = 'freescout@'.\Helper::getDomain();
         }
+
         return $mail_from;
     }
 
@@ -177,6 +178,7 @@ class Mail
             \MailHelper::setMailDriver($mailbox);
 
             $status_message = '';
+
             try {
                 \Mail::to([$to])->send(new \App\Mail\Test($mailbox));
             } catch (\Exception $e) {
@@ -188,6 +190,7 @@ class Mail
             \MailHelper::setSystemMailDriver();
 
             $status_message = '';
+
             try {
                 \Mail::to([['name' => '', 'email' => $to]])
                     ->send(new \App\Mail\Test());
@@ -206,6 +209,7 @@ class Mail
             }
         } else {
             SendLog::log(null, null, $to, SendLog::MAIL_TYPE_TEST, SendLog::STATUS_ACCEPTED);
+
             return true;
         }
     }
@@ -286,8 +290,9 @@ class Mail
         \MailHelper::setSystemMailDriver();
 
         $status_message = '';
+
         try {
-            \Mail::raw($body, function($message) use ($subject, $attachments, $from_user) {
+            \Mail::raw($body, function ($message) use ($subject, $attachments, $from_user) {
                 $message
                     ->subject($subject)
                     ->to(\Config::get('app.freescout_email'));

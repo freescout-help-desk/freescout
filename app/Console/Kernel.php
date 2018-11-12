@@ -48,11 +48,12 @@ class Kernel extends ConsoleKernel
         // Command runs as subprocess and sets cache mutex. If schedule:run command is killed
         // subprocess does not clear the mutex and it stays in the cache until cache:clear is executed.
         // By default, the lock will expire after 24 hours.
-        // 
+        //
         // cache:clear clears the mutex, but sometimes process continues running, so we need to kill it.
-        
+
         if (function_exists('shell_exec')) {
             $running_commands = 0;
+
             try {
                 $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep 'queue:work'"));
                 foreach ($processes as $process) {

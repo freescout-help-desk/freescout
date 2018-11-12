@@ -6,7 +6,6 @@ use App\Conversation;
 use App\Option;
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Validator;
 
 class SettingsController extends Controller
@@ -22,12 +21,12 @@ class SettingsController extends Controller
     }
 
     /**
-     * General settings
+     * General settings.
      *
      * @return \Illuminate\Http\Response
      */
     public function view($section = 'general')
-    {       
+    {
         $settings = $this->getSectionSettings($section);
 
         if (!$settings) {
@@ -37,10 +36,10 @@ class SettingsController extends Controller
         $sections = $this->getSections();
 
         $template_vars = [
-            'settings' => $settings,
-            'section' => $section,
-            'sections' => $this->getSections(),
-            'section_name' => $sections[$section]['title']
+            'settings'     => $settings,
+            'section'      => $section,
+            'sections'     => $this->getSections(),
+            'section_name' => $sections[$section]['title'],
         ];
         $template_vars = $this->getTemplateVars($section, $template_vars);
 
@@ -63,7 +62,6 @@ class SettingsController extends Controller
         if (!empty($rules)) {
             return Validator::make(request()->all(), $rules);
         }
-        return null;
     }
 
     public function getTemplateVars($section, $template_vars)
@@ -73,11 +71,11 @@ class SettingsController extends Controller
                 $template_vars['sendmail_path'] = ini_get('sendmail_path');
                 $template_vars['mail_drivers'] = [
                     'mail'     => __("PHP's mail() function"),
-                    'sendmail' => __("Sendmail"),
+                    'sendmail' => __('Sendmail'),
                     'smtp'     => 'SMTP',
                 ];
                 break;
-            
+
             // default:
             //     $template_vars = \Event::fire('filter.settings_template_vars', [$template_vars]);
             //     break;
@@ -102,12 +100,12 @@ class SettingsController extends Controller
                 break;
             case 'emails':
                 $settings = [
-                    'mail_from' => \App\Misc\Mail::getSystemMailFrom(),
-                    'mail_driver' => Option::get('mail_driver', \Config::get('mail.driver')),
-                    'mail_host' => Option::get('mail_host', \Config::get('mail.host')),
-                    'mail_port' => Option::get('mail_port', \Config::get('mail.port')),
-                    'mail_username' => Option::get('mail_username', \Config::get('mail.username')),
-                    'mail_password' => Option::get('mail_password', \Config::get('mail.password')),
+                    'mail_from'       => \App\Misc\Mail::getSystemMailFrom(),
+                    'mail_driver'     => Option::get('mail_driver', \Config::get('mail.driver')),
+                    'mail_host'       => Option::get('mail_host', \Config::get('mail.host')),
+                    'mail_port'       => Option::get('mail_port', \Config::get('mail.port')),
+                    'mail_username'   => Option::get('mail_username', \Config::get('mail.username')),
+                    'mail_password'   => Option::get('mail_password', \Config::get('mail.password')),
                     'mail_encryption' => Option::get('mail_encryption', \Config::get('mail.encryption')),
                 ];
                 break;
@@ -169,8 +167,8 @@ class SettingsController extends Controller
         $request = request();
 
         $request->settings = array_merge($request->settings, [
-            'email_branding'       => !empty($request->settings['email_branding'])       ? $request->settings['email_branding']       : 0,
-            'open_tracking'        => !empty($request->settings['open_tracking'])        ? $request->settings['open_tracking']        : 0,
+            'email_branding'       => !empty($request->settings['email_branding']) ? $request->settings['email_branding'] : 0,
+            'open_tracking'        => !empty($request->settings['open_tracking']) ? $request->settings['open_tracking'] : 0,
             'enrich_customer_data' => !empty($request->settings['enrich_customer_data']) ? $request->settings['enrich_customer_data'] : 0,
         ]);
 

@@ -17,7 +17,6 @@ class PublicController extends Controller
      */
     public function __construct()
     {
-        
     }
 
     /**
@@ -37,7 +36,6 @@ class PublicController extends Controller
 
     /**
      * Save user from invitation.
-     *
      */
     public function userSetupSave($hash, Request $request)
     {

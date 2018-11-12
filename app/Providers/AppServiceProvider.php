@@ -51,8 +51,8 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Process module registration error - disable module and show error to admin
-        \Eventy::addFilter('modules.register_error', function($exception, $module) {
-            
+        \Eventy::addFilter('modules.register_error', function ($exception, $module) {
+
             // request() does is empty at this stage
             if (!empty($_POST['action']) && $_POST['action'] == 'activate') {
 
@@ -68,13 +68,11 @@ class AppServiceProvider extends ServiceProvider
                     'role' => \App\User::ROLE_ADMIN,
                 ]]);
 
-                return null;
-
+                return;
             } elseif (empty($_POST)) {
- 
+
                 // failed to open stream: No such file or directory
                 if (strstr($exception->getMessage(), 'No such file or directory')) {
-
                     \App\Module::deactiveModule($module->getAlias());
 
                     \Session::flash('flashes_floating', [[
@@ -83,7 +81,8 @@ class AppServiceProvider extends ServiceProvider
                         'role' => \App\User::ROLE_ADMIN,
                     ]]);
                 }
-                return null;
+
+                return;
             }
 
             return $exception;

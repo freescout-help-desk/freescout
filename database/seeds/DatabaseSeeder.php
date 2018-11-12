@@ -27,18 +27,18 @@ class DatabaseSeeder extends Seeder
                 $customer->emails()->save($email);
 
                 $conversation = factory(App\Conversation::class)->create([
-                    'created_by_user_id' => $user->id, 
-                    'mailbox_id' => $m->id, 
-                    'customer_id' => $customer->id, 
-                    'customer_email' => $email->email, 
-                    'user_id' => $user->id, 
-                    'status' => array_rand([Conversation::STATUS_ACTIVE => 1, Conversation::STATUS_PENDING => 1])
+                    'created_by_user_id' => $user->id,
+                    'mailbox_id'         => $m->id,
+                    'customer_id'        => $customer->id,
+                    'customer_email'     => $email->email,
+                    'user_id'            => $user->id,
+                    'status'             => array_rand([Conversation::STATUS_ACTIVE => 1, Conversation::STATUS_PENDING => 1]),
                 ]);
 
                 $thread = factory(App\Thread::class)->make([
-                    'customer_id' => $customer->id, 
-                    'to' => $email->email, 
-                    'conversation_id' => $conversation->id
+                    'customer_id'     => $customer->id,
+                    'to'              => $email->email,
+                    'conversation_id' => $conversation->id,
                 ]);
                 $conversation->threads()->save($thread);
             }

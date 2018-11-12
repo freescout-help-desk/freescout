@@ -17,17 +17,17 @@ class FinalInstallManager
     {
         // After BufferedOutput it is impossible to get sessions values
         $user_data = [
-            'email' => old('admin_email'),
-            'password' => old('admin_password'),
-            'role' => \App\User::ROLE_ADMIN,
+            'email'      => old('admin_email'),
+            'password'   => old('admin_password'),
+            'role'       => \App\User::ROLE_ADMIN,
             'first_name' => old('admin_first_name'),
-            'last_name' => old('admin_last_name'),
+            'last_name'  => old('admin_last_name'),
         ];
         // Remove admin data from sessions
         // We need it to display on the page
         //session(['_old_input' => []]);
 
-        $outputLog = new BufferedOutput;
+        $outputLog = new BufferedOutput();
 
         $this->runCommands($outputLog);
         //$this->generateKey($outputLog);
@@ -46,7 +46,7 @@ class FinalInstallManager
         try {
             Artisan::call('freescout:clear-cache', [], $outputLog);
             Artisan::call('storage:link', [], $outputLog);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             return static::response($e->getMessage(), $outputLog);
         }
 
@@ -57,16 +57,16 @@ class FinalInstallManager
      * Generate New Application Key.
      *
      * @param collection $outputLog
+     *
      * @return collection
      */
     private static function generateKey($outputLog)
     {
-        try{
-            if (config('installer.final.key')){
-                Artisan::call('key:generate', ["--force"=> true], $outputLog);
+        try {
+            if (config('installer.final.key')) {
+                Artisan::call('key:generate', ['--force'=> true], $outputLog);
             }
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return static::response($e->getMessage(), $outputLog);
         }
 
@@ -77,35 +77,36 @@ class FinalInstallManager
      * Publish vendor assets.
      *
      * @param collection $outputLog
+     *
      * @return collection
      */
     private static function publishVendorAssets($outputLog)
     {
-        try{
-            if (config('installer.final.publish')){
+        try {
+            if (config('installer.final.publish')) {
                 Artisan::call('vendor:publish', ['--all' => true], $outputLog);
             }
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return static::response($e->getMessage(), $outputLog);
         }
 
         return $outputLog;
     }
-    
+
     /**
      * Return a formatted error messages.
      *
      * @param $message
      * @param collection $outputLog
+     *
      * @return array
      */
     private static function response($message, $outputLog)
     {
         return [
-            'status' => 'error',
-            'message' => $message,
-            'dbOutputLog' => $outputLog->fetch()
+            'status'      => 'error',
+            'message'     => $message,
+            'dbOutputLog' => $outputLog->fetch(),
         ];
     }
 }

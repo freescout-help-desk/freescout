@@ -3,16 +3,13 @@
  * Created by PhpStorm.
  * User: leemason
  * Date: 31/10/15
- * Time: 00:20
+ * Time: 00:20.
  */
 
 namespace App\Broadcasting\Broadcasters;
 
-
 use Carbon\Carbon;
 use Illuminate\Broadcasting\Broadcasters\Broadcaster;
-use Illuminate\Foundation\Application;
-use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -43,20 +40,22 @@ class PolycastBroadcaster extends Broadcaster
 
         // insert the new event
         \DB::table('polycast_events')->insert([
-            'channels' => json_encode($channels),
-            'event' => $event,
-            'payload' => json_encode($payload),
-            'created_at' => Carbon::now()->toDateTimeString()
+            'channels'   => json_encode($channels),
+            'event'      => $event,
+            'payload'    => json_encode($payload),
+            'created_at' => Carbon::now()->toDateTimeString(),
         ]);
     }
 
     /**
      * Authenticate the incoming request for a given channel.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return mixed
      */
-    public function auth($request) {
+    public function auth($request)
+    {
 
         // For connect request
         if (empty($request->channels)) {
@@ -67,10 +66,11 @@ class PolycastBroadcaster extends Broadcaster
         foreach ($request->channels as $channel_name => $channel_info) {
             // Copied from Illuminate\Broadcasting\Broadcasters\PusherBroadcaster
             if (Str::startsWith($channel_name, ['private-', 'presence-']) &&
-                ! $request->user()) {
+                !$request->user()) {
                 echo 1;
                 exit();
-                throw new AccessDeniedHttpException;
+
+                throw new AccessDeniedHttpException();
             }
 
             $channelName = Str::startsWith($channel_name, 'private-')
@@ -88,11 +88,13 @@ class PolycastBroadcaster extends Broadcaster
     /**
      * Return the valid authentication response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  mixed  $result
+     * @param \Illuminate\Http\Request $request
+     * @param mixed                    $result
+     *
      * @return mixed
      */
-    public function validAuthenticationResponse($request, $result) {
+    public function validAuthenticationResponse($request, $result)
+    {
         // By some reason this is never called
         return false;
 
@@ -107,17 +109,17 @@ class PolycastBroadcaster extends Broadcaster
         // ]]);
     }
 
-     public function isDeferred()
-     {
+    public function isDeferred()
+    {
         return false;
-     }
+    }
 
-     /**
-      * Created as there was an error:
-      * "Call to undefined method App\Broadcasting\Broadcasters\PolycastBroadcaster::channel()"
-      *
-      * It is called from routes/channels.php
-      */
+    /*
+     * Created as there was an error:
+     * "Call to undefined method App\Broadcasting\Broadcasters\PolycastBroadcaster::channel()"
+     *
+     * It is called from routes/channels.php
+     */
      // public function channel($channel, callable $callback)
      // {
      //    return true;

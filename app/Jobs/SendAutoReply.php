@@ -56,9 +56,9 @@ class SendAutoReply implements ShouldQueue
 
         $customer_email = $this->conversation->customer_email;
         $recipients = [$customer_email];
-        $failures   = [];
-        $exception  = null;
-        
+        $failures = [];
+        $exception = null;
+
         try {
             Mail::to([['name' => $this->customer->getFullName(), 'email' => $customer_email]])
                 ->send(new AutoReply($this->conversation, $this->mailbox, $this->customer, $headers));
