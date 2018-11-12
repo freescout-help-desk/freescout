@@ -368,15 +368,14 @@ class User extends Authenticatable
 
         if (!$dateForHuman) {
             return '';
-        }   
+        }
 
-        if ( stripos($dateForHuman, 'just') === false ) {
+        if (stripos($dateForHuman, 'just') === false) {
             return $dateForHuman.' @ '.$date->format('H:i');
         } else {
             return $dateForHuman;
         }
     }
-
 
     public static function getUserPermissionName($user_permission)
     {

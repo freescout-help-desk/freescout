@@ -1,7 +1,7 @@
 <?php
 
 namespace App;
-use App\Attachment;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model
@@ -142,8 +142,8 @@ class Thread extends Model
         'opened_at',
         'created_at',
         'updated_at',
-        'deleted_at'
-    ];    
+        'deleted_at',
+    ];
 
     /**
      * The user assigned to this thread (assignedTo).
