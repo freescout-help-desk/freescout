@@ -4937,16 +4937,18 @@ a.label:focus {
 .badge {
   display: inline-block;
   min-width: 10px;
-  padding: 3px 7px;
-  font-size: 12px;
+  padding: 5px 5px 3px;
+  font-size: 10px;
   font-weight: bold;
-  line-height: 1;
+  line-height: 10px;
   color: #fff;
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
-  background-color: #777;
-  border-radius: 10px;
+  background-color: #9598a1;
+  border-radius: 2px;
+  font-style: normal;
+  text-transform: uppercase;
 }
 .badge:empty {
   display: none;
@@ -6180,6 +6182,7 @@ button.close {
   margin-left: -10px;
 }
 .popover-title {
+  color: #5F7282;
   padding: 8px 14px;
   margin: 0;
   font-size: 14px;

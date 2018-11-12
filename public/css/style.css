@@ -401,6 +401,9 @@ select.form-control {
 .input-sized {
     width: 270px;
 }
+.input-sized-lg {
+    width: 320px;
+}
 .control-label {
     font-size: 13.4px;
 }
@@ -2654,6 +2657,9 @@ ul.prev-convs {
 .margin-top-25 {
     margin-top: 25px !important;
 }
+.margin-top-30 {
+    margin-top: 30px !important;
+}
 .margin-top-40 {
     margin-top: 40px !important;
 }
@@ -2663,11 +2669,17 @@ ul.prev-convs {
 .margin-right {
     margin-right: 20px !important;
 }
+.margin-left-10 {
+    margin-left: 10px !important;   
+}
 .margin-bottom {
     margin-bottom: 20px !important;
 }
 .margin-bottom-0 {
     margin-bottom: 0 !important;
+}
+.margin-bottom-30 {
+    margin-bottom: 30px !important;
 }
 .margin-bottom-40 {
     margin-bottom: 40px !important;
@@ -2706,6 +2718,11 @@ ul.prev-convs {
     font-size: 16px;
     font-weight: 400;
     line-height: 30px;
+}
+.subheading {
+    font-size: 16px;
+    margin: 20px 0 15px 15px;
+    font-weight: bold;    
 }
 .section-search {
     line-height: inherit;
@@ -3043,6 +3060,15 @@ a.disabled:focus {
     white-space: -pre-wrap;      /* Opera 4-6 */
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+.badge.success {
+    background-color: #3eb670;
+}
+.badge.danger {
+    background-color: #d43f3a;
+}
+.badge .glyphicon {
+    line-height: 5px;
 }
 
 /**
