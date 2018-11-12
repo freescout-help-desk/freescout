@@ -111,15 +111,18 @@ class Mail
     public static function replaceMailVars($text, $data = [])
     {
         // Available variables to insert into email in UI.
-        $vars = [
-            '{%subject%}'             => $data['conversation']->subject,
-            '{%mailbox.email%}'       => $data['mailbox']->email,
-            '{%mailbox.name%}'        => $data['mailbox']->name,
-            '{%conversation.number%}' => $data['conversation']->number,
-            '{%customer.email%}'      => $data['conversation']->customer_email
-        ];
+        $vars = [];
 
-        if ($data['customer']) {
+        if (!empty($data['conversation'])) {
+            $vars['{%subject%}']              =  $data['conversation']->subject;
+            $vars['{%conversation.number%}']  =  $data['conversation']->number;
+            $vars['{%customer.email%}']       =  $data['conversation']->customer_email;
+        }
+        if (!empty($data['mailbox'])) {
+            $vars['{%mailbox.email%}'] =  $data['mailbox']->email;
+            $vars['{%mailbox.name%}']  =  $data['mailbox']->name;
+        }
+        if (!empty($data['customer'])) {
             $vars['{%customer.fullName%}']  = $data['customer']->getFullName(true);
             $vars['{%customer.firstName%}'] = $data['customer']->getFirstName(true);
             $vars['{%customer.lastName%}']  = $data['customer']->last_name;

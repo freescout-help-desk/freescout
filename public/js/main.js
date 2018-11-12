@@ -2278,6 +2278,12 @@ function setReplyBody(text)
 	$('#body').summernote("code", text);
 }
 
+// Set text in summernote editor
+function setSummernoteText(jtextarea, text)
+{
+	jtextarea.summernote("code", text);
+}
+
 // Star/unstar processing from the list or conversation
 function starConversationInit()
 {
