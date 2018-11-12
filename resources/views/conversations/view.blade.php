@@ -264,13 +264,11 @@
                                                 @include('conversations/thread_by', ['as_link' => true])
                                             @endif
                                         </strong> 
+                                        {{-- Lines below must be spaceless --}}
                                         @if ($loop->last)
-                                            {{ __("started the conversation") }}
-                                        @elseif ($thread->type == App\Thread::TYPE_NOTE)
-                                            {{ __("added a note") }}
-                                        @else
-                                            {{ __("replied") }}
-                                        @endif
+                                            {{ __("started the conversation") }}@elseif ($thread->type == App\Thread::TYPE_NOTE)
+                                            {{ __("added a note") }}@else
+                                            {{ __("replied") }}@endif{{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
                                     </div>
                                     @if ($thread->type != App\Thread::TYPE_NOTE)
                                         <div class="thread-recipients">
