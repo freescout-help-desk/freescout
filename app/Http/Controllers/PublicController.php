@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Conversation;
 use App\Option;
+use App\Thread;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -104,4 +106,19 @@ class PublicController extends Controller
 
         return redirect()->route('dashboard');
     }
+
+    /*
+     * Set a thread as read by customer
+     */
+    public function setThreadAsRead($conversation_id, $thread_id) {
+        $conversation = Conversation::findOrFail($conversation_id);
+        $thread       = Thread::findOrFail($thread_id);
+
+        // We only track the first opening
+        if (empty($thread->opened_at)) {
+            $thread->opened_at = date('Y-m-d H:i:s');
+            $thread->save();
+        }
+    }
+
 }

@@ -355,6 +355,29 @@ class User extends Authenticatable
         }
     }
 
+    /**
+     * Convert date into human readable format with minutes and hours.
+     *
+     * @param Carbon $date
+     *
+     * @return string
+     */
+    public static function dateDiffForHumansWithHours($date)
+    {
+        $dateForHuman = self::dateDiffForHumans($date);
+
+        if (!$dateForHuman) {
+            return '';
+        }   
+
+        if ( stripos($dateForHuman, 'just') === false ) {
+            return $dateForHuman.' @ '.$date->format('H:i');
+        } else {
+            return $dateForHuman;
+        }
+    }
+
+
     public static function getUserPermissionName($user_permission)
     {
         $user_permission_names = [

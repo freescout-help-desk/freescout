@@ -1388,4 +1388,5 @@ class ConversationsController extends Controller
 
         return redirect()->away($conversation->url($folder_id, null, ['show_draft' => $thread->id]));
     }
+
 }
