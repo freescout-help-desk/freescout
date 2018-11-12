@@ -41,12 +41,12 @@
 						                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color: #232323; font-size:13px; line-height:19px; margin:0;">
 					                                {!! $thread->body !!}
 
-					                                @action('reply_email.before_signature', $mailbox, $conversation, $thread)
+					                                @action('reply_email.before_signature', $thread, $loop, $threads, $conversation, $mailbox)
 					                                @if ($thread->source_via == App\Thread::PERSON_USER)
 						                                <br>{!! $conversation->getSignatureProcessed() !!}
-						                                <br><br>
 						                            @endif
-						                            @action('reply_email.after_signature', $mailbox, $conversation, $thread)
+						                            @action('reply_email.after_signature', $thread, $loop, $threads, $conversation, $mailbox)
+						                            <br><br>
 	                                            </div>
 	                                        </div>
 						                </td>
@@ -68,14 +68,14 @@
 							</td>
 						</tr>
 					@endif
-	                <tr>
-	                    <td height="0" style="font-size: 0px; line-height: 0px; color:#ffffff;">
-	                    	{{-- todo: view tracking --}}
-	                        {{--<img src="" alt="" />
-	                        <div style="font-size: 0px; line-height: 0px; color:#ffffff !important; display:none;">{#FS:123-123#}</div>
-	                    	--}}
-	                    </td>
-	                </tr>
+					@if (\App\Option::get('open_tracking'))
+						<tr>
+							<td height="0" style="font-size: 0px; line-height: 0px; color:#ffffff;">	                    	
+								<img src="{{ route('open_tracking.set_read', ['conversation_id' => $threads->first()->conversation_id, 'thread_id' => $threads->first()->id]) }}/" alt="" />
+								<div style="font-size: 0px; line-height: 0px; color:#ffffff !important; display:none;">{#FS:123-123#}</div>
+							</td>
+						</tr>
+					@endif
 	            </table>
 	        </td>
 	    </tr>

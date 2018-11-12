@@ -1,6 +1,12 @@
 <?php
 
-/**
+// Check PHP version
+if (!version_compare(phpversion(), '7.0.0', '>=')) {
+    echo 'PHP 7.x is required to run FreeScout.';
+    exit();
+}
+
+/*
  * Laravel - A PHP Framework For Web Artisans.
  *
  * @author   Taylor Otwell <taylor@laravel.com>

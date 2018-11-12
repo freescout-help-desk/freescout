@@ -211,7 +211,7 @@
                                     @endif
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
+                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -239,11 +239,15 @@
                                     </div>
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
+                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
                                 </div>
                             </div>
                             <div class="thread-body">
                                 {!! $thread->getCleanBody() !!}
+
+                                @if ( $thread->opened_at )
+                                    <div class='thread-opened-at'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</div>
+                                @endif
                             </div>
                             @include('conversations/partials/thread_attachments')
                         </div>
@@ -264,13 +268,11 @@
                                                 @include('conversations/thread_by', ['as_link' => true])
                                             @endif
                                         </strong> 
+                                        {{-- Lines below must be spaceless --}}
                                         @if ($loop->last)
-                                            {{ __("started the conversation") }}
-                                        @elseif ($thread->type == App\Thread::TYPE_NOTE)
-                                            {{ __("added a note") }}
-                                        @else
-                                            {{ __("replied") }}
-                                        @endif
+                                            {{ __("started the conversation") }}@elseif ($thread->type == App\Thread::TYPE_NOTE)
+                                            {{ __("added a note") }}@else
+                                            {{ __("replied") }}@endif{{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
                                     </div>
                                     @if ($thread->type != App\Thread::TYPE_NOTE)
                                         <div class="thread-recipients">
@@ -306,7 +308,7 @@
                                     @endif
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
+                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
                                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                         <span class="thread-status">
                                             @if ($loop->last || $thread->status != App\Thread::STATUS_NOCHANGE)
@@ -333,6 +335,10 @@
                             </div>
                             <div class="thread-body">
                                 {!! $thread->getCleanBody() !!}
+
+                                @if ( $thread->opened_at )
+                                    <div class='thread-opened-at'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</div>
+                                @endif
                             </div>
                             @if ($thread->has_attachments)
                                 <div class="thread-attachments">

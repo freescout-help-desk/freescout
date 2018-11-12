@@ -12,10 +12,14 @@
     </div>
 
     <div class="form-group{{ $errors->has('settings[next_ticket]') ? ' has-error' : '' }}">
-        <label for="next_ticket" class="col-sm-2 control-label">{{ __('Next Conversation #') }} (todo)</label>
+        <label for="next_ticket" class="col-sm-2 control-label">{{ __('Next Conversation #') }}</label>
 
         <div class="col-sm-6">
-            <input id="next_ticket" type="number" class="form-control input-sized" name="settings[next_ticket]" value="{{ old('settings[next_ticket]', $settings['next_ticket']) }}" {{--required autofocus--}}>
+            <div class="flexy">
+                <input id="next_ticket" type="number" class="form-control input-sized" name="settings[next_ticket]" value="{{ old('settings[next_ticket]', $settings['next_ticket']) }}" {{--required autofocus--}}>
+
+                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-placement="left" data-content="{{ __('This number is not visible to customers. It is only used to track conversations within :app_name', ['app_name' => config('app.name')]) }}"></i>
+            </div>
 
             @include('partials/field_error', ['field'=>'settings.next_ticket'])
         </div>
@@ -55,7 +59,7 @@
     </div>
 
     <div class="form-group{{ $errors->has('settings[open_tracking]') ? ' has-error' : '' }}">
-        <label for="open_tracking" class="col-sm-2 control-label">{{ __('Open Tracking') }} (todo)</label>
+        <label for="open_tracking" class="col-sm-2 control-label">{{ __('Open Tracking') }}</label>
 
         <div class="col-sm-6">
             <div class="controls">

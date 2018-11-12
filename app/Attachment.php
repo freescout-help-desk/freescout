@@ -77,11 +77,11 @@ class Attachment extends Model
 
         $attachment = new self();
         $attachment->thread_id = $thread_id;
-        $attachment->user_id   = $user_id;
+        $attachment->user_id = $user_id;
         $attachment->file_name = $file_name;
         $attachment->mime_type = $mime_type;
-        $attachment->type      = $type;
-        $attachment->embedded  = $embedded;
+        $attachment->type = $type;
+        $attachment->embedded = $embedded;
         $attachment->save();
 
         // Save file from content or copy file.
@@ -112,7 +112,7 @@ class Attachment extends Model
 
     /**
      * Get file path.
-     * Examples: 1/2, 1/3
+     * Examples: 1/2, 1/3.
      *
      * @param int $id
      *
@@ -144,8 +144,9 @@ class Attachment extends Model
 
     /**
      * Detect attachment type by it's mime type.
-     * 
-     * @param  string $mime_type
+     *
+     * @param string $mime_type
+     *
      * @return int
      */
     public static function detectType($mime_type)
@@ -227,15 +228,15 @@ class Attachment extends Model
     /**
      * Delete attachments from disk and DB.
      * Embeds are not taken into account.
-     * 
-     * @param  array $attachments 
+     *
+     * @param array $attachments
      */
     public static function deleteByIds($attachment_ids)
     {
         if (!count($attachment_ids)) {
             return;
         }
-        $attachments = Attachment::whereIn('id', $attachment_ids)->get();
+        $attachments = self::whereIn('id', $attachment_ids)->get();
 
         // Delete from disk
         foreach ($attachments as $attachment) {
@@ -244,6 +245,6 @@ class Attachment extends Model
         }
 
         // Delete from DB
-        Attachment::whereIn('id', $attachment_ids)->delete();
+        self::whereIn('id', $attachment_ids)->delete();
     }
 }

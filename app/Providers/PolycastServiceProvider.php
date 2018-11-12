@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: leemason
  * Date: 30/10/15
- * Time: 19:34
+ * Time: 19:34.
  */
 
 namespace App\Providers;
@@ -19,7 +19,8 @@ use Illuminate\Support\ServiceProvider;
 class PolycastServiceProvider extends ServiceProvider
 {
     //public function boot(BroadcastingFactory $factory){
-    public function boot(){
+    public function boot()
+    {
 
         // register the polycast driver
         // $factory->extend('polycast', function(/*Application $app*/){
@@ -47,13 +48,12 @@ class PolycastServiceProvider extends ServiceProvider
         $this->app['router']->group(['middleware' => ['web']], function ($router) {
 
             // establish connection and send current time
-            $this->app['router']->post('polycast/connect', function(Request $request){
+            $this->app['router']->post('polycast/connect', function (Request $request) {
                 return ['status' => 'success', 'time' => Carbon::now()->toDateTimeString()];
             });
 
             // send payloads to requested browser
-            $this->app['router']->post('polycast/receive', function(Request $request){
-
+            $this->app['router']->post('polycast/receive', function (Request $request) {
                 \Broadcast::auth($request);
 
                 $query = \DB::table('polycast_events')
@@ -61,10 +61,10 @@ class PolycastServiceProvider extends ServiceProvider
 
                 $channels = $request->get('channels', []);
 
-                foreach($channels as $channel => $events){
-                    foreach($events as $event) {
+                foreach ($channels as $channel => $events) {
+                    foreach ($events as $event) {
                         // No need to add index to DB for this query.
-                        $query->orWhere(function($query) use ($channel, $event, $request){
+                        $query->orWhere(function ($query) use ($channel, $event, $request) {
                             $query->where('channels', 'like', '%"'.$channel.'"%')
                                 ->where('event', '=', $event)
                                 ->where('created_at', '>=', $request->get('time'));
@@ -75,15 +75,16 @@ class PolycastServiceProvider extends ServiceProvider
                 $collection = collect($query->get());
 
                 $payload = $collection->map(function ($item, $key) use ($request) {
-                    $created = \Carbon\Carbon::createFromFormat("Y-m-d H:i:s", $item->created_at);
-                    $requested = \Carbon\Carbon::createFromFormat("Y-m-d H:i:s", $request->get('time'));
+                    $created = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item->created_at);
+                    $requested = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $request->get('time'));
                     $item->channels = json_decode($item->channels);
                     $item->payload = json_decode($item->payload);
                     // Add extra data to the payload
                     $item->data = BroadcastNotification::fetchPayloadData($item->payload);
-                    
+
                     $item->delay = $requested->diffInSeconds($created);
                     $item->requested_at = $requested->toDateTimeString();
+
                     return $item;
                 });
 
@@ -94,11 +95,9 @@ class PolycastServiceProvider extends ServiceProvider
                 return ['status' => 'success', 'time' => Carbon::now()->toDateTimeString(), 'payloads' => $payload];
             });
         });
-
     }
 
-    public function register(){
-
+    public function register()
+    {
     }
-
 }

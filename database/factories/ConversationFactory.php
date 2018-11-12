@@ -28,10 +28,10 @@ $factory->define(Conversation::class, function (Faker $faker, $params) {
     }
 
     return [
-        'type'      => $faker->randomElement([Conversation::TYPE_EMAIL, Conversation::TYPE_PHONE]),
-        'folder_id' => $folder_id,
-        'state'     => Conversation::STATE_PUBLISHED, // $faker->randomElement(array_keys(Conversation::$states)),
-        'subject'   => $faker->sentence(7),
+        'type'                => $faker->randomElement([Conversation::TYPE_EMAIL, Conversation::TYPE_PHONE]),
+        'folder_id'           => $folder_id,
+        'state'               => Conversation::STATE_PUBLISHED, // $faker->randomElement(array_keys(Conversation::$states)),
+        'subject'             => $faker->sentence(7),
         'customer_email'      => $customer_email,
         'cc'                  => json_encode([$faker->unique()->safeEmail]),
         'bcc'                 => json_encode([$faker->unique()->safeEmail]),

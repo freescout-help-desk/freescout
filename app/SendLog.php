@@ -27,9 +27,9 @@ class SendLog extends Model
      */
     const MAIL_TYPE_EMAIL_TO_CUSTOMER = 1;
     const MAIL_TYPE_USER_NOTIFICATION = 2;
-    const MAIL_TYPE_AUTO_REPLY        = 3;
-    const MAIL_TYPE_INVITE            = 4;
-    const MAIL_TYPE_PASSWORD_CHANGED  = 5;
+    const MAIL_TYPE_AUTO_REPLY = 3;
+    const MAIL_TYPE_INVITE = 4;
+    const MAIL_TYPE_PASSWORD_CHANGED = 5;
     const MAIL_TYPE_WRONG_USER_EMAIL_MESSAGE = 6;
     const MAIL_TYPE_TEST = 7;
     const MAIL_TYPE_ALERT = 8;

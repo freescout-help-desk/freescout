@@ -2154,7 +2154,7 @@ function saveDraft(reload_page, no_loader)
 				if (typeof(response.conversation_id) != "undefined" && response.conversation_id) {
 					form.children(':input[name="conversation_id"][value=""]').val(response.conversation_id);
 					form.children(':input[name="thread_id"]').val(response.thread_id);
-					$('.conv-new-number:first').text(response.conversation_id);
+					$('.conv-new-number:first').text(response.number);
 
 					// Set URL if this is a new conversation
 					if (new_conversation) {
@@ -2276,6 +2276,12 @@ function setReplyBody(text)
 {
 	$(".conv-reply-block :input[name='body']:first").val(text);
 	$('#body').summernote("code", text);
+}
+
+// Set text in summernote editor
+function setSummernoteText(jtextarea, text)
+{
+	jtextarea.summernote("code", text);
 }
 
 // Star/unstar processing from the list or conversation

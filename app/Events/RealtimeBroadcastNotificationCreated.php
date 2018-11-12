@@ -3,17 +3,15 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Queue\SerializesModels;
 
 class RealtimeBroadcastNotificationCreated implements ShouldBroadcastNow
 {
     use SerializesModels;
 
-/**
+    /**
      * The notifiable entity who received the notification.
      *
      * @var mixed
@@ -55,7 +53,7 @@ class RealtimeBroadcastNotificationCreated implements ShouldBroadcastNow
     {
         $channels = $this->notification->broadcastOn();
 
-        if (! empty($channels)) {
+        if (!empty($channels)) {
             return $channels;
         }
 
@@ -72,7 +70,7 @@ class RealtimeBroadcastNotificationCreated implements ShouldBroadcastNow
     public function broadcastWith()
     {
         return array_merge($this->data, [
-            'id' => $this->notification->id,
+            'id'   => $this->notification->id,
             'type' => get_class($this->notification),
         ]);
         // return [
