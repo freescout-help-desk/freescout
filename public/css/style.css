@@ -1562,7 +1562,7 @@ table.table-conversations td.conv-attachment {
 }
 .thread-message {
     margin: 0 24px 0 72px;
-    padding: 25px 13px 25px 12px;
+    padding: 25px 13px 20px 12px;
 }
 .thread-photo {
     float: left;
@@ -1631,8 +1631,14 @@ table.table-conversations td.conv-attachment {
 }
 .thread-opened-at {
     font-size: 12.5px;
-    margin: 5px 0 0 0;
+    margin: 15px 0 0 0;
     color: #a5b2bd;
+    display: inline-block;
+}
+.thread-opened-at .glyphicon {
+    font-size: 12px;
+    color: #b8c7d4;
+    margin-right: 5px;
 }
 .thread-options {
     position: absolute;

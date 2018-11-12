@@ -97,4 +97,4 @@ Route::post('/system/tools', ['uses' => 'SystemController@toolsExecute', 'middle
 Route::post('/system/ajax', ['uses' => 'SystemController@ajax', 'laroute' => true, 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system.ajax');
 
 // Open tracking
-Route::get('/notification/convo/read/{conversation_id}/{thread_id}', 'PublicController@setThreadAsRead')->name('open_tracking.set_read');
+Route::get('/thread/read/{conversation_id}/{thread_id}', 'PublicController@setThreadAsRead')->name('open_tracking.set_read');
