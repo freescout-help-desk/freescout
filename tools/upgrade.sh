@@ -35,10 +35,10 @@ if [ -f "${TOOLS_DIR}/pre_upgrade.sh" ]; then
 	source "${TOOLS_DIR}/pre_upgrade.sh";
 fi
 
-if [ -f "${PROJECT_ROOT}/.gitcommit" ]; then
-	gitcommit=`more "${PROJECT_ROOT}/.gitcommit"`
-	echo -e "Last commit: \e[32m${gitcommit}\e[0m";
-fi
+#if [ -f "${PROJECT_ROOT}/.gitcommit" ]; then
+#	gitcommit=`more "${PROJECT_ROOT}/.gitcommit"`
+#	echo -e "Last commit: \e[32m${gitcommit}\e[0m";
+#fi
 
 # Check if git is installed
 git_installed=`command -v git`;
