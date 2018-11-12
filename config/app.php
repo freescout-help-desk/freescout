@@ -201,6 +201,7 @@ return [
         'alert_fetch'        => ['default' => false],
         'alert_fetch_period' => ['default' => 15], // min
         'email_branding'     => ['default' => true],
+        'open_tracking'      => ['default' => true],
     ],
 
     /*
