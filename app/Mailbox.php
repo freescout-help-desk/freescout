@@ -118,7 +118,7 @@ class Mailbox extends Model
     /**
      * Automatically encrypt password on save.
      */
-    public function setInPasswordAttribute($value) 
+    public function setInPasswordAttribute($value)
     {
         $this->attributes['in_password'] = encrypt($value);
     }
@@ -126,7 +126,7 @@ class Mailbox extends Model
     /**
      * Automatically decrypt password on read.
      */
-    public function getInPasswordAttribute($value) 
+    public function getInPasswordAttribute($value)
     {
         try {
             return decrypt($value);
