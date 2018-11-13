@@ -306,7 +306,7 @@
                                     @endif
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date">{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
+                                    <span class="thread-date" data-toggle="tooltip" title="{{ \Carbon\Carbon::parse($thread->created_at)->timezone(config('app.timezone'))->formatLocalized(config('app.date_format')) }}" >{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
                                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                         <span class="thread-status">
                                             @if ($loop->last || $thread->status != App\Thread::STATUS_NOCHANGE)

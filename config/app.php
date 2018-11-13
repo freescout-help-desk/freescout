@@ -79,6 +79,20 @@ return [
 
     'timezone' => env('APP_TIMEZONE', date_default_timezone_get()),
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Date Format
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the default date format for your application, which
+    | will be used by the PHP date and date-time functions.
+    |
+    */
+
+    'date_format' => env('APP_DATEFORMAT', '%A %d %B %Y'),
+
+
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
