@@ -123,6 +123,13 @@ $app_key = getAppKey($root_dir);
 if (empty($app_key)) {
     // Copy .env.example
     if (!file_exists($root_dir.'.env')) {
+
+        // Check if .env.example eixists
+        if (!file_exists($root_dir.'.env.example')) {
+            showError('File <strong>'.$root_dir.'.env.example</strong> not found. Please make sure to copy this file from the application dist.');
+            exit();
+        }
+
         copy($root_dir.'.env.example', $root_dir.'.env');
 
         if (!file_exists($root_dir.'.env')) {

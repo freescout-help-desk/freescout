@@ -30,3 +30,4 @@ Thumbs.db
 /storage/.ignore_locales
 /storage/.installed
 /tools
+.well-known
