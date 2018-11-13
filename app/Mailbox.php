@@ -116,6 +116,25 @@ class Mailbox extends Model
     }
 
     /**
+     * Automatically encrypt password on save
+     */
+    public function setInPasswordAttribute($value) {
+        $this->attributes['in_password'] = encrypt($value);
+    }
+
+    /**
+     * Automatically decrypt password on read
+     */
+    public function getInPasswordAttribute($value) {
+        try {
+            return decrypt($value);
+        } catch (Illuminate\Contracts\Encryption\DecryptException $e) {
+            // do nothing if decrypt wasn't succefull
+            return false;
+        }
+    }
+
+    /**
      * Get users having access to the mailbox.
      */
     public function users()
