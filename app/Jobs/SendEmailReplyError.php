@@ -7,7 +7,6 @@ namespace App\Jobs;
 
 use App\Mail\UserEmailReplyError;
 use App\SendLog;
-use App\Thread;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -48,6 +47,7 @@ class SendEmailReplyError implements ShouldQueue
         \App\Misc\Mail::setMailDriver($this->mailbox);
 
         $exception = null;
+
         try {
             Mail::to([['name' => '', 'email' => $this->from]])
                 ->send(new UserEmailReplyError());

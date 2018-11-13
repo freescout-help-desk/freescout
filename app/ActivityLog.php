@@ -95,6 +95,7 @@ class ActivityLog extends Activity
     {
         $col = str_replace('_', ' ', $col);
         $col = ucfirst($col);
+
         return $col;
     }
 }

@@ -337,7 +337,7 @@ class MailboxesController extends Controller
         }
 
         return view('mailboxes/auto_reply', [
-            'mailbox' => $mailbox
+            'mailbox' => $mailbox,
         ]);
     }
 
@@ -349,9 +349,9 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
 
         $this->authorize('update', $mailbox);
- 
+
         $request->merge([
-            'auto_reply_enabled'     => ($request->filled('auto_reply_enabled') ?? false)
+            'auto_reply_enabled'     => ($request->filled('auto_reply_enabled') ?? false),
         ]);
 
         if ($request->auto_reply_enabled) {
@@ -363,8 +363,8 @@ class MailboxesController extends Controller
             ]);
             $validator->setAttributeNames([
                 'auto_reply_subject' => __('Subject'),
-                'auto_reply_message' => __('Message')
-            ]); 
+                'auto_reply_message' => __('Message'),
+            ]);
 
             if ($validator->fails()) {
                 return redirect()->route('mailboxes.auto_reply', ['id' => $id])
@@ -482,7 +482,7 @@ class MailboxesController extends Controller
                     $mailbox->users()->sync([]);
                     $mailbox->folders()->delete();
                     // Maybe remove notifications on events in this mailbox?
-                    
+
                     $mailbox->delete();
 
                     \Session::flash('flash_success_floating', __('Mailbox deleted'));

@@ -1,4 +1,6 @@
 # On some hostings it is impossible to change web root directory
 # so we rewrite all web requests into /public folder
-RewriteEngine on
-RewriteRule (.*) /public/$1 [L]
+<IfModule mod_rewrite.c>
+	RewriteEngine on
+	RewriteRule (.*) /public/$1 [L]
+</IfModule>

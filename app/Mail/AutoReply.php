@@ -2,41 +2,32 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Container\Container;
-use Illuminate\Contracts\Mail\Mailer as MailerContract;
 use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
 
 class AutoReply extends Mailable
 {
     /**
      * Conversation created by customer.
-     *
      */
     public $conversation;
 
     /**
      * Mailbox.
-     *
      */
     public $mailbox;
 
     /**
      * Customer.
-     *
      */
     public $customer;
 
     /**
      * Custom headers.
-     *
      */
     public $headers = [];
 
     /**
      * Create a new message instance.
-     *
      */
     public function __construct($conversation, $mailbox, $customer, $headers)
     {

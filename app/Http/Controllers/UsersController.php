@@ -221,8 +221,8 @@ class UsersController extends Controller
         $users = $this->getUsersForSidebar($id);
 
         return view('users/permissions', [
-            'user'           => $user, 
-            'mailboxes'      => $mailboxes, 
+            'user'           => $user,
+            'mailboxes'      => $mailboxes,
             'user_mailboxes' => $user->mailboxes,
             'users'          => $users,
         ]);
@@ -240,7 +240,7 @@ class UsersController extends Controller
         if (!$user->isAdmin()) {
             abort(403);
         }
-        
+
         $user = User::findOrFail($id);
 
         $user->mailboxes()->sync($request->mailboxes);
@@ -311,10 +311,10 @@ class UsersController extends Controller
             // Both send and resend
             case 'send_invite':
                 if (!$auth_user->isAdmin()) {
-                     $response['msg'] = __('Not enough permissions');
+                    $response['msg'] = __('Not enough permissions');
                 }
                 if (empty($request->user_id)) {
-                     $response['msg'] = __('Incorrect user');
+                    $response['msg'] = __('Incorrect user');
                 }
                 if (!$response['msg']) {
                     $user = User::find($request->user_id);
@@ -340,10 +340,10 @@ class UsersController extends Controller
             // Reset password
             case 'reset_password':
                 if (!auth()->user()->isAdmin()) {
-                     $response['msg'] = __('Not enough permissions');
+                    $response['msg'] = __('Not enough permissions');
                 }
                 if (empty($request->user_id)) {
-                     $response['msg'] = __('Incorrect user');
+                    $response['msg'] = __('Incorrect user');
                 }
                 if (!$response['msg']) {
                     $user = User::find($request->user_id);
@@ -368,7 +368,7 @@ class UsersController extends Controller
             // Load website notifications
             case 'web_notifications':
                 if (!$auth_user) {
-                     $response['msg'] = __('You are not logged in');
+                    $response['msg'] = __('You are not logged in');
                 }
                 if (!$response['msg']) {
                     $web_notifications_info = $auth_user->getWebsiteNotificationsInfo(false);
@@ -376,8 +376,8 @@ class UsersController extends Controller
                         'web_notifications_info_data' => $web_notifications_info['data'],
                     ])->render();
 
-                    $response['has_more_pages'] = (int)$web_notifications_info['notifications']->hasMorePages();
-                    
+                    $response['has_more_pages'] = (int) $web_notifications_info['notifications']->hasMorePages();
+
                     $response['status'] = 'success';
                 }
                 break;
@@ -385,7 +385,7 @@ class UsersController extends Controller
             // Mark all user website notifications as read
             case 'mark_notifications_as_read':
                 if (!$auth_user) {
-                     $response['msg'] = __('You are not logged in');
+                    $response['msg'] = __('You are not logged in');
                 }
                 if (!$response['msg']) {
                     $auth_user->unreadNotifications()->update(['read_at' => now()]);
@@ -431,7 +431,6 @@ class UsersController extends Controller
                 }
 
                 if (!$response['msg']) {
-                    
                     event(new UserDeleted($user, $auth_user));
 
                     // We have to process conversations one by one to set move them to Unassigned folder,
@@ -533,7 +532,7 @@ class UsersController extends Controller
             // Check current password
             if (!Hash::check($request->password_current, $user->password)) {
                 $validator->errors()->add('password_current', __('This password is incorrect.'));
-            } else if (Hash::check($request->password, $user->password)) {
+            } elseif (Hash::check($request->password, $user->password)) {
                 // Check new password
                 $validator->errors()->add('password', __('The new password is the same as the old password.'));
             }

@@ -40,7 +40,7 @@
     </div>
 
     <div class="form-group{{ $errors->has('settings[email_branding]') ? ' has-error' : '' }}">
-        <label for="email_branding" class="col-sm-2 control-label">{{ __('Spread the Word', ['app_name' => \Config::get('app.name')]) }}</label>
+        <label for="email_branding" class="col-sm-2 control-label">{{ __('Spread the World', ['app_name' => \Config::get('app.name')]) }}</label>
 
         <div class="col-sm-6">
             <div class="controls">
@@ -59,7 +59,7 @@
     </div>
 
     <div class="form-group{{ $errors->has('settings[open_tracking]') ? ' has-error' : '' }}">
-        <label for="open_tracking" class="col-sm-2 control-label">{{ __('Open Tracking') }} (todo)</label>
+        <label for="open_tracking" class="col-sm-2 control-label">{{ __('Open Tracking') }}</label>
 
         <div class="col-sm-6">
             <div class="controls">

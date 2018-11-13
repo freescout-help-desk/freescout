@@ -2,58 +2,57 @@
 /**
  * Application installer.
  */
-
 ini_set('display_errors', 'On');
 
 $root_dir = realpath(__DIR__.'/..').'/';
 
 // Dotenv library for reading .env files
-require_once($root_dir.'vendor/vlucas/phpdotenv/src/Dotenv.php');
-require_once($root_dir.'vendor/vlucas/phpdotenv/src/Loader.php');
-require_once($root_dir.'vendor/vlucas/phpdotenv/src/Validator.php');
-require_once($root_dir.'vendor/vlucas/phpdotenv/src/Exception/ExceptionInterface.php');
-require_once($root_dir.'vendor/vlucas/phpdotenv/src/Exception/InvalidCallbackException.php');
-require_once($root_dir.'vendor/vlucas/phpdotenv/src/Exception/InvalidFileException.php');
-require_once($root_dir.'vendor/vlucas/phpdotenv/src/Exception/InvalidPathException.php');
-require_once($root_dir.'vendor/vlucas/phpdotenv/src/Exception/ValidationException.php');
+require_once $root_dir.'vendor/vlucas/phpdotenv/src/Dotenv.php';
+require_once $root_dir.'vendor/vlucas/phpdotenv/src/Loader.php';
+require_once $root_dir.'vendor/vlucas/phpdotenv/src/Validator.php';
+require_once $root_dir.'vendor/vlucas/phpdotenv/src/Exception/ExceptionInterface.php';
+require_once $root_dir.'vendor/vlucas/phpdotenv/src/Exception/InvalidCallbackException.php';
+require_once $root_dir.'vendor/vlucas/phpdotenv/src/Exception/InvalidFileException.php';
+require_once $root_dir.'vendor/vlucas/phpdotenv/src/Exception/InvalidPathException.php';
+require_once $root_dir.'vendor/vlucas/phpdotenv/src/Exception/ValidationException.php';
 
-// Get app key 
+// Get app key
 function getAppKey($root_dir, $check_cache = true)
 {
-	// First check APP_KEY in cache
-	if ($check_cache && file_exists($root_dir.'bootstrap/cache/config.php')) {
-		$config = include $root_dir.'bootstrap/cache/config.php';
+    // First check APP_KEY in cache
+    if ($check_cache && file_exists($root_dir.'bootstrap/cache/config.php')) {
+        $config = include $root_dir.'bootstrap/cache/config.php';
 
-		if (!empty($config)) {
-			if (!empty($config['app']['key'])) {
-				return $config['app']['key'];
-			} else {
-				return '';
-			}
-		}
-	}
+        if (!empty($config)) {
+            if (!empty($config['app']['key'])) {
+                return $config['app']['key'];
+            } else {
+                return '';
+            }
+        }
+    }
 
-	// Read .env file into $_ENV
-	try {
-		$dotenv = new Dotenv\Dotenv($root_dir);
-		// If using load() if $_ENV['APP_KEY'] was present in .env before it will not be updated when reading 
-		$dotenv->overload();
-	} catch (\Exception $e) {
-		// Do nothing
-	}
+    // Read .env file into $_ENV
+    try {
+        $dotenv = new Dotenv\Dotenv($root_dir);
+        // If using load() if $_ENV['APP_KEY'] was present in .env before it will not be updated when reading
+        $dotenv->overload();
+    } catch (\Exception $e) {
+        // Do nothing
+    }
 
-	if (!empty($_ENV['APP_KEY'])) {
-		return $_ENV['APP_KEY'];
-	} else {
-		return '';
-	}
+    if (!empty($_ENV['APP_KEY'])) {
+        return $_ENV['APP_KEY'];
+    } else {
+        return '';
+    }
 }
 
 function clearCache($root_dir)
 {
-	if (file_exists($root_dir.'bootstrap/cache/config.php')) {
-		unlink($root_dir.'bootstrap/cache/config.php');
-	}
+    if (file_exists($root_dir.'bootstrap/cache/config.php')) {
+        unlink($root_dir.'bootstrap/cache/config.php');
+    }
 }
 
 $alerts = [];
@@ -61,70 +60,69 @@ $errors = [];
 $app_key = $_POST['app_key'] ?? '';
 
 if (!empty($_POST)) {
+    if (trim($app_key) != trim(getAppKey($root_dir))) {
+        $errors['app_key'] = 'Invalid App Key';
+    } else {
+        clearCache($root_dir);
+        if ($_POST['action'] == 'cc') {
+            $alerts[] = [
+                'type' => 'success',
+                'text' => 'Cache cleared successfully.',
+            ];
+        } else {
+            if (!function_exists('shell_exec')) {
+                $alerts[] = [
+                    'type' => 'danger',
+                    'text' => '<code>shell_exec</code> function is unavailable. Can not run updating.',
+                ];
+            } else {
+                try {
+                    $php_path = 'php';
+                    if (!empty($_POST['php_path'])) {
+                        $php_path = $_POST['php_path'];
+                    }
 
-	if (trim($app_key) != trim(getAppKey($root_dir))) {
-		$errors['app_key'] = 'Invalid App Key';
-	} else {
-		clearCache($root_dir);
-		if ($_POST['action'] == 'cc') {
-			$alerts[] = [
-				'type' => 'success',
-				'text' => 'Cache cleared successfully.',
-			];	
-		} else {
-			if (!function_exists('shell_exec')) {
-				$alerts[] = [
-					'type' => 'danger',
-					'text' => '<code>shell_exec</code> function is unavailable. Can not run updating.',
-				];
-			} else {
-				try {
-					$php_path = 'php';
-					if (!empty($_POST['php_path'])) {
-						$php_path = $_POST['php_path'];
-					}
+                    // First check PHP version
+                    $version_output = shell_exec($php_path.' -v');
 
-					// First check PHP version
-					$version_output = shell_exec($php_path.' -v');
-					
-					if (!strstr($version_output, 'PHP 7.')) {
-						$alerts[] = [
-							'type' => 'danger',
-							'text' => 'Incorrect PHP version (7.x is required):<br/><br/><pre>'.htmlspecialchars($version_output).'</pre>',
-						];
-					} else {
-						if ($_POST['action'] == 'update') {
-							// Update Now
-							$output = shell_exec($php_path.' '.$root_dir.'artisan freescout:update --force');
-							if (strstr($output, 'Broadcasting queue restart signal')) {
-								$alerts[] = [
-									'type' => 'success',
-									'text' => 'Updating finished:<br/><pre>'.htmlspecialchars($output).'</pre>',
-								];	
-							} else {
-								$alerts[] = [
-									'type' => 'danger',
-									'text' => 'Something went wrong... Please <strong><a href="https://freescout.net/download/" target="_blank">download</a></strong> the latest version and extract it into your application folder replacing existing files. After that click "Migrate DB" button.<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
-								];
-							}
-						} else {
-							// Migreate DB
-							$output = shell_exec($php_path.' '.$root_dir.'artisan migrate --force');
-							$alerts[] = [
-								'type' => 'success',
-								'text' => 'Migrating finished:<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
-							];	
-						}
-					}
-				} catch (\Exception $e) {
-					$alerts[] = [
-						'type' => 'danger',
-						'text' => 'Error occured: '.htmlspecialchars($e->getMessage()),
-					];
-				}
-			}
-		}
-	}
+                    if (!strstr($version_output, 'PHP 7.')) {
+                        $alerts[] = [
+                            'type' => 'danger',
+                            'text' => 'Incorrect PHP version (7.x is required):<br/><br/><pre>'.htmlspecialchars($version_output).'</pre>',
+                        ];
+                    } else {
+                        if ($_POST['action'] == 'update') {
+                            // Update Now
+                            $output = shell_exec($php_path.' '.$root_dir.'artisan freescout:update --force');
+                            if (strstr($output, 'Broadcasting queue restart signal')) {
+                                $alerts[] = [
+                                    'type' => 'success',
+                                    'text' => 'Updating finished:<br/><pre>'.htmlspecialchars($output).'</pre>',
+                                ];
+                            } else {
+                                $alerts[] = [
+                                    'type' => 'danger',
+                                    'text' => 'Something went wrong... Please <strong><a href="https://freescout.net/download/" target="_blank">download</a></strong> the latest version and extract it into your application folder replacing existing files. After that click "Migrate DB" button.<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
+                                ];
+                            }
+                        } else {
+                            // Migreate DB
+                            $output = shell_exec($php_path.' '.$root_dir.'artisan migrate --force');
+                            $alerts[] = [
+                                'type' => 'success',
+                                'text' => 'Migrating finished:<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
+                            ];
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $alerts[] = [
+                        'type' => 'danger',
+                        'text' => 'Error occured: '.htmlspecialchars($e->getMessage()),
+                    ];
+                }
+            }
+        }
+    }
 }
 
 ?>

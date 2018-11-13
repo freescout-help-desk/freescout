@@ -1,11 +1,11 @@
 <?php
 
-use \Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreatePolycastEventsTable extends Migration {
-
+class CreatePolycastEventsTable extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -13,7 +13,7 @@ class CreatePolycastEventsTable extends Migration {
      */
     public function up()
     {
-        Schema::create('polycast_events', function(Blueprint $table){
+        Schema::create('polycast_events', function (Blueprint $table) {
             $table->engine = 'InnoDB';
 
             $table->increments('id');
@@ -33,5 +33,4 @@ class CreatePolycastEventsTable extends Migration {
     {
         Schema::drop('polycast_events');
     }
-
 }

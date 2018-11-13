@@ -245,7 +245,7 @@
                     {{-- Show version to admin only --}}
                     @if (Auth::user() && Auth::user()->isAdmin())
                         <br/>
-                        <a href="{{ route('system') }}#version">{{ config('app.version') }}</a>
+                        <a href="{{ route('system') }}">{{ config('app.version') }}</a>
                     @endif
             </div>
         @endif

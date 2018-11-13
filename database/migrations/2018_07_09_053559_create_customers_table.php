@@ -39,7 +39,7 @@ class CreateCustomersTable extends Migration
 
             // Indexes
             // For ajax search
-            $table->index([DB::raw('first_name(191)'), DB::raw('last_name(191)')]);
+            $table->index([DB::raw('first_name(80)'), DB::raw('last_name(80)')]);
         });
     }
 

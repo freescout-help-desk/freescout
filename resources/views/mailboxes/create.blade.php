@@ -46,18 +46,20 @@
 					                        </div>
 					                    </div>
 
-					                    <div class="form-group{{ $errors->has('ratings') ? ' has-error' : '' }}">
-					                        <label for="ratings" class="col-sm-4 control-label">{{ __('Satisfaction Ratings') }}</label>
+					                    @if (\Module::isActive('satratings'))
+						                    <div class="form-group{{ $errors->has('ratings') ? ' has-error' : '' }}">
+						                        <label for="ratings" class="col-sm-4 control-label">{{ __('Satisfaction Ratings') }}</label>
 
-					                        <div class="col-sm-6">
-					                            <select id="ratings" class="form-control input-sized" name="ratings" required autofocus>
-					                                <option value="1" @if ((int)old('ratings'))selected="selected"@endif>{{ __('On') }}</option>
-					                                <option value="0" @if ((int)old('ratings'))selected="selected"@endif>{{ __('Off') }}</option>
-					                            </select>
+						                        <div class="col-sm-6">
+						                            <select id="ratings" class="form-control input-sized" name="ratings" required autofocus>
+						                                <option value="1" @if ((int)old('ratings'))selected="selected"@endif>{{ __('On') }}</option>
+						                                <option value="0" @if ((int)old('ratings'))selected="selected"@endif>{{ __('Off') }}</option>
+						                            </select>
 
-					                            @include('partials/field_error', ['field'=>'ratings'])
-					                        </div>
-					                    </div>
+						                            @include('partials/field_error', ['field'=>'ratings'])
+						                        </div>
+						                    </div>
+						                @endif
 
 					                    <div class="form-group{{ $errors->has('users') ? ' has-error' : '' }}">
 					                        <label for="users" class="col-sm-4 control-label">{{ __('Who Else Will Use This Mailbox') }}</label>
