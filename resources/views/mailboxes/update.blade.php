@@ -96,7 +96,8 @@
                         </div>
                     </div>
 
-                    <div class="form-group{{ $errors->has('template') ? ' has-error' : '' }}">
+                    {{-- Email Template option hidden until somebody needs it --}}
+                    <div class="form-group{{ $errors->has('template') ? ' has-error' : '' }}" style="display:none">
                         <label for="template" class="col-sm-2 control-label">{{ __('Email Template') }} (todo)</label>
 
                         <div class="col-sm-6">
