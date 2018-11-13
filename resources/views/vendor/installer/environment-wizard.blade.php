@@ -92,15 +92,15 @@
             </div>
             <div class="tab" id="tab2content">
 
-                <div class="form-group {{ $errors->has('database_connection') ? ' has-error ' : '' }}" style="display:none">
+                <div class="form-group {{ $errors->has('database_connection') ? ' has-error ' : '' }}">
                     <label for="database_connection">
                         {{ trans('installer_messages.environment.wizard.form.db_connection_label') }}
                     </label>
                     <select name="database_connection" id="database_connection">
-                        <option value="mysql" selected>{{ trans('installer_messages.environment.wizard.form.db_connection_label_mysql') }}</option>
-                        {{--<option value="sqlite">{{ trans('installer_messages.environment.wizard.form.db_connection_label_sqlite') }}</option>
-                        <option value="pgsql">{{ trans('installer_messages.environment.wizard.form.db_connection_label_pgsql') }}</option>
-                        <option value="sqlsrv">{{ trans('installer_messages.environment.wizard.form.db_connection_label_sqlsrv') }}</option>--}}
+                        <option value="mysql" @if (old('database_connection', env('DB_CONNECTION', 'mysql')) == 'mysql') selected @endif>MySQL</option>
+                        <option value="pgsql" @if (old('database_connection', env('DB_CONNECTION')) == 'pgsql') selected @endif>PostgreSQL</option>
+                        <option value="sqlite" @if (old('database_connection', env('DB_CONNECTION')) == 'sqlite') selected @endif>SQLite</option>
+                        <option value="sqlsrv" @if (old('database_connection', env('DB_CONNECTION')) == 'sqlsrv') selected @endif>SQL Server</option>
                     </select>
                     @if ($errors->has('database_connection'))
                         <span class="error-block">
