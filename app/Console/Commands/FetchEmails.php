@@ -485,8 +485,8 @@ class FetchEmails extends Command
         // Save extra recipients to CC
         $conversation->setCc(array_merge($cc, $to));
         $conversation->setBcc($bcc);
-        // Reply from user makes conversation pending
-        $conversation->status = Conversation::STATUS_PENDING;
+        // Respect mailbox settings for "Status After Replying
+        $conversation->status = $mailbox->ticket_status;
         $conversation->last_reply_at = $now;
         $conversation->last_reply_from = Conversation::PERSON_USER;
         $conversation->user_updated_at = $now;
