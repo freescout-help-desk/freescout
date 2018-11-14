@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class EncryptMailboxPassword extends Migration
 {
@@ -11,7 +13,9 @@ class EncryptMailboxPassword extends Migration
      */
     public function up()
     {
-        \DB::statement('ALTER TABLE `mailboxes` MODIFY `in_password` VARCHAR(512) NOT NULL;');
+        Schema::table('mailboxes', function (Blueprint $table) {
+            $table->string('in_password', 512)->change();
+        });
 
         foreach (\App\Mailbox::whereNotNull('in_password')->get() as $Mailbox) {
             $Mailbox->in_password = $Mailbox->getOriginal('in_password');
@@ -33,6 +37,8 @@ class EncryptMailboxPassword extends Migration
             $Mailbox->save();
         }
 
-        \DB::statement('ALTER TABLE `mailboxes` MODIFY `in_password` VARCHAR(255) NOT NULL;');
+        Schema::table('mailboxes', function (Blueprint $table) {
+            $table->string('in_password')->change();
+        });
     }
 }
