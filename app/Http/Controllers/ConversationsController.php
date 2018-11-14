@@ -968,6 +968,144 @@ class ConversationsController extends Controller
         return \Response::json($response);
     }
 
+    public function ajaxBulk(Request $request)
+    {
+        $response = [
+            'status' => 'error',
+            'msg'    => '', // this is error message
+        ];
+
+        $user = auth()->user();
+
+        switch ($request->action) {
+
+            // Change conversation user
+            case 'change_user':
+
+                $conversations = Conversation::findMany($request->conversation_id);
+
+                $new_user_id = (int) $request->user_id;
+
+                if (!$response['msg']) {
+                    foreach ($conversations as $conversation) {
+                        if (!$user->can('update', $conversation)) {
+                            continue;
+                        }
+                        if (!$conversation->mailbox->userHasAccess($new_user_id)) {
+                            continue;
+                        }
+                    
+                        $conversation->setUser($new_user_id);
+                        $conversation->save();
+
+                        // Create lineitem thread
+                        $thread = new Thread();
+                        $thread->conversation_id = $conversation->id;
+                        $thread->user_id = $conversation->user_id;
+                        $thread->type = Thread::TYPE_LINEITEM;
+                        $thread->state = Thread::STATE_PUBLISHED;
+                        $thread->status = Thread::STATUS_NOCHANGE;
+                        $thread->action_type = Thread::ACTION_TYPE_USER_CHANGED;
+                        $thread->source_via = Thread::PERSON_USER;
+                        // todo: this need to be changed for API
+                        $thread->source_type = Thread::SOURCE_TYPE_WEB;
+                        $thread->customer_id = $conversation->customer_id;
+                        $thread->created_by_user_id = $user->id;
+                        $thread->save();
+
+                        event(new ConversationUserChanged($conversation, $user));
+                    }
+
+                    $response['status'] = 'success';
+                    // Flash
+                    $flash_message = __('Assignee updated');
+                    \Session::flash('flash_success_floating', $flash_message);
+
+                    $response['msg'] = __('Assignee updated');
+                }
+                break;
+
+            // Change conversations status
+            case 'change_status':
+                $conversations = Conversation::findMany($request->conversation_id);
+
+                $new_status = (int) $request->status;
+
+                if (!in_array((int) $request->status, array_keys(Conversation::$statuses))) {
+                    $response['msg'] = __('Incorrect status');
+                }
+
+                if (!$response['msg']) {
+                    foreach ($conversations as $conversation) {
+                        if (!$user->can('update', $conversation)) {
+                            continue;
+                        }
+
+                        $conversation->setStatus($new_status, $user);
+                        $conversation->save();
+
+                        // Create lineitem thread
+                        $thread = new Thread();
+                        $thread->conversation_id = $conversation->id;
+                        $thread->user_id = $conversation->user_id;
+                        $thread->type = Thread::TYPE_LINEITEM;
+                        $thread->state = Thread::STATE_PUBLISHED;
+                        $thread->status = $conversation->status;
+                        $thread->action_type = Thread::ACTION_TYPE_STATUS_CHANGED;
+                        $thread->source_via = Thread::PERSON_USER;
+                        // todo: this need to be changed for API
+                        $thread->source_type = Thread::SOURCE_TYPE_WEB;
+                        $thread->customer_id = $conversation->customer_id;
+                        $thread->created_by_user_id = $user->id;
+                        $thread->save();
+
+                        event(new ConversationStatusChanged($conversation));
+                    }
+
+                    $response['status'] = 'success';
+                    // Flash
+                    $flash_message = __('Status updated');
+                    \Session::flash('flash_success_floating', $flash_message);
+
+                    $response['msg'] = __('Status updated');
+                }
+                break;
+
+            // delete converations
+            case 'delete':
+                $conversations = Conversation::findMany($request->conversation_id);
+
+                foreach ($conversations as $conversation) {
+                    if (!$user->can('delete', $conversation)) {
+                        continue;
+                    }
+
+                    $folder_id = $conversation->folder_id;
+                    $conversation->state = Conversation::STATE_DELETED;
+                    $conversation->user_updated_at = date('Y-m-d H:i:s');
+                    $conversation->updateFolder();
+                    $conversation->save();
+
+                    // Recalculate only old and new folders
+                    $conversation->mailbox->updateFoldersCounters();
+
+                    $response['status'] = 'success';
+
+                    \Session::flash('flash_success_floating', __('Conversations deleted'));
+                }
+                break;
+            default:
+                $response['msg'] = 'Unknown action';
+                break;
+        }
+
+        if ($response['status'] == 'error' && empty($response['msg'])) {
+            $response['msg'] = 'Unknown error occured';
+        }
+
+        return \Response::json($response);
+    }
+
     /**
      * Conversations ajax controller.
      */
