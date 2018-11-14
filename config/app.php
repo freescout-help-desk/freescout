@@ -247,7 +247,7 @@ return [
          * Package Service Providers...
          */
         Devfactory\Minify\MinifyServiceProvider::class,
-        // Debugbar is enabled only if APP_ENV=local
+        // Debugbar is enabled only if APP_DEBUG=true
         //Barryvdh\Debugbar\ServiceProvider::class,
 
         /*

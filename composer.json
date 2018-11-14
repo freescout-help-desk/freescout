@@ -27,7 +27,7 @@
         "codedge/laravel-selfupdater": "1.4.3"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "v2.4.3",
+        "barryvdh/laravel-debugbar": "v3.2.0",
         "filp/whoops": "2.2.0",
         "fzaninotto/faker": "v1.7.1",
         "mockery/mockery": "1.1.0",
