@@ -1,0 +1,50 @@
+{
+    "name": "chumper/zipper",
+    "type": "library",
+    "description": "This is a little neat helper for the ZipArchive methods with handy functions",
+    "keywords": ["laravel", "ZIP", "Archive"],
+    "homepage": "http://github.com/Chumper/zipper",
+    "license": "Apache2",
+    "authors": [
+        {
+            "name": "Nils Plaschke",
+            "email": "github@nilsplaschke.de",
+            "homepage": "http://nilsplaschke.de",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.0",
+        "illuminate/support": "^5.0",
+        "illuminate/filesystem": "^5.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7",
+        "mockery/mockery": "^0.9.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Chumper\\Zipper\\": "src/Chumper/Zipper"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Chumper\\Zipper\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Chumper\\Zipper\\ZipperServiceProvider"
+            ],
+            "aliases": {
+                "Zipper": "Chumper\\Zipper\\Zipper"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

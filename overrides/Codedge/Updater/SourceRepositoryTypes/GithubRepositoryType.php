@@ -2,15 +2,15 @@
 
 namespace Codedge\Updater\SourceRepositoryTypes;
 
-use File;
-use Storage;
-use GuzzleHttp\Client;
-use Symfony\Component\Finder\Finder;
-use Codedge\Updater\Events\UpdateFailed;
 use Codedge\Updater\AbstractRepositoryType;
-use Codedge\Updater\Events\UpdateAvailable;
-use Codedge\Updater\Events\UpdateSucceeded;
 use Codedge\Updater\Contracts\SourceRepositoryTypeContract;
+use Codedge\Updater\Events\UpdateAvailable;
+use Codedge\Updater\Events\UpdateFailed;
+use Codedge\Updater\Events\UpdateSucceeded;
+use File;
+use GuzzleHttp\Client;
+use Storage;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Github.php.
@@ -56,12 +56,12 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
     {
         $version = $currentVersion ?: $this->getVersionInstalled();
 
-        if (! $version) {
+        if (!$version) {
             throw new \InvalidArgumentException('No currently installed version specified.');
         }
 
         if (version_compare($version, $this->getVersionAvailable(), '<')) {
-            if (! $this->versionFileExists()) {
+            if (!$this->versionFileExists()) {
                 $this->setVersionFile($this->getVersionAvailable());
                 event(new UpdateAvailable($this->getVersionAvailable()));
             }
@@ -95,17 +95,17 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
         $storagePath = $this->config['download_path'];
         //$storagePath = storage_path().DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'updater';
 
-        if (! File::exists($storagePath)) {
+        if (!File::exists($storagePath)) {
             File::makeDirectory($storagePath, 493, true, true);
         }
 
-        if (! empty($version)) {
+        if (!empty($version)) {
             $release = $releaseCollection->where('name', $version)->first();
         }
 
         $storageFilename = "{$release->name}.zip";
 
-        if (! $this->isSourceAlreadyFetched($release->name)) {
+        if (!$this->isSourceAlreadyFetched($release->name)) {
             $storageFile = $storagePath.DIRECTORY_SEPARATOR.$storageFilename;
             $this->downloadRelease($this->client, $release->zipball_url, $storageFile);
 
@@ -126,7 +126,7 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
         $this->setPathToUpdate(base_path(), $this->config['exclude_folders']);
 
         if ($this->hasCorrectPermissionForUpdate()) {
-            if (! empty($version)) {
+            if (!empty($version)) {
                 $sourcePath = $this->config['download_path'].DIRECTORY_SEPARATOR.$version;
             } else {
                 $sourcePath = File::directories($this->config['download_path'])[0];

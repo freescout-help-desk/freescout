@@ -1,0 +1,29 @@
+{
+    "name": "kitetail/zttp",
+    "description": "A developer-experience focused HTTP client, optimized for most common use cases.",
+    "keywords": ["http", "guzzle"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Adam Wathan",
+            "email": "adam.wathan@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "guzzlehttp/guzzle": "^6.0",
+        "tightenco/collect": "^5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.0",
+        "laravel/lumen-framework": "5.5.*"
+    },
+    "autoload": {
+        "files": [
+            "src/Zttp.php"
+        ]
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    }
+}

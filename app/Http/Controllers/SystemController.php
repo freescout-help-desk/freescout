@@ -134,7 +134,7 @@ class SystemController extends Controller
 
         // Check new version
         $new_version_available = false;
-        $latest_version = \Cache::remember('latest_version', 15, function() {
+        $latest_version = \Cache::remember('latest_version', 15, function () {
             return \Updater::getVersionAvailable();
         });
 
@@ -143,12 +143,12 @@ class SystemController extends Controller
         }
 
         return view('system/status', [
-            'commands'       => $commands,
-            'queued_jobs'    => $queued_jobs,
-            'failed_jobs'    => $failed_jobs,
-            'php_extensions' => $php_extensions,
+            'commands'              => $commands,
+            'queued_jobs'           => $queued_jobs,
+            'failed_jobs'           => $failed_jobs,
+            'php_extensions'        => $php_extensions,
             'new_version_available' => $new_version_available,
-            'latest_version' => $latest_version,
+            'latest_version'        => $latest_version,
         ]);
     }
 
@@ -163,18 +163,20 @@ class SystemController extends Controller
         }
 
         return view('system/tools', [
-            'output' => $output
+            'output' => $output,
         ]);
     }
 
     /**
      * Execute tools action.
-     * @param  Request $request [description]
-     * @return [type]           [description]
+     *
+     * @param Request $request [description]
+     *
+     * @return [type] [description]
      */
     public function toolsExecute(Request $request)
     {
-        $outputLog = new BufferedOutput;
+        $outputLog = new BufferedOutput();
 
         switch ($request->action) {
             case 'clear_cache':

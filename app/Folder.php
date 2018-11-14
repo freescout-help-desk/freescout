@@ -166,12 +166,12 @@ class Folder extends Model
      */
     public function isIndirect()
     {
-        return in_array($this->type, Folder::$indirect_types);
+        return in_array($this->type, self::$indirect_types);
     }
 
     public function updateCounters()
     {
-        if ($this->type == Folder::TYPE_MINE && $this->user_id) {
+        if ($this->type == self::TYPE_MINE && $this->user_id) {
             $this->active_count = Conversation::where('user_id', $this->user_id)
                 ->where('mailbox_id', $this->mailbox_id)
                 ->where('status', Conversation::STATUS_ACTIVE)
@@ -181,10 +181,10 @@ class Folder extends Model
                 ->where('mailbox_id', $this->mailbox_id)
                 ->where('state', Conversation::STATE_PUBLISHED)
                 ->count();
-        } elseif ($this->type == Folder::TYPE_STARRED) {
+        } elseif ($this->type == self::TYPE_STARRED) {
             $this->active_count = count(Conversation::getUserStarredConversationIds($this->mailbox_id, $this->user_id));
             $this->total_count = $this->active_count;
-        } elseif ($this->type == Folder::TYPE_DELETED) {
+        } elseif ($this->type == self::TYPE_DELETED) {
             $this->active_count = $this->conversations()->where('state', Conversation::STATE_DELETED)
                 ->count();
             $this->total_count = $this->active_count;
@@ -210,13 +210,13 @@ class Folder extends Model
     public function getActiveCount($folders = [])
     {
         $active_count = $this->active_count;
-        if ($this->type == Folder::TYPE_ASSIGNED) {
+        if ($this->type == self::TYPE_ASSIGNED) {
             if ($folders) {
-                $mine_folder = $folders->firstWhere('type', Folder::TYPE_MINE);
+                $mine_folder = $folders->firstWhere('type', self::TYPE_MINE);
             } else {
-                $mine_folder = $this->mailbox->folders()->where('type', Folder::TYPE_MINE)->first();
+                $mine_folder = $this->mailbox->folders()->where('type', self::TYPE_MINE)->first();
             }
-            
+
             if ($mine_folder) {
                 $active_count = $active_count - $mine_folder->active_count;
                 if ($active_count < 0) {

@@ -10,8 +10,8 @@ use App\Events\ConversationCustomerChanged;
 use App\Events\CustomerCreatedConversation;
 use App\Events\CustomerReplied;
 use App\Events\UserReplied;
-use App\Misc\Mail;
 use App\Mailbox;
+use App\Misc\Mail;
 use App\Option;
 use App\Subscription;
 use App\Thread;
@@ -96,13 +96,13 @@ class FetchEmails extends Command
     public function fetch($mailbox)
     {
         $client = new Client([
-            'host' => $mailbox->in_server,
-            'port' => $mailbox->in_port,
-            'encryption' => $mailbox->getInEncryptionName(),
+            'host'          => $mailbox->in_server,
+            'port'          => $mailbox->in_port,
+            'encryption'    => $mailbox->getInEncryptionName(),
             'validate_cert' => true,
-            'username' => $mailbox->in_username,
-            'password' => $mailbox->in_password,
-            'protocol' => $mailbox->getInProtocolName(),
+            'username'      => $mailbox->in_username,
+            'password'      => $mailbox->in_password,
+            'protocol'      => $mailbox->getInProtocolName(),
         ]);
 
         // Connect to the Server
@@ -353,7 +353,7 @@ class FetchEmails extends Command
         try {
             activity()
                 ->withProperties([
-                    'error' => $message,
+                    'error'   => $message,
                     'mailbox' => $mailbox_name,
                 ])
                 ->useLog(\App\ActivityLog::NAME_EMAILS_FETCHING)
@@ -557,7 +557,7 @@ class FetchEmails extends Command
             if ($created_attachment) {
                 $created_attachments[] = [
                     'imap_attachment' => $email_attachment,
-                    'attachment'      => $created_attachment
+                    'attachment'      => $created_attachment,
                 ];
             }
         }
@@ -628,6 +628,7 @@ class FetchEmails extends Command
                 $body = str_replace('cid:'.$attachment['imap_attachment']->id, $attachment['attachment']->url(), $body);
             }
         }
+
         return $body;
     }
 
@@ -674,7 +675,7 @@ class FetchEmails extends Command
     /**
      * Create customers from emails.
      *
-     * @param  array $emails_data
+     * @param array $emails_data
      */
     public function createCustomers($emails, $exclude_emails)
     {

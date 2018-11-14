@@ -30,7 +30,7 @@ class CreateConversationsTable extends Migration
             $table->string('subject', 998)->nullable();
             // Customer's email to which replies from users are sent.
             // Not used when fetching emails.
-            // Customer may have several emails, so we need to know which 
+            // Customer may have several emails, so we need to know which
             // email to use for each conversation.
             $table->string('customer_email', 191)->nullable();
             // CC and BCC store values from the last reply from customer or user

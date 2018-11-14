@@ -4,9 +4,6 @@ php:
   - 7.0
   - 7.2
 
-install:
-    - composer install
-
 before_script:
   - cp .env.travis .env
   - mysql -e 'create database homestead_test;'
