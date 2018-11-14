@@ -263,11 +263,8 @@ return [
         /*
          * Custom Service Providers...
          */
-        // We need to be careful when deleting service providers
-        // as Laravel config is cached with `config:cache`.
-        // If we remove some service provider file from here and from disk,
-        // when updating the app, users will receive "Class '...' not found" error,
-        // because their cached config still has this service provider listed.
+        // We can freely add or remove providers from this file.
+        // Updating will work without problems.
 
         // Autodiscovery did not work for this one, becasuse it's composer.json
         // does not have a `extra` section.

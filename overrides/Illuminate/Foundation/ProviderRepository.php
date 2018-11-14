@@ -30,6 +30,12 @@ class ProviderRepository
     protected $manifestPath;
 
     /**
+     * Non-cached config.
+     * @var [type]
+     */
+    protected $appConfig = [];
+
+    /**
      * Create a new service repository instance.
      *
      * @param  \Illuminate\Contracts\Foundation\Application  $app
@@ -71,8 +77,37 @@ class ProviderRepository
         // We will go ahead and register all of the eagerly loaded providers with the
         // application so their services can be registered with the application as
         // a provided service. Then we will set the deferred service list on it.
-        foreach ($manifest['eager'] as $provider) {
-            $this->app->register($provider);
+        foreach ($manifest['eager'] as $i => $provider) {
+            // Application config is cached with `config:cache`.
+            // If we remove some service provider file from app.php and from disk,
+            // when updating the app, users will receive "Class '...' not found" error,
+            // because their cached config still has this service provider listed.
+            try {
+                $this->app->register($provider);
+            } catch (\Throwable $e) {
+
+                preg_match("/Class '([^']+)' not found/", $e->getMessage(), $matches);
+
+                if (empty($matches[1])) {
+                    throw $e;
+                }
+                $provider_name = $matches[1];
+                // Read app.php and check if service provider is listed there,
+                // if not listed, we can ignore the exception.
+                if (!$this->appConfig) {
+                    $this->appConfig = include base_path().DIRECTORY_SEPARATOR.'config/app.php';
+                }
+
+                if (!in_array($provider_name, $this->appConfig['providers'])) {
+                    // Just log the error
+                    // After cache will be cleared, problem will go away
+                    \Log::error($e->getMessage());
+                    unset($manifest['eager'][$i]);
+                    continue;
+                } else {
+                    throw $e;
+                }
+            }
         }
 
         $this->app->addDeferredServices($manifest['deferred']);
@@ -140,7 +175,6 @@ class ProviderRepository
         // and determine if the manifest should be recompiled or is current.
         $manifest = $this->freshManifest($providers);
 
-        $app_config = [];
         foreach ($providers as $i => $provider) {
             // Application config is cached with `config:cache`.
             // If we remove some service provider file from app.php and from disk,
@@ -158,11 +192,11 @@ class ProviderRepository
                 $provider_name = $matches[1];
                 // Read app.php and check if service provider is listed there,
                 // if not listed, we can ignore the exception.
-                if (!$app_config) {
-                    $app_config = include base_path().DIRECTORY_SEPARATOR.'config/app.php';
+                if (!$this->appConfig) {
+                    $this->appConfig = include base_path().DIRECTORY_SEPARATOR.'config/app.php';
                 }
 
-                if (!in_array($provider_name, $app_config['providers'])) {
+                if (!in_array($provider_name, $this->appConfig['providers'])) {
                     // Just log the error
                     // After cache will be cleared, problem will go away
                     \Log::error($e->getMessage());
