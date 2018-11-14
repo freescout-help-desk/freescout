@@ -140,8 +140,38 @@ class ProviderRepository
         // and determine if the manifest should be recompiled or is current.
         $manifest = $this->freshManifest($providers);
 
-        foreach ($providers as $provider) {
-            $instance = $this->createProvider($provider);
+        $app_config = [];
+        foreach ($providers as $i => $provider) {
+            // Application config is cached with `config:cache`.
+            // If we remove some service provider file from app.php and from disk,
+            // when updating the app, users will receive "Class '...' not found" error,
+            // because their cached config still has this service provider listed.
+            try {
+                $instance = $this->createProvider($provider);
+            } catch (\Throwable $e) {
+
+                preg_match("/Class '([^']+)' not found/", $e->getMessage(), $matches);
+
+                if (empty($matches[1])) {
+                    throw $e;
+                }
+                $provider_name = $matches[1];
+                // Read app.php and check if service provider is listed there,
+                // if not listed, we can ignore the exception.
+                if (!$app_config) {
+                    $app_config = include base_path().DIRECTORY_SEPARATOR.'config/app.php';
+                }
+
+                if (!in_array($provider_name, $app_config['providers'])) {
+                    // Just log the error
+                    // After cache will be cleared, problem will go away
+                    \Log::error($e->getMessage());
+                    unset($providers[$i]);
+                    continue;
+                } else {
+                    throw $e;
+                }
+            }
 
             // When recompiling the service manifest, we will spin through each of the
             // providers and check if it's a deferred provider or not. If so we'll
