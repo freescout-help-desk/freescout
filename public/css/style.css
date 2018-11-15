@@ -1406,13 +1406,17 @@ table.table-conversations td.conv-attachment {
 .conv-subjwrap {
     padding-right: 145px;
     position: relative;
+    overflow: hidden;
 }
 .conv-subjtext {
+    float: left;
+    display: inline-block;
     color: #2a3b47;
     font-weight: 400;
     font-size: 23px;
     line-height: 30px;
     word-wrap: break-word;
+    margin-right: 8px;
 }
 .conv-numnav {
     margin: 0;

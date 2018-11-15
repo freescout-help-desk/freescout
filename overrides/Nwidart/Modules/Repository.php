@@ -804,4 +804,14 @@ abstract class Repository implements RepositoryInterface, Countable
     {
         return \Option::set(strtolower($module_alias).'.'.$option_name, $option_value);
     }
+
+    /**
+     * Get module public path.
+     * @param  [type] $module_alias [description]
+     * @return [type]               [description]
+     */
+    public function getPublicPath($module_alias)
+    {
+        return '/modules/'.$module_alias;
+    }
 }
