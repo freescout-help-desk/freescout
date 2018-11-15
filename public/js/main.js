@@ -2384,11 +2384,11 @@ function converstationBulkActionsInit()
 
 			fsAjax(
 				{
-					action: 'change_user',
+					action: 'bulk_conversation_change_user',
 					conversation_id: conv_ids,
 					user_id: user_id
 				}, 
-				laroute.route('conversations.ajax_bulk'),
+				laroute.route('conversations.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == "success") {
 						location.reload();
@@ -2407,11 +2407,11 @@ function converstationBulkActionsInit()
 
 			fsAjax(
 				{
-					action: 'change_status',
+					action: 'bulk_conversation_change_status',
 					conversation_id: conv_ids,
 					status: status
 				}, 
-				laroute.route('conversations.ajax_bulk'),
+				laroute.route('conversations.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == "success") {
 						location.reload();
@@ -2435,10 +2435,10 @@ function converstationBulkActionsInit()
 
 						fsAjax(
 							{
-								action: 'delete',
+								action: 'bulk_delete_conversation',
 								conversation_id: conv_ids,
 							}, 
-							laroute.route('conversations.ajax_bulk'),
+							laroute.route('conversations.ajax'),
 							function(response) {
 								if (typeof(response.status) != "undefined" && response.status == "success") {
 									location.reload();

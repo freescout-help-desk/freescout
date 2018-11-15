@@ -956,31 +956,8 @@ class ConversationsController extends Controller
                 }
                 break;
 
-            default:
-                $response['msg'] = 'Unknown action';
-                break;
-        }
-
-        if ($response['status'] == 'error' && empty($response['msg'])) {
-            $response['msg'] = 'Unknown error occured';
-        }
-
-        return \Response::json($response);
-    }
-
-    public function ajaxBulk(Request $request)
-    {
-        $response = [
-            'status' => 'error',
-            'msg'    => '', // this is error message
-        ];
-
-        $user = auth()->user();
-
-        switch ($request->action) {
-
-            // Change conversation user
-            case 'change_user':
+            // Change conversations user
+            case 'bulk_conversation_change_user':
 
                 $conversations = Conversation::findMany($request->conversation_id);
 
@@ -1026,7 +1003,7 @@ class ConversationsController extends Controller
                 break;
 
             // Change conversations status
-            case 'change_status':
+            case 'bulk_conversation_change_status':
                 $conversations = Conversation::findMany($request->conversation_id);
 
                 $new_status = (int) $request->status;
@@ -1072,7 +1049,7 @@ class ConversationsController extends Controller
                 break;
 
             // delete converations
-            case 'delete':
+            case 'bulk_delete_conversation':
                 $conversations = Conversation::findMany($request->conversation_id);
 
                 foreach ($conversations as $conversation) {
@@ -1094,6 +1071,7 @@ class ConversationsController extends Controller
                     \Session::flash('flash_success_floating', __('Conversations deleted'));
                 }
                 break;
+                
             default:
                 $response['msg'] = 'Unknown action';
                 break;

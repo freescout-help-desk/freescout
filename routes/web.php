@@ -57,7 +57,6 @@ Route::get('/mailbox/{mailbox_id}/new-ticket', 'ConversationsController@create')
 Route::get('/conversation/ajax-html/{action}', ['uses' => 'ConversationsController@ajaxHtml', 'laroute' => true])->name('conversations.ajax_html');
 Route::get('/search', 'ConversationsController@search')->name('conversations.search');
 Route::get('/conversation/undo-reply/{thread_id}', 'ConversationsController@undoReply')->name('conversations.undo');
-Route::post('/conversation/ajax-bulk', ['uses' => 'ConversationsController@ajaxBulk', 'laroute' => true])->name('conversations.ajax_bulk');
 
 // Mailboxes
 Route::get('/mailboxes', ['uses' => 'MailboxesController@mailboxes', 'laroute' => true])->name('mailboxes');

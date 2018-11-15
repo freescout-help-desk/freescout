@@ -36,10 +36,6 @@
         "name": "conversations.ajax_html"
     },
     {
-        "uri": "conversation\/ajax-bulk",
-        "name": "conversations.ajax_bulk"
-    },
-    {
         "uri": "mailboxes",
         "name": "mailboxes"
     },
