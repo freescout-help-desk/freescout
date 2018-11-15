@@ -807,8 +807,10 @@ abstract class Repository implements RepositoryInterface, Countable
 
     /**
      * Get module public path.
-     * @param  [type] $module_alias [description]
-     * @return [type]               [description]
+     *
+     * @param [type] $module_alias [description]
+     *
+     * @return [type] [description]
      */
     public function getPublicPath($module_alias)
     {
