@@ -87,7 +87,7 @@ class SettingsController extends Controller
     public function getSectionSettings($section)
     {
         $settings = [];
-        
+
         switch ($section) {
             case 'general':
                 $settings = [
