@@ -68,14 +68,15 @@
 							</td>
 						</tr>
 					@endif
-					@if (\App\Option::get('open_tracking'))
-						<tr>
-							<td height="0" style="font-size: 0px; line-height: 0px; color:#ffffff;">	                    	
+					<tr>
+						<td height="0" style="font-size: 0px; line-height: 0px; color:#ffffff;">	                    	
+							@if (\App\Option::get('open_tracking'))
 								<img src="{{ route('open_tracking.set_read', ['conversation_id' => $threads->first()->conversation_id, 'thread_id' => $threads->first()->id]) }}/" alt="" />
-								<div style="font-size: 0px; line-height: 0px; color:#ffffff !important; display:none;">{#FS:123-123#}</div>
-							</td>
-						</tr>
-					@endif
+							@endif
+							{{-- Addition to Message-ID header to detect relies --}}
+							<div style="font-size: 0px; line-height: 0px; color:#ffffff !important; display:none;">{{ \MailHelper::getMessageMarker($headers['Message-ID']) }}</div>
+						</td>
+					</tr>
 	            </table>
 	        </td>
 	    </tr>

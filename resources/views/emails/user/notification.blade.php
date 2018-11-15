@@ -228,6 +228,12 @@
 				</table>
 			</td>
 		</tr>
+		<tr>
+			<td height="0" style="font-size: 0px; line-height: 0px; color:#ffffff;">	                    	
+				{{-- Addition to Message-ID header to detect relies --}}
+				<div style="font-size: 0px; line-height: 0px; color:#ffffff !important; display:none;">{{ \MailHelper::getMessageMarker($headers['Message-ID']) }}</div>
+			</td>
+		</tr>
 	</table>
 	<div itemscope itemtype="http://schema.org/EmailMessage">
 		<div itemprop="potentialAction" itemscope itemtype="http://schema.org/ViewAction">
