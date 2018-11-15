@@ -82,7 +82,7 @@ class Conversation extends Model
 
     public static $status_colors = [
         self::STATUS_ACTIVE  => '#71c171',
-        self::STATUS_PENDING => '#9598a1',
+        self::STATUS_PENDING => '#8b98a6',
         self::STATUS_CLOSED  => '#6b6b6b',
         self::STATUS_SPAM    => '#de6864',
     ];

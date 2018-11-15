@@ -458,16 +458,16 @@ select.form-control {
     color: #fff;
     /*background-color: #a5b2bd;
     border-color: #8796a1;*/
-    background-color: #9598a1;
-    border-color: #777b80;
+    background-color: #8b98a6;
+    border-color: #69737d;
 }
 .btn-lightgrey:focus,
 .btn-lightgrey:hover {
     color: #fff;
     /*background-color: #72808e;
     border-color: #72808e;*/
-    background-color: #7e8088;
-    border-color: #676a6f;
+    background-color: #747f8a;
+    border-color: #636c75;
 }
 .btn-success.btn-light {
     background-color: #71c171;
@@ -1466,9 +1466,9 @@ table.table-conversations td.conv-attachment {
 .conv-info .btn-default {
     color: #4f5d69!important;
 }
-.conv-info .btn-group button.btn-default.conv-info-val {
+/*.conv-info .btn-group button.btn-default.conv-info-val {
     color: #727d87!important;
-}
+}*/
 .conv-info .btn-group button.conv-info-icon {
     padding: 0 7px;
 }
