@@ -16,6 +16,21 @@
             {{ __('Installed Modules') }}
         </div>
 
+        @if ($updates_available)
+            <div class="row-container margin-top">
+                <div class="alert alert-warning">
+                    {{ __('There are updates available') }}:
+                    <ul>
+                        @foreach ($installed_modules as $module)
+                            @if (!empty($module['new_version']))
+                                <li><a href="#module-{{ $module['alias'] }}">{{ $module['name']}} ({{ $module['new_version'] }})</a></li>
+                            @endif
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        @endif
+
         <div class="row-container margin-top">
             @foreach ($installed_modules as $module)
                 @include('modules/partials/module_card')

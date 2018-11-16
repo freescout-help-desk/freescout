@@ -2639,6 +2639,10 @@ ul.prev-convs {
 .module-actions .input-group {
     max-width: 378px;
 }
+.alert-module-update {
+    margin: 15px 0 0;
+    padding: 10px 15px;
+}
 @media (max-width:582px) {
     .module-card img {
         float: none;

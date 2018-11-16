@@ -28,8 +28,9 @@ class ModulesController extends Controller
     {
         $installed_modules = [];
         $modules_directory = [];
-
         $flashes = [];
+        $updates_available = false;
+        
         $flash = \Cache::get('modules_flash');
         if ($flash) {
             $flashes[] = $flash;
@@ -67,6 +68,8 @@ class ModulesController extends Controller
                 'installed'          => true,
                 'activated'          => \App\Module::isLicenseActivated($module->getAlias(), $module->get('authorUrl')),
                 'license'            => \App\Module::getLicense($module->getAlias()),
+                // Determined later
+                'new_version'        => '',
             ];
         }
 
@@ -79,12 +82,21 @@ class ModulesController extends Controller
         // Prepare directory modules
         if (is_array($modules_directory)) {
             foreach ($modules_directory as $i_dir => $dir_module) {
-                // Remove installed modules from modules directory
+                
                 foreach ($installed_modules as $i_installed => $module) {
+                    
                     if ($dir_module['alias'] == $module['alias']) {
                         // Set image from director
                         $installed_modules[$i_installed]['img'] = $dir_module['img'];
+                        // Remove installed modules from modules directory.
                         unset($modules_directory[$i_dir]);
+
+                        // Detect if new version is available
+                        if (!empty($dir_module['version']) && version_compare($dir_module['version'], $module['version'], '>')) {
+                            $installed_modules[$i_installed]['new_version'] = $dir_module['version'];
+                            $updates_available = true;
+                        }
+
                         continue 2;
                     }
                 }
@@ -105,6 +117,7 @@ class ModulesController extends Controller
             'installed_modules' => $installed_modules,
             'modules_directory' => $modules_directory,
             'flashes'           => $flashes,
+            'updates_available' => $updates_available,
         ]);
     }
 
@@ -377,6 +390,116 @@ class ModulesController extends Controller
                 }
 
                 $response['status'] = 'success';
+                break;
+
+            case 'update':
+                $alias = $request->alias;
+                $module = \Module::findByAlias($alias);
+
+                if (!$module) {
+                    $response['msg'] = __('Module not found').': '.$alias;
+                }
+
+                // Download new version
+                $download_error = false;
+                if (!$response['msg']) {
+                    $params = [
+                        'license'      => \App\Module::getLicense($alias),
+                        'module_alias' => $alias,
+                        'url'          => \App\Module::getAppUrl(),
+                    ];
+                    $license_details = WpApi::getVersion($params);
+
+                    if (WpApi::$lastError) {
+                        $response['msg'] = WpApi::$lastError['message'];
+                    } elseif (!empty($license_details['code']) && !empty($license_details['message'])) {
+                        $response['msg'] = $license_details['message'];
+                    } elseif (!empty($license_details['download_link'])) {
+                        // Download module
+                        $module_archive = \Module::getPath().DIRECTORY_SEPARATOR.$alias.'.zip';
+
+                        try {
+                            \Helper::downloadRemoteFile($license_details['download_link'], $module_archive);
+                        } catch (\Exception $e) {
+                            $response['msg'] = $e->getMessage();
+                        }
+
+                        if (!file_exists($module_archive)) {
+                            $download_error = true;
+                        } else {
+                            // Extract
+                            try {
+                                \Helper::unzip($module_archive, \Module::getPath());
+                            } catch (\Exception $e) {
+                                // We will show this as floating message on page reload
+                                $response['msg'] = $e->getMessage();
+                            }
+                            // Check if extracted module exists
+                            \Module::clearCache();
+                            $module = \Module::findByAlias($alias);
+                            if (!$module) {
+                                $download_error = true;
+                            }
+                        }
+
+                        // Remove archive
+                        if (file_exists($module_archive)) {
+                            \File::delete($module_archive);
+                        }
+
+                        if ($download_error) {
+                            $response['reload'] = true;
+
+                            if ($response['msg']) {
+                                \Session::flash('flash_error_floating', $response['msg']);
+                            }
+
+                            \Session::flash('flash_error_unescaped', __('Error occured downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']));
+                        }
+                    } else {
+                        $response['msg'] = __('Error occured, please try again later.');
+                    }
+                }
+
+                // Install updated module
+                if (!$response['msg'] && !$download_error) {
+                    $outputLog = new BufferedOutput();
+                    \Artisan::call('freescout:module-install', ['module_alias' => $alias], $outputLog);
+                    $output = $outputLog->fetch();
+
+                    // Get module name
+                    $name = '?';
+                    if ($module) {
+                        $name = $module->getName();
+                    }
+
+                    $type = 'danger';
+                    $msg = __('Error occured activating ":name" module', ['name' => $name]);
+                    if (session('flashes_floating') && is_array(session('flashes_floating'))) {
+                        // If there was any error, module has been deactivated via modules.register_error filter
+                        $msg = '';
+                        foreach (session('flashes_floating') as $flash) {
+                            $msg .= $flash['text'].' ';
+                        }
+                    } elseif (strstr($output, 'Configuration cached successfully')) {
+                        $type = 'success';
+                        $msg = __('":name" module successfully updated!', ['name' => $name]);
+                    } else {
+                        // Deactivate module
+                        \App\Module::setActive($alias, false);
+                        \Artisan::call('freescout:clear-cache');
+                    }
+
+                    // \Session::flash does not work after BufferedOutput
+                    $flash = [
+                        'text'      => '<strong>'.$msg.'</strong><pre class="margin-top">'.$output.'</pre>',
+                        'unescaped' => true,
+                        'type'      => $type,
+                    ];
+                    \Cache::forever('modules_flash', $flash);
+                    $response['status'] = 'success';
+                }
+
                 break;
 
             default:

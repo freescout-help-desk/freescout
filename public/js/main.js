@@ -2610,6 +2610,29 @@ function initModulesList()
 
 			e.preventDefault();
 		});
+		$('.update-module-trigger').click(function(e) {
+			var button = $(this);
+			
+			button.button('loading');
+			var alias = button.parents('.module-card:first').attr('data-alias');
+			fsAjax(
+				{
+					action: 'update',
+					alias: alias
+				}, 
+				laroute.route('modules.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == "success") {
+						window.location.href = '';
+					} else {
+						showAjaxError(response);
+						button.button('reset');
+					}
+				}, true
+			);
+
+			e.preventDefault();
+		});
 	});
 }
 
