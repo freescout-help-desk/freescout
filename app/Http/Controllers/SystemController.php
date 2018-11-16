@@ -186,6 +186,10 @@ class SystemController extends Controller
             case 'fetch_emails':
                 \Artisan::call('freescout:fetch-emails', [], $outputLog);
                 break;
+
+            case 'migrate_db':
+                \Artisan::call('migrate', ['--force' => true], $outputLog);
+                break;
         }
 
         $output = $outputLog->fetch();

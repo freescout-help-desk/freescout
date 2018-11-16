@@ -26,6 +26,11 @@
         <button type="submit" class="btn btn-default" name="action" value="fetch_emails">
             {{ __('Fetch Emails') }}
         </button>
+        &nbsp;
+
+        <button type="submit" class="btn btn-default" name="action" value="migrate_db">
+            {{ __('Migrate DB') }}
+        </button>
     </form>
 
     @if ($output)
