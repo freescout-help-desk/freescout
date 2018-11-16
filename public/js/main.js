@@ -10,7 +10,7 @@ var fs_draft_autosave_period = 12; // seconds
 var fs_reply_changed = false;
 var fs_conv_editor_buttons = {};
 var fs_conv_editor_toolbar = [
-    ['style', ['attachment', 'bold', 'italic', 'underline', 'ul', 'ol', 'link', 'picture', 'codeview']],
+    ['style', ['attachment', 'bold', 'italic', /*'underline',*/ 'ul', 'ol', 'link', 'picture', 'codeview', 'removeformat']],
     ['actions', ['savedraft', 'discard']],
 ];
 
@@ -80,6 +80,7 @@ var EditorAttachmentButton = function (context) {
 
 	return button.render();   // return button as jquery object
 }
+
 var EditorSaveDraftButton = function (context) {
 	var ui = $.summernote.ui;
 
@@ -96,6 +97,7 @@ var EditorSaveDraftButton = function (context) {
 
 	return button.render();   // return button as jquery object
 }
+
 var EditorDiscardButton = function (context) {
 	var ui = $.summernote.ui;
 
@@ -111,6 +113,7 @@ var EditorDiscardButton = function (context) {
 
 	return button.render();   // return button as jquery object
 }
+
 var EditorInsertVarButton = function (context) {
 	var ui = $.summernote.ui;
 
@@ -138,6 +141,22 @@ var EditorInsertVarButton = function (context) {
 		contents: contents,
 		tooltip: Lang.get("messages.insert_var"),
 		container: 'body'
+	});
+
+	return button.render();   // return button as jquery object
+}
+
+var EditorRemoveFormatButton = function (context) {
+	var ui = $.summernote.ui;
+
+	// create button
+	var button = ui.button({
+		contents: '<i class="glyphicon glyphicon-remove"></i>',
+		tooltip: Lang.get("messages.remove_format"),
+		container: 'body',
+		click: function () {
+			context.invoke('removeFormat');
+		}
 	});
 
 	return button.render();   // return button as jquery object
@@ -820,7 +839,8 @@ function convEditorInit()
 	$.extend(fs_conv_editor_buttons, {
 	    attachment: EditorAttachmentButton,
 	    savedraft: EditorSaveDraftButton,
-	    discard: EditorDiscardButton
+	    discard: EditorDiscardButton,
+	    removeformat: EditorRemoveFormatButton
 	});
 
 	$('#body').summernote({

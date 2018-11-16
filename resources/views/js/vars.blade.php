@@ -59,10 +59,11 @@ var LangMessages = {
             "confirm_delete_conversation": "{{ __("Delete this conversation?") }}",
             "confirm_delete_user": "{{ __("Deleting this User will deactivate workflows they are tied to and unassign their conversations. If you are sure, type :delete and click the red button.") }}",
             "type_delete": "{{ __("Type :delete") }}",
-
             "drag_image_file": "{{ __("Drag image or file here") }}",
             "confirm_delete_module": "{{ __("Delete this module?") }}",
             "confirm_update": "{{ __("Please backup application files and database before you continue.") }}",
+            "remove_format": "{{ __("Remove Formatting") }}",
+
             "update": "{{ __("Update") }}"
         }@if (!$loop->last),@endif
     @endforeach

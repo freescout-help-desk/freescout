@@ -48,10 +48,11 @@ var LangMessages = {
             "confirm_delete_conversation": "Delete this conversation?",
             "confirm_delete_user": "Deleting this User will deactivate workflows they are tied to and unassign their conversations. If you are sure, type :delete and click the red button.",
             "type_delete": "Type :delete",
-
             "drag_image_file": "Drag image or file here",
             "confirm_delete_module": "Delete this module?",
             "confirm_update": "Please backup application files and database before you continue.",
+            "remove_format": "Remove Formatting",
+
             "update": "Update"
         }    };
 
