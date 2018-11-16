@@ -13,6 +13,6 @@
 			</div>
 		@endif
     </div>
-    {{--<span height="0" style="font-size: 0px; height:0px; line-height: 0px; color:#ffffff;">{#FS:123-123#}</span>--}}
+    <span height="0" style="font-size: 0px; height:0px; line-height: 0px; color:#ffffff;">{{ \MailHelper::getMessageMarker($headers['Message-ID']) }}</span>
 </body>
 </html>

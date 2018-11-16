@@ -193,10 +193,41 @@ class FetchEmails extends Command
                     $in_reply_to = $message->getInReplyTo();
                     $references = $message->getReferences();
                     $attachments = $message->getAttachments();
+                    $html_body = '';
 
                     // Is it a bounce message
                     $is_bounce = false;
                     $bounce_attachment = null;
+
+                    // Determine previous Message-ID
+                    $prev_message_id = '';
+                    if ($in_reply_to) {
+                        $prev_message_id = $in_reply_to;
+                    } elseif ($references) {
+                        if (!is_array($references)) {
+                            $references = array_filter(preg_split('/[, <>]/', $references));
+                        }
+                        // Maybe we need to check all references
+                        $prev_message_id = $references[0];
+                    }
+
+                    // Some mail service providers change Message-ID of the outgoing email,
+                    // so we are passing Message-ID in marker in body.
+                    $reply_prefixes = [
+                        \MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION,
+                        \MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER,
+                        \MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY,
+                    ];
+
+                    if (!$prev_message_id || !preg_match('/^('.implode('|', $reply_prefixes).')\-(\d+)\-/', $prev_message_id)) {
+                        // Try to get previous message ID from marker in body.
+                        $html_body = $message->getHTMLBody(false);
+                        $marker_message_id = \MailHelper::fetchMessageMarkerValue($html_body);
+
+                        if ($marker_message_id) {
+                            $prev_message_id = $marker_message_id;
+                        }
+                    }
 
                     // Determine bounce by attachment
                     if ($message->hasAttachments()) {
@@ -212,7 +243,7 @@ class FetchEmails extends Command
                     }
 
                     // Is it a message from Customer or User replied to the notification
-                    preg_match('/^'.\App\Misc\Mail::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $in_reply_to, $m);
+                    preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $prev_message_id, $m);
 
                     if (!$is_bounce && !empty($m[1]) && !empty($m[2])) {
                         // Reply from User to the notification
@@ -228,7 +259,7 @@ class FetchEmails extends Command
                             continue;
                         }
                         $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
-                    } elseif (!$is_bounce && ($user = User::where('email', $from)->first()) && $in_reply_to && ($prev_thread = Thread::where('message_id', $in_reply_to)->first()) && $prev_thread->created_by_user_id == $user->id) {
+                    } elseif (!$is_bounce && ($user = User::where('email', $from)->first()) && $prev_message_id && ($prev_thread = Thread::where('message_id', $prev_message_id)->first()) && $prev_thread->created_by_user_id == $user->id) {
                         // Reply from customer to his reply to the notification
                         $user_id = $user->id;
                         $message_from_customer = false;
@@ -237,29 +268,20 @@ class FetchEmails extends Command
                         // Message from Customer
                         $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
 
-                        $prev_message_id = '';
                         if (!$is_bounce) {
-                            if ($in_reply_to) {
-                                $prev_message_id = $in_reply_to;
-                            } elseif ($references) {
-                                if (!is_array($references)) {
-                                    $references = array_filter(preg_split('/[, <>]/', $references));
-                                }
-                                // Maybe we need to check all references
-                                $prev_message_id = $references[0];
-                            }
+
                             if ($prev_message_id) {
                                 $prev_thread_id = '';
 
                                 // Customer replied to the email from user
-                                preg_match('/^'.\App\Misc\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
+                                preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
                                 if (!empty($m[1])) {
                                     $prev_thread_id = $m[1];
                                 }
 
                                 // Customer replied to the auto reply
                                 if (!$prev_thread_id) {
-                                    preg_match('/^'.\App\Misc\Mail::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-/", $prev_message_id, $m);
+                                    preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-/", $prev_message_id, $m);
                                     if (!empty($m[1])) {
                                         $prev_thread_id = $m[1];
                                     }
@@ -278,10 +300,13 @@ class FetchEmails extends Command
                         }
                     }
 
-                    if ($message->hasHTMLBody()) {
+                    // Get body
+                    if (!$html_body) {
                         // Get body and do not replace :cid with images base64
-                        $body = $message->getHTMLBody(false);
-                        $body = $this->separateReply($body, true, $is_reply);
+                        $html_body = $message->getHTMLBody(false);
+                    }
+                    if ($html_body) {
+                        $body = $this->separateReply($html_body, true, $is_reply);
                     } else {
                         $body = $message->getTextBody();
                         $body = $this->separateReply($body, false, $is_reply);

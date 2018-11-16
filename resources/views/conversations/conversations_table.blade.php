@@ -9,6 +9,7 @@
         // Preload users and customers
         App\Conversation::loadUsers($conversations);
         App\Conversation::loadCustomers($conversations);
+        $conversations = \Eventy::filter('conversations_table.preload_table_data', $conversations);
     @endphp
     <table class="table-conversations table" @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif >
         <colgroup>
@@ -109,7 +110,7 @@
                     <td class="conv-subject">
                         <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}">
                             <span class="conv-fader"></span>
-                            <p><span class="conv-subject-number">#{{ $conversation->number }} </span>{{ $conversation->getSubject() }}</p>
+                            <p><span class="conv-subject-number">#{{ $conversation->number }} </span>@action('conversations_table.before_subject', $conversation){{ $conversation->getSubject() }}</p>
                             <p class="conv-preview">@if ($conversation->preview){{ $conversation->preview }}@else&nbsp;@endif</p>
                         </a>
                     </td>

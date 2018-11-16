@@ -115,6 +115,7 @@ return [
             'emails'        => ['path' => 'Emails', 'generate' => false],
             'notifications' => ['path' => 'Notifications', 'generate' => false],
             'resource'      => ['path' => 'Transformers', 'generate' => false],
+            'public'        => ['path' => 'Public', 'generate' => true],
         ],
     ],
     /*
@@ -143,10 +144,10 @@ return [
     */
 
     'composer' => [
-        'vendor' => 'nwidart',
+        'vendor' => 'freescout',
         'author' => [
-            'name'  => 'Nicolas Widart',
-            'email' => 'n.widart@gmail.com',
+            'name'  => 'FreeScout',
+            'email' => 'support@freescout.net',
         ],
     ],
     /*

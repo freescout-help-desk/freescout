@@ -116,6 +116,7 @@
         </div>
     </div>
     @include('conversations/editor_bottom_toolbar', ['new_converstion' => true])
+    @action('new_conversation_form.after', $conversation)
 @endsection
 
 @include('partials/editor')

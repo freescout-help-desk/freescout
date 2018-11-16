@@ -1231,6 +1231,10 @@ class ConversationsController extends Controller
         // Get IDs of mailboxes to which user has access
         $mailbox_ids = $user->mailboxesIdsCanView();
 
+        // Filters
+        $filters = $request->f ?? [];
+
+        // Search query
         $q = '';
         if (!empty($request->q)) {
             $q = $request->q;
@@ -1240,16 +1244,22 @@ class ConversationsController extends Controller
 
         $like = '%'.mb_strtolower($q).'%';
 
-        $query_conversations = Conversation::whereIn('conversations.mailbox_id', $mailbox_ids)
+        $query_conversations = Conversation::select('conversations.*')
+            ->whereIn('conversations.mailbox_id', $mailbox_ids)
             ->join('threads', function ($join) {
                 $join->on('conversations.id', '=', 'threads.id');
             })
-            ->where('conversations.subject', 'like', $like)
-            ->orWhere('threads.body', 'like', $like)
-            ->orWhere('threads.to', 'like', $like)
-            ->orWhere('threads.cc', 'like', $like)
-            ->orWhere('threads.bcc', 'like', $like)
-            ->orderBy('conversations.last_reply_at');
+            ->where(function ($query) use ($like) {
+                $query->where('conversations.subject', 'like', $like)
+                    ->orWhere('threads.body', 'like', $like)
+                    ->orWhere('threads.to', 'like', $like)
+                    ->orWhere('threads.cc', 'like', $like)
+                    ->orWhere('threads.bcc', 'like', $like);
+            });
+
+        $query_conversations = \Eventy::filter('search.apply_filters', $query_conversations, $filters);
+
+        $query_conversations->orderBy('conversations.last_reply_at');
 
         return $query_conversations->paginate(Conversation::DEFAULT_LIST_SIZE);
     }
