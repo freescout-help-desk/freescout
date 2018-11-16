@@ -10,7 +10,7 @@ var fs_draft_autosave_period = 12; // seconds
 var fs_reply_changed = false;
 var fs_conv_editor_buttons = {};
 var fs_conv_editor_toolbar = [
-    ['style', ['attachment', 'bold', 'italic', /*'underline',*/ 'ul', 'ol', 'link', 'picture', 'codeview', 'removeformat']],
+    ['style', ['attachment', 'bold', 'italic', /*'underline',*/ 'removeformat', 'ul', 'ol', 'link', 'picture', 'codeview']],
     ['actions', ['savedraft', 'discard']],
 ];
 
