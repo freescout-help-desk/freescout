@@ -24,7 +24,7 @@
     <div class="row-container">
         <div class="row">
             <div class="col-xs-12">
-                @include(\Eventy::filter('settings.view', $section, 'settings/'.$section))
+                @include(\Eventy::filter('settings.view', 'settings/'.$section, $section))
             </div>
         </div>
     </div>
