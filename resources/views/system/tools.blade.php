@@ -18,13 +18,13 @@
     <form class="form-horizontal margin-top" method="POST" action="">
         {{ csrf_field() }}
 
-        <button type="submit" class="btn btn-default" name="action" value="clear_cache">
-            {{ __('Clear Cache') }}
-        </button>
-        &nbsp;
-
         <button type="submit" class="btn btn-default" name="action" value="fetch_emails">
             {{ __('Fetch Emails') }}
+        </button>
+        &nbsp;
+        
+        <button type="submit" class="btn btn-default" name="action" value="clear_cache">
+            {{ __('Clear Cache') }}
         </button>
         &nbsp;
 
