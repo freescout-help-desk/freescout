@@ -61,10 +61,10 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
         }
 
         if (version_compare($version, $this->getVersionAvailable(), '<')) {
-            if (!$this->versionFileExists()) {
-                $this->setVersionFile($this->getVersionAvailable());
-                event(new UpdateAvailable($this->getVersionAvailable()));
-            }
+            // if (!$this->versionFileExists()) {
+            //     $this->setVersionFile($this->getVersionAvailable());
+            //     event(new UpdateAvailable($this->getVersionAvailable()));
+            // }
 
             return true;
         }
@@ -229,13 +229,14 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
      */
     public function getVersionAvailable($prepend = '', $append = '')
     {
-        if ($this->versionFileExists()) {
-            $version = $prepend.$this->getVersionFile().$append;
-        } else {
-            $response = $this->getRepositoryReleases();
-            $releaseCollection = collect(\GuzzleHttp\json_decode($response->getBody()));
-            $version = $prepend.$releaseCollection->first()->name.$append;
-        }
+        // No need to save version to file.
+        // if ($this->versionFileExists()) {
+        //     $version = $prepend.$this->getVersionFile().$append;
+        // } else {
+        $response = $this->getRepositoryReleases();
+        $releaseCollection = collect(\GuzzleHttp\json_decode($response->getBody()));
+        $version = $prepend.$releaseCollection->first()->name.$append;
+        //}
 
         return $version;
     }
