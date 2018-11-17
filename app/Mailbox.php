@@ -130,7 +130,7 @@ class Mailbox extends Model
     {
         try {
             return decrypt($value);
-        } catch (Illuminate\Contracts\Encryption\DecryptException $e) {
+        } catch (\Exception $e) {
             // do nothing if decrypt wasn't succefull
             return false;
         }
