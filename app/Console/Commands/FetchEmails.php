@@ -269,7 +269,6 @@ class FetchEmails extends Command
                         $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
 
                         if (!$is_bounce) {
-
                             if ($prev_message_id) {
                                 $prev_thread_id = '';
 
