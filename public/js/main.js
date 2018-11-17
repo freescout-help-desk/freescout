@@ -2352,6 +2352,129 @@ function starConversationInit()
 	});
 }
 
+function converstationBulkActionsInit()
+{
+	$(document).ready(function() {
+		var checkboxes = $('.conv-checkbox');
+		var bulk_buttons = $('#conversations-bulk-actions');
+
+		function getConversationsIds()
+		{
+			var conv_ids = [];
+			checkboxes.each(function() {
+				if ($(this).prop('checked')) {
+					conv_ids.push($(this).val());
+				}
+			});
+
+			return conv_ids;
+		}
+
+		$(bulk_buttons).affix({
+			offset: {
+				top: $(bulk_buttons).offset().top,
+			}
+		});
+
+		//fix for bootstrap bug: https://stackoverflow.com/questions/19711202/bootstrap-3-affix-plugin-click-bug/31892323
+		$(bulk_buttons).on( 'affix.bs.affix', function() {
+		    if(!$(window).scrollTop()) return false;
+		} );
+
+	    var resizeFn = function () {
+	        $(bulk_buttons).css('width', $('.content-2col').width());
+	    };
+	    resizeFn();
+	    $(window).resize(resizeFn);
+
+		checkboxes.change(function(event) {
+			if (checkboxes.is(':checked')) {
+				$(bulk_buttons).fadeIn();
+			}
+			else {
+				$(bulk_buttons).fadeOut();
+			}
+		});
+
+		// Change conversation assignee
+		$(".conv-user li > a", bulk_buttons).click(function(e) {
+			var user_id = $(this).data('user_id');
+
+			var conv_ids = getConversationsIds();
+
+			fsAjax(
+				{
+					action: 'bulk_conversation_change_user',
+					conversation_id: conv_ids,
+					user_id: user_id
+				}, 
+				laroute.route('conversations.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == "success") {
+						location.reload();
+					} else {
+						showAjaxError(response);
+					}
+				}, true
+			);
+		});
+
+		// Change conversation status
+		$(".conv-status li > a", bulk_buttons).click(function(e) {
+			var status = $(this).data('status');
+
+			var conv_ids = getConversationsIds();
+
+			fsAjax(
+				{
+					action: 'bulk_conversation_change_status',
+					conversation_id: conv_ids,
+					status: status
+				}, 
+				laroute.route('conversations.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == "success") {
+						location.reload();
+					} else {
+						showAjaxError(response);
+					}
+				}, true
+			);
+		});
+
+		// Change conversation status
+		$(".conv-delete", bulk_buttons).click(function(e) {
+			var confirm_html = $('#conversations-bulk-actions-delete-modal').html();
+
+			showModalDialog(confirm_html, {
+				on_show: function(modal) {
+					modal.children().find('.delete-conversation-ok:first').click(function(e) {
+						modal.modal('hide');
+
+						var conv_ids = getConversationsIds();
+
+						fsAjax(
+							{
+								action: 'bulk_delete_conversation',
+								conversation_id: conv_ids,
+							}, 
+							laroute.route('conversations.ajax'),
+							function(response) {
+								if (typeof(response.status) != "undefined" && response.status == "success") {
+									location.reload();
+								} else {
+									showAjaxError(response);
+								}
+							}, true
+						);
+						e.preventDefault();
+					});
+				}
+			});
+		});
+	});
+}
+
 function switchToNote()
 {
 	$('.conv-add-note:first').click();
