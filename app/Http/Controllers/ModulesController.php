@@ -30,7 +30,7 @@ class ModulesController extends Controller
         $modules_directory = [];
         $flashes = [];
         $updates_available = false;
-        
+
         $flash = \Cache::get('modules_flash');
         if ($flash) {
             $flashes[] = $flash;
@@ -82,9 +82,7 @@ class ModulesController extends Controller
         // Prepare directory modules
         if (is_array($modules_directory)) {
             foreach ($modules_directory as $i_dir => $dir_module) {
-                
                 foreach ($installed_modules as $i_installed => $module) {
-                    
                     if ($dir_module['alias'] == $module['alias']) {
                         // Set image from director
                         $installed_modules[$i_installed]['img'] = $dir_module['img'];

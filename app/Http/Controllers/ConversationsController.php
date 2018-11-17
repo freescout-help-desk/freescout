@@ -971,7 +971,7 @@ class ConversationsController extends Controller
                         if (!$conversation->mailbox->userHasAccess($new_user_id)) {
                             continue;
                         }
-                    
+
                         $conversation->setUser($new_user_id);
                         $conversation->save();
 
@@ -1071,7 +1071,7 @@ class ConversationsController extends Controller
                     \Session::flash('flash_success_floating', __('Conversations deleted'));
                 }
                 break;
-                
+
             default:
                 $response['msg'] = 'Unknown action';
                 break;
