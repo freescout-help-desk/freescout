@@ -1,18 +1,20 @@
 <div id="conversations-bulk-actions" class="text-center">
     <div class="btn-group" role="group">
-        <div class="btn-group">
-            <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{{ __("Assignee") }}">
-                <span class="glyphicon glyphicon-user"></span><span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu conv-user">
-                <li><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
-                @foreach ($mailbox->usersHavingAccess(true) as $user)
-                    @if ($user->id != Auth::user()->id)
-                        <li><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
-                    @endif
-                @endforeach
-            </ul>
-        </div>
+        @if (!empty($mailbox))
+            <div class="btn-group">
+                <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{{ __("Assignee") }}">
+                    <span class="glyphicon glyphicon-user"></span><span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu conv-user">
+                    <li><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
+                    @foreach ($mailbox->usersHavingAccess(true) as $user)
+                        @if ($user->id != Auth::user()->id)
+                            <li><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
+                        @endif
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="btn-group">
             <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{{ __("Status") }}">
                 <span class="glyphicon glyphicon-flag"></span><span class="caret"></span>
