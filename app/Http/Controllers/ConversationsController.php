@@ -275,6 +275,7 @@ class ConversationsController extends Controller
                     $thread->save();
 
                     event(new ConversationUserChanged($conversation, $user));
+                    \Eventy::action('conversation.user_changed', $conversation, $user);
 
                     $response['status'] = 'success';
 
@@ -338,6 +339,7 @@ class ConversationsController extends Controller
                     $thread->save();
 
                     event(new ConversationStatusChanged($conversation));
+                    \Eventy::action('conversation.status_changed', $conversation);
 
                     $response['status'] = 'success';
                     // Flash
@@ -514,9 +516,11 @@ class ConversationsController extends Controller
                     if (!$new) {
                         if ($status_changed) {
                             event(new ConversationStatusChanged($conversation));
+                            \Eventy::action('conversation.status_changed', $conversation);
                         }
                         if ($user_changed) {
                             event(new ConversationUserChanged($conversation, $user));
+                            \Eventy::action('conversation.user_changed', $conversation, $user);
                         }
                     }
 
@@ -583,10 +587,21 @@ class ConversationsController extends Controller
 
                     if ($new) {
                         event(new UserCreatedConversation($conversation, $thread));
+                        \Eventy::action('conversation.created_by_user_can_undo', $conversation, $thread);
+                        // After Conversation::UNDO_TIMOUT period trigger final event.
+                        \App\Jobs\TriggerAction::dispatch('conversation.created_by_user', [$conversation, $thread])
+                            ->delay(now()->addSeconds(Conversation::UNDO_TIMOUT))
+                            ->onQueue('default');
                     } elseif ($is_note) {
                         event(new UserAddedNote($conversation, $thread));
+                        \Eventy::action('conversation.user_added_note', $conversation, $thread);
                     } else {
                         event(new UserReplied($conversation, $thread));
+                        \Eventy::action('conversation.user_replied_can_undo', $conversation, $thread);
+                        // After Conversation::UNDO_TIMOUT period trigger final event.
+                        \App\Jobs\TriggerAction::dispatch('conversation.user_replied', [$conversation, $thread])
+                            ->delay(now()->addSeconds(Conversation::UNDO_TIMOUT))
+                            ->onQueue('default');
                     }
 
                     if (!empty($request->after_send) && $request->after_send == MailboxUser::AFTER_SEND_STAY) {
@@ -991,6 +1006,7 @@ class ConversationsController extends Controller
                         $thread->save();
 
                         event(new ConversationUserChanged($conversation, $user));
+                        \Eventy::action('conversation.user_changed', $conversation, $user);
                     }
 
                     $response['status'] = 'success';
@@ -1037,6 +1053,7 @@ class ConversationsController extends Controller
                         $thread->save();
 
                         event(new ConversationStatusChanged($conversation));
+                        \Eventy::action('conversation.status_changed', $conversation);
                     }
 
                     $response['status'] = 'success';
