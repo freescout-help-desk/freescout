@@ -3090,6 +3090,23 @@ a.disabled:focus {
     line-height: 5px;
 }
 
+#conversations-bulk-actions {
+    z-index: 100; 
+    display: none;
+    pointer-events: none;
+}
+#conversations-bulk-actions>.btn-group
+{
+    pointer-events: auto;
+}
+#conversations-bulk-actions.affix-top {
+    position: absolute;
+}
+#conversations-bulk-actions.affix {
+    top: 0;
+    right: 0;
+}
+
 /**
  * Only main content is visible
  */
