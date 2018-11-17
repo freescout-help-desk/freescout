@@ -322,8 +322,10 @@ class Mail
     /**
      * Get email marker for the outgoing email to track replies
      * in case Message-ID header is removed by mail service provider.
-     * @param  [type] $message_id [description]
-     * @return [type]             [description]
+     *
+     * @param [type] $message_id [description]
+     *
+     * @return [type] [description]
      */
     public static function getMessageMarker($message_id)
     {
@@ -333,16 +335,19 @@ class Mail
 
     /**
      * Fetch Message-ID from incoming email body.
-     * @param  [type] $message_id [description]
-     * @return [type]             [description]
+     *
+     * @param [type] $message_id [description]
+     *
+     * @return [type] [description]
      */
     public static function fetchMessageMarkerValue($body)
     {
-        preg_match("/{#FS:([^#]+)#}/", $body, $matches);
+        preg_match('/{#FS:([^#]+)#}/', $body, $matches);
         if (!empty($matches[1]) && base64_decode($matches[1])) {
             // Return first found marker.
             return base64_decode($matches[1]);
         }
+
         return '';
     }
 }
