@@ -128,6 +128,9 @@ class Mailbox extends Model
      */
     public function getInPasswordAttribute($value)
     {
+        if (!$value) {
+            return '';
+        }
         try {
             return decrypt($value);
         } catch (\Exception $e) {
