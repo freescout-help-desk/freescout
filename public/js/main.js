@@ -665,6 +665,10 @@ function conversationInit()
 	    			$(".conv-reply-block").children().find(":input[name='user_id']:first").val(default_assignee);
 	    		}
 
+	    		// Show default status
+	    		var input_status = $(".conv-reply-block").children().find(":input[name='status']:first");
+	    		input_status.val(input_status.attr('data-reply-status'));
+
 				showReplyForm();
 			} /*else {
 				// Hide
@@ -685,10 +689,12 @@ function conversationInit()
 				$(".conv-reply-block").children().find(":input[name='thread_id']:first").val('');
 				//$(".conv-reply-block").children().find(":input[name='body']:first").val('');
 				
-				// If this is unassigned conversation, we need to set Assignee=Anyone
-				if (getConvData('user_id') == '-1') {
-					$(".conv-reply-block").children().find(":input[name='user_id']:first").val('-1');
-				}
+				// Note never changes Assignee by default
+				$(".conv-reply-block").children().find(":input[name='user_id']:first").val(getConvData('user_id'));
+
+	    		// Show default status
+	    		var input_status = $(".conv-reply-block").children().find(":input[name='status']:first");
+	    		input_status.val(input_status.attr('data-note-status'));
 
 				$(".conv-action").addClass('inactive');
 				$(this).removeClass('inactive');

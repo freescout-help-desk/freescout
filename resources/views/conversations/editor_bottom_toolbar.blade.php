@@ -7,10 +7,11 @@
         @endif
     </div>
 	<span class="editor-btm-text">{{ __('Status') }}:</span> 
-	<select name="status" class="form-control" data-parsley-exclude="true">
-        <option value="{{ App\Mailbox::TICKET_STATUS_ACTIVE }}" @if (old('status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_ACTIVE)selected="selected"@endif>{{ __('Active') }}</option>
-        <option value="{{ App\Mailbox::TICKET_STATUS_PENDING }}" @if (old('status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_PENDING)selected="selected"@endif>{{ __('Pending') }}</option>
-        <option value="{{ App\Mailbox::TICKET_STATUS_CLOSED }}" @if (old('status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_CLOSED)selected="selected"@endif>{{ __('Closed') }}</option>
+    {{-- Note always changes status to Active. Note never changes Assignee --}}
+	<select name="status" class="form-control" data-parsley-exclude="true" data-reply-status="{{ $mailbox->ticket_status }}" data-note-status="{{ App\Mailbox::TICKET_STATUS_ACTIVE }}">
+        <option value="{{ App\Mailbox::TICKET_STATUS_ACTIVE }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_ACTIVE)selected="selected"@endif>{{ __('Active') }}</option>
+        <option value="{{ App\Mailbox::TICKET_STATUS_PENDING }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_PENDING)selected="selected"@endif>{{ __('Pending') }}</option>
+        <option value="{{ App\Mailbox::TICKET_STATUS_CLOSED }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_CLOSED)selected="selected"@endif>{{ __('Closed') }}</option>
     </select> 
     <small class="glyphicon glyphicon-chevron-right note-bottom-div"></small> 
     <span class="editor-btm-text">{{ __('Assign to') }}:</span> 
