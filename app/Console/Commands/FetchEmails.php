@@ -207,8 +207,15 @@ class FetchEmails extends Command
                         if (!is_array($references)) {
                             $references = array_filter(preg_split('/[, <>]/', $references));
                         }
-                        // Maybe we need to check all references
-                        $prev_message_id = $references[0];
+                        // Find first non-empty reference
+                        if (is_array($references)) {
+                            foreach ($references as $reference) {
+                                if (!empty(trim($reference))) {
+                                    $prev_message_id = trim($reference);
+                                    break;
+                                }
+                            }
+                        }
                     }
 
                     // Some mail service providers change Message-ID of the outgoing email,
