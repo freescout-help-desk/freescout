@@ -74,7 +74,7 @@
         </div>
     </div>
 
-    <div class="form-group{{ $errors->has('settings[enrich_customer_data]') ? ' has-error' : '' }}">
+    <div class="form-group{{ $errors->has('settings[enrich_customer_data]') ? ' has-error' : '' }}" style="display:none">
         <label for="enrich_customer_data" class="col-sm-2 control-label">{{ __('Enrich Customer Data') }} (todo)</label>
 
         <div class="col-sm-6">
