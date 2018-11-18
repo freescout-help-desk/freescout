@@ -106,6 +106,13 @@ class Option extends Model
         }
     }
 
+    public static function isDefaultSet($option_name)
+    {
+        $options = \Config::get('app.options');
+
+        return (isset($options[$option_name]) && isset($options[$option_name]['default']));
+    }
+    
     public static function remove($name)
     {
         self::where('name', (string) $name)->delete();
