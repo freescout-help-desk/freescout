@@ -82,6 +82,10 @@ class ModulesController extends Controller
         // Prepare directory modules
         if (is_array($modules_directory)) {
             foreach ($modules_directory as $i_dir => $dir_module) {
+                // Remove modules without aliases
+                if (empty($dir_module['alias'])) {
+                    unset($modules_directory[$i_dir]);
+                }
                 foreach ($installed_modules as $i_installed => $module) {
                     if ($dir_module['alias'] == $module['alias']) {
                         // Set image from director
