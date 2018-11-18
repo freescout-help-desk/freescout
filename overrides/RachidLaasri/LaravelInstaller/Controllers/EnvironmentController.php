@@ -116,17 +116,17 @@ class EnvironmentController extends Controller
         // Check DB connection
         //$this->EnvironmentManager->saveFileWizard($request);
         try {
-            \Config::set('database.connections.install', [
-                'driver'    => 'mysql',
-                'host'      => $request->database_hostname,
-                'database'  => $request->database_name,
-                'username'  => $request->database_username,
-                'password'  => $request->database_password,
-                'charset'   => 'utf8mb4',
-                'collation' => 'utf8mb4_unicode_ci',
-                'prefix'    => '',
-            ]);
-            \DB::connection('install')->getPdo();
+            try {
+                $this->testDbConnect($request);
+            } catch (\Exception $e) {
+                // Change utf8mb4 to utf8 if needed.
+                if ($request->database_connection == 'mysql' && strstr($e->getMessage(), 'Unknown character set')) {
+                    $this->testDbConnect($request, ['charset' => 'utf8', 'collation' => 'utf8_unicode_ci']);
+
+                    $request->database_charset   = 'utf8';
+                    $request->database_collation = 'utf8_unicode_ci';
+                }
+            }
         } catch (\Exception $e) {
             $validator->getMessageBag()->add('general', 'Could not establish database connection: '.$e->getMessage());
             $validator->getMessageBag()->add('database_hostname', 'Database Host: Please check entered value.');
@@ -148,5 +148,23 @@ class EnvironmentController extends Controller
 
         return $redirect->route('LaravelInstaller::database')
                         ->with(['results' => $results]);
+    }
+
+    public function testDbConnect($request, $params = [])
+    {
+        $params = array_merge([
+            'driver'    => 'mysql',
+            'host'      => $request->database_hostname,
+            'database'  => $request->database_name,
+            'username'  => $request->database_username,
+            'password'  => $request->database_password,
+            'charset'   => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix'    => '',
+        ], $params);
+
+        $params_hash = md5(json_encode($params));
+        \Config::set('database.connections.install'.$params_hash, $params);
+        \DB::connection('install'.$params_hash)->getPdo();
     }
 }
