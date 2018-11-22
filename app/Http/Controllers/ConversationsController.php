@@ -989,8 +989,6 @@ class ConversationsController extends Controller
                     // Recalculate only old and new folders
                     $conversation->mailbox->updateFoldersCounters();
 
-                    $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $folder_id]);
-
                     $response['status'] = 'success';
 
                     \Session::flash('flash_success_floating', __('Conversation restored'));
