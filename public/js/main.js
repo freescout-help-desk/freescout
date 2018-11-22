@@ -664,10 +664,8 @@ function conversationInit()
 						} else {
 							window.location.href = '';
 						}
-					} else if (typeof(response.msg) != "undefined") {
-						showFloatingAlert('error', response.msg);
-					} else {
-						showFloatingAlert('error', Lang.get("messages.error_occured"));
+					} else  {
+						showAjaxError(response);
 					}
 					loaderHide();
 				});
