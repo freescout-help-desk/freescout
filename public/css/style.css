@@ -3106,6 +3106,9 @@ a.disabled:focus {
     top: 0;
     right: 0;
 }
+.inline-block {
+    display: inline-block;
+}
 
 /**
  * Only main content is visible

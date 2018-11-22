@@ -2788,3 +2788,21 @@ function installModule(alias)
 		}, true
 	);
 }
+
+// Scroll to
+function scrollTo(el, selector, speed, offset)
+{
+    if (typeof(offset) == "undefined") {
+        offset = 0;
+    }
+    if (typeof(speed) == "undefined") {
+        speed = 600;
+    }
+    var eljq = null;
+    if (el) {
+        eljq = $(el);
+    } else {
+        eljq = $(selector);
+    }
+    $('html, body').animate({scrollTop: (eljq.offset().top+offset)}, speed);
+}

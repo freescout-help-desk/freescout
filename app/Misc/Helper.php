@@ -688,4 +688,24 @@ class Helper
     {
         \Chumper\Zipper\Facades\Zipper::make($archive)->extractTo($to);
     }
+
+    public static function logException($e)
+    {
+        \Log::error(self::formatException($e));
+    }
+
+    /**
+     * Safely decrypt.
+     * @param  [type] $e [description]
+     * @return [type]    [description]
+     */
+    public static function decrypt($value)
+    {
+        try {
+            $value = decrypt($value);
+        } catch (\Exception $e) {
+            // Do nothing.
+        }
+        return $value;
+    }
 }

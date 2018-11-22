@@ -169,6 +169,8 @@ class SettingsController extends Controller
 
         $request = request();
 
+        $request = \Eventy::filter('settings.before_save', $request, $section, $settings);
+
         foreach ($settings as $i => $option_name) {
             // By some reason isset() does not work for empty elements
             if (array_key_exists($option_name, $request->settings)) {

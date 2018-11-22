@@ -95,7 +95,7 @@ class Option extends Model
         return $value;
     }
 
-    public static function getDefault($option_name, $default)
+    public static function getDefault($option_name, $default = false)
     {
         $options = \Config::get('app.options');
 
@@ -113,6 +113,54 @@ class Option extends Model
         return (isset($options[$option_name]) && isset($options[$option_name]['default']));
     }
     
+    /**
+     * Get multiple options.
+     * @param  [type]  $name    [description]
+     * @param  boolean $default [description]
+     * @param  boolean $decode  [description]
+     * @return [type]           [description]
+     */
+    public static function getOptions($options, $defaults = [], $decode = [])
+    {
+        $values = [];
+
+        // Check in cache first
+        // Return if we can get all options from cache
+        foreach ($options as $name) {
+            if (isset(self::$cache[$name])) {
+                $values[$name] = self::$cache[$name];
+            }
+        }
+        if (count($values) == count($options)) {
+            return $values;
+        } else {
+            $values = []; 
+        }
+
+
+        $db_options = self::whereIn('name', $options)->get();
+        foreach ($options as $name) {
+            // If not passed, get default value from config
+            if (empty($defaults[$name])) {
+                $default = self::getDefault($name);
+            }
+            $db_option = $db_options->where('name', $name)->first();
+            if ($db_option) {
+                // todo: decode
+                if (1 || $decode) {
+                    $value = self::maybeUnserialize($db_option->value);
+                } else {
+                    $value = $db_option->value;
+                }
+            } else {
+                $value = $default;
+            }
+
+            self::$cache[$name] = $value;
+            $values[$name] = $value;
+        }
+        return $values;
+    }
     public static function remove($name)
     {
         self::where('name', (string) $name)->delete();
