@@ -970,6 +970,30 @@ class ConversationsController extends Controller
                     \Session::flash('flash_success_floating', __('Conversation deleted'));
                 }
                 break;
+            // Restore conversation
+            case 'restore_conversation':
+                $conversation = Conversation::find($request->conversation_id);
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                } elseif (!$user->can('delete', $conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    $folder_id = $conversation->folder_id;
+                    $conversation->state = Conversation::STATE_PUBLISHED;
+                    $conversation->user_updated_at = date('Y-m-d H:i:s');
+                    $conversation->updateFolder();
+                    $conversation->save();
+
+                    // Recalculate only old and new folders
+                    $conversation->mailbox->updateFoldersCounters();
+
+                    $response['status'] = 'success';
+
+                    \Session::flash('flash_success_floating', __('Conversation restored'));
+                }
+                break;
 
             // Change conversations user
             case 'bulk_conversation_change_user':
