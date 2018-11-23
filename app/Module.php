@@ -169,4 +169,27 @@ class Module extends Model
     {
         return parse_url(\Config::get('app.url'), PHP_URL_HOST);
     }
+
+    /**
+     * Check missing extensions among required by module.
+     * @param  [type] $required_extensions [description]
+     * @return [type]                      [description]
+     */
+    public static function getMissingExtensions($required_extensions)
+    {
+        $missing = [];
+
+        $list = explode(',', $required_extensions);
+        if (!is_array($list) || !count($list)) {
+            return [];
+        }
+        foreach ($list as $ext) {
+            $ext = trim($ext);
+            if ($ext && !extension_loaded($ext)) {
+                $missing[] = $ext;
+            }
+        }
+        
+        return $missing;
+    }
 }

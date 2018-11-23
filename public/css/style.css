@@ -1261,11 +1261,6 @@ table.table-conversations td.conv-attachment {
     .table-conversations .conv-fader {
         width: 80px;
     }
-    .table-conversations td.conv-date
-    {
-        left: 28px;
-        width: calc(100% - 28px);
-    }
     .conv-owner {
         display: none!important;
     }
@@ -1275,7 +1270,7 @@ table.table-conversations td.conv-attachment {
     .conv-customer {
         position: absolute;
         top: 0;
-        margin-left: 28px!important;
+        padding-left: 28px!important;
     }
     .conv-customer a {
         width: 350px;

@@ -63,6 +63,8 @@ class ModulesController extends Controller
                 'author'             => $module->get('author'),
                 'authorUrl'          => $module->get('authorUrl'),
                 'requiredAppVersion' => $module->get('requiredAppVersion'),
+                'requiredPhpExtensions' => $module->get('requiredPhpExtensions'),
+                'requiredPhpExtensionsMissing' => \App\Module::getMissingExtensions($module->get('requiredPhpExtensions')),
                 'img'                => $img,
                 'active'             => $module->active(), //\App\Module::isActive($module->getAlias()),
                 'installed'          => true,
@@ -108,6 +110,9 @@ class ModulesController extends Controller
                     continue;
                 }
 
+                if (!empty($dir_module['requiredPhpExtensions'])) {
+                    $modules_directory[$i_dir]['requiredPhpExtensionsMissing'] = \App\Module::getMissingExtensions($dir_module['requiredPhpExtensions']);
+                }
                 $modules_directory[$i_dir]['active'] = \App\Module::isActive($dir_module['alias']);
                 $modules_directory[$i_dir]['activated'] = false;
             }
