@@ -708,4 +708,19 @@ class Helper
         }
         return $value;
     }
+
+    /**
+     * Log custom data to activity log.
+     * @param  [type] $log_name [description]
+     * @param  [type] $data     [description]
+     * @param  [type] $code     [description]
+     * @return [type]           [description]
+     */
+    public static function log($log_name, $description, $properties = [])
+    {
+        activity()
+            ->withProperties($properties)
+            ->useLog($log_name)
+            ->log($description);
+    }
 }
