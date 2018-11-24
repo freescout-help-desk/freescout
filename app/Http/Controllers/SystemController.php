@@ -41,6 +41,28 @@ class SystemController extends Controller
             }
         }
 
+        // Permissions.
+        $permissions = [];
+        foreach (config('installer.permissions') as $perm_path => $perm_value) {
+            $path = base_path($perm_path);
+            $permissions[$perm_path] = [
+                'status' => \Helper::isFolderWritable($path),
+                'value'  => substr(sprintf('%o', fileperms($path)), -4),
+            ];
+        }
+        // Check if public symlink exists, if not, try to create.
+        $public_symlink_exists = true;
+        $public_path = public_path('storage');
+        $public_test = $public_path.DIRECTORY_SEPARATOR.'.gitignore';
+
+        if (!file_exists($public_test) || !file_get_contents($public_test)) {
+            \File::delete($public_path);
+            \Artisan::call('storage:link');
+            if (!file_exists($public_test) || !file_get_contents($public_test)) {
+                $public_symlink_exists = false;
+            }
+        }
+
         // Jobs
         $queued_jobs = \App\Job::orderBy('created_at', 'desc')->get();
         $failed_jobs = \App\FailedJob::orderBy('failed_at', 'desc')->get();
@@ -147,8 +169,10 @@ class SystemController extends Controller
             'queued_jobs'           => $queued_jobs,
             'failed_jobs'           => $failed_jobs,
             'php_extensions'        => $php_extensions,
+            'permissions'           => $permissions,
             'new_version_available' => $new_version_available,
             'latest_version'        => $latest_version,
+            'public_symlink_exists' => $public_symlink_exists,
         ]);
     }
 

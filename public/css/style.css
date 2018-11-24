@@ -2263,6 +2263,12 @@ ul.prev-convs {
 .table-header {
     font-size: 14px;
 }
+.table-narrow > thead > tr > th,
+.table-narrow > tbody > tr > th,
+.table-narrow > tbody > tr > td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
 
 /**
  * Modal

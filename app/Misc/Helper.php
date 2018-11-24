@@ -723,4 +723,28 @@ class Helper
             ->useLog($log_name)
             ->log($description);
     }
+
+    /**
+     * Check if folder is writable.
+     * @param  [type]  $path [description]
+     * @return boolean       [description]
+     */
+    public static function isFolderWritable($path)
+    {
+        if (!file_exists($path)) {
+            return false;
+        }
+        $path = rtrim($path, DIRECTORY_SEPARATOR);
+        try {
+            $file = $path.DIRECTORY_SEPARATOR.'.writable_test';
+            if ($file && file_put_contents($file, 'test')) {
+                unlink($file);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 }
