@@ -147,7 +147,7 @@ class FetchEmails extends Command
             if ($client->getLastError()) {
                 // Throw exception for INBOX only
                 if ($folder->name == 'INBOX') {
-                    throw new Exception($client->getLastError(), 1);
+                    throw new \Exception($client->getLastError(), 1);
                 } else {
                     $this->error('['.date('Y-m-d H:i:s').'] '.$client->getLastError());
                 }
