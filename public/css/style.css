@@ -2627,6 +2627,7 @@ ul.prev-convs {
     width: 128px;
     height: 128px;
     float: left;
+    border-radius: 5px;
 }
 .module-card h4 {
     font-size: 18px;
