@@ -91,6 +91,8 @@ class FetchEmails extends Command
         // Middleware Terminate handler is not launched for commands,
         // so we need to run processing subscription events manually
         Subscription::processEvents();
+
+        $this->info('['.date('Y-m-d H:i:s').'] Fetching finished');
     }
 
     public function fetch($mailbox)
