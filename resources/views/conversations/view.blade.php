@@ -210,6 +210,10 @@
                                          {{ __("assigned to :assignee", ['assignee' => $thread->getAssigneeName()]) }}
                                     @elseif ($thread->action_type == App\Thread::ACTION_TYPE_CUSTOMER_CHANGED)
                                          {!! __("changed the customer to :customer", ['customer' => '<a href="'.$thread->customer->url().'" title="'.$thread->action_data.'" class="link-black">'.htmlspecialchars($thread->customer->getFullName(true)).'</a>']) !!}
+                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_DELETED_TICKET)
+                                         {{ __("deleted") }}
+                                     @elseif ($thread->action_type == App\Thread::ACTION_TYPE_RESTORE_TICKET)
+                                          {{ __("restored") }}
                                     @endif
                                 </div>
                                 <div class="thread-info">

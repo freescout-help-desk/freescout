@@ -76,12 +76,14 @@ class Thread extends Model
     // A state of review means the thread has been stopped by Traffic Cop and is waiting
     // to be confirmed (or discarded) by the person that created the thread.
     const STATE_REVIEW = 4;
+    const STATE_DELETED = 5;
 
     public static $states = [
         self::STATE_DRAFT     => 'draft',
         self::STATE_PUBLISHED => 'published',
         self::STATE_HIDDEN    => 'hidden',
         self::STATE_REVIEW    => 'review',
+        self::STATE_DELETED   => 'deleted',
     ];
 
     /**

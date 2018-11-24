@@ -960,6 +960,21 @@ class ConversationsController extends Controller
                     $conversation->updateFolder();
                     $conversation->save();
 
+                    // Create lineitem thread
+                    $thread = new Thread();
+                    $thread->conversation_id = $conversation->id;
+                    $thread->user_id = $conversation->user_id;
+                    $thread->type = Thread::TYPE_LINEITEM;
+                    $thread->state = Thread::STATE_DELETED;
+                    $thread->status = Thread::STATUS_NOCHANGE;
+                    $thread->action_type = Thread::ACTION_TYPE_DELETED_TICKET;
+                    $thread->source_via = Thread::PERSON_USER;
+                    // todo: this need to be changed for API
+                    $thread->source_type = Thread::SOURCE_TYPE_WEB;
+                    $thread->customer_id = $conversation->customer_id;
+                    $thread->created_by_user_id = $user->id;
+                    $thread->save();
+
                     // Recalculate only old and new folders
                     $conversation->mailbox->updateFoldersCounters();
 
@@ -985,6 +1000,21 @@ class ConversationsController extends Controller
                     $conversation->user_updated_at = date('Y-m-d H:i:s');
                     $conversation->updateFolder();
                     $conversation->save();
+
+                    // Create lineitem thread
+                    $thread = new Thread();
+                    $thread->conversation_id = $conversation->id;
+                    $thread->user_id = $conversation->user_id;
+                    $thread->type = Thread::TYPE_LINEITEM;
+                    $thread->state = Thread::STATE_PUBLISHED;
+                    $thread->status = Thread::STATUS_NOCHANGE;
+                    $thread->action_type = Thread::ACTION_TYPE_RESTORE_TICKET;
+                    $thread->source_via = Thread::PERSON_USER;
+                    // todo: this need to be changed for API
+                    $thread->source_type = Thread::SOURCE_TYPE_WEB;
+                    $thread->customer_id = $conversation->customer_id;
+                    $thread->created_by_user_id = $user->id;
+                    $thread->save();
 
                     // Recalculate only old and new folders
                     $conversation->mailbox->updateFoldersCounters();
