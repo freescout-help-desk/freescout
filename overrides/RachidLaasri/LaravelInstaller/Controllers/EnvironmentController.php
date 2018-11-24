@@ -123,7 +123,7 @@ class EnvironmentController extends Controller
                 if ($request->database_connection == 'mysql' && strstr($e->getMessage(), 'Unknown character set')) {
                     $this->testDbConnect($request, ['charset' => 'utf8', 'collation' => 'utf8_unicode_ci']);
 
-                    $request->database_charset   = 'utf8';
+                    $request->database_charset = 'utf8';
                     $request->database_collation = 'utf8_unicode_ci';
                 }
             }
