@@ -39,14 +39,17 @@ class Mail
     const MAIL_ENCRYPTION_TLS = 'tls';
 
     /**
-     * If reply is not extracted properly from the incoming email, add here new separator.
+     * If reply is not extracted properly from the incoming email, add here a new separator.
      * Order is not important.
+     * Idially separators must contain < or > to avoid false positives.
+     * If there will be problems, convert into regular expressions.
      */
     public static $alternative_reply_separators = [
-        self::REPLY_SEPARATOR_HTML,
-        self::REPLY_SEPARATOR_TEXT,
-        '<div class="gmail_quote">',
-        '<blockquote',
+        self::REPLY_SEPARATOR_HTML, // Our HTML separator
+        self::REPLY_SEPARATOR_TEXT, // Our plain text separator
+        '<div class="gmail_quote">', // Gmail
+        'yahoo_quoted_', // Yahoo, full: <div id=3D"ydp6h4f5c59yahoo_quoted_2937493705"
+        '<blockquote', // General sepator
         '<!-- originalMessage -->',
         //'---Original---', // QQ separator, wait for emails from QQ and check
     ];

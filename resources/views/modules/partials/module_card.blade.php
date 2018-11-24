@@ -18,7 +18,10 @@
 		    	@php
 		    		$wrong_app_verion = true;
 		    	@endphp
-		    	| <span class="text-danger">{{ __('Required :app_name version', ['app_name' => \Config::get('app.name')]) }}: {{ $module['requiredAppVersion'] }}</span>
+		    	| <span class="text-danger nowrap">{{ __('Required :app_name version', ['app_name' => \Config::get('app.name')]) }}: <strong>{{ $module['requiredAppVersion'] }}</strong></span>
+		    @endif
+		    @if (!empty($module['requiredPhpExtensionsMissing']))
+		    	| <span class="text-danger nowrap">{{ __('Required PHP extensions') }}: <strong>{{ implode(', ', $module['requiredPhpExtensionsMissing']) }}</strong></span>
 		    @endif
 		    @if (!empty($module['detailsUrl']))
 		    	| <a href="{{ $module['detailsUrl'] }}" target="_blank">{{ __('View details') }}</a>
@@ -29,7 +32,7 @@
 		</div>
 		<div class="module-actions form-horizontal">
 			
-			@if (empty($wrong_app_verion) || !empty($module['active']))
+			@if ((empty($wrong_app_verion) && empty($module['requiredPhpExtensionsMissing'])) || !empty($module['active']))
 				@if (!empty($module['active']))
 					<button type="submit" class="btn btn-default deactivate-trigger" data-loading-text="{{ __('Deactivating') }}…">{{ __('Deactivate') }}</button>
 				@elseif (!empty($module['activated']))

@@ -137,9 +137,9 @@
                     <tr class="table-header">
                         <th>
                             @if ($person)
-                                {{ __("Notify :person when another Help Scout user replies or adds a note…", ['person' => $person]) }}
+                                {{ __("Notify :person when another :app_name user replies or adds a note…", ['person' => $person, 'app_name' => config('app.name')]) }}
                             @else
-                                {{ __('Notify me when another Help Scout user replies or adds a note…') }}
+                                {{ __('Notify me when another :app_name user replies or adds a note…', ['app_name' => config('app.name')]) }}
                             @endif
                         </th>
                         <td class="text-center">&nbsp;</td>

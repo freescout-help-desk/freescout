@@ -2263,6 +2263,12 @@ ul.prev-convs {
 .table-header {
     font-size: 14px;
 }
+.table-narrow > thead > tr > th,
+.table-narrow > tbody > tr > th,
+.table-narrow > tbody > tr > td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
 
 /**
  * Modal
@@ -3105,6 +3111,9 @@ a.disabled:focus {
 #conversations-bulk-actions.affix {
     top: 0;
     right: 0;
+}
+.inline-block {
+    display: inline-block;
 }
 
 /**

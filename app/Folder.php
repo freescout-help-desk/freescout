@@ -190,7 +190,10 @@ class Folder extends Model
             $this->total_count = $this->active_count;
         } elseif ($this->isIndirect()) {
             // Conversation are connected to folder via conversation_folder table.
-            $this->active_count = ConversationFolder::where('folder_id', $this->id)->count();
+            $this->active_count = ConversationFolder::where('conversation_folder.folder_id', $this->id)
+                ->join('conversations', 'conversations.id', '=', 'conversation_folder.conversation_id')
+                ->where('state', Conversation::STATE_PUBLISHED)
+                ->count();
             $this->total_count = $this->active_count;
         } else {
             $this->active_count = $this->conversations()

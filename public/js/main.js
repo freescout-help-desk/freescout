@@ -649,6 +649,30 @@ function conversationInit()
 			e.preventDefault();
 		});
 
+		// Restore conversation
+		jQuery(".conv-status li > a.conv-restore-trigger").click(function(e) {
+			if (!$(this).hasClass('active')) {
+				fsAjax({
+					action: 'restore_conversation',
+					conversation_id: getGlobalAttr('conversation_id')
+				}, 
+				laroute.route('conversations.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == 'success') {
+						if (typeof(response.redirect_url) != "undefined") {
+							window.location.href = response.redirect_url;
+						} else {
+							window.location.href = '';
+						}
+					} else  {
+						showAjaxError(response);
+					}
+					loaderHide();
+				});
+			}
+			e.preventDefault();
+		});
+
 	    // Reply
 	    jQuery(".conv-reply").click(function(e){
 	    	// We don't allow to switch between reply and note, as it creates multiple drafts
@@ -664,6 +688,10 @@ function conversationInit()
 	    		if (default_assignee) {
 	    			$(".conv-reply-block").children().find(":input[name='user_id']:first").val(default_assignee);
 	    		}
+
+	    		// Show default status
+	    		var input_status = $(".conv-reply-block").children().find(":input[name='status']:first");
+	    		input_status.val(input_status.attr('data-reply-status'));
 
 				showReplyForm();
 			} /*else {
@@ -685,10 +713,12 @@ function conversationInit()
 				$(".conv-reply-block").children().find(":input[name='thread_id']:first").val('');
 				//$(".conv-reply-block").children().find(":input[name='body']:first").val('');
 				
-				// If this is unassigned conversation, we need to set Assignee=Anyone
-				if (getConvData('user_id') == '-1') {
-					$(".conv-reply-block").children().find(":input[name='user_id']:first").val('-1');
-				}
+				// Note never changes Assignee by default
+				$(".conv-reply-block").children().find(":input[name='user_id']:first").val(getConvData('user_id'));
+
+	    		// Show default status
+	    		var input_status = $(".conv-reply-block").children().find(":input[name='status']:first");
+	    		input_status.val(input_status.attr('data-note-status'));
 
 				$(".conv-action").addClass('inactive');
 				$(this).removeClass('inactive');
@@ -2781,4 +2811,22 @@ function installModule(alias)
 			}
 		}, true
 	);
+}
+
+// Scroll to
+function scrollTo(el, selector, speed, offset)
+{
+    if (typeof(offset) == "undefined") {
+        offset = 0;
+    }
+    if (typeof(speed) == "undefined") {
+        speed = 600;
+    }
+    var eljq = null;
+    if (el) {
+        eljq = $(el);
+    } else {
+        eljq = $(selector);
+    }
+    $('html, body').animate({scrollTop: (eljq.offset().top+offset)}, speed);
 }

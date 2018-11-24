@@ -69,7 +69,7 @@
     </table>
 
     <h3 id="php">{{ __('PHP Extensions') }}</h3>
-    <table class="table table-dark-header table-bordered table-responsive">
+    <table class="table table-dark-header table-bordered table-responsive table-narrow">
         <tbody>
             @foreach ($php_extensions as $extension_name => $extension_status)
                 <tr>
@@ -85,6 +85,43 @@
             @endforeach
         </tbody>
     </table>
+
+    <h3 id="permissions">{{ __('Permissions') }}</h3>
+    {!! __('These folders must be writable by web server user (:user).', ['user' => '<strong>'.get_current_user().'</strong>']) !!} {{ __('Recommended permissions') }}: <strong>775</strong>
+    <table class="table table-dark-header table-bordered table-responsive table-narrow">
+        <tbody>
+            @foreach ($permissions as $perm_path => $perm)
+                <tr>
+                    <th>{{ $perm_path }}</th>
+                    <td class="table-main-col">
+                        @if ($perm['status'])
+                            <strong class="text-success">OK</strong>
+                        @else
+                            <strong class="text-danger">{{ __('Not writable') }} ({{ $perm['value'] }})</strong>
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    {{ __('Symlinks') }}
+    <table class="table table-dark-header table-bordered table-responsive table-narrow">
+        <tbody>
+            <tr>
+                <th>public/storage</th>
+                <td class="table-main-col">
+                    @if ($public_symlink_exists)
+                        <strong class="text-success">OK</strong>
+                    @else
+                        <strong class="text-danger">{{ __('Not found') }}</strong>
+                        <div class="alert alert-danger">{{ __('Create symlink manually') }}: <code>ln -s storage/app/public public/storage</code></div>
+                    @endif
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
 
     <h3 id="cron" class="margin-top-40">Cron Commands</h3>
     <p>

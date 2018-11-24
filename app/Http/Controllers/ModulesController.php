@@ -55,19 +55,21 @@ class ModulesController extends Controller
         foreach ($modules as $module) {
             $img = '';
             $installed_modules[] = [
-                'alias'              => $module->getAlias(),
-                'name'               => $module->getName(),
-                'description'        => $module->getDescription(),
-                'version'            => $module->get('version'),
-                'detailsUrl'         => $module->get('detailsUrl'),
-                'author'             => $module->get('author'),
-                'authorUrl'          => $module->get('authorUrl'),
-                'requiredAppVersion' => $module->get('requiredAppVersion'),
-                'img'                => $img,
-                'active'             => $module->active(), //\App\Module::isActive($module->getAlias()),
-                'installed'          => true,
-                'activated'          => \App\Module::isLicenseActivated($module->getAlias(), $module->get('authorUrl')),
-                'license'            => \App\Module::getLicense($module->getAlias()),
+                'alias'                        => $module->getAlias(),
+                'name'                         => $module->getName(),
+                'description'                  => $module->getDescription(),
+                'version'                      => $module->get('version'),
+                'detailsUrl'                   => $module->get('detailsUrl'),
+                'author'                       => $module->get('author'),
+                'authorUrl'                    => $module->get('authorUrl'),
+                'requiredAppVersion'           => $module->get('requiredAppVersion'),
+                'requiredPhpExtensions'        => $module->get('requiredPhpExtensions'),
+                'requiredPhpExtensionsMissing' => \App\Module::getMissingExtensions($module->get('requiredPhpExtensions')),
+                'img'                          => $img,
+                'active'                       => $module->active(), //\App\Module::isActive($module->getAlias()),
+                'installed'                    => true,
+                'activated'                    => \App\Module::isLicenseActivated($module->getAlias(), $module->get('authorUrl')),
+                'license'                      => \App\Module::getLicense($module->getAlias()),
                 // Determined later
                 'new_version'        => '',
             ];
@@ -82,6 +84,10 @@ class ModulesController extends Controller
         // Prepare directory modules
         if (is_array($modules_directory)) {
             foreach ($modules_directory as $i_dir => $dir_module) {
+                // Remove modules without aliases
+                if (empty($dir_module['alias'])) {
+                    unset($modules_directory[$i_dir]);
+                }
                 foreach ($installed_modules as $i_installed => $module) {
                     if ($dir_module['alias'] == $module['alias']) {
                         // Set image from director
@@ -104,6 +110,9 @@ class ModulesController extends Controller
                     continue;
                 }
 
+                if (!empty($dir_module['requiredPhpExtensions'])) {
+                    $modules_directory[$i_dir]['requiredPhpExtensionsMissing'] = \App\Module::getMissingExtensions($dir_module['requiredPhpExtensions']);
+                }
                 $modules_directory[$i_dir]['active'] = \App\Module::isActive($dir_module['alias']);
                 $modules_directory[$i_dir]['activated'] = false;
             }

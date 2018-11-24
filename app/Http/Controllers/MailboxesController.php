@@ -215,6 +215,10 @@ class MailboxesController extends Controller
         $mailbox->fill($request->all());
         $mailbox->save();
 
+        if (!empty($request->send_test_to)) {
+            \Option::set('send_test_to', $request->send_test_to);
+        }
+
         \Session::flash('flash_success_floating', __('Connection settings saved!'));
 
         return redirect()->route('mailboxes.connection', ['id' => $id]);

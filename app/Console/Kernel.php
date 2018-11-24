@@ -48,6 +48,8 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
 
+        $schedule = \Eventy::filter('schedule', $schedule);
+
         // Command runs as subprocess and sets cache mutex. If schedule:run command is killed
         // subprocess does not clear the mutex and it stays in the cache until cache:clear is executed.
         // By default, the lock will expire after 24 hours.
