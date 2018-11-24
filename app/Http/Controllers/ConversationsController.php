@@ -965,7 +965,7 @@ class ConversationsController extends Controller
                     $thread->conversation_id = $conversation->id;
                     $thread->user_id = $conversation->user_id;
                     $thread->type = Thread::TYPE_LINEITEM;
-                    $thread->state = Thread::STATE_DELETED;
+                    $thread->state = Thread::STATE_PUBLISHED;
                     $thread->status = Thread::STATUS_NOCHANGE;
                     $thread->action_type = Thread::ACTION_TYPE_DELETED_TICKET;
                     $thread->source_via = Thread::PERSON_USER;
