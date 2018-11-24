@@ -97,7 +97,7 @@
                         @if ($perm['status'])
                             <strong class="text-success">OK</strong>
                         @else
-                            <strong class="text-danger">{{ __('Not writable') }} ({{ $perm['value'] }})</strong>
+                            <strong class="text-danger">{{ __('Not writable') }} @if ($perm['value'])({{ $perm['value'] }})@endif</strong>
                         @endif
                     </td>
                 </tr>
