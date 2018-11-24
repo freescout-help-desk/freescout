@@ -73,6 +73,7 @@ return array(
     'App\\Jobs\\SendEmailReplyError' => $baseDir . '/app/Jobs/SendEmailReplyError.php',
     'App\\Jobs\\SendNotificationToUsers' => $baseDir . '/app/Jobs/SendNotificationToUsers.php',
     'App\\Jobs\\SendReplyToCustomer' => $baseDir . '/app/Jobs/SendReplyToCustomer.php',
+    'App\\Jobs\\TriggerAction' => $baseDir . '/app/Jobs/TriggerAction.php',
     'App\\Listeners\\ActivateUser' => $baseDir . '/app/Listeners/ActivateUser.php',
     'App\\Listeners\\LogFailedLogin' => $baseDir . '/app/Listeners/LogFailedLogin.php',
     'App\\Listeners\\LogLockout' => $baseDir . '/app/Listeners/LogLockout.php',

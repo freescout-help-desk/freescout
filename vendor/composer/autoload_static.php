@@ -540,6 +540,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'App\\Jobs\\SendEmailReplyError' => __DIR__ . '/../..' . '/app/Jobs/SendEmailReplyError.php',
         'App\\Jobs\\SendNotificationToUsers' => __DIR__ . '/../..' . '/app/Jobs/SendNotificationToUsers.php',
         'App\\Jobs\\SendReplyToCustomer' => __DIR__ . '/../..' . '/app/Jobs/SendReplyToCustomer.php',
+        'App\\Jobs\\TriggerAction' => __DIR__ . '/../..' . '/app/Jobs/TriggerAction.php',
         'App\\Listeners\\ActivateUser' => __DIR__ . '/../..' . '/app/Listeners/ActivateUser.php',
         'App\\Listeners\\LogFailedLogin' => __DIR__ . '/../..' . '/app/Listeners/LogFailedLogin.php',
         'App\\Listeners\\LogLockout' => __DIR__ . '/../..' . '/app/Listeners/LogLockout.php',
