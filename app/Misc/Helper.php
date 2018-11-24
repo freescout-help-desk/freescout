@@ -696,8 +696,10 @@ class Helper
 
     /**
      * Safely decrypt.
-     * @param  [type] $e [description]
-     * @return [type]    [description]
+     *
+     * @param [type] $e [description]
+     *
+     * @return [type] [description]
      */
     public static function decrypt($value)
     {
@@ -706,15 +708,18 @@ class Helper
         } catch (\Exception $e) {
             // Do nothing.
         }
+
         return $value;
     }
 
     /**
      * Log custom data to activity log.
-     * @param  [type] $log_name [description]
-     * @param  [type] $data     [description]
-     * @param  [type] $code     [description]
-     * @return [type]           [description]
+     *
+     * @param [type] $log_name [description]
+     * @param [type] $data     [description]
+     * @param [type] $code     [description]
+     *
+     * @return [type] [description]
      */
     public static function log($log_name, $description, $properties = [])
     {
@@ -726,8 +731,10 @@ class Helper
 
     /**
      * Check if folder is writable.
-     * @param  [type]  $path [description]
-     * @return boolean       [description]
+     *
+     * @param [type] $path [description]
+     *
+     * @return bool [description]
      */
     public static function isFolderWritable($path)
     {
@@ -735,10 +742,12 @@ class Helper
             return false;
         }
         $path = rtrim($path, DIRECTORY_SEPARATOR);
+
         try {
             $file = $path.DIRECTORY_SEPARATOR.'.writable_test';
             if ($file && file_put_contents($file, 'test')) {
                 unlink($file);
+
                 return true;
             } else {
                 return false;

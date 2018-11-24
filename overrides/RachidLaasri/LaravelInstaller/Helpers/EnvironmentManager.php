@@ -116,8 +116,8 @@ class EnvironmentManager
         'DB_DATABASE='.$request->database_name."\n".
         'DB_USERNAME='.$request->database_username."\n".
         'DB_PASSWORD='.$request->database_password."\n".
-        (!empty($request->database_charset) ? 'DB_CHARSET='.$request->database_charset."\n" : '') .
-        (!empty($request->database_collation) ? 'DB_COLLATION='.$request->database_collation."\n" : '') .
+        (!empty($request->database_charset) ? 'DB_CHARSET='.$request->database_charset."\n" : '').
+        (!empty($request->database_collation) ? 'DB_COLLATION='.$request->database_collation."\n" : '').
         "\n".
         '# Run the following console command to generate the key: php artisan key:generate'."\n".
         '# Otherwise application will show the following error: "Whoops, looks like something went wrong"'."\n".

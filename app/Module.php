@@ -172,8 +172,10 @@ class Module extends Model
 
     /**
      * Check missing extensions among required by module.
-     * @param  [type] $required_extensions [description]
-     * @return [type]                      [description]
+     *
+     * @param [type] $required_extensions [description]
+     *
+     * @return [type] [description]
      */
     public static function getMissingExtensions($required_extensions)
     {
@@ -189,7 +191,7 @@ class Module extends Model
                 $missing[] = $ext;
             }
         }
-        
+
         return $missing;
     }
 }

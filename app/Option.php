@@ -110,15 +110,17 @@ class Option extends Model
     {
         $options = \Config::get('app.options');
 
-        return (isset($options[$option_name]) && isset($options[$option_name]['default']));
+        return isset($options[$option_name]) && isset($options[$option_name]['default']);
     }
-    
+
     /**
      * Get multiple options.
-     * @param  [type]  $name    [description]
-     * @param  boolean $default [description]
-     * @param  boolean $decode  [description]
-     * @return [type]           [description]
+     *
+     * @param [type] $name    [description]
+     * @param bool   $default [description]
+     * @param bool   $decode  [description]
+     *
+     * @return [type] [description]
      */
     public static function getOptions($options, $defaults = [], $decode = [])
     {
@@ -134,9 +136,8 @@ class Option extends Model
         if (count($values) == count($options)) {
             return $values;
         } else {
-            $values = []; 
+            $values = [];
         }
-
 
         $db_options = self::whereIn('name', $options)->get();
         foreach ($options as $name) {
@@ -159,8 +160,10 @@ class Option extends Model
             self::$cache[$name] = $value;
             $values[$name] = $value;
         }
+
         return $values;
     }
+
     public static function remove($name)
     {
         self::where('name', (string) $name)->delete();

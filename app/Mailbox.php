@@ -131,6 +131,7 @@ class Mailbox extends Model
         if (!$value) {
             return '';
         }
+
         try {
             return decrypt($value);
         } catch (\Exception $e) {
