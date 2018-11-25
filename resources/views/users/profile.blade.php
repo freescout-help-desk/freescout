@@ -178,12 +178,12 @@
                             @if (Auth::user()->isAdmin())
                                 @if ($user->invite_state == App\User::INVITE_STATE_ACTIVATED)
                                     @if ($user->id != Auth::user()->id)
-                                        <a href="#" class="btn btn-link reset-password-trigger" data-loading-text="{{ __('Resetting Password') }}…">{{ __('Reset Password') }}</a>
+                                        <a href="#" class="btn btn-link reset-password-trigger" data-loading-text="{{ __('Resetting password') }}…">{{ __('Reset password') }}</a>
                                     @endif
                                 @elseif ($user->invite_state == App\User::INVITE_STATE_SENT)
-                                    <a href="#" class="btn btn-link resend-invite-trigger" data-loading-text="{{ __('Resending') }}…">{{ __('Re-send invite Email') }}</a>
+                                    <a href="#" class="btn btn-link resend-invite-trigger" data-loading-text="{{ __('Resending') }}…">{{ __('Re-send invite email') }}</a>
                                 @elseif ($user->invite_state == App\User::INVITE_STATE_NOT_INVITED)
-                                    <a href="#" class="btn btn-link send-invite-trigger" data-loading-text="{{ __('Sending') }}…">{{ __('Send invite Email') }}</a>
+                                    <a href="#" class="btn btn-link send-invite-trigger" data-loading-text="{{ __('Sending') }}…">{{ __('Send invite email') }}</a>
                                 @endif
                             @endif
 
