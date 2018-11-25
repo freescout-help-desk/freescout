@@ -777,7 +777,7 @@ class Helper
         
         if ($param) {
             if (isset(self::$locales[$locale])) {
-                return self::$locales[$locale];
+                return self::$locales[$locale][$param];
             } else {
                 return null;
             }

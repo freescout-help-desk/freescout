@@ -11,7 +11,7 @@ use Symfony\Component\Finder\Finder;
 
 class Manager
 {
-    const JSON_GROUP = '_json';
+    const JSON_GROUP = '_app';
 
     /** @var \Illuminate\Contracts\Foundation\Application */
     protected $app;
@@ -117,7 +117,10 @@ class Manager
             }
         }
 
-        return $counter;
+        // We also find translations during import.
+        $this->findTranslations();
+
+        //return $counter;
     }
 
     public function importTranslation( $key, $value, $locale, $group, $replace = false )
@@ -184,10 +187,15 @@ class Manager
         if (!empty(request()->submit) && request()->submit == 'modules') {
             // Find in modules.
             $searchInModules = true;
-            $finder->in( $path.DIRECTORY_SEPARATOR.'Modules' )->name( '*.php' )->name( '*.twig' )->name( '*.vue' )->files();
+            $finder->in( $path.DIRECTORY_SEPARATOR.'Modules' )->exclude('vendor')->name( '*.php' )->name( '*.twig' )->name( '*.vue' )->files();
         } else {
             // Find in core.
-            $finder->in( $path )->exclude( 'Modules' )->name( '*.php' )->name( '*.twig' )->name( '*.vue' )->files();
+            $exclude = ['bootstrap', 'config', 'database', 'public', 'routes', 'storage', 'tests', 'tools', 'vendor'];
+            $finder->in( $path )->exclude( $exclude )->name( '*.php' )->name( '*.twig' )->name( '*.vue' )->files();
+            // foreach ($exclude as $exclude_folder) {
+            //     $finder->exclude($exclude_folder);
+            // }
+            // $finder->files();
         }
 
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
@@ -225,12 +233,13 @@ class Manager
                          || str_contains( $key, ' ' ) ) {
                         
                         // Modules
-                        if ($searchInModules) {
-                            if ($moduleAlias) {
-                                $groupKeys[] = $moduleAlias.'.'.$key;
-                            } else {
-                                continue;
-                            }
+                        //if ($searchInModules) {
+                        if ($moduleAlias) {
+                            //if ($moduleAlias) {
+                                $groupKeys[] = '_'.$moduleAlias.'.'.$key;
+                            // } else {
+                            //     continue;
+                            // }
                         } else {
                             $stringKeys[] = $key;
                         }
@@ -274,6 +283,14 @@ class Manager
     {
         $basePath = $this->app[ 'path.lang' ];
 
+        $moduleAlias = '';
+        if ($group && $group[0] == '_') {
+            $json = true;
+        }
+
+        if ($json && $group != self::JSON_GROUP) {
+            $moduleAlias = substr($group, 1);
+        }
 
         if ( !is_null( $group ) && !$json ) {
             if ( !in_array( $group, $this->config[ 'exclude_groups' ] ) ) {
@@ -324,17 +341,39 @@ class Manager
         }
 
         if ( $json ) {
-            $tree = $this->makeTree( Translation::ofTranslatedGroup( self::JSON_GROUP )
+            $tree = $this->makeTree( Translation::ofTranslatedGroup( $group )
                                                 ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
                                                 ->get(), true );
-
+            
             foreach ( $tree as $locale => $groups ) {
-                if ( isset( $groups[ self::JSON_GROUP ] ) ) {
-                    $translations = $groups[ self::JSON_GROUP ];
-                    $path         = $this->app[ 'path.lang' ] . '/' . $locale . '.json';
-                    $output       = json_encode( $translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE );
+                if (!$moduleAlias) {
+                    // _json
+                    $path = $this->app[ 'path.lang' ] . '/' . $locale . '.json';
+                } else {
+                    // Export module translations into module's folder
+                    $modulePath = \Module::getModulePathByAlias($moduleAlias);
+                    // Module not found.
+                    if (!$modulePath) {
+                        continue;
+                    }
+                    $path = $modulePath . 'Resources/lang/' . $locale . '.json';
+                }
+
+                $translations = $groups[ $group ];
+                $output       = json_encode( $translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE );
+                $this->files->put( $path, $output );
+
+                // If it is module, also export translation into the main langs folder.
+                if ($moduleAlias && $modulePath) {
+                    $path = $this->app[ 'path.lang' ] . '/' . $locale . '.' . $moduleAlias . '.json';
                     $this->files->put( $path, $output );
                 }
+                // if ( isset( $groups[ self::JSON_GROUP ] ) ) {
+                //     $translations = $groups[ self::JSON_GROUP ];
+                //     $path         = $this->app[ 'path.lang' ] . '/' . $locale . '.json';
+                //     $output       = json_encode( $translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE );
+                //     $this->files->put( $path, $output );
+                // }
             }
 
             Translation::ofTranslatedGroup( self::JSON_GROUP )->update( [ 'status' => Translation::STATUS_SAVED ] );

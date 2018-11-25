@@ -44,12 +44,28 @@
         });
 
         $('.group-select').on('change', function(){
+            var locale = $('#locale').val();
             var group = $(this).val();
             if (group) {
-                window.location.href = '<?php echo action('\Barryvdh\TranslationManager\Controller@getView') ?>/'+$(this).val();
+                url = '<?php echo action('\Barryvdh\TranslationManager\Controller@getView') ?>/'+$(this).val();
             } else {
-                window.location.href = '<?php echo action('\Barryvdh\TranslationManager\Controller@getIndex') ?>';
+                url = '<?php echo action('\Barryvdh\TranslationManager\Controller@getIndex') ?>';
             }
+            if (locale) {
+                url = url + '?locale='+locale;
+            }
+            window.location.href = url;
+        });
+
+        $('.group-locale-select').on('change', function(){
+            var group = $('#group').val();
+            if (group) {
+                url = '<?php echo action('\Barryvdh\TranslationManager\Controller@getView') ?>/'+group;
+            } else {
+                url = '<?php echo action('\Barryvdh\TranslationManager\Controller@getIndex') ?>';
+            }
+            url = url + '?locale='+$(this).val();
+            window.location.href = url;
         });
 
         $("a.delete-key").click(function(event){

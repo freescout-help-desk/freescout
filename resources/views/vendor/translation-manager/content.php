@@ -4,6 +4,21 @@
     }
 </style>
 
+<?php
+    $selected_locale = request()->input('locale');
+    if ($selected_locale == 'en') {
+        $selected_locale = '';
+    }
+    if (!$selected_locale) {
+        foreach ($locales as $locale) {
+            if ($locale != 'en') {
+                $selected_locale = $locale;
+                break;
+            }
+        }
+    }
+?>
+
 <div class="container">
 
 <div class="container-fluid">
@@ -30,44 +45,38 @@
             <?php endif; ?>
             <p>
                 <?php if(!isset($group)) : ?>
+                    <form class="form-find hidden" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Search may take some time, please don't reload the page until the search process finishes.<?php /*Are you sure you want to scan you app folder? All found translation keys will be added to the database.*/ ?>">
+                        <div class="form-group">
+                            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                            <button type="submit" class="btn btn-primary" data-disable-with="Searching…" >Find translations in files</button>
+                            <button type="submit" class="btn btn-primary" name="submit" value="modules" data-disable-with="Searching…" >Find translations in modules</button>
+                        </div>
+                    </form>
                     <form class="form-import" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postImport') ?>" data-remote="true" role="form">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                         <div class="form-group">
                             <p>1. Import existing translations.</p>
                             <div class="row">
-                                <div class="col-sm-3">
-                                    <select name="replace" class="form-control">
+                                <div class="col-sm-12">
+                                <?php /*<div class="col-sm-3">*/ ?>
+                                    <select name="replace" class="form-control hidden">
                                         <option value="0">Append new translations</option>
                                         <option value="1">Replace existing translations</option>
                                     </select>
-                                </div>
-                                <div class="col-sm-2">
-                                <button type="submit" class="btn btn-primary"  data-disable-with="Loading…">Import translations</button>
+                                <?php /*</div>
+                                <div class="col-sm-2">*/ ?>
+                                <button type="submit" class="btn btn-primary"  data-disable-with="Importing… It may take several minutes">Import translations</button>
                                 </div>
                             </div>
                         </div>
-                    </form>
-                    <form class="form-find" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postFind') ?>" data-remote="true" role="form" data-confirm="Search may take some time, please don't reload the page until the search process finishes.<?php /*Are you sure you want to scan you app folder? All found translation keys will be added to the database.*/ ?>">
-                        <div class="form-group">
-                            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                            2. <button type="submit" class="btn btn-primary" name="submit" value="modules" data-disable-with="Searching…" >Find translations in modules</button>
-                            <button type="submit" class="btn btn-primary hidden" data-disable-with="Searching…" >Find translations in files</button>
-                        </div>
-                    </form>
-                <?php endif; ?>
-                <?php if(isset($group)) : ?>
-                    <form class="form-inline form-publish" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?php echo $group ?>? This will overwrite existing language files.">
-                        <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                        <button type="submit" class="btn btn-primary" data-disable-with="Publishing…" >Publish translations</button>
-                        <a href="<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>" class="btn btn-default">Back</a>
                     </form>
                 <?php endif; ?>
             </p>
             <form role="form" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postAddGroup') ?>">
                 <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                 <div class="form-group">
-                    <p>3. Choose a group to display translations. <?php /* (if no groups are visisble, make sure you have imported translations).*/ ?></p>
-                    <select name="group" id="group" class="form-control group-select">
+                    <p><?php if (!isset($group)) : ?>2.<?php endif ?>Choose a group to display translations. <?php /* (if no groups are visisble, make sure you have imported translations).*/ ?></p>
+                    <select name="group" id="group" class="form-control group-select" autocomplete="off">
                         <?php foreach($groups as $key => $value): ?>
                             <option value="<?php echo $key ?>"<?php echo $key == $group ? ' selected':'' ?>><?php echo $value ?></option>
                         <?php endforeach; ?>
@@ -81,6 +90,28 @@
                     <input type="submit" class="btn btn-default" name="add-group" value="Add and edit keys" />
                 </div>*/ ?>
             </form>
+            <?php if (isset($group)) : ?>
+                <form role="form" method="GET" action="">
+                    <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                    <div class="form-group">
+                        <p>Language</p>
+                        <select name="locale" id="locale" class="form-control group-locale-select" autocomplete="off">
+                            <?php foreach($locales as $locale): ?>
+                                <?php if ($locale != 'en'): ?>
+                                    <option value="<?php echo $locale ?>"<?php echo $locale == $selected_locale ? ' selected':'' ?>><?php echo \Helper::getLocaleData($locale, 'name') ?> (<?php echo \Helper::getLocaleData($locale, 'name_en') ?>)</option>
+                                <?php endif ?>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </form>
+            <?php endif ?>
+            <?php if(isset($group)) : ?>
+                <form class="form-inline form-publish" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?php echo $group ?>? This will overwrite existing language files.">
+                    <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                    <?php /*<button type="submit" class="btn btn-primary" data-disable-with="Publishing…" >Publish translations</button>*/ ?>
+                    <a href="<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>" class="btn btn-default">« Back</a>
+                </form>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -107,11 +138,13 @@
                     <tr>
                         <th width="15%">Key</th>
                         <?php foreach ($locales as $locale): ?>
-                            <th><?= $locale ?></th>
+                            <?php if ($locale == $selected_locale || ($locale == 'en' && $group[0] != '_')): ?>
+                                <th><?= $locale ?></th>
+                            <?php endif ?>
                         <?php endforeach; ?>
-                        <?php if ($deleteEnabled): ?>
+                        <?php /*if ($deleteEnabled): ?>
                             <th>&nbsp;</th>
-                        <?php endif; ?>
+                        <?php endif;*/ ?>
                     </tr>
                     </thead>
                     <tbody>
@@ -120,6 +153,9 @@
                         <tr id="<?php echo htmlentities($key, ENT_QUOTES, 'UTF-8', false) ?>">
                             <td><?php echo htmlentities($key, ENT_QUOTES, 'UTF-8', false) ?></td>
                             <?php foreach ($locales as $locale): ?>
+                                <?php if (!($locale == $selected_locale || ($locale == 'en' && $group[0] != '_'))): ?>
+                                    <?php continue; ?>
+                                <?php endif ?>
                                 <?php $t = isset($translation[$locale]) ? $translation[$locale] : null ?>
 
                                 <td>
@@ -131,14 +167,14 @@
                                        data-title="Enter translation"><?php echo $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
                                 </td>
                             <?php endforeach; ?>
-                            <?php if ($deleteEnabled): ?>
+                            <?php /*if ($deleteEnabled): ?>
                                 <td>
                                     <a href="<?php echo action('\Barryvdh\TranslationManager\Controller@postDelete', [$group, $key]) ?>"
                                        class="delete-key"
                                        data-confirm="Are you sure you want to delete the translations for '<?php echo htmlentities($key, ENT_QUOTES, 'UTF-8', false) ?>?"><span
                                                 class="glyphicon glyphicon-trash"></span></a>
                                 </td>
-                            <?php endif; ?>
+                            <?php endif;*/ ?>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -174,7 +210,7 @@
                                 <div class="col-sm-4 col-md-3">
                                     <select name="new-locale" class="form-control">
                                         <?php foreach (\Helper::$locales as $locale_code => $locale_info): ?>
-                                            <option value="<?php echo $locale_code; ?>"><?php echo $locale_info['en']; ?> (<?php echo $locale_info['name']; ?>)</option>
+                                            <option value="<?php echo $locale_code; ?>"><?php echo $locale_info['name_en']; ?> (<?php echo $locale_info['name']; ?>)</option>
                                         <?php endforeach ?>
                                     </select>
                                     <?php /*<input type="text" name="new-locale" class="form-control" />*/ ?>

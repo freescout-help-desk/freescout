@@ -406,6 +406,7 @@ abstract class Repository implements RepositoryInterface, Countable
                 return $module;
             }
         }
+        return null;
     }
 
     /**
@@ -506,6 +507,20 @@ abstract class Repository implements RepositoryInterface, Countable
             return $this->findOrFail($module)->getPath().'/';
         } catch (ModuleNotFoundException $e) {
             return $this->getPath().'/'.Str::studly($module).'/';
+        }
+    }
+
+    public function getModulePathByAlias($module_alias)
+    {
+        try {
+            $module = $this->findByAlias($module_alias);
+            if (!$module) {
+                throw new ModuleNotFoundException("", 1);
+            }
+            return $module->getPath().'/';
+        } catch (ModuleNotFoundException $e) {
+            //return $this->getPath().'/'.Str::studly($module).'/';
+            return '';
         }
     }
 

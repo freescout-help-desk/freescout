@@ -91,8 +91,8 @@ return [
     | locales: available locales
     */
 
-    'locale'  => 'en',
-    'locales' => ['en'],
+    'locale'  => env('APP_LOCALE', 'en'),
+    'locales' => ['en', 'fr'],
 
     /*
     |--------------------------------------------------------------------------

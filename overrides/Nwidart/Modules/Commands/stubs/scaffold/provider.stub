@@ -21,7 +21,6 @@ class $CLASS$ extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
         $this->registerFactories();
@@ -35,7 +34,7 @@ class $CLASS$ extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->registerTranslations();
     }
 
     /**
@@ -80,13 +79,7 @@ class $CLASS$ extends ServiceProvider
      */
     public function registerTranslations()
     {
-        $langPath = resource_path('lang/modules/$LOWER_NAME$');
-
-        if (is_dir($langPath)) {
-            $this->loadTranslationsFrom($langPath, '$LOWER_NAME$');
-        } else {
-            $this->loadTranslationsFrom(__DIR__ .'/../$PATH_LANG$', '$LOWER_NAME$');
-        }
+        $this->loadJsonTranslationsFrom(__DIR__ .'/../$PATH_LANG$');
     }
 
     /**
