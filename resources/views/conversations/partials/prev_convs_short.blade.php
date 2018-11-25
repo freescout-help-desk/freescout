@@ -3,7 +3,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" href=".collapse-conv-prev">{{ __("Previous Conversations") }} 
+                    <a data-toggle="collapse" href=".collapse-conv-prev">{{ __("Previous Conversations") }}
                         <b class="caret"></b>
                     </a>
                 </h4>
@@ -18,7 +18,7 @@
                             </li>
                         @endforeach
                     </ul>
-                    @if ($prev_conversations->hasMorePages()) 
+                    @if ($prev_conversations->hasMorePages())
                         <a href="{{ route('customers.conversations', ['id' => $customer->id])}}" class="link-prev-convs link-blue">{{ __("View all :number", ['number' => $prev_conversations->total()]) }}</a>
                     @endif
                 </div>

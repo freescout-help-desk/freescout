@@ -94,16 +94,16 @@
                         {{-- Displayed in customer conversation history --}}
                         <td class="conv-customer conv-owner-mobile">
                             <a href="{{ $conversation->url() }}" class="help-link">
-                                <small class="glyphicon glyphicon-envelope"></small> 
+                                <small class="glyphicon glyphicon-envelope"></small>
                                 @if ($conversation->user_id)
-                                     <small>&nbsp;{{ __('Assigned to') }}: {{ $conversation->user->getFullName() }}</small> 
+                                     <small>&nbsp;{{ __('Assigned to') }}: {{ $conversation->user->getFullName() }}</small>
                                 @endif
                             </a>
                         </td>
                     @endif
                     <td class="conv-attachment">
                         <i class="glyphicon conv-star @if ($conversation->isStarredByUser()) glyphicon-star @else glyphicon-star-empty @endif" title="@if ($conversation->isStarredByUser()){{ __("Unstar Conversation") }}@else{{ __("Star Conversation") }}@endif"></i>
-                        
+
                         @if ($conversation->has_attachments)
                             <i class="glyphicon glyphicon-paperclip"></i>
                         @else
@@ -154,10 +154,10 @@
                     <td class="conv-totals" colspan="5">
                 @endif
                     @if ($conversations->total())
-                        <strong>{{ $conversations->total() }}</strong> {{ __('total conversations') }}&nbsp;|&nbsp; 
+                        <strong>{{ $conversations->total() }}</strong> {{ __('total conversations') }}&nbsp;|&nbsp;
                     @endif
                     @if (isset($folder->active_count))
-                        <strong>{{ $folder->getActiveCount() }}</strong> {{ __('active') }}&nbsp;|&nbsp; 
+                        <strong>{{ $folder->getActiveCount() }}</strong> {{ __('active') }}&nbsp;|&nbsp;
                     @endif
                     @if ($conversations)
                         {{ __('Viewing') }} <strong>{{ $conversations->firstItem() }}</strong>-<strong>{{ $conversations->lastItem() }}</strong>

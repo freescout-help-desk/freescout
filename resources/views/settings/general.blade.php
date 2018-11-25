@@ -40,7 +40,7 @@
     </div>
 
     <div class="form-group{{ $errors->has('settings[email_branding]') ? ' has-error' : '' }}">
-        <label for="email_branding" class="col-sm-2 control-label">{{ __('Spread the World', ['app_name' => \Config::get('app.name')]) }}</label>
+        <label for="email_branding" class="col-sm-2 control-label">{{ __('Spread the Word', ['app_name' => \Config::get('app.name')]) }}</label>
 
         <div class="col-sm-6">
             <div class="controls">
@@ -52,7 +52,7 @@
                 </div>
             </div>
             <p class="help-block">
-                {{ __('Add "Powered by :app_name" footer text to the outgoing emails to invite more developers to the project and make application better.', ['app_name' => \Config::get('app.name')]) }}
+                {{ __('Add "Powered by :app_name" footer text to the outgoing emails to invite more developers to the project and make the application better.', ['app_name' => \Config::get('app.name')]) }}
             </p>
             @include('partials/field_error', ['field'=>'settings.email_branding'])
         </div>

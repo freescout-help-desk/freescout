@@ -2,7 +2,7 @@
     {{ csrf_field() }}
 
     <div class="descr-block">
-        {{ __("Send email alerts to super admin.") }}
+        {{ __("Send Email alerts to the Administrators.") }}
     </div>
 
     <div class="form-group{{ $errors->has('settings[alert_fetch]') ? ' has-error' : '' }}">
@@ -21,7 +21,7 @@
                 {{ __('Send alert if application could not fetch emails for a period of time.') }}
             </p>
             <div class="controls form-inline @if (!$settings['alert_fetch']) hidden @endif" id="alert_fetch_period_wrap">
-                <label for="alert_fetch_period" class="control-label">{{ __('Check Period (minutes)') }}</label> 
+                <label for="alert_fetch_period" class="control-label">{{ __('Check Period (minutes)') }}</label>
 
                 <input id="alert_fetch_period" type="number" min="5" class="form-control" name="settings[alert_fetch_period]" value="{{ old('settings[alert_fetch_period]', $settings['alert_fetch_period']) }}" @if ($settings['alert_fetch']) required autofocus @endif>
             </div>

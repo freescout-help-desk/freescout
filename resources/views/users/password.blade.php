@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title_full', __('Change your password').' - '.$user->getFullName())
+@section('title_full', __('Change your Password').' - '.$user->getFullName())
 
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
@@ -9,7 +9,7 @@
 
 @section('content')
     <div class="section-heading">
-        {{ __('Change your password') }}
+        {{ __('Change your Password') }}
     </div>
 
     <div class="container">
@@ -53,7 +53,7 @@
                             <button type="submit" class="btn btn-primary">
                                 {{ __('Save Password') }}
                             </button>
-                            
+
                             <a href="{{ route('users.profile', ['id' => $user->id]) }}" class="btn btn-link">{{ __('Cancel') }}</a>
                         </div>
                     </div>

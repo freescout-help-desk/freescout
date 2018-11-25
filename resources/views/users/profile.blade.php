@@ -87,7 +87,7 @@
 
                             <div class="col-sm-6">
                                 <label class="control-label"><a href="{{ route('users.password', ['id' => $user->id]) }}">{{ __('Change your password') }}</a></label>
-                                
+
                             </div>
                         </div>
                     @endif
@@ -128,7 +128,7 @@
                         <label for="time_format" class="col-sm-2 control-label">{{ __('Time Format') }}</label>
 
                         <div class="col-sm-6">
-     
+
                             <div class="controls">
                                 <label for="12hour" class="radio inline plain"><input type="radio" name="time_format" value="{{ App\User::TIME_FORMAT_12 }}" id="12hour" @if (old('time_format', $user->time_format) == App\User::TIME_FORMAT_12)checked="checked"@endif> {{ __('12-hour clock (e.g. 2:13pm)') }}</label>
                                 <label for="24hour" class="radio inline"><input type="radio" name="time_format" value="{{ App\User::TIME_FORMAT_24 }}" id="24hour" @if (old('time_format', $user->time_format) == App\User::TIME_FORMAT_24 || !$user->time_format)checked="checked"@endif> {{ __('24-hour clock (e.g. 14:13)') }}</label>
@@ -174,19 +174,19 @@
                             <button type="submit" class="btn btn-primary">
                                 {{ __('Save Profile') }}
                             </button>
-                            
+
                             @if (Auth::user()->isAdmin())
                                 @if ($user->invite_state == App\User::INVITE_STATE_ACTIVATED)
                                     @if ($user->id != Auth::user()->id)
-                                        <a href="#" class="btn btn-link reset-password-trigger" data-loading-text="{{ __('Resettings password') }}…">{{ __('Reset password') }}</a>
+                                        <a href="#" class="btn btn-link reset-password-trigger" data-loading-text="{{ __('Resetting Password') }}…">{{ __('Reset Password') }}</a>
                                     @endif
                                 @elseif ($user->invite_state == App\User::INVITE_STATE_SENT)
-                                    <a href="#" class="btn btn-link resend-invite-trigger" data-loading-text="{{ __('Resending') }}…">{{ __('Re-send invite email') }}</a>
+                                    <a href="#" class="btn btn-link resend-invite-trigger" data-loading-text="{{ __('Resending') }}…">{{ __('Re-send invite Email') }}</a>
                                 @elseif ($user->invite_state == App\User::INVITE_STATE_NOT_INVITED)
-                                    <a href="#" class="btn btn-link send-invite-trigger" data-loading-text="{{ __('Sending') }}…">{{ __('Send invite email') }}</a>
+                                    <a href="#" class="btn btn-link send-invite-trigger" data-loading-text="{{ __('Sending') }}…">{{ __('Send invite Email') }}</a>
                                 @endif
-                            @endif 
-                            
+                            @endif
+
                             @if (Auth::user()->can('delete', $user))
                                 <a href="#" id="delete-user-trigger" class="btn btn-link text-danger">{{ __('Delete user') }}</a>
                             @endif

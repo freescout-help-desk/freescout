@@ -27,7 +27,7 @@
 
                     <div class="descr-block">
                         {!! __("You can read more about sending emails :%a_begin%here:%a_end%.", ['%a_begin%' => '<a href="https://github.com/freescout-helpdesk/freescout/wiki/Sending-emails" target="_blank">', '%a_end%' =>'</a>']) !!}
-                         {!! __("To send system emails via webmail providers (Gmail, Yahoo, etc) use only SMTP method and make sure that SMTP username is equal to the mailbox email address (:%mailbox_email%), otherwise webmail provider won't send emails.", ['%mailbox_email%' => $mailbox->email]) !!}
+                         {!! __("To send system emails via webmail providers (Gmail, Yahoo, etc) use only SMTP method and make sure that the SMTP username is equal to the mailbox email address (:%mailbox_email%), otherwise webmail provider won't send emails.", ['%mailbox_email%' => $mailbox->email]) !!}
                     </div>
 
                     <div class="form-group margin-top">
@@ -139,7 +139,7 @@
                         </div>
                         <hr/>
                     </div>
-                    
+
                     <div class="form-group margin-bottom-0">
                         <label class="col-sm-2 control-label">{{ __('Improve Delivery') }}</label>
 
@@ -148,7 +148,7 @@
                                 <div class="panel panel-default panel-spf">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-spf">SPF 
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-spf">SPF
                                                 <i class="label label-success accordion-status">Active</i>
                                                 <b class="caret"></b>
                                             </a>
@@ -164,7 +164,7 @@
                                 <div class="panel panel-default panel-ptr">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-ptr">PTR 
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-ptr">PTR
                                                 <i class="label label-success accordion-status">Active</i>
                                                 <b class="caret"></b>
                                             </a>
@@ -180,7 +180,7 @@
                                 <div class="panel panel-default panel-dmarc">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-dmarc">DMARC 
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-dmarc">DMARC
                                                 <i class="label label-success accordion-status">Active</i>
                                                 <b class="caret"></b>
                                             </a>

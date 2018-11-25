@@ -78,7 +78,7 @@
                                 {{ __(':person is @mentioned in a conversation', ['person' => $person]) }}
                             @else
                                 {{ __("I'm @mentioned in a conversation") }}
-                            @endif 
+                            @endif
                             (todo)
                         </td>
                         <td class="subscriptions-email"><input type="checkbox" @include('users/is_subscribed', ['medium' => App\Subscription::MEDIUM_EMAIL, 'event' => App\Subscription::EVENT_I_AM_MENTIONED]) name="subscriptions[{{ App\Subscription::MEDIUM_EMAIL }}][]" value="{{ App\Subscription::EVENT_I_AM_MENTIONED }}"></td>
@@ -91,7 +91,7 @@
                                 {{ __(":person's team is @mentioned in a conversation", ['person' => $person]) }}
                             @else
                                 {{ __('My team is @mentioned in a conversation') }}
-                            @endif 
+                            @endif
                             (todo)
                         </td>
                         <td class="subscriptions-email"><input type="checkbox" @include('users/is_subscribed', ['medium' => App\Subscription::MEDIUM_EMAIL, 'event' => App\Subscription::EVENT_MY_TEAM_MENTIONED]) name="subscriptions[{{ App\Subscription::MEDIUM_EMAIL }}][]" value="{{ App\Subscription::EVENT_MY_TEAM_MENTIONED }}"></td>
@@ -172,11 +172,11 @@
                     </tr>
                 </table>
                 <div class="form-group margin-top">
-                    
+
                     <button type="submit" class="btn btn-primary">
                         {{ __('Save Notifications') }}
                     </button>
-                
+
                 </div>
                 </form>
             </div>
