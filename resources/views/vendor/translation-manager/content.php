@@ -61,11 +61,11 @@
                                 <?php /*<div class="col-sm-3">*/ ?>
                                     <select name="replace" class="form-control hidden">
                                         <option value="0">Append new translations</option>
-                                        <option value="1">Replace existing translations</option>
+                                        <option value="1" selected>Replace existing translations</option>
                                     </select>
                                 <?php /*</div>
                                 <div class="col-sm-2">*/ ?>
-                                <button type="submit" class="btn btn-primary"  data-disable-with="Importing… It may take several minutes">Import translations</button>
+                                <button type="submit" class="btn btn-primary"  data-disable-with="Importing… It may take several minutes">Import Translations</button>
                                 </div>
                             </div>
                         </div>
@@ -78,7 +78,7 @@
                     <p><?php if (!isset($group)) : ?>2.<?php endif ?>Choose a group to display translations. <?php /* (if no groups are visisble, make sure you have imported translations).*/ ?></p>
                     <select name="group" id="group" class="form-control group-select" autocomplete="off">
                         <?php foreach($groups as $key => $value): ?>
-                            <option value="<?php echo $key ?>"<?php echo $key == $group ? ' selected':'' ?>><?php echo $value ?></option>
+                            <option value="<?php echo $key ?>"<?php echo $key == $group ? ' selected':'' ?>><?php if (strstr($value, 'a group')): ?>-- <?php endif ?><?php echo ucfirst(trim($value, '_')) ?><?php if (strstr($value, 'a group')): ?> --<?php endif ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -109,7 +109,7 @@
                 <form class="form-inline form-publish" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?php echo $group ?>? This will overwrite existing language files.">
                     <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                     <?php /*<button type="submit" class="btn btn-primary" data-disable-with="Publishing…" >Publish translations</button>*/ ?>
-                    <a href="<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>" class="btn btn-default">« Back</a>
+                    <a href="<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>" class="btn btn-primary">« Back</a>
                 </form>
             <?php endif; ?>
         </div>
@@ -117,7 +117,7 @@
 
     <div class="panel panel-default panel-shaded">
         <?php if (!$group): ?>
-            <div class="panel-heading">Supported Locales</div>
+            <div class="panel-heading">Languages</div>
         <?php endif ?>
         <div class="panel-body">
             <?php if($group): ?>
@@ -190,11 +190,12 @@
                         <?php foreach($locales as $locale): ?>
                             <li>
                                 <div class="form-group">
-                                    <button type="submit" name="remove-locale[<?php echo $locale ?>]" class="btn btn-danger btn-xs" data-disable-with="...">
-                                        &times;
-                                    </button>
-                                    <?php echo $locale ?>
-                                    
+                                    <strong><?php echo $locale ?></strong>
+                                    <?php if (!in_array($locale, config('app.locales'))): ?>
+                                        <button type="submit" name="remove-locale[<?php echo $locale ?>]" class="btn btn-link btn-xs" data-disable-with="...">
+                                            &times;
+                                        </button>
+                                    <?php endif ?>
                                 </div>
                             </li>
                         <?php endforeach; ?>
@@ -216,7 +217,7 @@
                                     <?php /*<input type="text" name="new-locale" class="form-control" />*/ ?>
                                 </div>
                                 <div class="col-sm-3">
-                                    <button type="submit" class="btn btn-default"  data-disable-with="Adding…">Add new locale</button>
+                                    <button type="submit" class="btn btn-default"  data-disable-with="Adding…">Add New Langauge</button>
                                 </div>
                             </div>
                         </div>
@@ -244,14 +245,22 @@
                     <div class="alert alert-danger error-send-translations" style="display:none;">
                         <p>Error occured sending translations. <a href="<?php echo route('system') ?>#php" target="_blank">Make sure</a> that you have PHP Zip extension enabled and check your <a href="<?php echo route('settings', ['section' => 'emails']) ?>" target="_blank">mail settings</a>.</p>
                     </div>
+                    <div class="alert alert-success success-remove-unpublished" style="display:none;">
+                        <p>Unpublished translations removed!</p>
+                    </div>
                     <form class="form-inline form-publish-all pull-left" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', '*') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish all translation groups? This will overwrite existing language files.">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                        <button type="submit" class="btn btn-primary" data-disable-with="Publishing…" >Publish translations</button>
+                        <button type="submit" class="btn btn-primary" data-disable-with="Publishing…" >Publish Translations</button>
                     </form>
                     <form class="form-inline form-send-translations pull-left" method="POST" action="<?php echo action('TranslateController@postSend') ?>" data-remote="true" role="form" data-confirm="This will publish translations and send them to <?php echo \Config::get('app.name') ?> team by email.">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                         &nbsp;&nbsp;
-                        <button type="submit" class="btn btn-default" data-disable-with="Sending…" >Send translations to <?php echo \Config::get('app.name') ?> team</button>
+                        <button type="submit" class="btn btn-default" data-disable-with="Sending…" >Send Translations to <?php echo \Config::get('app.name') ?> Team</button>
+                    </form>
+                    <form class="form-inline form-remove-unpublished pull-left" method="POST" action="<?php echo action('TranslateController@postRemoveUnpublished') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to remove all translations which has not been published yet?">
+                        <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                        &nbsp;&nbsp;
+                        <button type="submit" class="btn btn-link" data-disable-with="Removing…" ><span class="text-danger">Remove unpublished</span></button>
                     </form>
                 </fieldset>
 

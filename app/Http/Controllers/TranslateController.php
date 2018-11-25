@@ -6,6 +6,10 @@ use Barryvdh\TranslationManager\Controller as BaseController;
 
 class TranslateController extends BaseController
 {
+    /**
+     * Send translations to FreeScout team.
+     * @return [type] [description]
+     */
     public function postSend()
     {
         $result = false;
@@ -27,5 +31,15 @@ class TranslateController extends BaseController
         } else {
             abort(500);
         }
+    }
+
+    /**
+     * Remove all translations which has not been published yet.
+     * @return [type] [description]
+     */
+    public function postRemoveUnpublished()
+    {
+        \Barryvdh\TranslationManager\Models\Translation::truncate();
+        return ['status' => 'ok'];
     }
 }

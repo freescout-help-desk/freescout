@@ -83,7 +83,7 @@
             $('div.success-import').slideDown();
             setTimeout(function(){
             	window.location.reload();
-            }, 5000);
+            }, 3000);
         });
 
         $('.form-find').on('ajax:success', function (e, data) {
@@ -108,6 +108,10 @@
 
         $('.form-send-translations').on('ajax:error', function (e, data) {
             $('div.error-send-translations').slideDown();
+        });
+        
+        $('.form-remove-unpublished').on('ajax:success', function (e, data) {
+            $('div.success-remove-unpublished').slideDown();
         });
 
     })

@@ -101,14 +101,16 @@ class Manager
             }
         }
 
+        // Import app json translations.
         foreach ( $this->files->files( $this->app[ 'path.lang' ] ) as $jsonTranslationFile ) {
             if ( strpos( $jsonTranslationFile, '.json' ) === false ) {
                 continue;
             }
             $locale       = basename( $jsonTranslationFile, '.json' );
+
             $group        = self::JSON_GROUP;
-            $translations =
-                \Lang::getLoader()->load( $locale, '*', '*' ); // Retrieves JSON entries of the given locale only
+            // Retrieves JSON entries of the given locale only.
+            $translations =\Lang::getLoader()->load( $locale, '*', '*' );
             if ( $translations && is_array( $translations ) ) {
                 foreach ( $translations as $key => $value ) {
                     $importedTranslation = $this->importTranslation( $key, $value, $locale, $group, $replace );
@@ -117,10 +119,37 @@ class Manager
             }
         }
 
+        // Import modules translations.
+        $modules = \Module::getActive();
+        foreach ($modules as $key => $module) {
+
+            $moduleLangPath = $module->getPath().'/Resources/lang/';
+            if (!$this->files->exists( $moduleLangPath ) || !$this->files->isDirectory( $moduleLangPath )) {
+                continue;
+            }
+
+            foreach ( $this->files->files( $moduleLangPath ) as $jsonTranslationFile ) {
+                if ( strpos( $jsonTranslationFile, '.json' ) === false ) {
+                    continue;
+                }
+                $locale       = basename( $jsonTranslationFile, '.json' );
+
+                $group        = $module->getAlias();
+                // Retrieves JSON entries of the given locale only.
+                $translations =\Lang::getLoader()->load( $locale, '*', '*' );
+                if ( $translations && is_array( $translations ) ) {
+                    foreach ( $translations as $key => $value ) {
+                        $importedTranslation = $this->importTranslation( $key, $value, $locale, $group, $replace );
+                        $counter             += $importedTranslation ? 1 : 0;
+                    }
+                }
+            }
+        }
+
         // We also find translations during import.
         $this->findTranslations();
 
-        //return $counter;
+        return $counter;
     }
 
     public function importTranslation( $key, $value, $locale, $group, $replace = false )
@@ -130,6 +159,12 @@ class Manager
         if ( is_array( $value ) ) {
             return false;
         }
+
+        // Miss modules translations: fr.module.json
+        if (!preg_match("/^[a-zA-Z_]+$/", $locale)) {
+            return false;
+        }
+
         $value       = (string) $value;
         $translation = Translation::firstOrNew( [
             'locale' => $locale,
@@ -283,16 +318,17 @@ class Manager
     {
         $basePath = $this->app[ 'path.lang' ];
 
-        $moduleAlias = '';
+        // Detect json groups automatically.
         if ($group && $group[0] == '_') {
             $json = true;
         }
 
+        $moduleAlias = '';
         if ($json && $group != self::JSON_GROUP) {
             $moduleAlias = substr($group, 1);
         }
 
-        if ( !is_null( $group ) && !$json ) {
+        if ( !is_null( $group ) && !$json) {
             if ( !in_array( $group, $this->config[ 'exclude_groups' ] ) ) {
                 $vendor = false;
                 if ( $group == '*' ) {
@@ -363,9 +399,9 @@ class Manager
                 $output       = json_encode( $translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE );
                 $this->files->put( $path, $output );
 
-                // If it is module, also export translation into the main langs folder.
+                // If it is a module, also export translation into the main langs folder.
                 if ($moduleAlias && $modulePath) {
-                    $path = $this->app[ 'path.lang' ] . '/' . $locale . '.' . $moduleAlias . '.json';
+                    $path = $this->app[ 'path.lang' ] . '/module.' . $moduleAlias . '.' . $locale . '.json';
                     $this->files->put( $path, $output );
                 }
                 // if ( isset( $groups[ self::JSON_GROUP ] ) ) {
@@ -478,10 +514,17 @@ class Manager
             return false;
         }
         $this->ignoreLocales = array_merge( $this->ignoreLocales, [ $locale ] );
-        $this->saveIgnoredLocales();
+        // Only delete from DB.
+        //$this->saveIgnoredLocales();
         $this->ignoreLocales = $this->getIgnoredLocales();
 
         Translation::where( 'locale', $locale )->delete();
+
+        // Remove folder.
+        $localeDir = $this->app->langPath() . '/' . $locale;
+        if ( $this->files->exists( $localeDir )) {
+            $this->files->deleteDirectory( $localeDir );
+        }
     }
 
     public function getConfig( $key = null )
