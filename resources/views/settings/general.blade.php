@@ -1,4 +1,4 @@
-<form class="form-horizontal margin-top" method="POST" action="">
+<form class="form-horizontal margin-top margin-bottom" method="POST" action="">
     {{ csrf_field() }}
 
     <div class="form-group{{ $errors->has('settings[company_name]') ? ' has-error' : '' }}">
@@ -51,7 +51,7 @@
                     </div>
                 </div>
             </div>
-            <p class="help-block">
+            <p class="form-help">
                 {{ __('Add "Powered by :app_name" footer text to the outgoing emails to invite more developers to the project and make application better.', ['app_name' => \Config::get('app.name')]) }}
             </p>
             @include('partials/field_error', ['field'=>'settings.email_branding'])
@@ -92,17 +92,33 @@
         </div>
     </div>
 
+    <div class="form-group{{ $errors->has('settings[locale]') ? ' has-error' : '' }}">
+        <label for="locale" class="col-sm-2 control-label">{{ __('Default Language') }}</label>
+
+        <div class="col-sm-6">
+            <select id="locale" class="form-control input-sized" name="settings[locale]" required autofocus>
+                @include('partials/locale_options', ['selected' => old('settings[locale]', \Config::get('app.locale'))])
+            </select>
+
+            {{--<div class="help-block">
+                {{ __('Value is set in .env file using APP_TIMEZONE parameter.') }}
+            </div>--}}
+
+            @include('partials/field_error', ['field'=>'settings.timezone'])
+        </div>
+    </div>
+
     <div class="form-group{{ $errors->has('settings[timezone]') ? ' has-error' : '' }}">
         <label for="timezone" class="col-sm-2 control-label">{{ __('Timezone') }}</label>
 
         <div class="col-sm-6">
-            <select id="timezone" disabled="disabled" class="form-control input-sized" name="settings[timezone]" required autofocus>
+            <select id="timezone" class="form-control input-sized" name="settings[timezone]" required autofocus>
                 @include('partials/timezone_options', ['current_timezone' => old('settings[timezone]', \Config::get('app.timezone'))])
             </select>
 
-            <div class="help-block">
+            {{--<div class="help-block">
                 {{ __('Value is set in .env file using APP_TIMEZONE parameter.') }}
-            </div>
+            </div>--}}
 
             @include('partials/field_error', ['field'=>'settings.timezone'])
         </div>
