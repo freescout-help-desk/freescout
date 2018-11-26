@@ -406,7 +406,6 @@ abstract class Repository implements RepositoryInterface, Countable
                 return $module;
             }
         }
-        return null;
     }
 
     /**
@@ -515,8 +514,9 @@ abstract class Repository implements RepositoryInterface, Countable
         try {
             $module = $this->findByAlias($module_alias);
             if (!$module) {
-                throw new ModuleNotFoundException("", 1);
+                throw new ModuleNotFoundException('', 1);
             }
+
             return $module->getPath().'/';
         } catch (ModuleNotFoundException $e) {
             //return $this->getPath().'/'.Str::studly($module).'/';

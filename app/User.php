@@ -695,7 +695,7 @@ class User extends Authenticatable
 
     /**
      * Get user locale.
-     * 
+     *
      * @return [type] [description]
      */
     public function getLocale()
