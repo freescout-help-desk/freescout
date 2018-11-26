@@ -1,12 +1,14 @@
 @php
 	$dropdown_locales = config('app.locales');
 
-	// User may add an extra translation to the app on Translate page,
-	// we should allow user to see his custom translations.
-	$custom_locales = \Helper::getCustomLocales();
+	if (empty($no_custom_locales)) {
+		// User may add an extra translation to the app on Translate page,
+		// we should allow user to see his custom translations.
+		$custom_locales = \Helper::getCustomLocales();
 
-	if (count($custom_locales)) {
-		$dropdown_locales = array_unique(array_merge($dropdown_locales, $custom_locales));
+		if (count($custom_locales)) {
+			$dropdown_locales = array_unique(array_merge($dropdown_locales, $custom_locales));
+		}
 	}
 @endphp
 @foreach ($dropdown_locales as $locale)

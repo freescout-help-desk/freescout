@@ -183,12 +183,27 @@
                 </div>
             </div>
             <div class="tab" id="tab3content">
-                
+
+                <div class="form-group {{ $errors->has('app_locale') ? ' has-error ' : '' }}">
+                    <label for="app_locale">
+                        Language
+                    </label>
+                    <select name="app_locale" id="app_locale">
+                        @include('partials/locale_options', ['selected' => old('app_locale', \Config::get('app.locale')), 'no_custom_locales' => true])
+                    </select>
+                    @if ($errors->has('app_locale'))
+                        <span class="error-block">
+                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+                            {{ $errors->first('app_locale') }}
+                        </span>
+                    @endif
+                </div>
+
                 <div class="form-group {{ $errors->has('app_timezone') ? ' has-error ' : '' }}">
                     <label for="app_timezone">
                         Timezone
                     </label>
-                    <select name="app_timezone" id="app_timezone" readonly="readonly">
+                    <select name="app_timezone" id="app_timezone">
                         @include('partials/timezone_options', ['current_timezone' => old('app_timezone', \Config::get('app.timezone'))])
                     </select>
                     @if ($errors->has('app_timezone'))
