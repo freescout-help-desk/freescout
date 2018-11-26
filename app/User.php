@@ -98,7 +98,7 @@ class User extends Authenticatable
      *
      * @var [type]
      */
-    protected $fillable = ['role', 'first_name', 'last_name', 'email', 'password', 'role', 'timezone', 'photo_url', 'type', 'emails', 'job_title', 'phone', 'time_format', 'enable_kb_shortcuts'];
+    protected $fillable = ['role', 'first_name', 'last_name', 'email', 'password', 'role', 'timezone', 'photo_url', 'type', 'emails', 'job_title', 'phone', 'time_format', 'enable_kb_shortcuts', 'locale'];
 
     /**
      * For array_unique function.
@@ -691,5 +691,19 @@ class User extends Authenticatable
         $user->email = 'deleted@example.org';
 
         return $user;
+    }
+
+    /**
+     * Get user locale.
+     * 
+     * @return [type] [description]
+     */
+    public function getLocale()
+    {
+        if ($this->locale) {
+            return $this->locale;
+        } else {
+            return config('app.default_locale');
+        }
     }
 }

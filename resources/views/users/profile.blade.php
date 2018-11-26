@@ -112,6 +112,18 @@
                         </div>
                     </div>
 
+                    <div class="form-group{{ $errors->has('locale') ? ' has-error' : '' }}">
+                        <label for="locale" class="col-sm-2 control-label">{{ __('Language') }}</label>
+
+                        <div class="col-sm-6">
+                            <select id="locale" class="form-control input-sized" name="locale">
+                                @include('partials/locale_options', ['selected' => old('locale', $user->getLocale())])
+                            </select>
+
+                            @include('partials/field_error', ['field'=>'locale'])
+                        </div>
+                    </div>
+
                     <div class="form-group{{ $errors->has('timezone') ? ' has-error' : '' }}">
                         <label for="timezone" class="col-sm-2 control-label">{{ __('Timezone') }}</label>
 

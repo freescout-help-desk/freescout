@@ -19,8 +19,8 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
+        // todo: These two may need to be moved into 'web' not to be called in 'api'.
         \App\Http\Middleware\ResponseHeaders::class,
-        \App\Http\Middleware\Localize::class,
         \App\Http\Middleware\TerminateHandler::class,
     ];
 
@@ -39,6 +39,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\HttpsRedirect::class,
+            \App\Http\Middleware\Localize::class,
         ],
 
         'api' => [

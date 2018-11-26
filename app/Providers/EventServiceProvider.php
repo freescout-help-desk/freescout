@@ -18,6 +18,7 @@ class EventServiceProvider extends ServiceProvider
         ],
 
         'Illuminate\Auth\Events\Login' => [
+            'App\Listeners\RememberUserLocale',
             'App\Listeners\LogSuccessfulLogin',
             'App\Listeners\ActivateUser',
         ],
