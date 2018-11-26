@@ -55,7 +55,7 @@
                     <form class="form-import" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postImport') ?>" data-remote="true" role="form">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                         <div class="form-group">
-                            <p>1. Import existing translations.</p>
+                            <p>1. Import existing translations (non-published pending translations will be overwritten).</p>
                             <div class="row">
                                 <div class="col-sm-12">
                                 <?php /*<div class="col-sm-3">*/ ?>
@@ -246,7 +246,7 @@
                         <p>Error occured sending translations. <a href="<?php echo route('system') ?>#php" target="_blank">Make sure</a> that you have PHP Zip extension enabled and check your <a href="<?php echo route('settings', ['section' => 'emails']) ?>" target="_blank">mail settings</a>.</p>
                     </div>
                     <div class="alert alert-success success-remove-unpublished" style="display:none;">
-                        <p>Unpublished translations removed!</p>
+                        <p>Non-published translations removed!</p>
                     </div>
                     <form class="form-inline form-publish-all pull-left" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', '*') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish all translation groups? This will overwrite existing language files.">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
@@ -257,10 +257,15 @@
                         &nbsp;&nbsp;
                         <button type="submit" class="btn btn-default" data-disable-with="Sending…" >Send Translations to <?php echo \Config::get('app.name') ?> Team</button>
                     </form>
+                    <form class="form-inline form-download pull-left" method="POST" target="_blank" action="<?php echo action('TranslateController@postDownload') ?>" onsubmit="javascript:confirm('This will publish translations and download them as ZIP archive.');">
+                        <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                        
+                        <button type="submit" class="btn btn-link" data-disable-with="Preparing…" title="Download translations as ZIP archive">Download as ZIP</button>
+                    </form>
                     <form class="form-inline form-remove-unpublished pull-left" method="POST" action="<?php echo action('TranslateController@postRemoveUnpublished') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to remove all translations which has not been published yet?">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                        &nbsp;&nbsp;
-                        <button type="submit" class="btn btn-link" data-disable-with="Removing…" ><span class="text-danger">Remove unpublished</span></button>
+                        
+                        <button type="submit" class="btn btn-link" style="padding-left:0" data-disable-with="Removing…" title="Remove non-published translations"><span class="text-danger">Remove non-npublished</span></button>
                     </form>
                 </fieldset>
 

@@ -120,7 +120,7 @@ class Manager
         }
 
         // Import modules translations.
-        $modules = \Module::getActive();
+        $modules = \Module::all();
         foreach ($modules as $key => $module) {
 
             $moduleLangPath = $module->getPath().'/Resources/lang/';
@@ -134,7 +134,7 @@ class Manager
                 }
                 $locale       = basename( $jsonTranslationFile, '.json' );
 
-                $group        = $module->getAlias();
+                $group        = '_'.$module->getAlias();
                 // Retrieves JSON entries of the given locale only.
                 $translations =\Lang::getLoader()->load( $locale, '*', '*' );
                 if ( $translations && is_array( $translations ) ) {
@@ -146,10 +146,67 @@ class Manager
             }
         }
 
-        // We also find translations during import.
-        $this->findTranslations();
+        // Find translations in files.
+        $existingTranslations = $this->findTranslations();
+
+        // Remove translations which do not exist in files.
+        $this->removeNonexisting($existingTranslations);
 
         return $counter;
+    }
+
+    /**
+     * Remove translations which do not exist in files.
+     * 
+     * @param  [type] $existingTranslations [description]
+     * @return [type]                       [description]
+     */
+    public function removeNonexisting($existingTranslations)
+    {
+        // First process translations belonging to Modules one by one.
+        // $moduleAliases = [];
+        // foreach ($existingTranslations as $translation) {
+        //     preg_match("/^_([^\.])+\./", $translation, $matches);
+        //     if (empty($matches[1]) || in_array($matches[1], $moduleAliases)) {
+        //         continue;
+        //     } else {
+        //         $moduleAliases[] = $matches[1];
+        //     }
+        // }
+        
+        $existingGroups = [];
+        // Get unique groups.
+        foreach ($existingTranslations as $key) {
+            preg_match("/^([a-zA-Z0-9_]+)\./", $key, $matches);
+            // try {
+            //     list( $group, $item ) = explode( '.', $key);
+            // } catch (\Exception $e) {
+            //     continue;
+            // }
+            if (empty($matches[1]) || in_array($matches[1], $existingGroups)) {
+                continue;
+            } else {
+                $existingGroups[] = $matches[1];
+            }
+        }
+
+        // Process translations by groups.
+        // Get from DB translations for each module and compare to existing.
+        foreach ($existingGroups as $group) {
+            $dbTranslations = Translation::where('group', $group)->get();
+            foreach ($dbTranslations as $dbTranslation) {
+                $found = false;
+                foreach ($existingTranslations as $existingKey) {
+                    if ($dbTranslation['group'].'.'.$dbTranslation['key'] == $existingKey) {
+                        $found = true;
+                        break;
+                    }
+                }
+                if (!$found) {
+                    $dbTranslation->delete();
+                }
+            }
+        }
     }
 
     public function importTranslation( $key, $value, $locale, $group, $replace = false )
@@ -287,6 +344,7 @@ class Manager
         $stringKeys = array_unique( $stringKeys );
 
         // Add the translations to the database, if not existing.
+        // Modules translations are added here too.
         foreach ( $groupKeys as $key ) {
             // Split the group and item
             list( $group, $item ) = explode( '.', $key, 2 );
@@ -300,7 +358,8 @@ class Manager
         }
 
         // Return the number of found translations
-        return count( $groupKeys + $stringKeys );
+        //return count( $groupKeys + $stringKeys );
+        return $groupKeys + $stringKeys;
     }
 
     public function missingKey( $namespace, $group, $key )

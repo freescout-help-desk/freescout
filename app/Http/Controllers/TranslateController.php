@@ -42,4 +42,26 @@ class TranslateController extends BaseController
         \Barryvdh\TranslationManager\Models\Translation::truncate();
         return ['status' => 'ok'];
     }
+
+    /**
+     * Download as ZIP.
+     * 
+     * @return [type] [description]
+     */
+    public function postDownload()
+    {
+        $this->manager->exportTranslations('*', false);
+        $file_name = 'lang.zip';
+        // Archive langs folder
+        $archive_path = \Helper::createZipArchive(base_path().DIRECTORY_SEPARATOR.'resources/lang', $file_name, 'lang');
+        $public_path  = storage_path('app/public/'.$file_name);
+
+        \File::copy($archive_path, $public_path);
+
+        $headers = array(
+            'Content-Type: application/zip',
+        );
+
+        return \Response::download($public_path, $file_name, $headers);
+    }
 }
