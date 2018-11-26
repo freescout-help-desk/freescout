@@ -96,6 +96,12 @@ return [
     'default_locale'  => 'en',
 
     /*
+    | app()->setLocale() in Localize middleware also changes config('app.locale'),
+    | so we are keeping real app locale in real_locale parameter.
+    */
+   'real_locale' => env('APP_LOCALE', 'en'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale
     |--------------------------------------------------------------------------

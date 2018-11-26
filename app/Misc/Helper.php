@@ -834,4 +834,13 @@ class Helper
     {
         return \Barryvdh\TranslationManager\Models\Translation::distinct()->pluck('locale')->toArray();
     }
+
+    /**
+     *  app()->setLocale() in Localize middleware also changes config('app.locale'),
+     *  so we are keeping real app locale in real_locale parameter.
+     */
+    public static function getRealAppLocale()
+    {
+        return config('app.real_locale');
+    }
 }

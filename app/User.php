@@ -703,7 +703,7 @@ class User extends Authenticatable
         if ($this->locale) {
             return $this->locale;
         } else {
-            return config('app.locale');
+            return \Helper::getRealAppLocale();
         }
     }
 }
