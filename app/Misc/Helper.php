@@ -769,7 +769,7 @@ class Helper
      */
     public static function getLocaleData($locale, $param = '')
     {
-        if (!empty(self::$locales[$locale])) {
+        if (is_string($locale) && isset(self::$locales[$locale])) {
             $data = self::$locales[$locale];
         } else {
             return null;
@@ -823,5 +823,15 @@ class Helper
             $contents = $contents . "\n{$key}={$value}\n";
             \File::put($env_path, $contents);
         }
+    }
+
+    /**
+     * User may add an extra translation to the app on Translate page.
+     * 
+     * @return [type] [description]
+     */
+    public static function getCustomLocales()
+    {
+        return \Barryvdh\TranslationManager\Models\Translation::distinct()->pluck('locale')->toArray();
     }
 }
