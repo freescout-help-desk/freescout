@@ -1214,6 +1214,10 @@ table.table-conversations td.conv-attachment {
     display: none;
     font-weight: normal;
 }
+button.conv-checkbox-clear {
+    display: none;
+}
+
 @media (max-width:1000px) {
     /**
      * Make conversations table responsive
@@ -1238,7 +1242,22 @@ table.table-conversations td.conv-attachment {
         display: block;
         width: 100%;
         border: 0;
+
+        -webkit-touch-callout:none;
+        -webkit-user-select:none;
+        -khtml-user-select:none;
+        -moz-user-select:none;
+        -ms-user-select:none;
+        user-select:none;
     }
+
+    .table.table-conversations tr.selected {
+        background-color: #f0ecec;
+    }
+    .table-conversations tr.selected .conv-fader {
+        background: linear-gradient(to right,rgba(255,255,255,0), #f0ecec);
+    }
+
     .table.table-conversations tbody td {
         border: 0;
     }
@@ -1248,23 +1267,19 @@ table.table-conversations td.conv-attachment {
         border-bottom: 1px solid #e3e8eb;
     }
     .conv-cb {
-        width: 27px !important;
-        float: left;
-        padding: 11px 0 !important;
+        display: none !important;
+    }
+    .conv-attachment {
+        display: none !important;
     }
     .conv-subject {
         position: absolute !important;
         top: 24px;
-        padding-left: 25px!important;
+        padding-left: 2px!important;
         padding-right: 20px!important;
     }
     .table-conversations .conv-fader {
         width: 80px;
-    }
-    .table-conversations td.conv-date
-    {
-        left: 28px;
-        width: calc(100% - 28px);
     }
     .conv-owner {
         display: none!important;
@@ -1275,7 +1290,7 @@ table.table-conversations td.conv-attachment {
     .conv-customer {
         position: absolute;
         top: 0;
-        margin-left: 28px!important;
+        margin-left: 5px!important;
     }
     .conv-customer a {
         width: 350px;
@@ -1341,6 +1356,10 @@ table.table-conversations td.conv-attachment {
     .conv-nav {
         position: absolute;
         right: 0;
+    }
+
+    button.conv-checkbox-clear {
+        display: block;
     }
 }
 @media (max-width:700px) {
