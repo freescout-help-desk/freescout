@@ -129,6 +129,10 @@ class SettingsController extends Controller
 
         switch ($section) {
             case 'general':
+                // app()->setLocale() in Localize middleware also changes config('app.locale'),
+                // so we need to fetch a real locale.
+                $locale = session('app_locale') ?? config('app.locale');
+
                 $settings = [
                     'company_name'         => Option::get('company_name', \Config::get('app.name')),
                     'next_ticket'          => (Option::get('next_ticket') >= Conversation::max('number') + 1) ? Option::get('next_ticket') : Conversation::max('number') + 1,
@@ -137,7 +141,7 @@ class SettingsController extends Controller
                     'open_tracking'        => Option::get('open_tracking'),
                     'enrich_customer_data' => Option::get('enrich_customer_data'),
                     'time_format'          => Option::get('time_format', User::TIME_FORMAT_24),
-                    'locale'               => config('app.locale'),
+                    'locale'               => $locale,
                     'timezone'             => config('app.timezone'),
                 ];
                 break;

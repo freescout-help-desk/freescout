@@ -19,6 +19,9 @@ class Localize
         
         // Set user language if user logged in.
         if (session('user_locale')) {
+            // Keep in mind that this also dynamically changes config('app.locale'),
+            // so we have to remember current locale in session in case we need it.
+            session()->put('app_locale', config('app.locale'));
             app()->setLocale(session('user_locale'));
         }
 

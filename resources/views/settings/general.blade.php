@@ -97,7 +97,7 @@
 
         <div class="col-sm-6">
             <select id="locale" class="form-control input-sized" name="settings[locale]" required autofocus>
-                @include('partials/locale_options', ['selected' => old('settings[locale]', \Config::get('app.locale'))])
+                @include('partials/locale_options', ['selected' => old('settings[locale]', $settings['locale'])])
             </select>
 
             {{--<div class="help-block">
