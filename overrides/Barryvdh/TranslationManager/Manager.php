@@ -102,15 +102,24 @@ class Manager
         }
 
         // Import app json translations.
+        //$loader = new \Illuminate\Translation\FileLoader($this->files, $this->app[ 'path.lang' ]);
         foreach ( $this->files->files( $this->app[ 'path.lang' ] ) as $jsonTranslationFile ) {
             if ( strpos( $jsonTranslationFile, '.json' ) === false ) {
                 continue;
             }
             $locale       = basename( $jsonTranslationFile, '.json' );
+            // Ignore module translations backup files.
+            if (!preg_match("/^[a-zA-Z_]+$/", $locale)) {
+                continue;
+            }
 
             $group        = self::JSON_GROUP;
             // Retrieves JSON entries of the given locale only.
-            $translations =\Lang::getLoader()->load( $locale, '*', '*' );
+            // Modules JSON translations are also loaded.
+            $translations = \Lang::getLoader()->load( $locale, '*', '*' );
+
+            //$translations = $loader->load( $locale, '*', '*' );
+
             if ( $translations && is_array( $translations ) ) {
                 foreach ( $translations as $key => $value ) {
                     $importedTranslation = $this->importTranslation( $key, $value, $locale, $group, $replace );
@@ -132,11 +141,18 @@ class Manager
                 if ( strpos( $jsonTranslationFile, '.json' ) === false ) {
                     continue;
                 }
+                // Miss incorrect locales.
+                if (!preg_match("/^[a-zA-Z_]+$/", $locale)) {
+                    continue;
+                }
+
                 $locale       = basename( $jsonTranslationFile, '.json' );
 
                 $group        = '_'.$module->getAlias();
-                // Retrieves JSON entries of the given locale only.
-                $translations =\Lang::getLoader()->load( $locale, '*', '*' );
+                
+                $loader = new \Illuminate\Translation\FileLoader($this->files, $moduleLangPath);
+                $translations = \Lang::getLoader()->load( $locale, '*', '*' );
+
                 if ( $translations && is_array( $translations ) ) {
                     foreach ( $translations as $key => $value ) {
                         $importedTranslation = $this->importTranslation( $key, $value, $locale, $group, $replace );
@@ -373,10 +389,11 @@ class Manager
         }
     }
 
-    public function exportTranslations( $group = null, $json = false )
+    public function exportTranslations( $group = null /*, $json = false*/ )
     {
         $basePath = $this->app[ 'path.lang' ];
 
+        $json = false;
         // Detect json groups automatically.
         if ($group && $group[0] == '_') {
             $json = true;
@@ -439,7 +456,7 @@ class Manager
             $tree = $this->makeTree( Translation::ofTranslatedGroup( $group )
                                                 ->orderByGroupKeys( array_get( $this->config, 'sort_keys', false ) )
                                                 ->get(), true );
-            
+
             foreach ( $tree as $locale => $groups ) {
                 if (!$moduleAlias) {
                     // _json
@@ -482,11 +499,12 @@ class Manager
         $groups = Translation::whereNotNull( 'value' )->selectDistinctGroup()->get( 'group' );
 
         foreach ( $groups as $group ) {
-            if ( $group->group == self::JSON_GROUP ) {
-                $this->exportTranslations( null, true );
-            } else {
-                $this->exportTranslations( $group->group );
-            }
+            $this->exportTranslations( $group->group );
+            // if ( $group->group == self::JSON_GROUP ) {
+            //     $this->exportTranslations( null, true );
+            // } else {
+            //     $this->exportTranslations( $group->group );
+            // }
         }
 
         $this->events->dispatch( new TranslationsExportedEvent() );

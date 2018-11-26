@@ -81,9 +81,9 @@
         $('.form-import').on('ajax:success', function (e, data) {
             $('div.success-import strong.counter').text(data.counter);
             $('div.success-import').slideDown();
-            setTimeout(function(){
+            /*setTimeout(function(){
             	window.location.reload();
-            }, 3000);
+            }, 3000);*/
         });
 
         $('.form-find').on('ajax:success', function (e, data) {
