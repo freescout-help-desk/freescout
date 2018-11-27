@@ -49,7 +49,7 @@ return [
         'installer_messages',
     ],
 
-    /**
+    /*
      * Regular expression may determine goup incorrectly, for example for 'e.g'
      */
     'incorrect_groups' => [
