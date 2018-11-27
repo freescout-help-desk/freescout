@@ -102,6 +102,18 @@ class Option extends Model
         if (isset($options[$option_name]) && isset($options[$option_name]['default'])) {
             return $options[$option_name]['default'];
         } else {
+            // Try to get default option value from module's config.
+            preg_match("/^([a-z_]+)\.(.*)/", $option_name, $m);
+
+            if (!empty($m[1]) && !empty($m[2])) {
+                $module_alias = $m[1];
+                $modle_option_name = $m[2];
+                $module_options = \Config::get($module_alias.'.options');
+                if (isset($module_options[$modle_option_name]) && isset($module_options[$modle_option_name]['default'])) {
+                    return $module_options[$modle_option_name]['default'];
+                }
+            }
+            
             return $default;
         }
     }

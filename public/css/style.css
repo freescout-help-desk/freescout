@@ -2191,6 +2191,7 @@ ul.prev-convs {
 .user-subscriptions .table-header input {
     margin-top: 6px;
 }
+
 /**
  * Alerts
  */
@@ -2254,6 +2255,14 @@ ul.prev-convs {
     background-color: #fff6e2;
     color: #b37100;
     border: 1px solid #f5b126;
+}
+.alert-info.alert-striped {
+    -webkit-box-shadow:inset 4px 0 0 0 #3197d6;
+    box-shadow:inset 4px 0 0 0 #3197d6;
+}
+.alert-narrow {
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 /**
