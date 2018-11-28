@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Option extends Model
 {
+    // Value returned when cache contains default value.
+    const CACHE_DEFAULT_VALUE = 'CACHE_DEFAULT_VALUE';
+
     // todo: cache like in WordPress (fetch all options from DB each time)
     public static $cache = [];
 
@@ -76,7 +79,11 @@ class Option extends Model
         }
 
         if (isset(self::$cache[$name])) {
-            return self::$cache[$name];
+            if (self::$cache[$name] == self::CACHE_DEFAULT_VALUE) {
+                return $default;
+            } else {
+                return self::$cache[$name];
+            }
         }
 
         $option = self::where('name', (string) $name)->first();
@@ -86,11 +93,11 @@ class Option extends Model
             } else {
                 $value = $option->value;
             }
+            self::$cache[$name] = $value;
         } else {
             $value = $default;
+            self::$cache[$name] = self::CACHE_DEFAULT_VALUE;
         }
-
-        self::$cache[$name] = $value;
 
         return $value;
     }
@@ -142,7 +149,14 @@ class Option extends Model
         // Return if we can get all options from cache
         foreach ($options as $name) {
             if (isset(self::$cache[$name])) {
-                $values[$name] = self::$cache[$name];
+                if (self::$cache[$name] == self::CACHE_DEFAULT_VALUE) {
+                    if (empty($defaults[$name])) {
+                        $default = self::getDefault($name);
+                    }
+                    $values[$name] = $default;
+                } else {
+                    $values[$name] = self::$cache[$name];
+                }
             }
         }
         if (count($values) == count($options)) {
@@ -165,11 +179,12 @@ class Option extends Model
                 } else {
                     $value = $db_option->value;
                 }
+                self::$cache[$name] = $value;
             } else {
                 $value = $default;
+                self::$cache[$name] = self::CACHE_DEFAULT_VALUE;
             }
 
-            self::$cache[$name] = $value;
             $values[$name] = $value;
         }
 
