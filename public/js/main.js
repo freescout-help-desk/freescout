@@ -2382,6 +2382,29 @@ function starConversationInit()
 	});
 }
 
+function conversationsTableInit()
+{
+	converstationBulkActionsInit();
+
+	if ("ontouchstart" in window)
+	{
+		$(document).ready(function() {
+			$('.conv-row').on('contextmenu', function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+			});
+
+			$('.conv-row').on('taphold', {duration: 700}, function(event) {
+				var row = $(event.target).parents('.conv-row');
+				var checkbox = $(row).find('input.conv-checkbox');
+				$(checkbox).prop('checked', !checkbox.prop('checked'));
+				$(checkbox).trigger('change');
+				$(row).toggleClass('selected');
+			});
+		});
+	}
+}
+
 function converstationBulkActionsInit()
 {
 	$(document).ready(function() {
@@ -2400,11 +2423,13 @@ function converstationBulkActionsInit()
 			return conv_ids;
 		}
 
+		$(bulk_buttons).show();
 		$(bulk_buttons).affix({
 			offset: {
 				top: $(bulk_buttons).offset().top,
 			}
 		});
+		$(bulk_buttons).hide();
 
 		//fix for bootstrap bug: https://stackoverflow.com/questions/19711202/bootstrap-3-affix-plugin-click-bug/31892323
 		$(bulk_buttons).on( 'affix.bs.affix', function() {
@@ -2502,6 +2527,14 @@ function converstationBulkActionsInit()
 				}
 			});
 		});
+
+		$('.conv-checkbox-clear', bulk_buttons).click(function(e) {
+			$(checkboxes).trigger('change');
+			$(checkboxes).prop('checked', false);
+			$(checkboxes).trigger('change');
+			$('table.table-conversations tr').removeClass('selected');
+		});
+
 	});
 }
 

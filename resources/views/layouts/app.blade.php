@@ -258,7 +258,7 @@
     @yield('body_bottom')
 
     {{-- Scripts --}}
-    {!! Minify::javascript(\Eventy::filter('javascripts', array('/js/jquery.js', '/js/bootstrap.js', '/js/laroute.js', '/js/lang.js', '/js/vars.js', '/js/parsley/parsley.min.js', '/js/parsley/i18n/'.Config::get('app.locale').'.js', '/js/select2/select2.full.min.js', '/js/polycast/polycast.js', '/js/push/push.min.js', '/js/featherlight/featherlight.min.js', '/js/featherlight/featherlight.gallery.min.js', '/js/main.js'))) !!}
+    {!! Minify::javascript(\Eventy::filter('javascripts', array('/js/jquery.js', '/js/bootstrap.js', '/js/laroute.js', '/js/lang.js', '/js/vars.js', '/js/parsley/parsley.min.js', '/js/parsley/i18n/'.Config::get('app.locale').'.js', '/js/select2/select2.full.min.js', '/js/polycast/polycast.js', '/js/push/push.min.js', '/js/featherlight/featherlight.min.js', '/js/featherlight/featherlight.gallery.min.js', '/js/taphold.js', '/js/main.js'))) !!}
     @yield('javascripts')
     @if ($__env->yieldContent('javascript'))
         <script type="text/javascript">
