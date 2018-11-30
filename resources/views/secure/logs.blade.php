@@ -15,13 +15,14 @@
 @endsection
 
 @section('content')
+<form method="post">
+    {{ csrf_field() }}
+    <div class="section-heading margin-bottom">
+        {{ __('Log Records') }} @if ($current_name != App\ActivityLog::NAME_OUT_EMAILS)&nbsp;&nbsp;<button type="submit" name="action" value="clean" class="btn btn-default btn-xs" data-toggle="tooltip" title="{{ __('Clear this log') }}">{{ __('Clear Log') }}</button>@endif
+    </div>
+</form>
+
 <div class="container">
-    <form method="post">
-        {{ csrf_field() }}
-        <div class="section-heading margin-bottom">
-            {{ __('Log Records') }} @if ($current_name != App\ActivityLog::NAME_OUT_EMAILS)&nbsp;&nbsp;<button type="submit" name="action" value="clean" class="btn btn-default btn-xs" data-toggle="tooltip" title="{{ __('Clear this log') }}">{{ __('Clear Log') }}</button>@endif
-        </div>
-    </form>
 
     @if (count($logs))
         <table id="table-logs" class="stripe hover order-column row-border" style="width:100%">

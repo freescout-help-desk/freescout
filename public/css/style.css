@@ -37,7 +37,8 @@
 }
 .sidebar-2col {
     width: 260px;
-    background-color: #f4f4f4;
+    /*background-color: #f4f4f4;*/
+    background-color: #fff;
     padding-right: 12px;
 }
 .content-2col {

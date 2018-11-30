@@ -1090,7 +1090,8 @@ body {
   font-size: 13.4px;
   line-height: 1.6;
   color: #394956;
-  background-color: #f4f4f4;
+  /*background-color: #f4f4f4;*/
+  background-color: #fff;
 }
 input,
 button,
@@ -4513,7 +4514,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 }
 .navbar-default {
   /*background-color: #005689;*/
-  background-color: #000;
+  background-color: #0078d7;
   border-color: #e7e7e7;
 }
 .navbar-default .navbar-brand {
