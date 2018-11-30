@@ -23,7 +23,7 @@
         @endif
     @endforeach
 </ul>
-<div class="sidebar-buttons btn-group {{--btn-group-justified--}}">
+<div class="sidebar-buttons btn-group btn-group-justified">
     @if (Auth::user()->can('viewMailboxMenu', Auth::user()))
         <div class="btn-group dropdown" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="glyphicon glyphicon-cog"></i> <b class="caret"></b></a>
