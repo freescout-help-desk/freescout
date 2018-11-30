@@ -4588,27 +4588,45 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   background-color: #104a7d;
 }
 @media (max-width: 767px) {
+
+  .navbar-default .navbar-nav > .open > a, 
+  .navbar-default .navbar-nav > .open > a:hover, 
+  .navbar-default .navbar-nav > .open > a:focus {
+    color: #4f5d6b;
+    background-color: #f5f5f5;
+  }
+  /* selected item */
+  .navbar-default .navbar-nav > .active > a, 
+  .navbar-default .navbar-nav > .active > a:hover, 
+  .navbar-default .navbar-nav > .active > a:focus {
+    color: #4f5d6b;
+    background-color: #deecf9;
+  }
+  .navbar-default .navbar-nav > li > a:hover,
+  .navbar-default .navbar-nav > li > a:focus {
+    color: #4f5d6b;
+    background-color: #f5f5f5;
+  }
+  /* submenu */
   .navbar-default .navbar-nav .open .dropdown-menu > li > a {
-    color: #777;
+    color: #4f5d6b;
   }
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
-    color: #333;
-    background-color: transparent;
+    color: #4f5d6b;
+    background-color: #f5f5f5;
   }
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
-    /*color: #555;
-    background-color: #e7e7e7;*/
-    font-weight: bold;
+  /* do not highlight selected item on hover */
+  .navbar-default .navbar-nav .open .dropdown-menu > li.active > a:hover,
+  .navbar-default .navbar-nav .open .dropdown-menu > li.active > a:focus {
+    background-color: #deecf9;
   }
-  .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a,
+  /*.navbar-default .navbar-nav .open .dropdown-menu > .disabled > a,
   .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:hover,
   .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:focus {
     color: #ccc;
     background-color: transparent;
-  }
+  }*/
 }
 .navbar-default .navbar-link {
   color: #777;
@@ -5494,7 +5512,7 @@ button.list-group-item-danger.active:focus {
 }
 .panel {
   margin-bottom: 20px;
-  background-color: #fff;
+  background-color: #f8f8f8;
   border: 1px solid transparent;
   /*border-radius: 4px;*/
   -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
@@ -5736,7 +5754,7 @@ button.list-group-item-danger.active:focus {
   font-size: 16px;
   /*line-height: 30px;*/
   line-height: 29px;
-  background-color: #f9fafa;
+  background-color: #f4f4f4;
   border-color: #ddd;
 }
 .panel-default > .panel-heading + .panel-collapse > .panel-body {
