@@ -204,6 +204,12 @@ function triggersInit()
 {
 	// Tooltips
     $('[data-toggle="tooltip"]').tooltip({container: 'body'});
+    var handler = function() {
+	  return $('body [data-toggle="tooltip"]').tooltip('hide');
+	};
+	$(document).on('mouseenter', '.dropdown-menu', handler);
+	$(document).on('hidden.bs.dropdown', handler);
+	$(document).on('shown.bs.dropdown', handler);
 
     // Popover
     $('[data-toggle="popover"]').popover({
