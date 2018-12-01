@@ -222,6 +222,8 @@
                     </div>
                 </div>
             </nav>
+        @else
+            <div id="top-line"></div>
         @endif
 
         @if ($__env->yieldContent('sidebar'))

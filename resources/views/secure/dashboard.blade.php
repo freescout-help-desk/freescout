@@ -35,18 +35,20 @@
                     </div>
                     
                     <div class="dash-card-footer">
-                        <div>
-                            <a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" class="glyphicon glyphicon-envelope" data-toggle="tooltip" title="{{ __("New Conversation") }}"></a>
+                        <div class="btn-group btn-group-justified btn-group-rounded">
+                            @if (Auth::user()->can('viewMailboxMenu', Auth::user()))
+                                <div class="btn-group dropdown dropup" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
+                                    <a data-toggle="dropdown" href="#" class="btn btn-trans"><i class="glyphicon glyphicon-cog dropdown-toggle"></i></a>
+                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                        @include("mailboxes/settings_menu")
+                                    </ul>
+                                </div>
+                            @endif
+                            @if ($mailbox->isActive())
+                                <a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("New Conversation") }}"><i class="glyphicon glyphicon-envelope"></i></a>
+                            @endif
+                            <a href="{{ route('conversations.view', ['mailbox_id' => $mailbox->id]) }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("Open Mailbox") }}"><i class="glyphicon glyphicon-arrow-right"></i></a>
                         </div>
-
-                        @if (Auth::user()->can('viewMailboxMenu', Auth::user()))
-                            <div class="btn-group dropdown dropup" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
-                                <a class="glyphicon glyphicon-cog dropdown-toggle" data-toggle="dropdown" href="#"></a>
-                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                    @include("mailboxes/settings_menu")
-                                </ul>
-                            </div>
-                        @endif
                     </div>
                 </div>
             @endforeach

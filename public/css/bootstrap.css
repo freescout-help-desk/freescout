@@ -3083,19 +3083,19 @@ fieldset[disabled] a.btn {
 .btn-default:focus,
 .btn-default.focus {
   color: #333;
-  background-color: #e6ebf1;
+  background-color: #f4f4f4;
   border-color: #a5a9ac;
 }
 .btn-default:hover {
   color: #333;
-  background-color: #e6ebf1;
+  background-color: #f4f4f4;
   border-color: #a5a9ac;
 }
 .btn-default:active,
 .btn-default.active,
 .open > .dropdown-toggle.btn-default {
   color: #333;
-  background-color: #e6ebf1;
+  background-color: #f4f4f4;
   border-color: #a5a9ac;
 }
 .btn-default:active:hover,
@@ -3108,7 +3108,7 @@ fieldset[disabled] a.btn {
 .btn-default.active.focus,
 .open > .dropdown-toggle.btn-default.focus {
   color: #333;
-  background-color: #e6ebf1;
+  background-color: #f4f4f4;
   border-color: #a5a9ac;
 }
 .btn-default:active,
@@ -3125,7 +3125,7 @@ fieldset[disabled] .btn-default:focus,
 .btn-default.disabled.focus,
 .btn-default[disabled].focus,
 fieldset[disabled] .btn-default.focus {
-  background-color: #e6ebf1;
+  background-color: #f4f4f4;
   border-color: #a5a9ac;
 }
 .btn-default .badge {
@@ -5754,7 +5754,7 @@ button.list-group-item-danger.active:focus {
   font-size: 16px;
   /*line-height: 30px;*/
   line-height: 29px;
-  background-color: #f4f4f4;
+  background-color: #deecf9;
   border-color: #ddd;
 }
 .panel-default > .panel-heading + .panel-collapse > .panel-body {
