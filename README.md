@@ -12,7 +12,7 @@
 
 **FreeScout** is the super lightweight free open source help desk and shared inbox written in PHP7 (Laravel 5.5 framework) – self hosted clone of HelpScout. Now you can enjoy [free Zendesk & Help Scout](https://freescout.net) without giving up privacy or locking yourself into a service you don't control.
 
-FreeScout has been developed from scratch and is not using any copyrighted Help Scout materials to comply with GitHub's [DMCA Policy](https://help.github.com/articles/dmca-takedown-policy/) (trademark, logos, icons, CSS, JS, HTML files are copyrighted; idea, look and feel cannot be copyrighted).
+FreeScout has been developed from scratch and is not using any copyrighted Help Scout materials to comply with GitHub's [DMCA Policy](https://help.github.com/articles/dmca-takedown-policy/) (trademark, design, logos, icons, CSS, JS, HTML files are copyrighted; idea cannot be copyrighted).
 
 ![FreeScout](https://freescout-helpdesk.github.io/img/screenshots/screenshot.png)
 

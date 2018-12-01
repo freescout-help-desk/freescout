@@ -97,7 +97,7 @@
                         @if ($perm['status'])
                             <strong class="text-success">OK</strong>
                         @else
-                            <strong class="text-danger">{{ __('Not writable') }} ({{ $perm['value'] }})</strong>
+                            <strong class="text-danger">{{ __('Not writable') }} @if ($perm['value'])({{ $perm['value'] }})@endif</strong>
                         @endif
                     </td>
                 </tr>
@@ -115,7 +115,7 @@
                         <strong class="text-success">OK</strong>
                     @else
                         <strong class="text-danger">{{ __('Not found') }}</strong>
-                        <div class="alert alert-danger">{{ __('Create symlink manually') }}: <code>ln -s storage/app/public public/storage</code></div>
+                        <div class="alert alert-danger margin-top-10">{{ __('Create symlink manually') }}: <code>ln -s storage/app/public public/storage</code></div>
                     @endif
                 </td>
             </tr>

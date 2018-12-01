@@ -32,7 +32,7 @@
                 <ul class="conv-info">
                     @if ($conversation->state != App\Conversation::STATE_DELETED)
                         <li>
-                            <div class="btn-group" data-toggle="tooltip" title="{{ __("Assignee") }}: {{ $conversation->getAssigneeName(true) }}">
+                            <div class="btn-group conv-assignee" data-toggle="tooltip" title="{{ __("Assignee") }}: {{ $conversation->getAssigneeName(true) }}">
                                 <button type="button" class="btn btn-default conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i></button>
                                 <button type="button" class="btn btn-default dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span>{{ $conversation->getAssigneeName(true) }}</span> 
@@ -168,6 +168,7 @@
 
         <div id="conv-layout-customer">
             @if ($customer)
+                <div class="conv-customer-header"></div>
                 <div class="conv-customer-block conv-sidebar-block">
                     @include('customers/profile_snippet', ['customer' => $customer, 'main_email' => $conversation->customer_email])
                     <div class="dropdown customer-trigger" data-toggle="tooltip" title="{{ __("Settings") }}">

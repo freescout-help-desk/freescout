@@ -183,6 +183,11 @@ class UsersController extends Controller
                         ->withInput();
         }
 
+        // Save language into session.
+        if (auth()->user()->id == $id && $request->locale) {
+            session()->put('user_locale', $request->locale);
+        }
+
         $request_data = $request->all();
 
         if (isset($request_data['photo_url'])) {

@@ -84,6 +84,9 @@ class SendNotificationToUsers implements ShouldQueue
             }
             $from = ['address' => $mailbox->email, 'name' => $from_name];
 
+            // Set user language
+            app()->setLocale($user->getLocale());
+
             $exception = null;
 
             try {

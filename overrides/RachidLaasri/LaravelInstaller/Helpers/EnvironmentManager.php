@@ -110,6 +110,9 @@ class EnvironmentManager
         '# Timezones: https://github.com/freescout-helpdesk/freescout/wiki/PHP-Timezones'."\n".
         '# Comment it to use default timezone from php.ini'."\n".
         'APP_TIMEZONE='.$request->app_timezone."\n\n".
+        '# Default language'."\n".
+        'APP_LOCALE='.$request->app_locale."\n\n".
+        '# Database settings'."\n".
         'DB_CONNECTION='.$request->database_connection."\n".
         'DB_HOST='.$request->database_hostname."\n".
         'DB_PORT='.$request->database_port."\n".

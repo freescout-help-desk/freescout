@@ -509,6 +509,21 @@ abstract class Repository implements RepositoryInterface, Countable
         }
     }
 
+    public function getModulePathByAlias($module_alias)
+    {
+        try {
+            $module = $this->findByAlias($module_alias);
+            if (!$module) {
+                throw new ModuleNotFoundException('', 1);
+            }
+
+            return $module->getPath().'/';
+        } catch (ModuleNotFoundException $e) {
+            //return $this->getPath().'/'.Str::studly($module).'/';
+            return '';
+        }
+    }
+
     /**
      * Get asset path for a specific module.
      *

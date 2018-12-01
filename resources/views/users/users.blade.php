@@ -16,7 +16,7 @@
 
     <div class="card-list margin-top">
         @foreach ($users as $user)
-            <a href="{{ route('users.profile', ['id'=>$user->id]) }}" class="card">
+            <a href="{{ route('users.profile', ['id'=>$user->id]) }}" class="card @if ($user->invite_state != App\User::INVITE_STATE_ACTIVATED) card-inactive @endif">
                 @if ($user->photo_url)
                     <img src="{{ $user->getPhotoUrl() }}" />
                 @else

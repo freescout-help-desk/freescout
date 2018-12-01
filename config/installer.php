@@ -59,6 +59,7 @@ return [
         'bootstrap/cache/'                  => '775',
         'public/css/builds/'                => '775',
         'public/js/builds/'                 => '775',
+        'public/modules/'                   => '775',
     ],
 
     /*

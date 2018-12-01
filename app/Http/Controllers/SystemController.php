@@ -45,9 +45,13 @@ class SystemController extends Controller
         $permissions = [];
         foreach (config('installer.permissions') as $perm_path => $perm_value) {
             $path = base_path($perm_path);
+            $value = '';
+            if (file_exists($path)) {
+                $value = substr(sprintf('%o', fileperms($path)), -4);
+            }
             $permissions[$perm_path] = [
                 'status' => \Helper::isFolderWritable($path),
-                'value'  => substr(sprintf('%o', fileperms($path)), -4),
+                'value'  => $value,
             ];
         }
         // Check if public symlink exists, if not, try to create.

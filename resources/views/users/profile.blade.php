@@ -112,6 +112,18 @@
                         </div>
                     </div>
 
+                    <div class="form-group{{ $errors->has('locale') ? ' has-error' : '' }}">
+                        <label for="locale" class="col-sm-2 control-label">{{ __('Language') }}</label>
+
+                        <div class="col-sm-6">
+                            <select id="locale" class="form-control input-sized" name="locale">
+                                @include('partials/locale_options', ['selected' => old('locale', $user->getLocale())])
+                            </select>
+
+                            @include('partials/field_error', ['field'=>'locale'])
+                        </div>
+                    </div>
+
                     <div class="form-group{{ $errors->has('timezone') ? ' has-error' : '' }}">
                         <label for="timezone" class="col-sm-2 control-label">{{ __('Timezone') }}</label>
 
@@ -178,7 +190,7 @@
                             @if (Auth::user()->isAdmin())
                                 @if ($user->invite_state == App\User::INVITE_STATE_ACTIVATED)
                                     @if ($user->id != Auth::user()->id)
-                                        <a href="#" class="btn btn-link reset-password-trigger" data-loading-text="{{ __('Resettings password') }}…">{{ __('Reset password') }}</a>
+                                        <a href="#" class="btn btn-link reset-password-trigger" data-loading-text="{{ __('Resetting password') }}…">{{ __('Reset password') }}</a>
                                     @endif
                                 @elseif ($user->invite_state == App\User::INVITE_STATE_SENT)
                                     <a href="#" class="btn btn-link resend-invite-trigger" data-loading-text="{{ __('Resending') }}…">{{ __('Re-send invite email') }}</a>

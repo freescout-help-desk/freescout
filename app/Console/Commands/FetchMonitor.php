@@ -43,7 +43,7 @@ class FetchMonitor extends Command
         if ($last_successful_run && $last_successful_run < $now - \Option::get('alert_fetch_period') * 60) {
             $mins_ago = floor(($now - $last_successful_run) / 60);
 
-            $text = 'There are some problems fetching emails: last time emails were successfully fetched <strong>'.$mins_ago.' minutes ago</strong>. Please check <a href="'.route('logs', ['name' => 'fetch_errors']).'">fetching logs</a> and <a href="'.route('system').'#cron">make sure</a> that the flollowing cron task is running: <code>php artisan schedule:run</code>';
+            $text = 'There are some problems fetching emails: last time emails were successfully fetched <strong>'.$mins_ago.' minutes ago</strong>. Please check <a href="'.route('logs', ['name' => 'fetch_errors']).'">fetching logs</a> and <a href="'.route('system').'#cron">make sure</a> that the following cron task is running: <code>php artisan schedule:run</code>';
 
             if (\Option::get('alert_fetch') && !\Option::get('alert_fetch_sent')) {
                 // We send alert only once

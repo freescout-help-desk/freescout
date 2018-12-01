@@ -12,7 +12,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.0.7',
+    'version' => '1.0.8',
 
     /*
     |--------------------------------------------------------------------------
@@ -91,8 +91,15 @@ return [
     | locales: available locales
     */
 
-    'locale'  => 'en',
-    'locales' => ['en'],
+    'locale'          => env('APP_LOCALE', 'en'),
+    'locales'         => ['en', 'fr'],
+    'default_locale'  => 'en',
+
+    /*
+    | app()->setLocale() in Localize middleware also changes config('app.locale'),
+    | so we are keeping real app locale in real_locale parameter.
+    */
+   'real_locale' => env('APP_LOCALE', 'en'),
 
     /*
     |--------------------------------------------------------------------------

@@ -40,8 +40,21 @@ return [
      *        'validation',
      *    )
      */
-    'exclude_groups' => [],
+    'exclude_groups' => [
+        'auth',
+        'reminders',
+        'pagination',
+        'passwords',
+        'validation',
+        'installer_messages',
+    ],
 
+    /*
+     * Regular expression may determine goup incorrectly, for example for 'e.g'
+     */
+    'incorrect_groups' => [
+        'e',
+    ],
     /*
      * Exclude specific languages from Laravel Translation Manager.
      *
@@ -57,7 +70,7 @@ return [
     /*
      * Export translations with keys output alphabetically.
      */
-    'sort_keys '     => false,
+    'sort_keys '     => true,
 
     'trans_functions' => [
         'trans',

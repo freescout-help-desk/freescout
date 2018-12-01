@@ -31,3 +31,4 @@ Thumbs.db
 /storage/.installed
 /tools
 .well-known
+/resources/lang/module.*

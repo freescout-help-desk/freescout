@@ -32,7 +32,7 @@
         <thead>
         <tr>
             @if (empty($no_checkboxes))<th class="conv-current">&nbsp;</th>@endif
-            @if (empty($no_checkboxes))<th class="conv-cb"><input type="checkbox" class="toggle-all"></th>@endif
+            @if (empty($no_checkboxes))<th class="conv-cb"><input type="checkbox" class="toggle-all magic-checkbox" id="toggle-all"><label for="toggle-all"></label></th>@endif
             @if (empty($no_customer))
                 <th class="conv-customer">
                     <span>{{ __("Customer") }}</span>
@@ -76,7 +76,7 @@
                     @if (empty($no_checkboxes))<td class="conv-current"></td>@endif
                     @if (empty($no_checkboxes))
                         <td class="conv-cb">
-                            <input type="checkbox" class="conv-checkbox" id="cb-{{ $conversation->id }}" name="cb_{{ $conversation->id }}" value="{{ $conversation->id }}">
+                            <input type="checkbox" class="conv-checkbox magic-checkbox" id="cb-{{ $conversation->id }}" name="cb_{{ $conversation->id }}" value="{{ $conversation->id }}"><label for="cb-{{ $conversation->id }}"></label>
                         </td>
                     @endif
                     @if (empty($no_customer))
@@ -113,7 +113,12 @@
                     <td class="conv-subject">
                         <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}">
                             <span class="conv-fader"></span>
-                            <p><span class="conv-subject-number">#{{ $conversation->number }} </span>@action('conversations_table.before_subject', $conversation){{ $conversation->getSubject() }}</p>
+                            <p>
+                                @if ($conversation->has_attachments)
+                                    <i class="conv-attachment-mobile glyphicon glyphicon-paperclip"></i>
+                                @endif
+                                <span class="conv-subject-number">#{{ $conversation->number }} </span>@action('conversations_table.before_subject', $conversation){{ $conversation->getSubject() }}
+                            </p>
                             <p class="conv-preview">@if ($conversation->preview){{ $conversation->preview }}@else&nbsp;@endif</p>
                         </a>
                     </td>
@@ -179,5 +184,5 @@
 
 @section('javascript')
     @parent
-    converstationBulkActionsInit();
+    conversationsTableInit();
 @endsection
