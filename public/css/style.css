@@ -585,9 +585,7 @@ select[multiple].input-md {
  * Cards
  */
 .card {
-	background: #f8f8f8;
-	border: 1px solid #c1cbd4;
-    border-radius: 3px;
+    border: 1px solid #dedede;
     box-sizing: border-box;
     display: block;
     position: relative;
@@ -664,11 +662,12 @@ a h4 {
 .card.no-img p {
     margin-left: 0;
 }
-.card-active {
+/*.card-active {
     border-left: 4px solid #5cb85c;
-}
+}*/
 .card-inactive {
-    border-left: 4px solid #93a1af;
+    /*border-left: 4px solid #93a1af;*/
+    background-color: #f8f8f8;
 }
 .card .invite-state {
     background-color: #fff;
