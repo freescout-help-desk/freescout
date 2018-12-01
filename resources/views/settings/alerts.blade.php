@@ -2,7 +2,7 @@
     {{ csrf_field() }}
 
     <div class="descr-block">
-        {{ __("Send email alerts to super admin.") }}
+        {{ __("Send email alerts to the administrators.") }}
     </div>
 
     <div class="form-group{{ $errors->has('settings[alert_fetch]') ? ' has-error' : '' }}">

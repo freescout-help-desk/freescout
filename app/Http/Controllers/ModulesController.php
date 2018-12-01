@@ -220,7 +220,7 @@ class ModulesController extends Controller
                                         \Session::flash('flash_error_unescaped', __('Error occured downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']));
                                     }
                                 } else {
-                                    $response['msg'] = __('Error occured, please try again later.');
+                                    $response['msg'] = __('Error occured. Please try again later.');
                                 }
                             } else {
                                 // Just activate license
@@ -257,7 +257,7 @@ class ModulesController extends Controller
                                     break;
                             }
                         } else {
-                            $response['msg'] = __('Error occured, please try again later.');
+                            $response['msg'] = __('Error occured. Please try again later.');
                         }
                     }
                 }
@@ -464,7 +464,7 @@ class ModulesController extends Controller
                             \Session::flash('flash_error_unescaped', __('Error occured downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']));
                         }
                     } else {
-                        $response['msg'] = __('Error occured, please try again later.');
+                        $response['msg'] = __('Error occured. Please try again later.');
                     }
                 }
 

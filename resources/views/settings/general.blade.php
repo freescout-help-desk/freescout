@@ -40,7 +40,7 @@
     </div>
 
     <div class="form-group{{ $errors->has('settings[email_branding]') ? ' has-error' : '' }}">
-        <label for="email_branding" class="col-sm-2 control-label">{{ __('Spread the World', ['app_name' => \Config::get('app.name')]) }}</label>
+        <label for="email_branding" class="col-sm-2 control-label">{{ __('Spread the Word', ['app_name' => \Config::get('app.name')]) }}</label>
 
         <div class="col-sm-6">
             <div class="controls">
