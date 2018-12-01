@@ -284,6 +284,7 @@
     .sidebar-title {
         padding: 13px 0 0 0;
         margin: 0 20px 13px 50px;
+        white-space: nowrap;
     }
     .sidebar-title-extra {
         padding-top: 5px;
@@ -463,12 +464,13 @@ select.form-control {
     margin: 8px 0 0 20px;
     background-color: transparent;
     border: 1px solid #c4c8cc;
-    color: #666;
+    color: #0078D7;
 }
 .btn-sidebar:focus,
 .btn-sidebar:hover {
-    background-color: #f4f4f4;
-    border: 1px solid #a5a9ac;
+    background-color: #0078D7;
+    border: 1px solid #0078D7;
+    color: #fff;
 }
 .btn-grey {
     color: #fff;
@@ -531,16 +533,6 @@ select.form-control {
     line-height: 18px;
     /*border-radius: 3px;*/
 }
-.btn-trans {
-    color: #a3a3a3;
-    background-color: transparent;
-    border-color: #dedede;
-}
-.btn-trans:hover {
-    color: #666666;
-    background-color: #f4f4f4;
-    border-color: #dedede;
-}
 .btn .glyphicon {
     top: 2px;
 }
@@ -574,6 +566,26 @@ select[multiple].input-md {
 .btn-group-rounded .btn:last-child,
 .btn-group-rounded *:last-child .btn {
     border-radius: 0 14px 14px 0;
+}
+.btn-trans {
+    color: #a3a3a3;
+    background-color: transparent;
+    border-color: #dedede;
+}
+.btn-trans:hover {
+    color: #666666;
+    background-color: #f4f4f4;
+    border-color: #dedede;
+}
+.btn-blue-text {
+    color: #0078D7;
+    background-color: transparent;
+    border-color: #dedede;
+}
+.btn-blue-text:hover {
+    color: #fff;
+    background-color: #0078D7;
+    border-color: #0078D7;
 }
 @media (min-width: 435px) {
     .input-sized-lg {
@@ -667,10 +679,10 @@ a h4 {
 }*/
 .card-inactive {
     /*border-left: 4px solid #93a1af;*/
-    background-color: #f8f8f8;
+    background-color: #f4f4f4;
 }
 .card .invite-state {
-    background-color: #fff;
+    background-color: #f4f4f4;
     border-radius: 100%;
     color: #5cb85c;
     display: block;
@@ -785,7 +797,7 @@ a h4 {
 }
 .dash-card.dash-card-inactive {
     /*border-left-color: #93a1af;*/
-    background: #f8f8f8;
+    background: #f4f4f4;
 }
 .dash-card-item-empty span {
     display: none;
