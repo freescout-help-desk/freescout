@@ -67,7 +67,7 @@ return array(
     'Codedge\\Updater\\SourceRepositoryTypes\\' => array($baseDir . '/overrides/Codedge/Updater/SourceRepositoryTypes'),
     'Codedge\\Updater\\' => array($vendorDir . '/codedge/laravel-selfupdater/src'),
     'Chumper\\Zipper\\' => array($vendorDir . '/chumper/zipper/src/Chumper/Zipper'),
-    'Barryvdh\\TranslationManager\\' => array($vendorDir . '/barryvdh/laravel-translation-manager/src'),
+    'Barryvdh\\TranslationManager\\' => array($baseDir . '/overrides/Barryvdh/TranslationManager', $vendorDir . '/barryvdh/laravel-translation-manager/src'),
     'Axn\\Laroute\\Routes\\' => array($baseDir . '/overrides/Axn/Laroute/Routes'),
     'Axn\\Laroute\\' => array($vendorDir . '/axn/laravel-laroute/src'),
     'App\\' => array($baseDir . '/app'),

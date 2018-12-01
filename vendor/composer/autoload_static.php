@@ -406,7 +406,8 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         ),
         'Barryvdh\\TranslationManager\\' => 
         array (
-            0 => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src',
+            0 => __DIR__ . '/../..' . '/overrides/Barryvdh/TranslationManager',
+            1 => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src',
         ),
         'Axn\\Laroute\\Routes\\' => 
         array (
@@ -528,6 +529,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'App\\Http\\Middleware\\CheckRole' => __DIR__ . '/../..' . '/app/Http/Middleware/CheckRole.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
         'App\\Http\\Middleware\\HttpsRedirect' => __DIR__ . '/../..' . '/app/Http/Middleware/HttpsRedirect.php',
+        'App\\Http\\Middleware\\Localize' => __DIR__ . '/../..' . '/app/Http/Middleware/Localize.php',
         'App\\Http\\Middleware\\RedirectIfAuthenticated' => __DIR__ . '/../..' . '/app/Http/Middleware/RedirectIfAuthenticated.php',
         'App\\Http\\Middleware\\ResponseHeaders' => __DIR__ . '/../..' . '/app/Http/Middleware/ResponseHeaders.php',
         'App\\Http\\Middleware\\TerminateHandler' => __DIR__ . '/../..' . '/app/Http/Middleware/TerminateHandler.php',
@@ -549,6 +551,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'App\\Listeners\\LogSuccessfulLogin' => __DIR__ . '/../..' . '/app/Listeners/LogSuccessfulLogin.php',
         'App\\Listeners\\LogSuccessfulLogout' => __DIR__ . '/../..' . '/app/Listeners/LogSuccessfulLogout.php',
         'App\\Listeners\\LogUserDeletion' => __DIR__ . '/../..' . '/app/Listeners/LogUserDeletion.php',
+        'App\\Listeners\\RememberUserLocale' => __DIR__ . '/../..' . '/app/Listeners/RememberUserLocale.php',
         'App\\Listeners\\SendAutoReply' => __DIR__ . '/../..' . '/app/Listeners/SendAutoReply.php',
         'App\\Listeners\\SendNotificationToUsers' => __DIR__ . '/../..' . '/app/Listeners/SendNotificationToUsers.php',
         'App\\Listeners\\SendPasswordChanged' => __DIR__ . '/../..' . '/app/Listeners/SendPasswordChanged.php',
@@ -603,7 +606,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Barryvdh\\TranslationManager\\Console\\ResetCommand' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Console/ResetCommand.php',
         'Barryvdh\\TranslationManager\\Controller' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Controller.php',
         'Barryvdh\\TranslationManager\\Events\\TranslationsExportedEvent' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Events/TranslationsExportedEvent.php',
-        'Barryvdh\\TranslationManager\\Manager' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Manager.php',
+        'Barryvdh\\TranslationManager\\Manager' => __DIR__ . '/../..' . '/overrides/Barryvdh/TranslationManager/Manager.php',
         'Barryvdh\\TranslationManager\\ManagerServiceProvider' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/ManagerServiceProvider.php',
         'Barryvdh\\TranslationManager\\Models\\Translation' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/Models/Translation.php',
         'Barryvdh\\TranslationManager\\TranslationServiceProvider' => __DIR__ . '/..' . '/barryvdh/laravel-translation-manager/src/TranslationServiceProvider.php',
