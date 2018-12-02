@@ -19,6 +19,8 @@
     {{ csrf_field() }}
     <div class="section-heading margin-bottom">
         {{ __('Log Records') }} @if ($current_name != App\ActivityLog::NAME_OUT_EMAILS)&nbsp;&nbsp;<button type="submit" name="action" value="clean" class="btn btn-default btn-xs" data-toggle="tooltip" title="{{ __('Clear this log') }}">{{ __('Clear Log') }}</button>@endif
+
+        <div class="small text-help pull-right">{{ App\User::dateFormat(new Illuminate\Support\Carbon()) }}</div>
     </div>
 </form>
 
