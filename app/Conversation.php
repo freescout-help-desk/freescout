@@ -81,7 +81,7 @@ class Conversation extends Model
     ];
 
     public static $status_colors = [
-        self::STATUS_ACTIVE  => '#71c171',
+        self::STATUS_ACTIVE  => '#6ac27b',
         self::STATUS_PENDING => '#8b98a6',
         self::STATUS_CLOSED  => '#6b6b6b',
         self::STATUS_SPAM    => '#de6864',
@@ -288,6 +288,21 @@ class Conversation extends Model
         }
 
         return $query->get();
+    }
+
+    /**
+     * Get last reply by customer or support agent.
+     * 
+     * @param  boolean $last [description]
+     * @return [type]        [description]
+     */
+    public function getLastReply()
+    {
+        return $this->threads()
+            ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE])
+            ->where('state', Thread::STATE_PUBLISHED)
+            ->orderBy('created_at', 'desc')
+            ->first();
     }
 
     /**
