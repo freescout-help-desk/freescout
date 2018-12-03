@@ -233,6 +233,8 @@ class SettingsController extends Controller
                 // so we can not just remove bool settings.
                 if (\Option::getDefault($option_name, null) === true) {
                     Option::set($option_name, false);
+                } elseif (is_array(\Option::getDefault($option_name, -1))) {
+                    Option::set($option_name, []);
                 } else {
                     Option::remove($option_name);
                 }
