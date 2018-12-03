@@ -355,7 +355,7 @@ class FetchEmails extends Command
                             continue;
                         }
 
-                        $new_thread_id = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $from, $to, $cc, $bcc, $body, $attachments, $message->getHeader());
+                        $new_thread_id = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $message->getHeader());
                     }
 
                     if ($new_thread_id) {
@@ -505,10 +505,11 @@ class FetchEmails extends Command
     /**
      * Save email reply from user as thread.
      */
-    public function saveUserThread($mailbox, $message_id, $prev_thread, $user_id, $from, $to, $cc, $bcc, $body, $attachments, $headers)
+    public function saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $headers)
     {
         $conversation = null;
         $now = date('Y-m-d H:i:s');
+        $user_id = $user->id;
 
         $conversation = $prev_thread->conversation;
         // Determine assignee
@@ -521,6 +522,9 @@ class FetchEmails extends Command
         $conversation->setCc(array_merge($cc, $to));
         $conversation->setBcc($bcc);
         // Respect mailbox settings for "Status After Replying
+        if ($conversation->status != $mailbox->ticket_status) {
+            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, true);
+        }
         $conversation->status = $mailbox->ticket_status;
         $conversation->last_reply_at = $now;
         $conversation->last_reply_from = Conversation::PERSON_USER;

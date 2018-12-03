@@ -507,4 +507,23 @@ class Mailbox extends Model
 
         return $list;
     }
+
+    /**
+     * Get all active mailboxes.
+     * 
+     * @return [type] [description]
+     */
+    public static function getActiveMailboxes()
+    {
+        $active = [];
+
+        // It is more effective to retrive all mailboxes and filter them in PHP.
+        $mailboxes = Mailbox::all();
+        foreach ($mailboxes as $mailbox) {
+            if ($mailbox->isActive()) {
+                $active[] = $mailbox;
+            }
+        }
+        return $active;
+    }
 }

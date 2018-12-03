@@ -27,6 +27,7 @@ class Helper
         'dashboard' => 'dashboard',
         'mailbox'   => [
             'mailboxes.view',
+            'mailboxes.view.folder',
             'conversations.view',
             'conversations.create',
             'conversations.draft',
@@ -846,5 +847,28 @@ class Helper
     public static function getRealAppLocale()
     {
         return config('app.real_locale');
+    }
+
+    /**
+     * Create a backgound job executing specified action.
+     * 
+     * @return [type] [description]
+     */
+    public static function backgroundAction($action, $params, $delay = 0)
+    {
+        $job = \App\Jobs\TriggerAction::dispatch($action, $params);
+        if ($delay) {
+            $job->delay($delay);
+        }
+        $job->onQueue('default');
+    }
+
+    /**
+     * Convert HTML into the text with \n.
+     * @param [type] $text [description]
+     */
+    public static function htmlToText($text)
+    {
+        return (new \Html2Text\Html2Text($text))->getText();
     }
 }

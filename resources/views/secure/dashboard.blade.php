@@ -39,7 +39,7 @@
                             @if (Auth::user()->can('viewMailboxMenu', Auth::user()))
                                 <div class="btn-group dropdown dropup" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
                                     <a data-toggle="dropdown" href="#" class="btn btn-trans"><i class="glyphicon glyphicon-cog dropdown-toggle"></i></a>
-                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                    <ul class="dropdown-menu" role="menu">
                                         @include("mailboxes/settings_menu")
                                     </ul>
                                 </div>
@@ -47,7 +47,7 @@
                             @if ($mailbox->isActive())
                                 <a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("New Conversation") }}"><i class="glyphicon glyphicon-envelope"></i></a>
                             @endif
-                            <a href="{{ route('conversations.view', ['mailbox_id' => $mailbox->id]) }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("Open Mailbox") }}"><i class="glyphicon glyphicon-arrow-right"></i></a>
+                            <a href="{{ route('mailboxes.view', ['mailbox_id' => $mailbox->id]) }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("Open Mailbox") }}"><i class="glyphicon glyphicon-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>

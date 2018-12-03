@@ -9,7 +9,7 @@
             <span class="heading">{{ __('Mailboxes') }}</span>
         </div>
         <div class="flexy-item margin-left">
-            <a href="{{ route('mailboxes.create') }}" class="btn btn-primary">{{ __('New Mailbox') }}</a>
+            <a href="{{ route('mailboxes.create') }}" class="btn btn-blue-text" data-toggle="tooltip" title="{{ __('New Mailbox') }}"><i class="glyphicon glyphicon-plus"></i></a>
         </div>
         <div class="flexy-block"></div>
     </div>
