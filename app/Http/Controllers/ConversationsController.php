@@ -585,23 +585,21 @@ class ConversationsController extends Controller
                         Attachment::whereIn('id', $attachments_info['attachments'])->update(['thread_id' => $thread->id]);
                     }
 
-                    if ($new) {
+                    // When user creates a new conversation it may be saved as draft first.
+                    if ($new || ($from_draft && $conversation->threads_count == 1)) {
                         event(new UserCreatedConversation($conversation, $thread));
                         \Eventy::action('conversation.created_by_user_can_undo', $conversation, $thread);
                         // After Conversation::UNDO_TIMOUT period trigger final event.
-                        \App\Jobs\TriggerAction::dispatch('conversation.created_by_user', [$conversation, $thread])
-                            ->delay(now()->addSeconds(Conversation::UNDO_TIMOUT))
-                            ->onQueue('default');
+                        \Helper::backgroundAction('conversation.created_by_user', [$conversation, $thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
                     } elseif ($is_note) {
                         event(new UserAddedNote($conversation, $thread));
                         \Eventy::action('conversation.user_added_note', $conversation, $thread);
                     } else {
+                        // Reply.
                         event(new UserReplied($conversation, $thread));
                         \Eventy::action('conversation.user_replied_can_undo', $conversation, $thread);
                         // After Conversation::UNDO_TIMOUT period trigger final event.
-                        \App\Jobs\TriggerAction::dispatch('conversation.user_replied', [$conversation, $thread])
-                            ->delay(now()->addSeconds(Conversation::UNDO_TIMOUT))
-                            ->onQueue('default');
+                        \Helper::backgroundAction('conversation.user_replied', [$conversation, $thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
                     }
 
                     if (!empty($request->after_send) && $request->after_send == MailboxUser::AFTER_SEND_STAY) {
@@ -636,7 +634,7 @@ class ConversationsController extends Controller
                 }
                 break;
 
-            // Save draft (automatically or by click)
+            // Save draft (automatically or by click) of a new conversation or reply.
             case 'save_draft':
 
                 $mailbox = Mailbox::findOrFail($request->mailbox_id);
