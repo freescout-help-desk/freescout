@@ -207,6 +207,7 @@ return [
     'colors' => [
         'main_light' => '#0078d7',
         'main_dark'  => '#005a9e',
+        'note'       => '#ffc646',
     ],
 
     /*

@@ -1497,7 +1497,7 @@ button.conv-checkbox-clear {
 }
 .conv-actions .conv-action:hover {
     /*color: #394956;*/
-    color: #000;
+    color: #0078d7;
 }
 .conv-action.inactive {
     color: #aeb6c0;
@@ -2164,10 +2164,12 @@ ul.prev-convs {
         -webkit-box-shadow: none;
         box-shadow: none;
     }
-    .customer-photo-container {
+    #conv-layout-customer .customer-photo-container {
         margin: 0;  
         width: 45px;
-        float: left;  
+        float: left;
+        margin-top: 0;
+        height: auto;
     }
     .customer-photo {
         max-width: 45px;
@@ -2251,6 +2253,9 @@ ul.prev-convs {
     .customer-hist-trigger:hover {
         color: #72808e;
     }*/
+    .conv-sidebar-block .panel {
+        background-color: #fff;
+    }
     .conv-customer-hist .panel-group {
         margin: 0;
     }
