@@ -79,6 +79,7 @@
 
   <div class="section-heading margin-bottom">
     {{ __('Log Records') }}
+    <div class="small text-help pull-right">{{ App\User::dateFormat(new Illuminate\Support\Carbon()) }}</div>
   </div>
 
   <div class="container-fluid1" id="laravel-logs">
