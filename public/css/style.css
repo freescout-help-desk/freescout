@@ -1239,7 +1239,7 @@ table.table-conversations td.conv-attachment {
     text-align: right;
 }
 .table-conversations .conv-thread-count span {
-    background: #f4f5f5;
+    background: #f8f9f9;
     border: 1px solid #d6dde3;
     color: #a5b2bd;
     font-size: 11px;
@@ -1655,18 +1655,18 @@ button.conv-checkbox-clear {
     cursor: pointer;
     color: #4f5d69;
 }
-.conv-assignee .btn {
+/*.conv-assignee .btn {
     background-color: transparent!important;;
     border: 0;
     box-shadow: none!important;
     -webkit-box-shadow: none!important;
     color: #005a9e!important;
-}
-.conv-assignee .conv-info-icon {
+}*/
+/*.conv-assignee .conv-info-icon {
     padding-right: 0!important;
     font-size: 19px;
     top: 1px;
-}
+}*/
 .customer-trigger {
     display: inline-block;
     position: absolute;
@@ -2093,8 +2093,8 @@ ul.prev-convs {
     #conv-toolbar {
         padding-left: 6px;
     }
-    .conv-actions .conv-action,
-    .conv-assignee .conv-info-icon {
+    .conv-actions .conv-action/*,
+    .conv-assignee .conv-info-icon*/ {
         font-size: 17px;
     }
     .thread-photo {
