@@ -27,6 +27,7 @@ class Helper
         'dashboard' => 'dashboard',
         'mailbox'   => [
             'mailboxes.view',
+            'mailboxes.view.folder',
             'conversations.view',
             'conversations.create',
             'conversations.draft',
