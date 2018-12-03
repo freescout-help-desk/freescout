@@ -339,7 +339,7 @@ class ConversationsController extends Controller
                     $thread->save();
 
                     event(new ConversationStatusChanged($conversation));
-                    \Eventy::action('conversation.status_changed', $conversation);
+                    \Eventy::action('conversation.status_changed_by_user', $conversation, $user, false);
 
                     $response['status'] = 'success';
                     // Flash
@@ -516,7 +516,7 @@ class ConversationsController extends Controller
                     if (!$new) {
                         if ($status_changed) {
                             event(new ConversationStatusChanged($conversation));
-                            \Eventy::action('conversation.status_changed', $conversation);
+                            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, true);
                         }
                         if ($user_changed) {
                             event(new ConversationUserChanged($conversation, $user));
@@ -1107,7 +1107,7 @@ class ConversationsController extends Controller
                         $thread->save();
 
                         event(new ConversationStatusChanged($conversation));
-                        \Eventy::action('conversation.status_changed', $conversation);
+                        \Eventy::action('conversation.status_changed_by_user', $conversation, $user, false);
                     }
 
                     $response['status'] = 'success';

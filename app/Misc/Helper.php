@@ -861,4 +861,13 @@ class Helper
         }
         $job->onQueue('default');
     }
+
+    /**
+     * Convert HTML into the text with \n.
+     * @param [type] $text [description]
+     */
+    public static function htmlToText($text)
+    {
+        return (new \Html2Text\Html2Text($text))->getText();
+    }
 }
