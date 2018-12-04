@@ -12,7 +12,7 @@ var LangMessages = {
             "en.messages": {
             
             "ajax_error": "Error occured. Please check your internet connection and try again.",
-            "error_occured": "Error occured, please try again later.",
+            "error_occured": "Error occured. Please try again later.",
             "upload_attachments": "Upload Attachments",
             "saved_replies": "Saved Replies",
             "save_draft": "Save Draft",
@@ -42,7 +42,7 @@ var LangMessages = {
             "confirm_discard_draft": "Discard this draft?",
             "yes": "Yes",
             "confirm_delete_photo": "Delete this photo?",
-            "delete": "Delfr",
+            "delete": "Delete",
             "email_sent": "Email passed for delivery. If you don&#039;t receive a test email, check your mail server logs.",
             "connection_established": "Connection established!",
             "confirm_delete_conversation": "Delete this conversation?",
@@ -57,7 +57,7 @@ var LangMessages = {
         },            "fr.messages": {
             
             "ajax_error": "Error occured. Please check your internet connection and try again.",
-            "error_occured": "Error occured, please try again later.",
+            "error_occured": "Error occured. Please try again later.",
             "upload_attachments": "Upload Attachments",
             "saved_replies": "Saved Replies",
             "save_draft": "Save Draft",
@@ -87,7 +87,7 @@ var LangMessages = {
             "confirm_discard_draft": "Discard this draft?",
             "yes": "Yes",
             "confirm_delete_photo": "Delete this photo?",
-            "delete": "Delfr",
+            "delete": "Delete",
             "email_sent": "Email passed for delivery. If you don&#039;t receive a test email, check your mail server logs.",
             "connection_established": "Connection established!",
             "confirm_delete_conversation": "Delete this conversation?",
