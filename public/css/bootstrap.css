@@ -3082,13 +3082,12 @@ fieldset[disabled] a.btn {
 }
 .btn-default:focus,
 .btn-default.focus {
-  color: #333;
-  background-color: #f4f5f5;
   border-color: #a5a9ac;
+  background-color: #f1f3f5;
+  outline: none!important;
 }
 .btn-default:hover {
-  color: #333;
-  background-color: #f4f5f5;
+  background-color: #f1f3f5;
   border-color: #a5a9ac;
 }
 .btn-default:active,
