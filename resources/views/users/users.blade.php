@@ -9,7 +9,7 @@
             <span class="heading">{{ __('Users') }}</span>
         </div>
         <div class="flexy-item margin-left">
-            <a href="{{ route('users.create') }}" class="btn btn-blue-text" data-toggle="tooltip" title="{{ __('New User') }}"><i class="glyphicon glyphicon-plus"></i></a>
+            <a href="{{ route('users.create') }}" class="btn btn-bordered">{{ __('New User') }}</a>
         </div>
         <div class="flexy-block"></div>
     </div>

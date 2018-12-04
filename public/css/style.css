@@ -199,8 +199,6 @@ body.user-is-guest {
 .sidebar-buttons .btn-group.open .btn.dropdown-toggle {
     -webkit-box-shadow: none;
     box-shadow: none;
-    color: #4f5d6b;
-    background-color: #d3dae0;
 }
 .sidebar-buttons .btn-group .btn {
     border-right: none;
@@ -555,25 +553,32 @@ select[multiple].input-md {
     border-color: #d3dae0;
 }
 .btn-trans:hover {
-    color: #4f5d6b;
-    background-color: #d3dae0;
-    border-color: #d3dae0;
+    color: #0078D7;
 }
 .btn-trans:focus {
     -webkit-box-shadow: none;
     box-shadow: none;
-    color: #666666;
+    background-color: transparent;
+    color: #0078D7;
 }
-.btn-blue-text {
+.btn-bordered {
     color: #0078D7;
     background-color: transparent;
     border-color: #dedede;
 }
-.btn-blue-text:hover,
-.btn-blue-text:focus {
+.btn-bordered:hover,
+.btn-bordered:focus {
     color: #fff;
     background-color: #0078D7;
     border-color: #0078D7;
+}
+.btn-text {
+    color: #0078D7;
+    background-color: transparent;
+}
+.btn-text:hover,
+.btn-text:focus {
+    color: #0068bd;
 }
 .btn-group.open .glyphicon.dropdown-toggle {
     -webkit-box-shadow: none;
@@ -1676,12 +1681,11 @@ button.conv-checkbox-clear {
     height: 22px;
 }
 .customer-trigger a {
-    /*color: #c7ccd2;*/
-    color: #0078D7;
+    color: #93a1af;
 }
 .customer-trigger a:hover,
 .customer-trigger a:focus {
-    color: #72808e;
+    color: #0078D7;
     text-decoration: none;
 }
 .customer-hist-trigger {
