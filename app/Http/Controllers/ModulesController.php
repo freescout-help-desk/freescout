@@ -421,6 +421,8 @@ class ModulesController extends Controller
                         $response['msg'] = WpApi::$lastError['message'];
                     } elseif (!empty($license_details['code']) && !empty($license_details['message'])) {
                         $response['msg'] = $license_details['message'];
+                    } elseif (!empty($license_details['required_app_version']) && !\Helper::checkAppVersion($license_details['required_app_version'])) {
+                        $response['msg'] = 'Module requires app version:'.' '.$license_details['required_app_version'];
                     } elseif (!empty($license_details['download_link'])) {
                         // Download module
                         $module_archive = \Module::getPath().DIRECTORY_SEPARATOR.$alias.'.zip';
