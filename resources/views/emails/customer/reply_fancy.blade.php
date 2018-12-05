@@ -43,7 +43,7 @@
 
 					                                @action('reply_email.before_signature', $thread, $loop, $threads, $conversation, $mailbox)
 					                                @if ($thread->source_via == App\Thread::PERSON_USER)
-						                                <br>{!! $conversation->getSignatureProcessed() !!}
+						                                <br>{!! $conversation->getSignatureProcessed(['thread' => $thread]) !!}
 						                            @endif
 						                            @action('reply_email.after_signature', $thread, $loop, $threads, $conversation, $mailbox)
 						                            <br><br>

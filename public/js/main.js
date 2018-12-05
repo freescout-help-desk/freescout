@@ -134,6 +134,11 @@ var EditorInsertVarButton = function (context) {
 		        '<option value="{%customer.lastName%}">'+Lang.get("messages.last_name")+'</option>'+
 		        '<option value="{%customer.email%}">'+Lang.get("messages.email_addr")+'</option>'+
 		    '</optgroup>'+
+		    '<optgroup label="'+Lang.get("messages.user")+'">'+
+		        '<option value="{%user.fullName%}">'+Lang.get("messages.full_name")+'</option>'+
+		        '<option value="{%user.firstName%}">'+Lang.get("messages.first_name")+'</option>'+
+		        '<option value="{%user.lastName%}">'+Lang.get("messages.last_name")+'</option>'+
+		    '</optgroup>'+
 	    '</select>';
 
 	// create button
