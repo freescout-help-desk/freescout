@@ -845,6 +845,7 @@ class Conversation extends Model
             'mailbox'      => $this->mailbox,
             'conversation' => $this,
             'customer'     => $this->customer,
+            'user'         => $this->user,
         ];
 
         // Set variables
