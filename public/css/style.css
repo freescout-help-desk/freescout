@@ -721,7 +721,7 @@ a h4 {
     box-sizing: border-box;
     min-height: 295px;
     margin: 0 20px 20px 0;
-    width: 235px;
+    width: 257px;
 }
 .dash-card-content {
     padding-bottom: 60px;
@@ -769,10 +769,15 @@ a h4 {
     margin: 0;
     display: block;
 }
+.dash-card .waiting-since {
+    color: #93a1af;
+    font-size: 13.4px;
+    margin-left: 4px;
+}
 .dash-card-list-item:hover {
     background-color: #f4f5f5;
 }
-.dash-card-list-item span {
+.dash-card-list-item strong {
     display: block;
     float: right;
 }
@@ -796,7 +801,7 @@ a h4 {
     /*border-left-color: #93a1af;*/
     background: #f4f5f5;
 }
-.dash-card-item-empty span {
+.dash-card-item-empty strong {
     display: none;
 }
 .dash-card a.dash-card-item-empty,

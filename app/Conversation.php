@@ -1047,4 +1047,19 @@ class Conversation extends Model
             $thread->deleteThread();
         });
     }
+
+    /**
+     * Get waiting since time for the conversation.
+     * @param  [type] $folder [description]
+     * @return [type]         [description]
+     */
+    public function getWaitingSince($folder)
+    {
+        $waiting_since_field = $folder->getWaitingSinceField();
+        if ($waiting_since_field) {
+            return \App\User::dateDiffForHumans($this->$waiting_since_field);
+        } else {
+            return '';
+        }
+    }
 }
