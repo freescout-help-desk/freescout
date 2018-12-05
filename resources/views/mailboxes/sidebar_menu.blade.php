@@ -16,4 +16,4 @@
 <ul class="sidebar-menu">
     @include("mailboxes/settings_menu")
 </ul>
-<a href="{{ route('mailboxes.view', ['id' => $mailbox->id]) }}" class="btn btn-bordered btn-sidebar">{{ __("Open Mailbox") }}</a>
+<a href="{{ route('mailboxes.view', ['id' => $mailbox->id]) }}" class="btn btn-bordered btn-sidebar btn-rounded" data-toggle="tooltip" title="{{ __("Open Mailbox") }}"><i class="glyphicon glyphicon-arrow-right"></i></a>

@@ -719,7 +719,7 @@ a h4 {
     -webkit-box-shadow:0 0 5px rgba(0,0,0,.2);
     box-shadow:0 0 5px rgba(0,0,0,.2);
     box-sizing: border-box;
-    /*min-height: 295px;*/
+    min-height: 295px;
     margin: 0 20px 20px 0;
     width: 235px;
 }
