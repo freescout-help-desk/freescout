@@ -851,7 +851,7 @@ class Helper
 
     /**
      * Create a backgound job executing specified action.
-     * 
+     *
      * @return [type] [description]
      */
     public static function backgroundAction($action, $params, $delay = 0)
@@ -865,6 +865,7 @@ class Helper
 
     /**
      * Convert HTML into the text with \n.
+     *
      * @param [type] $text [description]
      */
     public static function htmlToText($text)
