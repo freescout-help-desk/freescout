@@ -292,9 +292,10 @@ class Conversation extends Model
 
     /**
      * Get last reply by customer or support agent.
-     * 
-     * @param  boolean $last [description]
-     * @return [type]        [description]
+     *
+     * @param bool $last [description]
+     *
+     * @return [type] [description]
      */
     public function getLastReply()
     {

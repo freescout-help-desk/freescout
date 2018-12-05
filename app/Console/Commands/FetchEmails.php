@@ -383,9 +383,9 @@ class FetchEmails extends Command
     /**
      * Detect autoresponder by headers.
      * https://github.com/jpmckinney/multi_mail/wiki/Detecting-autoresponders
-     * https://www.jitbit.com/maxblog/18-detecting-outlook-autoreplyout-of-office-emails-and-x-auto-response-suppress-header/
-     * 
-     * @return boolean [description]
+     * https://www.jitbit.com/maxblog/18-detecting-outlook-autoreplyout-of-office-emails-and-x-auto-response-suppress-header/.
+     *
+     * @return bool [description]
      */
     public function isAutoResponder($headers_str)
     {
