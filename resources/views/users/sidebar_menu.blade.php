@@ -19,4 +19,4 @@
     <li @if (Route::currentRouteName() == 'user_autobcc')class="active"@endif><a href="#"><i class="glyphicon glyphicon-duplicate"></i> {{ __('Auto Bcc') }} (todo)</a></li>
     {{--<li @if (Route::currentRouteName() == 'user_myapps')class="active"@endif><a href="#"><i class="glyphicon glyphicon-gift"></i> {{ __('My Apps') }} (todo)</a></li>--}}
 </ul>
-<a href="{{ route('users.create') }}" class="btn btn-blue-text btn-sidebar">{{ __("New User") }}</a>
+<a href="{{ route('users.create') }}" class="btn btn-bordered btn-sidebar">{{ __("New User") }}</a>

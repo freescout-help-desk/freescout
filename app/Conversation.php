@@ -292,9 +292,10 @@ class Conversation extends Model
 
     /**
      * Get last reply by customer or support agent.
-     * 
-     * @param  boolean $last [description]
-     * @return [type]        [description]
+     *
+     * @param bool $last [description]
+     *
+     * @return [type] [description]
      */
     public function getLastReply()
     {
@@ -835,20 +836,29 @@ class Conversation extends Model
 
     /**
      * Replace vars in signature.
+     * `data` contains extra info which can be used to build signature.
      */
-    public function getSignatureProcessed()
+    public function getSignatureProcessed($data = [])
     {
         if (!\App\Misc\Mail::hasVars($this->mailbox->signature)) {
             return $this->mailbox->signature;
         }
+
+        // `user` should contain a user who replies to the conversation.
+        $user = auth()->user();
+        if (!$user && !empty($data['thread'])) {
+            $user = $data['thread']->created_by_user;
+        }
+
         $data = [
             'mailbox'      => $this->mailbox,
             'conversation' => $this,
             'customer'     => $this->customer,
+            'user'         => $user,
         ];
 
         // Set variables
-        return \App\Misc\Mail::replaceMailVars($this->mailbox->signature, $data);
+        return \MailHelper::replaceMailVars($this->mailbox->signature, $data);
     }
 
     /**

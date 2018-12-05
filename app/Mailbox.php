@@ -510,7 +510,7 @@ class Mailbox extends Model
 
     /**
      * Get all active mailboxes.
-     * 
+     *
      * @return [type] [description]
      */
     public static function getActiveMailboxes()
@@ -518,12 +518,13 @@ class Mailbox extends Model
         $active = [];
 
         // It is more effective to retrive all mailboxes and filter them in PHP.
-        $mailboxes = Mailbox::all();
+        $mailboxes = self::all();
         foreach ($mailboxes as $mailbox) {
             if ($mailbox->isActive()) {
                 $active[] = $mailbox;
             }
         }
+
         return $active;
     }
 }

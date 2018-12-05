@@ -5,7 +5,7 @@
 {{-- Html2Text\Html2Text::convert($thread->body) - this was causing "AttValue: " expected in Entity" error sometimes --}}{{ (new Html2Text\Html2Text($thread->body))->getText() }}
 @if ($thread->source_via == App\Thread::PERSON_USER)
 
-{{-- Html2Text\Html2Text::convert($conversation->mailbox->signature) --}}{{ (new Html2Text\Html2Text($conversation->getSignatureProcessed()))->getText() }}
+{{-- Html2Text\Html2Text::convert($conversation->mailbox->signature) --}}{{ (new Html2Text\Html2Text($conversation->getSignatureProcessed(['thread' => $thread])))->getText() }}
 @endif
 @endforeach
 @if (\App\Option::get('email_branding'))

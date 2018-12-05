@@ -12,7 +12,7 @@ var LangMessages = {
             "en.messages": {
             
             "ajax_error": "Error occured. Please check your internet connection and try again.",
-            "error_occured": "Error occured, please try again later.",
+            "error_occured": "Error occured. Please try again later.",
             "upload_attachments": "Upload Attachments",
             "saved_replies": "Saved Replies",
             "save_draft": "Save Draft",
@@ -31,6 +31,7 @@ var LangMessages = {
             "first_name": "First Name",
             "last_name": "Last Name",
             "email_addr": "Email Address",
+            "user": "User",
             "confirm_change_customer": "Change the customer to :customer_email?",
             "invite_sent": "Invite email has been sent",
             "invite_resent": "Invite email has been resent",
@@ -42,7 +43,7 @@ var LangMessages = {
             "confirm_discard_draft": "Discard this draft?",
             "yes": "Yes",
             "confirm_delete_photo": "Delete this photo?",
-            "delete": "Delfr",
+            "delete": "Delete",
             "email_sent": "Email passed for delivery. If you don&#039;t receive a test email, check your mail server logs.",
             "connection_established": "Connection established!",
             "confirm_delete_conversation": "Delete this conversation?",
@@ -57,7 +58,7 @@ var LangMessages = {
         },            "fr.messages": {
             
             "ajax_error": "Error occured. Please check your internet connection and try again.",
-            "error_occured": "Error occured, please try again later.",
+            "error_occured": "Error occured. Please try again later.",
             "upload_attachments": "Upload Attachments",
             "saved_replies": "Saved Replies",
             "save_draft": "Save Draft",
@@ -76,6 +77,7 @@ var LangMessages = {
             "first_name": "First Name",
             "last_name": "Last Name",
             "email_addr": "Email Address",
+            "user": "User",
             "confirm_change_customer": "Change the customer to :customer_email?",
             "invite_sent": "Invite email has been sent",
             "invite_resent": "Invite email has been resent",
@@ -87,7 +89,7 @@ var LangMessages = {
             "confirm_discard_draft": "Discard this draft?",
             "yes": "Yes",
             "confirm_delete_photo": "Delete this photo?",
-            "delete": "Delfr",
+            "delete": "Delete",
             "email_sent": "Email passed for delivery. If you don&#039;t receive a test email, check your mail server logs.",
             "connection_established": "Connection established!",
             "confirm_delete_conversation": "Delete this conversation?",
