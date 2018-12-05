@@ -16,8 +16,11 @@
                             <a href="{{ route('mailboxes.view', ['id' => $mailbox->id]) }}" class="text-truncate help-link">{{ $mailbox->email }}</a>
                         </div>
                         <div class="dash-card-list">
-                            @foreach ($mailbox->getMainFolders() as $folder)
-                                <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$folder->active_count) dash-card-item-empty @endif" title="{{  __('View conversations') }}">{{ $folder->getTypeName() }}<span>{{ $folder->active_count }}</span></a>
+                            @php
+                                $main_folders = $mailbox->getMainFolders();
+                            @endphp
+                            @foreach ($main_folders as $folder)
+                                <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$folder->active_count) dash-card-item-empty @endif" title="{{  __('View conversations') }}">{{ $folder->getTypeName() }}<span>{{ $folder->getActiveCount($main_folders) }}</span></a>
                             @endforeach
                         </div>
                         <div class="dash-card-inactive-content">
