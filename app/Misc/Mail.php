@@ -130,6 +130,11 @@ class Mail
             $vars['{%customer.firstName%}'] = $data['customer']->getFirstName(true);
             $vars['{%customer.lastName%}'] = $data['customer']->last_name;
         }
+        if (!empty($data['user'])) {
+            $vars['{%user.fullName%}'] = $data['user']->getFullName();
+            $vars['{%user.firstName%}'] = $data['user']->getFirstName();
+            $vars['{%user.lastName%}'] = $data['user']->last_name;
+        }
 
         return strtr($text, $vars);
     }
