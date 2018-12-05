@@ -120,7 +120,7 @@ class Option extends Model
                     return $module_options[$modle_option_name]['default'];
                 }
             }
-            
+
             return $default;
         }
     }
