@@ -85,7 +85,7 @@
                                 @if ($conversation->customer_id){{ $conversation->customer->getFullName(true)}}@endif
                                 @if ($conversation->user_id)
                                     <small class="conv-owner-mobile text-help">
-                                        ({{ __('Assigned to') }}: {{ $conversation->user->getFullName() }})
+                                        &nbsp;<small class="glyphicon glyphicon-user"></small> {{ $conversation->user->getFullName() }}
                                     </small>
                                 @endif
                             </a>
@@ -96,7 +96,7 @@
                             <a href="{{ $conversation->url() }}" class="help-link">
                                 <small class="glyphicon glyphicon-envelope"></small> 
                                 @if ($conversation->user_id)
-                                     <small>&nbsp;{{ __('Assigned to') }}: {{ $conversation->user->getFullName() }}</small> 
+                                     <small>&nbsp;<i class="glyphicon glyphicon-user"></i> {{ $conversation->user->getFullName() }}</small> 
                                 @endif
                             </a>
                         </td>
@@ -117,7 +117,7 @@
                                 @if ($conversation->has_attachments)
                                     <i class="conv-attachment-mobile glyphicon glyphicon-paperclip"></i>
                                 @endif
-                                <span class="conv-subject-number">#{{ $conversation->number }} </span>@action('conversations_table.before_subject', $conversation){{ $conversation->getSubject() }}
+                                {{--<span class="conv-subject-number">#{{ $conversation->number }} </span>--}}@action('conversations_table.before_subject', $conversation){{ $conversation->getSubject() }}@if ($conversation->threads_count > 1) <span class="conv-counter">{{ $conversation->threads_count }}</span>@endif
                             </p>
                             <p class="conv-preview">@if ($conversation->preview){{ $conversation->preview }}@else&nbsp;@endif</p>
                         </a>
@@ -125,7 +125,7 @@
                     <td class="conv-thread-count">
                         <i class="glyphicon conv-star @if ($conversation->isStarredByUser()) glyphicon-star @else glyphicon-star-empty @endif" title="@if ($conversation->isStarredByUser()){{ __("Unstar Conversation") }}@else{{ __("Star Conversation") }}@endif"></i>
 
-                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}">@if ($conversation->threads_count <= 1)&nbsp;@else<span>{{ $conversation->threads_count }}</span>@endif</a>
+                        {{--<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}">@if ($conversation->threads_count <= 1)&nbsp;@else<span>{{ $conversation->threads_count }}</span>@endif</a>--}}
                     </td>
                     @if ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED)
                         <td class="conv-owner">
@@ -133,7 +133,7 @@
                         </td>
                     @endif
                     <td class="conv-number">
-                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}">{{ $conversation->number }}</a>
+                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}"><i>#</i>{{ $conversation->number }}</a>
                     </td>
                     <td class="conv-date">
                         <a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED])) data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conversation->getDateTitle() }}"@else title="{{ __('View conversation') }}" @endif >{{ $conversation->getWaitingSince($folder) }}</a>

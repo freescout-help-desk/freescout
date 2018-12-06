@@ -16,7 +16,7 @@
 
     <div class="card-list margin-top">
         @foreach ($mailboxes as $mailbox)
-            <a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}" class="card no-img  @if ($mailbox->isActive()) card-active @else card-inactive @endif">
+            <a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}" class="card no-img hover-shade @if ($mailbox->isActive()) card-active @else card-inactive @endif">
                 <h4>{{ $mailbox->name }}</h4>
                 <p>{{ $mailbox->email }}</p>
             </a>

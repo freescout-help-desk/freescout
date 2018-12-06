@@ -1094,6 +1094,9 @@ a h4 {
     table-layout: fixed;
     width: 100%;
 }
+.table-conversations thead {
+    background-color: #deecf9;
+}
 .table-conversations .conv-fader {
     background: linear-gradient(to right,rgba(255,255,255,0), #fff);
     position: absolute;
@@ -1145,12 +1148,12 @@ thead .conv-cb label {
 .table-conversations th a:hover,
 .table-conversations th a:focus,
 .table-conversations th span {
-    color: #666;
+    color: #253540;
     text-decoration: none;
     cursor: default;
     line-height: 26px;
     display: block;
-    font-weight: normal;
+    font-weight: bold;
 }
 .table.table-conversations tbody td {
     line-height: 1em;
@@ -1174,6 +1177,9 @@ thead .conv-cb label {
 }
 .table.table-conversations tbody .conv-active {
     background-color: #eff6fc;
+}
+.conv-active .conv-date a {
+    background-color: #d3e8f7;
 }
 .table-conversations td.conv-customer a {
     line-height: 1.2em;
@@ -1245,7 +1251,8 @@ table.table-conversations td.conv-attachment {
 }
 
 .table-conversations .conv-thread-count {
-    width: 42px;
+    /*width: 42px;*/
+    width: 1px;
     text-align: right;
 }
 .table-conversations .conv-thread-count span {
@@ -1257,6 +1264,17 @@ table.table-conversations td.conv-attachment {
     padding: .1em .4em;
     border-radius: 4px;
 }
+.conv-counter {
+    border: 1px solid #d6dde3;
+    background: #f8f9f9;
+    color: #a5b2bd;
+    line-height: 17px;
+    position: relative;
+    margin-left: 3px;
+    top: -1px;
+    font-size: 10px;
+    padding: 0 3px;
+}
 .table-conversations .conv-thread-count a {
     padding: 0;
 }
@@ -1267,6 +1285,11 @@ table.table-conversations td.conv-attachment {
 }
 .table-conversations .conv-number {
     width: 86px;
+}
+.table-conversations .conv-number i {
+    font-size: 10px;
+    margin-right: 2px;
+    color: #93a1af;
 }
 .table-conversations .conv-date {
     width: 138px;
@@ -1293,12 +1316,18 @@ table.table-conversations td.conv-attachment {
     line-height: 24px;
     font-size: 16px;
 }
-.conv-subject-number {
+/*.conv-subject-number {
     display: none;
-}
+}*/
 .conv-owner-mobile {
     display: none;
     font-weight: normal;
+}
+.conv-date a {
+    background-color: #f1f3f5;
+    border-radius: 17px 0 0 17px;
+    padding-top: 11px!important;
+    padding-bottom: 11px!important;
 }
 button.conv-checkbox-clear {
     display: none;
@@ -1379,10 +1408,13 @@ button.conv-checkbox-clear {
     .conv-owner-mobile {
         display: inline!important;
     }
+    .conv-owner-mobile .glyphicon {
+        top: 0;
+    }
     .conv-customer {
         position: absolute;
         top: 0;
-        margin-left: 5px!important;
+        margin-left: 10px!important;
     }
     .conv-customer a {
         width: 350px;
@@ -1392,18 +1424,24 @@ button.conv-checkbox-clear {
     }
     .conv-customer a,
     .conv-date a {
-        padding: 11px 5px 0 0 !important;
+        padding: 11px 8px 0 0 !important;
         line-height: 1.2em;
+    }
+    .table-conversations td.conv-subject a {
+        padding-left: 8px;
     }
     .conv-date a {
         padding-top: 13px!important;
-    }
-    .conv-date a {
         font-size: 12px!important;
+        background-color: transparent!important;
+        font-weight: normal;
     }
-    .conv-subject-number {
+    .conv-active .conv-date a {
+
+    }
+    /*.conv-subject-number {
         display: inline;
-    }
+    }*/
     .conv-number {
         display: none!important;
     }
@@ -1431,7 +1469,7 @@ button.conv-checkbox-clear {
     }
     .conv-thread-count a,
     .conv-thread-count .conv-star {
-        padding-right: 5px!important;
+        padding-right: 6px!important;
     }
     .table.table-conversations tfoot tr {
         display: block;
@@ -3287,6 +3325,10 @@ a.disabled:focus {
     position: relative;
     color: #0078D7;
     left: -5px;
+}
+.hover-shade:hover {
+    -webkit-box-shadow:0 0 13px rgba(0,0,0,.2);
+    box-shadow:0 0 13px rgba(0,0,0,.2);
 }
 
 /**
