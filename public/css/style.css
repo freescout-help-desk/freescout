@@ -1178,6 +1178,16 @@ thead .conv-cb label {
 .table.table-conversations tbody .conv-active {
     background-color: #eff6fc;
 }
+.conv-row:hover {
+    filter: brightness(98%);
+    -webkit-filter: brightness(98%);
+    -moz-filter: brightness(98%);
+    -o-filter: brightness(98%);
+    -ms-filter: brightness(98%);
+}
+.conv-row:hover {
+    background-color: #fbfcfd;
+}
 .conv-active .conv-date a {
     background-color: #d3e8f7;
 }
