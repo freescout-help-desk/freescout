@@ -13,7 +13,7 @@ class AddNullableToInPasswordFieldInMailboxTable extends Migration
      */
     public function up()
     {
-        Schema::table('mailboxes', function($table) {
+        Schema::table('mailboxes', function ($table) {
             $table->string('in_password', 512)->nullable()->change();
         });
     }
@@ -25,7 +25,7 @@ class AddNullableToInPasswordFieldInMailboxTable extends Migration
      */
     public function down()
     {
-        Schema::table('mailboxes', function($table) {
+        Schema::table('mailboxes', function ($table) {
             $table->string('in_password', 512)->nullable(false)->change();
         });
     }
