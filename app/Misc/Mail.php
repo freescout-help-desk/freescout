@@ -282,6 +282,17 @@ class Mail
     }
 
     /**
+     * Check if email format is valid.
+     * 
+     * @param  [type] $email [description]
+     * @return [type]        [description]
+     */
+    public static function validateEmail($email)
+    {
+        return filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
+
+    /**
      * Send system alert to super admin.
      */
     public static function sendAlertMail($text, $title = '')

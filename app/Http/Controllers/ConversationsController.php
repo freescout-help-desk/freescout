@@ -173,7 +173,7 @@ class ConversationsController extends Controller
     /**
      * New conversation.
      */
-    public function create($mailbox_id)
+    public function create(Request $request, $mailbox_id)
     {
         $mailbox = Mailbox::findOrFail($mailbox_id);
         $this->authorize('view', $mailbox);
@@ -186,8 +186,33 @@ class ConversationsController extends Controller
 
         $after_send = $mailbox->getUserSettings(auth()->user()->id)->after_send;
 
+        // Create conversation from thread
+        $thread = null;
+        if (!empty($request->from_thread_id)) {
+            $orig_thread = Thread::find($request->from_thread_id);
+            if ($orig_thread) {
+                $conversation->subject = $orig_thread->conversation->subject;
+                $conversation->subject = preg_replace("/^Fwd:/i", 'Re: ', $conversation->subject);
+
+                $thread = new \App\Thread();
+                $thread->body = $orig_thread->body;
+                // If this is a forwarded message, try to fetch From
+                preg_match_all("/From:[^<\n]+<([^<\n]+)>/m", html_entity_decode(strip_tags($thread->body)), $m);
+
+                if (!empty($m[1])) {
+                    foreach ($m[1] as $value) {
+                        if (\MailHelper::validateEmail($value)) {
+                            $thread->to = json_encode([$value]);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         return view('conversations/create', [
             'conversation' => $conversation,
+            'thread'       => $thread,
             'mailbox'      => $mailbox,
             'folder'       => $folder,
             'folders'      => $mailbox->getAssesibleFolders(),

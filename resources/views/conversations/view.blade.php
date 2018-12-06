@@ -366,7 +366,7 @@
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                 <li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }} (todo)</a></li>
                                 <li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>
-                                <li><a href="javascript:alert('todo: implement creating new conversation from thread');void(0);" title="{{ __("Start a conversation from this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
+                                <li><a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}?from_thread_id={{ $thread->id }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
                                 @if (Auth::user()->isAdmin())
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
