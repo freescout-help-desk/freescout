@@ -3407,6 +3407,14 @@ a.disabled:focus {
     -webkit-box-shadow:0 0 13px rgba(0,0,0,.2);
     box-shadow:0 0 13px rgba(0,0,0,.2);
 }
+.dropdown-menu > li > span {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857143;
+    cursor: default;
+}
 
 /**
  * Only main content is visible
