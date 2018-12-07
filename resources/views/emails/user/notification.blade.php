@@ -149,13 +149,24 @@
 									            <table width="100%" border="0" cellspacing="0" cellpadding="0">
 									                <tr>
 									                    <td>
-									                        <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#8d959b; font-size:17px; line-height:22px; margin:0 0 2px 0; font-weight:normal;">
+									                        <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; font-size:17px; line-height:22px; margin:0 0 2px 0; font-weight:normal;">
 																@if ($thread->type == App\Thread::TYPE_NOTE)
 																	<span style="color:#e6b216">
 																		<strong style="color:#000000;">{{ $thread->getCreatedBy()->getFullName(true) }}</strong> {{ __('added a note') }}
 																	</span>
 																@else
-																	<strong style="color:#000000;">{{ $thread->getCreatedBy()->getFullName(true) }}</strong> @if ($loop->last){{ __('started the conversation') }}@else {{ __('replied') }} @endif
+																	@if ($thread->type == App\Thread::TYPE_MESSAGE)
+																		@php
+																			$action_color = config('app.colors')['text_user'];
+																		@endphp
+																	@else
+																		@php
+																			$action_color = config('app.colors')['text_customer'];
+																		@endphp
+																	@endif
+																	<span style="color:{{ $action_color }}">
+																		<strong style="color:#000000;">{{ $thread->getCreatedBy()->getFullName(true) }}</strong> @if ($loop->last){{ __('started the conversation') }}@else {{ __('replied') }} @endif
+																	</span>
 																@endif
 															</h3>
 

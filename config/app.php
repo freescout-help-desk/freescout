@@ -208,6 +208,9 @@ return [
         'main_light' => '#0078d7',
         'main_dark'  => '#005a9e',
         'note'       => '#ffc646',
+        'text_note'  => '#e6b216',
+        'text_customer' => '#8d959b',
+        'text_user'     => '#3197d6',
     ],
 
     /*

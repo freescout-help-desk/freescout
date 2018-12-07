@@ -1148,7 +1148,7 @@ thead .conv-cb label {
 .table-conversations th a:hover,
 .table-conversations th a:focus,
 .table-conversations th span {
-    color: #253540;
+    color: #005a9e;
     text-decoration: none;
     cursor: default;
     line-height: 26px;
@@ -1176,9 +1176,10 @@ thead .conv-cb label {
     line-height: 1.2em;
 }
 .table.table-conversations tbody .conv-active {
-    background-color: #eff6fc;
+    /*background-color: #eff6fc;*/
+    background-color: #f2f7fd;
 }
-.conv-row:hover {
+/*.conv-row:hover {
     filter: brightness(98%);
     -webkit-filter: brightness(98%);
     -moz-filter: brightness(98%);
@@ -1187,9 +1188,9 @@ thead .conv-cb label {
 }
 .conv-row:hover {
     background-color: #fbfcfd;
-}
+}*/
 .conv-active .conv-date a {
-    background-color: #d3e8f7;
+    background-color: #deecf9;
 }
 .table-conversations td.conv-customer a {
     line-height: 1.2em;
@@ -1334,7 +1335,7 @@ table.table-conversations td.conv-attachment {
     font-weight: normal;
 }
 .conv-date a {
-    background-color: #f1f3f5;
+    /*background-color: #f8f9f9;*/
     border-radius: 17px 0 0 17px;
     padding-top: 11px!important;
     padding-bottom: 11px!important;
@@ -1568,7 +1569,7 @@ button.conv-checkbox-clear {
     padding-left: 13px;
 }
 #conv-subject {
-    border-bottom: 1px solid #e3e8eb;
+    border-bottom: 1px solid #ebeff1;
 }
 .conv-subj-block {
     padding: 16px 9px 24px 20px;
@@ -1674,7 +1675,7 @@ button.conv-checkbox-clear {
     background-color: #f8f9f9;
 }
 .conv-sidebar-block .panel-heading {
-    background-color: rgb(241, 243, 245) !important;
+    background-color: #f1f3f5 !important;
 }
 .conv-customer-block {
     position: relative;
@@ -1746,7 +1747,7 @@ button.conv-checkbox-clear {
 }
 .thread {
     position: relative;
-    border-bottom: 1px solid #e3e8eb;
+    border-bottom: 1px solid #ebeff1;
 }
 .thread:last-child {
     border-bottom: 0;
@@ -1754,14 +1755,15 @@ button.conv-checkbox-clear {
 .thread-header {
     overflow: hidden;
     min-height: 40px;
+    padding-left: 72px;
 }
 .thread-message {
-    margin: 0 24px 0 72px;
+    margin: 0 24px 0 0;
     padding: 25px 13px 20px 12px;
 }
 .thread-photo {
-    float: left;
-    padding: 25px 18px 25px 20px;
+    padding: 16px 18px 25px 20px;
+    position: absolute;
 }
 .thread-photo .person-photo {
     border-radius: 50%;
@@ -1823,6 +1825,10 @@ button.conv-checkbox-clear {
     font-size: 14px;
     line-height: 1.45em;
     overflow-y: hidden;
+
+    margin: 0 -18px 0 12px;
+    padding: 0 18px 0 61px;
+    border-radius: 10px 0 0 10px;
 }
 .thread-opened-at {
     font-size: 12.5px;
@@ -1864,21 +1870,43 @@ button.conv-checkbox-clear {
 .thread-attachments {
     position: relative;
 }
-.thread-type-message {
-    -webkit-box-shadow:inset 5px 0 0 0 #93a1af;
-    box-shadow:inset 5px 0 0 0 #93a1af
+.thread-type-message .thread-body {
+    border: 1px solid #2b8fdd;
+    margin-top: 5px;
+    padding-top: 12px;
+    padding-bottom: 10px;
+    background-color: #f1f7fc;
+    /*background-color: #fafcfc;*/
+    /*-webkit-box-shadow:inset 5px 0 0 0 #93a1af;
+    box-shadow:inset 5px 0 0 0 #93a1af;*/
+    -webkit-box-shadow:inset 3px 0 0 0 #2b8fdd;
+    box-shadow:inset 3px 0 0 0 #2b8fdd;
 }
-.thread-type-note {
-    -webkit-box-shadow:inset 5px 0 0 0 #ffc646;
-    box-shadow:inset 5px 0 0 0 #ffc646
+.thread-type-note .thread-body {
+    border: 1px solid #ffc646;
+    margin-top: 5px;
+    padding-top: 12px;
+    padding-bottom: 10px;
+    background-color: #fffbf1;
+    -webkit-box-shadow:inset 3px 0 0 0 #ffc646;
+    box-shadow:inset 3px 0 0 0 #ffc646
+}
+.thread-type-message .thread-message,
+.thread-type-note .thread-message {
+    padding-bottom: 17px;
 }
 .thread-type-note .thread-person {
     color: #f7b126;
 }
-.thread-type-draft {
-    -webkit-box-shadow:inset 5px 0 0 0 #3197d6;
-    box-shadow:inset 5px 0 0 0 #3197d6
+.thread-type-message .thread-person {
+    /*color: #8494a4;*/
+    color: #3197d6;
 }
+/*.thread-type-draft {
+    background-color: #e9f2fb;
+    /*-webkit-box-shadow:inset 5px 0 0 0 #3197d6;
+    box-shadow:inset 5px 0 0 0 #3197d6* /
+}*/
 .thread-type-draft .thread-person {
     color: #3197d6;
     margin-right: 10px;
