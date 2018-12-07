@@ -41,7 +41,7 @@ class EncryptMailboxPassword extends Migration
             }
 
             Schema::table('mailboxes', function (Blueprint $table) {
-                $table->string('in_password')->nullable()->change();
+                $table->string('in_password', 255)->nullable()->change();
             });
         }
     }
