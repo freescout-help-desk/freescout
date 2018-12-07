@@ -1826,8 +1826,8 @@ button.conv-checkbox-clear {
     line-height: 1.45em;
     overflow-y: hidden;
 
-    margin: 0 -18px 0 12px;
-    padding: 0 18px 0 61px;
+    margin: 0 -18px 0 50px;
+    padding: 0 18px 0 22px;
     border-radius: 10px 0 0 10px;
 }
 .thread-opened-at {
@@ -2161,7 +2161,7 @@ ul.prev-convs {
         padding: 16px 2px 18px 13px;
     }
     .conv-customer-block {
-        padding-left: 15px;
+        padding-left: 15px!important;
     }
     .conv-numnav {
         top: 0;
@@ -2191,7 +2191,24 @@ ul.prev-convs {
     }
     .thread-message {
         margin-right: 15px;
-        margin-left: 62px;
+        margin-left: 0;
+    }
+    .thread-header {
+        padding-left: 55px;
+        min-height: 44px;
+    }
+    .thread-body {
+        margin-left: 0;
+        padding-left: 10px;
+    }
+    .thread-type-note .thread-body,
+    .thread-type-message .thread-body {
+        border-radius: 0;
+        margin: 0 -17px 0 -3px;
+        padding-left: 14px;
+    }
+    .thread-info {
+        max-width: 32%;
     }
     .thread-options {
         right: 0;
@@ -2291,6 +2308,7 @@ ul.prev-convs {
     }
     .customer-trigger {
         top: 16px;
+        right: 11px;
     }
     .profile-preview {
         padding: 15px;
