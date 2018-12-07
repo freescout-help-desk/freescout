@@ -1569,7 +1569,7 @@ button.conv-checkbox-clear {
     padding-left: 13px;
 }
 #conv-subject {
-    border-bottom: 1px solid #ebeff1;
+    border-bottom: 1px solid #e3e8eb;
 }
 .conv-subj-block {
     padding: 16px 9px 24px 20px;
@@ -1747,7 +1747,8 @@ button.conv-checkbox-clear {
 }
 .thread {
     position: relative;
-    border-bottom: 1px solid #ebeff1;
+    /*border-bottom: 1px solid #ebeff1;*/
+    border-bottom: 1px solid #e3e8eb;
 }
 .thread:last-child {
     border-bottom: 0;
@@ -1762,7 +1763,8 @@ button.conv-checkbox-clear {
     padding: 25px 13px 20px 12px;
 }
 .thread-photo {
-    padding: 16px 18px 25px 20px;
+    /*padding: 16px 18px 25px 20px;*/
+    padding: 25px 18px 25px 20px;
     position: absolute;
 }
 .thread-photo .person-photo {
@@ -1773,6 +1775,7 @@ button.conv-checkbox-clear {
     /* for automatic photo */
     line-height: 41px;
     padding: 2px;
+    background-color: #fff;
 }
 .thread-title {
     float: left;
@@ -1828,7 +1831,11 @@ button.conv-checkbox-clear {
 
     margin: 0 -18px 0 50px;
     padding: 0 18px 0 22px;
-    border-radius: 10px 0 0 10px;
+    border-radius: 10px;
+
+    /*margin-top: 5px;*/
+    padding-top: 12px;
+    padding-bottom: 10px;
 }
 .thread-opened-at {
     font-size: 12.5px;
@@ -1870,26 +1877,39 @@ button.conv-checkbox-clear {
 .thread-attachments {
     position: relative;
 }
-.thread-type-message .thread-body {
-    border: 1px solid #2b8fdd;
-    margin-top: 5px;
-    padding-top: 12px;
-    padding-bottom: 10px;
+/*.thread-type-customer .thread-body {
+    border: 1px solid #d9dee3;
+    -webkit-box-shadow:inset 3px 0 0 0 #d9dee3;
+    box-shadow:inset 3px 0 0 0 #d9dee3;
+}*/
+/*.thread-type-message .thread-body {
     background-color: #f1f7fc;
-    /*background-color: #fafcfc;*/
-    /*-webkit-box-shadow:inset 5px 0 0 0 #93a1af;
-    box-shadow:inset 5px 0 0 0 #93a1af;*/
+    /*border: 1px solid #2b8fdd;
     -webkit-box-shadow:inset 3px 0 0 0 #2b8fdd;
-    box-shadow:inset 3px 0 0 0 #2b8fdd;
+    box-shadow:inset 3px 0 0 0 #2b8fdd;* /
+    border: 1px solid #abd2f1;
+    -webkit-box-shadow:inset 3px 0 0 0 #abd2f1;
+    box-shadow:inset 3px 0 0 0 #abd2f1;
+}*/
+.thread-type-message {
+    background-color: #f1f7fc;
 }
-.thread-type-note .thread-body {
-    border: 1px solid #ffc646;
-    margin-top: 5px;
-    padding-top: 12px;
-    padding-bottom: 10px;
+/*.thread-type-draft .thread-body {
+    border: 1px solid #6db2e8;
+    -webkit-box-shadow:inset 3px 0 0 0 #6db2e8;
+    box-shadow:inset 3px 0 0 0 #6db2e8;
+}*/
+/*.thread-type-note .thread-body {
     background-color: #fffbf1;
+    /*border: 1px solid #ffc646;
     -webkit-box-shadow:inset 3px 0 0 0 #ffc646;
-    box-shadow:inset 3px 0 0 0 #ffc646
+    box-shadow:inset 3px 0 0 0 #ffc646;* /
+    border: 1px solid #ffe19d;
+    -webkit-box-shadow:inset 3px 0 0 0 #ffe19d;
+    box-shadow:inset 3px 0 0 0 #ffe19d;
+}*/
+.thread-type-note {
+    background-color: #fffbf1;
 }
 .thread-type-message .thread-message,
 .thread-type-note .thread-message {
@@ -2183,8 +2203,7 @@ ul.prev-convs {
         font-size: 17px;
     }
     .thread-photo {
-        padding-left: 15px;
-        padding-right: 15px;
+        padding: 17px 15px 25px 12px;
     }
     .conv-customer-block {
         padding: 15px;
@@ -2192,6 +2211,7 @@ ul.prev-convs {
     .thread-message {
         margin-right: 15px;
         margin-left: 0;
+        padding-top: 17px;
     }
     .thread-header {
         padding-left: 55px;
@@ -2199,19 +2219,20 @@ ul.prev-convs {
     }
     .thread-body {
         margin-left: 0;
-        padding-left: 10px;
+        padding-left: 3px;
     }
-    .thread-type-note .thread-body,
+    /*.thread-type-note .thread-body,
     .thread-type-message .thread-body {
         border-radius: 0;
         margin: 0 -17px 0 -3px;
-        padding-left: 14px;
-    }
+        padding-left: 10px;
+    }*/
     .thread-info {
         max-width: 32%;
     }
     .thread-options {
         right: 0;
+        top: 15px;
     }
     .conv-new #conv-toolbar h2 {
         padding-left: 13px;
