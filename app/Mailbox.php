@@ -248,6 +248,10 @@ class Mailbox extends Model
                     ->orWhere(function ($query2) {
                         $query2->where(['type' => Folder::TYPE_MINE]);
                         $query2->where(['user_id' => auth()->user()->id]);
+                    })
+                    ->orWhere(function ($query3) {
+                        $query3->where(['type' => Folder::TYPE_STARRED]);
+                        $query3->where(['user_id' => auth()->user()->id]);
                     });
             })
             ->orderBy('type')

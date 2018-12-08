@@ -21,9 +21,9 @@
                             @endphp
                             @foreach ($main_folders as $folder)
                                 @php
-                                    $active_count = $folder->getActiveCount($main_folders);
+                                    $active_count = $folder->getCount($main_folders);
                                 @endphp
-                                <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$active_count) dash-card-item-empty @endif" title="@if ($active_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if ($active_count)<span class="waiting-since">/ {{ $folder->getWaitingSince() }}</span>@endif<strong>{{ $active_count }}</strong></a>
+                                <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$active_count) dash-card-item-empty @endif" title="@if ($active_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $active_count)<span class="waiting-since">/ {{ $folder->getWaitingSince() }}</span>@endif<strong>{{ $active_count }}</strong></a>
                             @endforeach
                         </div>
                         <div class="dash-card-inactive-content">

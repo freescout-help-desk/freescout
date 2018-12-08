@@ -151,7 +151,7 @@
                     @if ($conversations->total())
                         <strong>{{ $conversations->total() }}</strong> {{ __('total conversations') }}&nbsp;|&nbsp; 
                     @endif
-                    @if (isset($folder->active_count))
+                    @if (isset($folder->active_count) && !$folder->isIndirect())
                         <strong>{{ $folder->getActiveCount() }}</strong> {{ __('active') }}&nbsp;|&nbsp; 
                     @endif
                     @if ($conversations)

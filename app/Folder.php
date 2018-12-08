@@ -198,9 +198,10 @@ class Folder extends Model
             $this->total_count = $this->active_count;
         } elseif ($this->isIndirect()) {
             // Conversation are connected to folder via conversation_folder table.
+            // Drafts.
             $this->active_count = ConversationFolder::where('conversation_folder.folder_id', $this->id)
                 ->join('conversations', 'conversations.id', '=', 'conversation_folder.conversation_id')
-                ->where('state', Conversation::STATE_PUBLISHED)
+                //->where('state', Conversation::STATE_PUBLISHED)
                 ->count();
             $this->total_count = $this->active_count;
         } else {
@@ -213,6 +214,21 @@ class Folder extends Model
                 ->count();
         }
         $this->save();
+    }
+
+    /**
+     * Get count to display in folders list.
+     * 
+     * @param  array  $folders [description]
+     * @return [type]          [description]
+     */
+    public function getCount($folders = [])
+    {
+        if ($this->type == self::TYPE_STARRED || $this->type == self::TYPE_DRAFTS) {
+            return $this->total_count;
+        } else {
+            return $this->getActiveCount($folders);
+        }
     }
 
     /**
