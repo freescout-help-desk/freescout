@@ -82,10 +82,10 @@
                     @if (empty($no_customer))
                         <td class="conv-customer">
                             <a href="{{ $conversation->url() }}">
-                                @if ($conversation->customer_id){{ $conversation->customer->getFullName(true)}}@endif
+                                @if ($conversation->customer_id){{ $conversation->customer->getFullName(true)}}@endif&nbsp;@if ($conversation->threads_count > 1)<span class="conv-counter">{{ $conversation->threads_count }}</span>@endif
                                 @if ($conversation->user_id)
                                     <small class="conv-owner-mobile text-help">
-                                        &nbsp;<small class="glyphicon glyphicon-user"></small> {{ $conversation->user->getFullName() }}
+                                        {{ $conversation->user->getFullName() }} <small class="glyphicon glyphicon-user"></small>
                                     </small>
                                 @endif
                             </a>
@@ -117,7 +117,7 @@
                                 @if ($conversation->has_attachments)
                                     <i class="conv-attachment-mobile glyphicon glyphicon-paperclip"></i>
                                 @endif
-                                {{--<span class="conv-subject-number">#{{ $conversation->number }} </span>--}}@action('conversations_table.before_subject', $conversation){{ $conversation->getSubject() }}@if ($conversation->threads_count > 1) <span class="conv-counter">{{ $conversation->threads_count }}</span>@endif
+                                {{--<span class="conv-subject-number">#{{ $conversation->number }} </span>--}}@action('conversations_table.before_subject', $conversation){{ $conversation->getSubject() }}
                             </p>
                             <p class="conv-preview">@if ($conversation->preview){{ $conversation->preview }}@else&nbsp;@endif</p>
                         </a>
