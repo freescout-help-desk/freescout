@@ -70,7 +70,7 @@
 				                        <label for="password" class="col-sm-4 control-label">{{ __('Password') }}</label>
 
 				                        <div class="col-sm-6">
-				                            <input id="password" type="password" class="form-control input-sized" name="password" value="{{ old('password') }}" maxlength="255" @if (!empty(old('send_invite')) || empty(old('role'))) required autofocus @endif>
+				                            <input id="password" type="password" class="form-control input-sized" name="password" value="{{ old('password') }}" maxlength="255" @if (!old('send_invite') && old('role')) required @endif autofocus>
 
 				                            @include('partials/field_error', ['field'=>'password'])
 				                        </div>
