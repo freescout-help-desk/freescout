@@ -238,7 +238,10 @@
                             <div class="thread-header">
                                 <div class="thread-title">
                                     <div class="thread-person">
-                                        {!! $thread->getActionDescription($conversation->number) !!}
+                                        {{--{!! $thread->getActionDescription($conversation->number) !!}--}}
+                                        <strong>@include('conversations/thread_by')</strong>
+                                        &nbsp;
+                                        {{ __('Draft') }}
                                     </div>
                                     <div class="btn-group btn-group-xs draft-actions">
                                         <a class="btn btn-default edit-draft-trigger" href="javascript:void(0);">Edit</a>
@@ -276,10 +279,10 @@
                                             @endif
                                         </strong> 
                                         {{-- Lines below must be spaceless --}}
-                                        @if ($loop->last)
+                                            {{--@if ($loop->last)
                                             {{ __("started the conversation") }}@elseif ($thread->type == App\Thread::TYPE_NOTE)
                                             {{ __("added a note") }}@else
-                                            {{ __("replied") }}@endif{{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
+                                            {{ __("replied") }}@endif--}}{{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
                                     </div>
                                     @if ($thread->type != App\Thread::TYPE_NOTE)
                                         <div class="thread-recipients">
@@ -389,14 +392,14 @@
                                         )
                                             @if ($thread->user_id)
                                                 @if ($thread->user_cached)
-                                                    {{ $thread->user_cached->getFullName() }}@if (!empty($show_status)),@endif
+                                                    {{ __("Assigned:") }}{{ $thread->user_cached->getFullName() }}@if (!empty($show_status)),@endif
                                                 @endif
                                             @else
-                                                {{ __("Anyone") }}@if (!empty($show_status)),@endif
+                                                {{ __("Assigned:") }} {{ __("Anyone") }}@if (!empty($show_status))<br/>@endif
                                             @endif
                                         @endif
                                         @if (!empty($show_status))
-                                            {{ $thread->getStatusName() }}
+                                            {{ __("Status:") }} {{ $thread->getStatusName() }}
                                         @endif
                                         </span>
                                     </li>
