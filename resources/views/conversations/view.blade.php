@@ -392,14 +392,14 @@
                                         )
                                             @if ($thread->user_id)
                                                 @if ($thread->user_cached)
-                                                    {{ __("Assigned:") }}{{ $thread->user_cached->getFullName() }}@if (!empty($show_status)),@endif
+                                                    {{ __("Assigned:") }} <strong>{{ $thread->user_cached->getFullName() }}</strong>@if (!empty($show_status))<br/>@endif
                                                 @endif
                                             @else
-                                                {{ __("Assigned:") }} {{ __("Anyone") }}@if (!empty($show_status))<br/>@endif
+                                                {{ __("Assigned:") }} <strong>{{ __("Anyone") }}</strong>@if (!empty($show_status))<br/>@endif
                                             @endif
                                         @endif
                                         @if (!empty($show_status))
-                                            {{ __("Status:") }} {{ $thread->getStatusName() }}
+                                            {{ __("Status:") }} <strong>{{ $thread->getStatusName() }}</strong>
                                         @endif
                                         </span>
                                     </li>
