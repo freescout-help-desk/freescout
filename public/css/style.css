@@ -1036,6 +1036,15 @@ a h4 {
     color: #72808e;
     text-decoration: none;
 }
+.profile-preview .customer-social-profiles {
+    top: 61px;
+}
+.profile-preview .customer-photo {
+    max-width: 100%;
+}
+.profile-preview .customer-data {
+    margin: 15px 0 0 0!important;
+}
 .customer-data {
     padding: 0px 26px 0 12px;
     margin-top: 15px;
@@ -2190,6 +2199,9 @@ ul.prev-convs {
         padding-left: 12px!important;
         padding-right: 15px!important;
     }
+    .customer-data {
+        margin-left: 43px!important;
+    }
     .conv-numnav {
         top: 0;
     }
@@ -2313,7 +2325,7 @@ ul.prev-convs {
         padding: 15px 20px 15px;
     }
     .customer-data {
-        margin: 0 0 0 42px;
+        margin: 0 0 0 50px;
     }
     .thread-person {
         font-size: 16px;
