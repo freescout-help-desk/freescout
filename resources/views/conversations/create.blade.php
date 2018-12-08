@@ -12,7 +12,9 @@
     @include('partials/flash_messages')
 
     @php
-        $thread = $conversation->threads()->first();
+        if (empty($thread)) {
+            $thread = $conversation->threads()->first();
+        }
         if (!$thread) {
             $thread = new App\Thread();
         }

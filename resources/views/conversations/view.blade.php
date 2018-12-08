@@ -197,7 +197,7 @@
             @endif
         </div>
         <div id="conv-layout-main">
-            @foreach ($threads as $thread)
+            @foreach ($threads as $thread_index => $thread)
                 
                 @if ($thread->type == App\Thread::TYPE_LINEITEM)
                     <div class="thread thread-type-{{ $thread->getTypeName() }} thread-state-{{ $thread->getStateName() }}" id="thread-{{ $thread->id }}">
@@ -238,7 +238,10 @@
                             <div class="thread-header">
                                 <div class="thread-title">
                                     <div class="thread-person">
-                                        {!! $thread->getActionDescription($conversation->number) !!}
+                                        {{--{!! $thread->getActionDescription($conversation->number) !!}--}}
+                                        <strong>@include('conversations/thread_by')</strong>
+                                        &nbsp;
+                                        [{{ __('Draft') }}]
                                     </div>
                                     <div class="btn-group btn-group-xs draft-actions">
                                         <a class="btn btn-default edit-draft-trigger" href="javascript:void(0);">Edit</a>
@@ -276,10 +279,10 @@
                                             @endif
                                         </strong> 
                                         {{-- Lines below must be spaceless --}}
-                                        @if ($loop->last)
+                                            {{--@if ($loop->last)
                                             {{ __("started the conversation") }}@elseif ($thread->type == App\Thread::TYPE_NOTE)
                                             {{ __("added a note") }}@else
-                                            {{ __("replied") }}@endif{{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
+                                            {{ __("replied") }}@endif--}}{{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
                                     </div>
                                     @if ($thread->type != App\Thread::TYPE_NOTE)
                                         <div class="thread-recipients">
@@ -315,7 +318,9 @@
                                     @endif
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
+                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
+                                    {{--<br/>
+                                    <a href="#thread-{{ $thread->id }}">#{{ $thread_index+1 }}</a>
                                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                         <span class="thread-status">
                                             @if ($loop->last || $thread->status != App\Thread::STATUS_NOCHANGE)
@@ -337,7 +342,7 @@
                                                 {{ $thread->getStatusName() }}
                                             @endif
                                         </span>
-                                    @endif
+                                    @endif--}}
                                 </div>
                             </div>
                             <div class="thread-body">
@@ -364,9 +369,9 @@
                         <div class="dropdown thread-options">
                             <span class="dropdown-toggle glyphicon glyphicon-option-vertical" data-toggle="dropdown"></span>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                <li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }} (todo)</a></li>
-                                <li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>
-                                <li><a href="javascript:alert('todo: implement creating new conversation from thread');void(0);" title="{{ __("Start a conversation from this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
+                                {{--<li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }} (todo)</a></li>
+                                <li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>--}}
+                                <li><a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}?from_thread_id={{ $thread->id }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
                                 @if (Auth::user()->isAdmin())
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
@@ -374,6 +379,31 @@
                                 @if ($thread->headers)
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message") }}" data-trigger="modal" data-modal-title="{{ __("Original Message") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
+                                @endif
+                                @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
+                                    <li class="divider"></li>
+                                    <li>
+                                        <span>
+                                        @if ($loop->last || $thread->status != App\Thread::STATUS_NOCHANGE)
+                                            @php
+                                                $show_status = true;
+                                            @endphp
+                                        @endif
+                                        @if ($loop->last || (!$loop->last && ($thread->user_id != $threads[$loop->index+1]->user_id || $threads[$loop->index+1]->action_type == App\Thread::ACTION_TYPE_USER_CHANGED))
+                                        )
+                                            @if ($thread->user_id)
+                                                @if ($thread->user_cached)
+                                                    {{ __("Assigned:") }} <strong>{{ $thread->user_cached->getFullName() }}</strong>@if (!empty($show_status))<br/>@endif
+                                                @endif
+                                            @else
+                                                {{ __("Assigned:") }} <strong>{{ __("Anyone") }}</strong>@if (!empty($show_status))<br/>@endif
+                                            @endif
+                                        @endif
+                                        @if (!empty($show_status))
+                                            {{ __("Status:") }} <strong>{{ $thread->getStatusName() }}</strong>
+                                        @endif
+                                        </span>
+                                    </li>
                                 @endif
                             </ul>
                         </div>

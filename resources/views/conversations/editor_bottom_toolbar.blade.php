@@ -13,7 +13,7 @@
         <option value="{{ App\Mailbox::TICKET_STATUS_PENDING }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_PENDING)selected="selected"@endif>{{ __('Pending') }}</option>
         <option value="{{ App\Mailbox::TICKET_STATUS_CLOSED }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_CLOSED)selected="selected"@endif>{{ __('Closed') }}</option>
     </select> 
-    <small class="glyphicon glyphicon-chevron-right note-bottom-div"></small> 
+    <small class="note-bottom-div"></small> 
     <span class="editor-btm-text">{{ __('Assign to') }}:</span> 
     <select name="user_id" class="form-control" data-parsley-exclude="true">
     	<option value="-1" @if ($mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_ANYONE))data-default="true" selected="selected"@endif>{{ __('Anyone') }}</option>

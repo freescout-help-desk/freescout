@@ -96,7 +96,15 @@ class Folder extends Model
 
     public function getTypeName()
     {
-        return __(self::$types[$this->type]);
+        // To make name translatable.
+        switch ($this->type) {
+            case self::TYPE_UNASSIGNED:
+                return __('Unassigned');
+            case self::TYPE_MINE:
+                return __('Mine');
+            default:
+                return __(self::$types[$this->type]);
+        }
     }
 
     public function getTypeIcon()
@@ -190,9 +198,10 @@ class Folder extends Model
             $this->total_count = $this->active_count;
         } elseif ($this->isIndirect()) {
             // Conversation are connected to folder via conversation_folder table.
+            // Drafts.
             $this->active_count = ConversationFolder::where('conversation_folder.folder_id', $this->id)
                 ->join('conversations', 'conversations.id', '=', 'conversation_folder.conversation_id')
-                ->where('state', Conversation::STATE_PUBLISHED)
+                //->where('state', Conversation::STATE_PUBLISHED)
                 ->count();
             $this->total_count = $this->active_count;
         } else {
@@ -205,6 +214,21 @@ class Folder extends Model
                 ->count();
         }
         $this->save();
+    }
+
+    /**
+     * Get count to display in folders list.
+     * 
+     * @param  array  $folders [description]
+     * @return [type]          [description]
+     */
+    public function getCount($folders = [])
+    {
+        if ($this->type == self::TYPE_STARRED || $this->type == self::TYPE_DRAFTS) {
+            return $this->total_count;
+        } else {
+            return $this->getActiveCount($folders);
+        }
     }
 
     /**
@@ -229,5 +253,58 @@ class Folder extends Model
         }
 
         return $active_count;
+    }
+
+    public function getConversationsQuery()
+    {
+        if ($this->type == self::TYPE_MINE) {
+            // Assigned to user.
+            return Conversation::where('user_id', $this->user_id)
+                ->where('mailbox_id', $this->mailbox_id);
+        } elseif ($this->isIndirect()) {
+            // Via intermediate table.
+            return Conversation::join('conversation_folder', 'conversations.id', '=', 'conversation_folder.conversation_id')
+                    ->where('conversation_folder.folder_id', $this->id);
+        } else {
+            // All other conversations.
+            return $this->conversations();
+        }
+    }
+
+    /**
+     * Works for main folder only for now.
+     * 
+     * @return [type] [description]
+     */
+    public function getWaitingSince()
+    {
+        // Get oldest active conversation.
+        $conversation = $this->getConversationsQuery()
+            ->where('state', Conversation::STATE_PUBLISHED)
+            ->where('status', Conversation::STATUS_ACTIVE)
+            ->orderBy($this->getWaitingSinceField(), 'asc')
+            ->first();
+        if ($conversation) {
+            return $conversation->getWaitingSince($this);
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * Get conversation field used to detect waiting since time.
+     * @return [type] [description]
+     */
+    public function getWaitingSinceField()
+    {
+        if ($this->type == \App\Folder::TYPE_CLOSED) {
+            return 'closed_at';
+        } elseif ($this->type == \App\Folder::TYPE_DRAFTS) {
+            return 'updated_at';
+        } elseif ($this->type == \App\Folder::TYPE_DELETED) {
+            return 'user_updated_at';
+        } else {
+            return'last_reply_at';
+        }
     }
 }
