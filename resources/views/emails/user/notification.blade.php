@@ -21,8 +21,8 @@
 		</style>
 	<![endif]-->
 </head>
-<body bgcolor="#f1f3f4" style="-webkit-text-size-adjust:none; margin: 0;">
-	<table bgcolor="#f1f3f4" cellspacing="0" border="0" cellpadding="0" width="100%">
+<body bgcolor="#f8f9f9" style="-webkit-text-size-adjust:none; margin: 0;">
+	<table bgcolor="#f8f9f9" cellspacing="0" border="0" cellpadding="0" width="100%">
 		<tr>
 			<td>
 				<table class="content" width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -145,7 +145,7 @@
 								<td>
 									<table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-bottom:1px solid #dde3e7;">
 									    <tr>
-									        <td style="padding: 2em;" bgcolor="#ffffff">
+									        <td style="padding: 2em;" bgcolor="@if ($thread->type == App\Thread::TYPE_MESSAGE){{ config('app.colors')['bg_user_reply'] }}@elseif ($thread->type == App\Thread::TYPE_NOTE){{ config('app.colors')['bg_note'] }}@else{{ 'ffffff' }}@endif">
 									            <table width="100%" border="0" cellspacing="0" cellpadding="0">
 									                <tr>
 									                    <td>
@@ -223,7 +223,7 @@
 		{{-- footer --}}
 		<tr>
 			<td>
-				<table align="center" bgcolor="#f1f3f4" width="95%" border="0" cellspacing="0" cellpadding="0" style="max-width: 650px; margin: 0 auto;">
+				<table align="center" bgcolor="#f8f9f9" width="95%" border="0" cellspacing="0" cellpadding="0" style="max-width: 650px; margin: 0 auto;">
 					<tr>
 						<td height="22"></td>
 					</tr>

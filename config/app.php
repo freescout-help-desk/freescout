@@ -211,6 +211,8 @@ return [
         'text_note'  => '#e6b216',
         'text_customer' => '#8d959b',
         'text_user'     => '#3197d6',
+        'bg_user_reply' => '#f1f7fc',
+        'bg_note'       => '#fffbf1',
     ],
 
     /*

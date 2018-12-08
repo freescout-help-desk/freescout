@@ -197,7 +197,7 @@
             @endif
         </div>
         <div id="conv-layout-main">
-            @foreach ($threads as $thread)
+            @foreach ($threads as $thread_index => $thread)
                 
                 @if ($thread->type == App\Thread::TYPE_LINEITEM)
                     <div class="thread thread-type-{{ $thread->getTypeName() }} thread-state-{{ $thread->getStateName() }}" id="thread-{{ $thread->id }}">
@@ -241,7 +241,7 @@
                                         {{--{!! $thread->getActionDescription($conversation->number) !!}--}}
                                         <strong>@include('conversations/thread_by')</strong>
                                         &nbsp;
-                                        {{ __('Draft') }}
+                                        [{{ __('Draft') }}]
                                     </div>
                                     <div class="btn-group btn-group-xs draft-actions">
                                         <a class="btn btn-default edit-draft-trigger" href="javascript:void(0);">Edit</a>
@@ -320,6 +320,7 @@
                                 <div class="thread-info">
                                     <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
                                     {{--<br/>
+                                    <a href="#thread-{{ $thread->id }}">#{{ $thread_index+1 }}</a>
                                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                         <span class="thread-status">
                                             @if ($loop->last || $thread->status != App\Thread::STATUS_NOCHANGE)
