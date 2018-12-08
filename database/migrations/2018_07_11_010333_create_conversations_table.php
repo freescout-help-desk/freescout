@@ -37,6 +37,7 @@ class CreateConversationsTable extends Migration
             // For incoming messages values are stored as is
             $table->text('cc')->nullable(); // JSON
             $table->text('bcc')->nullable(); // JSON
+            // Preview stores the body of the latest reply or note.
             $table->string('preview', Conversation::PREVIEW_MAXLENGTH);
             // The imported field enables conversation to be created for historical purposes
             // (i.e. if moving from a different platform, you can import your history).
