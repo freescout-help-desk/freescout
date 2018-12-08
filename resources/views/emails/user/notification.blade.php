@@ -170,11 +170,11 @@
 																@endif
 															</h3>
 
-															@if ($thread->type != App\Thread::TYPE_NOTE)
+															{{--@if ($thread->type != App\Thread::TYPE_NOTE)
 																<p style="display:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; font-size:11.5px; line-height:18px; margin:0;">
 															    	@if ($thread->user_id){{ __('Assigned:') }} {{ $thread->getAssigneeName(true, $user) }} &nbsp;&nbsp;&nbsp; @endif{{ __('Status:') }} {{ $thread->getStatusName() }}<br>
 															    </p>
-															@endif
+															@endif--}}
 									                    </td>
 									                    <td valign="top">
 									                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; font-size:12px; line-height:18px; margin:0;" align="right">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
