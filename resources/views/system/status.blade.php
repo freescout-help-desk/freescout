@@ -198,7 +198,7 @@
                                 </tr>
                                 <tr>
                                     <td>{{ __('Failed At') }}</td>
-                                    <td>{{  App\User::dateFormat($job->failed_at) }}</td>
+                                    <td>{{  App\User::dateFormat($job->failed_at, 'M j, Y H:i:s') }}</td>
                                 </tr>
                             </tbody>
                         </table>

@@ -38,6 +38,7 @@ return [
             'driver'      => 'database',
             'table'       => 'jobs',
             'queue'       => 'default',
+            // Retry after does not work as delay between retry attempts.
             'retry_after' => 90,
         ],
 
