@@ -48,10 +48,12 @@ class Mail
         self::REPLY_SEPARATOR_HTML, // Our HTML separator
         self::REPLY_SEPARATOR_TEXT, // Our plain text separator
 
+        // Email service providers specific separators.
         '<div class="gmail_quote">', // Gmail
         'yahoo_quoted_', // Yahoo, full: <div id=3D"ydp6h4f5c59yahoo_quoted_2937493705"
         '------------------ 原始邮件 ------------------', // QQ
 
+        // General separators.
         '<blockquote', // General sepator
         '<!-- originalMessage -->',
         //'---Original---', // QQ separator, wait for emails from QQ and check
