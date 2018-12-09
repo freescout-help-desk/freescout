@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
     {
         // Remove failed jobs
         $schedule->command('queue:flush')
-            ->daily();
+            ->weekly();
 
         // Restart processing queued jobs (just in case)
         $schedule->command('queue:restart')

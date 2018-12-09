@@ -153,31 +153,33 @@
                     <p>
                         {{ __('Total') }}: <strong>{{ count($queued_jobs)}}</strong>
                     </p>
-                    @foreach ($queued_jobs as $job)
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <th colspan="2">{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}</th>
-                                </tr>
-                                <tr>
-                                    <td>{{ __('Queue') }}</td>
-                                    <td>{{ $job->queue }}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{ __('Attempts') }}</td>
-                                    <td>
-                                        @if ($job->attempts > 0)<strong class="text-danger">@endif
-                                            {{ $job->attempts }}
-                                        @if ($job->attempts > 0)</strong>@endif
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>{{ __('Created At') }}</td>
-                                    <td>{{  App\User::dateFormat($job->created_at) }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    @endforeach
+                    <div class="jobs-list">
+                        @foreach ($queued_jobs as $job)
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th colspan="2">{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ __('Queue') }}</td>
+                                        <td>{{ $job->queue }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ __('Attempts') }}</td>
+                                        <td>
+                                            @if ($job->attempts > 0)<strong class="text-danger">@endif
+                                                {{ $job->attempts }}
+                                            @if ($job->attempts > 0)</strong>@endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ __('Created At') }}</td>
+                                        <td>{{  App\User::dateFormat($job->created_at) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        @endforeach
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -185,24 +187,42 @@
                 <td>
                     <p>
                         {{ __('Total') }}:  <strong @if (count($failed_jobs) > 0) class="text-danger" @endif >{{ count($failed_jobs) }}</strong>
+
+                        @if (count($failed_jobs))
+                            &nbsp;&nbsp;
+                            <form action="{{ route('system.action') }}" method="POST">
+                                {{ csrf_field() }}
+
+                                <select name="failed_queue" class="">
+                                    @foreach ($failed_queues as $queue)
+                                        <option value="{{ $queue }}">{{ $queue }}</option>
+                                    @endforeach
+                                </select>
+
+                                <button type="submit" name="action" value="delete_failed_jobs" class="btn btn-default btn-xs margin-left-10">{{ __('Delete') }}</button>
+                                <button type="submit" name="action" value="retry_failed_jobs" class="btn btn-default btn-xs">{{ __('Retry') }}</button>
+                            </form>
+                        @endif
                     </p>
-                    @foreach ($failed_jobs as $job)
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <th colspan="2">{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}</th>
-                                </tr>
-                                <tr>
-                                    <td>{{ __('Queue') }}</td>
-                                    <td>{{ $job->queue }}</td>
-                                </tr>
-                                <tr>
-                                    <td>{{ __('Failed At') }}</td>
-                                    <td>{{  App\User::dateFormat($job->failed_at, 'M j, Y H:i:s') }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    @endforeach
+                    <div class="jobs-list">
+                        @foreach ($failed_jobs as $job)
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th colspan="2">{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ __('Queue') }}</td>
+                                        <td>{{ $job->queue }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ __('Failed At') }}</td>
+                                        <td>{{  App\User::dateFormat($job->failed_at, 'M j, Y H:i:s') }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        @endforeach
+                    </div>
                 </td>
             </tr>
         </tbody>

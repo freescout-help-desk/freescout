@@ -1458,6 +1458,13 @@ button.conv-checkbox-clear {
         background-color: transparent!important;
         font-weight: normal;
     }
+    .conv-counter {
+        border: 1px solid #d6dde3;
+        background: #f8f9f9;
+        top: -1px;
+        font-size: 10px;
+        padding: 0 3px;
+    }
     /*.conv-subject-number {
         display: inline;
     }*/
@@ -3437,6 +3444,10 @@ a.disabled:focus {
     font-weight: normal;
     line-height: 1.42857143;
     cursor: default;
+}
+.jobs-list {
+    max-height: 300px;
+    overflow-y: scroll;
 }
 
 /**
