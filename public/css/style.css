@@ -1287,15 +1287,15 @@ table.table-conversations td.conv-attachment {
     border-radius: 4px;
 }
 .conv-counter {
-    border: 1px solid #d6dde3;
-    background: #f8f9f9;
+    /*border: 1px solid #d6dde3;
+    background: #f8f9f9;*/
     color: #a5b2bd;
     line-height: 17px;
     position: relative;
     margin-left: 3px;
-    top: -1px;
-    font-size: 10px;
-    padding: 0 3px;
+    /*top: -1px;*/
+    font-size: 12px;
+    /*padding: 0 3px;*/
 }
 .table-conversations .conv-thread-count a {
     padding: 0;
