@@ -1186,7 +1186,8 @@ thead .conv-cb label {
 }
 .table.table-conversations tbody .conv-active {
     /*background-color: #eff6fc;*/
-    background-color: #f2f7fd;
+    /*background-color: #f2f7fd;*/
+    background-color: #f4f8fd;
 }
 /*.conv-row:hover {
     filter: brightness(98%);
@@ -1199,7 +1200,8 @@ thead .conv-cb label {
     background-color: #fbfcfd;
 }*/
 .conv-active .conv-date a {
-    background-color: #deecf9;
+    /*background-color: #deecf9;*/
+    background-color: #e1edfa;
 }
 .table-conversations td.conv-customer a {
     line-height: 1.2em;
@@ -1387,10 +1389,10 @@ button.conv-checkbox-clear {
     }
 
     .table.table-conversations tr.selected {
-        background-color: #f0ecec;
+        background-color: #e1edfa;
     }
     .table-conversations tr.selected .conv-fader {
-        background: linear-gradient(to right,rgba(255,255,255,0), #f0ecec);
+        background: linear-gradient(to right,rgba(255,255,255,0), #e1edfa);
     }
 
     .table.table-conversations tbody td {
@@ -1455,9 +1457,6 @@ button.conv-checkbox-clear {
         font-size: 12px!important;
         background-color: transparent!important;
         font-weight: normal;
-    }
-    .conv-active .conv-date a {
-
     }
     /*.conv-subject-number {
         display: inline;
@@ -1901,7 +1900,7 @@ button.conv-checkbox-clear {
     box-shadow:inset 3px 0 0 0 #abd2f1;
 }*/
 .thread-type-message {
-    background-color: #f1f7fc;
+    background-color: #f4f8fd;
 }
 /*.thread-type-draft .thread-body {
     border: 1px solid #6db2e8;
