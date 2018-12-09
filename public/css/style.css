@@ -1970,6 +1970,8 @@ button.conv-checkbox-clear {
 }
 .thread-attachments a {
     display: inline-block;
+    color: #337ab7;
+    font-size: 13.4px;
 }
 .thread-attachments a.disabled,
 .thread-attachments a.disabled:hover,
