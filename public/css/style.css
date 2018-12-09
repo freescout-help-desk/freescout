@@ -1763,7 +1763,7 @@ button.conv-checkbox-clear {
 }
 .thread-header {
     overflow: hidden;
-    min-height: 40px;
+    min-height: 42px;
     padding-left: 72px;
 }
 .thread-message {

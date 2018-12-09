@@ -318,14 +318,17 @@
                                     @endif
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
-                                    {{--<br/>
-                                    <a href="#thread-{{ $thread->id }}">#{{ $thread_index+1 }}</a>
+                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
+                                    {{--<a href="#thread-{{ $thread->id }}">#{{ $thread_index+1 }}</a>--}}
                                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                         <span class="thread-status">
-                                            @if ($loop->last || $thread->status != App\Thread::STATUS_NOCHANGE)
+                                            @if ($loop->last || (!$loop->last && $thread->status != App\Thread::STATUS_NOCHANGE && $thread->status != $threads[$loop->index+1]->status))
                                                 @php
                                                     $show_status = true;
+                                                @endphp
+                                            @else
+                                                @php
+                                                    $show_status = false;
                                                 @endphp
                                             @endif
                                             @if ($loop->last || (!$loop->last && ($thread->user_id != $threads[$loop->index+1]->user_id || $threads[$loop->index+1]->action_type == App\Thread::ACTION_TYPE_USER_CHANGED))
@@ -342,7 +345,7 @@
                                                 {{ $thread->getStatusName() }}
                                             @endif
                                         </span>
-                                    @endif--}}
+                                    @endif
                                 </div>
                             </div>
                             <div class="thread-body">
@@ -380,7 +383,7 @@
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message") }}" data-trigger="modal" data-modal-title="{{ __("Original Message") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
                                 @endif
-                                @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
+                                {{--@if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                     <li class="divider"></li>
                                     <li>
                                         <span>
@@ -404,7 +407,7 @@
                                         @endif
                                         </span>
                                     </li>
-                                @endif
+                                @endif--}}
                             </ul>
                         </div>
                     </div>
