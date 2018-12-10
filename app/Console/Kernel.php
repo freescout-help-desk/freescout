@@ -42,6 +42,34 @@ class Kernel extends ConsoleKernel
         $schedule->command('freescout:module-check-licenses')
             ->daily();
 
+        // Logs monitoring.
+        $log_monitor_options = \Option::getOptions([
+            'alert_logs',
+            'alert_logs_period',
+        ]);
+        if ($log_monitor_options['alert_logs'] && $log_monitor_options['alert_logs_period']) {
+            $logs_cron = '';
+            switch ($log_monitor_options['alert_logs_period']) {
+                case 'hour':
+                    $logs_cron = '0 * * * *';
+                    break;
+                case 'day':
+                    $logs_cron = '0 0 * * *';
+                    break;
+                case 'week':
+                    $logs_cron = '0 0 * * 0';
+                    break;
+                case 'month':
+                    $logs_cron = '0 0 1 * *';
+                    break;
+            }
+            if ($logs_cron) {
+                $schedule->command('freescout:logs-monitor')
+                    ->cron($logs_cron)
+                    ->withoutOverlapping();
+            }
+        }
+
         // Fetch emails from mailboxes
         $schedule->command('freescout:fetch-emails')
             ->everyMinute()

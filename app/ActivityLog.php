@@ -13,6 +13,15 @@ class ActivityLog extends Activity
     const NAME_SYSTEM = 'system';
     const NAME_APP_LOGS = 'app';
 
+    public static $available_logs = [
+        self::NAME_USER,
+        self::NAME_OUT_EMAILS,
+        self::NAME_EMAILS_SENDING,
+        self::NAME_EMAILS_FETCHING,
+        self::NAME_SYSTEM,
+        self::NAME_APP_LOGS,
+    ];
+
     const DESCRIPTION_USER_LOGIN = 'login';
     const DESCRIPTION_USER_LOGOUT = 'logout';
     const DESCRIPTION_USER_REGISTER = 'register';
@@ -97,5 +106,29 @@ class ActivityLog extends Activity
         $col = ucfirst($col);
 
         return $col;
+    }
+
+    /**
+     * Get log names.
+     * 
+     * @return [type] [description]
+     */
+    public static function getLogNames()
+    {
+        return ActivityLog::select('log_name')->distinct()->pluck('log_name')->toArray();
+    }
+
+    /**
+     * Get available log names.
+     * 
+     * @return [type] [description]
+     */
+    public static function getAvailableLogs($check_existing = true)
+    {
+        $available_logs = self::$available_logs;
+        if ($check_existing) {
+            $available_logs = array_merge($available_logs, self::getLogNames());
+        }
+        return array_unique(\Eventy::filter('activity_log.available_logs', self::$available_logs));
     }
 }
