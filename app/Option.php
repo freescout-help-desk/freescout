@@ -150,8 +150,10 @@ class Option extends Model
         foreach ($options as $name) {
             if (isset(self::$cache[$name])) {
                 if (self::$cache[$name] == self::CACHE_DEFAULT_VALUE) {
-                    if (empty($defaults[$name])) {
+                    if (!isset($defaults[$name])) {
                         $default = self::getDefault($name);
+                    } else {
+                        $default = $defaults[$name];
                     }
                     $values[$name] = $default;
                 } else {
@@ -168,8 +170,10 @@ class Option extends Model
         $db_options = self::whereIn('name', $options)->get();
         foreach ($options as $name) {
             // If not passed, get default value from config
-            if (empty($defaults[$name])) {
+            if (!isset($defaults[$name])) {
                 $default = self::getDefault($name);
+            } else {
+                $default = $defaults[$name];
             }
             $db_option = $db_options->where('name', $name)->first();
             if ($db_option) {
