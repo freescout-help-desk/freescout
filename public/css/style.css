@@ -1784,7 +1784,9 @@ button.conv-checkbox-clear {
 }
 .thread-photo .person-photo {
     border-radius: 50%;
-    box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    /*box-shadow: 0 1px 2px rgba(0,0,0,.2);*/
+    -webkit-box-shadow: 0 1px 6px rgba(147,161,175,.5);
+    box-shadow: 0 1px 6px rgba(147,161,175,.5);
     width: 45px;
     height: 45px;
     /* for automatic photo */
@@ -1990,6 +1992,14 @@ button.conv-checkbox-clear {
 .thread-attachments span {
     text-transform: lowercase;
 }
+/*.thread-num {
+    position: absolute;
+    left: 20px;
+    padding: 1px 5px;
+    color: #a5b2bd;
+    text-align: center;
+    top: 75px;
+}*/
 .conv-new #conv-toolbar {
     border-bottom: 1px solid #d4d9dd;
     padding: 6px 0 7px 0;

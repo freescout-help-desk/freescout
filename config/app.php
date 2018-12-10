@@ -213,7 +213,7 @@ return [
         'note'       => '#ffc646',
         'text_note'  => '#e6b216',
         'text_customer' => '#8d959b',
-        'text_user'     => '#3197d6',
+        'text_user'     => '#8d959b',
         'bg_user_reply' => '#f4f8fd',
         'bg_note'       => '#fffbf1',
     ],

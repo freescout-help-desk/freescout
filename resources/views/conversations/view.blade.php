@@ -411,6 +411,16 @@
                                 @endif--}}
                             </ul>
                         </div>
+                        {{--@if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
+                            @php
+                                if (!empty($thread_num)) {
+                                    $thread_num--;
+                                } else {
+                                    $thread_num = $conversation->threads_count;
+                                }
+                            @endphp
+                            <div class="thread-num"><i class="glyphicon glyphicon-share-alt"></i> {{ $thread_num }}</div>
+                        @endif--}}
                     </div>
                 @endif
             @endforeach
