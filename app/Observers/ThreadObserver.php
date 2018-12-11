@@ -35,7 +35,7 @@ class ThreadObserver
         }
 
         // Update preview.
-        if (in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE]) && $thread->state == Thread::STATE_PUBLISHED && $conversation->threads_count > 1)
+        if (in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE]) && $thread->state == Thread::STATE_PUBLISHED && ($conversation->threads_count > 1 || $thread->type == Thread::TYPE_NOTE))
         {
             $conversation->setPreview($thread->body);
         }
