@@ -1829,8 +1829,10 @@ button.conv-checkbox-clear {
     font-size: 12px;
 }
 .thread-to-first {
-    margin-right: 6px;
+    /*margin-right: 7px;*/
     color: #a5b2bd;
+}
+.thread-to-first .glyphicon {
     top: 2px;
 }
 .thread-to-first:hover {
@@ -2271,7 +2273,7 @@ ul.prev-convs {
         padding-left: 3px;
     }
     .thread-to-first,
-    .thread-num {
+    .thread-type {
         display: none;
     }
     /*.thread-type-note .thread-body,
