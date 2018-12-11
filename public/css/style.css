@@ -1603,6 +1603,7 @@ button.conv-checkbox-clear {
     line-height: 30px;
     word-wrap: break-word;
     margin-right: 8px;
+    max-width: 100%;
 }
 .conv-numnav {
     margin: 0;
@@ -1779,7 +1780,7 @@ button.conv-checkbox-clear {
 }
 .thread-photo {
     /*padding: 16px 18px 25px 20px;*/
-    padding: 25px 18px 25px 20px;
+    padding: 21px 18px 25px 20px;
     position: absolute;
 }
 .thread-photo .person-photo {
@@ -1826,6 +1827,14 @@ button.conv-checkbox-clear {
     float: right;
     text-align: right;
     font-size: 12px;
+}
+.thread-to-first {
+    margin-right: 6px;
+    color: #a5b2bd;
+    top: 2px;
+}
+.thread-to-first:hover {
+    text-decoration: none;
 }
 .thread-recipients {
     clear: both;
@@ -2240,7 +2249,7 @@ ul.prev-convs {
         font-size: 17px;
     }
     .thread-photo {
-        padding: 17px 15px 25px 12px;
+        padding: 13px 15px 25px 12px;
     }
     .conv-customer-block {
         padding: 15px;
@@ -2260,6 +2269,10 @@ ul.prev-convs {
     .thread-body {
         margin-left: 0;
         padding-left: 3px;
+    }
+    .thread-to-first,
+    .thread-num {
+        display: none;
     }
     /*.thread-type-note .thread-body,
     .thread-type-message .thread-body {

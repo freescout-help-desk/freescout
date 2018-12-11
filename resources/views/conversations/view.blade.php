@@ -318,7 +318,15 @@
                                     @endif
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
+                                    @php
+                                        if (!isset($is_first) && ($thread->type == App\Thread::TYPE_CUSTOMER || $thread->type == App\Thread::TYPE_MESSAGE)) {
+                                            $is_first = true;
+                                        } elseif (isset($is_first)) {
+                                            $is_first = false;
+                                        }
+                                    @endphp
+                                    @if ($is_first && $conversation->threads_count > 2)<a href="#thread-{{ $threads[count($threads)-1]->id }}" class="glyphicon glyphicon-arrow-down thread-to-first" data-toggle="tooltip" title="{{ __('Scroll to the First') }}"></a>@endif
+                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>@if ($is_first && $conversation->threads_count > 1)<span class="thread-num">{{ __('Last message') }}, </span>@elseif ($loop->last && $conversation->threads_count > 1)<span class="thread-num">{{ __('1-st message') }}, </span>@endif{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
                                     {{--<a href="#thread-{{ $thread->id }}">#{{ $thread_index+1 }}</a>--}}
                                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                         <span class="thread-status">
