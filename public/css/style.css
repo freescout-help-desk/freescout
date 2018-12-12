@@ -1830,6 +1830,7 @@ button.conv-checkbox-clear {
 }
 .thread-type {
     margin-right: 7px;
+    font-weight: bold;
 }
 .thread-to-first {
     margin-right: 7px;
