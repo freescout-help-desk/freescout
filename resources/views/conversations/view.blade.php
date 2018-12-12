@@ -320,7 +320,7 @@
                                 </div>
                                 <div class="thread-info">
                                     @if ($thread->type == App\Thread::TYPE_NOTE)
-                                        <span class="thread-type">[{{ __('Note') }}] <span>·</span> </span>
+                                        {{--<span class="thread-type">{{ __('Note') }} <span>·</span> </span>--}}
                                     @else
                                         @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                             @php
