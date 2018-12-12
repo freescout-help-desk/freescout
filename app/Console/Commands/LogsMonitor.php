@@ -42,6 +42,8 @@ class LogsMonitor extends Command
         $options = \Option::getOptions([
             'alert_logs_names',
             'alert_logs_period',
+        ], [
+            'alert_logs_period' => config('app.alert_logs_period')
         ]);
 
         if (!$options['alert_logs_names']) {

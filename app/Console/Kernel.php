@@ -43,13 +43,10 @@ class Kernel extends ConsoleKernel
             ->daily();
 
         // Logs monitoring.
-        $log_monitor_options = \Option::getOptions([
-            'alert_logs',
-            'alert_logs_period',
-        ]);
-        if ($log_monitor_options['alert_logs'] && $log_monitor_options['alert_logs_period']) {
+        $alert_logs_period = config('app.alert_logs_period');
+        if (config('app.alert_logs') && $alert_logs_period) {
             $logs_cron = '';
-            switch ($log_monitor_options['alert_logs_period']) {
+            switch ($alert_logs_period) {
                 case 'hour':
                     $logs_cron = '0 * * * *';
                     break;

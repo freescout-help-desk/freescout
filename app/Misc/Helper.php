@@ -822,12 +822,18 @@ class Helper
         if ($old_value) {
             // Replace.
             $contents = str_replace("{$key}={$old_value}", "{$key}={$value}", $contents);
-            \File::put($env_path, $contents);
         } else {
-            // Add.
-            $contents = $contents."\n{$key}={$value}\n";
-            \File::put($env_path, $contents);
+            // Add or empty value
+            preg_match("/^{$key}=[\r\n]/m", $contents, $matches);
+            if (count($matches)) {
+                // Replace empty value
+                $contents = str_replace("{$key}=", "{$key}={$value}", $contents);
+            } else {
+                // Add.
+                $contents = $contents."\n{$key}={$value}\n";
+            }
         }
+        \File::put($env_path, $contents);
     }
 
     /**
