@@ -1828,8 +1828,11 @@ button.conv-checkbox-clear {
     text-align: right;
     font-size: 12px;
 }
+.thread-type {
+    margin-right: 7px;
+}
 .thread-to-first {
-    /*margin-right: 7px;*/
+    margin-right: 7px;
     color: #a5b2bd;
 }
 .thread-to-first .glyphicon {
