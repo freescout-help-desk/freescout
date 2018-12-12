@@ -60,7 +60,7 @@
             @endforeach
         </div>
     @elseif (Auth::user()->isAdmin())
-        <a href="{{ route('mailboxes.create') }}" class="btn btn-primary margin-top">{{ __("Create Mailbox") }}</a>
+        <a href="{{ route('mailboxes') }}" class="btn btn-primary margin-top">{{ __("Manage Mailboxes") }}</a>
     @else
         @include('partials/empty', ['icon' => 'home', 'empty_text' => __("Welcome home!")])
     @endif
