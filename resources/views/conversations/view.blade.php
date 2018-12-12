@@ -336,7 +336,7 @@
                                                 }
                                             @endphp
                                             @if (!empty($is_first) && $conversation->threads_count > 2)<a href="#thread-{{ $threads[count($threads)-1]->id }}" class="thread-to-first" data-toggle="tooltip" title="{{ __('Scroll to the Beginning') }}"><i class="glyphicon glyphicon-arrow-down"></i> </a>@endif
-                                            <span class="thread-type">({{ $thread_num }}) <span>·</span> </span>
+                                            {{--<span class="thread-type">#{{ $thread_num }} <span>·</span> </span>--}}
                                         @endif
                                     @endif
                                     <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
