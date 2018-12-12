@@ -114,6 +114,14 @@ class SettingsController extends Controller
                     'template_vars' => [
                         'logs' => \App\ActivityLog::getAvailableLogs()
                     ],
+                    'settings' => [
+                        'alert_logs' => [
+                            'env' => 'APP_ALERT_LOGS',
+                        ],
+                        'alert_logs_period' => [
+                            'env' => 'APP_ALERT_LOGS_PERIOD',
+                        ],
+                    ],
                 ];
 
                 // todo: monitor App Logs
@@ -178,7 +186,9 @@ class SettingsController extends Controller
                     'alert_logs_names',
                     'alert_logs_period',
                 ], [
-                    'alert_logs_names' => []
+                    'alert_logs_names' => [],
+                    'alert_logs'        => config('app.alert_logs'),
+                    'alert_logs_period' => config('app.alert_logs_period'),
                 ]);
                 break;
             default:
