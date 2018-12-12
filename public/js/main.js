@@ -2,6 +2,7 @@ var fs_sidebar_menu_applied = false;
 var fs_loader_timeout;
 var fs_processing_send_reply = false;
 var fs_processing_save_draft = false;
+var fs_send_reply_after_draft = false;
 var fs_connection_errors = 0;
 var fs_editor_change_timeout = -1;
 // For how long to remember conversation note drafts
@@ -1168,6 +1169,12 @@ function newConversationInit()
 
 	    	button.button('loading');
 
+	    	// If draft is being sent, we need to wait and send reply after draft has been saved.
+	    	if (fs_processing_save_draft) {
+	    		fs_send_reply_after_draft = true;
+	    		return;
+	    	}
+
 	    	data = form.serialize();
 	    	data += '&action=send_reply';
 
@@ -2156,7 +2163,7 @@ function saveDraft(reload_page, no_loader)
 	// Do not autosave draft if reply form has been closed
 	var form = $(".form-reply:visible:first");
 	if (!form || !form.length) {
-		fs_processing_save_draft = false;
+		finishSaveDraft();
 		return;
 	}
 
@@ -2220,14 +2227,25 @@ function saveDraft(reload_page, no_loader)
 			showAjaxError(response);
 		}
 		loaderHide();
-		fs_processing_save_draft = false;
+		finishSaveDraft();
 	}, 
 	no_loader,
 	function() {
 		showFloatingAlert('error', Lang.get("messages.ajax_error"));
 		loaderHide();
-		fs_processing_save_draft = false;
+		finishSaveDraft();
 	});
+}
+
+// If draft is being sent and user clicks Send reply, 
+// we need to wait and send reply after draft has been saved.
+function finishSaveDraft()
+{
+	fs_processing_save_draft = false;
+	if (fs_send_reply_after_draft) {
+		fs_processing_send_reply = false;
+		$(".btn-reply-submit:first").button('reset').click();
+	}
 }
 
 function setUrl(url)
