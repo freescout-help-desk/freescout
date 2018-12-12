@@ -597,7 +597,7 @@ function showFloatingAlert(type, msg)
     fsFloatingAlertsInit();
 }
 
-function conversationInit()
+function initConversation()
 {
 	$(document).ready(function(){
 
@@ -830,7 +830,14 @@ function conversationInit()
 		starConversationInit();
 		maybeShowStoredNote();
 		maybeShowDraft();
+		processLinks();
 	});
+}
+
+// Add target blank to all links in threads.
+function processLinks()
+{
+	$('.thread-body a').attr('target', '_blank');
 }
 
 // Get current conversation assignee

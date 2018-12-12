@@ -454,5 +454,5 @@
 @section('javascript')
     @parent
     newConversationInit();
-    conversationInit();
+    initConversation();
 @endsection
