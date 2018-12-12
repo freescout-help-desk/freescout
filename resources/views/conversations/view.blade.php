@@ -401,7 +401,7 @@
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
                                 @endif
-                                @if ($thread->headers)
+                                @if ($thread->isReply())
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message") }}" data-trigger="modal" data-modal-title="{{ __("Original Message") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
                                 @endif
