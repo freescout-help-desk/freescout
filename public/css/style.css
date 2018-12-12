@@ -1829,11 +1829,14 @@ button.conv-checkbox-clear {
     font-size: 12px;
 }
 .thread-type {
-    margin-right: 7px;
+    /*margin-right: 7px;*/
     font-weight: bold;
 }
+.thread-type span {
+    font-weight: normal;
+}
 .thread-to-first {
-    margin-right: 3px;
+    margin-right: 1px;
     color: #a5b2bd;
 }
 .thread-to-first .glyphicon {
