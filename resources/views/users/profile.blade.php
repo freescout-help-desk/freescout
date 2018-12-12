@@ -208,6 +208,43 @@
             </div>
         </div>
     </div>
+
+    <div id="delete_user_modal" class="hidden">
+        <div>
+        <div class="text-center">
+            <div class="col-sm-10 col-sm-offset-1 text-large margin-top-10 margin-bottom">{!! __("Deleting this User will deactivate workflows they are tied to and assign their conversations to:") !!}</div>
+            <form class="assign_form form-horizontal">
+                @foreach (App\Mailbox::all() as $mailbox)
+                    <div class="col-sm-9 col-sm-offset-1">
+                        <div class="form-group">
+                            <label class="col-sm-5 control-label">{{ $mailbox->name }}</label>
+                            <div class="col-sm-7">
+                                <select name="assign_user[{{ $mailbox->id }}]" class="form-control input-sized">
+                                    <option value="-1">{{ __("Anyone") }}</option>
+                                    @foreach ($mailbox->usersHavingAccess() as $assign_user)
+                                        @if ($assign_user->id != $user->id)
+                                            <option value="{{ $assign_user->id }}">{{ $assign_user->getFullName() }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </form>
+            <div class="col-sm-12 text-large margin-top">{!! __("If you are sure, type :delete and click the red button.", ['delete' => '<span class="text-danger">DELETE</span>']) !!}</div>
+            <div class="col-sm-6 col-sm-offset-3 margin-top-10 margin-bottom">
+                <div class="input-group">
+                    <input type="text" class="form-control input-delete-user" placeholder="{!! __("Type :delete", ['delete' => '&quot;DELETE&quot;']) !!}">
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger button-delete-user" disabled="disabled"><i class="glyphicon glyphicon-ok"></i></button>
+                    </span>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        </div>
+    </div>
 @endsection
 
 @section('javascript')

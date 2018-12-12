@@ -1778,20 +1778,7 @@ function userProfileInit()
 
 	// Delete user
     jQuery("#delete-user-trigger").click(function(e){
-    	var confirm_html = '<div>'+
-		'<div class="text-center">'+
-			'<div class="text-large margin-top-10">'+Lang.get("messages.confirm_delete_user", {delete: '<span class="text-danger">DELETE</span>'})+'</div>'+
-			'<div class="col-sm-6 col-sm-offset-3 margin-top margin-bottom">'+
-				'<div class="input-group">'+
-				    '<input type="text" class="form-control input-delete-user" placeholder="'+Lang.get("messages.type_delete", {delete: '&quot;DELETE&quot;'})+'">'+
-				    '<span class="input-group-btn">'+
-				    	'<button class="btn btn-danger button-delete-user" disabled="disabled"><i class="glyphicon glyphicon-ok"></i></button>'+
-				    '</span>'+
-				'</div>'+
-			'</div>'+
-			'<div class="clearfix"></div>'+
-		'</div>'+
-		'</div>';
+    	var confirm_html = $('#delete_user_modal').html();
 
 		showModalDialog(confirm_html, {
 			width_auto: false,
@@ -1805,12 +1792,18 @@ function userProfileInit()
 				});
 
 				modal.children().find('.button-delete-user:first').click(function(e) {
+
+					var data = $('.assign_form:visible:first').serialize();
+					if (data) {
+						data += '&';
+					}
+					data += 'action=delete_user';
+					data += '&user_id='+getGlobalAttr('user_id');
+
 					modal.modal('hide');
+
 					fsAjax(
-						{
-							action: 'delete_user',
-							user_id: getGlobalAttr('user_id')
-						}, 
+						data, 
 						laroute.route('users.ajax'),
 						function(response) {
 							if (typeof(response.status) != "undefined" && response.status == "success") {

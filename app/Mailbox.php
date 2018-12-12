@@ -334,12 +334,20 @@ class Mailbox extends Model
     /**
      * Get users who have access to the mailbox.
      */
-    public function usersHavingAccess($cache = false)
+    public function usersHavingAccess($cache = false, $fields = 'users.*')
     {
-        $users = $this->users;
-        $admins = User::where('role', User::ROLE_ADMIN)->remember(\App\Misc\Helper::cacheTime($cache))->get();
+        $admins = User::where('role', User::ROLE_ADMIN)->select($fields)->remember(\App\Misc\Helper::cacheTime($cache))->get();
 
-        return $users->merge($admins)->unique();
+        $users = $this->users()->select($fields)->get()->merge($admins)->unique();
+
+        // Exclude deleted users (better to do it in PHP).
+        foreach ($users as $i => $user) {
+            if ($user->isDeleted()) {
+                $users->forget($i);
+            }
+        }
+
+        return $users;
     }
 
     /**
@@ -347,10 +355,12 @@ class Mailbox extends Model
      */
     public function userIdsHavingAccess()
     {
-        $user_ids = $this->users()->pluck('users.id');
+        return $this->usersHavingAccess(false, ['users.id', 'users.status'])->pluck('id')->toArray();
+
+        /*$user_ids = $this->users()->pluck('users.id');
         $admin_ids = User::where('role', User::ROLE_ADMIN)->pluck('id');
 
-        return $user_ids->merge($admin_ids)->unique()->toArray();
+        return $user_ids->merge($admin_ids)->unique()->toArray();*/
     }
 
     /**

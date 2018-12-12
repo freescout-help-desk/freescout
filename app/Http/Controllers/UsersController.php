@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\UserDeleted;
 use App\Folder;
 use App\Mailbox;
+use App\Thread;
 use App\Subscription;
 use App\User;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class UsersController extends Controller
     {
         $this->authorize('create', 'App\User');
 
-        $users = User::all();
+        $users = User::nonDeleted()->get();
 
         return view('users/users', ['users' => $users]);
     }
@@ -110,6 +111,9 @@ class UsersController extends Controller
     public function profile($id)
     {
         $user = User::findOrFail($id);
+        if ($user->isDeleted()) {
+            abort(404);
+        }
 
         $this->authorize('update', $user);
 
@@ -438,50 +442,82 @@ class UsersController extends Controller
                 if (!$response['msg']) {
                     event(new UserDeleted($user, $auth_user));
 
-                    // We have to process conversations one by one to set move them to Unassigned folder,
+                    // We have to process conversations one by one to move them to Unassigned folder,
                     // as conversations may be in different mailboxes
                     // $user->conversations()->update(['user_id' => null, 'folder_id' => ]);
                     $mailbox_unassigned_folders = [];
-                    $user->conversations->each(function ($conversation) {
+
+                    $user->conversations->each(function ($conversation) use ($auth_user, $request) {
                         // We don't fire ConversationUserChanged event to avoid sending notifications to users
-                        $conversation->user_id = null;
-
-                        $folder_id = null;
-                        if (!empty($mailbox_unassigned_folders[$conversation->mailbox_id])) {
-                            $folder_id = $mailbox_unassigned_folders[$conversation->mailbox_id];
+                        if (!empty($request->assign_user) && !empty($request->assign_user[$conversation->mailbox_id]) && (int)$request->assign_user[$conversation->mailbox_id] != -1) {
+                            // Set assignee.
+                            $conversation->user_id = $request->assign_user[$conversation->mailbox_id];
+                            // In this case conversation stays assigned, just assignee changes.
                         } else {
-                            $folder = $conversation->mailbox->folders()
-                                ->where('type', Folder::TYPE_UNASSIGNED)
-                                ->first();
+                            // Set assignee.
+                            $conversation->user_id = null;
 
-                            if ($folder) {
-                                $folder_id = $folder->id;
-                                $mailbox_unassigned_folders[$conversation->mailbox_id] = $folder_id;
+                            // Change conversation folder to ANASSIGNED.
+                            $folder_id = null;
+                            if (!empty($mailbox_unassigned_folders[$conversation->mailbox_id])) {
+                                $folder_id = $mailbox_unassigned_folders[$conversation->mailbox_id];
+                            } else {
+                                $folder = $conversation->mailbox->folders()
+                                    ->where('type', Folder::TYPE_UNASSIGNED)
+                                    ->first();
+
+                                if ($folder) {
+                                    $folder_id = $folder->id;
+                                    $mailbox_unassigned_folders[$conversation->mailbox_id] = $folder_id;
+                                }
+                            }
+                            if ($folder_id) {
+                                $conversation->folder_id = $folder_id;
                             }
                         }
-                        if ($folder_id) {
-                            $conversation->folder_id = $folder_id;
-                        }
+
                         $conversation->save();
+
+                        // Create lineitem thread
+                        $thread = new Thread();
+                        $thread->conversation_id = $conversation->id;
+                        $thread->user_id = $conversation->user_id;
+                        $thread->type = Thread::TYPE_LINEITEM;
+                        $thread->state = Thread::STATE_PUBLISHED;
+                        $thread->status = Thread::STATUS_NOCHANGE;
+                        $thread->action_type = Thread::ACTION_TYPE_USER_CHANGED;
+                        $thread->source_via = Thread::PERSON_USER;
+                        $thread->source_type = Thread::SOURCE_TYPE_WEB;
+                        $thread->customer_id = $conversation->customer_id;
+                        $thread->created_by_user_id = $auth_user->id;
+                        $thread->save();
                     });
 
                     // Recalculate counters for folders
-                    if ($user->isAdmin()) {
-                        // Admin has access to all mailboxes
-                        Mailbox::all()->each(function ($mailbox) {
-                            $mailbox->updateFoldersCounters();
-                        });
-                    } else {
-                        $user->mailboxes->each(function ($mailbox) {
-                            $mailbox->updateFoldersCounters();
-                        });
-                    }
+                    //if ($user->isAdmin()) {
+                    // Admin has access to all mailboxes
+                    Mailbox::all()->each(function ($mailbox) {
+                        $mailbox->updateFoldersCounters();
+                    });
+                    // } else {
+                    //     $user->mailboxes->each(function ($mailbox) {
+                    //         $mailbox->updateFoldersCounters();
+                    //     });
+                    // }
 
+                    // Disconnect user from mailboxes.
                     $user->mailboxes()->sync([]);
                     $user->folders()->delete();
-                    $user->delete();
+                    
+                    $user->status = \App\User::STATUS_DELETED;
+                    // Update email.
+                    $email_suffix = '_deleted'.date('YmdHis');
+                    // We have to truncate email to avoid "Data too long" error.
+                    $user->email = mb_substr($user->email, 0, User::EMAIL_MAX_LENGTH - mb_strlen($email_suffix)).$email_suffix;
 
-                    \Session::flash('flash_success_floating', __('User deleted'));
+                    $user->save();
+
+                    \Session::flash('flash_success_floating', __('User deleted').': '.$user->getFullName());
 
                     $response['status'] = 'success';
                 }
