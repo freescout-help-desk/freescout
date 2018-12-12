@@ -23,6 +23,20 @@ class SendLog extends Model
     const STATUS_COMPLAINED = 9;
 
     /**
+     * Status determining successfull sending.
+     * 
+     * @var [type]
+     */
+    public static $sent_success = [
+        self::STATUS_ACCEPTED,
+        self::STATUS_DELIVERY_SUCCESS,
+        self::STATUS_OPENED,
+        self::STATUS_CLICKED,
+        self::STATUS_UNSUBSCRIBED,
+        self::STATUS_COMPLAINED,
+    ];
+
+    /**
      * Mail types.
      */
     const MAIL_TYPE_EMAIL_TO_CUSTOMER = 1;

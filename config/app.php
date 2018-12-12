@@ -12,7 +12,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.1.1',
+    'version' => '1.1.2',
 
     /*
     |--------------------------------------------------------------------------
@@ -92,7 +92,7 @@ return [
     */
 
     'locale'          => env('APP_LOCALE', 'en'),
-    'locales'         => ['en', 'fr'],
+    'locales'         => ['en', 'fr', 'it'],
     'default_locale'  => 'en',
 
     /*
@@ -177,9 +177,12 @@ return [
     /*
     |--------------------------------------------------------------------------
     | Parameters used to run queued jobs processing.
-    | Checks for new jobs every 5 seconds.
-    | Do not set more than 1 retry, as it may lead to sending repeated emails if one recipient fails
-    | and another succeeds.
+    | Checks for new jobs every --sleep seconds.
+    | If --tries is set and job fails it is being processed right away without any delay.
+    | --delay parameter does not work to set delays between retry attempts.
+    /
+    | Jobs sending emails are retried manually in handle().
+    | Number of retries is set in each job class.
     |-------------------------------------------------------------------------
     */
     'queue_work_params' => ['--queue' => 'emails,default', '--sleep' => '5', '--tries' => '1'],
@@ -210,8 +213,8 @@ return [
         'note'       => '#ffc646',
         'text_note'  => '#e6b216',
         'text_customer' => '#8d959b',
-        'text_user'     => '#3197d6',
-        'bg_user_reply' => '#f1f7fc',
+        'text_user'     => '#8d959b',
+        'bg_user_reply' => '#f4f8fd',
         'bg_note'       => '#fffbf1',
     ],
 

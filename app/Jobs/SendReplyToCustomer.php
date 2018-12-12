@@ -16,6 +16,8 @@ class SendReplyToCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $tries = 5;
+
     public $conversation;
 
     public $threads;
@@ -123,7 +125,14 @@ class SendReplyToCustomer implements ShouldQueue
             // Save to send log
             $this->saveToSendLog($e->getMessage());
 
-            throw $e;
+            // Retry job with delay.
+            // https://stackoverflow.com/questions/35258175/how-can-i-create-delays-between-failed-queued-job-attempts-in-laravel
+            if ($this->attempts() <= $this->tries) {
+                $this->release(3600);
+                throw $e;
+            } else {
+                $this->fail($e);
+            }
         }
 
         // In message_id we are storing Message-ID of the incoming email which created the thread

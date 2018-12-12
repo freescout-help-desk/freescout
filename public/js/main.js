@@ -2,6 +2,7 @@ var fs_sidebar_menu_applied = false;
 var fs_loader_timeout;
 var fs_processing_send_reply = false;
 var fs_processing_save_draft = false;
+var fs_send_reply_after_draft = false;
 var fs_connection_errors = 0;
 var fs_editor_change_timeout = -1;
 // For how long to remember conversation note drafts
@@ -596,7 +597,7 @@ function showFloatingAlert(type, msg)
     fsFloatingAlertsInit();
 }
 
-function conversationInit()
+function initConversation()
 {
 	$(document).ready(function(){
 
@@ -829,7 +830,14 @@ function conversationInit()
 		starConversationInit();
 		maybeShowStoredNote();
 		maybeShowDraft();
+		processLinks();
 	});
+}
+
+// Add target blank to all links in threads.
+function processLinks()
+{
+	$('.thread-body a').attr('target', '_blank');
 }
 
 // Get current conversation assignee
@@ -1167,6 +1175,12 @@ function newConversationInit()
 	    	}
 
 	    	button.button('loading');
+
+	    	// If draft is being sent, we need to wait and send reply after draft has been saved.
+	    	if (fs_processing_save_draft) {
+	    		fs_send_reply_after_draft = true;
+	    		return;
+	    	}
 
 	    	data = form.serialize();
 	    	data += '&action=send_reply';
@@ -1778,20 +1792,7 @@ function userProfileInit()
 
 	// Delete user
     jQuery("#delete-user-trigger").click(function(e){
-    	var confirm_html = '<div>'+
-		'<div class="text-center">'+
-			'<div class="text-large margin-top-10">'+Lang.get("messages.confirm_delete_user", {delete: '<span class="text-danger">DELETE</span>'})+'</div>'+
-			'<div class="col-sm-6 col-sm-offset-3 margin-top margin-bottom">'+
-				'<div class="input-group">'+
-				    '<input type="text" class="form-control input-delete-user" placeholder="'+Lang.get("messages.type_delete", {delete: '&quot;DELETE&quot;'})+'">'+
-				    '<span class="input-group-btn">'+
-				    	'<button class="btn btn-danger button-delete-user" disabled="disabled"><i class="glyphicon glyphicon-ok"></i></button>'+
-				    '</span>'+
-				'</div>'+
-			'</div>'+
-			'<div class="clearfix"></div>'+
-		'</div>'+
-		'</div>';
+    	var confirm_html = $('#delete_user_modal').html();
 
 		showModalDialog(confirm_html, {
 			width_auto: false,
@@ -1805,12 +1806,18 @@ function userProfileInit()
 				});
 
 				modal.children().find('.button-delete-user:first').click(function(e) {
+
+					var data = $('.assign_form:visible:first').serialize();
+					if (data) {
+						data += '&';
+					}
+					data += 'action=delete_user';
+					data += '&user_id='+getGlobalAttr('user_id');
+
 					modal.modal('hide');
+
 					fsAjax(
-						{
-							action: 'delete_user',
-							user_id: getGlobalAttr('user_id')
-						}, 
+						data, 
 						laroute.route('users.ajax'),
 						function(response) {
 							if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -2163,7 +2170,7 @@ function saveDraft(reload_page, no_loader)
 	// Do not autosave draft if reply form has been closed
 	var form = $(".form-reply:visible:first");
 	if (!form || !form.length) {
-		fs_processing_save_draft = false;
+		finishSaveDraft();
 		return;
 	}
 
@@ -2227,14 +2234,25 @@ function saveDraft(reload_page, no_loader)
 			showAjaxError(response);
 		}
 		loaderHide();
-		fs_processing_save_draft = false;
+		finishSaveDraft();
 	}, 
 	no_loader,
 	function() {
 		showFloatingAlert('error', Lang.get("messages.ajax_error"));
 		loaderHide();
-		fs_processing_save_draft = false;
+		finishSaveDraft();
 	});
+}
+
+// If draft is being sent and user clicks Send reply, 
+// we need to wait and send reply after draft has been saved.
+function finishSaveDraft()
+{
+	fs_processing_save_draft = false;
+	if (fs_send_reply_after_draft) {
+		fs_processing_send_reply = false;
+		$(".btn-reply-submit:first").button('reset').click();
+	}
 }
 
 function setUrl(url)

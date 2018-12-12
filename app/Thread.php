@@ -610,4 +610,14 @@ class Thread extends Model
 
         return $name;
     }
+
+    /**
+     * Check if thread is a reply from customer or user.
+     * 
+     * @return boolean [description]
+     */
+    public function isReply()
+    {
+        return in_array($this->type, [\App\Thread::TYPE_MESSAGE, \App\Thread::TYPE_CUSTOMER]);
+    }
 }

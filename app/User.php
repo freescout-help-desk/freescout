@@ -29,6 +29,8 @@ class User extends Authenticatable
     const PHOTO_SIZE = 50; // px
     const PHOTO_QUALITY = 77;
 
+    const EMAIL_MAX_LENGTH = 100;
+
     /**
      * Roles.
      */
@@ -45,6 +47,13 @@ class User extends Authenticatable
      */
     const TYPE_USER = 1;
     const TYPE_TEAM = 2;
+
+    /**
+     * Statuses.
+     */
+    const STATUS_ACTIVE   = 1;
+    const STATUS_DISABLED = 2; // todo
+    const STATUS_DELETED  = 3;
 
     /**
      * Invite states.
@@ -705,5 +714,20 @@ class User extends Authenticatable
         } else {
             return \Helper::getRealAppLocale();
         }
+    }
+
+    /**
+     * Get query to fetch non-deleted users.
+     * 
+     * @return [type] [description]
+     */
+    public static function nonDeleted()
+    {
+        return User::where('status', '!=', self::STATUS_DELETED);
+    }
+
+    public function isDeleted()
+    {
+        return $this->status == self::STATUS_DELETED;
     }
 }

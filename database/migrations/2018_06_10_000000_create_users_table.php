@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string('first_name', 20);
             $table->string('last_name', 30);
-            $table->string('email', 100)->unique();
+            $table->string('email', User::EMAIL_MAX_LENGTH)->unique();
             $table->string('password', 255);
             $table->unsignedTinyInteger('role')->default(User::ROLE_USER)->index(); // admin/user
             $table->string('timezone', 255)->default('UTC');

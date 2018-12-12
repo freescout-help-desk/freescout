@@ -70,6 +70,7 @@ class SystemController extends Controller
         // Jobs
         $queued_jobs = \App\Job::orderBy('created_at', 'desc')->get();
         $failed_jobs = \App\FailedJob::orderBy('failed_at', 'desc')->get();
+        $failed_queues = $failed_jobs->pluck('queue')->unique();
 
         // Commands
         $commands_list = ['freescout:fetch-emails', 'queue:work'];
@@ -172,12 +173,33 @@ class SystemController extends Controller
             'commands'              => $commands,
             'queued_jobs'           => $queued_jobs,
             'failed_jobs'           => $failed_jobs,
+            'failed_queues'         => $failed_queues,
             'php_extensions'        => $php_extensions,
             'permissions'           => $permissions,
             'new_version_available' => $new_version_available,
             'latest_version'        => $latest_version,
             'public_symlink_exists' => $public_symlink_exists,
         ]);
+    }
+
+    public function action(Request $request)
+    {
+        switch ($request->action) {
+            case 'delete_failed_jobs':
+                \App\FailedJob::where('queue', $request->failed_queue)->delete();
+                \Session::flash('flash_success_floating', __('Failed jobs deleted'));                
+                break;
+
+            case 'retry_failed_jobs':
+                $jobs = \App\FailedJob::where('queue', $request->failed_queue)->get();
+                foreach ($jobs as $job) {
+                    \Artisan::call('queue:retry', ['id' => $job->id]);
+                }
+                \Session::flash('flash_success_floating', __('Failed jobs restarted'));                
+                break;
+        }
+
+        return redirect()->route('system');
     }
 
     /**

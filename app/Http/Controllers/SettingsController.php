@@ -109,6 +109,21 @@ class SettingsController extends Controller
                     ],
                 ];
                 break;
+            case 'alerts':
+                $params = [
+                    'template_vars' => [
+                        'logs' => \App\ActivityLog::getAvailableLogs()
+                    ],
+                ];
+
+                // todo: monitor App Logs
+                foreach ($params['template_vars']['logs'] as $i => $log) {
+                    if ($log == \App\ActivityLog::NAME_APP_LOGS || $log == \App\ActivityLog::NAME_OUT_EMAILS) {
+                        unset($params['template_vars']['logs'][$i]);
+                    }
+                }
+                
+                break;
             default:
                 $params = \Eventy::filter('settings.section_params', $params, $section);
                 break;
@@ -155,12 +170,16 @@ class SettingsController extends Controller
                 ];
                 break;
             case 'alerts':
-                $settings = [
-                    'alert_recipients'   => Option::get('alert_recipients'),
-                    'alert_fetch'        => Option::get('alert_fetch'),
-                    'alert_fetch_period' => Option::get('alert_fetch_period'),
-                    'alert_send'         => Option::get('alert_send'),
-                ];
+                $settings = Option::getOptions([
+                    'alert_recipients',
+                    'alert_fetch',
+                    'alert_fetch_period',
+                    'alert_logs',
+                    'alert_logs_names',
+                    'alert_logs_period',
+                ], [
+                    'alert_logs_names' => []
+                ]);
                 break;
             default:
                 $settings = \Eventy::filter('settings.section_settings', $settings, $section);

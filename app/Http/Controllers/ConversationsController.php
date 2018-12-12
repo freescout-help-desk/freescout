@@ -525,8 +525,8 @@ class ConversationsController extends Controller
                         $conversation->last_reply_at = $now;
                         $conversation->last_reply_from = Conversation::PERSON_USER;
                         $conversation->user_updated_at = $now;
-                        $conversation->updateFolder();
                     }
+                    $conversation->updateFolder();
                     if ($from_draft) {
                         // Increment number of replies in conversation
                         $conversation->threads_count++;

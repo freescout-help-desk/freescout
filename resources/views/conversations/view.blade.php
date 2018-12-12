@@ -244,11 +244,12 @@
                                         [{{ __('Draft') }}]
                                     </div>
                                     <div class="btn-group btn-group-xs draft-actions">
-                                        <a class="btn btn-default edit-draft-trigger" href="javascript:void(0);">Edit</a>
-                                        <a class="btn btn-default discard-draft-trigger" href="javascript:void(0)">Discard</a>
+                                        <a class="btn btn-default edit-draft-trigger" href="javascript:void(0);">{{ __('Edit') }}</a>
+                                        <a class="btn btn-default discard-draft-trigger" href="javascript:void(0)">{{ __('Discard') }}</a>
                                     </div>
                                 </div>
                                 <div class="thread-info">
+                                    {{--<span class="thread-type">[{{ __('Draft') }}] <span>·</span> </span>--}}
                                     <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
                                 </div>
                             </div>
@@ -318,14 +319,37 @@
                                     @endif
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
-                                    {{--<br/>
-                                    <a href="#thread-{{ $thread->id }}">#{{ $thread_index+1 }}</a>
+                                    @if ($thread->type == App\Thread::TYPE_NOTE)
+                                        {{--<span class="thread-type">{{ __('Note') }} <span>·</span> </span>--}}
+                                    @else
+                                        @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
+                                            @php
+                                                if (!empty($thread_num)) {
+                                                    $thread_num--;
+                                                } else {
+                                                    $thread_num = $conversation->threads_count;
+                                                }
+                                                if (!isset($is_first) && ($thread->type == App\Thread::TYPE_CUSTOMER || $thread->type == App\Thread::TYPE_MESSAGE)) {
+                                                    $is_first = true;
+                                                } elseif (isset($is_first)) {
+                                                    $is_first = false;
+                                                }
+                                            @endphp
+                                            @if (!empty($is_first) && $conversation->threads_count > 2)<a href="#thread-{{ $threads[count($threads)-1]->id }}" class="thread-to-first" data-toggle="tooltip" title="{{ __('Scroll to the Beginning') }}"><i class="glyphicon glyphicon-arrow-down"></i> </a>@endif
+                                            {{--<span class="thread-type">#{{ $thread_num }} <span>·</span> </span>--}}
+                                        @endif
+                                    @endif
+                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
+                                    {{--<a href="#thread-{{ $thread->id }}">#{{ $thread_index+1 }}</a>--}}
                                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                         <span class="thread-status">
-                                            @if ($loop->last || $thread->status != App\Thread::STATUS_NOCHANGE)
+                                            @if ($loop->last || (!$loop->last && $thread->status != App\Thread::STATUS_NOCHANGE && $thread->status != $threads[$loop->index+1]->status))
                                                 @php
                                                     $show_status = true;
+                                                @endphp
+                                            @else
+                                                @php
+                                                    $show_status = false;
                                                 @endphp
                                             @endif
                                             @if ($loop->last || (!$loop->last && ($thread->user_id != $threads[$loop->index+1]->user_id || $threads[$loop->index+1]->action_type == App\Thread::ACTION_TYPE_USER_CHANGED))
@@ -342,7 +366,7 @@
                                                 {{ $thread->getStatusName() }}
                                             @endif
                                         </span>
-                                    @endif--}}
+                                    @endif
                                 </div>
                             </div>
                             <div class="thread-body">
@@ -351,20 +375,21 @@
                                 @if ( $thread->opened_at )
                                     <div class='thread-opened-at'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</div>
                                 @endif
+
+                                @if ($thread->has_attachments)
+                                    <div class="thread-attachments">
+                                        <i class="glyphicon glyphicon-paperclip"></i>
+                                        <ul>
+                                            @foreach ($thread->attachments as $attachment)
+                                                <li>
+                                                    <a href="{{ $attachment->url() }}" class="break-words" target="_blank">{{ $attachment->file_name }}</a>
+                                                    <span class="text-help">({{ $attachment->getSizeName() }})</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
                             </div>
-                            @if ($thread->has_attachments)
-                                <div class="thread-attachments">
-                                    <i class="glyphicon glyphicon-paperclip"></i>
-                                    <ul>
-                                        @foreach ($thread->attachments as $attachment)
-                                            <li>
-                                                <a href="{{ $attachment->url() }}" class="break-words" target="_blank">{{ $attachment->file_name }}</a>
-                                                <span class="text-help">({{ $attachment->getSizeName() }})</span>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
                         </div>
                         <div class="dropdown thread-options">
                             <span class="dropdown-toggle glyphicon glyphicon-option-vertical" data-toggle="dropdown"></span>
@@ -376,11 +401,11 @@
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
                                 @endif
-                                @if ($thread->headers)
+                                @if ($thread->isReply())
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message") }}" data-trigger="modal" data-modal-title="{{ __("Original Message") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
                                 @endif
-                                @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
+                                {{--@if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
                                     <li class="divider"></li>
                                     <li>
                                         <span>
@@ -404,9 +429,19 @@
                                         @endif
                                         </span>
                                     </li>
-                                @endif
+                                @endif--}}
                             </ul>
                         </div>
+                        {{--@if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
+                            @php
+                                if (!empty($thread_num)) {
+                                    $thread_num--;
+                                } else {
+                                    $thread_num = $conversation->threads_count;
+                                }
+                            @endphp
+                            <div class="thread-type"><i class="glyphicon glyphicon-share-alt"></i> {{ $thread_num }}</div>
+                        @endif--}}
                     </div>
                 @endif
             @endforeach
@@ -419,5 +454,5 @@
 @section('javascript')
     @parent
     newConversationInit();
-    conversationInit();
+    initConversation();
 @endsection
