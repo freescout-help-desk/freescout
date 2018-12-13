@@ -223,7 +223,7 @@
                             </div>
                         </div>
                         <div class="dropdown thread-options">
-                            <span class="dropdown-toggle glyphicon glyphicon-option-vertical" data-toggle="dropdown"></span>
+                            <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown"><b class="caret"></b></span>
                             @if (Auth::user()->isAdmin())
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
@@ -392,7 +392,7 @@
                             </div>
                         </div>
                         <div class="dropdown thread-options">
-                            <span class="dropdown-toggle glyphicon glyphicon-option-vertical" data-toggle="dropdown"></span>
+                            <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown"><b class="caret"></b></span>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                 {{--<li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }} (todo)</a></li>
                                 <li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>--}}

@@ -1887,7 +1887,8 @@ button.conv-checkbox-clear {
     position: absolute;
     top: 22px;
     cursor: pointer;
-    right: 5px;
+    /*right: 5px;*/
+    right: 7px;
     color: #a5b2bd;
 }
 .thread-options .dropdown-toggle {
@@ -1896,6 +1897,8 @@ button.conv-checkbox-clear {
 .thread-type-lineitem {
     background: #f9fafa;
     /*overflow: auto;*/
+    /*-webkit-box-shadow:inset 5px 0 0 0 #bcc4cc;
+    box-shadow:inset 5px 0 0 0 #bcc4cc;*/
 }
 .thread-type-lineitem .thread-options {
     top: 8px;
@@ -2293,7 +2296,8 @@ ul.prev-convs {
         max-width: 32%;
     }
     .thread-options {
-        right: 0;
+        /*right: 0;*/
+        right: 2px;
         top: 15px;
     }
     .conv-new #conv-toolbar h2 {
