@@ -69,6 +69,8 @@
 			                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
 				                                    <strong>@include('emails/user/thread_by')</strong>  
 													{{ __("assigned to :person conversation", ['person' => $thread->getAssigneeName(false, $user)]) }}
+			                                    @elseif ($thread->type == App\Thread::TYPE_NOTE)
+			                                    	{!! __(":person added a note to conversation", ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>']) !!}
 			                                    @else
 			                                    	{!! __(":person replied to conversation", ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>']) !!}
 			                                    @endif
