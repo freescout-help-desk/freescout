@@ -821,7 +821,7 @@ a h4 {
  * Editor
  */
 .note-editor.note-frame {
-    border-color: #d6dde3 !important;
+    border-color: #dee4e9 !important;
 }
 .note-editor .btn-default {
     color: #86929e;
@@ -950,6 +950,10 @@ a h4 {
 }
 .note-toolbar.panel-heading {
     background-color: #f9fafa;
+}
+.panel-heading.note-toolbar .note-btn-group .dropdown-menu {
+    min-width: 83px;
+    padding-left: 5px;
 }
 @media (max-width:390px) {
     .note-bottom-div {
@@ -2113,7 +2117,7 @@ button.conv-checkbox-clear {
     color: #d79400;
 }
 .conv-note-block .note-editor.note-frame {
-    border-color: #ffd56d !important;
+    border-color: #f9f9f9 !important;
     color: #d79400;
 }
 .conv-note-block .form-control {

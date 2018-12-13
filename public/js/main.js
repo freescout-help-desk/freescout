@@ -11,7 +11,7 @@ var fs_draft_autosave_period = 12; // seconds
 var fs_reply_changed = false;
 var fs_conv_editor_buttons = {};
 var fs_conv_editor_toolbar = [
-    ['style', ['attachment', 'bold', 'italic', /*'underline',*/ 'removeformat', 'ul', 'ol', 'link', 'picture', 'codeview']],
+    ['style', ['attachment', 'bold', 'italic', 'underline', 'lists', 'removeformat', 'link', 'picture', 'codeview']],
     ['actions', ['savedraft', 'discard']],
 ];
 
@@ -164,6 +164,36 @@ var EditorRemoveFormatButton = function (context) {
 			context.invoke('removeFormat');
 		}
 	});
+
+	return button.render();   // return button as jquery object
+}
+
+var EditorListsButton = function (context) {
+	var ui = $.summernote.ui;
+
+	// create button
+	var button = ui.buttonGroup([
+        ui.button({
+            className: 'dropdown-toggle',
+            contents: ui.dropdownButtonContents(ui.icon('note-icon-unorderedlist'), {icons:{'caret': 'note-icon-caret1'}}),
+            tooltip: Lang.get("messages.list"),
+            data: {
+                toggle: 'dropdown'
+            }
+        }),
+        ui.dropdown([
+            ui.button({
+                contents: ui.icon($.summernote.options.icons.unorderedlist),
+                tooltip: $.summernote.lang[$.summernote.options.lang].lists.unordered /*+ $.summernote.representShortcut('insertUnorderedList')*/,
+                click: context.createInvokeHandler('editor.insertUnorderedList')
+            }),
+            ui.button({
+                contents: ui.icon($.summernote.options.icons.orderedlist),
+                tooltip: $.summernote.lang[$.summernote.options.lang].lists.ordered /*+ $.summernote.representShortcut('insertUnorderedList')*/,
+                click: context.createInvokeHandler('editor.insertOrderedList')
+            })
+        ])
+    ]);
 
 	return button.render();   // return button as jquery object
 }
@@ -889,7 +919,8 @@ function convEditorInit()
 	    attachment: EditorAttachmentButton,
 	    savedraft: EditorSaveDraftButton,
 	    discard: EditorDiscardButton,
-	    removeformat: EditorRemoveFormatButton
+	    removeformat: EditorRemoveFormatButton,
+	    lists: EditorListsButton
 	});
 
 	$('#body').summernote({
