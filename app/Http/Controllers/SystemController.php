@@ -187,7 +187,7 @@ class SystemController extends Controller
         switch ($request->action) {
             case 'delete_failed_jobs':
                 \App\FailedJob::where('queue', $request->failed_queue)->delete();
-                \Session::flash('flash_success_floating', __('Failed jobs deleted'));                
+                \Session::flash('flash_success_floating', __('Failed jobs deleted'));
                 break;
 
             case 'retry_failed_jobs':
@@ -195,7 +195,7 @@ class SystemController extends Controller
                 foreach ($jobs as $job) {
                     \Artisan::call('queue:retry', ['id' => $job->id]);
                 }
-                \Session::flash('flash_success_floating', __('Failed jobs restarted'));                
+                \Session::flash('flash_success_floating', __('Failed jobs restarted'));
                 break;
         }
 

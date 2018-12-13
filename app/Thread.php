@@ -613,8 +613,8 @@ class Thread extends Model
 
     /**
      * Check if thread is a reply from customer or user.
-     * 
-     * @return boolean [description]
+     *
+     * @return bool [description]
      */
     public function isReply()
     {

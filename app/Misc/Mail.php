@@ -288,9 +288,10 @@ class Mail
 
     /**
      * Check if email format is valid.
-     * 
-     * @param  [type] $email [description]
-     * @return [type]        [description]
+     *
+     * @param [type] $email [description]
+     *
+     * @return [type] [description]
      */
     public static function validateEmail($email)
     {

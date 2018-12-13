@@ -146,6 +146,7 @@ class SendNotificationToUsers implements ShouldQueue
             // https://stackoverflow.com/questions/35258175/how-can-i-create-delays-between-failed-queued-job-attempts-in-laravel
             if ($this->attempts() <= $this->tries) {
                 $this->release(3600);
+
                 throw $global_exception;
             } else {
                 $this->fail($global_exception);
