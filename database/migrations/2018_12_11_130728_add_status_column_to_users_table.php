@@ -14,7 +14,9 @@ class AddStatusColumnToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedTinyInteger('status')->after('type')->default(\App\User::STATUS_ACTIVE)->index();
+            // 1 - \App\User::STATUS_ACTIVE
+            // Using digit instead of constant to avoid problems duing updating process.
+            $table->unsignedTinyInteger('status')->after('type')->default(1)->index();
         });
     }
 
