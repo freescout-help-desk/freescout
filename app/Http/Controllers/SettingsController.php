@@ -248,7 +248,9 @@ class SettingsController extends Controller
         foreach ($settings as $i => $option_name) {
             // Option has to be saved to .env file.
             if (!empty($settings_params[$option_name]) && !empty($settings_params[$option_name]['env'])) {
-                \Helper::setEnvFileVar($settings_params[$option_name]['env'], $request->settings[$option_name] ?? '');
+                $env_value = $request->settings[$option_name] ?? '';
+                \Helper::setEnvFileVar($settings_params[$option_name]['env'], $env_value);
+                config($option_name, $env_value);
                 $cc_required = true;
                 continue;
             }
