@@ -2193,6 +2193,11 @@ function saveDraft(reload_page, no_loader)
 		return;
 	}
 
+	// Make button green when user clicks on it.
+	if (reload_page) {
+		button.addClass('text-success');
+	}
+
 	data = form.serialize();
 	data += '&action=save_draft';
 
