@@ -24,7 +24,7 @@ class SendLog extends Model
 
     /**
      * Status determining successfull sending.
-     * 
+     *
      * @var [type]
      */
     public static $sent_success = [

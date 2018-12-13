@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Events\UserDeleted;
 use App\Folder;
 use App\Mailbox;
-use App\Thread;
 use App\Subscription;
+use App\Thread;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -449,10 +449,10 @@ class UsersController extends Controller
 
                     $user->conversations->each(function ($conversation) use ($auth_user, $request) {
                         // We don't fire ConversationUserChanged event to avoid sending notifications to users
-                        if (!empty($request->assign_user) && !empty($request->assign_user[$conversation->mailbox_id]) && (int)$request->assign_user[$conversation->mailbox_id] != -1) {
+                        if (!empty($request->assign_user) && !empty($request->assign_user[$conversation->mailbox_id]) && (int) $request->assign_user[$conversation->mailbox_id] != -1) {
                             // Set assignee.
                             $conversation->user_id = $request->assign_user[$conversation->mailbox_id];
-                            // In this case conversation stays assigned, just assignee changes.
+                        // In this case conversation stays assigned, just assignee changes.
                         } else {
                             // Set assignee.
                             $conversation->user_id = null;
@@ -508,7 +508,7 @@ class UsersController extends Controller
                     // Disconnect user from mailboxes.
                     $user->mailboxes()->sync([]);
                     $user->folders()->delete();
-                    
+
                     $user->status = \App\User::STATUS_DELETED;
                     // Update email.
                     $email_suffix = '_deleted'.date('YmdHis');

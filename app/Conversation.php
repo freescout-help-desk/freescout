@@ -1050,8 +1050,10 @@ class Conversation extends Model
 
     /**
      * Get waiting since time for the conversation.
-     * @param  [type] $folder [description]
-     * @return [type]         [description]
+     *
+     * @param [type] $folder [description]
+     *
+     * @return [type] [description]
      */
     public function getWaitingSince($folder)
     {

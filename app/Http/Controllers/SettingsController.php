@@ -112,7 +112,7 @@ class SettingsController extends Controller
             case 'alerts':
                 $params = [
                     'template_vars' => [
-                        'logs' => \App\ActivityLog::getAvailableLogs()
+                        'logs' => \App\ActivityLog::getAvailableLogs(),
                     ],
                     'settings' => [
                         'alert_logs' => [
@@ -130,7 +130,7 @@ class SettingsController extends Controller
                         unset($params['template_vars']['logs'][$i]);
                     }
                 }
-                
+
                 break;
             default:
                 $params = \Eventy::filter('settings.section_params', $params, $section);
@@ -186,7 +186,7 @@ class SettingsController extends Controller
                     'alert_logs_names',
                     'alert_logs_period',
                 ], [
-                    'alert_logs_names' => [],
+                    'alert_logs_names'  => [],
                     'alert_logs'        => config('app.alert_logs'),
                     'alert_logs_period' => config('app.alert_logs_period'),
                 ]);

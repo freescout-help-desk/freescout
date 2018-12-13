@@ -218,9 +218,10 @@ class Folder extends Model
 
     /**
      * Get count to display in folders list.
-     * 
-     * @param  array  $folders [description]
-     * @return [type]          [description]
+     *
+     * @param array $folders [description]
+     *
+     * @return [type] [description]
      */
     public function getCount($folders = [])
     {
@@ -273,7 +274,7 @@ class Folder extends Model
 
     /**
      * Works for main folder only for now.
-     * 
+     *
      * @return [type] [description]
      */
     public function getWaitingSince()
@@ -293,6 +294,7 @@ class Folder extends Model
 
     /**
      * Get conversation field used to detect waiting since time.
+     *
      * @return [type] [description]
      */
     public function getWaitingSinceField()
