@@ -199,7 +199,6 @@ class FetchEmails extends Command
 
                     // Is it a bounce message
                     $is_bounce = false;
-                    $bounce_attachment = null;
 
                     // Determine previous Message-ID
                     $prev_message_id = '';
@@ -238,15 +237,27 @@ class FetchEmails extends Command
                         }
                     }
 
-                    // Determine bounce by attachment
+                    // Bounce detection.
+                    // This is a temporary simple solution.
                     if ($message->hasAttachments()) {
+                        // Detect bounce by attachment.
                         foreach ($attachments as $attachment) {
                             if (!empty(Attachment::$types[$attachment->getType()]) && Attachment::$types[$attachment->getType()] == Attachment::TYPE_MESSAGE) {
                                 if (in_array($attachment->getName(), ['RFC822', 'DELIVERY-STATUS'])) {
                                     $is_bounce = true;
-                                    $bounce_attachment = $attachment;
                                     break;
                                 }
+                            }
+                        }
+                        // Check Content-Type.
+                        if ($message->getHeader()) {
+                            $headers = $message->getHeader();
+                            if (preg_match("/Content-Type:((?:[^\n]|\n[\t ])+)(?:\n[^\t ]|$)/i", $headers, $match)
+                                && preg_match("/multipart\/report/i", $match[1])
+                                && preg_match("/report-type=[\"']?delivery-status[\"']?/i", $match[1])
+                            ) {
+                                // Standard DSN message.
+                                $is_bounce = true;
                             }
                         }
                     }
