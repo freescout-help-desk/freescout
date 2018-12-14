@@ -242,7 +242,7 @@ class FetchEmails extends Command
                     if ($message->hasAttachments()) {
                         foreach ($attachments as $attachment) {
                             if (!empty(Attachment::$types[$attachment->getType()]) && Attachment::$types[$attachment->getType()] == Attachment::TYPE_MESSAGE) {
-                                if (in_array(strtoupper($attachment->getName()), ['RFC822', 'DELIVERY-STATUS', 'DELIVERY-STATUS-NOTIFICATION', 'UNDELIVERED-MESSAGE']) 
+                                    if (in_array(strtoupper($attachment->getName()), ['RFC822', 'DELIVERY-STATUS', 'DELIVERY-STATUS-NOTIFICATION', 'UNDELIVERED-MESSAGE'])
                                         || preg_match('/delivery-status/', strtolower($attachment->content_type))) {
                                     $is_bounce = true;
                                     $bounce_attachment = $attachment;
