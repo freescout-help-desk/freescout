@@ -105,11 +105,10 @@
         </tbody>
     </table>
 
-    {{ __('Symlinks') }}
     <table class="table table-dark-header table-bordered table-responsive table-narrow">
         <tbody>
             <tr>
-                <th>public/storage</th>
+                <th>public/storage (symlink)</th>
                 <td class="table-main-col">
                     @if ($public_symlink_exists)
                         <strong class="text-success">OK</strong>
@@ -119,9 +118,18 @@
                     @endif
                 </td>
             </tr>
+            <tr>
+                <th>.env</th>
+                <td class="table-main-col">
+                    @if ($env_is_writable)
+                        <strong class="text-success">OK</strong>
+                    @else
+                        <strong class="text-danger">{{ __('Not writable') }}</strong>
+                    @endif
+                </td>
+            </tr>
         </tbody>
     </table>
-
 
     <h3 id="cron" class="margin-top-40">Cron Commands</h3>
     <p>

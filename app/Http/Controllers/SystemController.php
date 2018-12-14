@@ -67,6 +67,9 @@ class SystemController extends Controller
             }
         }
 
+        // Check if .env is writable.
+        $env_is_writable = is_writable(base_path('.env'));
+
         // Jobs
         $queued_jobs = \App\Job::orderBy('created_at', 'desc')->get();
         $failed_jobs = \App\FailedJob::orderBy('failed_at', 'desc')->get();
@@ -179,6 +182,7 @@ class SystemController extends Controller
             'new_version_available' => $new_version_available,
             'latest_version'        => $latest_version,
             'public_symlink_exists' => $public_symlink_exists,
+            'env_is_writable'       => $env_is_writable,
         ]);
     }
 
