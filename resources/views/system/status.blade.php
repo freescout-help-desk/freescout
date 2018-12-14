@@ -25,8 +25,8 @@
                     @if ($new_version_available)
                         <strong class="text-danger">{{ \Config::get('app.version') }}</strong>
                         <div class="alert alert-danger margin-top-10">
-                            {!! __('A new version :new_version (:%a_begin%view details:%a_end%) is available.', ['new_version' => '<strong>'.$latest_version.'</strong>', '%a_begin%' => '<a href="'.config('app.freescout_repo').'/releases" target="_blank">', '%a_end%' => '</a>']) !!}
-                            <button class="btn btn-default btn-sm update-trigger" data-loading-text="{{ __('Updating') }}…{{ __('This may take several minutes') }}"><small class="glyphicon glyphicon-refresh"></small> {{ __('Update Now') }}</button>
+                            {{ __('A new version is available') }}: <strong>{{ $latest_version }}</strong> <a href="{{ config('app.freescout_repo') }}/releases" target="_blank">({{ __('View details') }})</a>
+                            <button class="btn btn-default btn-sm update-trigger margin-left-10" data-loading-text="{{ __('Updating') }}…{{ __('This may take several minutes') }}"><small class="glyphicon glyphicon-refresh"></small> {{ __('Update Now') }}</button>
                         </div>
                     @else
                         <strong class="text-success">{{ \Config::get('app.version') }}</strong> 

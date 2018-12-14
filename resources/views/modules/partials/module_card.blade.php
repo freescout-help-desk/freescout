@@ -56,7 +56,7 @@
 		</div>
 		@if (!empty($module['new_version']))
 			<div class="alert alert-warning alert-module-update">
-				{{ __('There is a new version available: :version', ['version' => $module['new_version']]) }} (<a href="{{ $module['detailsUrl'] }}?changelog=1" target="_blank">{{ __('View details') }}</a>) 
+				{{ __('A new version is available') }}: <strong>{{ $module['new_version'] }}</strong> (<a href="{{ $module['detailsUrl'] }}?changelog=1" target="_blank">{{ __('View details') }}</a>) 
 				<a href="" class="btn btn-default btn-sm update-module-trigger margin-left-10" data-loading-text="{{ __('Updating') }}…"><i class="glyphicon glyphicon-refresh"></i> {{ __('Update Now') }}</a>
 			</div>
 		@endif
