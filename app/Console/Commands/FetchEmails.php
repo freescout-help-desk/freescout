@@ -341,12 +341,12 @@ class FetchEmails extends Command
                     $this->createCustomers($emails, $mailbox->getEmails());
 
                     if ($message_from_customer) {
-                        // Detect and ignore autoresponders.
-                        if ($this->isAutoResponder($message->getHeader())) {
+                        // SendAutoReply will check headers and will not send an auto reply if this is an auto responder.
+                        /*if ($this->isAutoResponder($message->getHeader())) {
                             $this->line('['.date('Y-m-d H:i:s').'] Email detected as autoresponder and ignored.');
                             $message->setFlag(['Seen']);
                             continue;
-                        }
+                        }*/
                         $new_thread_id = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $message->getHeader());
                     } else {
                         // Check if From is the same as user's email.
@@ -378,44 +378,6 @@ class FetchEmails extends Command
         }
 
         $client->disconnect();
-    }
-
-    /**
-     * Detect autoresponder by headers.
-     * https://github.com/jpmckinney/multi_mail/wiki/Detecting-autoresponders
-     * https://www.jitbit.com/maxblog/18-detecting-outlook-autoreplyout-of-office-emails-and-x-auto-response-suppress-header/.
-     *
-     * @return bool [description]
-     */
-    public function isAutoResponder($headers_str)
-    {
-        $autoresponder_headers = [
-            'x-autoreply'    => '',
-            'x-autorespond'  => '',
-            'auto-submitted' => 'auto-replied',
-        ];
-        $headers = explode("\n", $headers_str);
-
-        foreach ($autoresponder_headers as $auto_header => $auto_header_value) {
-            foreach ($headers as $header) {
-                $parts = explode(':', $header, 2);
-                if (count($parts) == 2) {
-                    $name = trim(strtolower($parts[0]));
-                    $value = trim($parts[1]);
-                } else {
-                    continue;
-                }
-                if (strtolower($name) == $auto_header) {
-                    if (!$auto_header_value) {
-                        return true;
-                    } elseif ($value == $auto_header_value) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
     }
 
     public function logError($message)

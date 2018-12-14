@@ -620,4 +620,14 @@ class Thread extends Model
     {
         return in_array($this->type, [\App\Thread::TYPE_MESSAGE, \App\Thread::TYPE_CUSTOMER]);
     }
+
+    /**
+     * Is this thread created from auto responder email.
+     * 
+     * @return boolean [description]
+     */
+    public function isAutoResponder()
+    {
+        return \MailHelper::isAutoResponder($this->headers);
+    }
 }

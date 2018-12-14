@@ -43,6 +43,11 @@ class SendAutoReply implements ShouldQueue
      */
     public function handle()
     {
+        // Do not send auto reply to auto responders.
+        if ($this->thread->isAutoResponder()) {
+            return;
+        }
+
         // Configure mail driver according to Mailbox settings
         \App\Misc\Mail::setMailDriver($this->mailbox);
 
