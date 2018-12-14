@@ -242,13 +242,19 @@ class FetchEmails extends Command
                     if ($message->hasAttachments()) {
                         foreach ($attachments as $attachment) {
                             if (!empty(Attachment::$types[$attachment->getType()]) && Attachment::$types[$attachment->getType()] == Attachment::TYPE_MESSAGE) {
-                                if (in_array($attachment->getName(), ['RFC822', 'DELIVERY-STATUS'])) {
+                                if (in_array(strtoupper($attachment->getName()), ['RFC822', 'DELIVERY-STATUS', 'DELIVERY-STATUS-NOTIFICATION', 'UNDELIVERED-MESSAGE'])) {
                                     $is_bounce = true;
                                     $bounce_attachment = $attachment;
                                     break;
                                 }
                             }
                         }
+                    }
+
+                    // If a bounce was not detected by the attachment check, try to determine a bounce by looking at subject or at From
+                    if (!$is_bounce) {
+                        $is_bounce = preg_match('/Delivery Status Notification/i', $message->getSubject() )
+                                        || preg_match('/mailer-daemon/i', $from );
                     }
 
                     // Is it a message from Customer or User replied to the notification
