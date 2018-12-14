@@ -413,4 +413,23 @@ class Mail
 
         return false;
     }
+
+    /**
+     * Check Content-Type header.
+     * This is not 100% reliable, detects only standard DSN bounces.
+     * 
+     * @param  [type] $headers [description]
+     * @return [type]          [description]
+     */
+    public static function detectBounceByHeaders($headers)
+    {
+        if (preg_match("/Content-Type:((?:[^\n]|\n[\t ])+)(?:\n[^\t ]|$)/i", $headers, $match)
+            && preg_match("/multipart\/report/i", $match[1])
+            && preg_match("/report-type=[\"']?delivery-status[\"']?/i", $match[1])
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

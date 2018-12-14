@@ -630,4 +630,18 @@ class Thread extends Model
     {
         return \MailHelper::isAutoResponder($this->headers);
     }
+
+    /**
+     * Is thread created from incoming bounce email.
+     * 
+     * @return boolean [description]
+     */
+    public function isBounce()
+    {
+        if ($this->created_by_customer_id && \MailHelper::detectBounceByHeaders($this->headers)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

@@ -238,7 +238,7 @@ class FetchEmails extends Command
                     }
 
                     // Bounce detection.
-                    // This is a temporary simple solution.
+                    // This is a temporary solution.
                     if ($message->hasAttachments()) {
                         // Detect bounce by attachment.
                         foreach ($attachments as $attachment) {
@@ -249,14 +249,9 @@ class FetchEmails extends Command
                                 }
                             }
                         }
-                        // Check Content-Type.
+                        // Check Content-Type header.
                         if ($message->getHeader()) {
-                            $headers = $message->getHeader();
-                            if (preg_match("/Content-Type:((?:[^\n]|\n[\t ])+)(?:\n[^\t ]|$)/i", $headers, $match)
-                                && preg_match("/multipart\/report/i", $match[1])
-                                && preg_match("/report-type=[\"']?delivery-status[\"']?/i", $match[1])
-                            ) {
-                                // Standard DSN message.
+                            if (\MailHelper::detectBounceByHeaders($message->getHeader())) {
                                 $is_bounce = true;
                             }
                         }
