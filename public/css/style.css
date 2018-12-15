@@ -1896,7 +1896,9 @@ button.conv-checkbox-clear {
     color: #a5b2bd;
 }
 .thread-options .dropdown-toggle {
-    padding: 4px 8px;
+    /*padding: 4px 8px;*/
+    padding: 0px 11px 4px 8px;
+    display: block;
 }
 .thread-type-lineitem {
     background: #f9fafa;
