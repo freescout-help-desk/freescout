@@ -638,10 +638,45 @@ class Thread extends Model
      */
     public function isBounce()
     {
-        if ($this->created_by_customer_id && \MailHelper::detectBounceByHeaders($this->headers)) {
+        if (!empty($this->getSendStatusData()['is_bounce'])) {
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Send status data mayb contain the following information:
+     * - bounce info (status_code, action, diagnostic_code, is_bounce, bounce_for_thread, bounce_for_conversation, bounced_by_thread, bounced_by_conversation)
+     * - send error message
+     * - click date
+     * - unsubscribe date
+     * - complain date
+     * 
+     * @return [type] [description]
+     */
+    public function getSendStatusData()
+    {
+        return \Helper::jsonToArray($this->send_status_data);
+    }
+
+    public function updateSendStatusData($new_data)
+    {
+        if ($new_data) {
+            $send_status_data = $this->getSendStatusData();
+            if ($send_status_data) {
+                $send_status_data = array_merge($send_status_data, $new_data);
+            } else {
+                $send_status_data = $new_data;
+            }
+            $this->send_status_data = json_encode($send_status_data);
+        } else {
+            $this->send_status_data = null;
+        }
+    }
+
+    public function isSendStatusError()
+    {
+        return in_array($this->send_status, \App\SendLog::$status_errors);
     }
 }

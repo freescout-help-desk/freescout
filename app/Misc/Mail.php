@@ -432,4 +432,39 @@ class Mail
             return false;
         }
     }
+
+    /**
+     * Parse email headers.
+     * 
+     * @param  [type] $headers_str [description]
+     * @return [type]              [description]
+     */
+    public static function parseHeaders($headers_str)
+    {
+        try {
+            return imap_rfc822_parse_headers($headers_str);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public static function getHeader($headers_str, $header)
+    {
+        $headers = self::parseHeaders($headers_str);
+        if (!$headers) {
+            return null;
+        }
+        $value = null;
+        if (property_exists($headers, $header)) {
+            $value = $headers->$header;
+        } else {
+            return null;
+        }
+        switch ($header) {
+            case 'message_id':
+                $value = str_replace(['<', '>'], '', $value);
+                break;
+        }
+        return $value;
+    }
 }

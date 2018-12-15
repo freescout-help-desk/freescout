@@ -37,6 +37,16 @@ class SendLog extends Model
     ];
 
     /**
+     * Error statuses.
+     * 
+     * @var [type]
+     */
+    public static $status_errors = [
+        self::STATUS_SEND_ERROR,
+        self::STATUS_DELIVERY_ERROR
+    ];
+
+    /**
      * Mail types.
      */
     const MAIL_TYPE_EMAIL_TO_CUSTOMER = 1;
@@ -127,7 +137,7 @@ class SendLog extends Model
 
     public function isErrorStatus()
     {
-        if (in_array($this->status, [self::STATUS_SEND_ERROR, self::STATUS_DELIVERY_ERROR])) {
+        if (in_array($this->status, self::$status_errors)) {
             return true;
         } else {
             return false;
