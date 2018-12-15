@@ -392,19 +392,28 @@
                                     @endif
                                 @endif
                                 @if ($thread->isSendStatusError())
-                                        <div class="alert alert-danger">
-                                            <strong>{{ __('Message not sent to customer') }}</strong> (<a href="{{ route('conversations.ajax_html', ['action' => 
-                                        'send_log']) }}?thread_id={{ $thread->id }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __('View delivery log') }}</a>)
+                                        <div class="alert alert-danger alert-light">
+                                            <div>
+                                                <strong>{{ __('Message not sent to customer') }}</strong> (<a href="{{ route('conversations.ajax_html', ['action' => 
+                                        'send_log']) }}?thread_id={{ $thread->id }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __('View log') }}</a>)
+                                            </div>
                                             
                                             @if (!empty($send_status_data['bounced_by_thread']) && !empty($send_status_data['bounced_by_conversation']))
                                                 @php
                                                     $bounced_by_conversation = App\Conversation::find($send_status_data['bounced_by_conversation']);
                                                 @endphp
                                                 @if ($bounced_by_conversation)
-                                                    <br/>{!! __('Message bounced (:link)', [
+                                                    <small>
+                                                        {!! __('Message bounced (:link)', [
                                                         'link' => '<a href="'.route('conversations.view', ['id' => $send_status_data['bounced_by_conversation']]).'#thread-id='.$send_status_data['bounced_by_thread'].'">#'.$bounced_by_conversation->number.'</a>'
-                                                    ]) !!}
+                                                        ]) !!}
+                                                    </small>
                                                 @endif
+                                            @endif
+                                            @if (!empty($send_status_data['msg']))
+                                                <small>
+                                                    {{ $send_status_data['msg'] }}
+                                                </small>
                                             @endif
                                         </div>
                                 @endif

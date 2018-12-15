@@ -16,7 +16,8 @@ class SendReplyToCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries = 5;
+    // Number of retries + 1
+    public $tries = 6;
 
     public $conversation;
 
@@ -134,12 +135,18 @@ class SendReplyToCustomer implements ShouldQueue
 
             // Retry job with delay.
             // https://stackoverflow.com/questions/35258175/how-can-i-create-delays-between-failed-queued-job-attempts-in-laravel
-            if ($this->attempts() <= $this->tries) {
+            if ($this->attempts() < $this->tries) {
                 $this->release(3600);
 
                 throw $e;
             } else {
+                $this->last_thread->send_status = SendLog::STATUS_SEND_ERROR;
+                $this->last_thread->updateSendStatusData(['msg' => $e->getMessage()]);
+                $this->last_thread->save();
+
+                // This executes $this->failed().
                 $this->fail($e);
+                return;
             }
         }
 

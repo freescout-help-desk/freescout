@@ -2598,6 +2598,10 @@ ul.prev-convs {
     padding-top: 5px;
     padding-bottom: 5px;
 }
+.alert-danger.alert-light {
+    background-color: #f5e7e9;
+    border-color: #f0d9dc;
+}
 
 /**
  * Tables
