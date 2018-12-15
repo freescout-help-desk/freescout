@@ -272,7 +272,11 @@ class FetchEmails extends Command
                     }
                     // Check message's From field.
                     if (!$is_bounce) {
-                        $is_bounce = preg_match('/^mailer\-daemon@/i', $message->getFrom());
+                        if ($message->getFrom()) {
+                            $original_from = $this->formatEmailList($message->getFrom());
+                            $original_from = $original_from[0];
+                            $is_bounce = preg_match('/^mailer\-daemon@/i', $original_from);
+                        }
                     }
 
                     // Is it a message from Customer or User replied to the notification

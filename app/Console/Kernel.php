@@ -68,10 +68,10 @@ class Kernel extends ConsoleKernel
         }
 
         // Fetch emails from mailboxes
-        // $schedule->command('freescout:fetch-emails')
-        //     ->everyMinute()
-        //     ->withoutOverlapping()
-        //     ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
+        $schedule->command('freescout:fetch-emails')
+            ->everyMinute()
+            ->withoutOverlapping()
+            ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
 
         $schedule = \Eventy::filter('schedule', $schedule);
 
