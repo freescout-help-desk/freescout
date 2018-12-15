@@ -231,7 +231,7 @@
 					</tr>
 					<tr>
 						<td align="center">
-							<p style="display:inline; margin:0; padding:0; font-size:12px; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; line-height: 22px;" align="center"><a href="{{ route('users.notifications', ['id' => $user->id]) }}" style="color:#B5B9BD;">{{ __('Notification Settings') }}</a>{{-- - <a href="https://github.com/freescout-helpdesk/freescout/issues/26" style="color:#B5B9BD;">{{ __('Available email commands') }}</a>--}} - <a href="{{ config('app.freescout_url') }}" style="color:#B5B9BD;">{{ config('app.name') }}</a></p>
+							<p style="display:inline; margin:0; padding:0; font-size:12px; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; line-height: 22px;" align="center"><a href="{{ route('users.notifications', ['id' => $user->id]) }}" style="color:#B5B9BD;">{{ __('Notification Settings') }}</a>{{-- - <a href="https://github.com/freescout-helpdesk/freescout/issues/26" style="color:#B5B9BD;">{{ __('Available email commands') }}</a>--}} - <a href="{{ $mailbox->url() }}" style="color:#B5B9BD;">{{ $mailbox->name }}</a></p>
 						</td>
 					</tr>
 					<tr>

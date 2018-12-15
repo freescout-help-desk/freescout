@@ -16,7 +16,8 @@ class SendNotificationToUsers implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries = 5;
+    // Max retries + 1
+    public $tries = 6;
 
     public $users;
 
@@ -93,11 +94,11 @@ class SendNotificationToUsers implements ShouldQueue
             if ($last_thread->type == Thread::TYPE_CUSTOMER) {
                 $from_name = $last_thread->customer->getFullName();
                 if ($from_name) {
-                    $from_name = $from_name.' '.__('via').' '.\Config::get('app.name');
+                    $from_name = $from_name.' '.__('via').' '.$mailbox->name;
                 }
             }
             if (!$from_name) {
-                $from_name = \Config::get('app.name');
+                $from_name = $mailbox->name;
             }
             $from = ['address' => $mailbox->email, 'name' => $from_name];
 
@@ -144,12 +145,13 @@ class SendNotificationToUsers implements ShouldQueue
         if ($global_exception) {
             // Retry job with delay.
             // https://stackoverflow.com/questions/35258175/how-can-i-create-delays-between-failed-queued-job-attempts-in-laravel
-            if ($this->attempts() <= $this->tries) {
+            if ($this->attempts() < $this->tries) {
                 $this->release(3600);
 
                 throw $global_exception;
             } else {
                 $this->fail($global_exception);
+                return;
             }
         }
     }

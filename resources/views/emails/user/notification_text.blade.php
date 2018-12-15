@@ -30,5 +30,5 @@ https://git.io/fNybs (todo)
 
 -----------------------------------------------------------
 
-FreeScout:
-{{ \Config::get('app.freescout_url') }}
+{{ $mailbox->name }}:
+{{ $mailbox->url() }}

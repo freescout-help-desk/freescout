@@ -541,4 +541,14 @@ class Mailbox extends Model
 
         return $active;
     }
+
+    /**
+     * Get mailbox URL.
+     * 
+     * @return [type] [description]
+     */
+    public function url()
+    {
+        return route('mailboxes.view', ['id' => $this->id]);
+    }
 }
