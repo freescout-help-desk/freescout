@@ -104,6 +104,12 @@ class SendReplyToCustomer implements ShouldQueue
 
         $this->recipients = array_merge([$this->customer_email], $cc_array, $bcc_array);
 
+        // If sending fails, all recipiens fail.
+        // if ($this->attempts() > 1) {
+        //     $cc_array = [];
+        //     $bcc_array = [];
+        // }
+
         try {
             Mail::to([['name' => $this->customer->getFullName(), 'email' => $this->customer_email]])
                 ->cc($cc_array)
@@ -120,6 +126,7 @@ class SendReplyToCustomer implements ShouldQueue
                 ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
 
             // Failures will be saved to send log when retry attempts will finish
+            // Mail::failures() is empty in case of connection error.
             $this->failures = $this->recipients;
 
             // Save to send log
