@@ -288,9 +288,10 @@ class Mail
 
     /**
      * Check if email format is valid.
-     * 
-     * @param  [type] $email [description]
-     * @return [type]        [description]
+     *
+     * @param [type] $email [description]
+     *
+     * @return [type] [description]
      */
     public static function validateEmail($email)
     {
@@ -373,5 +374,97 @@ class Mail
         }
 
         return '';
+    }
+
+    /**
+     * Detect autoresponder by headers.
+     * https://github.com/jpmckinney/multi_mail/wiki/Detecting-autoresponders
+     * https://www.jitbit.com/maxblog/18-detecting-outlook-autoreplyout-of-office-emails-and-x-auto-response-suppress-header/.
+     *
+     * @return bool [description]
+     */
+    public static function isAutoResponder($headers_str)
+    {
+        $autoresponder_headers = [
+            'x-autoreply'    => '',
+            'x-autorespond'  => '',
+            'auto-submitted' => 'auto-replied',
+        ];
+        $headers = explode("\n", $headers_str);
+
+        foreach ($autoresponder_headers as $auto_header => $auto_header_value) {
+            foreach ($headers as $header) {
+                $parts = explode(':', $header, 2);
+                if (count($parts) == 2) {
+                    $name = trim(strtolower($parts[0]));
+                    $value = trim($parts[1]);
+                } else {
+                    continue;
+                }
+                if (strtolower($name) == $auto_header) {
+                    if (!$auto_header_value) {
+                        return true;
+                    } elseif ($value == $auto_header_value) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check Content-Type header.
+     * This is not 100% reliable, detects only standard DSN bounces.
+     * 
+     * @param  [type] $headers [description]
+     * @return [type]          [description]
+     */
+    public static function detectBounceByHeaders($headers)
+    {
+        if (preg_match("/Content-Type:((?:[^\n]|\n[\t ])+)(?:\n[^\t ]|$)/i", $headers, $match)
+            && preg_match("/multipart\/report/i", $match[1])
+            && preg_match("/report-type=[\"']?delivery-status[\"']?/i", $match[1])
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Parse email headers.
+     * 
+     * @param  [type] $headers_str [description]
+     * @return [type]              [description]
+     */
+    public static function parseHeaders($headers_str)
+    {
+        try {
+            return imap_rfc822_parse_headers($headers_str);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public static function getHeader($headers_str, $header)
+    {
+        $headers = self::parseHeaders($headers_str);
+        if (!$headers) {
+            return null;
+        }
+        $value = null;
+        if (property_exists($headers, $header)) {
+            $value = $headers->$header;
+        } else {
+            return null;
+        }
+        switch ($header) {
+            case 'message_id':
+                $value = str_replace(['<', '>'], '', $value);
+                break;
+        }
+        return $value;
     }
 }

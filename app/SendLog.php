@@ -24,7 +24,7 @@ class SendLog extends Model
 
     /**
      * Status determining successfull sending.
-     * 
+     *
      * @var [type]
      */
     public static $sent_success = [
@@ -34,6 +34,16 @@ class SendLog extends Model
         self::STATUS_CLICKED,
         self::STATUS_UNSUBSCRIBED,
         self::STATUS_COMPLAINED,
+    ];
+
+    /**
+     * Error statuses.
+     * 
+     * @var [type]
+     */
+    public static $status_errors = [
+        self::STATUS_SEND_ERROR,
+        self::STATUS_DELIVERY_ERROR
     ];
 
     /**
@@ -127,7 +137,7 @@ class SendLog extends Model
 
     public function isErrorStatus()
     {
-        if (in_array($this->status, [self::STATUS_SEND_ERROR, self::STATUS_DELIVERY_ERROR])) {
+        if (in_array($this->status, self::$status_errors)) {
             return true;
         } else {
             return false;

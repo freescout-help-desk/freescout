@@ -821,7 +821,7 @@ a h4 {
  * Editor
  */
 .note-editor.note-frame {
-    border-color: #d6dde3 !important;
+    border-color: #dee4e9 !important;
 }
 .note-editor .btn-default {
     color: #86929e;
@@ -950,6 +950,10 @@ a h4 {
 }
 .note-toolbar.panel-heading {
     background-color: #f9fafa;
+}
+.panel-heading.note-toolbar .note-btn-group .dropdown-menu {
+    min-width: 83px;
+    padding-left: 5px;
 }
 @media (max-width:390px) {
     .note-bottom-div {
@@ -1892,7 +1896,9 @@ button.conv-checkbox-clear {
     color: #a5b2bd;
 }
 .thread-options .dropdown-toggle {
-    padding: 4px 8px;
+    /*padding: 4px 8px;*/
+    padding: 0px 11px 4px 8px;
+    display: block;
 }
 .thread-type-lineitem {
     background: #f9fafa;
@@ -2113,7 +2119,7 @@ button.conv-checkbox-clear {
     color: #d79400;
 }
 .conv-note-block .note-editor.note-frame {
-    border-color: #ffd56d !important;
+    border-color: #f9f9f9 !important;
     color: #d79400;
 }
 .conv-note-block .form-control {
@@ -2591,6 +2597,10 @@ ul.prev-convs {
 .alert-narrow {
     padding-top: 5px;
     padding-bottom: 5px;
+}
+.alert-danger.alert-light {
+    background-color: #f5e7e9;
+    border-color: #f0d9dc;
 }
 
 /**

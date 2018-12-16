@@ -370,6 +370,54 @@
                                 </div>
                             </div>
                             <div class="thread-body">
+                                @php
+                                    $send_status_data = $thread->getSendStatusData();
+                                @endphp
+                                @if ($send_status_data)
+                                    @if (!empty($send_status_data['is_bounce']))
+                                        <div class="alert alert-warning">
+                                            @if (empty($send_status_data['bounce_for_thread']) || empty($send_status_data['bounce_for_conversation']))
+                                                {{ __('This is a bounce message.') }}
+                                            @else
+                                                @php
+                                                    $bounce_for_conversation = App\Conversation::find($send_status_data['bounce_for_conversation']);
+                                                @endphp
+                                                @if ($bounce_for_conversation)
+                                                    {!! __('This is a bounce message for :link', [
+                                                    'link' => '<a href="'.route('conversations.view', ['id' => $send_status_data['bounce_for_conversation']]).'#thread-id='.$send_status_data['bounce_for_thread'].'">#'.$bounce_for_conversation->number.'</a>'
+                                                    ]) !!}
+                                                @endif
+                                            @endif
+                                        </div>
+                                    @endif
+                                @endif
+                                @if ($thread->isSendStatusError())
+                                        <div class="alert alert-danger alert-light">
+                                            <div>
+                                                <strong>{{ __('Message not sent to customer') }}</strong> (<a href="{{ route('conversations.ajax_html', ['action' => 
+                                        'send_log']) }}?thread_id={{ $thread->id }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __('View log') }}</a>)
+                                            </div>
+                                            
+                                            @if (!empty($send_status_data['bounced_by_thread']) && !empty($send_status_data['bounced_by_conversation']))
+                                                @php
+                                                    $bounced_by_conversation = App\Conversation::find($send_status_data['bounced_by_conversation']);
+                                                @endphp
+                                                @if ($bounced_by_conversation)
+                                                    <small>
+                                                        {!! __('Message bounced (:link)', [
+                                                        'link' => '<a href="'.route('conversations.view', ['id' => $send_status_data['bounced_by_conversation']]).'#thread-id='.$send_status_data['bounced_by_thread'].'">#'.$bounced_by_conversation->number.'</a>'
+                                                        ]) !!}
+                                                    </small>
+                                                @endif
+                                            @endif
+                                            @if (!empty($send_status_data['msg']))
+                                                <small>
+                                                    {{ $send_status_data['msg'] }}
+                                                </small>
+                                            @endif
+                                        </div>
+                                @endif
+
                                 {!! $thread->getCleanBody() !!}
 
                                 @if ( $thread->opened_at )

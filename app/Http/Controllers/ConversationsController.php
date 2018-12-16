@@ -192,7 +192,7 @@ class ConversationsController extends Controller
             $orig_thread = Thread::find($request->from_thread_id);
             if ($orig_thread) {
                 $conversation->subject = $orig_thread->conversation->subject;
-                $conversation->subject = preg_replace("/^Fwd:/i", 'Re: ', $conversation->subject);
+                $conversation->subject = preg_replace('/^Fwd:/i', 'Re: ', $conversation->subject);
 
                 $thread = new \App\Thread();
                 $thread->body = $orig_thread->body;

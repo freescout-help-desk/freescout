@@ -51,6 +51,7 @@ var LangMessages = {
             "confirm_delete_module": "Delete this module?",
             "confirm_update": "Please backup application files and database before you continue.",
             "remove_format": "Remove Formatting",
+            "list": "List",
 
             "update": "Update"
         },            "fr.messages": {
@@ -95,6 +96,7 @@ var LangMessages = {
             "confirm_delete_module": "Delete this module?",
             "confirm_update": "Please backup application files and database before you continue.",
             "remove_format": "Remove Formatting",
+            "list": "List",
 
             "update": "Update"
         },            "it.messages": {
@@ -139,6 +141,7 @@ var LangMessages = {
             "confirm_delete_module": "Delete this module?",
             "confirm_update": "Please backup application files and database before you continue.",
             "remove_format": "Remove Formatting",
+            "list": "List",
 
             "update": "Update"
         }    };

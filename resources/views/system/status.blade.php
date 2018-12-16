@@ -25,8 +25,8 @@
                     @if ($new_version_available)
                         <strong class="text-danger">{{ \Config::get('app.version') }}</strong>
                         <div class="alert alert-danger margin-top-10">
-                            {!! __('A new version [:new_version] is available.', ['new_version' => '<a href="'.config('app.freescout_repo').'/releases" target="_blank"><strong>'.$latest_version.'</strong></a>']) !!}
-                            <button class="btn btn-default btn-sm update-trigger" data-loading-text="{{ __('Updating') }}…{{ __('This may take several minutes') }}"><small class="glyphicon glyphicon-refresh"></small> {{ __('Update Now') }}</button>
+                            {{ __('A new version is available') }}: <strong>{{ $latest_version }}</strong> <a href="{{ config('app.freescout_repo') }}/releases" target="_blank">({{ __('View details') }})</a>
+                            <button class="btn btn-default btn-sm update-trigger margin-left-10" data-loading-text="{{ __('Updating') }}…{{ __('This may take several minutes') }}"><small class="glyphicon glyphicon-refresh"></small> {{ __('Update Now') }}</button>
                         </div>
                     @else
                         <strong class="text-success">{{ \Config::get('app.version') }}</strong> 
@@ -105,11 +105,10 @@
         </tbody>
     </table>
 
-    {{ __('Symlinks') }}
     <table class="table table-dark-header table-bordered table-responsive table-narrow">
         <tbody>
             <tr>
-                <th>public/storage</th>
+                <th>public/storage (symlink)</th>
                 <td class="table-main-col">
                     @if ($public_symlink_exists)
                         <strong class="text-success">OK</strong>
@@ -119,9 +118,18 @@
                     @endif
                 </td>
             </tr>
+            <tr>
+                <th>.env</th>
+                <td class="table-main-col">
+                    @if ($env_is_writable)
+                        <strong class="text-success">OK</strong>
+                    @else
+                        <strong class="text-danger">{{ __('Not writable') }}</strong>
+                    @endif
+                </td>
+            </tr>
         </tbody>
     </table>
-
 
     <h3 id="cron" class="margin-top-40">Cron Commands</h3>
     <p>

@@ -338,7 +338,7 @@ class Conversation extends Model
             $title = __('Created by :person<br/>:date', ['person' => ucfirst(__(
             self::$persons[$this->source_via])), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
         } else {
-            $title = __('Last reply by :person<br/>:date', ['person' => ucfirst(__(self::$persons[$this->source_via])), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
+            $title = __('Last reply by :person<br/>:date', ['person' => ucfirst(__(self::$persons[$this->last_reply_from])), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
         }
 
         return $title;
@@ -1050,8 +1050,10 @@ class Conversation extends Model
 
     /**
      * Get waiting since time for the conversation.
-     * @param  [type] $folder [description]
-     * @return [type]         [description]
+     *
+     * @param [type] $folder [description]
+     *
+     * @return [type] [description]
      */
     public function getWaitingSince($folder)
     {

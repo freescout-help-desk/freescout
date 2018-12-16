@@ -110,17 +110,17 @@ class ActivityLog extends Activity
 
     /**
      * Get log names.
-     * 
+     *
      * @return [type] [description]
      */
     public static function getLogNames()
     {
-        return ActivityLog::select('log_name')->distinct()->pluck('log_name')->toArray();
+        return self::select('log_name')->distinct()->pluck('log_name')->toArray();
     }
 
     /**
      * Get available log names.
-     * 
+     *
      * @return [type] [description]
      */
     public static function getAvailableLogs($check_existing = true)
@@ -129,6 +129,7 @@ class ActivityLog extends Activity
         if ($check_existing) {
             $available_logs = array_merge($available_logs, self::getLogNames());
         }
+
         return array_unique(\Eventy::filter('activity_log.available_logs', self::$available_logs));
     }
 }

@@ -51,9 +51,9 @@ class User extends Authenticatable
     /**
      * Statuses.
      */
-    const STATUS_ACTIVE   = 1;
+    const STATUS_ACTIVE = 1;
     const STATUS_DISABLED = 2; // todo
-    const STATUS_DELETED  = 3;
+    const STATUS_DELETED = 3;
 
     /**
      * Invite states.
@@ -718,12 +718,12 @@ class User extends Authenticatable
 
     /**
      * Get query to fetch non-deleted users.
-     * 
+     *
      * @return [type] [description]
      */
     public static function nonDeleted()
     {
-        return User::where('status', '!=', self::STATUS_DELETED);
+        return self::where('status', '!=', self::STATUS_DELETED);
     }
 
     public function isDeleted()

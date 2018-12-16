@@ -13,6 +13,7 @@ use App\Events\UserReplied;
 use App\Mailbox;
 use App\Misc\Mail;
 use App\Option;
+use App\SendLog;
 use App\Subscription;
 use App\Thread;
 use App\User;
@@ -199,7 +200,6 @@ class FetchEmails extends Command
 
                     // Is it a bounce message
                     $is_bounce = false;
-                    $bounce_attachment = null;
 
                     // Determine previous Message-ID
                     $prev_message_id = '';
@@ -238,16 +238,44 @@ class FetchEmails extends Command
                         }
                     }
 
-                    // Determine bounce by attachment
+                    // Bounce detection.
+                    $bounced_message_id = null;
                     if ($message->hasAttachments()) {
+                        // Detect bounce by attachment.
+                        // Check all attachments.
                         foreach ($attachments as $attachment) {
-                            if (!empty(Attachment::$types[$attachment->getType()]) && Attachment::$types[$attachment->getType()] == Attachment::TYPE_MESSAGE) {
-                                if (in_array($attachment->getName(), ['RFC822', 'DELIVERY-STATUS'])) {
+                            if (!empty(Attachment::$types[$attachment->getType()]) && Attachment::$types[$attachment->getType()] == Attachment::TYPE_MESSAGE
+                            ) {
+                                if (
+                                    // Checking the name will lead to mistakes if someone attaches a file with such name.
+                                    // Dashes are converted to space.
+                                    //in_array(strtoupper($attachment->getName()), ['RFC822', 'DELIVERY STATUS', 'DELIVERY STATUS NOTIFICATION', 'UNDELIVERED MESSAGE'])
+                                    preg_match('/delivery-status/', strtolower($attachment->content_type))
+                                    || $attachment->content_type == 'message/rfc822'
+                                ) {
                                     $is_bounce = true;
-                                    $bounce_attachment = $attachment;
-                                    break;
+
+                                    // Try to get Message-ID of the original email.
+                                    if (!$bounced_message_id) {
+                                        print_r(\MailHelper::parseHeaders($attachment->getContent()));
+                                        $bounced_message_id = \MailHelper::getHeader($attachment->getContent(), 'message_id');
+                                    }
                                 }
                             }
+                        }
+                    }
+                    // Check Content-Type header.
+                    if (!$is_bounce && $message->getHeader()) {
+                        if (\MailHelper::detectBounceByHeaders($message->getHeader())) {
+                            $is_bounce = true;
+                        }
+                    }
+                    // Check message's From field.
+                    if (!$is_bounce) {
+                        if ($message->getFrom()) {
+                            $original_from = $this->formatEmailList($message->getFrom());
+                            $original_from = $original_from[0];
+                            $is_bounce = preg_match('/^mailer\-daemon@/i', $original_from);
                         }
                     }
 
@@ -340,14 +368,10 @@ class FetchEmails extends Command
                     $emails = array_merge($message->getFrom(), $message->getReplyTo(), $message->getTo(), $message->getCc(), $message->getBcc());
                     $this->createCustomers($emails, $mailbox->getEmails());
 
+                    $new_thread = null;
                     if ($message_from_customer) {
-                        // Detect and ignore autoresponders.
-                        if ($this->isAutoResponder($message->getHeader())) {
-                            $this->line('['.date('Y-m-d H:i:s').'] Email detected as autoresponder and ignored.');
-                            $message->setFlag(['Seen']);
-                            continue;
-                        }
-                        $new_thread_id = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $message->getHeader());
+                        // SendAutoReply listener will check bounce flag and will not send an auto reply if this is an auto responder.
+                        $new_thread = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $message->getHeader());
                     } else {
                         // Check if From is the same as user's email.
                         // If not we send an email with information to the sender.
@@ -361,12 +385,17 @@ class FetchEmails extends Command
                             continue;
                         }
 
-                        $new_thread_id = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $message->getHeader());
+                        $new_thread = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $message->getHeader());
                     }
 
-                    if ($new_thread_id) {
+                    if ($new_thread) {
                         $message->setFlag(['Seen']);
-                        $this->line('['.date('Y-m-d H:i:s').'] Thread successfully created: '.$new_thread_id);
+                        $this->line('['.date('Y-m-d H:i:s').'] Thread successfully created: '.$new_thread->id);
+
+                        // If it was a bounce message, save bounce data.
+                        if ($message_from_customer && $is_bounce) {
+                            $this->saveBounceData($new_thread, $bounced_message_id, $from);
+                        }
                     } else {
                         $this->logError('Error occured processing message');
                     }
@@ -380,42 +409,50 @@ class FetchEmails extends Command
         $client->disconnect();
     }
 
-    /**
-     * Detect autoresponder by headers.
-     * https://github.com/jpmckinney/multi_mail/wiki/Detecting-autoresponders
-     * https://www.jitbit.com/maxblog/18-detecting-outlook-autoreplyout-of-office-emails-and-x-auto-response-suppress-header/.
-     *
-     * @return bool [description]
-     */
-    public function isAutoResponder($headers_str)
+    public function saveBounceData($new_thread, $bounced_message_id, $from)
     {
-        $autoresponder_headers = [
-            'x-autoreply'    => '',
-            'x-autorespond'  => '',
-            'auto-submitted' => 'auto-replied',
-        ];
-        $headers = explode("\n", $headers_str);
-
-        foreach ($autoresponder_headers as $auto_header => $auto_header_value) {
-            foreach ($headers as $header) {
-                $parts = explode(':', $header, 2);
-                if (count($parts) == 2) {
-                    $name = trim(strtolower($parts[0]));
-                    $value = trim($parts[1]);
-                } else {
-                    continue;
-                }
-                if (strtolower($name) == $auto_header) {
-                    if (!$auto_header_value) {
-                        return true;
-                    } elseif ($value == $auto_header_value) {
-                        return true;
-                    }
-                }
+        // Try to find bounced thread by Message-ID.
+        $bounced_thread = null;
+        if ($bounced_message_id) {
+            $prefixes = [
+                \MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER,
+                \MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY,
+            ];
+            preg_match('/^('.implode('|', $prefixes).')\-(\d+)\-/', $bounced_message_id, $matches);
+            if (!empty($matches[2])) {
+                $bounced_thread = Thread::find($matches[2]);
             }
         }
 
-        return false;
+        $status_data = [
+            'is_bounce' => true,
+        ];
+        if ($bounced_thread) {
+            $status_data['bounce_for_thread'] = $bounced_thread->id;
+            $status_data['bounce_for_conversation'] = $bounced_thread->conversation_id;
+        }
+      
+        $new_thread->updateSendStatusData($status_data);
+        $new_thread->save();
+
+        // Update status of the original message and create log record.
+        if ($bounced_thread) {
+            $bounced_thread->send_status = SendLog::STATUS_DELIVERY_ERROR;
+
+            $status_data = [
+                'bounced_by_thread' => $new_thread->id,
+                'bounced_by_conversation' => $new_thread->conversation_id,
+                // todo.
+                // 'bounce_info' => [
+                // ]
+            ];
+            
+            $bounced_thread->updateSendStatusData($status_data);
+            $bounced_thread->save();
+
+            // Bounces can be soft and hard, for now log both as STATUS_DELIVERY_ERROR.
+            SendLog::log($bounced_thread->id, null, $from, SendLog::MAIL_TYPE_EMAIL_TO_CUSTOMER, SendLog::STATUS_DELIVERY_ERROR, $bounced_thread->created_by_customer_id, null, 'Message bounced');
+        }
     }
 
     public function logError($message)
@@ -543,7 +580,7 @@ class FetchEmails extends Command
             event(new ConversationCustomerChanged($conversation, $prev_customer_id, $prev_customer_email, null, $customer));
         }
 
-        return $thread->id;
+        return $thread;
     }
 
     /**
@@ -614,7 +651,7 @@ class FetchEmails extends Command
         event(new UserReplied($conversation, $thread));
         \Eventy::action('conversation.user_replied', $conversation, $thread);
 
-        return $thread->id;
+        return $thread;
     }
 
     /**

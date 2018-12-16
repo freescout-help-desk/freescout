@@ -43,15 +43,17 @@ class LogsMonitor extends Command
             'alert_logs_names',
             'alert_logs_period',
         ], [
-            'alert_logs_period' => config('app.alert_logs_period')
+            'alert_logs_period' => config('app.alert_logs_period'),
         ]);
 
         if (!$options['alert_logs_names']) {
             $this->error('['.date('Y-m-d H:i:s').'] No logs to monitor selected');
+
             return;
         }
         if (!$options['alert_logs_period']) {
             $this->error('['.date('Y-m-d H:i:s').'] No logs monitoring period set');
+
             return;
         }
 
@@ -62,6 +64,7 @@ class LogsMonitor extends Command
 
         if (!count($logs)) {
             $this->line('['.date('Y-m-d H:i:s').'] No new log records found for the last '.$options['alert_logs_period']);
+
             return;
         }
 

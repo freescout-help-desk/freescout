@@ -62,6 +62,7 @@ var LangMessages = {
             "confirm_delete_module": "{{ __("Delete this module?") }}",
             "confirm_update": "{{ __("Please backup application files and database before you continue.") }}",
             "remove_format": "{{ __("Remove Formatting") }}",
+            "list": "{{ __("List") }}",
 
             "update": "{{ __("Update") }}"
         }@if (!$loop->last),@endif
