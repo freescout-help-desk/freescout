@@ -374,7 +374,7 @@ class FetchEmails extends Command
                             // SendAutoReply listener will check bounce flag and will not send an auto reply if this is an auto responder.
                             $new_thread = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $message->getHeader());
                         } else {
-                            $message->setFlag(['Seen']);                            
+                            $message->setFlag(['Seen']);
                             continue;
                         }
                     } else {
@@ -393,7 +393,7 @@ class FetchEmails extends Command
                         if (\Eventy::filter('fetch_emails.should_save_thread', $hook) !== false) {
                             $new_thread = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $message->getHeader());
                         } else {
-                            $message->setFlag(['Seen']);                            
+                            $message->setFlag(['Seen']);
                             continue;
                         }
                     }
