@@ -441,7 +441,7 @@ class FetchEmails extends Command
             $status_data['bounce_for_thread'] = $bounced_thread->id;
             $status_data['bounce_for_conversation'] = $bounced_thread->conversation_id;
         }
-      
+
         $new_thread->updateSendStatusData($status_data);
         $new_thread->save();
 
@@ -450,13 +450,13 @@ class FetchEmails extends Command
             $bounced_thread->send_status = SendLog::STATUS_DELIVERY_ERROR;
 
             $status_data = [
-                'bounced_by_thread' => $new_thread->id,
+                'bounced_by_thread'       => $new_thread->id,
                 'bounced_by_conversation' => $new_thread->conversation_id,
                 // todo.
                 // 'bounce_info' => [
                 // ]
             ];
-            
+
             $bounced_thread->updateSendStatusData($status_data);
             $bounced_thread->save();
 
