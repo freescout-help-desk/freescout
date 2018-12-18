@@ -368,7 +368,7 @@ class FetchEmails extends Command
                     $emails = array_merge($message->getFrom(), $message->getReplyTo(), $message->getTo(), $message->getCc(), $message->getBcc());
                     $this->createCustomers($emails, $mailbox->getEmails());
 
-                    $hook = new \StdClass;
+                    $hook = new \StdClass();
                     $hook->mailbox = $mailbox;
                     $hook->message_id = $message_id;
                     $hook->prev_thread = $prev_thread;
