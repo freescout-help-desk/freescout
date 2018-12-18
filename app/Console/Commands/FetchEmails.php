@@ -369,18 +369,18 @@ class FetchEmails extends Command
                     $this->createCustomers($emails, $mailbox->getEmails());
 
                     $hook = new \StdClass;
-                    $hook->mailbox     = $mailbox;
-                    $hook->message_id  = $message_id;
+                    $hook->mailbox = $mailbox;
+                    $hook->message_id = $message_id;
                     $hook->prev_thread = $prev_thread;
-                    $hook->from        = $from;
-                    $hook->to          = $to;
-                    $hook->cc          = $cc;
-                    $hook->bcc         = $bcc;
-                    $hook->subject     = $subject;
-                    $hook->body        = $body;
+                    $hook->from = $from;
+                    $hook->to = $to;
+                    $hook->cc = $cc;
+                    $hook->bcc = $bcc;
+                    $hook->subject = $subject;
+                    $hook->body = $body;
                     $hook->attachments = $attachments;
-                    $hook->message     = $message;
-                    $hook->is_bounce   = $is_bounce;
+                    $hook->message = $message;
+                    $hook->is_bounce = $is_bounce;
 
                     $new_thread = null;
                     if ($message_from_customer) {
