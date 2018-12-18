@@ -510,15 +510,19 @@ class FetchEmails extends Command
             $conversation->state = Conversation::STATE_PUBLISHED;
             $conversation->subject = $subject;
             $conversation->setPreview($body);
-            if (count($attachments)) {
-                $conversation->has_attachments = true;
-            }
             $conversation->mailbox_id = $mailbox_id;
             $conversation->customer_id = $customer->id;
             $conversation->created_by_customer_id = $customer->id;
             $conversation->source_via = Conversation::PERSON_CUSTOMER;
             $conversation->source_type = Conversation::SOURCE_TYPE_EMAIL;
         }
+
+        // Update has_attachments only if email has attachments AND conversation hasn't has_attachments already set
+        // Prevent to set has_attachments value back to 0 if the new reply doesn't have any attachment
+        if (!$conversation->has_attachments && count($attachments)) {
+            $conversation->has_attachments = true;
+        }
+
         // Save extra recipients to CC
         $conversation->setCc(array_merge($cc, $to));
         $conversation->setBcc($bcc);
