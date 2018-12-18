@@ -456,7 +456,7 @@ class Customer extends Model
      */
     public function getMainEmail()
     {
-        return $this->emails()->first()->email;
+        return optional($this->emails()->first())->email;
     }
 
     /**
