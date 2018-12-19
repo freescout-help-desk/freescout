@@ -381,7 +381,7 @@ class FetchEmails extends Command
                         'attachments' => $attachments,
                         'message'     => $message,
                         'is_bounce'   => $is_bounce,
-                        'user'        => $user
+                        'user'        => $user,
                     ]);
 
                     $new_thread = null;
