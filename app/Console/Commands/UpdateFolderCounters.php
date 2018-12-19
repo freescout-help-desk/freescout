@@ -37,8 +37,10 @@ class UpdateFolderCounters extends Command
      */
     public function handle()
     {
-        foreach (\App\Folder::get() as $Folder) {
-            $Folder->updateCounters();
+        foreach (\App\Folder::get() as $folder) {
+            $folder->updateCounters();
+            $this->line('Updated counters for folder: '.$folder->id);
         }
+        $this->info('Updating finished');
     }
 }
