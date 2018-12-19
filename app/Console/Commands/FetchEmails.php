@@ -431,7 +431,7 @@ class FetchEmails extends Command
             $status_data['bounce_for_thread'] = $bounced_thread->id;
             $status_data['bounce_for_conversation'] = $bounced_thread->conversation_id;
         }
-      
+
         $new_thread->updateSendStatusData($status_data);
         $new_thread->save();
 
@@ -440,13 +440,13 @@ class FetchEmails extends Command
             $bounced_thread->send_status = SendLog::STATUS_DELIVERY_ERROR;
 
             $status_data = [
-                'bounced_by_thread' => $new_thread->id,
+                'bounced_by_thread'       => $new_thread->id,
                 'bounced_by_conversation' => $new_thread->conversation_id,
                 // todo.
                 // 'bounce_info' => [
                 // ]
             ];
-            
+
             $bounced_thread->updateSendStatusData($status_data);
             $bounced_thread->save();
 
@@ -510,15 +510,19 @@ class FetchEmails extends Command
             $conversation->state = Conversation::STATE_PUBLISHED;
             $conversation->subject = $subject;
             $conversation->setPreview($body);
-            if (count($attachments)) {
-                $conversation->has_attachments = true;
-            }
             $conversation->mailbox_id = $mailbox_id;
             $conversation->customer_id = $customer->id;
             $conversation->created_by_customer_id = $customer->id;
             $conversation->source_via = Conversation::PERSON_CUSTOMER;
             $conversation->source_type = Conversation::SOURCE_TYPE_EMAIL;
         }
+
+        // Update has_attachments only if email has attachments AND conversation hasn't has_attachments already set
+        // Prevent to set has_attachments value back to 0 if the new reply doesn't have any attachment
+        if (!$conversation->has_attachments && count($attachments)) {
+            $conversation->has_attachments = true;
+        }
+
         // Save extra recipients to CC
         $conversation->setCc(array_merge($cc, $to));
         $conversation->setBcc($bcc);
