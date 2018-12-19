@@ -39,6 +39,9 @@ class Kernel extends ConsoleKernel
             ->everyMinute()
             ->withoutOverlapping();
 
+        $schedule->command('freescout:update-folder-counters')
+            ->hourly();
+
         $schedule->command('freescout:module-check-licenses')
             ->daily();
 

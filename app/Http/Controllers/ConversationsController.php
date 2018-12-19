@@ -803,7 +803,7 @@ class ConversationsController extends Controller
                         Attachment::whereIn('id', $attachments_info['attachments'])->update(['thread_id' => $thread->id]);
                     }
 
-                    // Update folder coutner
+                    // Update folder counter.
                     $conversation->mailbox->updateFoldersCounters(Folder::TYPE_DRAFTS);
 
                     if ($new) {
@@ -998,6 +998,9 @@ class ConversationsController extends Controller
                     $thread->created_by_user_id = $user->id;
                     $thread->save();
 
+                    // Remove conversation from drafts folder.
+                    $conversation->removeFromFolder(Folder::TYPE_DRAFTS);
+
                     // Recalculate only old and new folders
                     $conversation->mailbox->updateFoldersCounters();
 
@@ -1008,6 +1011,7 @@ class ConversationsController extends Controller
                     \Session::flash('flash_success_floating', __('Conversation deleted'));
                 }
                 break;
+
             // Restore conversation
             case 'restore_conversation':
                 $conversation = Conversation::find($request->conversation_id);
@@ -1142,9 +1146,10 @@ class ConversationsController extends Controller
                 }
                 break;
 
-            // delete converations
+            // Delete converations.
             case 'bulk_delete_conversation':
                 $conversations = Conversation::findMany($request->conversation_id);
+                $mailboxes_to_recalculate = [];
 
                 foreach ($conversations as $conversation) {
                     if (!$user->can('delete', $conversation)) {
@@ -1157,13 +1162,34 @@ class ConversationsController extends Controller
                     $conversation->updateFolder();
                     $conversation->save();
 
-                    // Recalculate only old and new folders
-                    $conversation->mailbox->updateFoldersCounters();
+                    // Create lineitem thread
+                    $thread = new Thread();
+                    $thread->conversation_id = $conversation->id;
+                    $thread->user_id = $conversation->user_id;
+                    $thread->type = Thread::TYPE_LINEITEM;
+                    $thread->state = Thread::STATE_PUBLISHED;
+                    $thread->status = Thread::STATUS_NOCHANGE;
+                    $thread->action_type = Thread::ACTION_TYPE_DELETED_TICKET;
+                    $thread->source_via = Thread::PERSON_USER;
+                    $thread->source_type = Thread::SOURCE_TYPE_WEB;
+                    $thread->customer_id = $conversation->customer_id;
+                    $thread->created_by_user_id = $user->id;
+                    $thread->save();
 
-                    $response['status'] = 'success';
+                    // Remove conversation from drafts folder.
+                    $conversation->removeFromFolder(Folder::TYPE_DRAFTS);
 
-                    \Session::flash('flash_success_floating', __('Conversations deleted'));
+                    if (!array_key_exists($conversation->mailbox_id, $mailboxes_to_recalculate)) {
+                        $mailboxes_to_recalculate[$conversation->mailbox_id] = $conversation->mailbox;
+                    }
                 }
+                // Recalculate folders counters for mailboxes.
+                foreach ($mailboxes_to_recalculate as $mailbox) {
+                    $mailbox->updateFoldersCounters();
+                }
+
+                $response['status'] = 'success';
+                \Session::flash('flash_success_floating', __('Conversations deleted'));
                 break;
 
             default:

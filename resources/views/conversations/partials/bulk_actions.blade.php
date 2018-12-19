@@ -28,13 +28,13 @@
                 @endforeach
             </ul>
         </div>
-        <div class="btn-group">
+        {{--<div class="btn-group">
             <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{{ __("Tag") }}">
                 <span class="glyphicon glyphicon-tag"></span>
             </button>
             <ul class="dropdown-menu conv-tag">
             </ul>
-        </div>
+        </div>--}}
         <button type="button" class="btn btn-default conv-delete" title="{{ __("Delete") }}">
             <span class="glyphicon glyphicon-trash"></span>
         </button>
@@ -43,7 +43,7 @@
 
 <div id="conversations-bulk-actions-delete-modal" class="hide">
     <div class="text-center">
-    <div class="text-larger margin-top-10">{{ __("Delete the conversations?") }}</div>
+        <div class="text-larger margin-top-10">{{ __("Delete the conversations?") }}</div>
         <div class="form-group margin-top">
             <button class="btn btn-primary delete-conversation-ok">{{ __("Delete") }}</button>
             <button class="btn btn-link" data-dismiss="modal">{{ __("Cancel") }}</button>
