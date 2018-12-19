@@ -2570,11 +2570,10 @@ function converstationBulkActionsInit()
 			);
 		});
 
-		// Change conversation status
+		// Delete conversation
 		$(".conv-delete", bulk_buttons).click(function(e) {
-			var confirm_html = $('#conversations-bulk-actions-delete-modal').html();
 
-			showModalDialog(confirm_html, {
+			showModalDialog('#conversations-bulk-actions-delete-modal', {
 				on_show: function(modal) {
 					modal.children().find('.delete-conversation-ok:first').click(function(e) {
 						modal.modal('hide');
