@@ -369,19 +369,19 @@ class FetchEmails extends Command
                     $this->createCustomers($emails, $mailbox->getEmails());
 
                     $data = \Eventy::filter('fetch_emails.data_to_save', [
-                        'mailbox' => $mailbox,
-                        'message_id' => $message_id,
+                        'mailbox'     => $mailbox,
+                        'message_id'  => $message_id,
                         'prev_thread' => $prev_thread,
-                        'from' => $from,
-                        'to' => $to,
-                        'cc' => $cc,
-                        'bcc' => $bcc,
-                        'subject' => $subject,
-                        'body' => $body,
+                        'from'        => $from,
+                        'to'          => $to,
+                        'cc'          => $cc,
+                        'bcc'         => $bcc,
+                        'subject'     => $subject,
+                        'body'        => $body,
                         'attachments' => $attachments,
-                        'message' => $message,
-                        'is_bounce' => $is_bounce,
-                        'user' => $user
+                        'message'     => $message,
+                        'is_bounce'   => $is_bounce,
+                        'user'        => $user
                     ]);
 
                     $new_thread = null;
