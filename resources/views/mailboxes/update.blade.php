@@ -96,7 +96,7 @@
                         </div>
                     </div>
 
-                    @action('mailboxes.update.view', $mailbox)
+                    @action('mailbox.update.after_ticket_status', $mailbox)
                     
                     {{-- Email Template option hidden until somebody needs it --}}
                     <div class="form-group{{ $errors->has('template') ? ' has-error' : '' }}" style="display:none">
