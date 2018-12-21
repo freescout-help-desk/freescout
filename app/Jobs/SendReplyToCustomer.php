@@ -146,6 +146,7 @@ class SendReplyToCustomer implements ShouldQueue
 
                 // This executes $this->failed().
                 $this->fail($e);
+
                 return;
             }
         }
