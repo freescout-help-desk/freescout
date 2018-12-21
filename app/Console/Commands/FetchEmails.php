@@ -282,6 +282,11 @@ class FetchEmails extends Command
                             $this->line('['.date('Y-m-d H:i:s').'] original_from: '.$original_from);
                         }
                     }
+                    // Check Return-Path header
+                    if (!$is_bounce && preg_match("/^Return\-Path: <>/i", $headers)) {
+                        $this->line('['.date('Y-m-d H:i:s').'] bounce detected from return-path');
+                        $is_bounce = true;
+                    }
 
                     // Is it a message from Customer or User replied to the notification
                     preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $prev_message_id, $m);
