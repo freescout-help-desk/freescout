@@ -530,6 +530,9 @@ class ConversationsController extends Controller
                     if ($from_draft) {
                         // Increment number of replies in conversation
                         $conversation->threads_count++;
+                        // We need to set preview here as when conversation is created from draft,
+                        // ThreadObserver::created() method is not called.
+                        $conversation->setPreview($request->body);
                     }
                     $conversation->save();
 
