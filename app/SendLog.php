@@ -38,12 +38,12 @@ class SendLog extends Model
 
     /**
      * Error statuses.
-     * 
+     *
      * @var [type]
      */
     public static $status_errors = [
         self::STATUS_SEND_ERROR,
-        self::STATUS_DELIVERY_ERROR
+        self::STATUS_DELIVERY_ERROR,
     ];
 
     /**

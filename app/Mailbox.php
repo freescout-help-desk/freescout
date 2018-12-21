@@ -544,7 +544,7 @@ class Mailbox extends Model
 
     /**
      * Get mailbox URL.
-     * 
+     *
      * @return [type] [description]
      */
     public function url()
@@ -554,9 +554,10 @@ class Mailbox extends Model
 
     /**
      * Fill the model with an array of attributes.
-     * 
-     * @param  array  $attributes [description]
-     * @return [type]             [description]
+     *
+     * @param array $attributes [description]
+     *
+     * @return [type] [description]
      */
     public function fill(array $attributes)
     {

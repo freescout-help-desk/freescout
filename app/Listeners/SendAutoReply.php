@@ -24,9 +24,8 @@ class SendAutoReply
         $conversation = $event->conversation;
 
         if (/*!$conversation->imported &&*/ $conversation->mailbox->auto_reply_enabled) {
-
             $thread = $conversation->threads()->first();
-            
+
             // Do not send auto reply to auto responders.
             if ($thread->isAutoResponder()) {
                 return;
@@ -36,7 +35,7 @@ class SendAutoReply
                 return;
             }
 
-            // We can not send auto reply to incoming bounce messages, as it will lead to the infinite loop: 
+            // We can not send auto reply to incoming bounce messages, as it will lead to the infinite loop:
             // application will be sending auto replies and mail server will be sending bounce messages to auto replies.
             // Bounce detection can not be 100% reliable.
             // So to prevent infinite loop, we are checking number of auto replies sent to the customer recently.
