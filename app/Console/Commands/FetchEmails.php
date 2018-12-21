@@ -251,7 +251,8 @@ class FetchEmails extends Command
                                     // Dashes are converted to space.
                                     //in_array(strtoupper($attachment->getName()), ['RFC822', 'DELIVERY STATUS', 'DELIVERY STATUS NOTIFICATION', 'UNDELIVERED MESSAGE'])
                                     preg_match('/delivery-status/', strtolower($attachment->content_type))
-                                    || $attachment->content_type == 'message/rfc822'
+                                    // 7.3.1 The Message/rfc822 (primary) subtype. A Content-Type of "message/rfc822" indicates that the body contains an encapsulated message, with the syntax of an RFC 822 message
+                                    //|| $attachment->content_type == 'message/rfc822'
                                 ) {
                                     $is_bounce = true;
 
