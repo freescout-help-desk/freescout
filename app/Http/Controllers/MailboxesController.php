@@ -71,7 +71,6 @@ class MailboxesController extends Controller
         }
 
         $mailbox = new Mailbox();
-        $mailbox->fillable(array_merge($mailbox->getFillable(), \Eventy::filter('mailbox:fillable_fields', [])));
         $mailbox->fill($request->all());
         $mailbox->save();
 
@@ -136,7 +135,6 @@ class MailboxesController extends Controller
                         ->withInput();
         }
 
-        $mailbox->fillable(array_merge($mailbox->getFillable(), \Eventy::filter('mailbox:fillable_fields', [])));
         $mailbox->fill($request->all());
 
         $mailbox->save();
@@ -214,7 +212,6 @@ class MailboxesController extends Controller
             }
         }
 
-        $mailbox->fillable(array_merge($mailbox->getFillable(), \Eventy::filter('mailbox:fillable_fields', [])));
         $mailbox->fill($request->all());
         $mailbox->save();
 
@@ -259,7 +256,6 @@ class MailboxesController extends Controller
                         ->withInput();
         }
 
-        $mailbox->fillable(array_merge($mailbox->getFillable(), \Eventy::filter('mailbox:fillable_fields', [])));
         $mailbox->fill($request->all());
         $mailbox->save();
 
@@ -381,7 +377,6 @@ class MailboxesController extends Controller
             }
         }
 
-        $mailbox->fillable(array_merge($mailbox->getFillable(), \Eventy::filter('mailbox:fillable_fields', [])));
         $mailbox->fill($request->all());
 
         $mailbox->save();
