@@ -460,10 +460,15 @@ class Helper
      */
     public static function textPreview($text, $length = self::PREVIEW_MAXLENGTH)
     {
-        // Remove all kinds of spaces after tags
+        // Remove all kinds of spaces after tags.
         // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
         $text = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $text);
 
+        // Remove <script> and <style> blocks.
+        $text = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $text);
+        $text = preg_replace('#<style(.*?)>(.*?)</style>#is', '', $text);
+
+        // Remove tags.
         $text = strip_tags($text);
         $text = preg_replace('/\s+/mu', ' ', $text);
 
