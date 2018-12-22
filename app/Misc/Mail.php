@@ -417,9 +417,10 @@ class Mail
     /**
      * Check Content-Type header.
      * This is not 100% reliable, detects only standard DSN bounces.
-     * 
-     * @param  [type] $headers [description]
-     * @return [type]          [description]
+     *
+     * @param [type] $headers [description]
+     *
+     * @return [type] [description]
      */
     public static function detectBounceByHeaders($headers)
     {
@@ -435,16 +436,17 @@ class Mail
 
     /**
      * Parse email headers.
-     * 
-     * @param  [type] $headers_str [description]
-     * @return [type]              [description]
+     *
+     * @param [type] $headers_str [description]
+     *
+     * @return [type] [description]
      */
     public static function parseHeaders($headers_str)
     {
         try {
             return imap_rfc822_parse_headers($headers_str);
         } catch (\Exception $e) {
-            return null;
+            return;
         }
     }
 
@@ -452,19 +454,20 @@ class Mail
     {
         $headers = self::parseHeaders($headers_str);
         if (!$headers) {
-            return null;
+            return;
         }
         $value = null;
         if (property_exists($headers, $header)) {
             $value = $headers->$header;
         } else {
-            return null;
+            return;
         }
         switch ($header) {
             case 'message_id':
                 $value = str_replace(['<', '>'], '', $value);
                 break;
         }
+
         return $value;
     }
 }

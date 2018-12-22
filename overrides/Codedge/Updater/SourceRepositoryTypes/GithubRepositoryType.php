@@ -132,15 +132,21 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
                 $sourcePath = File::directories($this->config['download_path'])[0];
             }
 
-            // Copy Vendor first
+            // Copy Vendor first.
             File::deleteDirectory(base_path('vendor_backup'));
+
+            // We copy new vendor and rename to avoid error:
+            // /vendor/composer/../laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php): failed to open stream: No such file or directory in /vendor/composer/ClassLoader.php:444
+            File::move(
+                $sourcePath.DIRECTORY_SEPARATOR.'vendor',
+                base_path('vendor_new')
+            );
             File::move(
                 base_path('vendor'),
                 base_path('vendor_backup')
             );
-
             File::move(
-                $sourcePath.DIRECTORY_SEPARATOR.'vendor',
+                base_path('vendor_new'),
                 base_path('vendor')
             );
 

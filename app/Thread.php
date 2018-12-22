@@ -623,8 +623,8 @@ class Thread extends Model
 
     /**
      * Is this thread created from auto responder email.
-     * 
-     * @return boolean [description]
+     *
+     * @return bool [description]
      */
     public function isAutoResponder()
     {
@@ -633,8 +633,8 @@ class Thread extends Model
 
     /**
      * Is thread created from incoming bounce email.
-     * 
-     * @return boolean [description]
+     *
+     * @return bool [description]
      */
     public function isBounce()
     {
@@ -651,8 +651,8 @@ class Thread extends Model
      * - send error message
      * - click date
      * - unsubscribe date
-     * - complain date
-     * 
+     * - complain date.
+     *
      * @return [type] [description]
      */
     public function getSendStatusData()

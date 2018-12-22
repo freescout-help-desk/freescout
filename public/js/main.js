@@ -2451,6 +2451,14 @@ function conversationsTableInit()
 {
 	converstationBulkActionsInit();
 
+	$(function() {
+		$('.toggle-all:checkbox').on('click', function () {
+			$('.conv-checkbox:checkbox').prop('checked', this.checked).trigger('change');
+		});
+	});
+
+	
+
 	if ("ontouchstart" in window)
 	{
 		$(document).ready(function() {
@@ -2562,11 +2570,10 @@ function converstationBulkActionsInit()
 			);
 		});
 
-		// Change conversation status
+		// Delete conversation
 		$(".conv-delete", bulk_buttons).click(function(e) {
-			var confirm_html = $('#conversations-bulk-actions-delete-modal').html();
 
-			showModalDialog(confirm_html, {
+			showModalDialog('#conversations-bulk-actions-delete-modal', {
 				on_show: function(modal) {
 					modal.children().find('.delete-conversation-ok:first').click(function(e) {
 						modal.modal('hide');

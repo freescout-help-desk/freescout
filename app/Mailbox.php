@@ -544,11 +544,25 @@ class Mailbox extends Model
 
     /**
      * Get mailbox URL.
-     * 
+     *
      * @return [type] [description]
      */
     public function url()
     {
         return route('mailboxes.view', ['id' => $this->id]);
+    }
+
+    /**
+     * Fill the model with an array of attributes.
+     *
+     * @param array $attributes [description]
+     *
+     * @return [type] [description]
+     */
+    public function fill(array $attributes)
+    {
+        $this->fillable(array_merge($this->getFillable(), \Eventy::filter('mailbox.fillable_fields', [])));
+
+        return parent::fill($attributes);
     }
 }

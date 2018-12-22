@@ -251,7 +251,8 @@ class FetchEmails extends Command
                                     // Dashes are converted to space.
                                     //in_array(strtoupper($attachment->getName()), ['RFC822', 'DELIVERY STATUS', 'DELIVERY STATUS NOTIFICATION', 'UNDELIVERED MESSAGE'])
                                     preg_match('/delivery-status/', strtolower($attachment->content_type))
-                                    || $attachment->content_type == 'message/rfc822'
+                                    // 7.3.1 The Message/rfc822 (primary) subtype. A Content-Type of "message/rfc822" indicates that the body contains an encapsulated message, with the syntax of an RFC 822 message
+                                    //|| $attachment->content_type == 'message/rfc822'
                                 ) {
                                     $is_bounce = true;
 
@@ -368,10 +369,32 @@ class FetchEmails extends Command
                     $emails = array_merge($message->getFrom(), $message->getReplyTo(), $message->getTo(), $message->getCc(), $message->getBcc());
                     $this->createCustomers($emails, $mailbox->getEmails());
 
+                    $data = \Eventy::filter('fetch_emails.data_to_save', [
+                        'mailbox'     => $mailbox,
+                        'message_id'  => $message_id,
+                        'prev_thread' => $prev_thread,
+                        'from'        => $from,
+                        'to'          => $to,
+                        'cc'          => $cc,
+                        'bcc'         => $bcc,
+                        'subject'     => $subject,
+                        'body'        => $body,
+                        'attachments' => $attachments,
+                        'message'     => $message,
+                        'is_bounce'   => $is_bounce,
+                        'user'        => $user,
+                    ]);
+
                     $new_thread = null;
                     if ($message_from_customer) {
-                        // SendAutoReply listener will check bounce flag and will not send an auto reply if this is an auto responder.
-                        $new_thread = $this->saveCustomerThread($mailbox->id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $message->getHeader());
+                        if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
+                            // SendAutoReply listener will check bounce flag and will not send an auto reply if this is an auto responder.
+                            $new_thread = $this->saveCustomerThread($mailbox->id, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data['attachments'], $data['message']->getHeader());
+                        } else {
+                            $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
+                            $message->setFlag(['Seen']);
+                            continue;
+                        }
                     } else {
                         // Check if From is the same as user's email.
                         // If not we send an email with information to the sender.
@@ -385,7 +408,13 @@ class FetchEmails extends Command
                             continue;
                         }
 
-                        $new_thread = $this->saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $message->getHeader());
+                        if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
+                            $new_thread = $this->saveUserThread($data['mailbox'], $data['message_id'], $data['prev_thread'], $data['user'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['body'], $data['attachments'], $data['message']->getHeader());
+                        } else {
+                            $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
+                            $message->setFlag(['Seen']);
+                            continue;
+                        }
                     }
 
                     if ($new_thread) {
@@ -431,7 +460,7 @@ class FetchEmails extends Command
             $status_data['bounce_for_thread'] = $bounced_thread->id;
             $status_data['bounce_for_conversation'] = $bounced_thread->conversation_id;
         }
-      
+
         $new_thread->updateSendStatusData($status_data);
         $new_thread->save();
 
@@ -440,13 +469,13 @@ class FetchEmails extends Command
             $bounced_thread->send_status = SendLog::STATUS_DELIVERY_ERROR;
 
             $status_data = [
-                'bounced_by_thread' => $new_thread->id,
+                'bounced_by_thread'       => $new_thread->id,
                 'bounced_by_conversation' => $new_thread->conversation_id,
                 // todo.
                 // 'bounce_info' => [
                 // ]
             ];
-            
+
             $bounced_thread->updateSendStatusData($status_data);
             $bounced_thread->save();
 
@@ -510,15 +539,19 @@ class FetchEmails extends Command
             $conversation->state = Conversation::STATE_PUBLISHED;
             $conversation->subject = $subject;
             $conversation->setPreview($body);
-            if (count($attachments)) {
-                $conversation->has_attachments = true;
-            }
             $conversation->mailbox_id = $mailbox_id;
             $conversation->customer_id = $customer->id;
             $conversation->created_by_customer_id = $customer->id;
             $conversation->source_via = Conversation::PERSON_CUSTOMER;
             $conversation->source_type = Conversation::SOURCE_TYPE_EMAIL;
         }
+
+        // Update has_attachments only if email has attachments AND conversation hasn't has_attachments already set
+        // Prevent to set has_attachments value back to 0 if the new reply doesn't have any attachment
+        if (!$conversation->has_attachments && count($attachments)) {
+            $conversation->has_attachments = true;
+        }
+
         // Save extra recipients to CC
         $conversation->setCc(array_merge($cc, $to));
         $conversation->setBcc($bcc);

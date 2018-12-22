@@ -93,31 +93,33 @@
                                     </ul>
                                 </li>
                             @endif--}}
-                            <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('manage') }}">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
-                                    {{ __('Manage') }} <span class="caret"></span>
-                                </a>
+                            @if (Auth::user()->isAdmin() || Auth::user()->can('viewMailboxMenu', Auth::user()))
+                                <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('manage') }}">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
+                                        {{ __('Manage') }} <span class="caret"></span>
+                                    </a>
 
-                                <ul class="dropdown-menu">
-                                    @if (Auth::user()->isAdmin())
-                                        {{--<li><a href="#">{{ __('Apps') }} (todo)</a></li>--}}
-                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('settings') }}"><a href="{{ route('settings') }}">{{ __('Settings') }}</a></li>
-                                        {{--<li><a href="#">{{ __('Docs') }} (todo)</a></li>--}}
-                                    @endif
-                                    @if (Auth::user()->can('viewMailboxMenu', Auth::user()))
-                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailboxes') }}"><a href="{{ route('mailboxes') }}">{{ __('Mailboxes') }}</a></li>
-                                    @endif
-                                    {{--<li class="{{ \App\Misc\Helper::menuSelectedHtml('tags') }}"><a href="#">{{ __('Tags') }} (todo)</a></li>--}}
-                                    @if (Auth::user()->isAdmin())
-                                        {{--<li><a href="#">{{ __('Teams') }} (todo)</a></li>--}}
-                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('users') }}"><a href="{{ route('users') }}">{{ __('Users') }}</a></li>
-                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('modules') }}"><a href="{{ route('modules') }}">{{ __('Modules') }}</a></li>
-                                        <li class=""><a href="/translations">{{ __('Translate') }}</a></li>
-                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('logs') }}"><a href="{{ route('logs') }}">{{ __('Logs') }}</a></li>
-                                        <li class="{{ \App\Misc\Helper::menuSelectedHtml('system') }}"><a href="{{ route('system') }}">{{ __('System') }}</a></li>
-                                    @endif
-                                </ul>
-                            </li>
+                                    <ul class="dropdown-menu">
+                                        @if (Auth::user()->isAdmin())
+                                            {{--<li><a href="#">{{ __('Apps') }} (todo)</a></li>--}}
+                                            <li class="{{ \App\Misc\Helper::menuSelectedHtml('settings') }}"><a href="{{ route('settings') }}">{{ __('Settings') }}</a></li>
+                                            {{--<li><a href="#">{{ __('Docs') }} (todo)</a></li>--}}
+                                        @endif
+                                        @if (Auth::user()->can('viewMailboxMenu', Auth::user()))
+                                            <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailboxes') }}"><a href="{{ route('mailboxes') }}">{{ __('Mailboxes') }}</a></li>
+                                        @endif
+                                        {{--<li class="{{ \App\Misc\Helper::menuSelectedHtml('tags') }}"><a href="#">{{ __('Tags') }} (todo)</a></li>--}}
+                                        @if (Auth::user()->isAdmin())
+                                            {{--<li><a href="#">{{ __('Teams') }} (todo)</a></li>--}}
+                                            <li class="{{ \App\Misc\Helper::menuSelectedHtml('users') }}"><a href="{{ route('users') }}">{{ __('Users') }}</a></li>
+                                            <li class="{{ \App\Misc\Helper::menuSelectedHtml('modules') }}"><a href="{{ route('modules') }}">{{ __('Modules') }}</a></li>
+                                            <li class=""><a href="/translations">{{ __('Translate') }}</a></li>
+                                            <li class="{{ \App\Misc\Helper::menuSelectedHtml('logs') }}"><a href="{{ route('logs') }}">{{ __('Logs') }}</a></li>
+                                            <li class="{{ \App\Misc\Helper::menuSelectedHtml('system') }}"><a href="{{ route('system') }}">{{ __('System') }}</a></li>
+                                        @endif
+                                    </ul>
+                                </li>
+                            @endif
                         </ul>
 
                         <!-- Right Side Of Navbar -->

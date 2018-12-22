@@ -151,6 +151,7 @@ class SendNotificationToUsers implements ShouldQueue
                 throw $global_exception;
             } else {
                 $this->fail($global_exception);
+
                 return;
             }
         }
