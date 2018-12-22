@@ -257,6 +257,8 @@ class FetchEmails extends Command
                                 ) {
                                     $is_bounce = true;
 
+                                    $this->line('['.date('Y-m-d H:i:s').'] Bounce detected by attachment content-type: '.$attachment->content_type);
+
                                     // Try to get Message-ID of the original email.
                                     if (!$bounced_message_id) {
                                         print_r(\MailHelper::parseHeaders($attachment->getContent()));
