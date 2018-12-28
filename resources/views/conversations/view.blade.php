@@ -259,8 +259,8 @@
                                 @if ( $thread->opened_at )
                                     <div class='thread-opened-at'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</div>
                                 @endif
+                                @include('conversations/partials/thread_attachments')
                             </div>
-                            @include('conversations/partials/thread_attachments')
                         </div>
                     </div>
                 @else
