@@ -2286,7 +2286,7 @@ ul.prev-convs {
     }
     .thread-body {
         margin-left: 0;
-        padding-left: 3px;
+        padding-left: 12px;
     }
     .thread-to-first,
     .thread-type {

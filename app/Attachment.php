@@ -240,7 +240,6 @@ class Attachment extends Model
 
         // Delete from disk
         foreach ($attachments as $attachment) {
-            echo $attachment->getStorageFilePath().' ';
             Storage::delete($attachment->getStorageFilePath());
         }
 

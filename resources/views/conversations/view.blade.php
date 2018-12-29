@@ -259,8 +259,8 @@
                                 @if ( $thread->opened_at )
                                     <div class='thread-opened-at'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</div>
                                 @endif
+                                @include('conversations/partials/thread_attachments')
                             </div>
-                            @include('conversations/partials/thread_attachments')
                         </div>
                     </div>
                 @else
@@ -335,7 +335,7 @@
                                                     $is_first = false;
                                                 }
                                             @endphp
-                                            @if (!empty($is_first) && $conversation->threads_count > 2)<a href="#thread-{{ $threads[count($threads)-1]->id }}" class="thread-to-first" data-toggle="tooltip" title="{{ __('Scroll to the Beginning') }}"><i class="glyphicon glyphicon-arrow-down"></i> </a>@endif
+                                            @if (!empty($is_first) && $conversation->threads_count > 2)<a href="#thread-{{ $threads[count($threads)-1]->id }}" class="thread-to-first" data-toggle="tooltip" title="{{ __('To the First Message') }}"><i class="glyphicon glyphicon-arrow-down"></i> </a>@endif
                                             {{--<span class="thread-type">#{{ $thread_num }} <span>·</span> </span>--}}
                                         @endif
                                     @endif
