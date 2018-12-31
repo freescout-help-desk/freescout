@@ -382,6 +382,7 @@ class FetchEmails extends Command
                         'attachments' => $attachments,
                         'message'     => $message,
                         'is_bounce'   => $is_bounce,
+                        'message_from_customer' => $message_from_customer,
                         'user'        => $user,
                     ]);
 

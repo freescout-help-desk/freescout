@@ -679,4 +679,69 @@ class Thread extends Model
     {
         return in_array($this->send_status, \App\SendLog::$status_errors);
     }
+
+    /**
+     * Create thread.
+     * 
+     * @param  [type] $conversation_id [description]
+     * @param  [type] $text            [description]
+     * @param  array  $data            [description]
+     * @return [type]                  [description]
+     */
+    public static function create($conversation, $type, $body, $data = [], $save = true)
+    {
+        $thread = new Thread();
+        $thread->conversation_id = $conversation->id;
+        $thread->type = $type;
+        $thread->body = $body;
+        $thread->status = $conversation->status;
+        $thread->state = Thread::STATE_PUBLISHED;
+
+        // Assigned to.
+        if (!empty($data['user_id'])) {
+            $thread->user_id = $data['user_id'];
+        }
+        if (!empty($data['message_id'])) {
+            $thread->message_id = $data['message_id'];
+        }
+        if (!empty($data['headers'])) {
+            $thread->headers = $data['headers'];
+        }
+        if (!empty($data['from'])) {
+            $thread->from = $data['from'];
+        }
+        if (!empty($data['to'])) {
+            $thread->setTo($data['to']);
+        }
+        if (!empty($data['cc'])) {
+            $thread->setCc($data['cc']);
+        }
+        if (!empty($data['bcc'])) {
+            $thread->setBcc($data['bcc']);
+        }
+        if (isset($data['first'])) {
+            $thread->from = $data['first'];
+        }
+        if (isset($data['source_via'])) {
+            $thread->source_via = $data['source_via'];
+        }
+        if (isset($data['source_type'])) {
+            $thread->source_type = $data['source_type'];
+        }
+        if (!empty($data['customer_id'])) {
+            $thread->customer_id = $data['customer_id'];
+        }
+        if (!empty($data['created_by_customer_id'])) {
+            $thread->created_by_customer_id = $data['created_by_customer_id'];
+        }
+        if (!empty($data['created_by_user_id'])) {
+            $thread->created_by_user_id = $data['created_by_user_id'];
+        }
+
+        if ($save) {
+            $thread->save();
+        }
+
+        return $thread;
+    }
 }
