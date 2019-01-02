@@ -244,7 +244,6 @@ class FetchEmails extends Command
                         // Detect bounce by attachment.
                         // Check all attachments.
                         foreach ($attachments as $attachment) {
-                            $this->line('['.date('Y-m-d H:i:s').'] Found attachment. Type='.$attachment->getType().', content-type='.$attachment->content_type);
                             if (!empty(Attachment::$types[$attachment->getType()]) && Attachment::$types[$attachment->getType()] == Attachment::TYPE_MESSAGE
                             ) {
                                 if (
@@ -280,8 +279,6 @@ class FetchEmails extends Command
                             $original_from = $this->formatEmailList($message->getFrom());
                             $original_from = $original_from[0];
                             $is_bounce = preg_match('/^mailer\-daemon@/i', $original_from);
-
-                            $this->line('['.date('Y-m-d H:i:s').'] original_from: '.$original_from);
                         }
                     }
                     // Check Return-Path header
