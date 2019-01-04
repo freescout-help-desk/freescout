@@ -279,11 +279,12 @@ class FetchEmails extends Command
                             $original_from = $this->formatEmailList($message->getFrom());
                             $original_from = $original_from[0];
                             $is_bounce = preg_match('/^mailer\-daemon@/i', $original_from);
+                            $this->line('['.date('Y-m-d H:i:s').'] Bounce detected by From header: '.$original_from);
                         }
                     }
                     // Check Return-Path header
                     if (!$is_bounce && preg_match("/^Return\-Path: <>/i", $headers)) {
-                        $this->line('['.date('Y-m-d H:i:s').'] bounce detected from return-path');
+                        $this->line('['.date('Y-m-d H:i:s').'] Bounce detected by Return-Path header.');
                         $is_bounce = true;
                     }
 
