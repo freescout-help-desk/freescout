@@ -195,6 +195,7 @@
                     @include('conversations/partials/prev_convs_short', ['mobile' => true])
                 @endif
             @endif
+            @action('conversation.after_customer', $customer, $conversation, $mailbox)
         </div>
         <div id="conv-layout-main">
             @foreach ($threads as $thread_index => $thread)
@@ -221,6 +222,7 @@
                                     <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
                                 </div>
                             </div>
+                            @action('thread.after_header', $thread, $loop, $threads, $conversation, $mailbox)
                         </div>
                         <div class="dropdown thread-options">
                             <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown"><b class="caret"></b></span>
@@ -253,6 +255,7 @@
                                     <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
                                 </div>
                             </div>
+                            @action('thread.after_header', $thread, $loop, $threads, $conversation, $mailbox)
                             <div class="thread-body">
                                 {!! $thread->getCleanBody() !!}
 
@@ -261,6 +264,7 @@
                                 @endif
                                 @include('conversations/partials/thread_attachments')
                             </div>
+                            @action('thread.after_body', $thread, $loop, $threads, $conversation, $mailbox)
                         </div>
                     </div>
                 @else
@@ -369,6 +373,7 @@
                                     @endif
                                 </div>
                             </div>
+                            @action('thread.after_header', $thread, $loop, $threads, $conversation, $mailbox)
                             <div class="thread-body">
                                 @php
                                     $send_status_data = $thread->getSendStatusData();
@@ -438,6 +443,7 @@
                                     </div>
                                 @endif
                             </div>
+                            @action('thread.after_body', $thread, $loop, $threads, $conversation, $mailbox)
                         </div>
                         <div class="dropdown thread-options">
                             <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown"><b class="caret"></b></span>
