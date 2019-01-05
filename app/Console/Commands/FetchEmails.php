@@ -283,7 +283,7 @@ class FetchEmails extends Command
                         }
                     }
                     // Check Return-Path header
-                    if (!$is_bounce && preg_match("/^Return\-Path: <>/i", $headers)) {
+                    if (!$is_bounce && preg_match("/^Return\-Path: <>/i", $message->getHeader())) {
                         $this->line('['.date('Y-m-d H:i:s').'] Bounce detected by Return-Path header.');
                         $is_bounce = true;
                     }
