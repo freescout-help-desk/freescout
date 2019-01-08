@@ -35,9 +35,11 @@
             <ul class="dropdown-menu conv-tag">
             </ul>
         </div>--}}
+        @if (auth()->user()->isAdmin() || auth()->user()->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS))
         <button type="button" class="btn btn-default conv-delete" title="{{ __("Delete") }}">
             <span class="glyphicon glyphicon-trash"></span>
         </button>
+        @endif
     </div>
 </div>
 
