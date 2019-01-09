@@ -1155,6 +1155,7 @@ class ConversationsController extends Controller
                 if (!auth()->user()->isAdmin() && !auth()->user()->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS)) {
                     $response['msg'] = __('Not enough permissions');
                     \Session::flash('flash_success_floating', __('Conversations deleted'));
+                    
                     return \Response::json($response);
                 }
 
