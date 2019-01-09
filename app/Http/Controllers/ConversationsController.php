@@ -1151,6 +1151,13 @@ class ConversationsController extends Controller
 
             // Delete converations.
             case 'bulk_delete_conversation':
+                // At first, check if this user is able to delete conversations
+                if (!auth()->user()->isAdmin() && !auth()->user()->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS)) {
+                    $response['msg'] = __('Not enough permissions');
+                    \Session::flash('flash_success_floating', __('Conversations deleted'));
+                    return \Response::json($response);
+                }
+
                 $conversations = Conversation::findMany($request->conversation_id);
                 $mailboxes_to_recalculate = [];
 
