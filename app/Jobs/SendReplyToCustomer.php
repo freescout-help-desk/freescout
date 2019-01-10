@@ -112,7 +112,7 @@ class SendReplyToCustomer implements ShouldQueue
         // }
 
         try {
-            Mail::to([['name' => $this->customer->getFullName(), 'email' => $this->customer_email]])
+            Mail::to([['name' => ($this->customer->getFullName() ?: $this->customer_email), 'email' => $this->customer_email]])
                 ->cc($cc_array)
                 ->bcc($bcc_array)
                 ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox));
