@@ -5,7 +5,7 @@
 <img src="https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/logo-300.png" width="180" height="180" />
 <br/><br/>
 
-[![PHP version](https://freescout-helpdesk.github.io/img/badges/PHP-7.0%2B-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) [![Laravel version](https://freescout-helpdesk.github.io/img/badges/Laravel-5.5-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) 
+[![PHP version](https://img.shields.io/badge/PHP-7.1.3%2B-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) [![Laravel version](https://img.shields.io/badge/Laravel-5.6-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements)
 [![Build Status](https://freescout-helpdesk.github.io/img/badges/travis.svg)](https://freescout-helpdesk.github.io/img/badges/travis.svg) [![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout)
 
 </div>
@@ -48,7 +48,7 @@ Need anything else? Suggest features [here](https://feedback.userreport.com/25a3
 FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a shared hosting.
 
   * Nginx / Apache / IIS
-  * PHP 7.0+
+  * PHP 7.1.3+
   * MySQL 5.0+ / MariaDB 5.0+ / PostgreSQL
 
 ## News & Updates

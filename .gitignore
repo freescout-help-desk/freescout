@@ -14,6 +14,7 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 .env
+.phpunit.result.cache
 
 /bootstrap/compiled.php
 composer.phar

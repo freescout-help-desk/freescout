@@ -26,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
         \App\Conversation::observe(\App\Observers\ConversationObserver::class);
         \App\Thread::observe(\App\Observers\ThreadObserver::class);
         \Illuminate\Notifications\DatabaseNotification::observe(\App\Observers\DatabaseNotificationObserver::class);
+
+        // Instruct the paginator to generate Bootstrap 3 links
+        \Illuminate\Pagination\Paginator::useBootstrapThree();
     }
 
     /**
