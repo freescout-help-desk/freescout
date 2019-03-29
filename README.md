@@ -5,7 +5,7 @@
 <img src="https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/logo-300.png" width="180" height="180" />
 <br/><br/>
 
-[![PHP version](https://img.shields.io/badge/PHP-7.1.3%2B-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) [![Laravel version](https://img.shields.io/badge/Laravel-5.6-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements)
+[![PHP version](https://img.shields.io/badge/PHP-7.1.3%2B-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) [![Laravel version](https://img.shields.io/badge/Laravel-5.7-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements)
 [![Build Status](https://freescout-helpdesk.github.io/img/badges/travis.svg)](https://freescout-helpdesk.github.io/img/badges/travis.svg) [![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout)
 
 </div>

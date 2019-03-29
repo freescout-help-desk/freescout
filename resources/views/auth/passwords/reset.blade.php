@@ -6,7 +6,7 @@
         <div class="col-md-8 col-md-offset-2">
 
             @include('auth/banner')
-            
+
             <div class="panel panel-default panel-shaded">
                 <div class="panel-heading">{{ __('Reset Password') }}</div>
 
@@ -20,7 +20,7 @@
                             <label for="email" class="col-md-4 control-label">{{ __('Email Address') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="{{ $email or old('email') }}" required autofocus>
+                                <input id="email" type="email" class="form-control" name="email" value="{{ $email ?? old('email') }}" required autofocus>
 
                                 @if ($errors->has('email'))
                                     <span class="help-block">
