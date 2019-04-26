@@ -883,4 +883,34 @@ class Helper
     {
         return (new \Html2Text\Html2Text($text))->getText();
     }
+
+    /**
+     * Trim text removing non-breaking spaces also.
+     * 
+     * @param  [type] $text [description]
+     * @return [type]       [description]
+     */
+    public static function trim($text)
+    {
+        $text = preg_replace("/^\s+/u", '', $text);
+        $text = preg_replace("/\s+$/u", '', $text);
+
+        return $text;
+    }
+
+    /**
+     * Unicode escape sequences like “\u00ed” to proper UTF-8 encoded characters.
+     * 
+     * @param  [type] $text [description]
+     * @return [type]       [description]
+     */
+    public static function entities2utf8($text)
+    {
+        try {
+            return json_decode('"'.str_replace('"', '\\"', $text).'"');
+        } catch(\Exception $e) {
+            return $text;
+        }
+    }
+
 }
