@@ -980,7 +980,7 @@ class ConversationsController extends Controller
                 }
 
                 if (!$response['msg']) {
-                    $folder_id = $conversation->folder_id;
+                    $folder_id = $conversation->getCurrentFolder();
                     $conversation->state = Conversation::STATE_DELETED;
                     $conversation->user_updated_at = date('Y-m-d H:i:s');
                     $conversation->updateFolder();
@@ -1007,7 +1007,7 @@ class ConversationsController extends Controller
                     // Recalculate only old and new folders
                     $conversation->mailbox->updateFoldersCounters();
 
-                    $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+                    $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $folder_id]);
 
                     $response['status'] = 'success';
 
