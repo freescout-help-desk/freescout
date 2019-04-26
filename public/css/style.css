@@ -71,13 +71,21 @@ body.user-is-guest {
     font-size: 20px;
     font-weight: 400;
     line-height: 24.4px;
-    margin: 16px 20px;
+    margin: 16px 20px 10px;
 }
 .sidebar-title .dropdown-toggle {
     cursor: pointer;
 }
 .sidebar-title-extra-value {
     display: none;
+}
+.sidebar-title-email {
+    overflow: hidden!important;
+    text-overflow: ellipsis!important;
+    white-space: nowrap!important;
+    font-size: 13.4px;
+    color: #93a1af;
+    margin-top: 5px;
 }
 .sidebar-menu {
     margin-left: 0;
@@ -1205,7 +1213,7 @@ thead .conv-cb label {
 }*/
 .conv-active .conv-date a {
     /*background-color: #deecf9;*/
-    background-color: #e1edfa;
+    background-color: #e5effb;
 }
 .table-conversations td.conv-customer a {
     line-height: 1.2em;
@@ -1393,10 +1401,10 @@ button.conv-checkbox-clear {
     }
 
     .table.table-conversations tr.selected {
-        background-color: #e1edfa;
+        background-color: #e5effb;
     }
     .table-conversations tr.selected .conv-fader {
-        background: linear-gradient(to right,rgba(255,255,255,0), #e1edfa);
+        background: linear-gradient(to right,rgba(255,255,255,0), #e5effb);
     }
 
     .table.table-conversations tbody td {
