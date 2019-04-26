@@ -220,6 +220,12 @@ class User extends Authenticatable
         }
     }
 
+    public function hasAccessToMailbox($mailbox_id)
+    {
+        $ids = $this->mailboxesIdsCanView();
+        return in_array($mailbox_id, $ids);
+    }
+
     /**
      * Generate random password for the user.
      *

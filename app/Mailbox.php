@@ -368,9 +368,11 @@ class Mailbox extends Model
      *
      * @return bool
      */
-    public function userHasAccess($user_id)
+    public function userHasAccess($user_id, $user = null)
     {
-        $user = User::find($user_id);
+        if (!$user) {
+            $user = User::find($user_id);
+        }
         if ($user && $user->isAdmin()) {
             return true;
         } else {
