@@ -256,6 +256,8 @@ class FetchEmails extends Command
                                 ) {
                                     $is_bounce = true;
 
+                                    $this->line('['.date('Y-m-d H:i:s').'] Bounce detected by attachment content-type: '.$attachment->content_type);
+
                                     // Try to get Message-ID of the original email.
                                     if (!$bounced_message_id) {
                                         print_r(\MailHelper::parseHeaders($attachment->getContent()));
@@ -277,7 +279,13 @@ class FetchEmails extends Command
                             $original_from = $this->formatEmailList($message->getFrom());
                             $original_from = $original_from[0];
                             $is_bounce = preg_match('/^mailer\-daemon@/i', $original_from);
+                            $this->line('['.date('Y-m-d H:i:s').'] Bounce detected by From header: '.$original_from);
                         }
+                    }
+                    // Check Return-Path header
+                    if (!$is_bounce && preg_match("/^Return\-Path: <>/i", $message->getHeader())) {
+                        $this->line('['.date('Y-m-d H:i:s').'] Bounce detected by Return-Path header.');
+                        $is_bounce = true;
                     }
 
                     // Is it a message from Customer or User replied to the notification

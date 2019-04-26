@@ -737,6 +737,9 @@ class Thread extends Model
         if (!empty($data['created_by_user_id'])) {
             $thread->created_by_user_id = $data['created_by_user_id'];
         }
+        if (!empty($data['action_type'])) {
+            $thread->action_type = $data['action_type'];
+        }
 
         if ($save) {
             $thread->save();
