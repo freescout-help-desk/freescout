@@ -24,9 +24,7 @@
 
 {{ __('Conversation URL:') }} {{ $conversation->url() }}
 
---
-{{ __('Reply with any of these commands to update the conversation:') }}
-https://git.io/fNybs (todo)
+{{ \Eventy::action('email_notification_text.footer_links', $mailbox, $conversation, $threads) }}
 
 -----------------------------------------------------------
 
