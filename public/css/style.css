@@ -71,7 +71,7 @@ body.user-is-guest {
     font-size: 20px;
     font-weight: 400;
     line-height: 24.4px;
-    margin: 16px 20px 10px;
+    margin: 16px 20px 6px;
 }
 .sidebar-title .dropdown-toggle {
     cursor: pointer;
