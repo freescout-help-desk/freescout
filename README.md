@@ -6,7 +6,7 @@
 <br/><br/>
 
 [![PHP version](https://freescout-helpdesk.github.io/img/badges/PHP-7.0%2B-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) [![Laravel version](https://freescout-helpdesk.github.io/img/badges/Laravel-5.5-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) 
-[![Build Status](https://freescout-helpdesk.github.io/img/badges/travis.svg)](https://freescout-helpdesk.github.io/img/badges/travis.svg) [![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout)
+[![Build Status](https://freescout-helpdesk.github.io/img/badges/travis.svg)](https://freescout-helpdesk.github.io/img/badges/travis.svg)
 
 </div>
 
@@ -18,10 +18,10 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
 
 ## Table of Contents
    * [Features](#features)
+   * [Modules](#modules)
    * [Requirements](#requirements)
    * [News & Updates](#news--updates)
    * [Installation](#installation)
-   * [Modules](#modules)
    * [Contributing](#contributing)
    * [Screenshots](#screenshots)
 
@@ -36,12 +36,16 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
   * Auto reply.
   * Notes.
   * Pasting screenshots from the clipboard into the reply area.
-  * Dragging images into the reply area.
+  * Configuring notifications on a per user basis.
   * Open tracking.
-  * Search.
   * Edit/hide threads.
+  * Search.
 
-Need anything else? Suggest features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular)
+Need anything else? Suggest features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular).
+
+## Modules
+
+[Available modules](https://github.com/freescout-helpdesk/freescout/wiki/FreeScout-Modules)
 
 ## Requirements
 
@@ -58,10 +62,6 @@ If you would like to be notified about new releases, news and updates you can su
 ## Installation
 
 [Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
-
-## Modules
-
-FreeScout [Modules](https://github.com/freescout-helpdesk/freescout/wiki/FreeScout-Modules)
 
 ## Contributing
 
