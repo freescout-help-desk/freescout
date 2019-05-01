@@ -107,6 +107,22 @@
         </div>
     </div>
 
+    <hr/>
+    <div class="form-group{{ $errors->has('settings.mail_schedule') ? ' has-error' : '' }}">
+        <label for="mail_schedule" class="col-sm-2 control-label">{{ __('Fetch Mail Schedule') }}</label>
+
+        <div class="col-sm-6">
+            <select id="mail_schedule" class="form-control input-sized" name="settings[mail_schedule]">
+                <option value="{{ \MailHelper::MAIL_SCHEDULE_EVERY_MINUTE }}" @if (old('settings.mail_schedule', $settings['mail_schedule']) == \MailHelper::MAIL_SCHEDULE_EVERY_MINUTE)selected="selected"@endif>{{ __('Every minute') }}</option>
+                <option value="{{ \MailHelper::MAIL_SCHEDULE_EVERY_FIVE_MINUTES }}" @if (old('settings.mail_schedule', $settings['mail_schedule']) == \MailHelper::MAIL_SCHEDULE_EVERY_FIVE_MINUTES)selected="selected"@endif>{{ __('Every 5 minutes') }}</option>
+                <option value="{{ \MailHelper::MAIL_SCHEDULE_EVERY_TEN_MINUTES }}" @if (old('settings.mail_schedule', $settings['mail_schedule']) == \MailHelper::MAIL_SCHEDULE_EVERY_TEN_MINUTES)selected="selected"@endif>{{ __('Every 10 minutes') }}</option>
+                <option value="{{ \MailHelper::MAIL_SCHEDULE_EVERY_FIFTEEN_MINUTES }}" @if (old('settings.mail_schedule', $settings['mail_schedule']) == \MailHelper::MAIL_SCHEDULE_EVERY_FIFTEEN_MINUTES)selected="selected"@endif>{{ __('Every 15 minutes') }}</option>
+                <option value="{{ \MailHelper::MAIL_SCHEDULE_EVERY_THIRTY_MINUTES }}" @if (old('settings.mail_schedule', $settings['mail_schedule']) == \MailHelper::MAIL_SCHEDULE_EVERY_THIRTY_MINUTES)selected="selected"@endif>{{ __('Every 30 minutes') }}</option>
+                <option value="{{ \MailHelper::MAIL_SCHEDULE_HOURLY }}" @if (old('settings.mail_schedule', $settings['mail_schedule']) == \MailHelper::MAIL_SCHEDULE_HOURLY)selected="selected"@endif>{{ __('Hourly') }}</option>
+            </select>
+        </div>
+    </div>
+
     <div class="form-group margin-top">
         <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">
