@@ -79,23 +79,23 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
 
-        switch (Option::get('mail_schedule', Mail::MAIL_SCHEDULE_EVERY_MINUTE)) {
-            case Mail::MAIL_SCHEDULE_EVERY_MINUTE:
+        switch (Option::get('fetch_schedule')) {
+            case Mail::FETCH_SCHEDULE_EVERY_MINUTE:
                 $fetch_command->everyMinute();
                 break;
-            case Mail::MAIL_SCHEDULE_EVERY_FIVE_MINUTES:
+            case Mail::FETCH_SCHEDULE_EVERY_FIVE_MINUTES:
                 $fetch_command->everyFiveMinutes();
                 break;
-            case Mail::MAIL_SCHEDULE_EVERY_TEN_MINUTES:
+            case Mail::FETCH_SCHEDULE_EVERY_TEN_MINUTES:
                 $fetch_command->everyTenMinutes();
                 break;
-            case Mail::MAIL_SCHEDULE_EVERY_FIFTEEN_MINUTES:
+            case Mail::FETCH_SCHEDULE_EVERY_FIFTEEN_MINUTES:
                 $fetch_command->everyFifteenMinutes();
                 break;
-            case Mail::MAIL_SCHEDULE_EVERY_THIRTY_MINUTES:
+            case Mail::FETCH_SCHEDULE_EVERY_THIRTY_MINUTES:
                 $fetch_command->everyThirtyMinutes();
                 break;
-            case Mail::MAIL_SCHEDULE_HOURLY:
+            case Mail::FETCH_SCHEDULE_HOURLY:
                 $fetch_command->Hourly();
                 break;
         }
