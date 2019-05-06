@@ -170,7 +170,7 @@
             @if ($customer)
                 <div class="conv-customer-header"></div>
                 <div class="conv-customer-block conv-sidebar-block">
-                    @include('customers/profile_snippet', ['customer' => $customer, 'main_email' => $conversation->customer_email])
+                    @include('customers/profile_snippet', ['customer' => $customer, 'main_email' => $conversation->customer_email, 'conversation' => $conversation])
                     <div class="dropdown customer-trigger" data-toggle="tooltip" title="{{ __("Settings") }}">
                         <a href="javascript:void(0)" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
