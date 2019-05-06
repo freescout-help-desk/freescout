@@ -511,7 +511,7 @@ class Conversation extends Model
             $url = $next_conversation->url();
         } else {
             // Show folder
-            $url = route('mailboxes.view.folder', ['id' => $this->mailbox_id, 'folder_id' => self::getCurrentFolder($this->folder_id)]);
+            $url = route('mailboxes.view.folder', ['id' => $this->mailbox_id, 'folder_id' => $this->getCurrentFolder($this->folder_id)]);
         }
 
         return $url;
@@ -527,7 +527,7 @@ class Conversation extends Model
             $url = $prev_conversation->url();
         } else {
             // Show folder
-            $url = route('mailboxes.view.folder', ['id' => $this->mailbox_id, 'folder_id' => self::getCurrentFolder($this->folder_id)]);
+            $url = route('mailboxes.view.folder', ['id' => $this->mailbox_id, 'folder_id' => $this->getCurrentFolder($this->folder_id)]);
         }
 
         return $url;
@@ -627,10 +627,25 @@ class Conversation extends Model
      */
     public function url($folder_id = null, $thread_id = null, $params = [])
     {
-        $params = array_merge($params, ['id' => $this->id]);
         if (!$folder_id) {
-            $folder_id = self::getCurrentFolder();
+            $folder_id = $this->getCurrentFolder();
         }
+        return self::conversationUrl($this->id, $folder_id, $thread_id, $params);
+    }
+
+    /**
+     * Static function for retrieving URL.
+     * 
+     * @param  [type] $id        [description]
+     * @param  [type] $folder_id [description]
+     * @param  [type] $thread_id [description]
+     * @param  array  $params    [description]
+     * @return [type]            [description]
+     */
+    public static function conversationUrl($id, $folder_id = null, $thread_id = null, $params = [])
+    {
+        $params = array_merge($params, ['id' => $id]);
+
         $params['folder_id'] = $folder_id;
 
         $url = route('conversations.view', $params);

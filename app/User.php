@@ -311,6 +311,11 @@ class User extends Authenticatable
         if (!$user) {
             $user = auth()->user();
         }
+        if (is_string($date)) {
+            // Convert string in to Carbon
+            $date = Carbon::parse($date);
+        }
+        
         if ($user) {
             if ($user->time_format == self::TIME_FORMAT_12) {
                 $format = strtr($format, [
@@ -346,6 +351,11 @@ class User extends Authenticatable
     {
         if (!$date) {
             return '';
+        }
+
+        if (is_string($date)) {
+            // Convert string in to Carbon
+            $date = Carbon::parse($date);
         }
 
         $user = auth()->user();
