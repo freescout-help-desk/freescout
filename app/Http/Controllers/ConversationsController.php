@@ -319,7 +319,21 @@ class ConversationsController extends Controller
             case 'conversation_change_status':
                 $conversation = Conversation::find($request->conversation_id);
 
-                $new_status = (int) $request->status;
+                if ($request->status == 'not_spam') {
+                    // Find previous status in threads
+                    $new_status = $conversation
+                        ->threads()
+                        ->orderBy('created_at', 'desc')
+                        ->where('status', '!=', Thread::STATUS_SPAM)
+                        ->where('type', Thread::TYPE_LINEITEM)
+                        ->where('action_type', Thread::ACTION_TYPE_STATUS_CHANGED)
+                        ->value('status');
+                    if (!$new_status) {
+                        $new_status = Thread::STATUS_ACTIVE;
+                    }
+                } else {
+                    $new_status = (int) $request->status;
+                }
 
                 if (!$conversation) {
                     $response['msg'] = __('Conversation not found');
@@ -330,7 +344,7 @@ class ConversationsController extends Controller
                 if (!$response['msg'] && !$user->can('update', $conversation)) {
                     $response['msg'] = __('Not enough permissions');
                 }
-                if (!$response['msg'] && !in_array((int) $request->status, array_keys(Conversation::$statuses))) {
+                if (!$response['msg'] && !in_array((int) $new_status, array_keys(Conversation::$statuses))) {
                     $response['msg'] = __('Incorrect status');
                 }
                 if (!$response['msg']) {

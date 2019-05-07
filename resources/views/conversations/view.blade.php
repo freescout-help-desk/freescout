@@ -58,9 +58,13 @@
                                     <span>{{ $conversation->getStatusName() }}</span> <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu conv-status">
-                                    @foreach (App\Conversation::$statuses as $status => $dummy)
-                                        <li @if ($conversation->status == $status) class="active" @endif><a href="#" data-status="{{ $status }}">{{ App\Conversation::statusCodeToName($status) }}</a></li>
-                                    @endforeach
+                                    @if ($conversation->status != App\Conversation::STATUS_SPAM)
+                                        @foreach (App\Conversation::$statuses as $status => $dummy)
+                                            <li @if ($conversation->status == $status) class="active" @endif><a href="#" data-status="{{ $status }}">{{ App\Conversation::statusCodeToName($status) }}</a></li>
+                                        @endforeach
+                                    @else
+                                        <li><a href="#" data-status="not_spam">{{ __('Not Spam') }}</a></li>
+                                    @endif
                                 </ul>
                             @else
                                 <button type="button" class="btn btn-grey btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-trash"></i></button>
