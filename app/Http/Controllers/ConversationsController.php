@@ -359,6 +359,8 @@ class ConversationsController extends Controller
                     $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
                     //}
 
+                    $prev_status = $conversation->status;
+
                     $conversation->setStatus($new_status, $user);
                     $conversation->save();
 
@@ -378,7 +380,7 @@ class ConversationsController extends Controller
                     $thread->save();
 
                     event(new ConversationStatusChanged($conversation));
-                    \Eventy::action('conversation.status_changed_by_user', $conversation, $user, false);
+                    \Eventy::action('conversation.status_changed_by_user', $conversation, $user, false, $prev_status);
 
                     $response['status'] = 'success';
                     // Flash
@@ -1132,6 +1134,8 @@ class ConversationsController extends Controller
                             continue;
                         }
 
+                        $prev_status = $conversation->status;
+
                         $conversation->setStatus($new_status, $user);
                         $conversation->save();
 
@@ -1151,7 +1155,7 @@ class ConversationsController extends Controller
                         $thread->save();
 
                         event(new ConversationStatusChanged($conversation));
-                        \Eventy::action('conversation.status_changed_by_user', $conversation, $user, false);
+                        \Eventy::action('conversation.status_changed_by_user', $conversation, $user, false, $prev_status);
                     }
 
                     $response['status'] = 'success';
