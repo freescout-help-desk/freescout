@@ -184,6 +184,7 @@
                             @if (count($prev_conversations))
                                 <li role="presentation" class="customer-hist-trigger"><a data-toggle="collapse" href=".collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
                             @endif
+                            {{ \Eventy::action('customer_profile.menu', $customer, $conversation) }}
                         </ul>
                     </div>
                     {{--<div data-toggle="collapse" href="#collapse-conv-prev" class="customer-hist-trigger">
