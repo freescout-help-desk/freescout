@@ -351,13 +351,13 @@ class ConversationsController extends Controller
                     // Determine redirect
                     // Must be done before updating current conversation's status or assignee.
                     $redirect_same_page = false;
-                    // if ($new_status == Conversation::STATUS_ACTIVE) {
-                    //     // If status is ACTIVE, stay on the current page
-                    //     $response['redirect_url'] = $conversation->url();
-                    //     $redirect_same_page = true;
-                    // } else {
-                    $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
-                    //}
+                    if ($request->status == 'not_spam') {
+                        // Stay on the current page
+                        $response['redirect_url'] = $conversation->url();
+                        $redirect_same_page = true;
+                    } else {
+                        $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+                    }
 
                     $prev_status = $conversation->status;
 
