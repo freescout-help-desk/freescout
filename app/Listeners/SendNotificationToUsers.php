@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Conversation;
 use App\Subscription;
 
 class SendNotificationToUsers
@@ -39,7 +40,11 @@ class SendNotificationToUsers
                 $event_type = Subscription::EVENT_TYPE_NEW;
                 break;
             case 'App\Events\CustomerCreatedConversation':
-                $event_type = Subscription::EVENT_TYPE_NEW;
+                // Do not send notification if conversation is spam.
+                \Log::error('status: '.$event->conversation->status);
+                if ($event->conversation->status != Conversation::STATUS_SPAM) {
+                    $event_type = Subscription::EVENT_TYPE_NEW;
+                }
                 break;
             case 'App\Events\ConversationUserChanged':
                 $caused_by_user_id = $event->user->id;
