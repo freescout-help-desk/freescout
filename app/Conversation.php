@@ -291,6 +291,16 @@ class Conversation extends Model
     }
 
     /**
+     * Get first thread of the conversation.
+     */
+    public function getFirstThread()
+    {
+        return $this->threads()
+            ->orderBy('created_at', 'asc')
+            ->first();
+    }
+
+    /**
      * Get last reply by customer or support agent.
      *
      * @param bool $last [description]
