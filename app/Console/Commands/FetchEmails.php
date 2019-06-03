@@ -573,9 +573,6 @@ class FetchEmails extends Command
         $conversation->updateFolder();
         $conversation->save();
 
-        // Update folders counters
-        $conversation->mailbox->updateFoldersCounters();
-
         // Thread
         $thread = new Thread();
         $thread->conversation_id = $conversation->id;
@@ -608,6 +605,18 @@ class FetchEmails extends Command
 
             $thread->save();
         }
+
+        // Update conversation here if needed.
+        if ($new) {
+            $conversation = \Eventy::filter('conversation.created_by_customer', $conversation, $thread);
+        } else {
+            $conversation = \Eventy::filter('conversation.customer_replied', $conversation, $thread);
+        }
+        // save() will check if something in the model has changed. If it hasn't it won't run a db query.
+        $conversation->save();
+
+        // Update folders counters
+        $conversation->mailbox->updateFoldersCounters();
 
         if ($new) {
             event(new CustomerCreatedConversation($conversation, $thread));
