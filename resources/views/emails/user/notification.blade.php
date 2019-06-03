@@ -124,11 +124,7 @@
 														<td valign="top">
 															<div style="disdivlay:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;">
 																@include('emails/user/thread_by')  
-							                                    @if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED)
-							                                        {{ __("marked as") }} {{ $thread->getStatusName() }}
-							                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
-							                                         {{ __("assigned to") }} {{ $thread->getAssigneeName(false, $user) }}
-							                                    @endif
+																{!! $thread->getActionText('', true, false, $user) !!}
 															</div>
 														</td>
 														<td valign="top">

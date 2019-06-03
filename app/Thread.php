@@ -86,6 +86,7 @@ class Thread extends Model
 
     /**
      * Action associated with the line item.
+     * It is recommended to add custom action types between 100 and 1000
      */
     // Conversation's status changed
     const ACTION_TYPE_STATUS_CHANGED = 1;
@@ -478,15 +479,12 @@ class Thread extends Model
     }
 
     /**
-     * Description of what happened.
+     * Get action's person.
      */
-    public function getActionDescription($conversation_number, $escape = true)
+    public function getActionPerson($conversation_number = '')
     {
         $person = '';
-        $did_this = '';
 
-        // Person
-        $person = '';
         if ($this->type == self::TYPE_CUSTOMER) {
             $person = $this->customer_cached->getFullName(true);
         } elseif ($this->state == self::STATE_DRAFT && !empty($this->edited_by_user_id)) {
@@ -504,14 +502,52 @@ class Thread extends Model
             }
         }
 
+        // https://github.com/tormjens/eventy/issues/19
+        $person = \Eventy::filter('thread.action_person', $person, $this, $conversation_number);
+
+        return $person;
+    }
+
+    /**
+     * Get action text.
+     */
+    public function getActionText($conversation_number = '', $escape = false, $strip_tags = false, $by_user = null)
+    {
+        $did_this = '';
+
         // Did this
         if ($this->type == self::TYPE_LINEITEM) {
+
             if ($this->action_type == self::ACTION_TYPE_STATUS_CHANGED) {
-                $did_this = __('marked as :status_name conversation #:conversation_number', ['status_name' => $this->getStatusName(), 'conversation_number' => $conversation_number]);
+                if ($conversation_number) {
+                    $did_this = __('marked as :status_name conversation #:conversation_number', ['status_name' => $this->getStatusName(), 'conversation_number' => $conversation_number]);
+                } else {
+                    $did_this = __("marked as :status_name", ['status_name' => $this->getStatusName()]);
+                }
             } elseif ($this->action_type == self::ACTION_TYPE_USER_CHANGED) {
-                $did_this = __('assigned :assignee convsersation #:conversation_number', ['assignee' => $this->getAssigneeName(false, null), 'conversation_number' => $conversation_number]);
+                $assignee = $this->getAssigneeName(false, $by_user);
+                if ($escape) {
+                    $assignee = htmlspecialchars($assignee);
+                }
+                if ($conversation_number) {
+                    $did_this = __('assigned :assignee convsersation #:conversation_number', ['assignee' => $assignee, 'conversation_number' => $conversation_number]);
+                } else {
+                    $did_this = __("assigned to :assignee", ['assignee' => $assignee]);
+                }
             } elseif ($this->action_type == self::ACTION_TYPE_CUSTOMER_CHANGED) {
-                $did_this = __('changed the customer to :customer in conversation #:conversation_number', ['customer' => $this->customer->getFullName(true), 'conversation_number' => $conversation_number]);
+                if ($conversation_number) {
+                    $did_this = __('changed the customer to :customer in conversation #:conversation_number', ['customer' => $this->customer->getFullName(true), 'conversation_number' => $conversation_number]);
+                } else {
+                    $customer_name = $this->customer->getFullName(true);
+                    if ($escape) {
+                        $customer_name = htmlspecialchars($customer_name);
+                    }
+                    $did_this = __("changed the customer to :customer", ['customer' => '<a href="'.$this->customer->url().'" title="'.$this->action_data.'" class="link-black">'.$customer_name.'</a>']);
+                }
+            } elseif ($this->action_type == self::ACTION_TYPE_DELETED_TICKET) {
+                $did_this = __("deleted");
+            } elseif ($this->action_type == self::ACTION_TYPE_RESTORE_TICKET) {
+                $did_this = __("restored");
             }
         } elseif ($this->state == self::STATE_DRAFT) {
             if (empty($this->edited_by_user_id)) {
@@ -528,6 +564,24 @@ class Thread extends Model
                 $did_this = __('replied to conversation #:conversation_number', ['conversation_number' => $conversation_number]);
             }
         }
+
+        $did_this = \Eventy::filter('thread.action_text', $did_this, $this, $conversation_number, $escape);
+
+        if ($strip_tags) {
+            $did_this = strip_tags($did_this);
+        }
+
+        return $did_this;
+    }
+
+    /**
+     * Description of what happened.
+     */
+    public function getActionDescription($conversation_number, $escape = true)
+    {
+        // Person
+        $person = $this->getActionPerson($conversation_number);
+        $did_this = $this->getActionText($conversation_number);
 
         $description = ':person_tag_start:person:person_tag_end :did_this';
         if ($escape) {

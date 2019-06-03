@@ -211,17 +211,7 @@
                             <div class="thread-header">
                                 <div class="thread-title">
                                     @include('conversations/thread_by') 
-                                    @if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED)
-                                        {{ __("marked as :status_name", ['status_name' => $thread->getStatusName()]) }}
-                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
-                                         {{ __("assigned to :assignee", ['assignee' => $thread->getAssigneeName()]) }}
-                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_CUSTOMER_CHANGED)
-                                         {!! __("changed the customer to :customer", ['customer' => '<a href="'.$thread->customer->url().'" title="'.$thread->action_data.'" class="link-black">'.htmlspecialchars($thread->customer->getFullName(true)).'</a>']) !!}
-                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_DELETED_TICKET)
-                                         {{ __("deleted") }}
-                                     @elseif ($thread->action_type == App\Thread::ACTION_TYPE_RESTORE_TICKET)
-                                          {{ __("restored") }}
-                                    @endif
+                                    {!! $thread->getActionText('', true) !!}
                                 </div>
                                 <div class="thread-info">
                                     <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
