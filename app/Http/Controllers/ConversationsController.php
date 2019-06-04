@@ -512,6 +512,8 @@ class ConversationsController extends Controller
                         $customer = $conversation->customer;
                     }
 
+                    $prev_status = $conversation->status;
+
                     $conversation->status = $request->status;
                     // We need to set state, as it may have been a draft
                     $conversation->state = Conversation::STATE_PUBLISHED;
@@ -560,7 +562,7 @@ class ConversationsController extends Controller
                     if (!$new) {
                         if ($status_changed) {
                             event(new ConversationStatusChanged($conversation));
-                            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, true);
+                            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, true, $prev_status);
                         }
                         if ($user_changed) {
                             event(new ConversationUserChanged($conversation, $user));

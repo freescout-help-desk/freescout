@@ -653,11 +653,13 @@ class FetchEmails extends Command
         // Save extra recipients to CC
         $conversation->setCc(array_merge($cc, $to));
         $conversation->setBcc($bcc);
+
         // Respect mailbox settings for "Status After Replying
-        if ($conversation->status != $mailbox->ticket_status) {
-            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, true);
-        }
+        $prev_status = $conversation->status;
         $conversation->status = $mailbox->ticket_status;
+        if ($conversation->status != $mailbox->ticket_status) {
+            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, true, $prev_status);
+        }
         $conversation->last_reply_at = $now;
         $conversation->last_reply_from = Conversation::PERSON_USER;
         $conversation->user_updated_at = $now;
