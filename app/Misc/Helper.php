@@ -456,9 +456,9 @@ class Helper
     }
 
     /**
-     * Get preview of the text in a plain form.
+     * Remove from text all tags, double spaces, etc.
      */
-    public static function textPreview($text, $length = self::PREVIEW_MAXLENGTH)
+    public static function stripTags($text)
     {
         // Remove all kinds of spaces after tags.
         // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
@@ -486,6 +486,16 @@ class Helper
         // $text = urldecode($text);
 
         $text = trim(preg_replace('/[ ]+/', ' ', $text));
+        
+        return $text;
+    }
+
+    /**
+     * Get preview of the text in a plain form.
+     */
+    public static function textPreview($text, $length = self::PREVIEW_MAXLENGTH)
+    {
+        $text = self::stripTags($text);
 
         $text = mb_substr($text, 0, $length);
 
