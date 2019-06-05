@@ -608,9 +608,9 @@ class FetchEmails extends Command
 
         // Update conversation here if needed.
         if ($new) {
-            $conversation = \Eventy::filter('conversation.created_by_customer', $conversation, $thread);
+            $conversation = \Eventy::filter('conversation.created_by_customer', $conversation, $thread, $customer);
         } else {
-            $conversation = \Eventy::filter('conversation.customer_replied', $conversation, $thread);
+            $conversation = \Eventy::filter('conversation.customer_replied', $conversation, $thread, $customer);
         }
         // save() will check if something in the model has changed. If it hasn't it won't run a db query.
         $conversation->save();
@@ -620,10 +620,10 @@ class FetchEmails extends Command
 
         if ($new) {
             event(new CustomerCreatedConversation($conversation, $thread));
-            \Eventy::action('conversation.created_by_customer', $conversation, $thread);
+            \Eventy::action('conversation.created_by_customer', $conversation, $thread, $customer);
         } else {
             event(new CustomerReplied($conversation, $thread));
-            \Eventy::action('conversation.customer_replied', $conversation, $thread);
+            \Eventy::action('conversation.customer_replied', $conversation, $thread, $customer);
         }
 
         // Conversation customer changed
