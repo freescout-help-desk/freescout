@@ -38,6 +38,13 @@ class Mail
     const MAIL_ENCRYPTION_SSL = 'ssl';
     const MAIL_ENCRYPTION_TLS = 'tls';
 
+    const FETCH_SCHEDULE_EVERY_MINUTE = 1;
+    const FETCH_SCHEDULE_EVERY_FIVE_MINUTES = 5;
+    const FETCH_SCHEDULE_EVERY_TEN_MINUTES = 10;
+    const FETCH_SCHEDULE_EVERY_FIFTEEN_MINUTES = 15;
+    const FETCH_SCHEDULE_EVERY_THIRTY_MINUTES = 30;
+    const FETCH_SCHEDULE_HOURLY = 60;
+
     /**
      * If reply is not extracted properly from the incoming email, add here a new separator.
      * Order is not important.

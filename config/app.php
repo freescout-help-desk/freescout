@@ -237,6 +237,7 @@ return [
         'alert_fetch_period' => ['default' => 15], // min
         'email_branding'     => ['default' => true],
         'open_tracking'      => ['default' => true],
+        'fetch_schedule'     => ['default' => env('APP_FETCH_SCHEDULE', 1)], //min
     ],
 
     /*

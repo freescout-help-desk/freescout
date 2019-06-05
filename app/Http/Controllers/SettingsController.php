@@ -175,6 +175,7 @@ class SettingsController extends Controller
                     'mail_username'   => Option::get('mail_username', \Config::get('mail.username')),
                     'mail_password'   => Option::get('mail_password', \Config::get('mail.password')),
                     'mail_encryption' => Option::get('mail_encryption', \Config::get('mail.encryption')),
+                    'fetch_schedule'  => Option::get('fetch_schedule'),
                 ];
                 break;
             case 'alerts':
