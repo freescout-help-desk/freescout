@@ -30,7 +30,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
 ![FreeScout](https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/banner.png)
 
   * 100% Mobile-friendly.
-  * Multilingual.
+  * Multilingual (English, French, Italian, Portuguese).
   * Starred conversations.
   * Push notifications.
   * Auto reply.
