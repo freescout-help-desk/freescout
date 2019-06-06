@@ -39,8 +39,13 @@ class FetchMonitor extends Command
     {
         $now = time();
 
-        $last_successful_run = \Option::get('fetch_emails_last_successful_run');
-        if ($last_successful_run && $last_successful_run < $now - \Option::get('alert_fetch_period') * 60) {
+        $options = \Option::getOptions([
+            'alert_fetch_period',
+            'fetch_emails_last_successful_run',
+        ]);
+
+        $last_successful_run = $options['fetch_emails_last_successful_run'];
+        if ($last_successful_run && $last_successful_run < $now - ((config('app.fetch_schedule') * 60) + ($options['alert_fetch_period'] * 60))) {
             $mins_ago = floor(($now - $last_successful_run) / 60);
 
             $text = 'There are some problems fetching emails: last time emails were successfully fetched <strong>'.$mins_ago.' minutes ago</strong>. Please check <a href="'.route('logs', ['name' => 'fetch_errors']).'">fetching logs</a> and <a href="'.route('system').'#cron">make sure</a> that the following cron task is running: <code>php artisan schedule:run</code>';

@@ -57,6 +57,14 @@ return [
             'visibility' => 'public',
         ],
 
+        // To store file in the storage/app folder
+        'private' => [
+            'driver'     => 'local',
+            'root'       => storage_path('app'),
+            'url'        => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key'    => env('AWS_ACCESS_KEY_ID'),

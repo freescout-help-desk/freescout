@@ -319,7 +319,21 @@ class ConversationsController extends Controller
             case 'conversation_change_status':
                 $conversation = Conversation::find($request->conversation_id);
 
-                $new_status = (int) $request->status;
+                if ($request->status == 'not_spam') {
+                    // Find previous status in threads
+                    $new_status = $conversation
+                        ->threads()
+                        ->orderBy('created_at', 'desc')
+                        ->where('status', '!=', Thread::STATUS_SPAM)
+                        ->where('type', Thread::TYPE_LINEITEM)
+                        ->where('action_type', Thread::ACTION_TYPE_STATUS_CHANGED)
+                        ->value('status');
+                    if (!$new_status) {
+                        $new_status = Thread::STATUS_ACTIVE;
+                    }
+                } else {
+                    $new_status = (int) $request->status;
+                }
 
                 if (!$conversation) {
                     $response['msg'] = __('Conversation not found');
@@ -330,20 +344,22 @@ class ConversationsController extends Controller
                 if (!$response['msg'] && !$user->can('update', $conversation)) {
                     $response['msg'] = __('Not enough permissions');
                 }
-                if (!$response['msg'] && !in_array((int) $request->status, array_keys(Conversation::$statuses))) {
+                if (!$response['msg'] && !in_array((int) $new_status, array_keys(Conversation::$statuses))) {
                     $response['msg'] = __('Incorrect status');
                 }
                 if (!$response['msg']) {
                     // Determine redirect
                     // Must be done before updating current conversation's status or assignee.
                     $redirect_same_page = false;
-                    // if ($new_status == Conversation::STATUS_ACTIVE) {
-                    //     // If status is ACTIVE, stay on the current page
-                    //     $response['redirect_url'] = $conversation->url();
-                    //     $redirect_same_page = true;
-                    // } else {
-                    $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
-                    //}
+                    if ($request->status == 'not_spam') {
+                        // Stay on the current page
+                        $response['redirect_url'] = $conversation->url();
+                        $redirect_same_page = true;
+                    } else {
+                        $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+                    }
+
+                    $prev_status = $conversation->status;
 
                     $conversation->setStatus($new_status, $user);
                     $conversation->save();
@@ -364,7 +380,7 @@ class ConversationsController extends Controller
                     $thread->save();
 
                     event(new ConversationStatusChanged($conversation));
-                    \Eventy::action('conversation.status_changed_by_user', $conversation, $user, false);
+                    \Eventy::action('conversation.status_changed_by_user', $conversation, $user, false, $prev_status);
 
                     $response['status'] = 'success';
                     // Flash
@@ -496,6 +512,8 @@ class ConversationsController extends Controller
                         $customer = $conversation->customer;
                     }
 
+                    $prev_status = $conversation->status;
+
                     $conversation->status = $request->status;
                     // We need to set state, as it may have been a draft
                     $conversation->state = Conversation::STATE_PUBLISHED;
@@ -544,7 +562,7 @@ class ConversationsController extends Controller
                     if (!$new) {
                         if ($status_changed) {
                             event(new ConversationStatusChanged($conversation));
-                            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, true);
+                            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, true, $prev_status);
                         }
                         if ($user_changed) {
                             event(new ConversationUserChanged($conversation, $user));
@@ -1118,6 +1136,8 @@ class ConversationsController extends Controller
                             continue;
                         }
 
+                        $prev_status = $conversation->status;
+
                         $conversation->setStatus($new_status, $user);
                         $conversation->save();
 
@@ -1137,7 +1157,7 @@ class ConversationsController extends Controller
                         $thread->save();
 
                         event(new ConversationStatusChanged($conversation));
-                        \Eventy::action('conversation.status_changed_by_user', $conversation, $user, false);
+                        \Eventy::action('conversation.status_changed_by_user', $conversation, $user, false, $prev_status);
                     }
 
                     $response['status'] = 'success';

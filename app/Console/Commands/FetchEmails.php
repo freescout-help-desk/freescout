@@ -573,9 +573,6 @@ class FetchEmails extends Command
         $conversation->updateFolder();
         $conversation->save();
 
-        // Update folders counters
-        $conversation->mailbox->updateFoldersCounters();
-
         // Thread
         $thread = new Thread();
         $thread->conversation_id = $conversation->id;
@@ -609,12 +606,24 @@ class FetchEmails extends Command
             $thread->save();
         }
 
+        // Update conversation here if needed.
+        if ($new) {
+            $conversation = \Eventy::filter('conversation.created_by_customer', $conversation, $thread, $customer);
+        } else {
+            $conversation = \Eventy::filter('conversation.customer_replied', $conversation, $thread, $customer);
+        }
+        // save() will check if something in the model has changed. If it hasn't it won't run a db query.
+        $conversation->save();
+
+        // Update folders counters
+        $conversation->mailbox->updateFoldersCounters();
+
         if ($new) {
             event(new CustomerCreatedConversation($conversation, $thread));
-            \Eventy::action('conversation.created_by_customer', $conversation, $thread);
+            \Eventy::action('conversation.created_by_customer', $conversation, $thread, $customer);
         } else {
             event(new CustomerReplied($conversation, $thread));
-            \Eventy::action('conversation.customer_replied', $conversation, $thread);
+            \Eventy::action('conversation.customer_replied', $conversation, $thread, $customer);
         }
 
         // Conversation customer changed
@@ -644,11 +653,13 @@ class FetchEmails extends Command
         // Save extra recipients to CC
         $conversation->setCc(array_merge($cc, $to));
         $conversation->setBcc($bcc);
+
         // Respect mailbox settings for "Status After Replying
-        if ($conversation->status != $mailbox->ticket_status) {
-            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, true);
-        }
+        $prev_status = $conversation->status;
         $conversation->status = $mailbox->ticket_status;
+        if ($conversation->status != $mailbox->ticket_status) {
+            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, true, $prev_status);
+        }
         $conversation->last_reply_at = $now;
         $conversation->last_reply_from = Conversation::PERSON_USER;
         $conversation->user_updated_at = $now;

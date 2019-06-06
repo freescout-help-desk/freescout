@@ -58,9 +58,13 @@
                                     <span>{{ $conversation->getStatusName() }}</span> <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu conv-status">
-                                    @foreach (App\Conversation::$statuses as $status => $dummy)
-                                        <li @if ($conversation->status == $status) class="active" @endif><a href="#" data-status="{{ $status }}">{{ App\Conversation::statusCodeToName($status) }}</a></li>
-                                    @endforeach
+                                    @if ($conversation->status != App\Conversation::STATUS_SPAM)
+                                        @foreach (App\Conversation::$statuses as $status => $dummy)
+                                            <li @if ($conversation->status == $status) class="active" @endif><a href="#" data-status="{{ $status }}">{{ App\Conversation::statusCodeToName($status) }}</a></li>
+                                        @endforeach
+                                    @else
+                                        <li><a href="#" data-status="not_spam">{{ __('Not Spam') }}</a></li>
+                                    @endif
                                 </ul>
                             @else
                                 <button type="button" class="btn btn-grey btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-trash"></i></button>
@@ -170,7 +174,7 @@
             @if ($customer)
                 <div class="conv-customer-header"></div>
                 <div class="conv-customer-block conv-sidebar-block">
-                    @include('customers/profile_snippet', ['customer' => $customer, 'main_email' => $conversation->customer_email])
+                    @include('customers/profile_snippet', ['customer' => $customer, 'main_email' => $conversation->customer_email, 'conversation' => $conversation])
                     <div class="dropdown customer-trigger" data-toggle="tooltip" title="{{ __("Settings") }}">
                         <a href="javascript:void(0)" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -180,6 +184,7 @@
                             @if (count($prev_conversations))
                                 <li role="presentation" class="customer-hist-trigger"><a data-toggle="collapse" href=".collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
                             @endif
+                            {{ \Eventy::action('customer_profile.menu', $customer, $conversation) }}
                         </ul>
                     </div>
                     {{--<div data-toggle="collapse" href="#collapse-conv-prev" class="customer-hist-trigger">
@@ -206,17 +211,7 @@
                             <div class="thread-header">
                                 <div class="thread-title">
                                     @include('conversations/thread_by') 
-                                    @if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED)
-                                        {{ __("marked as :status_name", ['status_name' => $thread->getStatusName()]) }}
-                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
-                                         {{ __("assigned to :assignee", ['assignee' => $thread->getAssigneeName()]) }}
-                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_CUSTOMER_CHANGED)
-                                         {!! __("changed the customer to :customer", ['customer' => '<a href="'.$thread->customer->url().'" title="'.$thread->action_data.'" class="link-black">'.htmlspecialchars($thread->customer->getFullName(true)).'</a>']) !!}
-                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_DELETED_TICKET)
-                                         {{ __("deleted") }}
-                                     @elseif ($thread->action_type == App\Thread::ACTION_TYPE_RESTORE_TICKET)
-                                          {{ __("restored") }}
-                                    @endif
+                                    {!! $thread->getActionText('', true) !!}
                                 </div>
                                 <div class="thread-info">
                                     <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>

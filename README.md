@@ -6,7 +6,7 @@
 <br/><br/>
 
 [![PHP version](https://freescout-helpdesk.github.io/img/badges/PHP-7.0%2B-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) [![Laravel version](https://freescout-helpdesk.github.io/img/badges/Laravel-5.5-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) 
-[![Build Status](https://freescout-helpdesk.github.io/img/badges/travis.svg)](https://freescout-helpdesk.github.io/img/badges/travis.svg)
+[![Build Status](https://freescout-helpdesk.github.io/img/badges/travis.svg)](https://freescout-helpdesk.github.io/img/badges/travis.svg) [![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout)
 
 </div>
 
@@ -30,7 +30,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
 ![FreeScout](https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/banner.png)
 
   * 100% Mobile-friendly.
-  * Multilingual.
+  * Multilingual (English, French, Italian, Portuguese).
   * Starred conversations.
   * Push notifications.
   * Auto reply.

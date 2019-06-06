@@ -102,6 +102,18 @@ class Folder extends Model
                 return __('Unassigned');
             case self::TYPE_MINE:
                 return __('Mine');
+            case self::TYPE_DRAFTS:
+                return __('Drafts');
+            case self::TYPE_ASSIGNED:
+                return __('Assigned');
+            case self::TYPE_CLOSED:
+                return __('Closed');
+            case self::TYPE_SPAM:
+                return __('Spam');
+            case self::TYPE_DELETED:
+                return __('Deleted');
+            case self::TYPE_STARRED:
+                return __('Starred');
             default:
                 return __(self::$types[$this->type]);
         }

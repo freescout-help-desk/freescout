@@ -12,7 +12,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.1.7',
+    'version' => '1.1.8',
 
     /*
     |--------------------------------------------------------------------------
@@ -92,7 +92,7 @@ return [
     */
 
     'locale'          => env('APP_LOCALE', 'en'),
-    'locales'         => ['en', 'fr', 'it'],
+    'locales'         => ['en', 'fr', 'it', 'pt-PT', 'pt-BR'],
     'default_locale'  => 'en',
 
     /*
@@ -210,6 +210,13 @@ return [
     */
     'alert_logs'        => env('APP_ALERT_LOGS', false),
     'alert_logs_period' => env('APP_ALERT_LOGS_PERIOD', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Fetch Mail Schedule.
+    |-------------------------------------------------------------------------
+    */
+    'fetch_schedule'    => env('APP_FETCH_SCHEDULE', 1),
 
     /*
     |--------------------------------------------------------------------------

@@ -95,6 +95,11 @@ class SettingsController extends Controller
                     'validator_rules' => [
                         'settings.mail_from' => 'required|email',
                     ],
+                    'settings' => [
+                        'fetch_schedule' => [
+                            'env' => 'APP_FETCH_SCHEDULE',
+                        ],
+                    ],
                 ];
                 break;
             case 'general':
@@ -175,6 +180,7 @@ class SettingsController extends Controller
                     'mail_username'   => Option::get('mail_username', \Config::get('mail.username')),
                     'mail_password'   => Option::get('mail_password', \Config::get('mail.password')),
                     'mail_encryption' => Option::get('mail_encryption', \Config::get('mail.encryption')),
+                    'fetch_schedule'  => config('app.fetch_schedule'),
                 ];
                 break;
             case 'alerts':

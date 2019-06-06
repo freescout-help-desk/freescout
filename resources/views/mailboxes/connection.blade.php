@@ -140,7 +140,7 @@
                         <hr/>
                     </div>
                     
-                    <div class="form-group margin-bottom-0">
+                    {{--<div class="form-group margin-bottom-0">
                         <label class="col-sm-2 control-label">{{ __('Improve Delivery') }}</label>
 
                         <div class="col-sm-6">
@@ -194,7 +194,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>--}}
 
                     <div class="form-group">
                         <label for="send_test" class="col-sm-2 control-label">{{ __('Send Test To') }}</label>

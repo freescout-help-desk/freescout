@@ -259,6 +259,16 @@ class Mailbox extends Model
     }
 
     /**
+     * Get folder by it's type.
+     */
+    public function getFolderByType($type)
+    {
+        return $this->folders()
+            ->where('type', $type)
+            ->first();
+    }
+
+    /**
      * Get folders available for the current user.
      */
     public function getAssesibleFolders()

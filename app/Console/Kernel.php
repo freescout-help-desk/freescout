@@ -5,6 +5,8 @@ namespace App\Console;
 use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Misc\Mail;
+use App\Option;
 
 class Kernel extends ConsoleKernel
 {
@@ -73,10 +75,30 @@ class Kernel extends ConsoleKernel
         }
 
         // Fetch emails from mailboxes
-        $schedule->command('freescout:fetch-emails')
-            ->everyMinute()
+        $fetch_command = $schedule->command('freescout:fetch-emails')
             ->withoutOverlapping()
             ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
+
+        switch (config('app.fetch_schedule')) {
+            case Mail::FETCH_SCHEDULE_EVERY_FIVE_MINUTES:
+                $fetch_command->everyFiveMinutes();
+                break;
+            case Mail::FETCH_SCHEDULE_EVERY_TEN_MINUTES:
+                $fetch_command->everyTenMinutes();
+                break;
+            case Mail::FETCH_SCHEDULE_EVERY_FIFTEEN_MINUTES:
+                $fetch_command->everyFifteenMinutes();
+                break;
+            case Mail::FETCH_SCHEDULE_EVERY_THIRTY_MINUTES:
+                $fetch_command->everyThirtyMinutes();
+                break;
+            case Mail::FETCH_SCHEDULE_HOURLY:
+                $fetch_command->Hourly();
+                break;
+            default:
+                $fetch_command->everyMinute();
+                break;
+        }
 
         $schedule = \Eventy::filter('schedule', $schedule);
 

@@ -50,5 +50,6 @@
 				</div>
 			@endif
 		</div>
+		@action('customer.profile_data', $customer, $conversation ?? '')
 	</div>
 </div>
