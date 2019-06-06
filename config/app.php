@@ -92,7 +92,7 @@ return [
     */
 
     'locale'          => env('APP_LOCALE', 'en'),
-    'locales'         => ['en', 'fr', 'it', 'pt-PT'],
+    'locales'         => ['en', 'fr', 'it', 'pt-PT', 'pt-BR'],
     'default_locale'  => 'en',
 
     /*
