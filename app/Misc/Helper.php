@@ -987,12 +987,16 @@ class Helper
      */
     public static function isRoute($route_name)
     {
-        $current = \Route::current()->getName();
+        $route = \Route::current();
+        if (!$route) {
+            return false;
+        }
+        $current = $route->getName();
 
         if (is_array($route_name)) {
             return in_array($current, $route_name);
         } else {
-            return $current == $route_name;
+            return ($current == $route_name);
         }
     }
 }

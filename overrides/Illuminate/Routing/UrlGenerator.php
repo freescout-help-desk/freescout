@@ -220,7 +220,7 @@ class UrlGenerator implements UrlGeneratorContract
         // Once we get the root URL, we will check to see if it contains an index.php
         // file in the paths. If it does, we will remove it since it is not needed
         // for asset paths, but only for routes to endpoints in the application.
-        $root = $this->formatRoot($this->formatScheme($secure), \Helper::getSubdirectory(true, true));
+        $root = $this->formatRoot($this->formatScheme($secure), config('app.url'));
 
         return $this->removeIndex($root).'/'.trim($path, '/');
     }
