@@ -117,13 +117,52 @@ function showPermissionsError()
 sudo chmod ug+rwx '.$root_dir_no_slash.'</textarea><br/>If it does not help, please follow <a href="http://freescout.net/install/#82-manual-installation" target="_blank">Manual installation</a> instructions.');
 }
 
+function getSubdirectory()
+{
+    $subdirectory = $_SERVER['PHP_SELF'];
+
+    $filename = basename($_SERVER['SCRIPT_FILENAME']);
+
+    if (basename($_SERVER['SCRIPT_NAME']) === $filename) {
+        $subdirectory = $_SERVER['SCRIPT_NAME'];
+    } elseif (basename($_SERVER['PHP_SELF']) === $filename) {
+        $subdirectory = $_SERVER['PHP_SELF'];
+    } elseif (basename($_SERVER['ORIG_SCRIPT_NAME']) === $filename) {
+        $subdirectory = $_SERVER['ORIG_SCRIPT_NAME']; // 1and1 shared hosting compatibility
+    } else {
+        // Backtrack up the script_filename to find the portion matching
+        // php_self
+        $path = $_SERVER['PHP_SELF'];
+        $file = $_SERVER['SCRIPT_FILENAME'];
+        $segs = explode('/', trim($file, '/'));
+        $segs = array_reverse($segs);
+        $index = 0;
+        $last = \count($segs);
+        $subdirectory = '';
+        do {
+            $seg = $segs[$index];
+            $subdirectory = '/'.$seg.$subdirectory;
+            ++$index;
+        } while ($last > $index && (false !== $pos = strpos($path, $subdirectory)) && 0 != $pos);
+    }
+
+    $subdirectory = str_replace('public/install.php', '', $subdirectory);
+    $subdirectory = str_replace('install.php', '', $subdirectory);
+
+    if (!$subdirectory) {
+        $subdirectory = '/';
+    }
+
+    return $subdirectory;
+}
+
 $app_key = getAppKey($root_dir);
 
 // Generate APP_KEY
 if (empty($app_key)) {
     // Copy .env.example
     if (!file_exists($root_dir.'.env')) {
-
+        
         // Check if .env.example eixists
         if (!file_exists($root_dir.'.env.example')) {
             showError('File <strong>'.$root_dir.'.env.example</strong> not found. Please make sure to copy this file from the application dist.');
@@ -161,7 +200,7 @@ if (empty($app_key)) {
 
 if (!empty($app_key)) {
     // When APP_KEY generated, redirect to /install
-    header('Location: /install');
+    header('Location: '.getSubdirectory().'install');
 } else {
     showPermissionsError();
 }

@@ -47,10 +47,13 @@
             "RachidLaasri\\LaravelInstaller\\Helpers\\": "overrides/RachidLaasri/LaravelInstaller/Helpers/",
             "RachidLaasri\\LaravelInstaller\\Middleware\\": "overrides/RachidLaasri/LaravelInstaller/Middleware/",
             "RachidLaasri\\LaravelInstaller\\Controllers\\": "overrides/RachidLaasri/LaravelInstaller/Controllers/",
+            "RachidLaasri\\LaravelInstaller\\Providers\\": "overrides/RachidLaasri/LaravelInstaller/Providers/",
             "Nwidart\\Modules\\": "overrides/Nwidart/Modules/",
             "Codedge\\Updater\\SourceRepositoryTypes\\": "overrides/Codedge/Updater/SourceRepositoryTypes/",
             "Illuminate\\Foundation\\": "overrides/Illuminate/Foundation/",
-            "Barryvdh\\TranslationManager\\": "overrides/Barryvdh/TranslationManager/"
+            "Barryvdh\\TranslationManager\\": "overrides/Barryvdh/TranslationManager/",
+            "Illuminate\\Routing\\": "overrides/Illuminate/Routing/",
+            "Lord\\Laroute\\Routes\\": "overrides/Lord/Laroute/Routes/"
         },
         "exclude-from-classmap": [
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
@@ -68,7 +71,10 @@
             "vendor/nwidart/laravel-modules/src/Json.php",
             "vendor/codedge/laravel-selfupdater/src/SourceRepositoryTypes/GithubRepositoryType.php",
             "vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php",
-            "vendor/barryvdh/laravel-translation-manager/src/Manager.php"
+            "vendor/barryvdh/laravel-translation-manager/src/Manager.php",
+            "vendor/laravel/framework/src/Illuminate/Routing/UrlGenerator.php",
+            "vendor/rachidlaasri/laravel-installer/src/Providers/LaravelInstallerServiceProvider.php",
+            "vendor/lord/laroute/src/Routes/Collection.php"
         ]
     },
     "autoload-dev": {

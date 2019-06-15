@@ -923,4 +923,76 @@ class Helper
         }
     }
 
+    /**
+     * Get app subdirectory in /subdirectory/1/2/ format.
+     */
+    public static function getSubdirectory($keep_trailing_slash = false, $keep_front_slash = false)
+    {
+        $subdirectory = '';
+
+        $app_url = config('app.url');
+        
+        // Check host to ignore default values.
+        $app_host = parse_url($app_url, PHP_URL_HOST);
+
+        if ($app_url && !in_array($app_host, ['localhost', 'example.com'])) {
+            $subdirectory = parse_url($app_url, PHP_URL_PATH);
+        } else {
+            // Before app is installed
+            $subdirectory = $_SERVER['PHP_SELF'];
+
+            $filename = basename($_SERVER['SCRIPT_FILENAME']);
+
+            if (basename($_SERVER['SCRIPT_NAME']) === $filename) {
+                $subdirectory = $_SERVER['SCRIPT_NAME'];
+            } elseif (basename($_SERVER['PHP_SELF']) === $filename) {
+                $subdirectory = $_SERVER['PHP_SELF'];
+            } elseif (basename($_SERVER['ORIG_SCRIPT_NAME']) === $filename) {
+                $subdirectory = $_SERVER['ORIG_SCRIPT_NAME']; // 1and1 shared hosting compatibility
+            } else {
+                // Backtrack up the script_filename to find the portion matching
+                // php_self
+                $path = $_SERVER['PHP_SELF'];
+                $file = $_SERVER['SCRIPT_FILENAME'];
+                $segs = explode('/', trim($file, '/'));
+                $segs = array_reverse($segs);
+                $index = 0;
+                $last = \count($segs);
+                $subdirectory = '';
+                do {
+                    $seg = $segs[$index];
+                    $subdirectory = '/'.$seg.$subdirectory;
+                    ++$index;
+                } while ($last > $index && (false !== $pos = strpos($path, $subdirectory)) && 0 != $pos);
+            }
+        }
+
+        $subdirectory = str_replace('public/index.php', '', $subdirectory);
+        $subdirectory = str_replace('index.php', '', $subdirectory);
+
+        $subdirectory = trim($subdirectory, '/');
+        if ($keep_trailing_slash) {
+            $subdirectory .= '/';
+        }
+
+        if ($keep_front_slash && $subdirectory != '/') {
+            $subdirectory = '/'.$subdirectory;
+        }
+
+        return $subdirectory;
+    }
+
+    /**
+     * Check current route.
+     */
+    public static function isRoute($route_name)
+    {
+        $current = \Route::current()->getName();
+
+        if (is_array($route_name)) {
+            return in_array($current, $route_name);
+        } else {
+            return $current == $route_name;
+        }
+    }
 }

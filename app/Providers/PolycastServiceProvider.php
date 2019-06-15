@@ -45,7 +45,7 @@ class PolycastServiceProvider extends ServiceProvider
         //     __DIR__.'/../migrations/' => database_path('migrations')
         // ], 'migrations');
 
-        $this->app['router']->group(['middleware' => ['web']], function ($router) {
+        $this->app['router']->group(['middleware' => ['web'], 'prefix' => \Helper::getSubdirectory()], function ($router) {
 
             // establish connection and send current time
             $this->app['router']->post('polycast/connect', function (Request $request) {

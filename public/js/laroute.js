@@ -4,8 +4,8 @@
 
         var routes = {
 
-            absolute: false,
-            rootUrl: '',
+            absolute: true,
+            rootUrl: Vars.public_url,
             routes : [
     {
         "uri": "app-settings\/ajax",

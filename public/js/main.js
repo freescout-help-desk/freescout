@@ -1894,7 +1894,7 @@ function polycastInit()
 	}
 
 	// create the connection
-    poly = new Polycast('/polycast', {
+    poly = new Polycast(Vars.public_url+'/polycast', {
         token: getCsrfToken()
     });
 

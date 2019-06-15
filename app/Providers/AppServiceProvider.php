@@ -47,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
         if (!\Config::get('app.key') && !app()->runningInConsole() && !file_exists(storage_path('.installed'))) {
             // Not defined here yet
             //\Artisan::call("freescout:clear-cache");
-            redirect('/install.php')->send();
+            redirect(\Helper::getSubdirectory().'/install.php')->send();
         }
 
         // Process module registration error - disable module and show error to admin

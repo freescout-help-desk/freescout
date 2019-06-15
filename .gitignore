@@ -1,6 +1,7 @@
 /node_modules
 /public/hot
 /public/storage
+/public/js/vars.js
 /storage/*.key
 # We are committing /vendor directory to make installation process super easy, even on a shared hosting:
 # - https://www.codeenigma.com/build/blog/do-you-really-need-composer-production

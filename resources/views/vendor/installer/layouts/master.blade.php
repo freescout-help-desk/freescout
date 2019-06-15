@@ -6,9 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>@if (trim($__env->yieldContent('template_title')))@yield('template_title') | @endif {{ trans('installer_messages.title') }}</title>
-        <link href="/css/fonts.css" rel="stylesheet"/>
-        <link href="/installer/css/fontawesome.css" rel="stylesheet"/>
-        <link href="/installer/css/style.min.css" rel="stylesheet"/>
+        <link href="/{{ \Helper::getSubdirectory() }}/css/fonts.css" rel="stylesheet"/>
+        <link href="/{{ \Helper::getSubdirectory() }}/installer/css/fontawesome.css" rel="stylesheet"/>
+        <link href="/{{ \Helper::getSubdirectory() }}/installer/css/style.min.css" rel="stylesheet"/>
         @yield('style')
         <script>
             window.Laravel = <?php echo json_encode([
@@ -29,17 +29,11 @@
                     </li>
                     <li class="step__divider"></li>
                     <li class="step__item {{ isActive('LaravelInstaller::environment')}} {{ isActive('LaravelInstaller::environmentWizard')}} {{ isActive('LaravelInstaller::environmentClassic')}}">
-                        @if(Request::is('install/environment') || Request::is('install/environment/wizard') || Request::is('install/environment/classic') )
-                            <a href="{{ route('LaravelInstaller::environmentWizard') }}">
-                                <i class="step__icon fa fa-cog" aria-hidden="true" title="Settings"></i>
-                            </a>
-                        @else
-                            <i class="step__icon fa fa-cog" aria-hidden="true" title="Settings"></i>
-                        @endif
+                        <i class="step__icon fa fa-cog" aria-hidden="true" title="Settings"></i>
                     </li>
                     <li class="step__divider"></li>
                     <li class="step__item {{ isActive('LaravelInstaller::permissions') }}">
-                        @if(Request::is('install/permissions') || Request::is('install/environment') || Request::is('install/environment/wizard') || Request::is('install/environment/classic') )
+                        @if(\Helper::isRoute(['LaravelInstaller::environment', 'LaravelInstaller::environmentWizard', 'LaravelInstaller::environmentClassic']))
                             <a href="{{ route('LaravelInstaller::permissions') }}">
                                 <i class="step__icon fa fa-key" aria-hidden="true" title="Permissions"></i>
                             </a>
@@ -49,7 +43,7 @@
                     </li>
                     <li class="step__divider"></li>
                     <li class="step__item {{ isActive('LaravelInstaller::requirements') }}">
-                        @if(Request::is('install') || Request::is('install/requirements') || Request::is('install/permissions') || Request::is('install/environment') || Request::is('install/environment/wizard') || Request::is('install/environment/classic') )
+                        @if(\Helper::isRoute(['LaravelInstaller::permissions', 'LaravelInstaller::environment', 'LaravelInstaller::environmentWizard', 'LaravelInstaller::environmentClassic']))
                             <a href="{{ route('LaravelInstaller::requirements') }}">
                                 <i class="step__icon fa fa-check" aria-hidden="true" title="Server Requirements"></i>
                             </a>
@@ -59,7 +53,7 @@
                     </li>
                     <li class="step__divider"></li>
                     <li class="step__item {{ isActive('LaravelInstaller::welcome') }}">
-                        @if(Request::is('install') || Request::is('install/requirements') || Request::is('install/permissions') || Request::is('install/environment') || Request::is('install/environment/wizard') || Request::is('install/environment/classic') )
+                        @if (\Helper::isRoute(['LaravelInstaller::requirements', 'LaravelInstaller::permissions', 'LaravelInstaller::environment', 'LaravelInstaller::environmentWizard', 'LaravelInstaller::environmentClassic']))
                             <a href="{{ route('LaravelInstaller::welcome') }}">
                                 <i class="step__icon fa fa-home" aria-hidden="true" title="Start"></i>
                             </a>

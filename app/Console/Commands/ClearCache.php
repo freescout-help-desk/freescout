@@ -11,7 +11,7 @@ class ClearCache extends Command
      *
      * @var string
      */
-    protected $signature = 'freescout:clear-cache {--doNotCacheConfig}';
+    protected $signature = 'freescout:clear-cache {--doNotCacheConfig} {--doNotGenerateVars}';
 
     /**
      * The console command description.
@@ -44,6 +44,10 @@ class ClearCache extends Command
             $this->call('config:clear');
         } else {
             $this->call('config:cache');
+        }
+        // Regenearte vars to get new data from .env
+        if (!$this->option('doNotGenerateVars')) {
+            $this->call('freescout:generate-vars');
         }
     }
 }

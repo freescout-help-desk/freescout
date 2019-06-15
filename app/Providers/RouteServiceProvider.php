@@ -51,9 +51,17 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware('web')
-             ->namespace($this->namespace)
-             ->group(base_path('routes/web.php'));
+        $subdirectory = \Helper::getSubdirectory();
+
+        if ($subdirectory) {
+            $route = Route::prefix($subdirectory)
+                     ->middleware('web');
+        } else {
+            $route = Route::middleware('web');
+        }
+             
+        $route->namespace($this->namespace)
+              ->group(base_path('routes/web.php'));
     }
 
     /**

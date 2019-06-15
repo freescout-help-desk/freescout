@@ -48,7 +48,7 @@
                     <label for="app_url">
                         App URL
                     </label>
-                    <input type="url" name="app_url" id="app_url" value="{{ old('app_url', Request::root()) }}" placeholder="{{ trans('installer_messages.environment.wizard.form.app_url_placeholder') }}" />
+                    <input type="url" name="app_url" id="app_url" value="{{ old('app_url', trim(Request::root().\Helper::getSubdirectory(false, true), '/')) }}" placeholder="{{ trans('installer_messages.environment.wizard.form.app_url_placeholder') }}" />
                     @if ($errors->has('app_url'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
