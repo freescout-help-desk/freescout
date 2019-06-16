@@ -79,7 +79,7 @@ class canInstall
             }
 
             // Allow to access the last installation page
-            if (\Request::is('install/database') || \Request::is('install/final')) {
+            if (\Route::current()->getName()== 'LaravelInstaller::database' || \Route::current()->getName() == 'LaravelInstaller::final') {
                 return false;
             }
 

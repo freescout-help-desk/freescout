@@ -5,7 +5,7 @@
         var routes = {
 
             absolute: $ABSOLUTE$,
-            rootUrl: '',
+            rootUrl: Vars.public_url,
             routes : $ROUTES$,
             prefix: '$PREFIX$',
 

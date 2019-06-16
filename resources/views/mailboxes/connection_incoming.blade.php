@@ -104,6 +104,25 @@
                             </select>
 
                             @include('partials/field_error', ['field'=>'in_encryption'])
+                        </div>
+                    </div>
+
+                    <div class="form-group{{ $errors->has('in_validate_cert') ? ' has-error' : '' }}">
+                        <label for="in_validate_cert" class="col-sm-2 control-label">{{ __('Validate Certificate') }}</label>
+
+                        <div class="col-sm-6">
+                            <div class="controls">
+                                <div class="onoffswitch-wrap">
+                                    <div class="onoffswitch">
+                                        <input type="checkbox" name="in_validate_cert" value="1" id="in_validate_cert" class="onoffswitch-checkbox" @if (old('in_validate_cert', $mailbox->in_validate_cert))checked="checked"@endif >
+                                        <label class="onoffswitch-label" for="in_validate_cert"></label>
+                                    </div>
+
+                                    <i class="glyphicon glyphicon-info-sign icon-info icon-info-inline" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="{{ __('Disable certificate validation if receiving "Certificate failure" error.') }}"></i>
+                                </div>
+                            </div>
+
+                            @include('partials/field_error', ['field'=>'in_validate_cert'])
 
                             <div class="form-help">{!! __("Make sure to save settings before checking connection.") !!}</div>
                         </div>
@@ -121,7 +140,7 @@
                         </div>
                     </div>
 
-                    <div class="margin-top-2"></div>
+                    <div class="margin-top-40"></div>
                 </form>
             </div>
         </div>
