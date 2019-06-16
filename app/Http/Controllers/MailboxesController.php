@@ -256,6 +256,11 @@ class MailboxesController extends Controller
                         ->withInput();
         }
 
+        // Checkboxes
+        $request->merge([
+            'in_validate_cert' => ($request->filled('in_validate_cert') ?? false),
+        ]);
+
         $mailbox->fill($request->all());
         $mailbox->save();
 
