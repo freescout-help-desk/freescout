@@ -68,6 +68,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'R' => 
         array (
             'Ramsey\\Uuid\\' => 12,
+            'RachidLaasri\\LaravelInstaller\\Providers\\' => 40,
             'RachidLaasri\\LaravelInstaller\\Middleware\\' => 41,
             'RachidLaasri\\LaravelInstaller\\Helpers\\' => 38,
             'RachidLaasri\\LaravelInstaller\\Controllers\\' => 42,
@@ -95,6 +96,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         ),
         'L' => 
         array (
+            'Lord\\Laroute\\Routes\\' => 20,
             'Lord\\Laroute\\' => 13,
             'League\\Flysystem\\' => 17,
             'Laravel\\Tinker\\' => 15,
@@ -106,6 +108,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         ),
         'I' => 
         array (
+            'Illuminate\\Routing\\' => 19,
             'Illuminate\\Foundation\\' => 22,
             'Illuminate\\' => 11,
         ),
@@ -250,6 +253,10 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         array (
             0 => __DIR__ . '/..' . '/ramsey/uuid/src',
         ),
+        'RachidLaasri\\LaravelInstaller\\Providers\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/RachidLaasri/LaravelInstaller/Providers',
+        ),
         'RachidLaasri\\LaravelInstaller\\Middleware\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/RachidLaasri/LaravelInstaller/Middleware',
@@ -311,6 +318,10 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         array (
             0 => __DIR__ . '/..' . '/mews/purifier/src',
         ),
+        'Lord\\Laroute\\Routes\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/Lord/Laroute/Routes',
+        ),
         'Lord\\Laroute\\' => 
         array (
             0 => __DIR__ . '/..' . '/lord/laroute/src',
@@ -330,6 +341,10 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'JakubOnderka\\PhpConsoleColor\\' => 
         array (
             0 => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src',
+        ),
+        'Illuminate\\Routing\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/Illuminate/Routing',
         ),
         'Illuminate\\Foundation\\' => 
         array (
@@ -485,11 +500,13 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'App\\Console\\Commands\\FetchEmails' => __DIR__ . '/../..' . '/app/Console/Commands/FetchEmails.php',
         'App\\Console\\Commands\\FetchMonitor' => __DIR__ . '/../..' . '/app/Console/Commands/FetchMonitor.php',
         'App\\Console\\Commands\\GenerateVars' => __DIR__ . '/../..' . '/app/Console/Commands/GenerateVars.php',
+        'App\\Console\\Commands\\LogsMonitor' => __DIR__ . '/../..' . '/app/Console/Commands/LogsMonitor.php',
         'App\\Console\\Commands\\ModuleBuild' => __DIR__ . '/../..' . '/app/Console/Commands/ModuleBuild.php',
         'App\\Console\\Commands\\ModuleCheckLicenses' => __DIR__ . '/../..' . '/app/Console/Commands/ModuleCheckLicenses.php',
         'App\\Console\\Commands\\ModuleInstall' => __DIR__ . '/../..' . '/app/Console/Commands/ModuleInstall.php',
         'App\\Console\\Commands\\ModuleLaroute' => __DIR__ . '/../..' . '/app/Console/Commands/ModuleLaroute.php',
         'App\\Console\\Commands\\Update' => __DIR__ . '/../..' . '/app/Console/Commands/Update.php',
+        'App\\Console\\Commands\\UpdateFolderCounters' => __DIR__ . '/../..' . '/app/Console/Commands/UpdateFolderCounters.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Conversation' => __DIR__ . '/../..' . '/app/Conversation.php',
         'App\\ConversationFolder' => __DIR__ . '/../..' . '/app/ConversationFolder.php',
@@ -2068,7 +2085,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Illuminate\\Routing\\Router' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Routing/Router.php',
         'Illuminate\\Routing\\RoutingServiceProvider' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Routing/RoutingServiceProvider.php',
         'Illuminate\\Routing\\SortedMiddleware' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Routing/SortedMiddleware.php',
-        'Illuminate\\Routing\\UrlGenerator' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Routing/UrlGenerator.php',
+        'Illuminate\\Routing\\UrlGenerator' => __DIR__ . '/../..' . '/overrides/Illuminate/Routing/UrlGenerator.php',
         'Illuminate\\Routing\\ViewController' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Routing/ViewController.php',
         'Illuminate\\Session\\CacheBasedSessionHandler' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Session/CacheBasedSessionHandler.php',
         'Illuminate\\Session\\Console\\SessionTableCommand' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Session/Console/SessionTableCommand.php',
@@ -2268,7 +2285,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Lord\\Laroute\\Generators\\GeneratorInterface' => __DIR__ . '/..' . '/lord/laroute/src/Generators/GeneratorInterface.php',
         'Lord\\Laroute\\Generators\\TemplateGenerator' => __DIR__ . '/..' . '/lord/laroute/src/Generators/TemplateGenerator.php',
         'Lord\\Laroute\\LarouteServiceProvider' => __DIR__ . '/..' . '/lord/laroute/src/LarouteServiceProvider.php',
-        'Lord\\Laroute\\Routes\\Collection' => __DIR__ . '/..' . '/lord/laroute/src/Routes/Collection.php',
+        'Lord\\Laroute\\Routes\\Collection' => __DIR__ . '/../..' . '/overrides/Lord/Laroute/Routes/Collection.php',
         'Lord\\Laroute\\Routes\\Exceptions\\ZeroRoutesException' => __DIR__ . '/..' . '/lord/laroute/src/Routes/Exceptions/ZeroRoutesException.php',
         'MailboxesTableSeeder' => __DIR__ . '/../..' . '/database/seeds/MailboxesTableSeeder.php',
         'Mews\\Purifier\\Facades\\Purifier' => __DIR__ . '/..' . '/mews/purifier/src/Facades/Purifier.php',
@@ -2859,7 +2876,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'RachidLaasri\\LaravelInstaller\\Helpers\\RequirementsChecker' => __DIR__ . '/..' . '/rachidlaasri/laravel-installer/src/Helpers/RequirementsChecker.php',
         'RachidLaasri\\LaravelInstaller\\Middleware\\canInstall' => __DIR__ . '/../..' . '/overrides/RachidLaasri/LaravelInstaller/Middleware/canInstall.php',
         'RachidLaasri\\LaravelInstaller\\Middleware\\canUpdate' => __DIR__ . '/..' . '/rachidlaasri/laravel-installer/src/Middleware/canUpdate.php',
-        'RachidLaasri\\LaravelInstaller\\Providers\\LaravelInstallerServiceProvider' => __DIR__ . '/..' . '/rachidlaasri/laravel-installer/src/Providers/LaravelInstallerServiceProvider.php',
+        'RachidLaasri\\LaravelInstaller\\Providers\\LaravelInstallerServiceProvider' => __DIR__ . '/../..' . '/overrides/RachidLaasri/LaravelInstaller/Providers/LaravelInstallerServiceProvider.php',
         'Ramsey\\Uuid\\BinaryUtils' => __DIR__ . '/..' . '/ramsey/uuid/src/BinaryUtils.php',
         'Ramsey\\Uuid\\Builder\\DefaultUuidBuilder' => __DIR__ . '/..' . '/ramsey/uuid/src/Builder/DefaultUuidBuilder.php',
         'Ramsey\\Uuid\\Builder\\DegradedUuidBuilder' => __DIR__ . '/..' . '/ramsey/uuid/src/Builder/DegradedUuidBuilder.php',
