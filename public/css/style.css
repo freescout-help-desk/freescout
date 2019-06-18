@@ -3372,7 +3372,7 @@ a.help-icon:hover {
     width: 100%;
     height: 100%;
     z-index: 9999;
-    background: url('../img/loader-main.gif') 50% 50% no-repeat #fff;
+    background: url('../../img/loader-main.gif') 50% 50% no-repeat #fff;
     opacity: 0.60;
     filter: alpha(opacity=60); /* For IE8 and earlier */
 }
