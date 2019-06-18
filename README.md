@@ -31,6 +31,8 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
 
   * 100% Mobile-friendly.
   * Multilingual (English, French, Italian, Portuguese).
+  * Seamless email integration.
+  * Web installer & updater.
   * Starred conversations.
   * Push notifications.
   * Auto reply.
@@ -62,6 +64,10 @@ If you would like to be notified about new releases, news and updates you can su
 ## Installation
 
 [Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
+
+Images & one-click installers:
+
+* [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view)
 
 ## Contributing
 
