@@ -14,7 +14,7 @@
 
     @include('partials/flash_messages')
 
-    <div class="container">
+    <div class="container form-container">
         <div class="row">
             <div class="col-xs-12">
                 <h3> {{ __('Selected Users have access to this mailbox:') }}</h3>

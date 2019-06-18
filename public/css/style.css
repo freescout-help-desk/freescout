@@ -592,6 +592,9 @@ select[multiple].input-md {
     -webkit-box-shadow: none;
     box-shadow: none;
 }
+.form-container {
+    margin-bottom: 25px;
+}
 @media (min-width: 435px) {
     .input-sized-lg {
         width: 387px;

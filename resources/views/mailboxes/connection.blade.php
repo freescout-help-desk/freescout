@@ -19,7 +19,7 @@
 
     @include('partials/flash_messages')
 
-    <div class="container">
+    <div class="container form-container">
         <div class="row">
             <div class="col-xs-12">
                 <form class="form-horizontal" method="POST" action="">
@@ -217,8 +217,6 @@
                             </button>
                         </div>
                     </div>
-
-                    <div class="margin-top-40"></div>
                 </form>
             </div>
         </div>
