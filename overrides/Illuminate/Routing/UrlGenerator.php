@@ -434,6 +434,12 @@ class UrlGenerator implements UrlGeneratorContract
             $path = call_user_func($this->formatPathUsing, $path);
         }
 
+        // Cut subdirectory from path.
+        $subdirectory = \Helper::getSubdirectory(false, true);
+        if ($subdirectory && preg_match("#".preg_quote($subdirectory)."$#", trim($root, '/'))) {
+            $path = preg_replace("#^".preg_quote($subdirectory)."#", '', $path);
+        }
+
         return trim($root.$path, '/');
     }
 

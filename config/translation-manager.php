@@ -11,7 +11,7 @@ return [
     |
     */
     'route'          => [
-        'prefix'     => 'translations',
+        'prefix'     => \Helper::getSubdirectory(true).'translations',
         'middleware' => [
             'web',
             'auth',
