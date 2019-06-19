@@ -999,4 +999,18 @@ class Helper
             return ($current == $route_name);
         }
     }
+
+    /**
+     * Check if passed app URL has default Laravel value.
+     */
+    public static function isDefaultAppUrl($app_url)
+    {
+        $app_host = parse_url($app_url, PHP_URL_HOST);
+
+        if ($app_url && !in_array($app_host, ['localhost', 'example.com'])) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
