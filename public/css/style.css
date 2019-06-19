@@ -85,7 +85,8 @@ body.user-is-guest {
     white-space: nowrap!important;
     font-size: 13.4px;
     color: #93a1af;
-    margin-top: 5px;
+    margin-top: 3px;
+    display: block;
 }
 .sidebar-menu {
     margin-left: 0;
@@ -301,6 +302,9 @@ body.user-is-guest {
         overflow: hidden!important;
         text-overflow: ellipsis!important;
         white-space: nowrap!important;
+    }
+    .sidebar-title-email {
+        display: none;
     }
     .sidebar-title-extra-value {
         display: block;
