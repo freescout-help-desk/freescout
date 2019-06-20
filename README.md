@@ -47,7 +47,7 @@ Need anything else? Suggest features [here](https://feedback.userreport.com/25a3
 
 ## Modules
 
-[Available modules](https://github.com/freescout-helpdesk/freescout/wiki/FreeScout-Modules)
+[Available modules](https://freescout.net/modules/)
 
 ## Requirements
 
