@@ -1073,6 +1073,53 @@ class ConversationsController extends Controller
                 }
                 break;
 
+            // Load data to edit thread.
+            case 'load_edit_thread':
+                $thread = Thread::find($request->thread_id);
+                if (!$thread) {
+                    $response['msg'] = __('Conversation not found');
+                } elseif (!$user->can('edit', $thread)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    $data = [
+                        'thread' => $thread
+                    ];
+                    $response['html'] = \View::make('conversations/partials/edit_thread')->with($data)->render();
+
+                    $response['status'] = 'success';
+                }
+                break;
+
+            // Load data to edit thread.
+            case 'save_edit_thread':
+                $thread = Thread::find($request->thread_id);
+                if (!$thread) {
+                    $response['msg'] = __('Conversation not found');
+                } elseif (!$user->can('edit', $thread)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    if (!$thread->body_original) {
+                        $thread->body_original = $thread->body;
+                    }
+                    $thread->body = $request->body;
+                    $thread->edited_by_user_id = $user->id;
+                    $thread->edited_at = date('Y-m-d H:i:s');
+                    $response['body'] = $thread->getCleanBody();
+
+                    if (strip_tags($response['body'])) {
+                        $thread->save();
+
+                        $response['status'] = 'success';
+                    } else {
+                        $response['msg'] = __('Message cannot be empty');
+                    }
+                }
+                break;
+
             // Change conversations user
             case 'bulk_conversation_change_user':
 

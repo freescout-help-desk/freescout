@@ -254,16 +254,13 @@
                             <div class="thread-body">
                                 {!! $thread->getCleanBody() !!}
 
-                                @if ( $thread->opened_at )
-                                    <div class='thread-opened-at'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</div>
-                                @endif
                                 @include('conversations/partials/thread_attachments')
                             </div>
                             @action('thread.after_body', $thread, $loop, $threads, $conversation, $mailbox)
                         </div>
                     </div>
                 @else
-                    <div class="thread thread-type-{{ $thread->getTypeName() }}" id="thread-{{ $thread->id }}">
+                    <div class="thread thread-type-{{ $thread->getTypeName() }}" id="thread-{{ $thread->id }}" data-thread_id="{{ $thread->id }}">
                         <div class="thread-photo">
                             @include('partials/person_photo', ['person' => $thread->getPerson(true)])
                         </div>
@@ -420,8 +417,14 @@
 
                                 {!! $thread->getCleanBody() !!}
 
-                                @if ( $thread->opened_at )
-                                    <div class='thread-opened-at'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</div>
+                                @if ($thread->body_original)
+                                    <div class='thread-meta'>
+                                        <i class="glyphicon glyphicon-pencil"></i> {{ __("Edited by :whom :when", ['whom' => $thread->getEditedByUserName(), 'when' => App\User::dateDiffForHumansWithHours($thread->edited_at)]) }} &nbsp;<a href="#" class="thread-original-show help-link link-underlined">{{ __("Show original") }}</a><a href="#" class="thread-original-hide help-link link-underlined hidden">{{ __("Hide") }}</a>
+                                        <div class="thread-original thread-text hidden">{!! $thread->getCleanBodyOriginal() !!}</div>
+                                    </div>
+                                @endif
+                                @if ($thread->opened_at)
+                                    <div class='thread-meta'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed :when", ['when' => App\User::dateDiffForHumansWithHours($thread->opened_at)]) }}</div>
                                 @endif
 
                                 @if ($thread->has_attachments)
@@ -443,8 +446,10 @@
                         <div class="dropdown thread-options">
                             <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown"><b class="caret"></b></span>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                {{--<li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }} (todo)</a></li>
-                                <li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>--}}
+                                @if (Auth::user()->can('edit', $thread))
+                                    <li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }}</a></li>
+                                @endif
+                                {{--<li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>--}}
                                 <li><a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}?from_thread_id={{ $thread->id }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
                                 @if (Auth::user()->isAdmin())
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 

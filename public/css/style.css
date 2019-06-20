@@ -1891,13 +1891,13 @@ button.conv-checkbox-clear {
     /*padding-top: 12px;*/
     /*padding-bottom: 10px;*/
 }
-.thread-opened-at {
+.thread-meta {
     font-size: 12.5px;
     margin: 15px 0 0 0;
     color: #a5b2bd;
-    display: inline-block;
+    display: block;
 }
-.thread-opened-at .glyphicon {
+.thread-meta .glyphicon {
     font-size: 12px;
     color: #b8c7d4;
     margin-right: 5px;
@@ -2033,6 +2033,41 @@ button.conv-checkbox-clear {
  }
 .thread-attachments span {
     text-transform: lowercase;
+}
+.thread-editor-container {
+    padding: 20px;
+}
+.thread-editor-statusbar {
+    text-align: right;
+    background-color: #f9fafa;
+    border: 1px solid #dee4e9;
+    border-top: none;
+}
+.thread-editor-statusbar button,
+.thread-editor-statusbar a {
+    display: inline-block;
+}
+.thread-editor-statusbar .btn-primary {
+    height: 38px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.conv-note-block .thread-editor-statusbar {
+    background-color: #fff7dd;
+    border: 1px solid #ffe39d;
+}
+.note-editor.note-frame.panel {
+    box-shadow: none;
+}
+.thread-original {
+    margin-top: 10px;
+    border-left: 5px solid #dbe1e9;
+    padding-left: 13px;
+}
+.thread-text {
+    color: #253540;
+    font-size: 14px;
+    line-height: 1.45em;
 }
 /*.thread-num {
     position: absolute;
@@ -3218,6 +3253,21 @@ a.help-icon:hover {
 }
 .help-link:hover {
     text-decoration: underline;
+}
+.link-grey,
+.link-grey:hover,
+.link-grey:focus {
+    color: #93a1af!important;
+}
+.link-grey:hover {
+    color: #4f5d6b!important;
+    text-decoration: none;
+}
+.link-underlined {
+    text-decoration: underline;
+}
+.link-underlined:hover {
+    text-decoration: none;
 }
 .wizard-header {
     padding: 40px 0 0;

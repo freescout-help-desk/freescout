@@ -263,7 +263,7 @@ function mailboxUpdateInit(from_name_custom)
 {
 	$(document).ready(function(){
 		
-		summernoteInit('#signature');
+		summernoteInit('#signature', {insertVar: true});
 
 	    $('#from_name').change(function(event) {
 			if ($(this).val() == from_name_custom) {
@@ -313,6 +313,11 @@ function summernoteInit(selector, new_options)
 	if (typeof(new_options) == "undefined") {
 		new_options = {};
 	}
+	var buttons = {};
+
+	if (typeof(new_options.insertVar) != "undefined" || new_options.insertVar) {
+		buttons.insertvar = EditorInsertVarButton;
+	}
 	options = {
 		minHeight: 120,
 		dialogsInBody: true,
@@ -324,19 +329,19 @@ function summernoteInit(selector, new_options)
 		    ['style', ['bold', 'italic', 'underline', 'color', 'ul', 'ol', 'link', 'codeview']],
 		    ['actions-select', ['insertvar']]
 		],
-		buttons: {
-		    insertvar: EditorInsertVarButton
-		},
+		buttons: buttons,
 	    callbacks: {
 		    onInit: function() {
 		    	// Remove statusbar
 		    	$(selector).parent().children().find('.note-statusbar').remove();
 
 		    	// Insert variables
-				$(selector).parent().children().find('.summernote-inservar:first').on('change', function(event) {
-					$(selector).summernote('insertText', $(this).val());
-					$(this).val('');
-				});
+		    	if (typeof(new_options.insertVar) != "undefined" || new_options.insertVar) {
+					$(selector).parent().children().find('.summernote-inservar:first').on('change', function(event) {
+						$(selector).summernote('insertText', $(this).val());
+						$(this).val('');
+					});
+				}
 		    }
 	    }
 	};
@@ -775,13 +780,13 @@ function initConversation()
 		});
 
 		// View Send Log
-	    jQuery(".thread-send-log-trigger").click(function(e){
+	    /*jQuery(".thread-send-log-trigger").click(function(e){
 	    	var thread_id = $(this).parents('.thread:first').attr('data-thread_id');
 	    	if (!thread_id) {
 	    		return;
 	    	}
 			e.preventDefault();
-		});
+		});*/
 
 		// Edit draft
 		jQuery(".edit-draft-trigger").click(function(e){
@@ -855,6 +860,24 @@ function initConversation()
 					});
 				}
 			});
+		});
+
+		// Edit thread
+		jQuery(".thread-edit-trigger").click(function(e){
+			editThread($(this));
+			e.preventDefault();
+		});
+
+		// Show original thread
+		jQuery(".thread-original-show").click(function(e){
+			threadShowOriginal($(this));
+			e.preventDefault();
+		});
+
+		// Hide original thread
+		jQuery(".thread-original-hide").click(function(e){
+			threadHideOriginal($(this));
+			e.preventDefault();
 		});
 
 		starConversationInit();
@@ -2374,6 +2397,89 @@ function discardDraft(thread_id)
 			});
 		}
 	});
+}
+
+// Show edit thread textarea
+function editThread(button)
+{
+	var thread_container = button.parents('.thread:first');
+
+	fsAjax({
+			action: 'load_edit_thread',
+			thread_id: thread_container.attr('data-thread_id')
+		}, 
+		laroute.route('conversations.ajax'),
+		function(response) {
+			loaderHide();
+			if (typeof(response.status) != "undefined" && response.status == 'success') {
+				// Hide all elements in thread container.
+				thread_container.children().hide();
+				thread_container.prepend(response.html);
+				summernoteInit(thread_container.find('.thread-editor:first'));
+			} else {
+				showAjaxError(response);
+			}
+		}
+	);
+}
+
+// Cancel thread editing
+function cancelThreadEdit(trigger, thread_container)
+{
+	if (typeof(thread_container) == "undefined" || !thread_container) {
+		thread_container = $(trigger).parents('.thread:first');
+	}
+	thread_container.find('.thread-editor-container').remove();
+	thread_container.children().show();
+}
+
+// Cancel thread editing
+function saveThreadEdit(trigger)
+{
+	var button = $(trigger);
+	var thread_container = $(trigger).parents('.thread:first');
+
+	button.button('loading');
+	fsAjax({
+			action: 'save_edit_thread',
+			thread_id: thread_container.attr('data-thread_id'),
+			body: thread_container.find('.thread-editor:first').val()
+		}, 
+		laroute.route('conversations.ajax'),
+		function(response) {
+			loaderHide();
+			button.button('reset');
+			if (typeof(response.status) != "undefined" && response.status == 'success') {
+				// Show new body
+				thread_container.find('.thread-body:first').html(response.body);
+				cancelThreadEdit(trigger, thread_container);
+			} else {
+				showAjaxError(response);
+			}
+		}
+	);
+}
+
+// Show original thread
+function threadShowOriginal(trigger)
+{
+	var container = trigger.parent();
+	var original = container.find('.thread-original:first');
+
+	original.removeClass('hidden');
+	container.find('.thread-original-hide:first').removeClass('hidden');
+	trigger.addClass('hidden');
+}
+
+// Hide original thread
+function threadHideOriginal(trigger)
+{
+	var container = trigger.parent();
+	var original = container.find('.thread-original:first');
+
+	original.addClass('hidden');
+	container.find('.thread-original-show:first').removeClass('hidden');
+	trigger.addClass('hidden');
 }
 
 function hideReplyEditor()

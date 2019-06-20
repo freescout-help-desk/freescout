@@ -144,6 +144,7 @@ class Thread extends Model
         'created_at',
         'updated_at',
         'deleted_at',
+        'edited_at',
     ];
 
     /**
@@ -236,7 +237,7 @@ class Thread extends Model
     }
 
     /**
-     * Get user who edited draft.
+     * Get user who edited thread.
      */
     public function edited_by_user()
     {
@@ -244,19 +245,40 @@ class Thread extends Model
     }
 
     /**
+     * Get user who edited thread (cached).
+     */
+    public function edited_by_user_cached()
+    {
+        return $this->edited_by_user()->rememberForever();
+    }
+
+    /**
      * Get sanitized body HTML.
      *
      * @return string
      */
-    public function getCleanBody()
+    public function getCleanBody($body = '')
     {
-        $body = \Purifier::clean($this->body);
+        if (!$body) {
+            $body = $this->body;
+        }
+        $body = \Purifier::clean($body);
 
         // Remove all kinds of spaces after tags
         // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
         $body = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $body);
 
         return $body;
+    }
+
+    /**
+     * Get sanitized body HTML.
+     *
+     * @return string
+     */
+    public function getCleanBodyOriginal()
+    {
+        return $this->getCleanBody($this->body_original);
     }
 
     /**
@@ -800,5 +822,25 @@ class Thread extends Model
         }
 
         return $thread;
+    }
+
+    /**
+     * Get full name of the user who edited thread.
+     */
+    public function getEditedByUserName()
+    {
+        $name = '';
+
+        if (!$this->edited_by_user_id) {
+            return '';
+        }
+
+        if (auth()->user() && $this->edited_by_user_id == auth()->user()->id) {
+            $name = __('you');
+        } else {
+            $name = $this->edited_by_user_cached->getFullName();
+        }
+
+        return $name;
     }
 }
