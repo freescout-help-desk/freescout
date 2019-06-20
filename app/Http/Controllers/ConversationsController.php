@@ -432,6 +432,12 @@ class ConversationsController extends Controller
                     }
                 }
 
+                if (!$response['msg']) {
+                    if ($thread && $from_draft && $thread->state == Thread::STATE_PUBLISHED) {
+                        $response['msg'] = __('Message has been already sent. Please discard this draft.');
+                    }
+                }
+
                 // Validate form
                 if (!$response['msg']) {
                     if ($new) {
@@ -708,6 +714,13 @@ class ConversationsController extends Controller
                         $response['msg'] = __('Incorrect thread');
                     } else {
                         $new_thread = false;
+                    }
+                }
+
+                // Check if thread has been sent (in other window for example).
+                if (!$response['msg']) {
+                    if ($thread && $thread->state == Thread::STATE_PUBLISHED) {
+                        $response['msg'] = __('Message has been already sent. Please discard this draft.');
                     }
                 }
 
