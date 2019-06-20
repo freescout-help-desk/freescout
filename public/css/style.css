@@ -85,7 +85,8 @@ body.user-is-guest {
     white-space: nowrap!important;
     font-size: 13.4px;
     color: #93a1af;
-    margin-top: 5px;
+    margin-top: 3px;
+    display: block;
 }
 .sidebar-menu {
     margin-left: 0;
@@ -301,6 +302,9 @@ body.user-is-guest {
         overflow: hidden!important;
         text-overflow: ellipsis!important;
         white-space: nowrap!important;
+    }
+    .sidebar-title-email {
+        display: none;
     }
     .sidebar-title-extra-value {
         display: block;
@@ -591,6 +595,9 @@ select[multiple].input-md {
 .btn-group.open .glyphicon.dropdown-toggle {
     -webkit-box-shadow: none;
     box-shadow: none;
+}
+.form-container {
+    margin-bottom: 25px;
 }
 @media (min-width: 435px) {
     .input-sized-lg {
@@ -3372,7 +3379,7 @@ a.help-icon:hover {
     width: 100%;
     height: 100%;
     z-index: 9999;
-    background: url('../img/loader-main.gif') 50% 50% no-repeat #fff;
+    background: url('../../img/loader-main.gif') 50% 50% no-repeat #fff;
     opacity: 0.60;
     filter: alpha(opacity=60); /* For IE8 and earlier */
 }
