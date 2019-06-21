@@ -508,15 +508,15 @@ class ConversationsController extends Controller
                         }
                     }
 
-                    // Customer can be empty in existing conversation if this is a draft
+                    $customer_email = $to_array[0];
+                    // Customer can be empty in existing conversation if this is a draft.
                     if (!$conversation->customer_id) {
-                        $customer_email = $to_array[0];
                         $customer = Customer::create($customer_email);
                         $conversation->customer_id = $customer->id;
-                        $conversation->customer_email = $customer_email;
                     } else {
                         $customer = $conversation->customer;
                     }
+                    $conversation->customer_email = $customer_email;
 
                     $prev_status = $conversation->status;
 
