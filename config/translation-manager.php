@@ -11,7 +11,7 @@ return [
     |
     */
     'route'          => [
-        'prefix'     => \Helper::getSubdirectory(true).'translations',
+        'prefix'     => trim(parse_url(env('APP_URL', ''), PHP_URL_PATH), '/').'/translations',
         'middleware' => [
             'web',
             'auth',
