@@ -756,6 +756,8 @@ function initConversation()
 	    		var input_status = reply_block.children().find(":input[name='status']:first");
 	    		input_status.val(input_status.attr('data-note-status'));
 
+	    		$(".attachments-upload:first :input, .attachments-upload:first li").remove();
+
 				$(".conv-action").addClass('inactive');
 				$(this).removeClass('inactive');
 				//$('#body').summernote("code", '');
@@ -892,6 +894,9 @@ function prepareReplyForm()
 	// Show default status
 	var input_status = $(".conv-reply-block").children().find(":input[name='status']:first");
 	input_status.val(input_status.attr('data-reply-status'));
+
+	// Clean attachments
+	$(".attachments-upload:first :input, .attachments-upload:first li").remove();
 }
 
 function showReplyForm(data)
@@ -916,6 +921,25 @@ function showReplyForm(data)
 				// Display body value in editor
 				$('#body').summernote("code", data[field]);
 			}
+		}
+
+		// Show attachments
+		if (data.attachments && data.attachments.length) {
+			var attachments_container = $(".attachments-upload:first");
+			for (var i = 0; i < data.attachments.length; i++) {
+				var attachment = data.attachments[i];
+
+				// Inputs
+				var input_html = '<input type="hidden" name="attachments_all[]" value="'+attachment.id+'" />';
+				input_html += '<input type="hidden" name="attachments[]" value="'+attachment.id+'" class="atachment-upload-'+attachment.id+'" />';
+				attachments_container.prepend(input_html);
+
+				// Links
+				var attachment_html = '<li class="atachment-upload-'+attachment.id+' attachment-loaded"><a href="'+attachment.url+'" class="break-words" target="_blank">'+attachment.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(attachment.size)+')</span> <i class="glyphicon glyphicon-remove" onclick="removeAttachment(\''+attachment.id+'\')"></i></li>';
+				attachments_container.find('ul:first').append(attachment_html);
+
+				attachments_container.show();
+	        }
 		}
 	}
 	$(".conv-reply-block :input[name='to']:first").removeClass('hidden');
@@ -1157,9 +1181,11 @@ function editorSendFile(file, attach)
 	});
 }
 
-function removeAttachment(attachment_dummy_id)
+function removeAttachment(attachment_id)
 {
-	$('.atachment-upload-'+attachment_dummy_id).remove();
+	$('.atachment-upload-'+attachment_id).remove();
+	// Remove inputs
+	$(".attachments-upload:first :input[value='"+attachment_id+"']");
 }
 
 
@@ -2329,11 +2355,11 @@ function forwardConversation(e)
 
 	prepareReplyForm();
 	showReplyForm();
-	showForwardForm(reply_block);
+	showForwardForm({}, reply_block);
 }
 
 // Turn reply form into forward form.
-function showForwardForm(reply_block)
+function showForwardForm(data, reply_block)
 {
 	if (typeof(reply_block) == "undefined" || !reply_block) {
 		reply_block = $(".conv-reply-block:first");
@@ -2344,6 +2370,10 @@ function showForwardForm(reply_block)
 	reply_block.addClass('inactive');
 	reply_block.addClass('conv-forward-block');
 	$(".conv-actions .conv-reply:first").addClass('inactive');
+
+	if (data && typeof(data.to) != "undefined") {
+		$(".conv-reply-block form:first :input[name='to_email']").val(data.to);
+	}
 }
 
 // Edit draft
@@ -2362,7 +2392,7 @@ function editDraft(button)
 				//response.data.is_note = '';
 				showReplyForm(response.data);
 				if (response.data.is_forward == '1') {
-					showForwardForm();
+					showForwardForm(response.data);
 				}
 				// Show all drafts
 				$('.thread.thread-type-draft').show();

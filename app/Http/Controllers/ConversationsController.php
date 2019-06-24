@@ -486,6 +486,7 @@ class ConversationsController extends Controller
                 if (!$response['msg']) {
 
                     // Get attachments info
+                    // Delete removed attachments.
                     $attachments_info = $this->processReplyAttachments($request);
 
                     // Determine redirect.
@@ -1002,13 +1003,26 @@ class ConversationsController extends Controller
                 }
 
                 if (!$response['msg']) {
+
+                    // Build attachments list.
+                    $attachments = [];
+                    foreach ($thread->attachments as $attachment) {
+                        $attachments[] = [
+                            'id'   => $attachment->id,
+                            'name' => $attachment->file_name,
+                            'size' => $attachment->size,
+                            'url'  => $attachment->url(),
+                        ];
+                    }
+
                     $response['data'] = [
-                        'thread_id' => $thread->id,
-                        'to'        => $thread->getToFirst(),
-                        'cc'        => $thread->getCcString(),
-                        'bcc'       => $thread->getBccString(),
-                        'body'      => $thread->body,
-                        'is_forward' => (int)$thread->isForward(),
+                        'thread_id'   => $thread->id,
+                        'to'          => $thread->getToFirst(),
+                        'cc'          => $thread->getCcString(),
+                        'bcc'         => $thread->getBccString(),
+                        'body'        => $thread->body,
+                        'is_forward'  => (int)$thread->isForward(),
+                        'attachments' => $attachments,
                     ];
                     $response['status'] = 'success';
                 }
