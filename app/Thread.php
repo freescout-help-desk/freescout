@@ -584,7 +584,9 @@ class Thread extends Model
                 $did_this = __("edited :creator's draft", ['creator' => $this->created_by_user_cached->getFirstName()]);
             }
         } else {
-            if ($this->first) {
+            if ($this->isForwarded()) {
+                $did_this = __('forwarded a conversation #:forward_parent_conversation_number', ['forward_parent_conversation_number' => $this->getMeta('forward_parent_conversation_number')]);
+            } elseif ($this->first) {
                 $did_this = __('started a new conversation #:conversation_number', ['conversation_number' => $conversation_number]);
             } elseif ($this->type == self::TYPE_NOTE) {
                 $did_this = __('added a note to conversation #:conversation_number', ['conversation_number' => $conversation_number]);

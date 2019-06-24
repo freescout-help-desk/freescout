@@ -785,29 +785,7 @@ function initConversation()
 
 		// Edit draft
 		jQuery(".edit-draft-trigger").click(function(e){
-			var button = $(this);
-			var thread_container = button.parents('.thread:first');
-
-			fsAjax({
-					action: 'load_draft',
-					thread_id: thread_container.attr('data-thread_id')
-				}, 
-				laroute.route('conversations.ajax'),
-				function(response) {
-					loaderHide();
-					if (typeof(response.status) != "undefined" && response.status == 'success') {
-						response.data.is_note = '';
-						showReplyForm(response.data);
-						// Show all drafts
-						$('.thread.thread-type-draft').show();
-						// Hide current draft
-						thread_container.hide();
-						$("html, body").animate({ scrollTop: $('.navbar:first').height() }, "slow");
-					} else {
-						showAjaxError(response);
-					}
-				}
-			);
+			editDraft($(this));
 			e.preventDefault();
 		});
 		
@@ -2351,13 +2329,51 @@ function forwardConversation(e)
 
 	prepareReplyForm();
 	showReplyForm();
+	showForwardForm(reply_block);
+}
 
+// Turn reply form into forward form.
+function showForwardForm(reply_block)
+{
+	if (typeof(reply_block) == "undefined" || !reply_block) {
+		reply_block = $(".conv-reply-block:first");
+	}
 	reply_block.children().find(":input[name='subtype']:first").val(Vars.subtype_forward);
 	reply_block.children().find(":input[name='to']:first").addClass('hidden');
 	reply_block.children().find(":input[name='to_email']:first").removeClass('hidden').removeAttr('data-parsley-exclude');
 	reply_block.addClass('inactive');
 	reply_block.addClass('conv-forward-block');
 	$(".conv-actions .conv-reply:first").addClass('inactive');
+}
+
+// Edit draft
+function editDraft(button)
+{
+	var thread_container = button.parents('.thread:first');
+
+	fsAjax({
+			action: 'load_draft',
+			thread_id: thread_container.attr('data-thread_id')
+		}, 
+		laroute.route('conversations.ajax'),
+		function(response) {
+			loaderHide();
+			if (typeof(response.status) != "undefined" && response.status == 'success') {
+				//response.data.is_note = '';
+				showReplyForm(response.data);
+				if (response.data.is_forward == '1') {
+					showForwardForm();
+				}
+				// Show all drafts
+				$('.thread.thread-type-draft').show();
+				// Hide current draft
+				thread_container.hide();
+				$("html, body").animate({ scrollTop: $('.navbar:first').height() }, "slow");
+			} else {
+				showAjaxError(response);
+			}
+		}
+	);
 }
 
 // Discards:

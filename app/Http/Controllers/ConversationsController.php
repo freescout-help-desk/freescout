@@ -893,6 +893,10 @@ class ConversationsController extends Controller
                             $thread->customer_id = $customer->id;
                         }
                         $thread->created_by_user_id = auth()->user()->id;
+                        // User is forwarding a conversation.
+                        if (!empty($request->subtype) && (int)$request->subtype) {
+                            $thread->subtype = $request->subtype;
+                        }
                     }
                     if ($attachments_info['has_attachments']) {
                         $thread->has_attachments = true;
@@ -1004,6 +1008,7 @@ class ConversationsController extends Controller
                         'cc'        => $thread->getCcString(),
                         'bcc'       => $thread->getBccString(),
                         'body'      => $thread->body,
+                        'is_forward' => (int)$thread->isForward(),
                     ];
                     $response['status'] = 'success';
                 }

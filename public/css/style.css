@@ -2169,6 +2169,9 @@ button.conv-checkbox-clear {
     float: left;
     width: 68%;
 }
+.conv-forward-block .alert-switch-to-note {
+    display: none;
+}
 .btn-add-note-text,
 .btn-send-forward,
 .conv-forward-block .btn-send-text,

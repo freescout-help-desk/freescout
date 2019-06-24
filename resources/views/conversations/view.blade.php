@@ -239,7 +239,11 @@
                                     <div class="thread-person">
                                         {{--{!! $thread->getActionDescription($conversation->number) !!}--}}
                                         <strong>@include('conversations/thread_by')</strong>
-                                        &nbsp;
+                                        @if ($thread->isForward())
+                                            {{ __('are forwarding') }} 
+                                        @else
+                                            &nbsp;
+                                        @endif
                                         [{{ __('Draft') }}]
                                     </div>
                                     <div class="btn-group btn-group-xs draft-actions">
@@ -432,8 +436,8 @@
                                 @endif
                                 @if ($thread->isForward())
                                     <div class="alert alert-note">
-                                        {!! __(':who forwarded this conversation. Forwarded conversation: :forward_child_conversation_number', [
-                                        'who' => ucfirst($thread->getForwardByFullName()),
+                                        {!! __(':person forwarded this conversation. Forwarded conversation: :forward_child_conversation_number', [
+                                        'person' => ucfirst($thread->getForwardByFullName()),
                                         'forward_child_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMeta('forward_child_conversation_id')]).'">#'.$thread->getMeta('forward_child_conversation_number').'</a>'
                                         ]) !!}
                                     </div>
