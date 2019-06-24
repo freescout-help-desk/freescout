@@ -725,21 +725,7 @@ function initConversation()
 	    	// We don't allow to switch between reply and note, as it creates multiple drafts
 	    	if ($(".conv-reply-block").hasClass('hidden') /* || $(this).hasClass('inactive')*/) {
 	    		// Show
-	    		// To prevent browser autocomplete, clean body
-	    		if (!$('.conv-action.inactive:first').length) {
-	    			setReplyBody('');
-	    		}
-
-	    		// Set assignee in case it has been changed in the Note editor
-	    		var default_assignee = $(".conv-reply-block").children().find(":input[name='user_id']:first option[data-default='true']").attr('value');
-	    		if (default_assignee) {
-	    			$(".conv-reply-block").children().find(":input[name='user_id']:first").val(default_assignee);
-	    		}
-
-	    		// Show default status
-	    		var input_status = $(".conv-reply-block").children().find(":input[name='status']:first");
-	    		input_status.val(input_status.attr('data-reply-status'));
-
+	    		prepareReplyForm();
 				showReplyForm();
 			} /*else {
 				// Hide
@@ -750,21 +736,24 @@ function initConversation()
 		});
 
 		// Add note
-	    jQuery(".conv-add-note").click(function(e){
-	    	if ($(".conv-reply-block").hasClass('hidden')  /*|| $(this).hasClass('inactive')*/) {
+	    jQuery(".conv-add-note").click(function(e) {
+	    	var reply_block = $(".conv-reply-block");
+	    	if (reply_block.hasClass('hidden')  /*|| $(this).hasClass('inactive')*/) {
 	    		// Show
 				$(".conv-action-block").addClass('hidden');
-				$(".conv-reply-block").removeClass('hidden')
+				reply_block.removeClass('hidden')
 					.addClass('conv-note-block')
+					.removeClass('conv-forward-block')
 					.children().find(":input[name='is_note']:first").val(1);
-				$(".conv-reply-block").children().find(":input[name='thread_id']:first").val('');
+				reply_block.children().find(":input[name='thread_id']:first").val('');
+				reply_block.children().find(":input[name='subtype']:first").val('');
 				//$(".conv-reply-block").children().find(":input[name='body']:first").val('');
 				
 				// Note never changes Assignee by default
-				$(".conv-reply-block").children().find(":input[name='user_id']:first").val(getConvData('user_id'));
+				reply_block.children().find(":input[name='user_id']:first").val(getConvData('user_id'));
 
 	    		// Show default status
-	    		var input_status = $(".conv-reply-block").children().find(":input[name='status']:first");
+	    		var input_status = reply_block.children().find(":input[name='status']:first");
 	    		input_status.val(input_status.attr('data-note-status'));
 
 				$(".conv-action").addClass('inactive');
@@ -776,6 +765,12 @@ function initConversation()
 				$(".conv-action-block").addClass('hidden');
 				$(".conv-action").removeClass('inactive');
 			}*/
+			e.preventDefault();
+		});
+
+		// Forward
+	    jQuery(".conv-forward").click(function(e){
+	    	forwardConversation(e);
 			e.preventDefault();
 		});
 
@@ -902,13 +897,34 @@ function getConvData(field)
 	return null;
 }
 
+// Prepare reply/forward form for display
+function prepareReplyForm()
+{
+	// To prevent browser autocomplete, clean body
+	if (!$('.conv-action.inactive:first').length) {
+		setReplyBody('');
+	}
+
+	// Set assignee in case it has been changed in the Note editor
+	var default_assignee = $(".conv-reply-block").children().find(":input[name='user_id']:first option[data-default='true']").attr('value');
+	if (default_assignee) {
+		$(".conv-reply-block").children().find(":input[name='user_id']:first").val(default_assignee);
+	}
+
+	// Show default status
+	var input_status = $(".conv-reply-block").children().find(":input[name='status']:first");
+	input_status.val(input_status.attr('data-reply-status'));
+}
+
 function showReplyForm(data)
 {
 	$(".conv-action-block").addClass('hidden');
 	$(".conv-reply-block").removeClass('hidden')
 		.removeClass('conv-note-block')
+		.removeClass('conv-forward-block')
 		.children().find(":input[name='is_note']:first").val('');
 	$(".conv-reply-block :input[name='thread_id']:first").val('');
+	$(".conv-reply-block :input[name='subtype']:first").val('');
 	
 	// When switching from note to reply, body has to be preserved
 	//$(".conv-reply-block").children().find(":input[name='body']:first").val(body_val);
@@ -924,6 +940,8 @@ function showReplyForm(data)
 			}
 		}
 	}
+	$(".conv-reply-block :input[name='to']:first").removeClass('hidden');
+	$(".conv-reply-block :input[name='to_email']:first").addClass('hidden').attr('data-parsley-exclude', '1');
 
 	if (!$('#to').length) {
 		$('#body').summernote('focus');
@@ -2321,6 +2339,27 @@ function setUrl(url)
     }
 }
 
+// Show forward conversation form
+function forwardConversation(e)
+{
+	var reply_block = $(".conv-reply-block");
+
+	// We don't allow to switch, as it creates multiple drafts
+	if (!reply_block.hasClass('hidden')) {
+		return false;
+	}
+
+	prepareReplyForm();
+	showReplyForm();
+
+	reply_block.children().find(":input[name='subtype']:first").val(Vars.subtype_forward);
+	reply_block.children().find(":input[name='to']:first").addClass('hidden');
+	reply_block.children().find(":input[name='to_email']:first").removeClass('hidden').removeAttr('data-parsley-exclude');
+	reply_block.addClass('inactive');
+	reply_block.addClass('conv-forward-block');
+	$(".conv-actions .conv-reply:first").addClass('inactive');
+}
+
 // Discards:
 // - draft of an old reply
 // - current reply
@@ -2340,7 +2379,7 @@ function discardDraft(thread_id)
 		'</div>';
 
 	// Discard note
-	if (typeof(thread_id) == "undefined" && $(".form-reply:first :input[name='is_note']:first").val()) {
+	if (typeof(thread_id) == "undefined" && isNote()) {
 		showModalDialog(confirm_html, {
 			on_show: function(modal) {
 				modal.children().find('.discard-draft-confirm:first').click(function(e) {

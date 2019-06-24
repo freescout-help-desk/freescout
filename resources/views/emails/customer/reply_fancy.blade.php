@@ -20,9 +20,11 @@
 						        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0;">
 						            <tr>
 						                <td style="padding:8px 0 10px 0;">
-						                    <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#727272; font-size:16px; line-height:22px; margin:0; font-weight:normal;">
-						                    	<strong style="color:#000000;">{{ $thread->getFromName($mailbox) }}</strong> @if ($loop->last){{ __('sent a message') }}@else {{ __('replied') }}@endif
-						                	</h3>
+						                	@if (!$thread->isForwarded())
+							                    <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#727272; font-size:16px; line-height:22px; margin:0; font-weight:normal;">
+							                    	@if ($loop->last){!! __(':person sent a message', ['person' => '<strong style="color:#000000;">'.htmlspecialchars($thread->getFromName($mailbox)).'</strong>']) !!}@else {!! __(':person replied', ['person' => '<strong style="color:#000000;">'.htmlspecialchars($thread->getFromName($mailbox)).'</strong>']) !!}@endif
+							                	</h3>
+							                @endif
 
 						                    @if ($thread->getCcArray())
 							                    <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#9F9F9F; font-size:12px; line-height:16px; margin:0;">

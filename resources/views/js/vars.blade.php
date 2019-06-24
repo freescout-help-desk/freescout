@@ -9,7 +9,8 @@
  */
 {{-- Global vars for JS. Set in /app/Console/Commands/GenerateJs.php --}}
 var Vars = {
-    public_url: '{{ config('app.url') }}'
+    public_url: '{{ config('app.url') }}',
+    subtype_forward: '{{ \App\Thread::SUBTYPE_FORWARD }}'
 };
 
 {{-- 

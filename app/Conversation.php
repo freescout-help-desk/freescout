@@ -5,9 +5,12 @@ namespace App;
 use App\Events\ConversationCustomerChanged;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
+use Watson\Rememberable\Rememberable;
 
 class Conversation extends Model
 {
+    use Rememberable;
+    
     /**
      * Max length of the preview.
      */
@@ -1089,4 +1092,56 @@ class Conversation extends Model
             return '';
         }
     }
+
+    // /**
+    //  * Get conversation meta data as array.
+    //  */
+    // public function getMetas()
+    // {
+    //     return \Helper::jsonToArray($this->meta);
+    // }
+
+    // /**
+    //  * Set conversation meta value.
+    //  */
+    // public function setMetas($data)
+    // {
+    //     $this->meta = json_encode($data);
+    // }
+
+    // /**
+    //  * Get conversation meta value.
+    //  */
+    // public function getMeta($key, $default = null)
+    // {
+    //     $metas = $this->getMetas();
+    //     if (isset($metas[$key])) {
+    //         return $metas[$key];
+    //     } else {
+    //         return $default;
+    //     }
+    // }
+
+    // /**
+    //  * Set conversation meta value.
+    //  */
+    // public function setMeta($key, $value)
+    // {
+    //     $metas = $this->getMetas();
+    //     $metas[$key] = $value;
+    //     $this->setMetas($metas);
+    // }
+
+    // /**
+    //  * Create new conversation.
+    //  */
+    // public static function create($data = [], $save = true)
+    // {
+    //     $conversation = new Conversation();
+    //     $conversation->fill($data);
+
+    //     if ($save) {
+    //         $conversation->save();
+    //     }
+    // }
 }

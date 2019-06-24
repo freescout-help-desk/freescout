@@ -27,10 +27,10 @@ class Thread extends Model
     const TYPE_NOTE = 3;
     // Thread status change
     const TYPE_LINEITEM = 4;
-    const TYPE_PHONE = 5;
-    // Forwarded threads
-    const TYPE_FORWARDPARENT = 6;
-    const TYPE_FORWARDCHILD = 7;
+    //const TYPE_PHONE = 5;
+    // Forwarded threads - used in API only.
+    //const TYPE_FORWARDPARENT = 6;
+    //const TYPE_FORWARDCHILD = 7;
     const TYPE_CHAT = 8;
 
     public static $types = [
@@ -41,14 +41,20 @@ class Thread extends Model
         self::TYPE_NOTE    => 'note',
         // lineitem represents a change of state on the conversation. This could include, but not limited to, the conversation was assigned, the status changed, the conversation was moved from one mailbox to another, etc. A line item won’t have a body, to/cc/bcc lists, or attachments.
         self::TYPE_LINEITEM => 'lineitem',
-        self::TYPE_PHONE    => 'phone',
+        //self::TYPE_PHONE    => 'phone',
         // When a conversation is forwarded, a new conversation is created to represent the forwarded conversation.
         // forwardparent is the type set on the thread of the original conversation that initiated the forward event.
-        self::TYPE_FORWARDPARENT => 'forwardparent',
+        //self::TYPE_FORWARDPARENT => 'forwardparent',
         // forwardchild is the type set on the first thread of the new forwarded conversation.
-        self::TYPE_FORWARDCHILD => 'forwardchild',
+        //self::TYPE_FORWARDCHILD => 'forwardchild',
         self::TYPE_CHAT         => 'chat',
     ];
+
+    /**
+     * Subtypes (for notes mostly)
+     */
+    const SUBTYPE_FORWARD = 1;
+    const SUBTYPE_PHONE = 2;
 
     /**
      * Statuses (code must be equal to conversations statuses).
@@ -843,4 +849,99 @@ class Thread extends Model
 
         return $name;
     }
+
+/**
+     * Get thread meta data as array.
+     */
+    public function getMetas()
+    {
+        return \Helper::jsonToArray($this->meta);
+    }
+
+    /**
+     * Set thread meta value.
+     */
+    public function setMetas($data)
+    {
+        $this->meta = json_encode($data);
+    }
+
+    /**
+     * Get thread meta value.
+     */
+    public function getMeta($key, $default = null)
+    {
+        $metas = $this->getMetas();
+        if (isset($metas[$key])) {
+            return $metas[$key];
+        } else {
+            return $default;
+        }
+    }
+
+    /**
+     * Set thread meta value.
+     */
+    public function setMeta($key, $value)
+    {
+        $metas = $this->getMetas();
+        $metas[$key] = $value;
+        $this->setMetas($metas);
+    }
+
+    /**
+     * Get full name of the user who forwarded conversation.
+     */
+    public function getForwardByFullName($by_user = null)
+    {
+        if (!$by_user) {
+            $by_user = auth()->user();
+        }
+        if ($by_user && $this->created_by_user_id == $by_user->id) {
+            $name = __('you');
+        } else {
+            $name = $this->created_by_user->getFullName();
+        }
+
+        return $name;
+    }
+
+    /**
+     * Is this a note informing that conversation has been forwarded.
+     */
+    public function isForward()
+    {
+        return ($this->subtype == \App\Thread::SUBTYPE_FORWARD);
+    }
+
+    /**
+     * Is this a forwarded conversation.
+     */
+    public function isForwarded()
+    {
+        if ($this->getMeta('forward_parent_conversation_id')) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Is this thread a note.
+     */
+    public function isNote()
+    {
+        return ($this->type == \App\Thread::TYPE_NOTE);
+    }
+
+    /**
+     * Get forwarded conversation.
+     */
+    public function getForwardParentConversation()
+    {
+        return Conversation::where('id', $this->getMeta('forward_parent_conversation_id'))
+            ->rememberForever()
+            ->first();
+    }
+
 }

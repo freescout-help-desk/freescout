@@ -188,12 +188,12 @@
 															</div>
 
 															@if ($thread->has_attachments)
-																<table cellspacing="0" cellpadding="6" bgcolor="#f1f3f4">
+																<table cellspacing="0" cellpadding="6">
 																	<tr>
-																		<td bgcolor="#ffffff" height="15">&nbsp;</td>
+																		<td height="15">&nbsp;</td>
 																	<tr>
 																	<tr>
-																		<td>
+																		<td bgcolor="#f1f3f4">
 																			<p style="display:inline; margin:0; padding: 0 5px; line-height:18px; font-size:12px; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#494848;">
 																				<strong>{{ __('Attached:') }}</strong>
 																				@foreach ($thread->attachments as $attachment)

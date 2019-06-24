@@ -1847,6 +1847,23 @@ button.conv-checkbox-clear {
     text-align: right;
     font-size: 12px;
 }
+.thread-badge {
+    color: #ffe19d;
+    border-top: 0 solid transparent;
+    border-bottom: 39px solid transparent;
+    border-left: 39px solid;
+    left: 0;
+    top: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+.thread-badge .glyphicon {
+    position: relative;
+    left: -34px;
+    top: 3px;
+    color: #c1861e;
+}
 /*.thread-type {
     /*margin-right: 7px;* /
     font-weight: bold;
@@ -2153,11 +2170,16 @@ button.conv-checkbox-clear {
     width: 68%;
 }
 .btn-add-note-text,
+.btn-send-forward,
+.conv-forward-block .btn-send-text,
 .conv-note-block .btn-send-text,
 .conv-note-block .conv-recipient {
     display: none;
 }
 .conv-note-block .btn-add-note-text {
+    display: block;
+}
+.conv-forward-block .btn-send-forward {
     display: block;
 }
 .conv-note-block .conv-reply-body {
@@ -2355,6 +2377,15 @@ ul.prev-convs {
         /*right: 0;*/
         right: 2px;
         top: 15px;
+    }
+    .thread-badge {
+        border-bottom: 31px solid transparent;
+        border-left: 31px solid;
+    }
+    .thread-badge .glyphicon {
+        left: -27px;
+        top: -1px;
+        font-size: 10px;
     }
     .conv-new #conv-toolbar h2 {
         padding-left: 13px;
@@ -2652,7 +2683,11 @@ ul.prev-convs {
     background-color: #f5e7e9;
     border-color: #f0d9dc;
 }
-
+.alert-note {
+    color: #b37100;
+    border-color: #ffe19d;
+    background-color: #fff1cf;
+}
 /**
  * Tables
  */

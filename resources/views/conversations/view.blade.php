@@ -21,9 +21,9 @@
                     <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}"></span><span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" data-toggle="tooltip"></span>@action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>--}}<div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
                         <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></span>
                         <ul class="dropdown-menu">
-                            <li><a href="#" class="conv-delete">{{ __("Delete") }}</a></li>
                             {{--<li><a href="#">{{ __("Follow") }} (todo)</a></li>--}}
-                            <li><a href="#">{{ __("Forward") }} (todo)</a></li>
+                            <li><a href="#" class="conv-forward">{{ __("Forward") }}</a></li>
+                            <li><a href="#" class="conv-delete">{{ __("Delete") }}</a></li>
                             @action('conversation.extra_action_buttons', $conversation, $mailbox)
                         </ul>
                     </div>
@@ -108,6 +108,7 @@
                             {{-- For drafts --}}
                             <input type="hidden" name="thread_id" value=""/>
                             <input type="hidden" name="is_note" value=""/>
+                            <input type="hidden" name="subtype" value=""/>
 
                             @if (!empty($to_customers))
                                 <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }} conv-recipient">
@@ -119,6 +120,7 @@
                                                 <option value="{{ $to_customer['email'] }}" @if ($to_customer['email'] == $conversation->customer_email)selected="selected"@endif>{{ $to_customer['customer']->getFullName(true) }} &lt;{{ $to_customer['email'] }}&gt;</option>
                                             @endforeach
                                         </select>
+                                        <input type="email" class="form-control hidden" name="to_email" value="{{ old('to_email') }}" required autofocus data-parsley-exclude="1">
                                         @include('partials/field_error', ['field'=>'to'])
                                     </div>
                                 </div>
@@ -265,6 +267,11 @@
                             @include('partials/person_photo', ['person' => $thread->getPerson(true)])
                         </div>
                         <div class="thread-message">
+                            @if ($thread->isForward())
+                                <div class="thread-badge">
+                                    <i class="glyphicon glyphicon-arrow-right"></i>
+                                </div>
+                            @endif
                             <div class="thread-header">
                                 <div class="thread-title">
                                     <div class="thread-person">
@@ -281,9 +288,10 @@
                                             {{ __("added a note") }}@else
                                             {{ __("replied") }}@endif--}}{{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
                                     </div>
-                                    @if ($thread->type != App\Thread::TYPE_NOTE)
+                                    @if ($thread->type != App\Thread::TYPE_NOTE || $thread->isForward())
                                         <div class="thread-recipients">
-                                            @if ($loop->last 
+                                            @if ($thread->isForward()
+                                                || $loop->last 
                                                 || ($thread->type == App\Thread::TYPE_CUSTOMER && count($thread->getToArray($mailbox->getEmails())))
                                                 || ($thread->type == App\Thread::TYPE_MESSAGE && !in_array($conversation->customer_email, $thread->getToArray()))
                                                 || ($thread->type == App\Thread::TYPE_MESSAGE && count($customer->emails) > 1)
@@ -413,6 +421,22 @@
                                                 </small>
                                             @endif
                                         </div>
+                                @endif
+                                @if ($thread->isForwarded())
+                                    <div class="alert alert-info">
+                                        {{ __('This is a forwarded conversation.') }} 
+                                        {!! __('Original conversation: :forward_parent_conversation_number', [
+                                        'forward_parent_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMeta('forward_parent_conversation_id')]).'#thread-'.$thread->getMeta('forward_parent_thread_id').'">#'.$thread->getMeta('forward_parent_conversation_number').'</a>'
+                                        ]) !!}
+                                    </div>
+                                @endif
+                                @if ($thread->isForward())
+                                    <div class="alert alert-note">
+                                        {!! __(':who forwarded this conversation. Forwarded conversation: :forward_child_conversation_number', [
+                                        'who' => ucfirst($thread->getForwardByFullName()),
+                                        'forward_child_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMeta('forward_child_conversation_id')]).'">#'.$thread->getMeta('forward_child_conversation_number').'</a>'
+                                        ]) !!}
+                                    </div>
                                 @endif
 
                                 {!! $thread->getCleanBody() !!}
