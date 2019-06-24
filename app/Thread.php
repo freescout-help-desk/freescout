@@ -946,4 +946,12 @@ class Thread extends Model
             ->first();
     }
 
+    /**
+     * Get forward child conversation.
+     */
+    public function getForwardChildConversation()
+    {
+        return Conversation::where('id', $this->getMeta('forward_child_conversation_id'))
+            ->first();
+    }
 }

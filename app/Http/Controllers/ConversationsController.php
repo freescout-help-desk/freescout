@@ -674,6 +674,7 @@ class ConversationsController extends Controller
                     if ($is_forward) {
                         $forwarded_thread->conversation_id = $forwarded_conversation->id;
                         $forwarded_thread->type = Thread::TYPE_MESSAGE;
+                        $forwarded_thread->subtype = null;
                         if ($attachments_info['has_attachments']) {
                             $forwarded_thread->has_attachments = true;
                         }
@@ -1826,6 +1827,17 @@ class ConversationsController extends Controller
             $folder_id = null;
         }
         $conversation->save();
+
+        // If forwarding cas been undone, we need to remove newly created conversation.
+        // No need to remove notifications, as they won't work if conversation does not exist.
+        if ($thread->isForward()) {
+            $forwarded_conversation = $thread->getForwardChildConversation();
+            if ($forwarded_conversation) {
+                $forwarded_conversation->threads()->delete();
+                // todo: maybe perform soft delete of the conversation.
+                $forwarded_conversation->delete();
+            }
+        }
 
         return redirect()->away($conversation->url($folder_id, null, ['show_draft' => $thread->id]));
     }

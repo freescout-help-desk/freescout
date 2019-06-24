@@ -2878,8 +2878,11 @@ function maybeShowDraft()
 		function(response) {
 			loaderHide();
 			if (typeof(response.status) != "undefined" && response.status == 'success') {
-				response.data.is_note = '';
+				//response.data.is_note = '';
 				showReplyForm(response.data);
+				if (response.data.is_forward == '1') {
+					showForwardForm(response.data);
+				}
 				$('#thread-'+thread_id).hide();
 			} else {
 				showAjaxError(response);

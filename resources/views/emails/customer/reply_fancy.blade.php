@@ -18,25 +18,26 @@
 		            	<tr>
 						    <td>
 						        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0;">
-						            <tr>
-						                <td style="padding:8px 0 10px 0;">
-						                	@if (!$thread->isForwarded())
+						        	@if (!$loop->first)
+							            <tr>
+							                <td style="padding:8px 0 10px 0;">
+							                	
 							                    <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#727272; font-size:16px; line-height:22px; margin:0; font-weight:normal;">
 							                    	@if ($loop->last){!! __(':person sent a message', ['person' => '<strong style="color:#000000;">'.htmlspecialchars($thread->getFromName($mailbox)).'</strong>']) !!}@else {!! __(':person replied', ['person' => '<strong style="color:#000000;">'.htmlspecialchars($thread->getFromName($mailbox)).'</strong>']) !!}@endif
 							                	</h3>
-							                @endif
 
-						                    @if ($thread->getCcArray())
-							                    <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#9F9F9F; font-size:12px; line-height:16px; margin:0;">
-							                    	Cc: {{ implode(', ', $thread->getCcArray() )}}
-							                    	<br>
-							                    </p>
-							                @endif
-						                </td>
-						                <td style="padding:8px 0 10px 0;" valign="top">
-						                    <div style="font-family: Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#9F9F9F; font-size:12px; line-height:18px; margin:0;" align="right">{{ App\Customer::dateFormat($thread->created_at, 'M j, H:i') }}</div>
-						                </td>
-						            </tr>
+							                    @if ($thread->getCcArray())
+								                    <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#9F9F9F; font-size:12px; line-height:16px; margin:0;">
+								                    	Cc: {{ implode(', ', $thread->getCcArray() )}}
+								                    	<br>
+								                    </p>
+								                @endif
+							                </td>
+							                <td style="padding:8px 0 10px 0;" valign="top">
+							                    <div style="font-family: Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#9F9F9F; font-size:12px; line-height:18px; margin:0;" align="right">{{ App\Customer::dateFormat($thread->created_at, 'M j, H:i') }}</div>
+							                </td>
+							            </tr>
+							        @endif
 						            <tr>
 						                <td colspan="2" style="padding:8px 0 10px 0;">
 						                    <div>

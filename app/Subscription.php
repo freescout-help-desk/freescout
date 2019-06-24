@@ -261,6 +261,8 @@ class Subscription extends Model
     {
         $notify = [];
 
+        $delay = now()->addSeconds(Conversation::UNDO_TIMOUT);
+
         // Collection into notify array information about all users who need to be notified
         foreach (self::$occured_events as $event) {
             // Get mailbox users ids
@@ -321,12 +323,14 @@ class Subscription extends Model
             // Email notification (better to create them first)
             foreach ($notify[self::MEDIUM_EMAIL] as $conversation_id => $notify_info) {
                 \App\Jobs\SendNotificationToUsers::dispatch($notify_info['users'], $notify_info['conversation'], $notify_info['threads'])
-                    ->delay(now()->addSeconds(Conversation::UNDO_TIMOUT))
+                    ->delay($delay)
                     ->onQueue('emails');
             }
             // - Menu notification (uses same medium as for email)
             foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
-                \Notification::send($notify_info['users'], new WebsiteNotification($notify_info['conversation'], $notify_info['threads'][0]));
+                $website_notification = new WebsiteNotification($notify_info['conversation'], $notify_info['threads'][0]);
+                $website_notification->delay($delay);
+                \Notification::send($notify_info['users'], $website_notification);
             }
         }
 
@@ -357,7 +361,9 @@ class Subscription extends Model
         }
         // \Notification::sendNow($notify_info['users'], new BroadcastNotification($notify_info['conversation'], $notify_info['threads'][0]));
         foreach ($broadcasts as $thread_id => $to_broadcast) {
-            $to_broadcast['user']->notify(new BroadcastNotification($to_broadcast['conversation'], $to_broadcast['threads'][0], $to_broadcast['mediums']));
+            $broadcast_notification = new BroadcastNotification($to_broadcast['conversation'], $to_broadcast['threads'][0], $to_broadcast['mediums']);
+            $broadcast_notification->delay($delay);
+            $to_broadcast['user']->notify($broadcast_notification);
         }
 
         // todo: mobile notification
