@@ -9,11 +9,15 @@ namespace App\Notifications;
 use App\Conversation;
 use App\Subscription;
 use App\Thread;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class BroadcastNotification extends Notification
+class BroadcastNotification extends Notification implements ShouldQueue
 {
+    use Queueable;
+
     public $conversation;
     public $thread;
     public $mediums;

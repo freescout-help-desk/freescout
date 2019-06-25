@@ -1847,6 +1847,23 @@ button.conv-checkbox-clear {
     text-align: right;
     font-size: 12px;
 }
+.thread-badge {
+    color: #ffe19d;
+    border-top: 0 solid transparent;
+    border-bottom: 39px solid transparent;
+    border-left: 39px solid;
+    left: 0;
+    top: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+.thread-badge .glyphicon {
+    position: relative;
+    left: -34px;
+    top: 3px;
+    color: #c1861e;
+}
 /*.thread-type {
     /*margin-right: 7px;* /
     font-weight: bold;
@@ -1891,13 +1908,13 @@ button.conv-checkbox-clear {
     /*padding-top: 12px;*/
     /*padding-bottom: 10px;*/
 }
-.thread-opened-at {
+.thread-meta {
     font-size: 12.5px;
     margin: 15px 0 0 0;
     color: #a5b2bd;
-    display: inline-block;
+    display: block;
 }
-.thread-opened-at .glyphicon {
+.thread-meta .glyphicon {
     font-size: 12px;
     color: #b8c7d4;
     margin-right: 5px;
@@ -2034,6 +2051,41 @@ button.conv-checkbox-clear {
 .thread-attachments span {
     text-transform: lowercase;
 }
+.thread-editor-container {
+    padding: 20px;
+}
+.thread-editor-statusbar {
+    text-align: right;
+    background-color: #f9fafa;
+    border: 1px solid #dee4e9;
+    border-top: none;
+}
+.thread-editor-statusbar button,
+.thread-editor-statusbar a {
+    display: inline-block;
+}
+.thread-editor-statusbar .btn-primary {
+    height: 38px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.conv-note-block .thread-editor-statusbar {
+    background-color: #fff7dd;
+    border: 1px solid #ffe39d;
+}
+.note-editor.note-frame.panel {
+    box-shadow: none;
+}
+.thread-original {
+    margin-top: 10px;
+    border-left: 5px solid #dbe1e9;
+    padding-left: 13px;
+}
+.thread-text {
+    color: #253540;
+    font-size: 14px;
+    line-height: 1.45em;
+}
 /*.thread-num {
     position: absolute;
     left: 20px;
@@ -2117,12 +2169,20 @@ button.conv-checkbox-clear {
     float: left;
     width: 68%;
 }
+.conv-forward-block .alert-switch-to-note {
+    display: none;
+}
 .btn-add-note-text,
+.btn-send-forward,
+.conv-forward-block .btn-send-text,
 .conv-note-block .btn-send-text,
 .conv-note-block .conv-recipient {
     display: none;
 }
 .conv-note-block .btn-add-note-text {
+    display: block;
+}
+.conv-forward-block .btn-send-forward {
     display: block;
 }
 .conv-note-block .conv-reply-body {
@@ -2320,6 +2380,15 @@ ul.prev-convs {
         /*right: 0;*/
         right: 2px;
         top: 15px;
+    }
+    .thread-badge {
+        border-bottom: 31px solid transparent;
+        border-left: 31px solid;
+    }
+    .thread-badge .glyphicon {
+        left: -27px;
+        top: -1px;
+        font-size: 10px;
     }
     .conv-new #conv-toolbar h2 {
         padding-left: 13px;
@@ -2617,7 +2686,11 @@ ul.prev-convs {
     background-color: #f5e7e9;
     border-color: #f0d9dc;
 }
-
+.alert-note {
+    color: #b37100;
+    border-color: #ffe19d;
+    background-color: #fff1cf;
+}
 /**
  * Tables
  */
@@ -3218,6 +3291,21 @@ a.help-icon:hover {
 }
 .help-link:hover {
     text-decoration: underline;
+}
+.link-grey,
+.link-grey:hover,
+.link-grey:focus {
+    color: #93a1af!important;
+}
+.link-grey:hover {
+    color: #4f5d6b!important;
+    text-decoration: none;
+}
+.link-underlined {
+    text-decoration: underline;
+}
+.link-underlined:hover {
+    text-decoration: none;
 }
 .wizard-header {
     padding: 40px 0 0;

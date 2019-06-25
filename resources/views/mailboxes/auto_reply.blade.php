@@ -94,5 +94,5 @@
 
 @section('javascript')
     @parent
-    summernoteInit('#auto_reply_message');
+    summernoteInit('#auto_reply_message', {insertVar: true});
 @endsection

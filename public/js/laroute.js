@@ -4,7 +4,7 @@
 
         var routes = {
 
-            absolute: true,
+            absolute: false,
             rootUrl: Vars.public_url,
             routes : [
     {

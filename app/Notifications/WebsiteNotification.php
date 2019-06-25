@@ -1,16 +1,20 @@
 <?php
 /**
- * Website notification (DB notification).
+ * Website notification (DB notification) to display notifications in the menu.
  */
 
 namespace App\Notifications;
 
 use App\Conversation;
 use App\Thread;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class WebsiteNotification extends Notification
+class WebsiteNotification extends Notification implements ShouldQueue
 {
+    use Queueable;
+
     public $conversation;
 
     public $thread;

@@ -50,9 +50,10 @@
             "RachidLaasri\\LaravelInstaller\\Providers\\": "overrides/RachidLaasri/LaravelInstaller/Providers/",
             "Nwidart\\Modules\\": "overrides/Nwidart/Modules/",
             "Codedge\\Updater\\SourceRepositoryTypes\\": "overrides/Codedge/Updater/SourceRepositoryTypes/",
-            "Illuminate\\Foundation\\": "overrides/Illuminate/Foundation/",
             "Barryvdh\\TranslationManager\\": "overrides/Barryvdh/TranslationManager/",
+            "Illuminate\\Foundation\\": "overrides/Illuminate/Foundation/",
             "Illuminate\\Routing\\": "overrides/Illuminate/Routing/",
+            "Illuminate\\Validation\\Concerns\\": "overrides/Illuminate/Validation/Concerns/",
             "Lord\\Laroute\\Routes\\": "overrides/Lord/Laroute/Routes/"
         },
         "exclude-from-classmap": [
@@ -70,9 +71,10 @@
             "vendor/nwidart/laravel-modules/src/Repository.php",
             "vendor/nwidart/laravel-modules/src/Json.php",
             "vendor/codedge/laravel-selfupdater/src/SourceRepositoryTypes/GithubRepositoryType.php",
-            "vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php",
             "vendor/barryvdh/laravel-translation-manager/src/Manager.php",
+            "vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php",
             "vendor/laravel/framework/src/Illuminate/Routing/UrlGenerator.php",
+            "vendor/laravel/framework/src/Illuminate/Validation/Concerns/ValidatesAttributes.php",
             "vendor/rachidlaasri/laravel-installer/src/Providers/LaravelInstallerServiceProvider.php",
             "vendor/lord/laroute/src/Routes/Collection.php"
         ]

@@ -21,9 +21,9 @@
                     <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}"></span><span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" data-toggle="tooltip"></span>@action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>--}}<div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
                         <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></span>
                         <ul class="dropdown-menu">
-                            <li><a href="#" class="conv-delete">{{ __("Delete") }}</a></li>
                             {{--<li><a href="#">{{ __("Follow") }} (todo)</a></li>--}}
-                            <li><a href="#">{{ __("Forward") }} (todo)</a></li>
+                            <li><a href="#" class="conv-forward">{{ __("Forward") }}</a></li>
+                            <li><a href="#" class="conv-delete">{{ __("Delete") }}</a></li>
                             @action('conversation.extra_action_buttons', $conversation, $mailbox)
                         </ul>
                     </div>
@@ -108,6 +108,7 @@
                             {{-- For drafts --}}
                             <input type="hidden" name="thread_id" value=""/>
                             <input type="hidden" name="is_note" value=""/>
+                            <input type="hidden" name="subtype" value=""/>
 
                             @if (!empty($to_customers))
                                 <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }} conv-recipient">
@@ -119,6 +120,7 @@
                                                 <option value="{{ $to_customer['email'] }}" @if ($to_customer['email'] == $conversation->customer_email)selected="selected"@endif>{{ $to_customer['customer']->getFullName(true) }} &lt;{{ $to_customer['email'] }}&gt;</option>
                                             @endforeach
                                         </select>
+                                        <input type="email" class="form-control hidden" name="to_email" value="{{ old('to_email') }}" required autofocus data-parsley-exclude="1">
                                         @include('partials/field_error', ['field'=>'to'])
                                     </div>
                                 </div>
@@ -237,7 +239,11 @@
                                     <div class="thread-person">
                                         {{--{!! $thread->getActionDescription($conversation->number) !!}--}}
                                         <strong>@include('conversations/thread_by')</strong>
-                                        &nbsp;
+                                        @if ($thread->isForward())
+                                            {{ __('are forwarding') }} 
+                                        @else
+                                            &nbsp;
+                                        @endif
                                         [{{ __('Draft') }}]
                                     </div>
                                     <div class="btn-group btn-group-xs draft-actions">
@@ -254,20 +260,22 @@
                             <div class="thread-body">
                                 {!! $thread->getCleanBody() !!}
 
-                                @if ( $thread->opened_at )
-                                    <div class='thread-opened-at'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</div>
-                                @endif
                                 @include('conversations/partials/thread_attachments')
                             </div>
                             @action('thread.after_body', $thread, $loop, $threads, $conversation, $mailbox)
                         </div>
                     </div>
                 @else
-                    <div class="thread thread-type-{{ $thread->getTypeName() }}" id="thread-{{ $thread->id }}">
+                    <div class="thread thread-type-{{ $thread->getTypeName() }}" id="thread-{{ $thread->id }}" data-thread_id="{{ $thread->id }}">
                         <div class="thread-photo">
                             @include('partials/person_photo', ['person' => $thread->getPerson(true)])
                         </div>
                         <div class="thread-message">
+                            @if ($thread->isForward())
+                                <div class="thread-badge">
+                                    <i class="glyphicon glyphicon-arrow-right"></i>
+                                </div>
+                            @endif
                             <div class="thread-header">
                                 <div class="thread-title">
                                     <div class="thread-person">
@@ -284,9 +292,10 @@
                                             {{ __("added a note") }}@else
                                             {{ __("replied") }}@endif--}}{{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
                                     </div>
-                                    @if ($thread->type != App\Thread::TYPE_NOTE)
+                                    @if ($thread->type != App\Thread::TYPE_NOTE || $thread->isForward())
                                         <div class="thread-recipients">
-                                            @if ($loop->last 
+                                            @if ($thread->isForward()
+                                                || $loop->last 
                                                 || ($thread->type == App\Thread::TYPE_CUSTOMER && count($thread->getToArray($mailbox->getEmails())))
                                                 || ($thread->type == App\Thread::TYPE_MESSAGE && !in_array($conversation->customer_email, $thread->getToArray()))
                                                 || ($thread->type == App\Thread::TYPE_MESSAGE && count($customer->emails) > 1)
@@ -417,11 +426,33 @@
                                             @endif
                                         </div>
                                 @endif
+                                @if ($thread->isForwarded())
+                                    <div class="alert alert-info">
+                                        {{ __('This is a forwarded conversation.') }} 
+                                        {!! __('Original conversation: :forward_parent_conversation_number', [
+                                        'forward_parent_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMeta('forward_parent_conversation_id')]).'#thread-'.$thread->getMeta('forward_parent_thread_id').'">#'.$thread->getMeta('forward_parent_conversation_number').'</a>'
+                                        ]) !!}
+                                    </div>
+                                @endif
+                                @if ($thread->isForward())
+                                    <div class="alert alert-note">
+                                        {!! __(':person forwarded this conversation. Forwarded conversation: :forward_child_conversation_number', [
+                                        'person' => ucfirst($thread->getForwardByFullName()),
+                                        'forward_child_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMeta('forward_child_conversation_id')]).'">#'.$thread->getMeta('forward_child_conversation_number').'</a>'
+                                        ]) !!}
+                                    </div>
+                                @endif
 
                                 {!! $thread->getCleanBody() !!}
 
-                                @if ( $thread->opened_at )
-                                    <div class='thread-opened-at'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed") }} {{ App\User::dateDiffForHumansWithHours($thread->opened_at) }}</div>
+                                @if ($thread->body_original)
+                                    <div class='thread-meta'>
+                                        <i class="glyphicon glyphicon-pencil"></i> {{ __("Edited by :whom :when", ['whom' => $thread->getEditedByUserName(), 'when' => App\User::dateDiffForHumansWithHours($thread->edited_at)]) }} &nbsp;<a href="#" class="thread-original-show help-link link-underlined">{{ __("Show original") }}</a><a href="#" class="thread-original-hide help-link link-underlined hidden">{{ __("Hide") }}</a>
+                                        <div class="thread-original thread-text hidden">{!! $thread->getCleanBodyOriginal() !!}</div>
+                                    </div>
+                                @endif
+                                @if ($thread->opened_at)
+                                    <div class='thread-meta'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed :when", ['when' => App\User::dateDiffForHumansWithHours($thread->opened_at)]) }}</div>
                                 @endif
 
                                 @if ($thread->has_attachments)
@@ -443,8 +474,10 @@
                         <div class="dropdown thread-options">
                             <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown"><b class="caret"></b></span>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                {{--<li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }} (todo)</a></li>
-                                <li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>--}}
+                                @if (Auth::user()->can('edit', $thread))
+                                    <li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }}</a></li>
+                                @endif
+                                {{--<li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>--}}
                                 <li><a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}?from_thread_id={{ $thread->id }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
                                 @if (Auth::user()->isAdmin())
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
