@@ -51,6 +51,7 @@ return array(
     'Laravel\\Tinker\\' => array($vendorDir . '/laravel/tinker/src'),
     'JakubOnderka\\PhpConsoleHighlighter\\' => array($vendorDir . '/jakub-onderka/php-console-highlighter/src'),
     'JakubOnderka\\PhpConsoleColor\\' => array($vendorDir . '/jakub-onderka/php-console-color/src'),
+    'Illuminate\\Validation\\Concerns\\' => array($baseDir . '/overrides/Illuminate/Validation/Concerns'),
     'Illuminate\\Routing\\' => array($baseDir . '/overrides/Illuminate/Routing'),
     'Illuminate\\Foundation\\' => array($baseDir . '/overrides/Illuminate/Foundation'),
     'Illuminate\\' => array($vendorDir . '/laravel/framework/src/Illuminate'),

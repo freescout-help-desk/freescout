@@ -108,6 +108,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         ),
         'I' => 
         array (
+            'Illuminate\\Validation\\Concerns\\' => 31,
             'Illuminate\\Routing\\' => 19,
             'Illuminate\\Foundation\\' => 22,
             'Illuminate\\' => 11,
@@ -341,6 +342,10 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'JakubOnderka\\PhpConsoleColor\\' => 
         array (
             0 => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src',
+        ),
+        'Illuminate\\Validation\\Concerns\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/Illuminate/Validation/Concerns',
         ),
         'Illuminate\\Routing\\' => 
         array (
@@ -600,6 +605,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'App\\Policies\\ConversationPolicy' => __DIR__ . '/../..' . '/app/Policies/ConversationPolicy.php',
         'App\\Policies\\FolderPolicy' => __DIR__ . '/../..' . '/app/Policies/FolderPolicy.php',
         'App\\Policies\\MailboxPolicy' => __DIR__ . '/../..' . '/app/Policies/MailboxPolicy.php',
+        'App\\Policies\\ThreadPolicy' => __DIR__ . '/../..' . '/app/Policies/ThreadPolicy.php',
         'App\\Policies\\UserPolicy' => __DIR__ . '/../..' . '/app/Policies/UserPolicy.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',
@@ -2172,7 +2178,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Illuminate\\Validation\\ClosureValidationRule' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Validation/ClosureValidationRule.php',
         'Illuminate\\Validation\\Concerns\\FormatsMessages' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Validation/Concerns/FormatsMessages.php',
         'Illuminate\\Validation\\Concerns\\ReplacesAttributes' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Validation/Concerns/ReplacesAttributes.php',
-        'Illuminate\\Validation\\Concerns\\ValidatesAttributes' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Validation/Concerns/ValidatesAttributes.php',
+        'Illuminate\\Validation\\Concerns\\ValidatesAttributes' => __DIR__ . '/../..' . '/overrides/Illuminate/Validation/Concerns/ValidatesAttributes.php',
         'Illuminate\\Validation\\DatabasePresenceVerifier' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Validation/DatabasePresenceVerifier.php',
         'Illuminate\\Validation\\Factory' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Validation/Factory.php',
         'Illuminate\\Validation\\PresenceVerifierInterface' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Validation/PresenceVerifierInterface.php',
