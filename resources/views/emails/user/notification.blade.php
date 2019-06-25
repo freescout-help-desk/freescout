@@ -37,9 +37,10 @@
 				            <table align="center" width="95%" border="0" cellspacing="0" cellpadding="0" style="max-width: 650px; margin: 0 auto;">
 				                <tr>
 				                    <td align="center">
+				                    	<!--
                                         <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; font-size:14px; color:#B5B9BD; line-height:16px; margin:0; margin-bottom: 6px;">
                                         	[{{ $mailbox->name }}]
-                                        </p>
+                                        </p>-->
 				                        <p style="display:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#444; line-height:22px; font-size:16px; margin:0;">
                                             {{ __('Replying to this notification will email :name', ['name' => $customer->getFirstName(true)]) }} (<a href="mailto:{{ $conversation->customer_email }}" style="color:#3f8abf; text-decoration:none;">{{ $conversation->customer_email }}</a>)
                                         </p>
