@@ -112,7 +112,7 @@ class Kernel extends ConsoleKernel
             if (count($running_commands) > 1) {
                 // Stop all queue:work processes.
                 // queue:work command is stopped by settings a cache key
-                \Cache::forever('illuminate:queue:restart', Carbon::now()->getTimestamp());
+                \Helper::queueWorkRestart();
                 // Sometimes processes stuck and just continue running, so we need to kill them.
                 // Sleep to let processes stop.
                 sleep(1);

@@ -107,7 +107,7 @@ class SystemController extends Controller
                 } elseif ($running_commands > 1) {
                     // queue:work command is stopped by settings a cache key
                     if ($command_name == 'queue:work') {
-                        \Cache::forever('illuminate:queue:restart', Carbon::now()->getTimestamp());
+                        \Helper::queueWorkRestart();
                         $commands[] = [
                             'name'        => $command_name,
                             'status'      => 'error',
@@ -152,7 +152,7 @@ class SystemController extends Controller
             // If queue:work is not running, clear cache to let it start if something is wrong with the mutex
             if ($command_name == 'queue:work' && !$last_successful_run && function_exists('shell_exec')) {
                 $status_texts[] = __('Cleared cache to force command to start.');
-                \Artisan::call('cache:clear');
+                \Artisan::call('freescout:clear-cache');
             }
 
             $commands[] = [

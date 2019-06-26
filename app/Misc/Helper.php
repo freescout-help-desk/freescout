@@ -6,6 +6,8 @@
 
 namespace App\Misc;
 
+use Carbon\Carbon;
+
 class Helper
 {
     /**
@@ -1013,4 +1015,13 @@ class Helper
             return true;
         }
     }
+
+    /**
+     * Stop all queue:work processes.
+     */
+    public static function queueWorkRestart()
+    {
+        \Cache::forever('illuminate:queue:restart', Carbon::now()->getTimestamp());
+    }
+
 }
