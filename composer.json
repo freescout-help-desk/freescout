@@ -1,9 +1,14 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
-    "license": "MIT",
-    "type": "project",
+    "name": "freescout-helpdesk/freescout",
+    "description": "Free self-hosted helpdesk and shared mailbox (Zendesk / Help Scout alternative)",
+    "keywords": ["helpdesk", "help desk", "shared mailbox"],
+    "license": "AGPL-3.0",
+    "authors": [
+        {
+            "name": "The FreeScout Team",
+            "email": "support@freescout.net"
+        }
+    ],
     "require": {
         "php": ">=7.0.0",
         "devfactory/minify": "1.0.7",
