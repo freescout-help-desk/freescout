@@ -125,6 +125,10 @@ class EnvironmentController extends Controller
 
                     $request->database_charset = 'utf8';
                     $request->database_collation = 'utf8_unicode_ci';
+
+                    $this->testDbConnect($request);
+                } else {
+                    throw $e;
                 }
             }
         } catch (\Exception $e) {
