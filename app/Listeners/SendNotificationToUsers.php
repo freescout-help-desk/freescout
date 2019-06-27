@@ -36,7 +36,7 @@ class SendNotificationToUsers
             case 'App\Events\UserAddedNote':
                 $caused_by_user_id = $event->thread->created_by_user_id;
                 // When conversation is forwarded only notification
-                // about parent forward conversation is sent.
+                // about child forward conversation is sent.
                 if (!$event->thread->isForward()) {
                     $event_type = Subscription::EVENT_TYPE_USER_ADDED_NOTE;
                 }

@@ -721,6 +721,7 @@ class ConversationsController extends Controller
                         \Helper::backgroundAction('conversation.created_by_user', [$conversation, $thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
                     } elseif ($is_forward) {
                         // Forward.
+                        // Notifications to users not sent.
                         event(new UserAddedNote($conversation, $thread));
                         // To send email with forwarded conversation.
                         event(new UserReplied($forwarded_conversation, $forwarded_thread));
@@ -808,6 +809,20 @@ class ConversationsController extends Controller
                 if (!$response['msg']) {
                     if ($thread && $thread->state == Thread::STATE_PUBLISHED) {
                         $response['msg'] = __('Message has been already sent. Please discard this draft.');
+                    }
+                }
+
+                // To prevent creating draft after reply has been created.
+                if (!$response['msg'] && $conversation) {
+                    // Check if the last thread has same content as the new one.
+                    $last_thread = $conversation->getLastThread([Thread::TYPE_MESSAGE, Thread::TYPE_NOTE]);
+
+                    if ($last_thread 
+                        && $last_thread->created_by_user_id == $user->id 
+                        && $last_thread->body == $request->body
+                    ) {
+                        //\Log::error("You've already sent this message just recently.");
+                        $response['msg'] = __("You've already sent this message just recently.");
                     }
                 }
 

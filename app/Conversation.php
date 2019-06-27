@@ -320,6 +320,20 @@ class Conversation extends Model
     }
 
     /**
+     * Get last thread by type.
+     */
+    public function getLastThread($types = [])
+    {
+        $query = $this->threads()
+            ->where('state', Thread::STATE_PUBLISHED)
+            ->orderBy('created_at', 'desc');
+        if ($types) {
+            $query->whereIn('type', $types);
+        }
+        return $query->first();
+    }
+
+    /**
      * Set preview text.
      *
      * @param string $text

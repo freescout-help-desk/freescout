@@ -219,6 +219,9 @@ class MailboxesController extends Controller
             \Option::set('send_test_to', $request->send_test_to);
         }
 
+        // Sometimes background job continues to use old connection settings.
+        \Helper::queueWorkRestart();
+        
         \Session::flash('flash_success_floating', __('Connection settings saved!'));
 
         return redirect()->route('mailboxes.connection', ['id' => $id]);
