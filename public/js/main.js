@@ -1990,6 +1990,18 @@ function polycastInit()
 	    }
     });
 
+	var channel = poly.subscribe('conview');
+
+	// Show who is viewing a conversation or replying.
+    channel.on('App\\Events\\RealtimeBroadcastUserViewingConversation', function(data, event){
+        // console.log(data);
+        console.log(event.data);
+        
+        if (typeof(event.data) != "undefined") {
+        	
+	    }
+    });
+
     // at any point you can disconnect
     //poly.disconnect();
 
