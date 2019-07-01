@@ -228,8 +228,8 @@ class FetchEmails extends Command
                         \MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY,
                     ];
 
+                    // Try to get previous message ID from marker in body.
                     if (!$prev_message_id || !preg_match('/^('.implode('|', $reply_prefixes).')\-(\d+)\-/', $prev_message_id)) {
-                        // Try to get previous message ID from marker in body.
                         $html_body = $message->getHTMLBody(false);
                         $marker_message_id = \MailHelper::fetchMessageMarkerValue($html_body);
 
