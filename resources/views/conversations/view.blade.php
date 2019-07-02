@@ -110,21 +110,21 @@
                             <input type="hidden" name="is_note" value=""/>
                             <input type="hidden" name="subtype" value=""/>
 
-                            @if (!empty($to_customers))
-                                <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }} conv-recipient">
-                                    <label for="to" class="control-label">{{ __('To') }}</label>
+                            <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }} conv-recipient conv-recipient-to @if (empty($to_customers)) hidden @endif">
+                                <label for="to" class="control-label">{{ __('To') }}</label>
 
-                                    <div class="conv-reply-field">
+                                <div class="conv-reply-field">
+                                    @if (!empty($to_customers))
                                         <select name="to" class="form-control">
                                             @foreach ($to_customers as $to_customer)
                                                 <option value="{{ $to_customer['email'] }}" @if ($to_customer['email'] == $conversation->customer_email)selected="selected"@endif>{{ $to_customer['customer']->getFullName(true) }} &lt;{{ $to_customer['email'] }}&gt;</option>
                                             @endforeach
                                         </select>
-                                        <input type="email" class="form-control hidden" name="to_email" value="{{ old('to_email') }}" required autofocus data-parsley-exclude="1">
-                                        @include('partials/field_error', ['field'=>'to'])
-                                    </div>
+                                    @endif
+                                    <input type="email" class="form-control hidden" name="to_email" value="{{ old('to_email') }}" required autofocus data-parsley-exclude="1">
+                                    @include('partials/field_error', ['field'=>'to'])
                                 </div>
-                            @endif
+                            </div>
 
                             <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} conv-recipient">
                                 <label for="cc" class="control-label">{{ __('Cc') }}</label>
