@@ -142,6 +142,14 @@ class ConversationsController extends Controller
             }
         }
 
+        // Exclude mailbox emails from $to_customers.
+        $mailbox_emails = $mailbox->getEmails();
+        foreach ($to_customers as $key => $to_customer) {
+            if (in_array($to_customer['email'], $mailbox_emails)) {
+                unset($to_customers[$key]);
+            }
+        }
+
         // Previous conversations
         $prev_conversations = [];
         if ($customer) {
