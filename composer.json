@@ -11,6 +11,43 @@
     ],
     "require": {
         "php": ">=7.0.0",
+
+        "symfony/polyfill-ctype": "v1.10.*",
+        "vlucas/phpdotenv": "v2.5.*",
+        "symfony/css-selector": "v3.4.*",
+        "symfony/polyfill-mbstring": "v1.10.*",
+        "symfony/var-dumper": "v3.4.*",
+        "symfony/routing": "v3.4.*",
+        "symfony/process": "v3.4.*",
+        "symfony/polyfill-php70": "v1.10.*",
+        "symfony/http-foundation": "v3.4.*",
+        "symfony/event-dispatcher": "v3.4.*",
+        "psr/log": "1.0.*",
+        "symfony/debug": "v3.4.*",
+        "symfony/http-kernel": "v3.4.*",
+        "symfony/finder": "v3.4.*",
+        "symfony/console": "v3.4.*",
+        "doctrine/lexer": "v1.0.*",
+        "egulias/email-validator": "2.1.*",
+        "swiftmailer/swiftmailer": "v6.1.*",
+        "symfony/translation": "v3.4.*",
+        "nesbot/carbon": "1.35.*",
+        "league/flysystem": "1.0.*",
+        "erusev/parsedown": "1.7.*",
+        "doctrine/inflector": "v1.2.*",
+        "doctrine/instantiator": "1.0.*",
+        "webmozart/assert": "1.3.*",
+        "phpdocumentor/reflection-docblock": "4.3.*",
+        "phpspec/prophecy": "1.8.*",
+        "guzzlehttp/psr7": "1.4.*",
+        "tedivm/jshrink": "v1.3.*",
+        "nikic/php-parser": "v4.1.*",
+        "theseer/tokenizer": "1.1.*",
+        "myclabs/deep-copy": "1.7.*",
+        "doctrine/annotations": "v1.4.*",
+        "doctrine/cache": "v1.6.*",
+        "doctrine/collections": "v1.4.*",
+
         "devfactory/minify": "1.0.7",
         "fideloper/proxy": "3.3.4",
         "laravel/framework": "v5.5.40",
@@ -59,7 +96,8 @@
             "Illuminate\\Foundation\\": "overrides/Illuminate/Foundation/",
             "Illuminate\\Routing\\": "overrides/Illuminate/Routing/",
             "Illuminate\\Validation\\Concerns\\": "overrides/Illuminate/Validation/Concerns/",
-            "Lord\\Laroute\\Routes\\": "overrides/Lord/Laroute/Routes/"
+            "Lord\\Laroute\\Routes\\": "overrides/Lord/Laroute/Routes/",
+            "TorMorten\\Eventy\\": "overrides/TorMorten/Eventy"
         },
         "exclude-from-classmap": [
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
@@ -81,7 +119,8 @@
             "vendor/laravel/framework/src/Illuminate/Routing/UrlGenerator.php",
             "vendor/laravel/framework/src/Illuminate/Validation/Concerns/ValidatesAttributes.php",
             "vendor/rachidlaasri/laravel-installer/src/Providers/LaravelInstallerServiceProvider.php",
-            "vendor/lord/laroute/src/Routes/Collection.php"
+            "vendor/lord/laroute/src/Routes/Collection.php",
+            "vendor/tormjens/eventy/src/Filter.php"
         ]
     },
     "autoload-dev": {
