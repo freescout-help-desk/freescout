@@ -780,7 +780,12 @@ class FetchEmails extends Command
             // Check all separators and choose the shortest reply
             $reply_bodies = [];
             foreach (Mail::$alternative_reply_separators as $alt_separator) {
-                $parts = explode($alt_separator, $body);
+                if (\Str::startsWith($alt_separator, 'regex:')) {
+                    $regex = preg_replace("/^regex:/", '', $alt_separator);
+                    $parts = preg_split($regex, $body);
+                } else {
+                    $parts = explode($alt_separator, $body);
+                }
                 if (count($parts) > 1) {
                     $reply_bodies[] = $parts[0];
                 }

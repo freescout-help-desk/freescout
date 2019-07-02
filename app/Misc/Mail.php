@@ -49,7 +49,7 @@ class Mail
      * If reply is not extracted properly from the incoming email, add here a new separator.
      * Order is not important.
      * Idially separators must contain < or > to avoid false positives.
-     * If there will be problems, convert into regular expressions.
+     * Regex separators has "regex:" in the beginning.
      */
     public static $alternative_reply_separators = [
         self::REPLY_SEPARATOR_HTML, // Our HTML separator
@@ -60,6 +60,8 @@ class Mail
         'yahoo_quoted_', // Yahoo, full: <div id=3D"ydp6h4f5c59yahoo_quoted_2937493705"
         '------------------ 原始邮件 ------------------', // QQ
         '------------------ Original ------------------', // QQ English
+        'divRplyFwdMsg', // Outlook
+        'regex:/<div style="border:none;border\-top:solid \#[A-Z0-9]{6} 1\.0pt;padding:3\.0pt 0in 0in 0in">[^<]*<p class="MsoNormal"><b>/', // MS Outlook
 
         // General separators.
         '<blockquote', // General sepator

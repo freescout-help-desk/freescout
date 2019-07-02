@@ -365,6 +365,7 @@ return [
         'Helper'       => App\Misc\Helper::class,
         'MailHelper'   => App\Misc\Mail::class,
         'Option'       => App\Option::class,
+        'Str'          => Illuminate\Support\Str::class,
         // Autodiscovery did not work for this one, becasuse it's composer.json
         // does not have a `extra` section.
         'Updater'      => Codedge\Updater\UpdaterFacade::class,
