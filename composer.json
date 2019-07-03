@@ -23,7 +23,6 @@
         "symfony/http-foundation": "v3.4.*",
         "symfony/event-dispatcher": "v3.4.*",
         "psr/log": "1.0.*",
-        "symfony/debug": "v3.4.*",
         "symfony/http-kernel": "v3.4.*",
         "symfony/finder": "v3.4.*",
         "symfony/console": "v3.4.*",
@@ -48,6 +47,7 @@
         "doctrine/cache": "v1.6.*",
         "doctrine/collections": "v1.4.*",
 
+        "symfony/debug": "v3.4.29",
         "devfactory/minify": "1.0.7",
         "fideloper/proxy": "3.3.4",
         "laravel/framework": "v5.5.40",
@@ -97,7 +97,8 @@
             "Illuminate\\Routing\\": "overrides/Illuminate/Routing/",
             "Illuminate\\Validation\\Concerns\\": "overrides/Illuminate/Validation/Concerns/",
             "Lord\\Laroute\\Routes\\": "overrides/Lord/Laroute/Routes/",
-            "TorMorten\\Eventy\\": "overrides/TorMorten/Eventy"
+            "TorMorten\\Eventy\\": "overrides/TorMorten/Eventy/",
+            "Symfony\\Component\\Debug\\": "overrides/Symfony/Component/Debug/"
         },
         "exclude-from-classmap": [
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
@@ -120,7 +121,8 @@
             "vendor/laravel/framework/src/Illuminate/Validation/Concerns/ValidatesAttributes.php",
             "vendor/rachidlaasri/laravel-installer/src/Providers/LaravelInstallerServiceProvider.php",
             "vendor/lord/laroute/src/Routes/Collection.php",
-            "vendor/tormjens/eventy/src/Filter.php"
+            "vendor/tormjens/eventy/src/Filter.php",
+            "vendor/symfony/debug/ExceptionHandler.php"
         ]
     },
     "autoload-dev": {
