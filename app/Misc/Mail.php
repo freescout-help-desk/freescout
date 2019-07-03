@@ -60,7 +60,7 @@ class Mail
         'yahoo_quoted_', // Yahoo, full: <div id=3D"ydp6h4f5c59yahoo_quoted_2937493705"
         '------------------ 原始邮件 ------------------', // QQ
         '------------------ Original ------------------', // QQ English
-        'divRplyFwdMsg', // Outlook
+        '<div id=3D"divRplyFwdMsg" dir=', // Outlook
         'regex:/<div style="border:none;border\-top:solid \#[A-Z0-9]{6} 1\.0pt;padding:3\.0pt 0in 0in 0in">[^<]*<p class="MsoNormal"><b>/', // MS Outlook
 
         // General separators.
