@@ -447,7 +447,7 @@ class User extends Authenticatable
         }
         // We are using remember_token as a hash for invite
         if (!$this->invite_hash) {
-            $this->invite_hash = Str::random(60);
+            $this->setInviteHash();
             $this->save();
         }
 
@@ -494,6 +494,22 @@ class User extends Authenticatable
         saveToSendLog($this, SendLog::STATUS_ACCEPTED);
 
         return true;
+    }
+
+    /**
+     * Generate and set password.
+     */
+    public function setPassword()
+    {
+        $this->password = Hash::make($this->generateRandomPassword());
+    }
+
+    /**
+     * Generate and set invite_hash.
+     */
+    public function setInviteHash()
+    {
+        $this->invite_hash = Str::random(60);
     }
 
     /**
