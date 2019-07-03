@@ -26,26 +26,26 @@ Route::post('/user-setup/{hash}', 'PublicController@userSetupSave');
 Route::get('/', 'SecureController@dashboard')->name('dashboard');
 Route::get('/logs/app', ['uses' => '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs.app');
 Route::get('/logs/{name?}', ['uses' => 'SecureController@logs', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs');
-Route::post('/logs/{name?}', ['uses' => 'SecureController@logsSubmit', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);
+Route::post('/logs/{name?}', ['uses' => 'SecureController@logsSubmit', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs.action');
 
 // Settings
 Route::post('/app-settings/ajax', ['uses' => 'SettingsController@ajax', 'middleware' => ['auth', 'roles'], 'roles' => ['admin'], 'laroute' => true])->name('settings.ajax');
 Route::get('/app-settings/{section?}', ['uses' => 'SettingsController@view', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('settings');
-Route::post('/app-settings/{section?}', ['uses' => 'SettingsController@save', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);
+Route::post('/app-settings/{section?}', ['uses' => 'SettingsController@save', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('settings.save');
 
 // Users
 Route::get('/users', ['uses' => 'UsersController@users', 'laroute' => true])->name('users');
 Route::get('/users/wizard', 'UsersController@create')->name('users.create');
 Route::post('/users/wizard', 'UsersController@createSave');
 Route::get('/users/profile/{id}', 'UsersController@profile')->name('users.profile');
-Route::post('/users/profile/{id}', 'UsersController@profileSave');
+Route::post('/users/profile/{id}', 'UsersController@profileSave')->name('users.profile.save');
 Route::post('/users/permissions/{id}', 'UsersController@permissionsSave');
 Route::get('/users/permissions/{id}', 'UsersController@permissions')->name('users.permissions');
-Route::post('/users/permissions/{id}', 'UsersController@permissionsSave');
+Route::post('/users/permissions/{id}', 'UsersController@permissionsSave')->name('users.permissions.save');
 Route::get('/users/notifications/{id}', 'UsersController@notifications')->name('users.notifications');
-Route::post('/users/notifications/{id}', 'UsersController@notificationsSave');
+Route::post('/users/notifications/{id}', 'UsersController@notificationsSave')->name('users.notifications.save');
 Route::get('/users/password/{id}', 'UsersController@password')->name('users.password');
-Route::post('/users/password/{id}', 'UsersController@passwordSave');
+Route::post('/users/password/{id}', 'UsersController@passwordSave')->name('users.password.save');
 Route::post('/users/ajax', ['uses' => 'UsersController@ajax', 'laroute' => true])->name('users.ajax');
 
 // Conversations
@@ -63,17 +63,17 @@ Route::get('/mailboxes', ['uses' => 'MailboxesController@mailboxes', 'laroute' =
 Route::get('/mailbox/new', 'MailboxesController@create')->name('mailboxes.create');
 Route::post('/mailbox/new', 'MailboxesController@createSave');
 Route::get('/mailbox/settings/{id}', 'MailboxesController@update')->name('mailboxes.update');
-Route::post('/mailbox/settings/{id}', 'MailboxesController@updateSave');
+Route::post('/mailbox/settings/{id}', 'MailboxesController@updateSave')->name('mailboxes.update.save');
 Route::get('/mailbox/permissions/{id}', 'MailboxesController@permissions')->name('mailboxes.permissions');
-Route::post('/mailbox/permissions/{id}', 'MailboxesController@permissionsSave');
+Route::post('/mailbox/permissions/{id}', 'MailboxesController@permissionsSave')->name('mailboxes.permissions.save');
 Route::get('/mailbox/{id}', 'MailboxesController@view')->name('mailboxes.view');
 Route::get('/mailbox/{id}/{folder_id}', 'MailboxesController@view')->name('mailboxes.view.folder');
 Route::get('/mailbox/connection-settings/{id}/outgoing', 'MailboxesController@connectionOutgoing')->name('mailboxes.connection');
-Route::post('/mailbox/connection-settings/{id}/outgoing', 'MailboxesController@connectionOutgoingSave');
+Route::post('/mailbox/connection-settings/{id}/outgoing', 'MailboxesController@connectionOutgoingSave')->name('mailboxes.connection.save');
 Route::get('/mailbox/connection-settings/{id}/incoming', 'MailboxesController@connectionIncoming')->name('mailboxes.connection.incoming');
-Route::post('/mailbox/connection-settings/{id}/incoming', 'MailboxesController@connectionIncomingSave');
+Route::post('/mailbox/connection-settings/{id}/incoming', 'MailboxesController@connectionIncomingSave')->name('mailboxes.connection.incoming.save');
 Route::get('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReply')->name('mailboxes.auto_reply');
-Route::post('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReplySave');
+Route::post('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReplySave')->name('mailboxes.auto_reply.save');
 Route::post('/mailbox/ajax', ['uses' => 'MailboxesController@ajax', 'laroute' => true])->name('mailboxes.ajax');
 
 // Customers
@@ -83,9 +83,9 @@ Route::get('/customer/{id}/', 'CustomersController@conversations')->name('custom
 Route::get('/customer/ajax-search', ['uses' => 'CustomersController@ajaxSearch', 'laroute' => true])->name('customers.ajax_search');
 
 // Translate
-Route::post('/translations/send', ['uses' => 'TranslateController@postSend', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);
-Route::post('/translations/removeUnpublished', ['uses' => 'TranslateController@postRemoveUnpublished', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);
-Route::post('/translations/download', ['uses' => 'TranslateController@postDownload', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);
+Route::post('/translations/send', ['uses' => 'TranslateController@postSend', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('translations.send');
+Route::post('/translations/removeUnpublished', ['uses' => 'TranslateController@postRemoveUnpublished', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('translations.remove_unpublished');
+Route::post('/translations/download', ['uses' => 'TranslateController@postDownload', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('translations.download');
 
 // Modules
 // There is a /public/modules folder, so route must have a different name
@@ -95,7 +95,7 @@ Route::post('/modules/ajax', ['uses' => 'ModulesController@ajax', 'laroute' => t
 // System
 Route::get('/system/status', ['uses' => 'SystemController@status', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system');
 Route::get('/system/tools', ['uses' => 'SystemController@tools', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system.tools');
-Route::post('/system/tools', ['uses' => 'SystemController@toolsExecute', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']]);
+Route::post('/system/tools', ['uses' => 'SystemController@toolsExecute', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system.tools.action');
 Route::post('/system/ajax', ['uses' => 'SystemController@ajax', 'laroute' => true, 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system.ajax');
 Route::post('/system/action', ['uses' => 'SystemController@action', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system.action');
 
