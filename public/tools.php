@@ -48,11 +48,12 @@ function getAppKey($root_dir, $check_cache = true)
     }
 }
 
-function clearCache($root_dir)
+function clearCache($root_dir, $php_path)
 {
     if (file_exists($root_dir.'bootstrap/cache/config.php')) {
         unlink($root_dir.'bootstrap/cache/config.php');
     }
+    return shell_exec($php_path.' '.$root_dir.'artisan freescout:clear-cache');
 }
 
 $alerts = [];
@@ -60,14 +61,20 @@ $errors = [];
 $app_key = $_POST['app_key'] ?? '';
 
 if (!empty($_POST)) {
+
+    $php_path = 'php';
+    if (!empty($_POST['php_path'])) {
+        $php_path = $_POST['php_path'];
+    }
+
     if (trim($app_key) != trim(getAppKey($root_dir))) {
         $errors['app_key'] = 'Invalid App Key';
     } else {
-        clearCache($root_dir);
+        $cc_output = clearCache($root_dir, $php_path);
         if ($_POST['action'] == 'cc') {
             $alerts[] = [
                 'type' => 'success',
-                'text' => 'Cache cleared successfully.',
+                'text' => 'Cache cleared: <br/><pre>'.htmlspecialchars($cc_output).'</pre>',
             ];
         } else {
             if (!function_exists('shell_exec')) {
@@ -77,10 +84,6 @@ if (!empty($_POST)) {
                 ];
             } else {
                 try {
-                    $php_path = 'php';
-                    if (!empty($_POST['php_path'])) {
-                        $php_path = $_POST['php_path'];
-                    }
 
                     // First check PHP version
                     $version_output = shell_exec($php_path.' -v');
