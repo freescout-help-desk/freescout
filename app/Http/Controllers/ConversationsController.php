@@ -108,19 +108,7 @@ class ConversationsController extends Controller
         $to_customers = [];
         // Add all customer emails
         $customer_emails = [];
-        if ($customer) {
-            $customer_emails = $customer->emails;
-        }
         $distinct_emails = [];
-        if (count($customer_emails) > 1) {
-            foreach ($customer_emails as $customer_email) {
-                $to_customers[] = [
-                    'customer' => $customer,
-                    'email'    => $customer_email->email,
-                ];
-                $distinct_emails[] = $customer_email->email;
-            }
-        }
 
         // Add emails of customers from whom there were replies in the conversation
         $prev_customers_emails = [];
@@ -139,6 +127,21 @@ class ConversationsController extends Controller
                     'customer' => $prev_customer->customer,
                     'email'    => $prev_customer->from,
                 ];
+                $distinct_emails[] = $prev_customer->from;
+            }
+        }
+
+        // Add customer email(s) if there more than one or if there are other emails in threads.
+        if ($customer) {
+            $customer_emails = $customer->emails;
+        }
+        if (count($customer_emails) > 1 || count($to_customers)) {
+            foreach ($customer_emails as $customer_email) {
+                $to_customers[] = [
+                    'customer' => $customer,
+                    'email'    => $customer_email->email,
+                ];
+                $distinct_emails[] = $customer_email->email;
             }
         }
 
