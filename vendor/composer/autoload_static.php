@@ -180,7 +180,8 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         ),
         'TorMorten\\Eventy\\' => 
         array (
-            0 => __DIR__ . '/..' . '/tormjens/eventy/src',
+            0 => __DIR__ . '/../..' . '/overrides/TorMorten/Eventy',
+            1 => __DIR__ . '/..' . '/tormjens/eventy/src',
         ),
         'TijsVerkoyen\\CssToInlineStyles\\' => 
         array (
@@ -232,7 +233,8 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         ),
         'Symfony\\Component\\Debug\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/debug',
+            0 => __DIR__ . '/../..' . '/overrides/Symfony/Component/Debug',
+            1 => __DIR__ . '/..' . '/symfony/debug',
         ),
         'Symfony\\Component\\CssSelector\\' => 
         array (
@@ -549,6 +551,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'App\\Http\\Controllers\\UsersController' => __DIR__ . '/../..' . '/app/Http/Controllers/UsersController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\CheckRole' => __DIR__ . '/../..' . '/app/Http/Middleware/CheckRole.php',
+        'App\\Http\\Middleware\\CustomHandle' => __DIR__ . '/../..' . '/app/Http/Middleware/CustomHandle.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
         'App\\Http\\Middleware\\HttpsRedirect' => __DIR__ . '/../..' . '/app/Http/Middleware/HttpsRedirect.php',
         'App\\Http\\Middleware\\Localize' => __DIR__ . '/../..' . '/app/Http/Middleware/Localize.php',
@@ -3081,7 +3084,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Symfony\\Component\\Debug\\Debug' => __DIR__ . '/..' . '/symfony/debug/Debug.php',
         'Symfony\\Component\\Debug\\DebugClassLoader' => __DIR__ . '/..' . '/symfony/debug/DebugClassLoader.php',
         'Symfony\\Component\\Debug\\ErrorHandler' => __DIR__ . '/..' . '/symfony/debug/ErrorHandler.php',
-        'Symfony\\Component\\Debug\\ExceptionHandler' => __DIR__ . '/..' . '/symfony/debug/ExceptionHandler.php',
+        'Symfony\\Component\\Debug\\ExceptionHandler' => __DIR__ . '/../..' . '/overrides/Symfony/Component/Debug/ExceptionHandler.php',
         'Symfony\\Component\\Debug\\Exception\\ClassNotFoundException' => __DIR__ . '/..' . '/symfony/debug/Exception/ClassNotFoundException.php',
         'Symfony\\Component\\Debug\\Exception\\ContextErrorException' => __DIR__ . '/..' . '/symfony/debug/Exception/ContextErrorException.php',
         'Symfony\\Component\\Debug\\Exception\\FatalErrorException' => __DIR__ . '/..' . '/symfony/debug/Exception/FatalErrorException.php',
@@ -3523,7 +3526,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'TorMorten\\Eventy\\EventServiceProvider' => __DIR__ . '/..' . '/tormjens/eventy/src/EventServiceProvider.php',
         'TorMorten\\Eventy\\Events' => __DIR__ . '/..' . '/tormjens/eventy/src/Events.php',
         'TorMorten\\Eventy\\Facades\\Events' => __DIR__ . '/..' . '/tormjens/eventy/src/Facades/Events.php',
-        'TorMorten\\Eventy\\Filter' => __DIR__ . '/..' . '/tormjens/eventy/src/Filter.php',
+        'TorMorten\\Eventy\\Filter' => __DIR__ . '/../..' . '/overrides/TorMorten/Eventy/Filter.php',
         'TypeError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/TypeError.php',
         'Underscore\\Dispatch' => __DIR__ . '/..' . '/anahkiasen/underscore-php/src/Dispatch.php',
         'Underscore\\Method' => __DIR__ . '/..' . '/anahkiasen/underscore-php/src/Method.php',
