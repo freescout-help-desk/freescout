@@ -18,6 +18,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
 
 ## Table of Contents
    * [Features](#features)
+   * [Demo](#demo)
    * [Modules](#modules)
    * [Requirements](#requirements)
    * [News & Updates](#news--updates)
@@ -45,6 +46,10 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
   * Search.
 
 Need anything else? Suggest features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular).
+
+## Demo
+
+[Live demo](https://demo.freescout.net)
 
 ## Modules
 
