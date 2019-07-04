@@ -2185,6 +2185,9 @@ button.conv-checkbox-clear {
 .conv-forward-block .btn-send-forward {
     display: block;
 }
+.conv-forward-block .conv-recipient-to.hidden {
+    display: block !important;
+}
 .conv-note-block .conv-reply-body {
     margin-top: 5px;
 }

@@ -10,6 +10,9 @@
             <div class="panel panel-default panel-shaded">
                 
                 <div class="panel-body">
+
+                    @action('login_form.before')
+
                     <form class="form-horizontal margin-top" method="POST" action="{{ route('login') }}">
                         {{ csrf_field() }}
 
@@ -61,6 +64,8 @@
                             </div>
                         </div>
                     </form>
+
+                    @action('login_form.after')
                 </div>
             </div>
         </div>

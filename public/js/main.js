@@ -532,11 +532,7 @@ function fsAjax(data, url, success_callback, no_loader, error_callback)
 	if (typeof(error_callback) == "undefined" || !error_callback) {
 		error_callback = function() {
 			showFloatingAlert('error', Lang.get("messages.ajax_error"));
-			loaderHide();
-			// Buttons
-			$(".btn[data-loading-text!='']:disabled").button('reset');
-			// Links
-			$(".btn.disabled[data-loading-text!='']").button('reset');
+			ajaxFinish();
 		};
 	}
 
@@ -614,7 +610,7 @@ function fsFloatingAlertsInit()
 	}
 }
 
-function showFloatingAlert(type, msg)
+function showFloatingAlert(type, msg, no_autohide)
 {
 	var icon = 'ok';
 	var alert_class = 'success';
@@ -622,6 +618,10 @@ function showFloatingAlert(type, msg)
 	if (type == 'error') {
 		icon = 'exclamation-sign';
 		alert_class = 'danger';
+	}
+
+	if (typeof(no_autohide) != "undefined") {
+		alert_class += ' alert-noautohide ';
 	}
 
 	var html = '<div class="alert alert-'+alert_class+' alert-floating">'+
@@ -1517,7 +1517,7 @@ function triggerModal(a, params)
 }
 
 // Show floating error message on ajax error
-function showAjaxError(response)
+function showAjaxError(response, no_autohide)
 {
 	var msg = '';
 
@@ -1528,9 +1528,9 @@ function showAjaxError(response)
 		msg = response.message;
 	}
 	if (msg) {
-		showFloatingAlert('error', response.msg);
+		showFloatingAlert('error', response.msg, no_autohide);
 	} else {
-		showFloatingAlert('error', Lang.get("messages.error_occured"));
+		showFloatingAlert('error', Lang.get("messages.error_occured"), no_autohide);
 	}
 }
 
@@ -2154,6 +2154,7 @@ function initSystemStatus()
 	}
 
 	$('.update-trigger').click(function(e) {
+
 		var button = $(this);
 		showModalConfirm('<span class="text-danger"><i class="glyphicon glyphicon-exclamation-sign"></i> '+Lang.get("messages.confirm_update")+'</span>', 'confirm-update', {
 			on_show: function(modal) {
@@ -2173,10 +2174,14 @@ function initSystemStatus()
 								showAjaxResult(response);
 								window.location.href = '';
 							} else {
-								showAjaxError(response);
+								showAjaxError({msg: htmlDecode(Lang.get("messages.error_occured_updating"))}, true);
 								button.button('reset');
 							}
-						}, true
+						}, true,
+						function() {
+							showFloatingAlert('error', htmlDecode(Lang.get("messages.error_occured_updating")), true);
+							ajaxFinish();
+						}
 					);
 				});
 			}
@@ -2208,6 +2213,16 @@ function initSystemStatus()
 		);
 		e.preventDefault();
 	});
+}
+
+// Finishe ajax request by hiding loader, etc.
+function ajaxFinish()
+{
+	loaderHide();
+	// Buttons
+	$(".btn[data-loading-text!='']:disabled").button('reset');
+	// Links
+	$(".btn.disabled[data-loading-text!='']").button('reset');
 }
 
 // Called from polycast

@@ -272,12 +272,14 @@ class SystemController extends Controller
             case 'update':
                 try {
                     $status = \Updater::update();
+                    
                     // Artisan::output()
                 } catch (\Exception $e) {
-                    $response['msg'] = __('Error occured').': '.$e->getMessage();
+                    $response['msg'] = __('Error occured. Please try again or try another :%a_start%update method:%a_end%', ['%a_start%' => '<a href="'.config('app.freescout_url').'/docs/update/" target="_blank">', '%a_end%' => '</a>']);
+                    $response['msg'] .= '<br/><br/>'.$e->getMessage();
                 }
                 if (!$response['msg'] && $status) {
-                    // Adding session flash is useless as cache is cleated
+                    // Adding session flash is useless as cache is cleared
                     $response['msg_success'] = __('Application successfully updated');
                     $response['status'] = 'success';
                 }

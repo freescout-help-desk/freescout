@@ -15,6 +15,10 @@
 
 <div class="container">
 
+    {{-- By some reason sometimes after clearing the cache, System page shows without menu --}} 
+    {{-- because somehow Auth::user() returns nothing --}}
+    <!-- {{ Auth::user()->id }} -->
+
     <h3 id="app">{{ __('Info') }}</h3>
 
     <table class="table table-dark-header table-bordered table-responsive">
