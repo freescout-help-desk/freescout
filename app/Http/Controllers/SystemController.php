@@ -150,9 +150,10 @@ class SystemController extends Controller
             }
 
             // If queue:work is not running, clear cache to let it start if something is wrong with the mutex
-            if ($command_name == 'queue:work' && !$last_successful_run && function_exists('shell_exec')) {
-                $status_texts[] = __('Cleared cache to force command to start.');
-                \Artisan::call('freescout:clear-cache');
+            if ($command_name == 'queue:work' && !$last_successful_run) {
+                $status_texts[] = __('Try to :%a_start%clear cache:%a_end% to force command to start.', ['%a_start%' => '<a href="'.route('system.tools').'" target="_blank">', '%a_end%' => '</a>']);
+                // This sometimes makes Status page open as non logged in user.
+                //\Artisan::call('freescout:clear-cache', ['--doNotGenerateVars' => true]);
             }
 
             $commands[] = [

@@ -268,9 +268,9 @@
     @php
         } catch (\Exception $e) {
             // To prevent 500 errors on update.
-            // Afte some time this can be remove
+            // After some time this can be removed.
             if (strstr($e->getMessage(), 'vars.js')) {
-                \Helper::clearCache();
+                \Artisan::call('freescout:generate-vars');
             }
         }
     @endphp

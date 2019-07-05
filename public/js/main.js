@@ -425,6 +425,75 @@ function mailboxConnectionIncomingInit()
 				true
 			);
 		});
+
+		$('#retrieve-imap-folders').click(function(e) {
+	    	var button = $(this);
+	    	button.button('loading');
+	    	fsAjax(
+				{
+					action: 'imap_folders',
+					mailbox_id: getGlobalAttr('mailbox_id')
+				}, 
+				laroute.route('mailboxes.ajax'),
+				function(response) {
+
+					var select = $('#in_imap_folders');
+
+					var options_html = '';
+					if (typeof(response.folders) != "undefined" && response.folders.length) {
+						for (i in response.folders) {
+							var imap_folder = response.folders[i];
+							if (select.find("option[value='"+imap_folder+"']").length) {
+								continue;
+							}
+							options_html += '<option value="'+imap_folder+'" selected="selected">'+imap_folder+'</option>'
+						};
+					}
+
+					// Add retrieved folders to the list
+					if (options_html) {
+						select.append(options_html)
+							.select2()
+							.trigger('change');
+					}
+
+					showAjaxResult(response);
+					
+					button.button('reset');
+				}, 
+				true
+			);
+			e.preventDefault();
+		});
+
+		$("#in_imap_folders").select2({
+			//containerCssClass: "select2-multi-container", // select2-with-loader
+     		dropdownCssClass: "select2-multi-dropdown",
+			//dropdownParent: $('.modal-dialog:visible:first'),
+			multiple: true,
+			//maximumSelectionLength: 1,
+			//placeholder: input.attr('placeholder'),
+			minimumInputLength: 1,
+			tags: true,
+			createTag: function (params) {
+			    return {
+					id: params.term,
+					text: params.term,
+					newOption: true
+			    }
+			},
+			templateResult: function (data) {
+			    var $result = $("<span></span>");
+
+			    $result.text(data.text);
+
+			    if (data.newOption) {
+			     	$result.append(" <em>("+Lang.get("messages.add_lower")+")</em>");
+			    }
+
+			    return $result;
+			},
+		});
 	});
 }
 

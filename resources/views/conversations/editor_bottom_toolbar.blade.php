@@ -7,17 +7,21 @@
         @endif
     </div>
 	<span class="editor-btm-text">{{ __('Status') }}:</span> 
-    {{-- Note keeps status. Note never changes Assignee --}}
-	<select name="status" class="form-control" data-parsley-exclude="true" data-reply-status="{{ $mailbox->ticket_status }}" data-note-status="{{ $mailbox->ticket_status }}">
+    {{-- Note keeps status--}}
+	<select name="status" class="form-control" data-parsley-exclude="true" data-reply-status="{{ $mailbox->ticket_status }}" data-note-status="{{ $conversation->status }}">
         <option value="{{ App\Mailbox::TICKET_STATUS_ACTIVE }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_ACTIVE)selected="selected"@endif>{{ __('Active') }}</option>
         <option value="{{ App\Mailbox::TICKET_STATUS_PENDING }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_PENDING)selected="selected"@endif>{{ __('Pending') }}</option>
         <option value="{{ App\Mailbox::TICKET_STATUS_CLOSED }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_CLOSED)selected="selected"@endif>{{ __('Closed') }}</option>
     </select> 
     <small class="note-bottom-div"></small> 
     <span class="editor-btm-text">{{ __('Assign to') }}:</span> 
+    {{-- Note never changes Assignee --}}
     <select name="user_id" class="form-control" data-parsley-exclude="true">
         <option value="-1" @if ($mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_ANYONE)data-default="true" selected="selected"@endif>{{ __('Anyone') }}</option>
-    	<option value="{{ Auth::user()->id }}" @if (($conversation->user_id == Auth::user()->id && !$mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_ANYONE) || (!$conversation->user_id && $mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_REPLYING_UNASSIGNED) || $mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_REPLYING)data-default="true" selected="selected"@endif>{{ __('Me') }}</option>
+    	<option value="{{ Auth::user()->id }}" @if (
+            ($conversation->user_id == Auth::user()->id && $mailbox->ticket_assignee != App\Mailbox::TICKET_ASSIGNEE_ANYONE) 
+            || (!$conversation->user_id && $mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_REPLYING_UNASSIGNED) 
+            || $mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_REPLYING)data-default="true" selected="selected"@endif>{{ __('Me') }}</option>
         @foreach ($mailbox->usersHavingAccess() as $user)
             @if ($user->id != Auth::user()->id)
             	<option value="{{ $user->id }}" @if ($conversation->user_id == $user->id && !in_array($mailbox->ticket_assignee, [ App\Mailbox::TICKET_ASSIGNEE_REPLYING, App\Mailbox::TICKET_ASSIGNEE_ANYONE]))data-default="true" selected="selected"@endif>{{ $user->getFullName() }}</option>

@@ -15,10 +15,6 @@
 
 <div class="container">
 
-    {{-- By some reason sometimes after clearing the cache, System page shows without menu --}} 
-    {{-- because somehow Auth::user() returns nothing --}}
-    <!-- {{ Auth::user()->id }} -->
-
     <h3 id="app">{{ __('Info') }}</h3>
 
     <table class="table table-dark-header table-bordered table-responsive">
@@ -146,7 +142,7 @@
                 <tr>
                     <th>{{ $command['name'] }}</th>
                     <td class="table-main-col">
-                        <strong class="text-@if ($command['status'] == "success"){{ 'success' }}@else{{ 'danger' }}@endif">{{ $command['status_text'] }}</strong>
+                        <strong class="text-@if ($command['status'] == "success"){{ 'success' }}@else{{ 'danger' }}@endif">{!! $command['status_text'] !!}</strong>
                         @if ($command['name'] == 'freescout:fetch-emails' && $command['status'] != "success")
                             (<a href="{{ route('logs', ['name' => 'fetch_errors']) }}">{{ __('See logs') }}</a>)
                         @endif

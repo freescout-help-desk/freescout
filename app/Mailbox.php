@@ -577,4 +577,22 @@ class Mailbox extends Model
 
         return parent::fill($attributes);
     }
+
+    /**
+     * Set phones as JSON.
+     *
+     * @param array $phones_array
+     */
+    public function setInImapFolders(array $in_imap_folders)
+    {
+        $this->in_imap_folders = json_encode($in_imap_folders);
+    }
+
+    /**
+     * Get list of imap folders.
+     */
+    public function getInImapFolders()
+    {
+        return \Helper::jsonToArray($this->in_imap_folders);
+    }
 }

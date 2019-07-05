@@ -98,45 +98,49 @@ class FetchEmails extends Command
 
     public function fetch($mailbox)
     {
-        $client = new Client([
-            'host'          => $mailbox->in_server,
-            'port'          => $mailbox->in_port,
-            'encryption'    => $mailbox->getInEncryptionName(),
-            'validate_cert' => $mailbox->in_validate_cert,
-            'username'      => $mailbox->in_username,
-            'password'      => $mailbox->in_password,
-            'protocol'      => $mailbox->getInProtocolName(),
-        ]);
+        $client = \MailHelper::getMailboxClient($mailbox);
 
         // Connect to the Server
         $client->connect();
 
-        // Get folder
+        // Get INBOX folder
+        $folders = [];
         $folder = $client->getFolder('INBOX');
 
         if (!$folder) {
             throw new \Exception('Could not get mailbox folder: INBOX', 1);
         }
-        $folders = [$folder];
+        $folders[] = $folder;
 
-        // It would be good to be able to fetch emails from Spam folder into Spam folder of the mailbox
-        // But not all mail servers provide access to it.
-        // For example DreamHost does have a Spam folder but allows IMAP access to the following folders only:
-        //      ./cur
-        //      ./new
-        //      ./tmp
+        // Fetch emails from custom IMAP folders.
+        if ($mailbox->in_protocol == Mailbox::IN_PROTOCOL_IMAP) {
+            $imap_folders = $mailbox->getInImapFolders();
 
-        // $folders = [];
+            foreach ($imap_folders as $folder_name) {
+                try {
+                    $folder = $client->getFolder($folder_name);
+                } catch (\Exception $e) {
+                    // Just log error and continue.
+                    $this->error('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$folder_name);
+                }
 
-        // if ($mailbox->in_protocol == Mailbox::IN_PROTOCOL_IMAP) {
-        //     try {
-        //         //$folders = $client->getFolders();
-        //     } catch (\Exception $e) {
-        //         // Do nothing
-        //     }
-        // }
+                if ($folder) {
+                    $folders[] = $folder;
+                }
+            }
+            // try {
+            //     //$folders = $client->getFolders();
+            // } catch (\Exception $e) {
+            //     // Do nothing
+            // }
+        }
         // if (!count($folders)) {
-        //     $folders = [$client->getFolder('INBOX')];
+        //     $folder = $client->getFolder('INBOX');
+
+        //     if (!$folder) {
+        //         throw new \Exception('Could not get mailbox folder: INBOX', 1);
+        //     }
+        //     $folders = [$folder];
         // }
 
         foreach ($folders as $folder) {

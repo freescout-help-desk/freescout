@@ -57,6 +57,7 @@ class Mail
 
         // Email service providers specific separators.
         '<div class="gmail_quote">', // Gmail
+        '<div name="quote" ',
         'yahoo_quoted_', // Yahoo, full: <div id=3D"ydp6h4f5c59yahoo_quoted_2937493705"
         '------------------ 原始邮件 ------------------', // QQ
         '------------------ Original ------------------', // QQ English
@@ -479,5 +480,21 @@ class Mail
         }
 
         return $value;
+    }
+
+    /**
+     * Get client for fetching emails.
+     */
+    public static function getMailboxClient($mailbox)
+    {
+        return new \Webklex\IMAP\Client([
+            'host'          => $mailbox->in_server,
+            'port'          => $mailbox->in_port,
+            'encryption'    => $mailbox->getInEncryptionName(),
+            'validate_cert' => $mailbox->in_validate_cert,
+            'username'      => $mailbox->in_username,
+            'password'      => $mailbox->in_password,
+            'protocol'      => $mailbox->getInProtocolName(),
+        ]);
     }
 }
