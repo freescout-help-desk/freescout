@@ -481,4 +481,20 @@ class Mail
 
         return $value;
     }
+
+    /**
+     * Get client for fetching emails.
+     */
+    public static function getMailboxClient($mailbox)
+    {
+        return new \Webklex\IMAP\Client([
+            'host'          => $mailbox->in_server,
+            'port'          => $mailbox->in_port,
+            'encryption'    => $mailbox->getInEncryptionName(),
+            'validate_cert' => $mailbox->in_validate_cert,
+            'username'      => $mailbox->in_username,
+            'password'      => $mailbox->in_password,
+            'protocol'      => $mailbox->getInProtocolName(),
+        ]);
+    }
 }

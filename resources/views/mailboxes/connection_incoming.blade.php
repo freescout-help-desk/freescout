@@ -107,6 +107,23 @@
                         </div>
                     </div>
 
+                    <div class="form-group{{ $errors->has('in_server') ? ' has-error' : '' }}">
+                        <label for="in_imap_folders" class="col-sm-2 control-label">{{ __('IMAP Folders') }}</label>
+
+                        <div class="col-sm-6 flexy">
+                            <select id="in_imap_folders" class="form-control input-sized" name="in_imap_folders[]" multiple>
+                                <option value="INBOX" selected="selected">INBOX</option>
+                                @foreach ($mailbox->getInImapFolders() as $imap_folder)
+                                    <option value="{{ $imap_folder }}" selected="selected">{{ $imap_folder }}</option>
+                                @endforeach
+                            </select>
+
+                            <a href="#" class="btn btn-link btn-sm" data-toggle="tooltip" title="{{ __('Retrieve a list of available IMAP folders from the server') }}" style="margin-top: 3px" id="retrieve-imap-folders" data-loading-text="{{ __('Retrieving') }}…">{{ __('Get folders') }}</a>
+
+                            @include('partials/field_error', ['field'=>'in_imap_folders'])
+                        </div>
+                    </div>
+
                     <div class="form-group{{ $errors->has('in_validate_cert') ? ' has-error' : '' }}">
                         <label for="in_validate_cert" class="col-sm-2 control-label">{{ __('Validate Certificate') }}</label>
 

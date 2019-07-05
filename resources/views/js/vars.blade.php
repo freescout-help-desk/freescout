@@ -65,6 +65,7 @@ var LangMessages = {
             "confirm_update": "{{ __("Please backup application files and database before you continue.") }}",
             "remove_format": "{{ __("Remove Formatting") }}",
             "list": "{{ __("List") }}",
+            "add_lower": "{{ __("add") }}",
 
             "update": "{{ __("Update") }}"
         }@if (!$loop->last),@endif
