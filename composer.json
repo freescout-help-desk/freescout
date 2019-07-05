@@ -100,6 +100,7 @@
         "exclude-from-classmap": [
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
             "vendor/webklex/laravel-imap/src/IMAP/Message.php",
+            "vendor/webklex/laravel-imap/src/IMAP/Client.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/PermissionsChecker.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/EnvironmentManager.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/FinalInstallManager.php",
