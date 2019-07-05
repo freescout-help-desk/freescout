@@ -57,6 +57,7 @@ class Mail
 
         // Email service providers specific separators.
         '<div class="gmail_quote">', // Gmail
+        '<div name="quote" ',
         'yahoo_quoted_', // Yahoo, full: <div id=3D"ydp6h4f5c59yahoo_quoted_2937493705"
         '------------------ 原始邮件 ------------------', // QQ
         '------------------ Original ------------------', // QQ English
