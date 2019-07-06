@@ -149,7 +149,7 @@ class FetchEmails extends Command
             // Get unseen messages for a period
             $messages = $folder->query()->unseen()->since(now()->subDays($this->option('days')))->leaveUnread()->get();
 
-            if ($client->getLastError()) {
+            if ($client->getLastError() && !$messages) {
                 // Throw exception for INBOX only
                 if ($folder->name == 'INBOX') {
                     throw new \Exception($client->getLastError(), 1);
