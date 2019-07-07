@@ -149,7 +149,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group{{ $errors->has('enable_kb_shortcuts') ? ' has-error' : '' }}">
+                    <div class="form-group{{ $errors->has('enable_kb_shortcuts') ? ' has-error' : '' }} hidden">
                         <label for="enable_kb_shortcuts" class="col-sm-2 control-label">{{ __('Keyboard Shortcuts') }} (todo)</label>
 
                         <div class="col-sm-6">
