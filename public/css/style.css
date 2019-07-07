@@ -871,6 +871,7 @@ a h4 {
 .note-btn.btn-sm {
     font-size: 14px;
     line-height: 18px;
+    height: 30px;
 }
 .note-actions {
     float: right;
