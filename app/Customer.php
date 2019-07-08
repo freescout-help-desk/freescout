@@ -444,6 +444,14 @@ class Customer extends Model
     }
 
     /**
+     * Get customer emails.
+     */
+    public function emails_cached()
+    {
+        return $this->hasMany('App\Email')->rememberForever();
+    }
+
+    /**
      * Get customer conversations.
      */
     public function conversations()
@@ -456,7 +464,7 @@ class Customer extends Model
      */
     public function getMainEmail()
     {
-        return optional($this->emails()->first())->email;
+        return optional($this->emails_cached()->first())->email;
     }
 
     /**

@@ -348,7 +348,7 @@ class Mailbox extends Model
     {
         $admins = User::where('role', User::ROLE_ADMIN)->select($fields)->remember(\App\Misc\Helper::cacheTime($cache))->get();
 
-        $users = $this->users()->select($fields)->get()->merge($admins)->unique();
+        $users = $this->users()->select($fields)->rememberForever()->get()->merge($admins)->unique();
 
         // Exclude deleted users (better to do it in PHP).
         foreach ($users as $i => $user) {

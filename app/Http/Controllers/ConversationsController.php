@@ -44,7 +44,7 @@ class ConversationsController extends Controller
         $this->authorize('view', $conversation);
 
         $mailbox = $conversation->mailbox;
-        $customer = $conversation->customer;
+        $customer = $conversation->customer_cached;
         $user = auth()->user();
 
         // Mark notifications as read

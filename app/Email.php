@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Watson\Rememberable\Rememberable;
 
 class Email extends Model
 {
+    use Rememberable;
+
     /**
      * Email types.
      */
