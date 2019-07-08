@@ -86,8 +86,13 @@ class Mail
             if ($mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
                 \Config::set('mail.host', $mailbox->out_server);
                 \Config::set('mail.port', $mailbox->out_port);
-                \Config::set('mail.username', $mailbox->out_username);
-                \Config::set('mail.password', $mailbox->out_password);
+                if (!$mailbox->out_username) {
+                    \Config::set('mail.username', null);
+                    \Config::set('mail.password', null);
+                } else {
+                    \Config::set('mail.username', $mailbox->out_username);
+                    \Config::set('mail.password', $mailbox->out_password);
+                }
                 \Config::set('mail.encryption', $mailbox->getOutEncryptionName());
             }
         } else {
@@ -116,8 +121,13 @@ class Mail
         if (\Config::get('mail.driver') == self::MAIL_DRIVER_SMTP) {
             \Config::set('mail.host', Option::get('mail_host'));
             \Config::set('mail.port', Option::get('mail_port'));
-            \Config::set('mail.username', Option::get('mail_username'));
-            \Config::set('mail.password', Option::get('mail_password'));
+            if (!Option::get('mail_username')) {
+                \Config::set('mail.username', null);
+                \Config::set('mail.password', null);
+            } else {
+                \Config::set('mail.username', Option::get('mail_username'));
+                \Config::set('mail.password', Option::get('mail_password'));
+            }
             \Config::set('mail.encryption', Option::get('mail_encryption'));
         }
 
