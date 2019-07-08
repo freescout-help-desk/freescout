@@ -22,6 +22,18 @@
                 <form class="form-horizontal margin-top" method="POST" action="" enctype="multipart/form-data">
                     {{ csrf_field() }}
 
+                    @if ($user->invite_state == App\User::INVITE_STATE_SENT || $user->invite_state == App\User::INVITE_STATE_NOT_INVITED)
+                        <div class="form-group{{ $errors->has('first_name') ? ' has-error' : '' }}">
+                            <label for="first_name" class="col-sm-2 control-label">{{ __('Status') }}</label>
+
+                            <div class="col-sm-6">
+                                <label class="control-label text-help">
+                                    <i class="glyphicon @if ($user->invite_state == App\User::INVITE_STATE_SENT) glyphicon-hourglass @else glyphicon-remove @endif"></i> {{ $user->getInviteStateName() }}
+                                </label>
+                            </div>
+                        </div>
+                    @endif
+
                     @if (auth()->user()->isAdmin())
                         <div class="form-group{{ $errors->has('role') ? ' has-error' : '' }}">
                             <label for="role" class="col-sm-2 control-label">{{ __('Role') }}</label>

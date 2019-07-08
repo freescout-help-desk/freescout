@@ -73,6 +73,11 @@ body.user-is-guest {
     line-height: 24.4px;
     margin: 16px 20px 6px;
 }
+.sidebar-title .dropdown-menu .glyphicon {
+    color: inherit;
+    left: 0;
+    left: 1px;
+}
 .sidebar-title .dropdown-toggle {
     cursor: pointer;
 }
