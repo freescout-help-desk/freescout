@@ -280,7 +280,7 @@ class SettingsController extends Controller
 
         // Clear cache if some options have been saved to .env file.
         if ($cc_required) {
-            \Helper::clearCache();
+            \Helper::clearCache(['--doNotGenerateVars' => true]);
         }
 
         \Session::flash('flash_success_floating', __('Settings updated'));
