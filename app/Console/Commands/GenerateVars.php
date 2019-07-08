@@ -54,7 +54,11 @@ class GenerateVars extends Command
             $content = view('js/vars', $params)->render();
 
             //$filesystem->put($file_path, $content);
-            \Storage::put('js/vars.js', $content);
+            // Save vars only if content changed
+            $old_content = \Storage::get('js/vars.js');
+            if ($content != $old_content) {
+                \Storage::put('js/vars.js', $content);
+            }
 
             $this->info("Created: ".substr($file_path, strlen(base_path())+1));
         } catch (\Exception $e) {
