@@ -219,6 +219,14 @@ class Conversation extends Model
     }
 
     /**
+     * Cached customer.
+     */
+    public function customer_cached()
+    {
+        return $this->customer()->rememberForever();
+    }
+
+    /**
      * Get conversation threads.
      */
     public function threads()
@@ -895,7 +903,7 @@ class Conversation extends Model
         $data = [
             'mailbox'      => $this->mailbox,
             'conversation' => $this,
-            'customer'     => $this->customer,
+            'customer'     => $this->customer_cached,
             'user'         => $user,
         ];
 

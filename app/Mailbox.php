@@ -333,7 +333,7 @@ class Mailbox extends Model
     public function isOutActive()
     {
         if ($this->out_method != self::OUT_METHOD_PHP_MAIL && $this->out_method != self::OUT_METHOD_SENDMAIL
-            && (!$this->out_server || !$this->out_username || !$this->out_password)
+            && (!$this->out_server /*|| !$this->out_username || !$this->out_password*/)
         ) {
             return false;
         } else {
@@ -348,7 +348,7 @@ class Mailbox extends Model
     {
         $admins = User::where('role', User::ROLE_ADMIN)->select($fields)->remember(\App\Misc\Helper::cacheTime($cache))->get();
 
-        $users = $this->users()->select($fields)->get()->merge($admins)->unique();
+        $users = $this->users()->select($fields)->rememberForever()->get()->merge($admins)->unique();
 
         // Exclude deleted users (better to do it in PHP).
         foreach ($users as $i => $user) {

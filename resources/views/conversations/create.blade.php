@@ -54,6 +54,18 @@
                             <input type="hidden" name="thread_id" value="{{ $thread->id }}"/>
                             <input type="hidden" name="is_create" value="1"/>
                             
+                            @if ($conversation->created_by_user_id)
+                                <div class="form-group">
+                                    <label for="to" class="col-sm-2 control-label">{{ __('Author') }}</label>
+
+                                    <div class="col-sm-9">
+                                        <label class="control-label text-help">
+                                            <i class="glyphicon glyphicon-user"></i> {{ $conversation->created_by_user->getFullName() }}
+                                        </label>
+                                    </div>
+                                </div>
+                            @endif
+
                             <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }}">
                                 <label for="to" class="col-sm-2 control-label">{{ __('To') }}</label>
 

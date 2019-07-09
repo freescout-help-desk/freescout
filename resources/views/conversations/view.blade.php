@@ -281,7 +281,7 @@
                                     <div class="thread-person">
                                         <strong>
                                             @if ($thread->type == App\Thread::TYPE_CUSTOMER)
-                                                <a href="{{ $thread->customer->url() }}">{{ $thread->customer->getFullName(true) }}</a>
+                                                <a href="{{ $thread->customer_cached->url() }}">{{ $thread->customer_cached->getFullName(true) }}</a>
                                             @else
                                                 @include('conversations/thread_by', ['as_link' => true])
                                             @endif

@@ -149,12 +149,20 @@ class FetchEmails extends Command
             // Get unseen messages for a period
             $messages = $folder->query()->unseen()->since(now()->subDays($this->option('days')))->leaveUnread()->get();
 
-            if ($client->getLastError()) {
+            $last_error = $client->getLastError();
+
+            if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
+                // Solution for MS mailboxes.
+                // https://github.com/freescout-helpdesk/freescout/issues/176
+                $messages = $folder->query()->unseen()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null)->get();
+            }
+
+            if ($last_error && !\Str::startsWith($last_error, 'Mailbox is empty')) {
                 // Throw exception for INBOX only
-                if ($folder->name == 'INBOX') {
-                    throw new \Exception($client->getLastError(), 1);
+                if ($folder->name == 'INBOX' && !$messages) {
+                    throw new \Exception($last_error, 1);
                 } else {
-                    $this->error('['.date('Y-m-d H:i:s').'] '.$client->getLastError());
+                    $this->error('['.date('Y-m-d H:i:s').'] '.$last_error);
                 }
             }
 

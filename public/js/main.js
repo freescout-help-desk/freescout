@@ -372,7 +372,7 @@ function mailboxConnectionInit(out_method_smtp)
 			$('#out_method_'+method+'_options').removeClass('hidden');
 
 			if (parseInt(method) == parseInt(out_method_smtp)) {
-				$('#out_method_'+out_method_smtp+'_options :input').attr('required', 'required');
+				$('#out_method_'+out_method_smtp+'_options :input[data-smtp-required="true"]').attr('required', 'required');
 			} else {
 				$('#out_method_'+out_method_smtp+'_options :input').removeAttr('required');
 			}
@@ -416,9 +416,9 @@ function mailboxConnectionIncomingInit()
 				laroute.route('mailboxes.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
-						showFloatingAlert('success', Lang.get("messages.connection_established"));
+						showFloatingAlert('success', Lang.get("messages.connection_established"), true);
 					} else {
-						showAjaxError(response);
+						showAjaxError(response, true);
 					}
 					button.button('reset');
 				}, 

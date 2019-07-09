@@ -812,9 +812,9 @@ class Helper
      *
      * @return [type] [description]
      */
-    public static function clearCache()
+    public static function clearCache($options = [])
     {
-        \Artisan::call('freescout:clear-cache');
+        \Artisan::call('freescout:clear-cache', $options);
     }
 
     /**

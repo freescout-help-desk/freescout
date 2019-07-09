@@ -71,6 +71,11 @@ class Mail
     ];
 
     /**
+     * md5 of the last applied mail config.
+     */
+    public static $last_mail_config_hash = '';
+
+    /**
      * Configure mail sending parameters.
      *
      * @param App\Mailbox $mailbox
@@ -86,8 +91,13 @@ class Mail
             if ($mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
                 \Config::set('mail.host', $mailbox->out_server);
                 \Config::set('mail.port', $mailbox->out_port);
-                \Config::set('mail.username', $mailbox->out_username);
-                \Config::set('mail.password', $mailbox->out_password);
+                if (!$mailbox->out_username) {
+                    \Config::set('mail.username', null);
+                    \Config::set('mail.password', null);
+                } else {
+                    \Config::set('mail.username', $mailbox->out_username);
+                    \Config::set('mail.password', $mailbox->out_password);
+                }
                 \Config::set('mail.encryption', $mailbox->getOutEncryptionName());
             }
         } else {
@@ -96,7 +106,33 @@ class Mail
             \Config::set('mail.from', ['address' => self::getSystemMailFrom(), 'name' => '']);
         }
 
+        self::reapplyMailConfig();
+    }
+
+    /**
+     * Reapply new mail config.
+     */
+    public static function reapplyMailConfig()
+    {
+        // Check hash to avoid recreating MailServiceProvider.
+        $mail_config_hash = md5(json_encode(\Config::get('mail')));
+
+        if (self::$last_mail_config_hash != $mail_config_hash) {
+            self::$last_mail_config_hash = $mail_config_hash;
+        } else {
+            return false;
+        }
+
+        // Without doing this, Swift mailer uses old config values
+        // if there were emails sent with previous config.
+        \App::forgetInstance('mailer');
+        \App::forgetInstance('swift.mailer');
+        \App::forgetInstance('swift.transport');
+
         (new \Illuminate\Mail\MailServiceProvider(app()))->register();
+        // We have to update Mailer facade manually, as it does not happen automatically
+        // and previous instance of app('mailer') is used.
+        \Mail::swap(app('mailer'));
     }
 
     /**
@@ -116,12 +152,17 @@ class Mail
         if (\Config::get('mail.driver') == self::MAIL_DRIVER_SMTP) {
             \Config::set('mail.host', Option::get('mail_host'));
             \Config::set('mail.port', Option::get('mail_port'));
-            \Config::set('mail.username', Option::get('mail_username'));
-            \Config::set('mail.password', Option::get('mail_password'));
+            if (!Option::get('mail_username')) {
+                \Config::set('mail.username', null);
+                \Config::set('mail.password', null);
+            } else {
+                \Config::set('mail.username', Option::get('mail_username'));
+                \Config::set('mail.password', Option::get('mail_password'));
+            }
             \Config::set('mail.encryption', Option::get('mail_encryption'));
         }
 
-        (new \Illuminate\Mail\MailServiceProvider(app()))->register();
+        self::reapplyMailConfig();
     }
 
     /**
