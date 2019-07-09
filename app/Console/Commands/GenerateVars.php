@@ -55,8 +55,12 @@ class GenerateVars extends Command
 
             //$filesystem->put($file_path, $content);
             // Save vars only if content changed
-            $old_content = \Storage::get('js/vars.js');
-            if ($content != $old_content) {
+            if (\Storage::exists('js/vars.js')) {
+                $old_content = \Storage::get('js/vars.js');
+                if ($content != $old_content) {
+                    \Storage::put('js/vars.js', $content);
+                }
+            } else {
                 \Storage::put('js/vars.js', $content);
             }
 
