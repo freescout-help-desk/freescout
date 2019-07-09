@@ -150,6 +150,13 @@ class FetchEmails extends Command
             $messages = $folder->query()->unseen()->since(now()->subDays($this->option('days')))->leaveUnread()->get();
 
             $last_error = $client->getLastError();
+
+            if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
+                // Solution for MS mailboxes.
+                // https://github.com/freescout-helpdesk/freescout/issues/176
+                $messages = $folder->query()->unseen()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null)->get();
+            }
+
             if ($last_error && !\Str::startsWith($last_error, 'Mailbox is empty')) {
                 // Throw exception for INBOX only
                 if ($folder->name == 'INBOX' && !$messages) {

@@ -416,9 +416,9 @@ function mailboxConnectionIncomingInit()
 				laroute.route('mailboxes.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
-						showFloatingAlert('success', Lang.get("messages.connection_established"));
+						showFloatingAlert('success', Lang.get("messages.connection_established"), true);
 					} else {
-						showAjaxError(response);
+						showAjaxError(response, true);
 					}
 					button.button('reset');
 				}, 
