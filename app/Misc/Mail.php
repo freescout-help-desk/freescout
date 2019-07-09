@@ -71,6 +71,11 @@ class Mail
     ];
 
     /**
+     * md5 of the last applied mail config.
+     */
+    public static $last_mail_config_hash = '';
+
+    /**
      * Configure mail sending parameters.
      *
      * @param App\Mailbox $mailbox
@@ -101,7 +106,33 @@ class Mail
             \Config::set('mail.from', ['address' => self::getSystemMailFrom(), 'name' => '']);
         }
 
+        self::reapplyMailConfig();
+    }
+
+    /**
+     * Reapply new mail config.
+     */
+    public static function reapplyMailConfig()
+    {
+        // Check hash to avoid recreating MailServiceProvider.
+        $mail_config_hash = md5(json_encode(\Config::get('mail')));
+
+        if (self::$last_mail_config_hash != $mail_config_hash) {
+            self::$last_mail_config_hash = $mail_config_hash;
+        } else {
+            return false;
+        }
+
+        // Without doing this, Swift mailer uses old config values
+        // if there were emails sent with previous config.
+        \App::forgetInstance('mailer');
+        \App::forgetInstance('swift.mailer');
+        \App::forgetInstance('swift.transport');
+
         (new \Illuminate\Mail\MailServiceProvider(app()))->register();
+        // We have to update Mailer facade manually, as it does not happen automatically
+        // and previous instance of app('mailer') is used.
+        \Mail::swap(app('mailer'));
     }
 
     /**
@@ -131,7 +162,7 @@ class Mail
             \Config::set('mail.encryption', Option::get('mail_encryption'));
         }
 
-        (new \Illuminate\Mail\MailServiceProvider(app()))->register();
+        self::reapplyMailConfig();
     }
 
     /**
