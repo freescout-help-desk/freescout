@@ -3058,7 +3058,7 @@ return array(
     'Watson\\Rememberable\\Query\\Builder' => $vendorDir . '/watson/rememberable/src/Query/Builder.php',
     'Watson\\Rememberable\\Rememberable' => $vendorDir . '/watson/rememberable/src/Rememberable.php',
     'Webklex\\IMAP\\Attachment' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Attachment.php',
-    'Webklex\\IMAP\\Client' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Client.php',
+    'Webklex\\IMAP\\Client' => $baseDir . '/overrides/Webklex/IMAP/Client.php',
     'Webklex\\IMAP\\ClientManager' => $vendorDir . '/webklex/laravel-imap/src/IMAP/ClientManager.php',
     'Webklex\\IMAP\\EncodingAliases' => $vendorDir . '/webklex/laravel-imap/src/IMAP/EncodingAliases.php',
     'Webklex\\IMAP\\Exceptions\\ConnectionFailedException' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Exceptions/ConnectionFailedException.php',
