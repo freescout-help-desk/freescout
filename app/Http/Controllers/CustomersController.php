@@ -236,10 +236,7 @@ class CustomersController extends Controller
             ->paginate(20);
 
         foreach ($customers as $customer) {
-            $text = $customer->email;
-            if ($customer->getFullName()) {
-                $text .= ' ('.$customer->getFullName().')';
-            }
+            $text = $customer->getEmailAndName();
             if (!empty($request->use_id)) {
                 $id = $customer->id;
             } else {

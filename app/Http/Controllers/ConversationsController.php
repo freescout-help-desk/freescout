@@ -1082,7 +1082,7 @@ class ConversationsController extends Controller
 
             // Conversations navigation
             case 'conversations_pagination':
-                if (!empty($request->filter)) {
+                if (isset($request->filter)) {
                     $response = $this->ajaxConversationsFilter($request, $response, $user);
                 } else {
                     $response = $this->ajaxConversationsPagination($request, $response, $user);
@@ -1671,28 +1671,162 @@ class ConversationsController extends Controller
     public function search(Request $request)
     {
         $user = auth()->user();
+        $conversations = [];
+        $customers = [];
 
-        $conversations = $this->searchQuery($request, $user);
+        $mode = Conversation::SEARCH_MODE_CONV;
+        if (!empty($request->mode) && $request->mode == Conversation::SEARCH_MODE_CUSTOMERS) {
+            $mode = Conversation::SEARCH_MODE_CUSTOMERS;
+        }
+
+        // Search query
+        $q = $this->getSearchQuery($request);
+
+        // Filters.
+        $filters = $this->getSearchFilters($request);
+        $filters_data = [];
+        // Modify filters is needed.
+        if (!empty($filters['customer'])) {
+            // Get customer name.
+            $filters_data['customer'] = Customer::find($filters['customer']);
+        }
+        $filters = \Eventy::filter('search.filters', $filters, $filters_data, $mode, $q);
+
+        // Remember recent query.
+        $recent_search_queries = session('recent_search_queries') ?? [];
+        if ($q && !in_array($q, $recent_search_queries)) {
+            array_unshift($recent_search_queries, $q);
+            $recent_search_queries = array_slice($recent_search_queries, 0, 4);
+            session()->put('recent_search_queries', $recent_search_queries);
+        }
+
+        $conversations = $this->searchQuery($request, $user, $q, $filters);
+        $customers = $this->searchCustomers($request, $user);
 
         // Dummy folder
         $folder = $this->getSearchFolder($conversations);
 
+        // List of available filters.
+        $filters_list = \Eventy::filter('search.filters_list', Conversation::$search_filters, $mode, $filters, $q);
+        //$filters_list_all = \Eventy::filter('search.filters_list_all', array_merge(Conversation::$search_filters, Customer::$search_filters), $filters, $q);
+
+        $mailboxes = \Cache::remember('search_filter_mailboxes_'.$user->id, 5, function () use ($user) {
+            return $user->mailboxesCanView();
+        });
+        $users = \Cache::remember('search_filter_users_'.$user->id, 5, function () use ($user, $mailboxes) {
+            return $user->whichUsersCanView($mailboxes);
+        });
+
         return view('conversations/search', [
             'folder'        => $folder,
             'q'             => $request->q,
+            'filters'       => $filters,
+            'filters_list'  => $filters_list,
+            'filters_data'  => $filters_data,
+            //'filters_list_all'  => $filters_list_all,
+            'mode'          => $mode,
             'conversations' => $conversations,
+            'customers'     => $customers,
+            'recent'        => session('recent_search_queries'),
+            'users'         => $users,
+            'mailboxes'     => $mailboxes,
         ]);
     }
 
-    public function searchQuery($request, $user)
+    /**
+     * Search conversations.
+     */
+    public function searchQuery($request, $user, $q, $filters)
     {
         // Get IDs of mailboxes to which user has access
         $mailbox_ids = $user->mailboxesIdsCanView();
 
         // Filters
-        $filters = $request->f ?? [];
+        //$filters = $request->f ?? [];
 
         // Search query
+        //$q = $this->getSearchQuery($request);
+
+        // Like is case insensitive.
+        $like = '%'.mb_strtolower($q).'%';
+
+        $query_conversations = Conversation::select('conversations.*')
+            // https://github.com/laravel/framework/issues/21242
+            // https://github.com/laravel/framework/pull/27675
+            ->groupby('conversations.id')
+            ->whereIn('conversations.mailbox_id', $mailbox_ids)
+            ->join('threads', function ($join) {
+                $join->on('conversations.id', '=', 'threads.conversation_id');
+            });
+        if ($q) {
+            $query_conversations->where(function ($query) use ($like) {
+                $query->where('conversations.subject', 'like', $like)
+                    ->orWhere('conversations.customer_email', 'like', $like)
+                    ->orWhere('conversations.number', 'like', $like)
+                    ->orWhere('conversations.id', 'like', $like)
+                    ->orWhere('threads.body', 'like', $like)
+                    ->orWhere('threads.from', 'like', $like)
+                    ->orWhere('threads.to', 'like', $like)
+                    ->orWhere('threads.cc', 'like', $like)
+                    ->orWhere('threads.bcc', 'like', $like);
+            });
+        }
+
+        // Apply search filters.
+        if (!empty($filters['assigned'])) {
+            $query_conversations->where('conversations.user_id', $filters['assigned']);
+        }
+        if (!empty($filters['customer'])) {
+            $customer_id = $filters['customer'];
+            $query_conversations->where(function ($query) use ($customer_id) {
+                $query->where('conversations.customer_id', '=', $customer_id)
+                    ->orWhere('threads.created_by_customer_id', '=', $customer_id);
+            });
+        }
+        if (!empty($filters['mailbox'])) {
+            $query_conversations->where('conversations.mailbox_id', '=', $filters['mailbox']);
+        }
+        if (!empty($filters['status'])) {
+            $query_conversations->where('conversations.status', '=', $filters['status']);
+        }
+        if (!empty($filters['subject'])) {
+            $query_conversations->where('conversations.subject', 'like', '%'.mb_strtolower($filters['subject']).'%');
+        }
+        if (!empty($filters['attachments'])) {
+            $has_attachments = ($filters['attachments'] == 'yes' ? true : false);
+            $query_conversations->where('conversations.has_attachments', '=', $has_attachments);
+        }
+        if (!empty($filters['type'])) {
+            $query_conversations->where('conversations.has_attachments', '=', $filters['type']);
+        }
+        if (!empty($filters['body'])) {
+            $query_conversations->where('threads.body', 'like', '%'.mb_strtolower($filters['body']).'%');
+        }
+        if (!empty($filters['number'])) {
+            $query_conversations->where('conversations.number', '=', $filters['number']);
+        }
+        if (!empty($filters['id'])) {
+            $query_conversations->where('conversations.id', '=', $filters['id']);
+        }
+        if (!empty($filters['after'])) {
+            $query_conversations->where('conversations.created_at', '>=', date('Y-m-d 00:00:00', strtotime($filters['after'])));
+        }
+        if (!empty($filters['before'])) {
+            $query_conversations->where('conversations.created_at', '<=', date('Y-m-d 23:59:59', strtotime($filters['before'])));
+        }
+
+        $query_conversations = \Eventy::filter('search.apply_filters', $query_conversations, $filters, $q);
+
+        $query_conversations->orderBy('conversations.last_reply_at');
+
+        return $query_conversations->paginate(Conversation::DEFAULT_LIST_SIZE);
+    }
+
+    /**
+     * Get and format search query.
+     */
+    public function getSearchQuery($request)
+    {
         $q = '';
         if (!empty($request->q)) {
             $q = $request->q;
@@ -1700,26 +1834,77 @@ class ConversationsController extends Controller
             $q = $request->filter['q'];
         }
 
+        return trim($q);
+    }
+
+    /**
+     * Get and format search filters.
+     */
+    public function getSearchFilters($request)
+    {
+        $filters = [];
+
+        if (!empty($request->f)) {
+            $filters = $request->f;
+        } elseif (!empty($request->filter) && !empty($request->filter['f'])) {
+            $filters = $request->filter['f'];
+        }
+
+        foreach ($filters as $filter => $value) {
+            switch ($filter) {
+                case 'after':
+                case 'before':
+                    $value = date('Y-m-d', strtotime($value));
+                    break;
+            }
+        }
+
+        $filters = \Eventy::filter('search.filters.format', $filters, $request);
+
+        return $filters;
+    }
+
+    /**
+     * Search conversations.
+     */
+    public function searchCustomers($request, $user)
+    {
+        // Get IDs of mailboxes to which user has access
+        $mailbox_ids = $user->mailboxesIdsCanView();
+
+        // Filters
+        $filters = $this->getSearchFilters($request);;
+
+        // Search query
+        $q = $this->getSearchQuery($request);
+
+        // Like is case insensitive.
         $like = '%'.mb_strtolower($q).'%';
 
-        $query_conversations = Conversation::select('conversations.*')
-            ->whereIn('conversations.mailbox_id', $mailbox_ids)
-            ->join('threads', function ($join) {
-                $join->on('conversations.id', '=', 'threads.id');
+        $query_customers = Customer::select('customers.*')
+            ->join('emails', function ($join) {
+                $join->on('customers.id', '=', 'emails.customer_id');
             })
             ->where(function ($query) use ($like) {
-                $query->where('conversations.subject', 'like', $like)
-                    ->orWhere('threads.body', 'like', $like)
-                    ->orWhere('threads.to', 'like', $like)
-                    ->orWhere('threads.cc', 'like', $like)
-                    ->orWhere('threads.bcc', 'like', $like);
+                $query->where('customers.first_name', 'like', $like)
+                    ->orWhere('customers.last_name', 'like', $like)
+                    ->orWhere('customers.company', 'like', $like)
+                    ->orWhere('customers.job_title', 'like', $like)
+                    ->orWhere('customers.phones', 'like', $like)
+                    ->orWhere('customers.websites', 'like', $like)
+                    ->orWhere('customers.social_profiles', 'like', $like)
+                    ->orWhere('customers.chats', 'like', $like)
+                    ->orWhere('customers.address', 'like', $like)
+                    ->orWhere('customers.city', 'like', $like)
+                    ->orWhere('customers.state', 'like', $like)
+                    ->orWhere('customers.zip', 'like', $like)
+                    ->orWhere('customers.zip', 'like', $like)
+                    ->orWhere('emails.email', 'like', $like);
             });
 
-        $query_conversations = \Eventy::filter('search.apply_filters', $query_conversations, $filters);
+        $query_customers = \Eventy::filter('search.customers.apply_filters', $query_customers, $filters, $q);
 
-        $query_conversations->orderBy('conversations.last_reply_at');
-
-        return $query_conversations->paginate(Conversation::DEFAULT_LIST_SIZE);
+        return $query_customers->paginate(50);
     }
 
     /**
@@ -1740,9 +1925,11 @@ class ConversationsController extends Controller
      */
     public function ajaxConversationsFilter(Request $request, $response, $user)
     {
-        if (!empty($request->filter['q'])) {
-            $conversations = $this->searchQuery($request, $user);
+        if (array_key_exists('q', $request->filter)) {
+            // Search
+            $conversations = $this->searchQuery($request, $user, $this->getSearchQuery($request), $this->getSearchFilters($request));
         } else {
+            // Filters
             $conversations = $this->conversationsFilterQuery($request, $user);
         }
 
@@ -1755,6 +1942,9 @@ class ConversationsController extends Controller
         return $response;
     }
 
+    /**
+     * Filter conversations according to the request.
+     */
     public function conversationsFilterQuery($request, $user)
     {
         // Get IDs of mailboxes to which user has access

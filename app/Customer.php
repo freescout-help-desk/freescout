@@ -729,4 +729,20 @@ class Customer extends Model
         // todo
         return '/img/default-avatar.png';
     }
+
+    /**
+     * Get full representation of customer.
+     */
+    public function getEmailAndName()
+    {
+        // Email can be fetched using query.
+        $text = $this->email;
+        if (!$text) {
+            $text = $this->getMainEmail();
+        }
+        if ($this->getFullName()) {
+            $text .= ' ('.$this->getFullName().')';
+        }
+        return $text;
+    }
 }
