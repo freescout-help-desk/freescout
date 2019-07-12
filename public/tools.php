@@ -4,6 +4,11 @@
  */
 ini_set('display_errors', 'On');
 
+if (preg_match("#^/public\/(.*)#", $_SERVER['REQUEST_URI'], $m) && !empty($m[1])) {
+    header("Location: /".$m[1]);
+    exit();
+}
+
 $root_dir = realpath(__DIR__.'/..').'/';
 
 // Dotenv library for reading .env files
