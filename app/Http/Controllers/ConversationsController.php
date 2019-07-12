@@ -1055,7 +1055,8 @@ class ConversationsController extends Controller
                 }
                 break;
 
-            case 'load_forward_attachments':
+            // Load attachments from all threads in conversation.
+            case 'load_attachments':
                 $conversation = Conversation::find($request->conversation_id);
                 if (!$conversation) {
                     $response['msg'] = __('Conversation not found');

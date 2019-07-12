@@ -1224,7 +1224,7 @@ function editorSendFile(file, attach)
 				return;
 			}
 			if (attach) {
-				
+				fs_reply_changed = true;
 			} else {
 				// Embed image
 				$('#body').summernote('insertImage', response.url, function (image) {
@@ -1279,11 +1279,14 @@ function formatBytes(size)
 }
 
 // New conversation page
-function newConversationInit()
+function newConversationInit(load_attachments)
 {
 	$(document).ready(function() {
 
 		convEditorInit();
+		if (typeof(load_attachments) != "undefined") {
+			loadAttachments();
+		}
 
 		// Show CC
 	    $('.toggle-cc a:first').click(function() {
@@ -2510,11 +2513,18 @@ function forwardConversation(e)
 	showForwardForm({}, reply_block);
 
 	// Load attachments
+	loadAttachments();
+}
+
+// Load attachments for the draft of a new conversation of draft of the forward
+function loadAttachments()
+{
 	var attachments_container = $(".attachments-upload:first");
-	if (!attachments_container.hasClass('forward-attachments-loaded')) {
+	var conversation_id = getGlobalAttr('conversation_id');
+	if (!attachments_container.hasClass('forward-attachments-loaded') && conversation_id) {
 		fsAjax({
-				action: 'load_forward_attachments',
-				conversation_id: getGlobalAttr('conversation_id')
+				action: 'load_attachments',
+				conversation_id: conversation_id
 			}, 
 			laroute.route('conversations.ajax'),
 			function(response) {
