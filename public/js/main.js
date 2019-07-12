@@ -993,29 +993,35 @@ function showReplyForm(data)
 		}
 
 		// Show attachments
-		if (data.attachments && data.attachments.length) {
-			var attachments_container = $(".attachments-upload:first");
-			for (var i = 0; i < data.attachments.length; i++) {
-				var attachment = data.attachments[i];
-
-				// Inputs
-				var input_html = '<input type="hidden" name="attachments_all[]" value="'+attachment.id+'" />';
-				input_html += '<input type="hidden" name="attachments[]" value="'+attachment.id+'" class="atachment-upload-'+attachment.id+'" />';
-				attachments_container.prepend(input_html);
-
-				// Links
-				var attachment_html = '<li class="atachment-upload-'+attachment.id+' attachment-loaded"><a href="'+attachment.url+'" class="break-words" target="_blank">'+attachment.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(attachment.size)+')</span> <i class="glyphicon glyphicon-remove" onclick="removeAttachment(\''+attachment.id+'\')"></i></li>';
-				attachments_container.find('ul:first').append(attachment_html);
-
-				attachments_container.show();
-	        }
-		}
+		showAttachments(data);
 	}
 	$(".conv-reply-block :input[name='to']:first").removeClass('hidden');
 	$(".conv-reply-block :input[name='to_email']:first").addClass('hidden').attr('data-parsley-exclude', '1');
 
 	if (!$('#to').length) {
 		$('#body').summernote('focus');
+	}
+}
+
+// Show attachments after loading via ajax.
+function showAttachments(data)
+{
+	if (data && data.attachments && data.attachments.length) {
+		var attachments_container = $(".attachments-upload:first");
+		for (var i = 0; i < data.attachments.length; i++) {
+			var attachment = data.attachments[i];
+
+			// Inputs
+			var input_html = '<input type="hidden" name="attachments_all[]" value="'+attachment.id+'" />';
+			input_html += '<input type="hidden" name="attachments[]" value="'+attachment.id+'" class="atachment-upload-'+attachment.id+'" />';
+			attachments_container.prepend(input_html);
+
+			// Links
+			var attachment_html = '<li class="atachment-upload-'+attachment.id+' attachment-loaded"><a href="'+attachment.url+'" class="break-words" target="_blank">'+attachment.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(attachment.size)+')</span> <i class="glyphicon glyphicon-remove" onclick="removeAttachment(\''+attachment.id+'\')"></i></li>';
+			attachments_container.find('ul:first').append(attachment_html);
+
+			attachments_container.show();
+        }
 	}
 }
 
@@ -2502,6 +2508,28 @@ function forwardConversation(e)
 	prepareReplyForm();
 	showReplyForm();
 	showForwardForm({}, reply_block);
+
+	// Load attachments
+	var attachments_container = $(".attachments-upload:first");
+	if (!attachments_container.hasClass('forward-attachments-loaded')) {
+		fsAjax({
+				action: 'load_forward_attachments',
+				conversation_id: getGlobalAttr('conversation_id')
+			}, 
+			laroute.route('conversations.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == 'success'
+					&& typeof(response.data) != "undefined"
+				) {
+					attachments_container.addClass('forward-attachments-loaded');
+					showAttachments(response.data);
+				} else {
+					// Do nothing
+					//showAjaxError(response);
+				}
+			}, true
+		);
+	}
 }
 
 // Turn reply form into forward form.

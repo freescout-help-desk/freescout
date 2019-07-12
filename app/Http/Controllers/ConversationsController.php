@@ -1055,6 +1055,42 @@ class ConversationsController extends Controller
                 }
                 break;
 
+            case 'load_forward_attachments':
+                $conversation = Conversation::find($request->conversation_id);
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                } else {
+                    if (!$user->can('view', $conversation)) {
+                        $response['msg'] = __('Not enough permissions');
+                    }
+                }
+
+                if (!$response['msg']) {
+                    // Build attachments list.
+                    $attachments = [];
+
+                    if ($conversation->has_attachments) {
+                        foreach ($conversation->threads as $thread) {
+                            if ($thread->has_attachments) {
+                                foreach ($thread->attachments as $attachment) {
+                                    $attachments[] = [
+                                        'id'   => $attachment->id,
+                                        'name' => $attachment->file_name,
+                                        'size' => $attachment->size,
+                                        'url'  => $attachment->url(),
+                                    ];
+                                }
+                            }
+                        }
+                    }
+
+                    $response['data'] = [
+                        'attachments' => $attachments,
+                    ];
+                    $response['status'] = 'success';
+                }
+                break;
+
             // Save default redirect
             case 'save_after_send':
                 $mailbox = Mailbox::find($request->mailbox_id);
@@ -1974,7 +2010,7 @@ class ConversationsController extends Controller
     }
 
     /**
-     * Process attachments on reply, new conversation, saving draft.
+     * Process attachments on reply, new conversation, saving draft and forwarding.
      */
     public function processReplyAttachments($request)
     {
