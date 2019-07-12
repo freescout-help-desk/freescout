@@ -1674,10 +1674,7 @@ class ConversationsController extends Controller
         $conversations = [];
         $customers = [];
 
-        $mode = Conversation::SEARCH_MODE_CONV;
-        if (!empty($request->mode) && $request->mode == Conversation::SEARCH_MODE_CUSTOMERS) {
-            $mode = Conversation::SEARCH_MODE_CUSTOMERS;
-        }
+        $mode = $this->getSearchMode($request);
 
         // Search query
         $q = $this->getSearchQuery($request);
@@ -1690,7 +1687,7 @@ class ConversationsController extends Controller
             // Get customer name.
             $filters_data['customer'] = Customer::find($filters['customer']);
         }
-        $filters = \Eventy::filter('search.filters', $filters, $filters_data, $mode, $q);
+        //$filters = \Eventy::filter('search.filters', $filters, $filters_data, $mode, $q);
 
         // Remember recent query.
         $recent_search_queries = session('recent_search_queries') ?? [];
@@ -1731,6 +1728,18 @@ class ConversationsController extends Controller
             'users'         => $users,
             'mailboxes'     => $mailboxes,
         ]);
+    }
+
+    /**
+     * Search conversations.
+     */
+    public function getSearchMode($request)
+    {  
+        $mode = Conversation::SEARCH_MODE_CONV;
+        if (!empty($request->mode) && $request->mode == Conversation::SEARCH_MODE_CUSTOMERS) {
+            $mode = Conversation::SEARCH_MODE_CUSTOMERS;
+        }
+        return $mode;
     }
 
     /**
@@ -1859,7 +1868,7 @@ class ConversationsController extends Controller
             }
         }
 
-        $filters = \Eventy::filter('search.filters.format', $filters, $request);
+        $filters = \Eventy::filter('search.filters', $filters, $this->getSearchMode($request), $request);
 
         return $filters;
     }

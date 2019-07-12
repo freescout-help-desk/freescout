@@ -113,7 +113,7 @@
 		            <label>{{ __('Before') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
 		            <input type="text" name="f[before]" value="{{ $filters['before'] ?? ''}}" class="form-control input-date" @if (empty($filters['before'])) disabled @endif>
 		        </div>
-		        @action('search.display_filters')
+		        @action('search.display_filters', $filters, $filters_data)
 		    </div>
 
 	        <div class="input-group input-group-lg1">
