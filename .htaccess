@@ -2,5 +2,8 @@
 # so we rewrite all web requests into /public folder
 <IfModule mod_rewrite.c>
 	RewriteEngine on
+	# On some hostings it does not work as "public/$1", but works as "/public/$1".
+	# But we can't write it as "/public/$1" because in this case it does not work
+	# when application is installed in subdirectory.
 	RewriteRule (.*) public/$1 [L]
 </IfModule>
