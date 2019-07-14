@@ -2,6 +2,9 @@
 
 @section('title', __('(no subject)'))
 @section('body_class', 'body-conv')
+@if (!empty($conversation->id))
+    @section('body_attrs')@parent data-conversation_id="{{ $conversation->id }}"@endsection
+@endif
 
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
@@ -137,5 +140,5 @@
 
 @section('javascript')
     @parent
-    newConversationInit();
+    newConversationInit(true);
 @endsection

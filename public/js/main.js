@@ -993,29 +993,35 @@ function showReplyForm(data)
 		}
 
 		// Show attachments
-		if (data.attachments && data.attachments.length) {
-			var attachments_container = $(".attachments-upload:first");
-			for (var i = 0; i < data.attachments.length; i++) {
-				var attachment = data.attachments[i];
-
-				// Inputs
-				var input_html = '<input type="hidden" name="attachments_all[]" value="'+attachment.id+'" />';
-				input_html += '<input type="hidden" name="attachments[]" value="'+attachment.id+'" class="atachment-upload-'+attachment.id+'" />';
-				attachments_container.prepend(input_html);
-
-				// Links
-				var attachment_html = '<li class="atachment-upload-'+attachment.id+' attachment-loaded"><a href="'+attachment.url+'" class="break-words" target="_blank">'+attachment.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(attachment.size)+')</span> <i class="glyphicon glyphicon-remove" onclick="removeAttachment(\''+attachment.id+'\')"></i></li>';
-				attachments_container.find('ul:first').append(attachment_html);
-
-				attachments_container.show();
-	        }
-		}
+		showAttachments(data);
 	}
 	$(".conv-reply-block :input[name='to']:first").removeClass('hidden');
 	$(".conv-reply-block :input[name='to_email']:first").addClass('hidden').attr('data-parsley-exclude', '1');
 
 	if (!$('#to').length) {
 		$('#body').summernote('focus');
+	}
+}
+
+// Show attachments after loading via ajax.
+function showAttachments(data)
+{
+	if (data && data.attachments && data.attachments.length) {
+		var attachments_container = $(".attachments-upload:first");
+		for (var i = 0; i < data.attachments.length; i++) {
+			var attachment = data.attachments[i];
+
+			// Inputs
+			var input_html = '<input type="hidden" name="attachments_all[]" value="'+attachment.id+'" />';
+			input_html += '<input type="hidden" name="attachments[]" value="'+attachment.id+'" class="atachment-upload-'+attachment.id+'" />';
+			attachments_container.prepend(input_html);
+
+			// Links
+			var attachment_html = '<li class="atachment-upload-'+attachment.id+' attachment-loaded"><a href="'+attachment.url+'" class="break-words" target="_blank">'+attachment.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(attachment.size)+')</span> <i class="glyphicon glyphicon-remove" onclick="removeAttachment(\''+attachment.id+'\')"></i></li>';
+			attachments_container.find('ul:first').append(attachment_html);
+
+			attachments_container.show();
+        }
 	}
 }
 
@@ -1218,7 +1224,7 @@ function editorSendFile(file, attach)
 				return;
 			}
 			if (attach) {
-				
+				fs_reply_changed = true;
 			} else {
 				// Embed image
 				$('#body').summernote('insertImage', response.url, function (image) {
@@ -1273,11 +1279,14 @@ function formatBytes(size)
 }
 
 // New conversation page
-function newConversationInit()
+function newConversationInit(load_attachments)
 {
 	$(document).ready(function() {
 
 		convEditorInit();
+		if (typeof(load_attachments) != "undefined") {
+			loadAttachments();
+		}
 
 		// Show CC
 	    $('.toggle-cc a:first').click(function() {
@@ -1637,10 +1646,46 @@ function viewMailboxInit()
 
 function searchInit()
 {
-	// Open all links in new window
-	$(".conv-row a").attr('target', '_blank');
-	conversationPagination();
-	starConversationInit();
+	$(document).ready(function() {
+		// Open all links in new window
+		$(".conv-row a").attr('target', '_blank');
+		conversationPagination();
+		starConversationInit();
+
+		$(".sidebar-menu .menu-link a").click(function(e){
+			var trigger = $(this);
+			var filter = trigger.attr('data-filter');
+			if (!trigger.parent().hasClass('active')) {
+				// Show
+				$('#search-filters div[data-filter="'+filter+'"]:first').addClass('active')
+					.find(':input:first').removeAttr('disabled');
+				trigger.parent().addClass('active');
+			} else {
+				// Hide
+				$('#search-filters div[data-filter="'+filter+'"]:first').removeClass('active')
+					.find(':input:first').attr('disabled', 'disabled');
+				trigger.parent().removeClass('active');
+			}
+			$('html, body').animate({scrollTop: 0}, 600, 'swing');
+			e.preventDefault();
+		});
+
+		$("#search-filters .remove").click(function(e){
+			var container = $(this).parents('.form-group:first');
+			var filter = container.attr('data-filter');
+			// Hide
+			$('#search-filters div[data-filter="'+filter+'"]:first').removeClass('active')
+				.find(':input:first').attr('disabled', 'disabled');
+			$('.sidebar-menu a[data-filter="'+filter+'"]:first').parent().removeClass('active');
+
+			e.preventDefault();
+		});
+
+		initCustomerSelector($('#search-filter-customer'), {width: '100%'});
+
+		// Dates
+		$('#search-filters .input-date').flatpickr({allowInput: true})
+	});
 }
 
 function conversationPagination()
@@ -1648,7 +1693,8 @@ function conversationPagination()
 	$(".table-conversations .pager-nav").click(function(e){
 
 		var filter = {
-			q: getQueryParam('q') // For search
+			q: getQueryParam('q'), // For search
+			f: getQueryParam('f') // For search
 		};
 		var table = $(this).parents('.table-conversations:first');
 
@@ -1691,7 +1737,11 @@ function changeCustomerInit()
 {
 	$(document).ready(function() {
 		var input = $(".change-customer-input");
-		input.select2({
+		initCustomerSelector(input, {
+			dropdownParent: $('.modal-dialog:visible:first'),
+			multiple: true,
+			placeholder: input.attr('placeholder'),
+			maximumSelectionLength: 1,
 			ajax: {
 				url: laroute.route('customers.ajax_search'),
 				dataType: 'json',
@@ -1703,21 +1753,8 @@ function changeCustomerInit()
 						exclude_email: input.attr('data-customer_email')
 						//use_id: true
 					};
-				}/*,
-				beforeSend: function(){
-			    	showSelect2Loader(input);
-			    },
-			    complete: function(){
-			    	hideSelect2Loader(input);
-			    }*/
-			},
-			containerCssClass: "select2-multi-container", // select2-with-loader
-     		dropdownCssClass: "select2-multi-dropdown",
-			dropdownParent: $('.modal-dialog:visible:first'),
-			multiple: true,
-			maximumSelectionLength: 1,
-			placeholder: input.attr('placeholder'),
-			minimumInputLength: 1
+				}
+			}
 		});
 
 		// Show confirmation dialog on customer select
@@ -1773,6 +1810,40 @@ function changeCustomerInit()
 		    e.preventDefault();
 		});
 	});
+}
+
+// Initialize customer select2
+function initCustomerSelector(input, custom_options)
+{
+	var options = {
+		ajax: {
+			url: laroute.route('customers.ajax_search'),
+			dataType: 'json',
+			delay: 250,
+			cache: true,
+			data: function (params) {
+				return {
+					q: params.term,
+					exclude_email: input.attr('data-customer_email'),
+					use_id: true
+				};
+			}/*,
+			beforeSend: function(){
+		    	showSelect2Loader(input);
+		    },
+		    complete: function(){
+		    	hideSelect2Loader(input);
+		    }*/
+		},
+		containerCssClass: "select2-multi-container", // select2-with-loader
+ 		dropdownCssClass: "select2-multi-dropdown",
+		minimumInputLength: 2
+	};
+	if (typeof(custom_options) != 'undefined') {
+		$.extend(options, custom_options);
+	}
+
+	input.select2(options);
 }
 
 // Show confirmation dialog
@@ -2440,6 +2511,35 @@ function forwardConversation(e)
 	prepareReplyForm();
 	showReplyForm();
 	showForwardForm({}, reply_block);
+
+	// Load attachments
+	loadAttachments();
+}
+
+// Load attachments for the draft of a new conversation of draft of the forward
+function loadAttachments()
+{
+	var attachments_container = $(".attachments-upload:first");
+	var conversation_id = getGlobalAttr('conversation_id');
+	if (!attachments_container.hasClass('forward-attachments-loaded') && conversation_id) {
+		fsAjax({
+				action: 'load_attachments',
+				conversation_id: conversation_id
+			}, 
+			laroute.route('conversations.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == 'success'
+					&& typeof(response.data) != "undefined"
+				) {
+					attachments_container.addClass('forward-attachments-loaded');
+					showAttachments(response.data);
+				} else {
+					// Do nothing
+					//showAjaxError(response);
+				}
+			}, true
+		);
+	}
 }
 
 // Turn reply form into forward form.
@@ -2772,11 +2872,13 @@ function converstationBulkActionsInit()
 		}
 
 		$(bulk_buttons).show();
-		$(bulk_buttons).affix({
-			offset: {
-				top: $(bulk_buttons).offset().top,
-			}
-		});
+		if ($(bulk_buttons).offset()) {
+			$(bulk_buttons).affix({
+				offset: {
+					top: $(bulk_buttons).offset().top,
+				}
+			});
+		}
 		$(bulk_buttons).hide();
 
 		//fix for bootstrap bug: https://stackoverflow.com/questions/19711202/bootstrap-3-affix-plugin-click-bug/31892323

@@ -6,6 +6,11 @@ if (!version_compare(phpversion(), '7.0.0', '>=')) {
     exit();
 }
 
+if (preg_match("#^/public\/(.*)#", $_SERVER['REQUEST_URI'], $m) && !empty($m[1])) {
+    header("Location: /".$m[1]);
+    exit();
+}
+
 /*
  * Laravel - A PHP Framework For Web Artisans.
  *

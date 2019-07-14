@@ -117,24 +117,30 @@ class Conversation extends Model
     ];
 
     /**
-     * todo: Search filters.
+     * Search filters.
      */
-    public static $filters = [
+    public static $search_filters = [
         'assigned',
         'customer',
         'mailbox',
         'status',
         'subject',
-        'tag',
+        'attachments',
         'type',
         'body',
         'number',
         'id',
         'after',
         'before',
-        'between',
-        'on',
+        //'between',
+        //'on',
     ];
+
+    /**
+     * Search mode.
+     */
+    const SEARCH_MODE_CONV = 'conversations';
+    const SEARCH_MODE_CUSTOMERS = 'customers';
 
     /**
      * Default size of the conversations table.
@@ -373,7 +379,11 @@ class Conversation extends Model
             $title = __('Created by :person<br/>:date', ['person' => ucfirst(__(
             self::$persons[$this->source_via])), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
         } else {
-            $title = __('Last reply by :person<br/>:date', ['person' => ucfirst(__(self::$persons[$this->last_reply_from])), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
+            $person = '';
+            if (!empty(self::$persons[$this->last_reply_from])) {
+                $person = __(self::$persons[$this->last_reply_from]);
+            }
+            $title = __('Last reply by :person<br/>:date', ['person' => ucfirst($person), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
         }
 
         return $title;
@@ -1113,6 +1123,42 @@ class Conversation extends Model
         } else {
             return '';
         }
+    }
+
+    /**
+     * Get type name.
+     */
+    public function getTypeName()
+    {
+        return self::typeToName($this->type);
+    }
+
+    /**
+     * Get type name .
+     */
+    public static function typeToName($type)
+    {
+        $name = '';
+
+        switch ($type) {
+            case self::TYPE_EMAIL:
+                $name = __('Email');
+                break;
+
+            case self::TYPE_PHONE:
+                $name = __('Phone');
+                break;
+
+            case self::TYPE_CHAT:
+                $name = __('Chat');
+                break;
+
+            default:
+                $name = \Eventy::filter('conversation.type_name', $type);
+                break;
+        }
+
+        return $name;
     }
 
     // /**

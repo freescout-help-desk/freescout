@@ -762,4 +762,31 @@ class User extends Authenticatable
     {
         return $this->status == self::STATUS_DELETED;
     }
+
+    /**
+     * Get users which current user can see.
+     */
+    public function whichUsersCanView($mailboxes = null)
+    {
+        if ($this->isAdmin()) {
+            return User::all();
+        } else {
+            // Get user mailboxes.
+            if ($mailboxes == null) {
+                $mailbox_ids = $this->mailboxesIdsCanView();
+            } else {
+                $mailbox_ids = $mailboxes->pluck('id')->toArray();
+            }
+
+            // Get users
+            $users = User::select('users.*')
+                ->join('mailbox_user', function ($join) {
+                    $join->on('mailbox_user.user_id', '=', 'users.id');
+                })
+                ->whereIn('mailbox_user.mailbox_id', $mailbox_ids)
+                ->get();
+
+            return $users;
+        }
+    }
 }

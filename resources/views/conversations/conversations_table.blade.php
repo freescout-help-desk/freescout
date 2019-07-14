@@ -43,14 +43,17 @@
                 <span>{{ __("Conversation") }}</span>
             </th>
             @if ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED)
-                <th class="conv-owner dropdown">
-                    <span {{--data-target="#"--}} class="dropdown-toggle" data-toggle="dropdown">{{ __("Assigned To") }}</span>
+                <th class="conv-owner">
+                    <span>{{ __("Assigned To") }}</span>
+                </th>
+                {{--<th class="conv-owner dropdown">
+                    <span {{--data-target="#"- -}} class="dropdown-toggle" data-toggle="dropdown">{{ __("Assigned To") }}</span>
                     <ul class="dropdown-menu">
                           <li><a class="filter-owner" data-id="1" href="#"><span class="option-title">{{ __("Anyone") }}</span></a></li>
                           <li><a class="filter-owner" data-id="123" href="#"><span class="option-title">{{ __("Me") }}</span></a></li>
                           <li><a class="filter-owner" data-id="123" href="#"><span class="option-title">{{ __("User") }}</span></a></li>
                     </ul>
-                </th>
+                </th>--}}
             @endif
             <th class="conv-number">
                 <span>{{ __("Number") }}</span>
