@@ -115,13 +115,13 @@
 
                                 <div class="conv-reply-field">
                                     @if (!empty($to_customers))
-                                        <select name="to" class="form-control">
+                                        <select name="to" id="to" class="form-control">
                                             @foreach ($to_customers as $to_customer)
                                                 <option value="{{ $to_customer['email'] }}" @if ($to_customer['email'] == $conversation->customer_email)selected="selected"@endif>{{ $to_customer['customer']->getFullName(true) }} &lt;{{ $to_customer['email'] }}&gt;</option>
                                             @endforeach
                                         </select>
                                     @endif
-                                    <input type="email" class="form-control hidden" name="to_email" value="{{ old('to_email') }}" required autofocus data-parsley-exclude="1">
+                                    <input type="email" class="form-control hidden parsley-exclude" name="to_email" value="{{ old('to_email') }}" required autofocus>
                                     @include('partials/field_error', ['field'=>'to'])
                                 </div>
                             </div>
@@ -535,6 +535,6 @@
 
 @section('javascript')
     @parent
-    newConversationInit();
+    initReplyForm();
     initConversation();
 @endsection

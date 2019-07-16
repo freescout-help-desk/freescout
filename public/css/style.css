@@ -520,8 +520,12 @@ select.form-control {
 .has-error.help-block {
     color: #a94442;
 }
-.has-error .form-control[data-parsley-exclude="true"] {
+.has-error .form-control.parsley-exclude {
     border-color: #ccc;
+}
+.has-error .select2-container--default .select2-selection--multiple,
+.has-error .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #a94442;
 }
 .input-md {
     height: 38px;
@@ -2139,7 +2143,10 @@ button.conv-checkbox-clear {
 .conv-new-form .form-group {
     margin-bottom: 10px;
 }
-.toggle-cc {
+.phone-conv-fields {
+    display: none;
+}
+.toggle-field {
     padding-left: 4px;
     padding-bottom: 5px;
     margin-top: -5px;
@@ -2180,6 +2187,7 @@ button.conv-checkbox-clear {
 }
 .btn-add-note-text,
 .btn-send-forward,
+.btn-create-conv,
 .conv-forward-block .btn-send-text,
 .conv-note-block .btn-send-text,
 .conv-note-block .conv-recipient {
@@ -2190,6 +2198,12 @@ button.conv-checkbox-clear {
 }
 .conv-forward-block .btn-send-forward {
     display: block;
+}
+.conv-phone-block .btn-create-conv {
+    display: block;
+}
+.conv-phone-block .btn-add-note-text {
+    display: none;
 }
 .conv-forward-block .conv-recipient-to.hidden {
     display: block !important;
@@ -2206,7 +2220,7 @@ button.conv-checkbox-clear {
     border-color: #ffe39d !important;
     color: #d79400;
 }
-.conv-note-block .form-control {
+.conv-note-block .note-editor .form-control {
     border-color: #ffd56d;
     color: #b37100;
 }
@@ -2885,6 +2899,18 @@ ul.prev-convs {
 .select2-selection--single .select2-selection__rendered {
     font-size: 13px;
     color: #555;
+}
+.customer-select .select2-selection__arrow {
+    display: none;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    margin-top: 3px;
+}
+.select2-selection.select2-selection--multiple {
+    line-height: 17px;
+}
+.select2-container .select2-selection--multiple {
+    min-height: auto;
 }
 /*.select2-with-loader .select2-selection__rendered {
     padding-right: 30px;

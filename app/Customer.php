@@ -745,4 +745,44 @@ class Customer extends Model
         }
         return $text;
     }
+
+    /**
+     * Get customers info for the list of emails.
+     */
+    public static function emailsToCustomers($list)
+    {
+        $result = [];
+
+        $data = Customer::select(['emails.email', 'customers.first_name', 'customers.last_name'])
+            ->join('emails', function ($join) {
+                $join->on('emails.customer_id', '=', 'customers.id');
+            })
+            ->whereIn('emails.email', $list)
+            //->groupby('customers.id')
+            ->get()
+            ->toArray();
+
+        foreach ($data as $values) {
+            // Dummy customer.
+            $customer = new Customer();
+            $customer->email = $values['email'];
+            $customer->first_name = $values['first_name'];
+            $customer->last_name = $values['last_name'];
+
+            $result[$values['email']] = $customer->getEmailAndName();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get customer by email.
+     */
+    public static function getByEmail($email)
+    {
+        return Customer::where('emails.email', $email)
+            ->join('emails', function ($join) {
+                $join->on('emails.customer_id', '=', 'customers.id');
+            })->first();
+    }
 }

@@ -31,8 +31,8 @@
                     <h2>{{ __("New Conversation") }}</h2>
 
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default active"><i class="glyphicon glyphicon-envelope"></i></button>
-                        <button type="button" class="btn btn-default" onclick="alert('todo: implement phone conversations');"><i class="glyphicon glyphicon-earphone"></i></button>
+                        <button type="button" class="btn btn-default active" id="email-conv-switch" onclick="switchToNewEmailConversation({{ App\Conversation::TYPE_EMAIL }})"><i class="glyphicon glyphicon-envelope"></i></button>
+                        <button type="button" class="btn btn-default" id="phone-conv-switch" onclick="switchToNewPhoneConversation({{ App\Conversation::TYPE_PHONE }})"><i class="glyphicon glyphicon-earphone"></i></button>
                     </div>
                 </div>
 
@@ -49,17 +49,21 @@
             <div class="conv-block">
                 <div class="row">
                     <div class="col-xs-12">
-                        <form class="form-horizontal margin-top form-reply" method="POST" action="">
+                        <form class="form-horizontal margin-top form-reply" method="POST" action="" id="form-create">
                             {{ csrf_field() }}
                             <input type="hidden" name="conversation_id" value="{{ $conversation->id }}"/>
                             <input type="hidden" name="mailbox_id" value="{{ $mailbox->id }}"/>
+                            {{-- For phone conversation --}}
+                            <input type="hidden" name="is_note" value="{{ ($conversation->type == App\Conversation::TYPE_PHONE ? '1' : '') }}"/>
+                            <input type="hidden" name="is_phone" value="{{ ($conversation->type == App\Conversation::TYPE_PHONE ? '1' : '') }}"/>
+                            <input type="hidden" name="type" value="{{ $conversation->type }}"/>
                             {{-- For drafts --}}
                             <input type="hidden" name="thread_id" value="{{ $thread->id }}"/>
                             <input type="hidden" name="is_create" value="1"/>
                             
                             @if ($conversation->created_by_user_id)
                                 <div class="form-group">
-                                    <label for="to" class="col-sm-2 control-label">{{ __('Author') }}</label>
+                                    <label class="col-sm-2 control-label">{{ __('Author') }}</label>
 
                                     <div class="col-sm-9">
                                         <label class="control-label text-help">
@@ -69,21 +73,52 @@
                                 </div>
                             @endif
 
-                            <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }}">
-                                <label for="to" class="col-sm-2 control-label">{{ __('To') }}</label>
+                            <div class="form-group phone-conv-fields{{ $errors->has('name') ? ' has-error' : '' }}">
+                                <label for="name" class="col-sm-2 control-label">{{ __('Customer Name') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="to" type="text" class="form-control" name="to" value="{{ old('to', $thread->getToString()) }}" required autofocus>
+                                    <input id="name" type="text" class="form-control parsley-exclude" name="name" value="{{ old('name') }}" required autofocus>
+
+                                    @include('partials/field_error', ['field'=>'name'])
+                                </div>
+                            </div>
+
+                            <div class="form-group phone-conv-fields{{ $errors->has('phone') ? ' has-error' : '' }}">
+                                <label for="phone" class="col-sm-2 control-label">{{ __('Phone') }}</label>
+
+                                <div class="col-sm-9">
+                                    <input id="phone" type="text" class="form-control" name="phone" value="{{ old('phone') }}" placeholder="{{ __('(optional)') }}">
+
+                                    @include('partials/field_error', ['field'=>'phone'])
+                                </div>
+                            </div>
+
+                            <div class="col-sm-9 col-sm-offset-2 toggle-field phone-conv-fields" id="toggle-email">
+                                <a href="javascript:void(0);">{{ __('Add Email') }}</a>
+                            </div>
+
+                            <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }}" id="field-to">
+                                <label for="to" class="col-sm-2 control-label"><span class="email-conv-fields">{{ __('To') }}</span> <span class="phone-conv-fields">{{ __('Email') }}</span></label>
+
+                                <div class="col-sm-9">
+
+                                    <select class="form-control customer-select" name="to[]" id="to" multiple required autofocus/>
+                                        @if ($to)
+                                            @foreach ($to as $to_email => $to_name)
+                                                <option value="{{ $to_email }}" selected="selected">{{ $to_name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
 
                                     @include('partials/field_error', ['field'=>'to'])
                                 </div>
                             </div>
 
-                            <div class="col-sm-9 col-sm-offset-2 toggle-cc @if ($conversation->cc || $thread->bcc) hidden @endif">
-                                <a href="javascript:void(0);" class="help-link">Cc/Bcc</a>
+                            <div class="col-sm-9 col-sm-offset-2 email-conv-fields toggle-field @if ($conversation->cc || $thread->bcc) hidden @endif">
+                                <a href="javascript:void(0);" class="help-link" id="toggle-cc">Cc/Bcc</a>
                             </div>
 
-                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} @if (!$thread->cc) hidden @endif field-cc">
+                            <div class="form-group email-conv-fields{{ $errors->has('cc') ? ' has-error' : '' }} @if (!$thread->cc) hidden @endif field-cc">
                                 <label for="cc" class="col-sm-2 control-label">{{ __('Cc') }}</label>
 
                                 <div class="col-sm-9">
@@ -93,7 +128,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }} @if (!$conversation->bcc) hidden @endif field-cc">
+                            <div class="form-group email-conv-fields{{ $errors->has('bcc') ? ' has-error' : '' }} @if (!$conversation->bcc) hidden @endif field-cc">
                                 <label for="bcc" class="col-sm-2 control-label">{{ __('Bcc') }}</label>
 
                                 <div class="col-sm-9">
@@ -140,5 +175,6 @@
 
 @section('javascript')
     @parent
-    newConversationInit(true);
+    initReplyForm(true);
+    initNewConversation(@if ($conversation->type == App\Conversation::TYPE_PHONE){{ 'true' }}@endif);
 @endsection

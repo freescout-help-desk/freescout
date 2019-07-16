@@ -145,6 +145,14 @@ class ConversationsController extends Controller
             }
         }
 
+        // To (for new conversation draft only).
+        $to = [];
+        $emails = Conversation::sanitizeEmails($conversation->customer_email);
+        // Get customers info for emails.
+        if (count($emails)) {
+            $to = Customer::emailsToCustomers($emails);
+        }
+
         // Exclude mailbox emails from $to_customers.
         $mailbox_emails = $mailbox->getEmails();
         foreach ($to_customers as $key => $to_customer) {
@@ -177,6 +185,7 @@ class ConversationsController extends Controller
             'folder'             => $folder,
             'folders'            => $conversation->mailbox->getAssesibleFolders(),
             'after_send'         => $after_send,
+            'to'                 => $to,
             'to_customers'       => $to_customers,
             'prev_conversations' => $prev_conversations,
         ]);
@@ -229,6 +238,7 @@ class ConversationsController extends Controller
             'folder'       => $folder,
             'folders'      => $mailbox->getAssesibleFolders(),
             'after_send'   => $after_send,
+            'to'           => [],
         ]);
     }
 
@@ -432,6 +442,11 @@ class ConversationsController extends Controller
                     $is_note = true;
                 }
 
+                $type = Conversation::TYPE_EMAIL;
+                if (!empty($request->type)) {
+                    $type = (int)$request->type;
+                }
+
                 $is_forward = false;
                 if (!empty($request->subtype) && (int)$request->subtype == Thread::SUBTYPE_FORWARD) {
                     $is_forward = true;
@@ -482,6 +497,8 @@ class ConversationsController extends Controller
                     }
                 }
 
+                // List of emails.
+                $to_array = [];
                 if ($is_forward) {
                     $to_array = Conversation::sanitizeEmails($request->to_email);
                 } else {
@@ -513,7 +530,7 @@ class ConversationsController extends Controller
                     if ($new) {
                         // New conversation
                         $conversation = new Conversation();
-                        $conversation->type = Conversation::TYPE_EMAIL;
+                        $conversation->type = $type;
                         $conversation->subject = $request->subject;
                         $conversation->setPreview($request->body);
                         if ($attachments_info['has_attachments']) {
@@ -562,13 +579,19 @@ class ConversationsController extends Controller
                     }
 
                     // To is a single email string.
-                    // todo: multiple emails.
                     $to = '';
+                    // List of emails.
+                    $to_list = [];
                     if ($is_forward) {
                         $to = $request->to_email;
                     } else {
                         if (!empty($request->to)) {
-                            $to = $request->to;
+                            // When creating a new conversation, to is a list of emails.
+                            if (is_array($request->to)) {
+                                $to = $request->to[0];
+                            } else {
+                                $to = $request->to;
+                            }
                         } else {
                             $to = $conversation->customer_email;
                         }
@@ -854,13 +877,29 @@ class ConversationsController extends Controller
                     if ($new || !empty($request->is_create)) {
                         // New conversation
                         $customer_email = '';
+                        $customer = null;
                         $to_array = Conversation::sanitizeEmails($request->to);
                         if (count($to_array)) {
-                            $customer_email = $to_array[0];
+                            if (count($to_array) == 1) {
+                                $customer_email = array_shift($to_array);
+                                $customer = Customer::create($customer_email);
+                            } else {
+                                // Creating a conversation to multiple customers
+                                // In customer_email temporary store a list of customer emails
+                                $customer_email = implode(',', $to_array);
+                                // Keep $customer as null.
+                                // When conversation will be sent, separate conversation
+                                // will be created for each customer.
+                                $to = null;
+                            }
                         }
-                        $customer = Customer::create($customer_email);
 
-                        $conversation->type = Conversation::TYPE_EMAIL;
+                        $type = Conversation::TYPE_EMAIL;
+                        if (!empty($request->type)) {
+                            $type = (int)$request->type;
+                        }
+
+                        $conversation->type = $type;
                         $conversation->state = Conversation::STATE_DRAFT;
                         $conversation->status = $request->status;
                         $conversation->subject = $request->subject;
@@ -887,10 +926,12 @@ class ConversationsController extends Controller
 
                     // To is a single email string
                     $to = '';
-                    if (!empty($request->to)) {
-                        $to = $request->to;
-                    } else {
-                        $to = $conversation->customer_email;
+                    if (empty($request->to) || !is_array($request->to)) {
+                        if (!empty($request->to)) {
+                            $to = $request->to;
+                        } else {
+                            $to = $conversation->customer_email;
+                        }
                     }
 
                     // Save extra recipients to CC

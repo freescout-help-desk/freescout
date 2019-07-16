@@ -22,21 +22,28 @@ var poly;
 // https://devhints.io/parsley
 window.ParsleyConfig = window.ParsleyConfig || {};
 $.extend(window.ParsleyConfig, {
-	excluded: '.note-codable, [data-parsley-exclude]',
+	// select2-search__field is the additional input created by select2
+	excluded: '.note-codable, .parsley-exclude, .select2-search__field',
     errorClass: 'has-error',
     //successClass: 'has-success',
+    // Return the $element that will receive these above
+	// success or error classes. Could also be (and given
+	// directly from DOM) a valid selector like '#div'
     classHandler: function(ParsleyField) {
         return ParsleyField.$element.parents('.form-group:first');
     },
     errorsContainer: function(ParsleyField) {
-    	var help_block = ParsleyField.$element.parent().children('.help-block:first');
+    	var element = ParsleyField.$element;
+    	var help_block = element.parent().children('.help-block:first');
 
-    	if (help_block) {
-    		return help_block;
-    	} else {
-    		return ParsleyField.$element;
-    		//return ParsleyField.$element.parents('.form-group:first');
+    	if (!help_block.length) {
+    		// Show error after select2 field
+    		if (element.hasClass('select2-hidden-accessible')) {
+    			return element.parent();
+    		}
     	}
+    		
+    	return help_block;
     },
     errorsWrapper: '<div class="help-block"></div>',
     errorTemplate: '<div></div>'
@@ -931,6 +938,46 @@ function initConversation()
 	});
 }
 
+// Create new email conversation
+function switchToNewEmailConversation(type_email)
+{
+	$('#email-conv-switch').addClass('active');
+	$('#phone-conv-switch').removeClass('active');
+	$('.email-conv-fields').show();
+	$('.phone-conv-fields').hide();
+	$('#field-to').show();
+	$('#to').removeClass('parsley-exclude');
+
+	$('.conv-block:first').removeClass('conv-note-block').removeClass('conv-phone-block');
+	$('#form-create :input[name="is_note"]:first').val(0);
+	$('#form-create :input[name="is_phone"]:first').val(0);
+	$('#form-create :input[name="type"]:first').val(type_email);
+}
+
+// Create new phone conversation
+function switchToNewPhoneConversation(type_phone)
+{
+	$('#email-conv-switch').removeClass('active');
+	$('#phone-conv-switch').addClass('active');
+	$('.email-conv-fields').hide();
+	$('.phone-conv-fields').show();
+
+	if (!$('#to').val()) {
+		$('#field-to').hide();
+		$('#toggle-email').show();
+	} else {
+		$('#field-to').show();
+		$('#toggle-email').hide();
+	}
+	$('#to').addClass('parsley-exclude');
+
+	$('.conv-block:first').addClass('conv-note-block').addClass('conv-phone-block');
+
+	$('#form-create :input[name="is_note"]:first').val(0);
+	$('#form-create :input[name="is_phone"]:first').val(0);
+	$('#form-create :input[name="type"]:first').val(type_phone);
+}
+
 // Add target blank to all links in threads.
 function processLinks()
 {
@@ -996,7 +1043,7 @@ function showReplyForm(data)
 		showAttachments(data);
 	}
 	$(".conv-reply-block :input[name='to']:first").removeClass('hidden');
-	$(".conv-reply-block :input[name='to_email']:first").addClass('hidden').attr('data-parsley-exclude', '1');
+	$(".conv-reply-block :input[name='to_email']:first").addClass('hidden').addClass('parsley-exclude');
 
 	if (!$('#to').length) {
 		$('#body').summernote('focus');
@@ -1074,12 +1121,17 @@ function convEditorInit()
 	$('.note-statusbar').addClass('note-statusbar-toolbar form-inline').html(html);
 
 	// Track changes to save draft
-	$("#to, #cc, #bcc, #subject").on('keyup keypress', function(event) {
+	$("#to, #to_email, #cc, #bcc, #subject, #name, #phone").on('keyup keypress', function(event) {
 		onReplyChange();
-	});
-	$("#to, #cc, #bcc, #subject").blur(function(event) {
+	}).blur(function(event) {
 	    onReplyBlur();
 	});
+	// select2 does not react on keyup or keypress
+	$(".customer-select").on('change', function(event) {
+		onReplyChange();
+		onReplyBlur(); 
+	});
+		
 
 	// Autosave draft periodically
 	autosaveDraft();
@@ -1088,7 +1140,7 @@ function convEditorInit()
 // Automatically save draft
 function autosaveDraft()
 {
-	if (!isNote()) {
+	if (!isNote() || isPhone()) {
 		saveDraft(false, true);
 	}
 	setTimeout(function(){ autosaveDraft() }, fs_draft_autosave_period*1000);
@@ -1149,6 +1201,12 @@ function onReplyBlur()
 function isNote()
 {
 	return $(".form-reply:first :input[name='is_note']:first").val();
+}
+
+// Is it a new phone conversation draft
+function isPhone()
+{
+	return $("#form-create :input[name='is_phone']:first").val();
 }
 
 // Generate random unique ID
@@ -1279,7 +1337,20 @@ function formatBytes(size)
 }
 
 // New conversation page
-function newConversationInit(load_attachments)
+function initNewConversation(is_phone)
+{
+    $(document).ready(function() {
+    	if (typeof(is_phone) != "undefined") {
+        	switchToNewPhoneConversation();
+        }
+	    $('#toggle-email').click(function() {
+			$('#field-to').show();
+			$(this).remove();
+		});
+    });
+}
+
+function initReplyForm(load_attachments)
 {
 	$(document).ready(function() {
 
@@ -1288,8 +1359,15 @@ function newConversationInit(load_attachments)
 			loadAttachments();
 		}
 
+		// Customer selector
+		initCustomerSelector($('.customer-select'), {
+			editable: true,
+			use_id: false,
+			containerCssClass: 'customer-select'
+		});
+
 		// Show CC
-	    $('.toggle-cc a:first').click(function() {
+	    $('#toggle-cc').click(function() {
 			$('.field-cc').removeClass('hidden');
 			$(this).parent().remove();
 		});
@@ -1815,6 +1893,15 @@ function changeCustomerInit()
 // Initialize customer select2
 function initCustomerSelector(input, custom_options)
 {
+	var use_id = true;
+
+	if (typeof(custom_options.use_id) != "undefined") {
+		use_id = custom_options.use_id;
+		if (!use_id) {
+			use_id = null;
+		}
+	}
+
 	var options = {
 		ajax: {
 			url: laroute.route('customers.ajax_search'),
@@ -1825,7 +1912,7 @@ function initCustomerSelector(input, custom_options)
 				return {
 					q: params.term,
 					exclude_email: input.attr('data-customer_email'),
-					use_id: true
+					use_id: use_id
 				};
 			}/*,
 			beforeSend: function(){
@@ -1839,11 +1926,40 @@ function initCustomerSelector(input, custom_options)
  		dropdownCssClass: "select2-multi-dropdown",
 		minimumInputLength: 2
 	};
+	if (typeof(custom_options.editable) != "undefined" && custom_options.editable) {
+		$.extend(options, {
+			multiple: true,
+			tags: true,
+			createTag: function (params) {
+				// Don't allow to create a tag if there is no @ symbol
+			    if (params.term.indexOf('@') === -1) {
+			      // Return null to disable tag creation
+			      return null;
+			    }
+			    return {
+					id: params.term,
+					text: params.term,
+					newOption: true
+			    }
+			},
+			templateResult: function (data) {
+			    var $result = $("<span></span>");
+
+			    $result.text(data.text);
+
+			    if (data.newOption) {
+			     	$result.append(" <em>("+Lang.get("messages.add_lower")+")</em>");
+			    }
+
+			    return $result;
+			}
+		});
+	}
 	if (typeof(custom_options) != 'undefined') {
 		$.extend(options, custom_options);
 	}
 
-	input.select2(options);
+	return input.select2(options);
 }
 
 // Show confirmation dialog
@@ -2424,7 +2540,7 @@ function saveDraft(reload_page, no_loader)
 		return;
 	}
 
-	// Make button green when user clicks on it.
+	// Make save draft button green when user clicks on it.
 	if (reload_page) {
 		button.addClass('text-success');
 	}
@@ -2550,7 +2666,7 @@ function showForwardForm(data, reply_block)
 	}
 	reply_block.children().find(":input[name='subtype']:first").val(Vars.subtype_forward);
 	reply_block.children().find(":input[name='to']:first").addClass('hidden');
-	reply_block.children().find(":input[name='to_email']:first").removeClass('hidden').removeAttr('data-parsley-exclude');
+	reply_block.children().find(":input[name='to_email']:first").removeClass('hidden').removeClass('parsley-exclude');
 	reply_block.addClass('inactive');
 	reply_block.addClass('conv-forward-block');
 	$(".conv-actions .conv-reply:first").addClass('inactive');
@@ -2650,8 +2766,8 @@ function discardDraft(thread_id)
 							} else {
 								// Hide editor
 								hideReplyEditor();
-								$(".conv-reply-block :input[name='to']:first").val(
-									$(".conv-reply-block :input[name='to']:first option:first").val()
+								$("#to").val(
+									$("#to option:first").val()
 								);
 								$(".conv-reply-block :input[name='cc']:first").val('');
 								$(".conv-reply-block :input[name='bcc']:first").val('');
