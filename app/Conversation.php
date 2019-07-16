@@ -1161,6 +1161,22 @@ class Conversation extends Model
         return $name;
     }
 
+    /**
+     * Get emails which are excluded from CC and BCC.
+     */
+    public function getExcludeArray($mailbox = null)
+    {
+        if (!$mailbox) {
+            $mailbox = $this->mailbox;
+        }
+        $customer_emails = [$this->customer_email];
+        if (strstr($this->customer_email, ',')) {
+            // customer_email contains mutiple addresses (when new conversation for multiple recipients created)
+            $customer_emails = explode(',', $this->customer_email);
+        }
+        return array_merge($mailbox->getEmails(), $customer_emails);
+    }
+
     // /**
     //  * Get conversation meta data as array.
     //  */

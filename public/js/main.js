@@ -1048,6 +1048,9 @@ function showReplyForm(data)
 	if (!$('#to').length) {
 		$('#body').summernote('focus');
 	}
+
+	// Select2 for CC/BCC
+	initRecipientSelector();
 }
 
 // Show attachments after loading via ajax.
@@ -1350,7 +1353,23 @@ function initNewConversation(is_phone)
     });
 }
 
-function initReplyForm(load_attachments)
+// To, Cc, Bcc selector
+function initRecipientSelector(custom_options)
+{
+	var options = {
+		editable: true,
+		use_id: false,
+		containerCssClass: 'recipient-select',
+		//selectOnClose: true,
+		// For hidden inputs
+		width: '100%'
+	};
+	$.extend(options, custom_options);
+
+	initCustomerSelector($('.recipient-select:visible'), options);
+}
+
+function initReplyForm(load_attachments, init_customer_selector)
 {
 	$(document).ready(function() {
 
@@ -1360,18 +1379,15 @@ function initReplyForm(load_attachments)
 		}
 
 		// Customer selector
-		initCustomerSelector($('.recipient-select'), {
-			editable: true,
-			use_id: false,
-			containerCssClass: 'recipient-select',
-			selectOnClose: true,
-			width: '100%'
-		})
+		if (typeof(init_customer_selector) != "undefined") {
+			initRecipientSelector();
+		}
 
 		// Show CC
 	    $('#toggle-cc').click(function() {
 			$('.field-cc').removeClass('hidden');
 			$(this).parent().remove();
+			initRecipientSelector();
 		});
 
 		// After send
@@ -1938,6 +1954,13 @@ function initCustomerSelector(input, custom_options)
 			    if (params.term.indexOf('@') === -1) {
 					// Return null to disable tag creation
 					return null;
+			    }
+			    // Check if select already has such option
+			    var data = this.$element.select2('data');
+			    for (i in data) {
+			    	if (data[i].id == params.term) {
+			    		return null;
+			    	}
 			    }
 			    return {
 					id: params.term,
@@ -2633,6 +2656,11 @@ function forwardConversation(e)
 
 	// Load attachments
 	loadAttachments();
+
+	// Show recipient selector
+	initRecipientSelector({
+		maximumSelectionLength: 1
+	});
 }
 
 // Load attachments for the draft of a new conversation of draft of the forward
@@ -2675,8 +2703,17 @@ function showForwardForm(data, reply_block)
 	$(".conv-actions .conv-reply:first").addClass('inactive');
 
 	if (data && typeof(data.to) != "undefined") {
-		$(".conv-reply-block form:first :input[name='to_email']").val(data.to);
+		$("#to_email").children('option:first')
+            .attr("value", data.to)
+            .attr("selected", "selected")
+            .text(data.to); 
+	} else {
+		$("#to_email").children('option:first').removeAttr('selected');
 	}
+	// Show recipient selector
+	initRecipientSelector({
+		maximumSelectionLength: 1
+	});
 }
 
 // Edit draft

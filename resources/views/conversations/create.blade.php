@@ -114,11 +114,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-sm-9 col-sm-offset-2 email-conv-fields toggle-field @if ($conversation->cc && $thread->bcc) hidden @endif">
-                                <a href="javascript:void(0);" class="help-link" id="toggle-cc">Cc/Bcc</a>
-                            </div>
-
-                            <div class="form-group email-conv-fields{{ $errors->has('cc') ? ' has-error' : '' }} @if (!$thread->cc) hidden @endif field-cc">
+                            <div class="form-group email-conv-fields{{ $errors->has('cc') ? ' has-error' : '' }} @if (!$conversation->cc) hidden @endif field-cc">
                                 <label for="cc" class="col-sm-2 control-label">{{ __('Cc') }}</label>
 
                                 <div class="col-sm-9">
@@ -138,10 +134,21 @@
                                 <label for="bcc" class="col-sm-2 control-label">{{ __('Bcc') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', $thread->getBccString()) }}">
+
+                                    <select class="form-control recipient-select" name="bcc[]" id="bcc" multiple/>
+                                        @if ($conversation->getBccArray())
+                                            @foreach ($conversation->getBccArray() as $bcc)
+                                                <option value="{{ $bcc }}" selected="selected">{{ $bcc }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
 
                                     @include('partials/field_error', ['field'=>'bcc'])
                                 </div>
+                            </div>
+
+                            <div class="col-sm-9 col-sm-offset-2 email-conv-fields toggle-field @if ($conversation->cc && $conversation->bcc) hidden @endif">
+                                <a href="javascript:void(0);" class="help-link" id="toggle-cc">Cc/Bcc</a>
                             </div>
 
                             <div class="form-group{{ $errors->has('subject') ? ' has-error' : '' }}">
@@ -181,6 +188,6 @@
 
 @section('javascript')
     @parent
-    initReplyForm(true);
+    initReplyForm(true, true);
     initNewConversation(@if ($conversation->type == App\Conversation::TYPE_PHONE){{ 'true' }}@endif);
 @endsection

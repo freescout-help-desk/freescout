@@ -177,6 +177,8 @@ class ConversationsController extends Controller
             $template = 'conversations/create';
         }
 
+        $exclude_array = $conversation->getExcludeArray($mailbox);
+
         return view($template, [
             'conversation'       => $conversation,
             'mailbox'            => $conversation->mailbox,
@@ -188,6 +190,8 @@ class ConversationsController extends Controller
             'to'                 => $to,
             'to_customers'       => $to_customers,
             'prev_conversations' => $prev_conversations,
+            'cc'                 => $conversation->getCcArray($exclude_array),
+            'bcc'                => $conversation->getBccArray($exclude_array),
         ]);
     }
 
@@ -480,17 +484,17 @@ class ConversationsController extends Controller
                 if (!$response['msg']) {
                     if ($new) {
                         $validator = Validator::make($request->all(), [
-                            'to'       => 'required|string',
+                            'to'       => 'required|array',
                             'subject'  => 'required|string|max:998',
                             'body'     => 'required|string',
-                            'cc'       => 'nullable|string',
-                            'bcc'      => 'nullable|string',
+                            'cc'       => 'nullable|array',
+                            'bcc'      => 'nullable|array',
                         ]);
                     } else {
                         $validator = Validator::make($request->all(), [
                             'body'     => 'required|string',
-                            'cc'       => 'nullable|string',
-                            'bcc'      => 'nullable|string',
+                            'cc'       => 'nullable|array',
+                            'bcc'      => 'nullable|array',
                         ]);
                     }
 

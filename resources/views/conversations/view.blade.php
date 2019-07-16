@@ -121,27 +121,50 @@
                                             @endforeach
                                         </select>
                                     @endif
-                                    <input type="email" class="form-control hidden parsley-exclude" name="to_email" value="{{ old('to_email') }}" required autofocus>
+                                    <select class="form-control hidden parsley-exclude recipient-select" name="to_email" id="to_email" multiple required autofocus>
+                                        <option value=""></option>
+                                    </select>
                                     @include('partials/field_error', ['field'=>'to'])
                                 </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} conv-recipient">
+                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} @if (!$cc) hidden @endif field-cc conv-recipient">
                                 <label for="cc" class="control-label">{{ __('Cc') }}</label>
 
                                 <div class="conv-reply-field">
-                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', implode(',', $conversation->getCcArray(array_merge($mailbox->getEmails(), [$conversation->customer_email])))) }}">
+
+                                    <select class="form-control recipient-select" name="cc[]" id="cc" multiple/>
+                                        @if ($cc)
+                                            @foreach ($cc as $cc_email)
+                                                <option value="{{ $cc_email }}" selected="selected">{{ $cc_email }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+
                                     @include('partials/field_error', ['field'=>'cc'])
                                 </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }} conv-recipient">
+                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }} @if (!$bcc) hidden @endif field-cc conv-recipient">
                                 <label for="bcc" class="control-label">{{ __('Bcc') }}</label>
 
                                 <div class="conv-reply-field">
-                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', implode(',', $conversation->getBccArray(array_merge($mailbox->getEmails(), [$conversation->customer_email])))) }}">
+                                     <select class="form-control recipient-select" name="bcc[]" id="bcc" multiple/>
+                                        @if ($bcc)
+                                            @foreach ($bcc as $bcc_email)
+                                                <option value="{{ $bcc_email }}" selected="selected">{{ $bcc_email }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
 
                                     @include('partials/field_error', ['field'=>'bcc'])
+                                </div>
+                            </div>
+
+                            <div class="form-group @if ($cc && $bcc) hidden @endif">
+                                <label class="control-label"></label>
+                                <div class="conv-reply-field">
+                                    <a href="javascript:void(0);" class="help-link" id="toggle-cc">Cc/Bcc</a>
                                 </div>
                             </div>
 
