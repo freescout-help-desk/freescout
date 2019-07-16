@@ -1127,7 +1127,7 @@ function convEditorInit()
 	    onReplyBlur();
 	});
 	// select2 does not react on keyup or keypress
-	$(".customer-select").on('change', function(event) {
+	$(".recipient-select").on('change', function(event) {
 		onReplyChange();
 		onReplyBlur(); 
 	});
@@ -1360,11 +1360,13 @@ function initReplyForm(load_attachments)
 		}
 
 		// Customer selector
-		initCustomerSelector($('.customer-select'), {
+		initCustomerSelector($('.recipient-select'), {
 			editable: true,
 			use_id: false,
-			containerCssClass: 'customer-select'
-		});
+			containerCssClass: 'recipient-select',
+			selectOnClose: true,
+			width: '100%'
+		})
 
 		// Show CC
 	    $('#toggle-cc').click(function() {
@@ -1930,11 +1932,12 @@ function initCustomerSelector(input, custom_options)
 		$.extend(options, {
 			multiple: true,
 			tags: true,
+			tokenSeparators: [",", ", ", " "],
 			createTag: function (params) {
 				// Don't allow to create a tag if there is no @ symbol
 			    if (params.term.indexOf('@') === -1) {
-			      // Return null to disable tag creation
-			      return null;
+					// Return null to disable tag creation
+					return null;
 			    }
 			    return {
 					id: params.term,

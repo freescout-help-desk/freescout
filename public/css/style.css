@@ -2900,7 +2900,7 @@ ul.prev-convs {
     font-size: 13px;
     color: #555;
 }
-.customer-select .select2-selection__arrow {
+.recipient-select .select2-selection__arrow {
     display: none;
 }
 .select2-container--default .select2-selection--multiple .select2-selection__choice {

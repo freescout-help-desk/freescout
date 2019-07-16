@@ -102,7 +102,7 @@
 
                                 <div class="col-sm-9">
 
-                                    <select class="form-control customer-select" name="to[]" id="to" multiple required autofocus/>
+                                    <select class="form-control recipient-select" name="to[]" id="to" multiple required autofocus/>
                                         @if ($to)
                                             @foreach ($to as $to_email => $to_name)
                                                 <option value="{{ $to_email }}" selected="selected">{{ $to_name }}</option>
@@ -114,7 +114,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-sm-9 col-sm-offset-2 email-conv-fields toggle-field @if ($conversation->cc || $thread->bcc) hidden @endif">
+                            <div class="col-sm-9 col-sm-offset-2 email-conv-fields toggle-field @if ($conversation->cc && $thread->bcc) hidden @endif">
                                 <a href="javascript:void(0);" class="help-link" id="toggle-cc">Cc/Bcc</a>
                             </div>
 
@@ -122,7 +122,13 @@
                                 <label for="cc" class="col-sm-2 control-label">{{ __('Cc') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', $thread->getCcString()) }}">
+                                    <select class="form-control recipient-select" name="cc[]" id="cc" multiple/>
+                                        @if ($conversation->getCcArray())
+                                            @foreach ($conversation->getCcArray() as $cc)
+                                                <option value="{{ $cc }}" selected="selected">{{ $cc }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
 
                                     @include('partials/field_error', ['field'=>'cc'])
                                 </div>

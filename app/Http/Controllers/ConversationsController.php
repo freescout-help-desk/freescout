@@ -447,6 +447,12 @@ class ConversationsController extends Controller
                     $type = (int)$request->type;
                 }
 
+                $is_create = false;
+                if (!empty($request->is_create)) {
+                    //if ($new || ($from_draft && $conversation->threads_count == 1)) {
+                    $is_create = $request->is_create;
+                }
+
                 $is_forward = false;
                 if (!empty($request->subtype) && (int)$request->subtype == Thread::SUBTYPE_FORWARD) {
                     $is_forward = true;
@@ -747,7 +753,7 @@ class ConversationsController extends Controller
                     }
 
                     // When user creates a new conversation it may be saved as draft first.
-                    if ($new || ($from_draft && $conversation->threads_count == 1)) {
+                    if ($is_create) {
                         // New conversation.
                         event(new UserCreatedConversation($conversation, $thread));
                         \Eventy::action('conversation.created_by_user_can_undo', $conversation, $thread);
@@ -772,6 +778,50 @@ class ConversationsController extends Controller
                         \Eventy::action('conversation.user_replied_can_undo', $conversation, $thread);
                         // After Conversation::UNDO_TIMOUT period trigger final event.
                         \Helper::backgroundAction('conversation.user_replied', [$conversation, $thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
+                    }
+
+                    // Send new conversation to multiple customers.
+                    if ($is_create && count($to_array) > 1) {
+                        $prev_customers_ids = [];
+                        foreach ($to_array as $i => $customer_email) {
+                            // Skip first email, as conversation has already been created for it.
+                            if ($i == 0) {
+                                continue;
+                            }
+                            // Get customer by email.
+                            $customer_tmp = Customer::getByEmail($customer_email);
+                            // Skip same customers.
+                            if ($customer_tmp && in_array($customer_tmp->id, $prev_customers_ids)) {
+                                continue;
+                            }
+
+                            if (!$customer_tmp) {
+                                $customer_tmp = Customer::create($customer_email);
+                            }
+
+                            $prev_customers_ids[]  = $customer_tmp->id;
+
+                            // Copy conversation and thread.
+                            $conversation_copy = $conversation->replicate();
+                            $thread_copy = $thread->replicate();
+
+                            // Save conversation.
+                            $conversation_copy->customer_id = $customer_tmp->id;
+                            $conversation_copy->customer_email = $customer_email;
+                            $conversation_copy->push();
+
+                            $thread_copy->conversation_id = $conversation_copy->id;
+                            $thread_copy->customer_id = $customer_tmp->id;
+                            $thread_copy->setTo($customer_email);
+                            $thread_copy->push();
+
+                            // Events.
+                            // todo: allow to undo all emails
+                            event(new UserCreatedConversation($conversation_copy, $thread_copy));
+                            \Eventy::action('conversation.created_by_user_can_undo', $conversation_copy, $thread_copy);
+                            // After Conversation::UNDO_TIMOUT period trigger final event.
+                            \Helper::backgroundAction('conversation.created_by_user', [$conversation_copy, $thread_copy], now()->addSeconds(Conversation::UNDO_TIMOUT));
+                        }
                     }
 
                     // Compose flash message.
