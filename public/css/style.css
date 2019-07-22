@@ -3105,7 +3105,7 @@ ul.prev-convs {
     box-shadow:0 0 5px rgba(0,0,0,.2);
 }
 .module-card.active {
-    background-color: #fff;
+    background-color: #deffde;
 }
 .module-card img {
     width: 128px;
