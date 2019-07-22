@@ -118,7 +118,7 @@
                                 @endforeach
                             </select>
 
-                            <a href="#" class="btn btn-link btn-sm" data-toggle="tooltip" title="{{ __('Retrieve a list of available IMAP folders from the server') }}" style="margin-top: 3px" id="retrieve-imap-folders" data-loading-text="{{ __('Retrieving') }}…">{{ __('Get folders') }}</a>
+                            <a href="#" class="btn btn-link btn-sm" data-toggle="tooltip" title="{{ __('Retrieve a list of available IMAP folders from the server') }}" id="retrieve-imap-folders" data-loading-text="{{ __('Retrieving') }}…">{{ __('Get folders') }}</a>
 
                             @include('partials/field_error', ['field'=>'in_imap_folders'])
                         </div>

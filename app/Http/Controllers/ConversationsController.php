@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Attachment;
 use App\Conversation;
 use App\Customer;
+use App\Email;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
 use App\Events\UserAddedNote;
@@ -145,6 +146,14 @@ class ConversationsController extends Controller
             }
         }
 
+        // To (for new conversation draft only).
+        $to = [];
+        $emails = Conversation::sanitizeEmails($conversation->customer_email);
+        // Get customers info for emails.
+        if (count($emails)) {
+            $to = Customer::emailsToCustomers($emails);
+        }
+
         // Exclude mailbox emails from $to_customers.
         $mailbox_emails = $mailbox->getEmails();
         foreach ($to_customers as $key => $to_customer) {
@@ -169,6 +178,31 @@ class ConversationsController extends Controller
             $template = 'conversations/create';
         }
 
+        $exclude_array = $conversation->getExcludeArray($mailbox);
+
+        // Get data for creating a phone conversation.
+        $name = [];
+        $phone = '';
+        $to_email = [];
+        if ($customer) {
+            if ($customer->getFullName()) {
+                $name = [$customer->id => $customer->getFullName()];
+            }
+            $last_phone = array_last($customer->getPhones());
+            if (!empty($last_phone)) {
+                $phone = $last_phone['value'];
+            }
+
+            if ($conversation->customer_email) {
+                $customer_email = $conversation->customer_email;
+            } else {
+                $customer_email = $customer->getMainEmail();
+            }
+            if ($customer_email) {
+                $to_email = [$customer_email];
+            }
+        }
+
         return view($template, [
             'conversation'       => $conversation,
             'mailbox'            => $conversation->mailbox,
@@ -177,8 +211,15 @@ class ConversationsController extends Controller
             'folder'             => $folder,
             'folders'            => $conversation->mailbox->getAssesibleFolders(),
             'after_send'         => $after_send,
+            'to'                 => $to,
             'to_customers'       => $to_customers,
             'prev_conversations' => $prev_conversations,
+            'cc'                 => $conversation->getCcArray($exclude_array),
+            'bcc'                => $conversation->getBccArray($exclude_array),
+            // Data for creating a phone conversation.
+            'name'               => $name,
+            'phone'              => $phone,
+            'to_email'           => $to_email,
         ]);
     }
 
@@ -229,6 +270,7 @@ class ConversationsController extends Controller
             'folder'       => $folder,
             'folders'      => $mailbox->getAssesibleFolders(),
             'after_send'   => $after_send,
+            'to'           => [],
         ]);
     }
 
@@ -432,6 +474,22 @@ class ConversationsController extends Controller
                     $is_note = true;
                 }
 
+                $type = Conversation::TYPE_EMAIL;
+                if (!empty($request->type)) {
+                    $type = (int)$request->type;
+                }
+
+                $is_phone = false;
+                if ($type == Conversation::TYPE_PHONE) {
+                    $is_phone = true;
+                }
+
+                $is_create = false;
+                if (!empty($request->is_create)) {
+                    //if ($new || ($from_draft && $conversation->threads_count == 1)) {
+                    $is_create = $request->is_create;
+                }
+
                 $is_forward = false;
                 if (!empty($request->subtype) && (int)$request->subtype == Thread::SUBTYPE_FORWARD) {
                     $is_forward = true;
@@ -440,7 +498,7 @@ class ConversationsController extends Controller
                 // If reply is being created from draft, there is already thread created
                 $thread = null;
                 $from_draft = false;
-                if (!$is_note && !$response['msg'] && !empty($request->thread_id)) {
+                if ((!$is_note || $is_phone) && !$response['msg'] && !empty($request->thread_id)) {
                     $thread = Thread::find($request->thread_id);
                     if ($thread && (!$conversation || $thread->conversation_id != $conversation->id)) {
                         $response['msg'] = __('Incorrect thread');
@@ -458,18 +516,29 @@ class ConversationsController extends Controller
                 // Validate form
                 if (!$response['msg']) {
                     if ($new) {
-                        $validator = Validator::make($request->all(), [
-                            'to'       => 'required|string',
-                            'subject'  => 'required|string|max:998',
-                            'body'     => 'required|string',
-                            'cc'       => 'nullable|string',
-                            'bcc'      => 'nullable|string',
-                        ]);
+                        if ($type == Conversation::TYPE_EMAIL) {
+                            $validator = Validator::make($request->all(), [
+                                'to'       => 'required|array',
+                                'subject'  => 'required|string|max:998',
+                                'body'     => 'required|string',
+                                'cc'       => 'nullable|array',
+                                'bcc'      => 'nullable|array',
+                            ]);
+                        } else {
+                            // Phone conversation.
+                            $validator = Validator::make($request->all(), [
+                                'name'     => 'required|string',
+                                'subject'  => 'required|string|max:998',
+                                'body'     => 'required|string',
+                                'phone'    => 'nullable|string',
+                                'to_email' => 'nullable|string',
+                            ]);
+                        }
                     } else {
                         $validator = Validator::make($request->all(), [
                             'body'     => 'required|string',
-                            'cc'       => 'nullable|string',
-                            'bcc'      => 'nullable|string',
+                            'cc'       => 'nullable|array',
+                            'bcc'      => 'nullable|array',
                         ]);
                     }
 
@@ -482,6 +551,8 @@ class ConversationsController extends Controller
                     }
                 }
 
+                // List of emails.
+                $to_array = [];
                 if ($is_forward) {
                     $to_array = Conversation::sanitizeEmails($request->to_email);
                 } else {
@@ -513,7 +584,7 @@ class ConversationsController extends Controller
                     if ($new) {
                         // New conversation
                         $conversation = new Conversation();
-                        $conversation->type = Conversation::TYPE_EMAIL;
+                        $conversation->type = $type;
                         $conversation->subject = $request->subject;
                         $conversation->setPreview($request->body);
                         if ($attachments_info['has_attachments']) {
@@ -532,14 +603,25 @@ class ConversationsController extends Controller
 
                     // Customer can be empty in existing conversation if this is a draft.
                     $customer_email = '';
-                    if (!empty($to_array)) {
-                        $customer_email = $to_array[0];
-                    }
-                    if (!$conversation->customer_id) {
-                        $customer = Customer::create($customer_email);
-                        $conversation->customer_id = $customer->id;
+                    $customer = null;
+
+                    if ($type == Conversation::TYPE_PHONE) {
+                        // Phone.
+                        $phone_customer_data = $this->processPhoneCustomer($request);
+
+                        $customer_email = $phone_customer_data['customer_email'];
+                        $customer = $phone_customer_data['customer'];
                     } else {
-                        $customer = $conversation->customer;
+                        // Email.
+                        if (!empty($to_array)) {
+                            $customer_email = $to_array[0];
+                        }
+                        if (!$conversation->customer_id) {
+                            $customer = Customer::create($customer_email);
+                            $conversation->customer_id = $customer->id;
+                        } else {
+                            $customer = $conversation->customer;
+                        }
                     }
                     if ($customer_email && !$is_note && !$is_forward) {
                         $conversation->customer_email = $customer_email;
@@ -562,13 +644,19 @@ class ConversationsController extends Controller
                     }
 
                     // To is a single email string.
-                    // todo: multiple emails.
                     $to = '';
+                    // List of emails.
+                    $to_list = [];
                     if ($is_forward) {
                         $to = $request->to_email;
                     } else {
                         if (!empty($request->to)) {
-                            $to = $request->to;
+                            // When creating a new conversation, to is a list of emails.
+                            if (is_array($request->to)) {
+                                $to = $request->to[0];
+                            } else {
+                                $to = $request->to;
+                            }
                         } else {
                             $to = $conversation->customer_email;
                         }
@@ -620,7 +708,7 @@ class ConversationsController extends Controller
                         $thread->source_via = Thread::PERSON_USER;
                         $thread->source_type = Thread::SOURCE_TYPE_WEB;
                     } else {
-                        if ($is_forward) {
+                        if ($is_forward || $is_phone) {
                             $thread->type = Thread::TYPE_NOTE;
                         } else {
                             $thread->type = Thread::TYPE_MESSAGE;
@@ -724,7 +812,7 @@ class ConversationsController extends Controller
                     }
 
                     // When user creates a new conversation it may be saved as draft first.
-                    if ($new || ($from_draft && $conversation->threads_count == 1)) {
+                    if ($is_create) {
                         // New conversation.
                         event(new UserCreatedConversation($conversation, $thread));
                         \Eventy::action('conversation.created_by_user_can_undo', $conversation, $thread);
@@ -751,23 +839,70 @@ class ConversationsController extends Controller
                         \Helper::backgroundAction('conversation.user_replied', [$conversation, $thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
                     }
 
+                    // Send new conversation to multiple customers.
+                    if ($is_create && count($to_array) > 1) {
+                        $prev_customers_ids = [];
+                        foreach ($to_array as $i => $customer_email) {
+                            // Skip first email, as conversation has already been created for it.
+                            if ($i == 0) {
+                                continue;
+                            }
+                            // Get customer by email.
+                            $customer_tmp = Customer::getByEmail($customer_email);
+                            // Skip same customers.
+                            if ($customer_tmp && in_array($customer_tmp->id, $prev_customers_ids)) {
+                                continue;
+                            }
+
+                            if (!$customer_tmp) {
+                                $customer_tmp = Customer::create($customer_email);
+                            }
+
+                            $prev_customers_ids[]  = $customer_tmp->id;
+
+                            // Copy conversation and thread.
+                            $conversation_copy = $conversation->replicate();
+                            $thread_copy = $thread->replicate();
+
+                            // Save conversation.
+                            $conversation_copy->customer_id = $customer_tmp->id;
+                            $conversation_copy->customer_email = $customer_email;
+                            $conversation_copy->push();
+
+                            $thread_copy->conversation_id = $conversation_copy->id;
+                            $thread_copy->customer_id = $customer_tmp->id;
+                            $thread_copy->setTo($customer_email);
+                            $thread_copy->push();
+
+                            // Events.
+                            // todo: allow to undo all emails
+                            event(new UserCreatedConversation($conversation_copy, $thread_copy));
+                            \Eventy::action('conversation.created_by_user_can_undo', $conversation_copy, $thread_copy);
+                            // After Conversation::UNDO_TIMOUT period trigger final event.
+                            \Helper::backgroundAction('conversation.created_by_user', [$conversation_copy, $thread_copy], now()->addSeconds(Conversation::UNDO_TIMOUT));
+                        }
+                    }
+
                     // Compose flash message.
                     $show_view_link = true;
                     if (!empty($request->after_send) && $request->after_send == MailboxUser::AFTER_SEND_STAY) {
                         $show_view_link = false;
                     }
                    
-                    if ($is_note) {
+                    if ($is_phone) {
+                        $flash_type = 'warning';
+                        if ($show_view_link) {
+                            $flash_text = ':%tag_start%Conversation created:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%';
+                        } else {
+                            $flash_text = '<strong>'.__('Conversation created').'</strong>';
+                        }
+                    } elseif ($is_note) {
                         $flash_type = 'warning';
                         if ($show_view_link) {
                             $flash_text = ':%tag_start%Note added:%tag_end% :%view_start%View:%a_end%';
                         } else {
                             $flash_text = '<strong>'.__('Note added').'</strong>';
                         }
-                        $flash_message = __(
-                            $flash_text,
-                            ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;']
-                        );
                     } else {
                         $flash_type = 'success';
                         if ($show_view_link) {
@@ -775,11 +910,11 @@ class ConversationsController extends Controller
                         } else {
                             $flash_text = ':%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%';
                         }
-                        $flash_message = __(
-                            $flash_text,
-                            ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.undo', ['thread_id' => $thread->id]).'" class="text-danger">']
-                        );
                     }
+                    $flash_message = __(
+                        $flash_text,
+                        ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.undo', ['thread_id' => $thread->id]).'" class="text-danger">']
+                    );
 
                     \Session::flash('flash_'.$flash_type.'_floating', $flash_message);
                 }
@@ -803,6 +938,11 @@ class ConversationsController extends Controller
                     } else {
                         $new = false;
                     }
+                }
+
+                $is_create = false;
+                if (!empty($request->is_create)) {
+                    $is_create = true;
                 }
 
                 $thread = null;
@@ -851,16 +991,42 @@ class ConversationsController extends Controller
                         $conversation = new Conversation();
                     }
 
-                    if ($new || !empty($request->is_create)) {
+                    if ($new || $is_create) {
                         // New conversation
                         $customer_email = '';
-                        $to_array = Conversation::sanitizeEmails($request->to);
-                        if (count($to_array)) {
-                            $customer_email = $to_array[0];
-                        }
-                        $customer = Customer::create($customer_email);
+                        $customer = null;
 
-                        $conversation->type = Conversation::TYPE_EMAIL;
+                        $type = Conversation::TYPE_EMAIL;
+                        if (!empty($request->type)) {
+                            $type = (int)$request->type;
+                        }
+
+                        if ($type == Conversation::TYPE_PHONE) {
+                            // Phone.
+                            $phone_customer_data = $this->processPhoneCustomer($request);
+
+                            $customer_email = $phone_customer_data['customer_email'];
+                            $customer = $phone_customer_data['customer'];
+                        } else {
+                            // Email.
+                            $to_array = Conversation::sanitizeEmails($request->to);
+                            if (count($to_array)) {
+                                if (count($to_array) == 1) {
+                                    $customer_email = array_first($to_array);
+                                    $customer = Customer::create($customer_email);
+                                } else {
+                                    // Creating a conversation to multiple customers
+                                    // In customer_email temporary store a list of customer emails
+                                    $customer_email = implode(',', $to_array);
+                                    // Keep $customer as null.
+                                    // When conversation will be sent, separate conversation
+                                    // will be created for each customer.
+                                    $customer = null;
+                                }
+                            }
+                        }
+
+                        $conversation->type = $type;
                         $conversation->state = Conversation::STATE_DRAFT;
                         $conversation->status = $request->status;
                         $conversation->subject = $request->subject;
@@ -887,15 +1053,24 @@ class ConversationsController extends Controller
 
                     // To is a single email string
                     $to = '';
-                    if (!empty($request->to)) {
-                        $to = $request->to;
-                    } else {
-                        $to = $conversation->customer_email;
+                    if (empty($request->to) || !is_array($request->to)) {
+                        if (!empty($request->to)) {
+                            $to = $request->to;
+                        } else {
+                            $to = $conversation->customer_email;
+                        }
+                    }
+
+                    // Conversation type.
+                    if (!empty($request->type) && array_key_exists((int)$request->type, Conversation::$types)) {
+                        $conversation->type = (int)$request->type;
                     }
 
                     // Save extra recipients to CC
-                    $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
-                    $conversation->setBcc($request->bcc);
+                    if ($is_create) {
+                        $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                        $conversation->setBcc($request->bcc);
+                    }
                     // $conversation->last_reply_at = $now;
                     // $conversation->last_reply_from = Conversation::PERSON_USER;
                     // $conversation->user_updated_at = $now;
@@ -908,7 +1083,7 @@ class ConversationsController extends Controller
                         $thread = new Thread();
                         $thread->conversation_id = $conversation->id;
                         $thread->user_id = auth()->user()->id;
-                        $thread->type = Thread::TYPE_MESSAGE;
+                        //$thread->type = Thread::TYPE_MESSAGE;
                         if ($new) {
                             $thread->first = true;
                         }
@@ -929,6 +1104,12 @@ class ConversationsController extends Controller
                     if ($attachments_info['has_attachments']) {
                         $thread->has_attachments = true;
                     }
+                    // Thread type.
+                    if ($is_create && !empty($request->is_note)) {
+                        $thread->type = Thread::TYPE_NOTE;
+                    } else {
+                        $thread->type = Thread::TYPE_MESSAGE;
+                    }
                     $thread->body = $request->body;
                     $thread->setTo($to);
                     // We save CC and BCC as is and filter emails when sending replies
@@ -944,6 +1125,7 @@ class ConversationsController extends Controller
                     $conversation->addToFolder(Folder::TYPE_DRAFTS);
 
                     $response['conversation_id'] = $conversation->id;
+                    $response['customer_id'] = $conversation->customer_id;
                     $response['thread_id'] = $thread->id;
                     $response['number'] = $conversation->number;
 
@@ -2102,5 +2284,84 @@ class ConversationsController extends Controller
         }
 
         return redirect()->away($conversation->url($folder_id, null, ['show_draft' => $thread->id]));
+    }
+
+    /**
+     * Find or create customer when creating a Phone conversation.
+     */
+    public function processPhoneCustomer($request)
+    {
+        $customer_data = [];
+        $customer_email = '';
+        $customer = null;
+
+        // Check to prevent creating empty customers.
+        if (trim($request->name) || trim($request->phone)) {
+            $request->name = trim($request->name);
+            $request->phone = trim($request->phone);
+
+            $name_parts = explode(' ', $request->name);
+            $customer_data['first_name'] = $name_parts[0];
+            if (!empty($name_parts[1])) {
+                $customer_data['last_name'] = $name_parts[1];
+            }
+            $customer_data['phones'] = [$request->phone];
+        }
+
+        // Check if name field contains ID of the customer.
+        if (!$request->customer_id && is_numeric($request->name)) {
+            // Try to find customer by ID.
+            $customer = Customer::find($request->name);
+        }
+
+        if (!$customer && $request->to_email) {
+            // Try to get customer by email.
+            $customer = Customer::getByEmail($request->to_email);
+            if ($customer) {
+                $customer_email = $request->to_email;
+            }
+        }
+
+        if (!$customer) {
+            // Create customer with passed name, email and phone
+            if (Email::sanitizeEmail($request->to_email)) {
+                $customer_email = $request->to_email;
+                // If new email entered, attach email to the current customer
+                // instead of creating a new customer
+                if ($request->customer_id) {
+                    $customer = Customer::find($request->customer_id);
+                    if ($customer) {
+                        // Add email to customer.
+                        $customer->addEmail($customer_email, true);
+                    } else {
+                        $customer = Customer::create($customer_email, $customer_data);
+                    }
+                } else {
+                    $customer = Customer::create($customer_email, $customer_data);
+                }
+            } elseif ($customer_data) {
+                if ($request->customer_id) {
+                    $customer = Customer::find($request->customer_id);
+                    if ($customer) {
+                        $customer->setData($customer_data, false, true);
+                    }
+                }
+
+                if (!$customer) {
+                    $customer = Customer::createWithoutEmail($customer_data);
+                }
+            }
+        } else {
+            $customer->setData($customer_data, false, true);
+            // Add email to customer.
+            if (Email::sanitizeEmail($request->to_email)) {
+                $customer->addEmail($request->to_email, true);
+            }
+        }
+
+        return [
+            'customer' => $customer,
+            'customer_email' => $customer_email,
+        ];
     }
 }

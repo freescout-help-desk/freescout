@@ -18,7 +18,7 @@
                 
                 <div class="conv-actions">
                     {{-- There should be no spaced between buttons --}}
-                    <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}"></span><span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" data-toggle="tooltip"></span>@action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>--}}<div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
+                    @if (!$conversation->isPhone())<span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}">@endif</span><span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" data-toggle="tooltip"></span>@action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>--}}<div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
                         <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></span>
                         <ul class="dropdown-menu">
                             {{--<li><a href="#">{{ __("Follow") }} (todo)</a></li>--}}
@@ -115,33 +115,55 @@
 
                                 <div class="conv-reply-field">
                                     @if (!empty($to_customers))
-                                        <select name="to" class="form-control">
+                                        <select name="to" id="to" class="form-control">
                                             @foreach ($to_customers as $to_customer)
                                                 <option value="{{ $to_customer['email'] }}" @if ($to_customer['email'] == $conversation->customer_email)selected="selected"@endif>{{ $to_customer['customer']->getFullName(true) }} &lt;{{ $to_customer['email'] }}&gt;</option>
                                             @endforeach
                                         </select>
                                     @endif
-                                    <input type="email" class="form-control hidden" name="to_email" value="{{ old('to_email') }}" required autofocus data-parsley-exclude="1">
+                                    <select class="form-control hidden parsley-exclude draft-changer" name="to_email" id="to_email" multiple required autofocus>
+                                    </select>
                                     @include('partials/field_error', ['field'=>'to'])
                                 </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} conv-recipient">
+                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} @if (!$cc) hidden @endif field-cc conv-recipient">
                                 <label for="cc" class="control-label">{{ __('Cc') }}</label>
 
                                 <div class="conv-reply-field">
-                                    <input id="cc" type="text" class="form-control" name="cc" value="{{ old('cc', implode(',', $conversation->getCcArray(array_merge($mailbox->getEmails(), [$conversation->customer_email])))) }}">
+
+                                    <select class="form-control recipient-select" name="cc[]" id="cc" multiple/>
+                                        @if ($cc)
+                                            @foreach ($cc as $cc_email)
+                                                <option value="{{ $cc_email }}" selected="selected">{{ $cc_email }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+
                                     @include('partials/field_error', ['field'=>'cc'])
                                 </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }} conv-recipient">
+                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }} @if (!$bcc) hidden @endif field-cc conv-recipient">
                                 <label for="bcc" class="control-label">{{ __('Bcc') }}</label>
 
                                 <div class="conv-reply-field">
-                                    <input id="bcc" type="text" class="form-control" name="bcc" value="{{ old('bcc', implode(',', $conversation->getBccArray(array_merge($mailbox->getEmails(), [$conversation->customer_email])))) }}">
+                                     <select class="form-control recipient-select" name="bcc[]" id="bcc" multiple/>
+                                        @if ($bcc)
+                                            @foreach ($bcc as $bcc_email)
+                                                <option value="{{ $bcc_email }}" selected="selected">{{ $bcc_email }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
 
                                     @include('partials/field_error', ['field'=>'bcc'])
+                                </div>
+                            </div>
+
+                            <div class="form-group @if ($cc && $bcc) hidden @endif">
+                                <label class="control-label"></label>
+                                <div class="conv-reply-field">
+                                    <a href="javascript:void(0);" class="help-link" id="toggle-cc">Cc/Bcc</a>
                                 </div>
                             </div>
 
@@ -274,6 +296,11 @@
                             @if ($thread->isForward())
                                 <div class="thread-badge">
                                     <i class="glyphicon glyphicon-arrow-right"></i>
+                                </div>
+                            @endif
+                            @if ($conversation->isPhone() && $thread->first)
+                                <div class="thread-badge">
+                                    <i class="glyphicon glyphicon-earphone"></i>
                                 </div>
                             @endif
                             <div class="thread-header">
@@ -535,6 +562,6 @@
 
 @section('javascript')
     @parent
-    newConversationInit();
+    initReplyForm();
     initConversation();
 @endsection
