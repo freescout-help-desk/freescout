@@ -78,6 +78,9 @@
             "database/seeds",
             "database/factories"
         ],
+        "psr-0": {
+            "Swift_": "overrides/Swiftmailer/lib/classes"
+        },
         "psr-4": {
             "App\\": "app/",
             "Modules\\": "Modules/",
@@ -93,6 +96,7 @@
             "Illuminate\\Foundation\\": "overrides/Illuminate/Foundation/",
             "Illuminate\\Routing\\": "overrides/Illuminate/Routing/",
             "Illuminate\\Validation\\Concerns\\": "overrides/Illuminate/Validation/Concerns/",
+            "Illuminate\\Mail\\": "overrides/Illuminate/Mail/",
             "Lord\\Laroute\\Routes\\": "overrides/Lord/Laroute/Routes/",
             "TorMorten\\Eventy\\": "overrides/TorMorten/Eventy/",
             "Symfony\\Component\\Debug\\": "overrides/Symfony/Component/Debug/"
@@ -117,6 +121,7 @@
             "vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php",
             "vendor/laravel/framework/src/Illuminate/Routing/UrlGenerator.php",
             "vendor/laravel/framework/src/Illuminate/Validation/Concerns/ValidatesAttributes.php",
+            "vendor/laravel/framework/src/Illuminate/Mail/TransportManager.php",
             "vendor/rachidlaasri/laravel-installer/src/Providers/LaravelInstallerServiceProvider.php",
             "vendor/lord/laroute/src/Routes/Collection.php",
             "vendor/tormjens/eventy/src/Filter.php",
