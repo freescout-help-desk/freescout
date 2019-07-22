@@ -53,6 +53,7 @@ return array(
     'JakubOnderka\\PhpConsoleColor\\' => array($vendorDir . '/jakub-onderka/php-console-color/src'),
     'Illuminate\\Validation\\Concerns\\' => array($baseDir . '/overrides/Illuminate/Validation/Concerns'),
     'Illuminate\\Routing\\' => array($baseDir . '/overrides/Illuminate/Routing'),
+    'Illuminate\\Mail\\' => array($baseDir . '/overrides/Illuminate/Mail'),
     'Illuminate\\Foundation\\' => array($baseDir . '/overrides/Illuminate/Foundation'),
     'Illuminate\\' => array($vendorDir . '/laravel/framework/src/Illuminate'),
     'Html2Text\\' => array($vendorDir . '/html2text/html2text/src', $vendorDir . '/html2text/html2text/test'),

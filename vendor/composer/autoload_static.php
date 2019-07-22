@@ -110,6 +110,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         array (
             'Illuminate\\Validation\\Concerns\\' => 31,
             'Illuminate\\Routing\\' => 19,
+            'Illuminate\\Mail\\' => 16,
             'Illuminate\\Foundation\\' => 22,
             'Illuminate\\' => 11,
         ),
@@ -353,6 +354,10 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         array (
             0 => __DIR__ . '/../..' . '/overrides/Illuminate/Routing',
         ),
+        'Illuminate\\Mail\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/Illuminate/Mail',
+        ),
         'Illuminate\\Foundation\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/Illuminate/Foundation',
@@ -450,6 +455,13 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
     );
 
     public static $prefixesPsr0 = array (
+        'S' => 
+        array (
+            'Swift_' => 
+            array (
+                0 => __DIR__ . '/../..' . '/overrides/Swiftmailer/lib/classes',
+            ),
+        ),
         'R' => 
         array (
             'Rap2hpoutre\\LaravelLogViewer\\' => 
@@ -1941,7 +1953,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Illuminate\\Mail\\Message' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/Message.php',
         'Illuminate\\Mail\\PendingMail' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/PendingMail.php',
         'Illuminate\\Mail\\SendQueuedMailable' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/SendQueuedMailable.php',
-        'Illuminate\\Mail\\TransportManager' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/TransportManager.php',
+        'Illuminate\\Mail\\TransportManager' => __DIR__ . '/../..' . '/overrides/Illuminate/Mail/TransportManager.php',
         'Illuminate\\Mail\\Transport\\ArrayTransport' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/Transport/ArrayTransport.php',
         'Illuminate\\Mail\\Transport\\LogTransport' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/Transport/LogTransport.php',
         'Illuminate\\Mail\\Transport\\MailgunTransport' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/Transport/MailgunTransport.php',
@@ -2955,6 +2967,10 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Spatie\\String\\Exceptions\\UnsetOffsetException' => __DIR__ . '/..' . '/spatie/string/src/Exceptions/UnsetOffsetException.php',
         'Spatie\\String\\Integrations\\Underscore' => __DIR__ . '/..' . '/spatie/string/src/Integrations/Underscore.php',
         'Spatie\\String\\Str' => __DIR__ . '/..' . '/spatie/string/src/Str.php',
+        'Swift_MailTransport' => __DIR__ . '/../..' . '/overrides/Swiftmailer/lib/classes/Swift/MailTransport.php',
+        'Swift_Transport_MailInvoker' => __DIR__ . '/../..' . '/overrides/Swiftmailer/lib/classes/Swift/Transport/MailInvoker.php',
+        'Swift_Transport_MailTransport' => __DIR__ . '/../..' . '/overrides/Swiftmailer/lib/classes/Swift/Transport/MailTransport.php',
+        'Swift_Transport_SimpleMailInvoker' => __DIR__ . '/../..' . '/overrides/Swiftmailer/lib/classes/Swift/Transport/SimpleMailInvoker.php',
         'Symfony\\Component\\Console\\Application' => __DIR__ . '/..' . '/symfony/console/Application.php',
         'Symfony\\Component\\Console\\CommandLoader\\CommandLoaderInterface' => __DIR__ . '/..' . '/symfony/console/CommandLoader/CommandLoaderInterface.php',
         'Symfony\\Component\\Console\\CommandLoader\\ContainerCommandLoader' => __DIR__ . '/..' . '/symfony/console/CommandLoader/ContainerCommandLoader.php',

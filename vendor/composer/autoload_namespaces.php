@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Swift_' => array($baseDir . '/overrides/Swiftmailer/lib/classes'),
     'Rap2hpoutre\\LaravelLogViewer\\' => array($vendorDir . '/rap2hpoutre/laravel-log-viewer/src'),
     'Parsedown' => array($vendorDir . '/erusev/parsedown'),
     'JShrink' => array($vendorDir . '/tedivm/jshrink/src'),
