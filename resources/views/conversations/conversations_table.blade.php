@@ -120,6 +120,9 @@
                                 @if ($conversation->has_attachments)
                                     <i class="conv-attachment-mobile glyphicon glyphicon-paperclip"></i>
                                 @endif
+                                @if ($conversation->isPhone())
+                                    <i class="glyphicon glyphicon-earphone"></i>
+                                @endif
                                 {{--<span class="conv-subject-number">#{{ $conversation->number }} </span>--}}@action('conversations_table.before_subject', $conversation){{ $conversation->getSubject() }}
                             </p>
                             <p class="conv-preview">@if ($conversation->preview){{ $conversation->preview }}@else&nbsp;@endif</p>

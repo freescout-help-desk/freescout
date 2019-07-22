@@ -242,7 +242,11 @@ class CustomersController extends Controller
         $customers_query = Customer::select($select_list);
 
         if ($join_emails) {
-            $customers_query->join('emails', 'customers.id', '=', 'emails.customer_id');
+            if ($request->allow_non_emails) {
+                $customers_query->leftJoin('emails', 'customers.id', '=', 'emails.customer_id');
+            } else {
+                $customers_query->join('emails', 'customers.id', '=', 'emails.customer_id');
+            }
         }
 
         if ($request->search_by == 'all' || $request->search_by == 'email') {

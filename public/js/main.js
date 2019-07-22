@@ -1436,13 +1436,66 @@ function initRecipientSelector(custom_options, selector)
 		// For hidden inputs
 		width: '100%'
 	};
+
+	if (typeof(custom_options) == "undefined") {
+		custom_options = {};
+	}
+
 	$.extend(options, custom_options);
 
 	if (typeof(selector) == "undefined") {
 		selector = $('.recipient-select:visible:not(.select2-hidden-accessible)');
 	}
 
-	return initCustomerSelector(selector, options);
+	var result = initCustomerSelector(selector, options);
+
+	if (options.editable) {
+		result.on('select2:closing', function(e) {
+			var params = e.params;
+			var select = $(e.target);
+
+			var value = select.next('.select2:first').children().find('.select2-search__field:first').val();
+			value = value.trim();
+			if (!value) {
+				return;
+			}
+
+			// Don't allow to create a tag if there is no @ symbol
+			if (typeof(custom_options.allow_non_emails) == "undefined") {
+			    if (value.indexOf('@') === -1) {
+					// Return null to disable tag creation
+					return null;
+			    }
+			}
+
+			// Don't select an item if the close event was triggered from a select or
+			// unselect event
+		    if (params && params.args && params.args.originalSelect2Event != null) {
+				var event = params.args.originalSelect2Event;
+
+				if (event._type === 'select' || event._type === 'unselect') {
+					return;
+				}
+		    }
+
+			var data = select.select2('data');
+
+			// Check if select already has such option
+		    for (i in data) {
+		    	if (data[i].id == value) {
+		    		return;
+		    	}
+		    }
+			
+		    addSelect2Option(select, {
+		        id: value,
+		        text: value,
+		        selected: true
+		    });
+		});
+	}
+
+	return result;
 }
 
 function initReplyForm(load_attachments, init_customer_selector)
@@ -2006,6 +2059,11 @@ function initCustomerSelector(input, custom_options)
 		show_fields = custom_options.show_fields;
 	}
 
+	var allow_non_emails = null;
+	if (typeof(custom_options.allow_non_emails) != "undefined") {
+		allow_non_emails = true;
+	}
+
 	var options = {
 		ajax: {
 			url: laroute.route('customers.ajax_search'),
@@ -2018,7 +2076,8 @@ function initCustomerSelector(input, custom_options)
 					exclude_email: input.attr('data-customer_email'),
 					use_id: use_id,
 					search_by: search_by,
-					show_fields: show_fields
+					show_fields: show_fields,
+					allow_non_emails: allow_non_emails
 				};
 			}/*,
 			beforeSend: function(){

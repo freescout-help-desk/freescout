@@ -498,7 +498,7 @@ class ConversationsController extends Controller
                 // If reply is being created from draft, there is already thread created
                 $thread = null;
                 $from_draft = false;
-                if (!$is_note && !$response['msg'] && !empty($request->thread_id)) {
+                if ((!$is_note || $is_phone) && !$response['msg'] && !empty($request->thread_id)) {
                     $thread = Thread::find($request->thread_id);
                     if ($thread && (!$conversation || $thread->conversation_id != $conversation->id)) {
                         $response['msg'] = __('Incorrect thread');
@@ -603,14 +603,25 @@ class ConversationsController extends Controller
 
                     // Customer can be empty in existing conversation if this is a draft.
                     $customer_email = '';
-                    if (!empty($to_array)) {
-                        $customer_email = $to_array[0];
-                    }
-                    if (!$conversation->customer_id) {
-                        $customer = Customer::create($customer_email);
-                        $conversation->customer_id = $customer->id;
+                    $customer = null;
+
+                    if ($type == Conversation::TYPE_PHONE) {
+                        // Phone.
+                        $phone_customer_data = $this->processPhoneCustomer($request);
+
+                        $customer_email = $phone_customer_data['customer_email'];
+                        $customer = $phone_customer_data['customer'];
                     } else {
-                        $customer = $conversation->customer;
+                        // Email.
+                        if (!empty($to_array)) {
+                            $customer_email = $to_array[0];
+                        }
+                        if (!$conversation->customer_id) {
+                            $customer = Customer::create($customer_email);
+                            $conversation->customer_id = $customer->id;
+                        } else {
+                            $customer = $conversation->customer;
+                        }
                     }
                     if ($customer_email && !$is_note && !$is_forward) {
                         $conversation->customer_email = $customer_email;
@@ -697,7 +708,7 @@ class ConversationsController extends Controller
                         $thread->source_via = Thread::PERSON_USER;
                         $thread->source_type = Thread::SOURCE_TYPE_WEB;
                     } else {
-                        if ($is_forward) {
+                        if ($is_forward || $is_phone) {
                             $thread->type = Thread::TYPE_NOTE;
                         } else {
                             $thread->type = Thread::TYPE_MESSAGE;
@@ -992,71 +1003,10 @@ class ConversationsController extends Controller
 
                         if ($type == Conversation::TYPE_PHONE) {
                             // Phone.
-                            $customer_data = [];
+                            $phone_customer_data = $this->processPhoneCustomer($request);
 
-                            // Check to prevent creating empty customers.
-                            if (trim($request->name) || trim($request->phone)) {
-                                $request->name = trim($request->name);
-                                $request->phone = trim($request->phone);
-
-                                $name_parts = explode(' ', $request->name);
-                                $customer_data['first_name'] = $name_parts[0];
-                                if (!empty($name_parts[1])) {
-                                    $customer_data['last_name'] = $name_parts[1];
-                                }
-                                $customer_data['phones'] = [$request->phone];
-                            }
-
-                            // Check if name field contains ID of the customer.
-                            if (!$request->customer_id && is_numeric($request->name)) {
-                                // Try to find customer by ID.
-                                $customer = Customer::find($request->name);
-                            }
-
-                            if (!$customer && $request->to_email) {
-                                // Try to get customer by email.
-                                $customer = Customer::getByEmail($request->to_email);
-                                if ($customer) {
-                                    $customer_email = $request->to_email;
-                                }
-                            }
-
-                            if (!$customer) {
-                                // Create customer with passed name, email and phone
-                                if (Email::sanitizeEmail($request->to_email)) {
-                                    $customer_email = $request->to_email;
-                                    // If new email entered, attach email to the current customer
-                                    // instead of creating a new customer
-                                    if ($request->customer_id) {
-                                        $customer = Customer::find($request->customer_id);
-                                        if ($customer) {
-                                            // Add email to customer.
-                                            $customer->addEmail($customer_email, true);
-                                        } else {
-                                            $customer = Customer::create($customer_email, $customer_data);
-                                        }
-                                    } else {
-                                        $customer = Customer::create($customer_email, $customer_data);
-                                    }
-                                } elseif ($customer_data) {
-                                    if ($request->customer_id) {
-                                        $customer = Customer::find($request->customer_id);
-                                        if ($customer) {
-                                            $customer->setData($customer_data, false, true);
-                                        }
-                                    }
-
-                                    if (!$customer) {
-                                        $customer = Customer::createWithoutEmail($customer_data);
-                                    }
-                                }
-                            } else {
-                                $customer->setData($customer_data, false, true);
-                                // Add email to customer.
-                                if (Email::sanitizeEmail($request->to_email)) {
-                                    $customer->addEmail($request->to_email, true);
-                                }
-                            }
+                            $customer_email = $phone_customer_data['customer_email'];
+                            $customer = $phone_customer_data['customer'];
                         } else {
                             // Email.
                             $to_array = Conversation::sanitizeEmails($request->to);
@@ -2334,5 +2284,84 @@ class ConversationsController extends Controller
         }
 
         return redirect()->away($conversation->url($folder_id, null, ['show_draft' => $thread->id]));
+    }
+
+    /**
+     * Find or create customer when creating a Phone conversation.
+     */
+    public function processPhoneCustomer($request)
+    {
+        $customer_data = [];
+        $customer_email = '';
+        $customer = null;
+
+        // Check to prevent creating empty customers.
+        if (trim($request->name) || trim($request->phone)) {
+            $request->name = trim($request->name);
+            $request->phone = trim($request->phone);
+
+            $name_parts = explode(' ', $request->name);
+            $customer_data['first_name'] = $name_parts[0];
+            if (!empty($name_parts[1])) {
+                $customer_data['last_name'] = $name_parts[1];
+            }
+            $customer_data['phones'] = [$request->phone];
+        }
+
+        // Check if name field contains ID of the customer.
+        if (!$request->customer_id && is_numeric($request->name)) {
+            // Try to find customer by ID.
+            $customer = Customer::find($request->name);
+        }
+
+        if (!$customer && $request->to_email) {
+            // Try to get customer by email.
+            $customer = Customer::getByEmail($request->to_email);
+            if ($customer) {
+                $customer_email = $request->to_email;
+            }
+        }
+
+        if (!$customer) {
+            // Create customer with passed name, email and phone
+            if (Email::sanitizeEmail($request->to_email)) {
+                $customer_email = $request->to_email;
+                // If new email entered, attach email to the current customer
+                // instead of creating a new customer
+                if ($request->customer_id) {
+                    $customer = Customer::find($request->customer_id);
+                    if ($customer) {
+                        // Add email to customer.
+                        $customer->addEmail($customer_email, true);
+                    } else {
+                        $customer = Customer::create($customer_email, $customer_data);
+                    }
+                } else {
+                    $customer = Customer::create($customer_email, $customer_data);
+                }
+            } elseif ($customer_data) {
+                if ($request->customer_id) {
+                    $customer = Customer::find($request->customer_id);
+                    if ($customer) {
+                        $customer->setData($customer_data, false, true);
+                    }
+                }
+
+                if (!$customer) {
+                    $customer = Customer::createWithoutEmail($customer_data);
+                }
+            }
+        } else {
+            $customer->setData($customer_data, false, true);
+            // Add email to customer.
+            if (Email::sanitizeEmail($request->to_email)) {
+                $customer->addEmail($request->to_email, true);
+            }
+        }
+
+        return [
+            'customer' => $customer,
+            'customer_email' => $customer_email,
+        ];
     }
 }
