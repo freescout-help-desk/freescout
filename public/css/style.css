@@ -3101,8 +3101,8 @@ ul.prev-convs {
     position: relative;
     margin: 0 18px 18px 0;
     padding: 18px;
-    -webkit-box-shadow:0 0 10px rgba(0,0,0,.2);
-    box-shadow:0 0 10px rgba(0,0,0,.2);
+    -webkit-box-shadow:0 0 5px rgba(0,0,0,.2);
+    box-shadow:0 0 5px rgba(0,0,0,.2);
 }
 .module-card.active {
     background-color: #fff;
