@@ -36,13 +36,15 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
   * Web installer & updater.
   * Starred conversations.
   * Forwarding conversations.
+  * Phone conversations.
+  * Sending new conversations to multiple recipients at once.
   * Push notifications.
   * Auto reply.
   * Notes.
   * Pasting screenshots from the clipboard into the reply area.
   * Configuring notifications on a per user basis.
   * Open tracking.
-  * Editing/hiding threads.
+  * Editing threads.
   * Search.
 
 Need anything else? Suggest features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular).
