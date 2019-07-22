@@ -1177,6 +1177,14 @@ class Conversation extends Model
         return array_merge($mailbox->getEmails(), $customer_emails);
     }
 
+    /**
+     * Is it as phone conversation.
+     */
+    public function isPhone()
+    {
+        return ($this->type == self::TYPE_PHONE);
+    }
+
     // /**
     //  * Get conversation meta data as array.
     //  */

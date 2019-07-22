@@ -227,20 +227,80 @@ class CustomersController extends Controller
 
         $q = $request->q;
 
-        $customers = Customer::select('customers.id', 'emails.email', 'first_name', 'last_name')
-            ->join('emails', 'customers.id', '=', 'emails.customer_id')
-            ->where('emails.email', 'like', '%'.$q.'%')
-            ->where('emails.email', '<>', $request->exclude_email)
-            ->orWhere('first_name', 'like', '%'.$q.'%')
-            ->orWhere('last_name', 'like', '%'.$q.'%')
-            ->paginate(20);
+        $join_emails = false;
+        if ($request->search_by == 'all' || $request->search_by == 'email' || $request->exclude_email) {
+            $join_emails = true;
+        }
+
+        $select_list = ['customers.id', 'first_name', 'last_name'];
+        if ($join_emails) {
+            $select_list[] = 'emails.email';
+        }
+        if ($request->show_fields == 'phone') {
+            $select_list[] = 'phones';
+        }
+        $customers_query = Customer::select($select_list);
+
+        if ($join_emails) {
+            $customers_query->join('emails', 'customers.id', '=', 'emails.customer_id');
+        }
+
+        if ($request->search_by == 'all' || $request->search_by == 'email') {
+            $customers_query->where('emails.email', 'like', '%'.$q.'%');
+        }
+        if ($request->exclude_email) {
+            $customers_query->where('emails.email', '<>', $request->exclude_email);
+        }
+        if ($request->search_by == 'all' || $request->search_by == 'name') {
+            $customers_query->orWhere('first_name', 'like', '%'.$q.'%')
+                ->orWhere('last_name', 'like', '%'.$q.'%');
+        }
+        if ($request->search_by == 'phone') {
+            $customers_query->where('customers.phones', 'like', '%'.$q.'%');
+        }
+
+        $customers = $customers_query->paginate(20);
 
         foreach ($customers as $customer) {
-            $text = $customer->getEmailAndName();
-            if (!empty($request->use_id)) {
-                $id = $customer->id;
+            $id = '';
+            $text = '';
+
+            if ($request->show_fields != 'all') {
+                switch ($request->show_fields) {
+                    case 'email':
+                        $text = $customer->email;
+                        break;
+                    case 'name':
+                        $text = $customer->getFullName();
+                        break;
+                    case 'phone':
+                        // Get phone which matches
+                        $phones = $customer->getPhones();
+                        foreach ($phones as $phone) {
+                            if (strstr($phone['value'], $q)) {
+                                $text = $phone['value'];
+                                if ($customer->getFullName()) {
+                                    $text .= ' — '.$customer->getFullName();
+                                }
+                                $id = $phone['value'];
+                                break;
+                            }
+                        }
+                        break;
+                    default:
+                        $text = $customer->getNameAndEmail();
+                        break;
+                }
             } else {
-                $id = $customer->email;
+                $text = $customer->getNameAndEmail();
+            }
+
+            if (!$id) {
+                if (!empty($request->use_id)) {
+                    $id = $customer->id;
+                } else {
+                    $id = $customer->email;
+                }
             }
             $response['results'][] = [
                 'id'   => $id,

@@ -32,7 +32,7 @@
 
                     <div class="btn-group">
                         <button type="button" class="btn btn-default active" id="email-conv-switch" onclick="switchToNewEmailConversation({{ App\Conversation::TYPE_EMAIL }})"><i class="glyphicon glyphicon-envelope"></i></button>
-                        <button type="button" class="btn btn-default" id="phone-conv-switch" onclick="switchToNewPhoneConversation({{ App\Conversation::TYPE_PHONE }})"><i class="glyphicon glyphicon-earphone"></i></button>
+                        <button type="button" class="btn btn-default" id="phone-conv-switch" onclick="switchToNewPhoneConversation()"><i class="glyphicon glyphicon-earphone"></i></button>
                     </div>
                 </div>
 
@@ -59,6 +59,8 @@
                             <input type="hidden" name="type" value="{{ $conversation->type }}"/>
                             {{-- For drafts --}}
                             <input type="hidden" name="thread_id" value="{{ $thread->id }}"/>
+                            {{-- Customer ID is needed not to create empty customers when creating a new phone conversations --}}
+                            <input type="hidden" name="customer_id" value="{{ $conversation->customer_id }}"/>
                             <input type="hidden" name="is_create" value="1"/>
                             
                             @if ($conversation->created_by_user_id)
@@ -77,7 +79,15 @@
                                 <label for="name" class="col-sm-2 control-label">{{ __('Customer Name') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="name" type="text" class="form-control parsley-exclude" name="name" value="{{ old('name') }}" required autofocus>
+
+                                    <select class="form-control parsley-exclude draft-changer" name="name" id="name" multiple required autofocus/>
+                                        @if (!empty($name))
+                                            {{-- We use customer ID here because customer may have no emails --}}
+                                            @foreach ($name as $name_customer_id => $name_customer_name)
+                                                <option value="{{ $name_customer_id }}" selected="selected">{{ $name_customer_name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
 
                                     @include('partials/field_error', ['field'=>'name'])
                                 </div>
@@ -87,25 +97,49 @@
                                 <label for="phone" class="col-sm-2 control-label">{{ __('Phone') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="phone" type="text" class="form-control" name="phone" value="{{ old('phone') }}" placeholder="{{ __('(optional)') }}">
+
+                                    <select class="form-control draft-changer" name="phone" id="phone" placeholder="{{ __('(optional)') }}" multiple/>
+                                        @if (!empty($phone))
+                                            <option value="{{ $phone }}" selected="selected">{{ $phone }}</option>
+                                        @endif
+                                    </select>
 
                                     @include('partials/field_error', ['field'=>'phone'])
                                 </div>
                             </div>
 
-                            <div class="col-sm-9 col-sm-offset-2 toggle-field phone-conv-fields" id="toggle-email">
-                                <a href="javascript:void(0);">{{ __('Add Email') }}</a>
+                            <div id="conv-to-email-group">
+                                <div class="form-group phone-conv-fields{{ $errors->has('to_email') ? ' has-error' : '' }}" id="field-to_email">
+                                    <label for="to_email" class="col-sm-2 control-label">{{ __('Email') }}</label>
+
+                                    <div class="col-sm-9">
+
+                                        <select class="form-control draft-changer" name="to_email" id="to_email" placeholder="{{ __('(optional)') }}" multiple/>
+                                            @if (!empty($to_email))
+                                                @foreach ($to_email as $email => $name)
+                                                    <option value="{{ $email }}" selected="selected">{{ $name }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+
+                                        @include('partials/field_error', ['field'=>'to'])
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-9 col-sm-offset-2 toggle-field phone-conv-fields" id="toggle-email">
+                                    <a href="javascript:void(0);">{{ __('Add Email') }}</a>
+                                </div>
                             </div>
 
                             <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }}" id="field-to">
-                                <label for="to" class="col-sm-2 control-label"><span class="email-conv-fields">{{ __('To') }}</span> <span class="phone-conv-fields">{{ __('Email') }}</span></label>
+                                <label for="to" class="col-sm-2 control-label">{{ __('To') }}</label>
 
                                 <div class="col-sm-9">
 
                                     <select class="form-control recipient-select" name="to[]" id="to" multiple required autofocus/>
                                         @if ($to)
-                                            @foreach ($to as $to_email => $to_name)
-                                                <option value="{{ $to_email }}" selected="selected">{{ $to_name }}</option>
+                                            @foreach ($to as $email => $name)
+                                                <option value="{{ $email }}" selected="selected">{{ $name }}</option>
                                             @endforeach
                                         @endif
                                     </select>

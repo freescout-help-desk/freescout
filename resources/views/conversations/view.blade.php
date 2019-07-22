@@ -121,8 +121,7 @@
                                             @endforeach
                                         </select>
                                     @endif
-                                    <select class="form-control hidden parsley-exclude recipient-select" name="to_email" id="to_email" multiple required autofocus>
-                                        <option value=""></option>
+                                    <select class="form-control hidden parsley-exclude draft-changer" name="to_email" id="to_email" multiple required autofocus>
                                     </select>
                                     @include('partials/field_error', ['field'=>'to'])
                                 </div>
@@ -297,6 +296,11 @@
                             @if ($thread->isForward())
                                 <div class="thread-badge">
                                     <i class="glyphicon glyphicon-arrow-right"></i>
+                                </div>
+                            @endif
+                            @if ($conversation->isPhone() && $thread->first)
+                                <div class="thread-badge">
+                                    <i class="glyphicon glyphicon-earphone"></i>
                                 </div>
                             @endif
                             <div class="thread-header">

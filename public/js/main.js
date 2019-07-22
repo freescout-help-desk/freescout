@@ -946,6 +946,7 @@ function switchToNewEmailConversation(type_email)
 	$('.email-conv-fields').show();
 	$('.phone-conv-fields').hide();
 	$('#field-to').show();
+	$('#name').addClass('parsley-exclude');
 	$('#to').removeClass('parsley-exclude');
 
 	$('.conv-block:first').removeClass('conv-note-block').removeClass('conv-phone-block');
@@ -955,27 +956,69 @@ function switchToNewEmailConversation(type_email)
 }
 
 // Create new phone conversation
-function switchToNewPhoneConversation(type_phone)
+function switchToNewPhoneConversation()
 {
 	$('#email-conv-switch').removeClass('active');
 	$('#phone-conv-switch').addClass('active');
 	$('.email-conv-fields').hide();
 	$('.phone-conv-fields').show();
 
-	if (!$('#to').val()) {
-		$('#field-to').hide();
-		$('#toggle-email').show();
-	} else {
-		$('#field-to').show();
+	if ($('#to_email').val().length) {
+		// Show Email
+		$('#field-to_email').show();
 		$('#toggle-email').hide();
+		$('#field-to').hide();
+	} else {
+		// Hide Email
+		$('#field-to_email').hide();
+		$('#toggle-email').show();
+		$('#field-to').show();
 	}
+	$('#field-to').hide();
+	$('#name').removeClass('parsley-exclude');
 	$('#to').addClass('parsley-exclude');
 
 	$('.conv-block:first').addClass('conv-note-block').addClass('conv-phone-block');
 
-	$('#form-create :input[name="is_note"]:first').val(0);
-	$('#form-create :input[name="is_phone"]:first').val(0);
-	$('#form-create :input[name="type"]:first').val(type_phone);
+	$('#form-create :input[name="is_note"]:first').val(1);
+	$('#form-create :input[name="is_phone"]:first').val(1);
+	$('#form-create :input[name="type"]:first').val(Vars.conv_type_phone);
+
+	// Customer name
+	initRecipientSelector({
+		maximumSelectionLength: 1,
+		allow_non_emails: true,
+		use_id: true
+	}, $('#name:not(.select2-hidden-accessible)')).on('select2:select select2:unselect', function(e) {
+		// If customer selects a customer with email, hide Email field.
+		var data = e.params.data;
+		if (typeof(data.newOption) == "undefined" && data.selected) {
+			// User added custom name, so hide Email
+			$('#conv-to-email-group').hide();
+		} else {
+			// User selected existing customer or unselected, so show Email
+			$('#conv-to-email-group').show();
+
+			// Reset customer_id on unselect
+			if (!data.selected) {
+				$('#form-create :input[name="customer_id"]:first').val('');
+			}
+		}
+	});
+
+	// Email
+	initRecipientSelector({
+		maximumSelectionLength: 1,
+		search_by: 'email'
+	}, $('#to_email:not(.select2-hidden-accessible)'));
+
+	// Phone
+	initRecipientSelector({
+		maximumSelectionLength: 1,
+		allow_non_emails: true,
+		search_by: 'phone',
+		show_fields: 'phone',
+	}, $('#phone:not(.select2-hidden-accessible)'));
 }
 
 // Add target blank to all links in threads.
@@ -1037,13 +1080,27 @@ function showReplyForm(data)
 				// Display body value in editor
 				$('#body').summernote("code", data[field]);
 			}
+			if (field == 'to_email' || field == 'cc' || field == 'bcc') {
+				if (data && typeof(data.to) != "undefined") {
+					addSelect2Option($("#"+field), {
+						id: data[field], text: data[field]
+					});
+				} else {
+					$("#"+field).children('option:first').removeAttr('selected');
+				}
+			}
 		}
 
 		// Show attachments
 		showAttachments(data);
+
+		// Show Cc/Bcc
+		if (data.cc || data.bcc ) {
+	    	$('#toggle-cc').click();
+		}
 	}
-	$(".conv-reply-block :input[name='to']:first").removeClass('hidden');
-	$(".conv-reply-block :input[name='to_email']:first").addClass('hidden').addClass('parsley-exclude');
+	$("#to").removeClass('hidden');
+	$("#to_email").addClass('hidden').addClass('parsley-exclude').next('.select2:first').hide();
 
 	if (!$('#to').length) {
 		$('#body').summernote('focus');
@@ -1051,6 +1108,21 @@ function showReplyForm(data)
 
 	// Select2 for CC/BCC
 	initRecipientSelector();
+}
+
+// Add an option to select2
+// 	var data = {
+//	    id: 1,
+//	    text: 'Barn owl'
+//	};
+function addSelect2Option(select, data)
+{
+	if (!data.id || !data.text) {
+		return;
+	}
+
+	var new_option = new Option(data.text, data.id, true, true);
+	select.append(new_option).trigger('change');
 }
 
 // Show attachments after loading via ajax.
@@ -1130,7 +1202,7 @@ function convEditorInit()
 	    onReplyBlur();
 	});
 	// select2 does not react on keyup or keypress
-	$(".recipient-select").on('change', function(event) {
+	$(".recipient-select, .draft-changer").on('change', function(event) {
 		onReplyChange();
 		onReplyBlur(); 
 	});
@@ -1347,26 +1419,30 @@ function initNewConversation(is_phone)
         	switchToNewPhoneConversation();
         }
 	    $('#toggle-email').click(function() {
-			$('#field-to').show();
-			$(this).remove();
+			$('#field-to_email').show();
+			$(this).hide();
 		});
     });
 }
 
 // To, Cc, Bcc selector
-function initRecipientSelector(custom_options)
+function initRecipientSelector(custom_options, selector)
 {
 	var options = {
 		editable: true,
 		use_id: false,
-		containerCssClass: 'recipient-select',
+		containerCssClass: 'select2-recipient',
 		//selectOnClose: true,
 		// For hidden inputs
 		width: '100%'
 	};
 	$.extend(options, custom_options);
 
-	initCustomerSelector($('.recipient-select:visible'), options);
+	if (typeof(selector) == "undefined") {
+		selector = $('.recipient-select:visible:not(.select2-hidden-accessible)');
+	}
+
+	return initCustomerSelector(selector, options);
 }
 
 function initReplyForm(load_attachments, init_customer_selector)
@@ -1438,7 +1514,7 @@ function initReplyForm(load_attachments, init_customer_selector)
 			fsAjax(data, laroute.route('conversations.ajax'), function(response) {
 				if (typeof(response.status) != "undefined" && response.status == 'success') {
 					// Forget note
-					if (button.hasClass('btn-add-note-text')) {
+					if (isNote()) {
 						forgetNote(getGlobalAttr('conversation_id'));
 					}
 					if (typeof(response.redirect_url) != "undefined") {
@@ -1920,6 +1996,16 @@ function initCustomerSelector(input, custom_options)
 		}
 	}
 
+	var search_by = 'all';
+	if (typeof(custom_options.search_by) != "undefined") {
+		search_by = custom_options.search_by;
+	}
+
+	var show_fields = 'all';
+	if (typeof(custom_options.show_fields) != "undefined") {
+		show_fields = custom_options.show_fields;
+	}
+
 	var options = {
 		ajax: {
 			url: laroute.route('customers.ajax_search'),
@@ -1930,7 +2016,9 @@ function initCustomerSelector(input, custom_options)
 				return {
 					q: params.term,
 					exclude_email: input.attr('data-customer_email'),
-					use_id: use_id
+					use_id: use_id,
+					search_by: search_by,
+					show_fields: show_fields
 				};
 			}/*,
 			beforeSend: function(){
@@ -1944,17 +2032,28 @@ function initCustomerSelector(input, custom_options)
  		dropdownCssClass: "select2-multi-dropdown",
 		minimumInputLength: 2
 	};
+	// When placeholder is set on invisible input, it breaks input
+	// todo: fix this
+	if (input.length == 1 && input.is(':visible')) {
+		options.placeholder = input.attr('placeholder');
+	}
 	if (typeof(custom_options.editable) != "undefined" && custom_options.editable) {
+		var token_separators = [",", ", ", " "];
+		if (typeof(custom_options.maximumSelectionLength) != "undefined" && custom_options.maximumSelectionLength == 1) {
+			token_separators = [];
+		}
 		$.extend(options, {
 			multiple: true,
 			tags: true,
-			tokenSeparators: [",", ", ", " "],
+			tokenSeparators: token_separators,
 			createTag: function (params) {
 				// Don't allow to create a tag if there is no @ symbol
-			    if (params.term.indexOf('@') === -1) {
-					// Return null to disable tag creation
-					return null;
-			    }
+				if (typeof(custom_options.allow_non_emails) == "undefined") {
+				    if (params.term.indexOf('@') === -1) {
+						// Return null to disable tag creation
+						return null;
+				    }
+				}
 			    // Check if select already has such option
 			    var data = this.$element.select2('data');
 			    for (i in data) {
@@ -2600,6 +2699,7 @@ function saveDraft(reload_page, no_loader)
 				if (typeof(response.conversation_id) != "undefined" && response.conversation_id) {
 					form.children(':input[name="conversation_id"][value=""]').val(response.conversation_id);
 					form.children(':input[name="thread_id"]').val(response.thread_id);
+					form.children(':input[name="customer_id"]').val(response.customer_id);
 					$('.conv-new-number:first').text(response.number);
 
 					// Set URL if this is a new conversation
@@ -2656,11 +2756,6 @@ function forwardConversation(e)
 
 	// Load attachments
 	loadAttachments();
-
-	// Show recipient selector
-	initRecipientSelector({
-		maximumSelectionLength: 1
-	});
 }
 
 // Load attachments for the draft of a new conversation of draft of the forward
@@ -2697,23 +2792,23 @@ function showForwardForm(data, reply_block)
 	}
 	reply_block.children().find(":input[name='subtype']:first").val(Vars.subtype_forward);
 	reply_block.children().find(":input[name='to']:first").addClass('hidden');
-	reply_block.children().find(":input[name='to_email']:first").removeClass('hidden').removeClass('parsley-exclude');
+	reply_block.children().find(":input[name='to_email']:first").removeClass('hidden').removeClass('parsley-exclude').next('.select2:first').show();
 	reply_block.addClass('inactive');
 	reply_block.addClass('conv-forward-block');
 	$(".conv-actions .conv-reply:first").addClass('inactive');
 
 	if (data && typeof(data.to) != "undefined") {
-		$("#to_email").children('option:first')
-            .attr("value", data.to)
-            .attr("selected", "selected")
-            .text(data.to); 
+		addSelect2Option($("#to_email"), {
+			id: data.to, text: data.to
+		});
 	} else {
 		$("#to_email").children('option:first').removeAttr('selected');
 	}
+
 	// Show recipient selector
 	initRecipientSelector({
 		maximumSelectionLength: 1
-	});
+	}, $('#to_email:not(.select2-hidden-accessible)'));
 }
 
 // Edit draft

@@ -2250,6 +2250,11 @@ button.conv-checkbox-clear {
 .conv-note-block .note-actions .draft-saved {
     display: none;
 }
+.conv-note-block.conv-phone-block .note-actions .note-btn-save-draft,
+.conv-note-block.conv-phone-block .note-actions .draft-saved {
+    color: #b37100;
+    display: block;
+}
 .conv-note-block .note-editor .btn-default {
     color: #b37100;
     background-color: #fff7dd;
@@ -2900,7 +2905,7 @@ ul.prev-convs {
     font-size: 13px;
     color: #555;
 }
-.recipient-select .select2-selection__arrow {
+.select2-recipient .select2-selection__arrow {
     display: none;
 }
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
