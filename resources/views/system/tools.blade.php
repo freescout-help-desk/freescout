@@ -15,22 +15,35 @@
 
 <div class="container">
 
-    <form class="form-horizontal margin-top" method="POST" action="">
+    <form class="form-inline margin-top" method="POST" action="">
         {{ csrf_field() }}
 
-        <button type="submit" class="btn btn-default" name="action" value="clear_cache">
-            {{ __('Clear Cache') }}
-        </button>
-        &nbsp;
-        
-        <button type="submit" class="btn btn-default" name="action" value="fetch_emails">
-            {{ __('Fetch Emails') }}
-        </button>
-        &nbsp;
+        <div>
+            <button type="submit" class="btn btn-default" name="action" value="clear_cache">
+                {{ __('Clear Cache') }}
+            </button>
+            &nbsp;
 
-        <button type="submit" class="btn btn-default" name="action" value="migrate_db">
-            {{ __('Migrate DB') }}
-        </button>
+            <button type="submit" class="btn btn-default" name="action" value="migrate_db">
+                {{ __('Migrate DB') }}
+            </button>
+        </div>
+        <hr/>
+        <div class="margin-top text-help">
+            <button type="submit" class="btn btn-default" name="action" value="fetch_emails">
+                {{ __('Fetch Emails') }}
+            </button>
+
+            &nbsp;
+            {{ __('Days') }}: <input type="number" name="days" value="{{ old('days', 3) }}" class="form-control input-sm" />
+
+            &nbsp;
+            <input type="radio" value="1" name="unseen" @if ((int)old('unseen', 1)) checked @endif /> {{ __('Unread') }}   
+            &nbsp;
+            <input type="radio" value="0" name="unseen" @if (!(int)old('unseen', 1)) checked @endif /> {{ __('All') }}   
+            
+        </div>
+            
     </form>
 
     @if ($output)

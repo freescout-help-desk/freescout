@@ -64,6 +64,8 @@ class FetchEmails extends Command
         $successfully = true;
         Option::set('fetch_emails_last_run', $now);
 
+        $this->line('['.date('Y-m-d H:i:s').'] Fetching '.($this->option('unseen') ? 'UNREAD' : 'ALL').' emails for the last '.$this->option('days').' days.');
+
         // Get active mailboxes
         $mailboxes = Mailbox::where('in_protocol', '<>', '')
             ->where('in_server', '<>', '')
@@ -169,7 +171,7 @@ class FetchEmails extends Command
                     $messages->unseen();
                 }
                 $messages = $messages->get();
-                
+
                 $no_charset = true;
                 if (count($client->getErrors()) > $errors_count) {
                     $last_error = $client->getLastError();
