@@ -3094,7 +3094,7 @@ ul.prev-convs {
  * Modules
  */
 .module-card {
-    background-color: #f4f5f5;
+    background-color: #ffffff;
     border: 1px solid #dedede;
     box-sizing: border-box;
     display: block;
@@ -3106,6 +3106,9 @@ ul.prev-convs {
 }
 .module-card.active {
     background-color: #deffde;
+}
+.module-card.not-installed {
+    background-color: #f4f5f5;
 }
 .module-card img {
     width: 128px;
@@ -3130,6 +3133,18 @@ ul.prev-convs {
 .module-actions .input-group {
     max-width: 378px;
 }
+.module-card .label {
+    float: right;
+    font-size: 13.4px;
+    font-weight: normal;
+    padding-top: 2px;
+}
+.label-lightgrey {
+    background-color: #8b98a6;
+}
+.label-grey {
+    background-color: #6b6b6b;
+}
 .alert-module-update {
     margin: 15px 0 0;
     padding: 10px 15px;
@@ -3147,6 +3162,11 @@ ul.prev-convs {
     .module-card h4 {
         margin-top: 10px;
         text-align: center;
+    }
+    .module-card .label {
+        display: block;
+        margin-top: 3px;
+        float: none;
     }
 }
 

@@ -1,11 +1,11 @@
-<div class="module-card col-sm-10 col-md-8 @if (!empty($module['active'])) active @endif" id="module-{{ $module['alias'] }}" data-alias="{{ $module['alias'] }}">
+<div class="module-card col-sm-10 col-md-8 @if (!empty($module['active'])) active @elseif (empty($module['installed'])) not-installed @endif" id="module-{{ $module['alias'] }}" data-alias="{{ $module['alias'] }}">
 	@if (!empty($module['img']))
 		<img src="{{ $module['img'] }}" />
 	@else
 		<img src="{{ App\Module::IMG_DEFAULT }}" />
 	@endif
 	<div class="module-wrap">
-	    <h4>{{ preg_replace("/ Module$/", '', $module['name']) }}@if (empty($module['installed'])) <span class="text-help">({{ __('not installed') }})</span>@elseif (empty($module['active'])) <span class="text-help">({{ __('inactive') }})</span>@endif</h4>
+	    <h4>{{ preg_replace("/ Module$/", '', $module['name']) }}@if (empty($module['installed'])) <span class="label label-lightgrey">{{ __('Not Installed') }}</span>@elseif (empty($module['active'])) <span class="label label-lightgrey">{{ __('Inactive') }}</span>@else <span class="label label-success">{{ __('Active') }}</span>@endif</h4>
 	    <p>
 	    	{{ $module['description'] }}
 	    </p>
