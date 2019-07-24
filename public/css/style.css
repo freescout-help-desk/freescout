@@ -2679,8 +2679,8 @@ ul.prev-convs {
 }
 .alert-floating .glyphicon {
     margin-right: 8px;
-    position: relative;
-    top: 4px;
+    /*position: relative;
+    top: 4px;*/
 }
 .alert-floating a,
 .alert-floating a:hover,

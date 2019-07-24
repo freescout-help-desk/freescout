@@ -701,8 +701,7 @@ function showFloatingAlert(type, msg, no_autohide)
 	}
 
 	var html = '<div class="alert alert-'+alert_class+' alert-floating">'+
-    	'<i class="glyphicon glyphicon-'+icon+'"></i>'+
-        '<div>'+msg+'</div>'+
+        '<div><i class="glyphicon glyphicon-'+icon+'"></i>'+msg+'</div>'+
         '</div>';
     $('body:first').append(html);
     fsFloatingAlertsInit();
