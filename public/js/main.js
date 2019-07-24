@@ -1040,7 +1040,8 @@ function prepareReplyForm()
 {
 	// To prevent browser autocomplete, clean body
 	if (!$('.conv-action.inactive:first').length) {
-		setReplyBody('');
+		// We have to insert this code to allow proper UL/OL
+		setReplyBody('<div><br></div>');
 	}
 
 	// Set assignee in case it has been changed in the Note editor
