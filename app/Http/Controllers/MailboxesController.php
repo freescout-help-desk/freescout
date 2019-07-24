@@ -469,7 +469,7 @@ class MailboxesController extends Controller
                     $test_result = false;
 
                     try {
-                        $test_result = \App\Misc\Mail::fetchTest($mailbox);
+                        $test_result = \MailHelper::fetchTest($mailbox);
                     } catch (\Exception $e) {
                         $response['msg'] = $e->getMessage();
                     }

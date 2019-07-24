@@ -239,7 +239,10 @@ class SystemController extends Controller
                 break;
 
             case 'fetch_emails':
-                \Artisan::call('freescout:fetch-emails', [], $outputLog);
+                $params = [];
+                $params['--days'] = (int)$request->days;
+                $params['--unseen'] = (int)$request->unseen;
+                \Artisan::call('freescout:fetch-emails', $params, $outputLog);
                 break;
 
             case 'migrate_db':
@@ -255,7 +258,7 @@ class SystemController extends Controller
             \Cache::forever('tools_execute_output', $output);
         }
 
-        return redirect()->route('system.tools');
+        return redirect()->route('system.tools')->withInput($request->input());
     }
 
     /**

@@ -67,6 +67,29 @@ return [
         'storage/logs',
         'storage/self-update',
         'vendor',
+        // These folders are opied using File::move().
+        'app',
+        'config',
+        'database',
+        'overrides',
+        'public',
+        'resources',
+        'routes',
+        'tests',
+    ],
+
+    /*
+    | These folder are copied using File::move().
+    */
+    'folders_to_move' => [
+        'app',
+        'config',
+        'database',
+        'overrides',
+        'public',
+        'resources',
+        'routes',
+        'tests',
     ],
 
     /*

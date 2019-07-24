@@ -27,7 +27,7 @@ class FetchEmails extends Command
      *
      * @var string
      */
-    protected $signature = 'freescout:fetch-emails {--days=3}';
+    protected $signature = 'freescout:fetch-emails {--days=3} {--unseen=1}';
 
     /**
      * The console command description.
@@ -64,6 +64,8 @@ class FetchEmails extends Command
         $successfully = true;
         Option::set('fetch_emails_last_run', $now);
 
+        $this->line('['.date('Y-m-d H:i:s').'] Fetching '.($this->option('unseen') ? 'UNREAD' : 'ALL').' emails for the last '.$this->option('days').' days.');
+
         // Get active mailboxes
         $mailboxes = Mailbox::where('in_protocol', '<>', '')
             ->where('in_server', '<>', '')
@@ -98,6 +100,8 @@ class FetchEmails extends Command
 
     public function fetch($mailbox)
     {
+        $no_charset = false;
+
         $client = \MailHelper::getMailboxClient($mailbox);
 
         // Connect to the Server
@@ -147,14 +151,33 @@ class FetchEmails extends Command
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
 
             // Get unseen messages for a period
-            $messages = $folder->query()->unseen()->since(now()->subDays($this->option('days')))->leaveUnread()->get();
+            $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
+            if ($this->option('unseen')) {
+                $messages->unseen();
+            }
+            if ($no_charset) {
+                $messages->setCharset(null);
+            }
+            $messages = $messages->get();
 
             $last_error = $client->getLastError();
 
             if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
+                $errors_count = count($client->getErrors());
                 // Solution for MS mailboxes.
                 // https://github.com/freescout-helpdesk/freescout/issues/176
-                $messages = $folder->query()->unseen()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null)->get();
+                $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null);
+                if ($this->option('unseen')) {
+                    $messages->unseen();
+                }
+                $messages = $messages->get();
+
+                $no_charset = true;
+                if (count($client->getErrors()) > $errors_count) {
+                    $last_error = $client->getLastError();
+                } else {
+                    $last_error = null;
+                }
             }
 
             if ($last_error && !\Str::startsWith($last_error, 'Mailbox is empty')) {
