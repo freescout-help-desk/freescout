@@ -376,7 +376,7 @@
                                     @endif
                                     <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
                                     {{--<a href="#thread-{{ $thread->id }}">#{{ $thread_index+1 }}</a>--}}
-                                    @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
+                                    @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE, App\Thread::TYPE_NOTE]))
                                         <span class="thread-status">
                                             @if ($loop->last || (!$loop->last && $thread->status != App\Thread::STATUS_NOCHANGE && $thread->status != $threads[$loop->index+1]->status))
                                                 @php
