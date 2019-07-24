@@ -3689,6 +3689,15 @@ a.disabled:focus {
     max-height: 300px;
     overflow-y: scroll;
 }
+.conv-reply-block .form-group.cc-toggler {
+    margin-bottom: -8px;
+}
+.cc-toggler .control-label {
+    display: none;
+}
+.cc-toggler .conv-reply-field {
+    padding-left: 0;
+}
 
 /**
  * Only main content is visible

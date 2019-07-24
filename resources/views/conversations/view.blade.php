@@ -160,7 +160,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group @if ($cc && $bcc) hidden @endif">
+                            <div class="form-group @if (empty($to_customers) && !$cc && !$bcc) cc-toggler @endif @if ($cc && $bcc) hidden @endif">
                                 <label class="control-label"></label>
                                 <div class="conv-reply-field">
                                     <a href="javascript:void(0);" class="help-link" id="toggle-cc">Cc/Bcc</a>
