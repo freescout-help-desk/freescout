@@ -133,7 +133,9 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
             }
 
             // Copy Vendor first.
-            File::deleteDirectory(base_path('vendor_backup'));
+            if (File::exists(base_path('vendor_backup'))) {
+                File::deleteDirectory(base_path('vendor_backup'));
+            }
 
             // We copy new vendor and rename to avoid error:
             // /vendor/composer/../laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php): failed to open stream: No such file or directory in /vendor/composer/ClassLoader.php:444
@@ -150,10 +152,19 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
                 base_path('vendor')
             );
 
-            // Move all directories first
+            // Move folders
+            foreach ($this->config['folders_to_move'] as $folder) {
+                File::move(
+                    $sourcePath.DIRECTORY_SEPARATOR.$folder,
+                    base_path($folder)
+                );
+            }
+
+            // Move directories
             collect((new Finder())->in($sourcePath)->exclude($this->config['exclude_folders'])->directories()->sort(function ($a, $b) {
                 return strlen($b->getRealpath()) - strlen($a->getRealpath());
             }))->each(function ($directory) { /** @var \SplFileInfo $directory */
+
                 if (count(array_intersect(File::directories(
                         $directory->getRealPath()), $this->config['exclude_folders'])) == 0
                 ) {
