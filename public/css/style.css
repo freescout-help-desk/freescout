@@ -2485,6 +2485,8 @@ ul.prev-convs {
     }
     .conv-customer-block {
         padding: 15px 20px 15px;
+        background-color: #f8f9f9;
+        border-radius: 0;
     }
     .customer-data {
         margin: 0 0 0 50px;
