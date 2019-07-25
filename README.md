@@ -76,6 +76,7 @@ If you would like to be notified about new releases, news and updates you can su
 Images & one-click installers:
 
 * [Docker Image](http://freescout.net/docker/)
+* [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
 * [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
 
 ## Contributing
