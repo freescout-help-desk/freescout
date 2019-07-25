@@ -3700,13 +3700,13 @@ a.disabled:focus {
     max-height: 300px;
     overflow-y: scroll;
 }
-.conv-reply-block .form-group.cc-toggler {
+.conv-reply-block:not(.conv-forward-block) .form-group.cc-shifted {
     margin-bottom: -8px;
 }
-.cc-toggler .control-label {
+.conv-reply-block:not(.conv-forward-block) .cc-shifted .control-label {
     display: none;
 }
-.cc-toggler .conv-reply-field {
+.conv-reply-block:not(.conv-forward-block) .cc-shifted .conv-reply-field {
     padding-left: 0;
 }
 
