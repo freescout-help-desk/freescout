@@ -477,7 +477,7 @@ class Customer extends Model
      *
      * @return string
      */
-    public function getFullName($email_if_empty = false)
+    public function getFullName($email_if_empty = false, $first_part_from_email = false)
     {
         if ($this->first_name && $this->last_name) {
             return $this->first_name.' '.$this->last_name;
@@ -486,7 +486,12 @@ class Customer extends Model
         } elseif (!$this->first_name && $this->last_name) {
             return $this->last_name;
         } elseif ($email_if_empty) {
-            return $this->getMainEmail();
+            $email = $this->getMainEmail();
+            if ($first_part_from_email) {
+                return $this->getNameFromEmail($email);
+            } else {
+                return $email;
+            }
         }
 
         return '';
@@ -513,11 +518,13 @@ class Customer extends Model
      *
      * @return string
      */
-    public function getNameFromEmail()
+    public function getNameFromEmail($email = '')
     {
-        $email = $this->emails()->first();
+        if (!$email) {
+            $email = optional($this->emails_cached()->first())->email;
+        }
         if ($email) {
-            return explode('@', $email->email)[0];
+            return explode('@', $email)[0];
         } else {
             return '';
         }
