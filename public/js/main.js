@@ -2613,6 +2613,9 @@ function initSystemStatus()
 							if (typeof(response.status) != "undefined" && response.status == "success") {
 								showAjaxResult(response);
 								window.location.href = '';
+							} else if (response.msg) {
+								showAjaxError({msg: response.msg}, true);
+								button.button('reset');
 							} else {
 								showAjaxError({msg: htmlDecode(Lang.get("messages.error_occured_updating"))}, true);
 								button.button('reset');

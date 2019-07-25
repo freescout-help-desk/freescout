@@ -272,6 +272,7 @@
             if (strstr($e->getMessage(), 'vars.js')) {
                 \Artisan::call('freescout:generate-vars');
             }
+            \Helper::logException($e);
         }
     @endphp
     @yield('javascripts')
