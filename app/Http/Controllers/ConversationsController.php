@@ -559,7 +559,7 @@ class ConversationsController extends Controller
                     $to_array = Conversation::sanitizeEmails($request->to);
                 }
                 // Check To
-                if (!$response['msg'] && $new) {
+                if (!$response['msg'] && $new && !$is_phone) {
                     if (!$to_array) {
                         $response['msg'] .= __('Incorrect recipients');
                     }
@@ -605,7 +605,7 @@ class ConversationsController extends Controller
                     $customer_email = '';
                     $customer = null;
 
-                    if ($type == Conversation::TYPE_PHONE) {
+                    if ($is_phone) {
                         // Phone.
                         $phone_customer_data = $this->processPhoneCustomer($request);
 
