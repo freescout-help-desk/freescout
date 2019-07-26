@@ -576,6 +576,8 @@ class Thread extends Model
                 $did_this = __("deleted");
             } elseif ($this->action_type == self::ACTION_TYPE_RESTORE_TICKET) {
                 $did_this = __("restored");
+            } elseif ($this->action_type == self::ACTION_TYPE_MOVED_FROM_MAILBOX) {
+                $did_this = __("moved conversation from another mailbox");
             }
         } elseif ($this->state == self::STATE_DRAFT) {
             if (empty($this->edited_by_user_id)) {

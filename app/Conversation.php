@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Thread;
 use App\Events\ConversationCustomerChanged;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
@@ -581,7 +582,7 @@ class Conversation extends Model
     /**
      * Set folder according to the status, state and user of the conversation.
      */
-    public function updateFolder()
+    public function updateFolder($mailbox = null)
     {
         if ($this->state == self::STATE_DRAFT) {
             $folder_type = Folder::TYPE_DRAFTS;
@@ -597,8 +598,12 @@ class Conversation extends Model
             $folder_type = Folder::TYPE_UNASSIGNED;
         }
 
+        if (!$mailbox) {
+            $mailbox = $this->mailbox;
+        }
+
         // Find folder
-        $folder = $this->mailbox->folders()
+        $folder = $mailbox->folders()
             ->where('type', $folder_type)
             ->first();
 
@@ -963,6 +968,41 @@ class Conversation extends Model
         }
 
         event(new ConversationCustomerChanged($this, $prev_customer_id, $prev_customer_email, $by_user, $by_customer));
+
+        return true;
+    }
+
+    /**
+     * Move conversation to another mailbox.
+     */
+    public function moveToMailbox($mailbox, $user)
+    {
+        $prev_mailbox = $this->mailbox;
+
+        // We don't know how to replace $this->mailbox object.
+        $this->mailbox_id = $mailbox->id;
+        // Check assignee.
+        if ($this->user_id && !in_array($this->user_id, $mailbox->userIdsHavingAccess())) {
+            // Assign conversation to the user who moved it.
+            $conversation->user_id = $user->id;
+        }
+        $this->updateFolder($mailbox);
+        $this->save();
+
+        // Add record to the conversation history.
+        Thread::create($this, Thread::TYPE_LINEITEM, '', [
+            'created_by_user_id' => $user->id,
+            'user_id'     => $this->user_id,
+            'state'       => Thread::STATE_PUBLISHED,
+            'action_type' => Thread::ACTION_TYPE_MOVED_FROM_MAILBOX,
+            'source_via'  => Thread::PERSON_USER,
+            'source_type' => Thread::SOURCE_TYPE_WEB,
+            'customer_id' => $this->customer_id,
+        ]);
+
+        // Update counters.
+        $prev_mailbox->updateFoldersCounters();
+        $mailbox->updateFoldersCounters();
 
         return true;
     }

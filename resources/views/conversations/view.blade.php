@@ -23,6 +23,10 @@
                         <ul class="dropdown-menu">
                             {{--<li><a href="#">{{ __("Follow") }} (todo)</a></li>--}}
                             <li><a href="#" class="conv-forward">{{ __("Forward") }}</a></li>
+                            @if (count(Auth::user()->mailboxesCanView(true)) > 1)
+                                <li><a href="{{ route('conversations.ajax_html', ['action' => 
+                                            'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv">{{ __("Move") }}</a></li>
+                            @endif
                             <li><a href="#" class="conv-delete">{{ __("Delete") }}</a></li>
                             @action('conversation.extra_action_buttons', $conversation, $mailbox)
                         </ul>

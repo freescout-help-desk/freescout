@@ -73,7 +73,7 @@ If you would like to be notified about new releases, news and updates you can su
 
 [Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
 
-Images & one-click installers:
+Images & one-click installs:
 
 * [Docker Image](http://freescout.net/docker/)
 * [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)

@@ -1958,6 +1958,7 @@ function conversationPagination()
 	});	
 }
 
+// Change customer modal
 function changeCustomerInit()
 {
 	$(document).ready(function() {
@@ -2035,6 +2036,43 @@ function changeCustomerInit()
 		    e.preventDefault();
 		});
 	});
+}
+
+// Move conversation modal
+function initMoveConv()
+{
+	$(document).ready(function() {
+		$(".btn-move-conv:visible:first").click(function(e){
+			var button = $(this);
+
+			button.button('loading');
+
+			fsAjax({
+					action: 'conversation_move',
+					mailbox_id: $('.move-conv-mailbox-id:visible:first').val(),
+					conversation_id: getGlobalAttr('conversation_id')
+				}, 
+				laroute.route('conversations.ajax'), 
+				function(response) {
+					showAjaxResult(response);
+					if (isAjaxSuccess(response)) {
+						window.location.href = '';
+					}
+					ajaxFinish();
+				}
+			);
+		});
+	});
+}
+
+// Check if ajax request was successfull
+function isAjaxSuccess(response)
+{
+	if (typeof(response.status) != "undefined" && response.status == 'success') {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 // Initialize customer select2
