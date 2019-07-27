@@ -1067,4 +1067,24 @@ class Helper
     {
         return str_replace('<br />', '<br /><br />', nl2br($text));
     }
+
+    /**
+     * Decode \u00ed.
+     */
+    public static function decodeUnicode($str)
+    {
+        $str = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
+            return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+        }, $str);
+
+        return $str;
+    }
+
+    /**
+     * Convert text into json without converting chars into \u0411.
+     */
+    public static function jsonEncodeUtf8($text)
+    {
+        return json_encode($text, JSON_UNESCAPED_UNICODE);
+    }
 }
