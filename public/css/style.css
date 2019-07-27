@@ -3577,6 +3577,12 @@ a.text-danger:hover,
 a.text-danger:focus {
     color: #d9534f!important;
 }
+a.selected,
+a.selected:hover,
+a.selected:focus {
+    color: #93a1af;
+    text-decoration: none;
+}
 .break-words {
     /* These are technically the same, but use both */
     overflow-wrap: break-word;

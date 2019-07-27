@@ -278,6 +278,14 @@ class Thread extends Model
     }
 
     /**
+     * Convert body to plain text.
+     */
+    public function getBodyAsText()
+    {
+        return \Helper::htmlToText($this->body);
+    }
+
+    /**
      * Get sanitized body HTML.
      *
      * @return string

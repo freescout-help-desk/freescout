@@ -251,6 +251,7 @@
                             <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown"><b class="caret"></b></span>
                             @if (Auth::user()->isAdmin())
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                    @action('thread.menu', $thread)
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
                                 </ul>
@@ -284,6 +285,7 @@
                             </div>
                             @action('thread.after_header', $thread, $loop, $threads, $conversation, $mailbox)
                             <div class="thread-body">
+                                @action('thread.before_body', $thread, $loop, $threads, $conversation, $mailbox)
                                 {!! $thread->getCleanBody() !!}
 
                                 @include('conversations/partials/thread_attachments')
@@ -474,6 +476,8 @@
                                     </div>
                                 @endif
 
+                                @action('thread.before_body', $thread, $loop, $threads, $conversation, $mailbox)
+
                                 {!! $thread->getCleanBody() !!}
 
                                 @if ($thread->body_original)
@@ -510,6 +514,7 @@
                                 @endif
                                 {{--<li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>--}}
                                 <li><a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}?from_thread_id={{ $thread->id }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
+                                @action('thread.menu', $thread)
                                 @if (Auth::user()->isAdmin())
                                     <li><a href="{{ route('conversations.ajax_html', ['action' => 
                                         'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
