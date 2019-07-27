@@ -1060,4 +1060,11 @@ class Helper
         return $array_output;
     }
 
+    /**
+     * Replace new line with doble <br />.
+     */
+    public static function nl2brDouble($text)
+    {
+        return str_replace('<br />', '<br /><br />', nl2br($text));
+    }
 }
