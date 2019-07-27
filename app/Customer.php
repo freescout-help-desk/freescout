@@ -477,7 +477,7 @@ class Customer extends Model
      *
      * @return string
      */
-    public function getFullName($email_if_empty = false)
+    public function getFullName($email_if_empty = false, $first_part_from_email = false)
     {
         if ($this->first_name && $this->last_name) {
             return $this->first_name.' '.$this->last_name;
@@ -486,7 +486,12 @@ class Customer extends Model
         } elseif (!$this->first_name && $this->last_name) {
             return $this->last_name;
         } elseif ($email_if_empty) {
-            return $this->getMainEmail();
+            $email = $this->getMainEmail();
+            if ($first_part_from_email) {
+                return $this->getNameFromEmail($email);
+            } else {
+                return $email;
+            }
         }
 
         return '';
@@ -513,11 +518,13 @@ class Customer extends Model
      *
      * @return string
      */
-    public function getNameFromEmail()
+    public function getNameFromEmail($email = '')
     {
-        $email = $this->emails()->first();
+        if (!$email) {
+            $email = optional($this->emails_cached()->first())->email;
+        }
         if ($email) {
-            return explode('@', $email->email)[0];
+            return explode('@', $email)[0];
         } else {
             return '';
         }
@@ -619,7 +626,7 @@ class Customer extends Model
             }
         }
 
-        $this->phones = json_encode($phones_array);
+        $this->phones = \Helper::jsonEncodeUtf8($phones_array);
     }
 
     /**
@@ -701,13 +708,14 @@ class Customer extends Model
     {
         $websites = [];
         foreach ($websites_array as $key => $value) {
-            $value = filter_var((string) $value, FILTER_SANITIZE_URL);
+            // FILTER_SANITIZE_URL cuts some symbols.
+            //$value = filter_var((string) $value, FILTER_SANITIZE_URL);
             if (!preg_match("/http(s)?:\/\//i", $value)) {
                 $value = 'http://'.$value;
             }
             $websites[] = (string) $value;
         }
-        $this->websites = json_encode(array_unique($websites));
+        $this->websites = \Helper::jsonEncodeUtf8(array_unique($websites));
     }
 
     /**

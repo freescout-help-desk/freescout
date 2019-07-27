@@ -380,6 +380,15 @@ class FetchEmails extends Command
                         }
                     }
 
+                    // Make sure that prev_thread belongs to the current mailbox.
+                    // It may happen when forwarding conversation for example.
+                    if ($prev_thread) {
+                        if ($prev_thread->conversation->mailbox_id != $mailbox->id) {
+                            $prev_thread = null;
+                            $is_reply = false;
+                        }
+                    }
+
                     // Get body
                     if (!$html_body) {
                         // Get body and do not replace :cid with images base64

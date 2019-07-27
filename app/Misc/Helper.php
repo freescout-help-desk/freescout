@@ -893,6 +893,9 @@ class Helper
      */
     public static function htmlToText($text)
     {
+        // Process blockquotes.
+        $text = str_ireplace('<blockquote>', '<div>', $text);
+        $text = str_ireplace('</blockquote>', '</div>', $text);
         return (new \Html2Text\Html2Text($text))->getText();
     }
 
@@ -1024,4 +1027,64 @@ class Helper
         \Cache::forever('illuminate:queue:restart', Carbon::now()->getTimestamp());
     }
 
+    /**
+     * UTF-8 split text into parts with max. length.
+     */
+    public static function strSplitKeepWords($str, $max_length = 75)
+    {
+        $array_words = explode(' ', $str);
+
+        $currentLength = 0;
+
+        $index = 0;
+
+        $array_output = [''];
+
+        foreach ($array_words as $word) {
+            // +1 because the word will receive back the space in the end that it loses in explode()
+            $wordLength = strlen($word) + 1;
+
+            if (($currentLength + $wordLength) <= $max_length) {
+                $array_output[$index] .= $word . ' ';
+
+                $currentLength += $wordLength;
+            } else {
+                $index += 1;
+
+                $currentLength = $wordLength;
+
+                $array_output[$index] = $word;
+            }
+        }
+
+        return $array_output;
+    }
+
+    /**
+     * Replace new line with doble <br />.
+     */
+    public static function nl2brDouble($text)
+    {
+        return str_replace('<br />', '<br /><br />', nl2br($text));
+    }
+
+    /**
+     * Decode \u00ed.
+     */
+    public static function decodeUnicode($str)
+    {
+        $str = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
+            return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+        }, $str);
+
+        return $str;
+    }
+
+    /**
+     * Convert text into json without converting chars into \u0411.
+     */
+    public static function jsonEncodeUtf8($text)
+    {
+        return json_encode($text, JSON_UNESCAPED_UNICODE);
+    }
 }

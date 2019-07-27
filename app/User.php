@@ -128,6 +128,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Cached mailboxes.
+     */
+    public function mailboxes_cached()
+    {
+        return $this->mailboxes()->rememberForever();
+    }
+
+    /**
      * Get conversations assigned to user.
      */
     public function conversations()
@@ -199,12 +207,20 @@ class User extends Authenticatable
     /**
      * Get mailboxes to which user has access.
      */
-    public function mailboxesCanView()
+    public function mailboxesCanView($cache = false)
     {
         if ($this->isAdmin()) {
-            return Mailbox::all();
+            if ($cache) {
+                return Mailbox::rememberForever()->get();
+            } else {
+                return Mailbox::all();
+            }
         } else {
-            return $this->mailboxes;
+            if ($cache) {
+                return $this->mailboxes_cached;
+            } else {
+                return $this->mailboxes;
+            }
         }
     }
 

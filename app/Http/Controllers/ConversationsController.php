@@ -321,7 +321,7 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
                 if (!$response['msg'] && (int) $new_user_id != -1 && !$conversation->mailbox->userHasAccess($new_user_id)) {
-                    $response['msg'] = __('Incorrect user');
+                    $response['msg'] = __('Not enough permissions');
                 }
                 if (!$response['msg']) {
                     // Determine redirect
@@ -559,7 +559,7 @@ class ConversationsController extends Controller
                     $to_array = Conversation::sanitizeEmails($request->to);
                 }
                 // Check To
-                if (!$response['msg'] && $new) {
+                if (!$response['msg'] && $new && !$is_phone) {
                     if (!$to_array) {
                         $response['msg'] .= __('Incorrect recipients');
                     }
@@ -605,7 +605,7 @@ class ConversationsController extends Controller
                     $customer_email = '';
                     $customer = null;
 
-                    if ($type == Conversation::TYPE_PHONE) {
+                    if ($is_phone) {
                         // Phone.
                         $phone_customer_data = $this->processPhoneCustomer($request);
 
@@ -1320,7 +1320,7 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
                 if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
-                    $response['msg'] = __('Incorrect user');
+                    $response['msg'] = __('Not enough permissions');
                 }
 
                 $conversation->changeCustomer($customer_email, null, $user);
@@ -1633,6 +1633,32 @@ class ConversationsController extends Controller
                 \Session::flash('flash_success_floating', __('Conversations deleted'));
                 break;
 
+            // Change conversation customer
+            case 'conversation_move':
+                $conversation = Conversation::find($request->conversation_id);
+
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                }
+                if (!$response['msg'] && !$user->can('update', $conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+                if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                $mailbox = Mailbox::find($request->mailbox_id);
+                if (!$mailbox) {
+                    $response['msg'] = __('Mailbox not found');
+                }
+
+                $conversation->moveToMailbox($mailbox, $user);
+
+                $response['status'] = 'success';
+                \Session::flash('flash_success_floating', __('Conversation Moved'));
+
+                break;
+
             default:
                 $response['msg'] = 'Unknown action';
                 break;
@@ -1657,6 +1683,8 @@ class ConversationsController extends Controller
                 return $this->ajaxHtmlShowOriginal();
             case 'change_customer':
                 return $this->ajaxHtmlChangeCustomer();
+            case 'move_conv':
+                return $this->ajaxHtmlMoveConv();
         }
 
         abort(404);
@@ -1753,6 +1781,33 @@ class ConversationsController extends Controller
 
         return view('conversations/ajax_html/change_customer', [
             'conversation' => $conversation,
+        ]);
+    }
+
+    /**
+     * Move conversation to other mailbox.
+     */
+    public function ajaxHtmlMoveConv()
+    {
+        $conversation_id = Input::get('conversation_id');
+        if (!$conversation_id) {
+            abort(404);
+        }
+
+        $conversation = Conversation::find($conversation_id);
+        if (!$conversation) {
+            abort(404);
+        }
+
+        $user = auth()->user();
+
+        if (!$user->can('view', $conversation)) {
+            abort(403);
+        }
+
+        return view('conversations/ajax_html/move_conv', [
+            'conversation' => $conversation,
+            'mailboxes'    => $user->mailboxesCanView(),
         ]);
     }
 
@@ -1987,7 +2042,7 @@ class ConversationsController extends Controller
                 $join->on('conversations.id', '=', 'threads.conversation_id');
             });
         if ($q) {
-            $query_conversations->where(function ($query) use ($like) {
+            $query_conversations->where(function ($query) use ($like, $filters, $q) {
                 $query->where('conversations.subject', 'like', $like)
                     ->orWhere('conversations.customer_email', 'like', $like)
                     ->orWhere('conversations.number', 'like', $like)
@@ -1997,6 +2052,8 @@ class ConversationsController extends Controller
                     ->orWhere('threads.to', 'like', $like)
                     ->orWhere('threads.cc', 'like', $like)
                     ->orWhere('threads.bcc', 'like', $like);
+
+                $query = \Eventy::filter('search.conversations.or_where', $query, $filters, $q);
             });
         }
 
@@ -2043,7 +2100,7 @@ class ConversationsController extends Controller
             $query_conversations->where('conversations.created_at', '<=', date('Y-m-d 23:59:59', strtotime($filters['before'])));
         }
 
-        $query_conversations = \Eventy::filter('search.apply_filters', $query_conversations, $filters, $q);
+        $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);
 
         $query_conversations->orderBy('conversations.last_reply_at');
 

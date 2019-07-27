@@ -67,6 +67,7 @@ class Mail
         // General separators.
         '<blockquote', // General sepator
         '<!-- originalMessage -->',
+        '‐‐‐‐‐‐‐ Original Message ‐‐‐‐‐‐‐',
         //'---Original---', // QQ separator, wait for emails from QQ and check
     ];
 

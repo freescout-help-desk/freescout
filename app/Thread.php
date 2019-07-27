@@ -278,6 +278,14 @@ class Thread extends Model
     }
 
     /**
+     * Convert body to plain text.
+     */
+    public function getBodyAsText()
+    {
+        return \Helper::htmlToText($this->body);
+    }
+
+    /**
      * Get sanitized body HTML.
      *
      * @return string
@@ -358,7 +366,7 @@ class Thread extends Model
         $emails_array = Conversation::sanitizeEmails($emails);
         if ($emails_array) {
             $emails_array = array_unique($emails_array);
-            $this->to = json_encode($emails_array);
+            $this->to = \Helper::jsonEncodeUtf8($emails_array);
         } else {
             $this->to = null;
         }
@@ -369,7 +377,7 @@ class Thread extends Model
         $emails_array = Conversation::sanitizeEmails($emails);
         if ($emails_array) {
             $emails_array = array_unique($emails_array);
-            $this->cc = json_encode($emails_array);
+            $this->cc = \Helper::jsonEncodeUtf8($emails_array);
         } else {
             $this->cc = null;
         }
@@ -380,7 +388,7 @@ class Thread extends Model
         $emails_array = Conversation::sanitizeEmails($emails);
         if ($emails_array) {
             $emails_array = array_unique($emails_array);
-            $this->bcc = json_encode($emails_array);
+            $this->bcc = \Helper::jsonEncodeUtf8($emails_array);
         } else {
             $this->bcc = null;
         }
@@ -576,6 +584,8 @@ class Thread extends Model
                 $did_this = __("deleted");
             } elseif ($this->action_type == self::ACTION_TYPE_RESTORE_TICKET) {
                 $did_this = __("restored");
+            } elseif ($this->action_type == self::ACTION_TYPE_MOVED_FROM_MAILBOX) {
+                $did_this = __("moved conversation from another mailbox");
             }
         } elseif ($this->state == self::STATE_DRAFT) {
             if (empty($this->edited_by_user_id)) {
@@ -753,7 +763,7 @@ class Thread extends Model
             } else {
                 $send_status_data = $new_data;
             }
-            $this->send_status_data = json_encode($send_status_data);
+            $this->send_status_data = \Helper::jsonEncodeUtf8($send_status_data);
         } else {
             $this->send_status_data = null;
         }
@@ -865,7 +875,7 @@ class Thread extends Model
      */
     public function setMetas($data)
     {
-        $this->meta = json_encode($data);
+        $this->meta = \Helper::jsonEncodeUtf8($data);
     }
 
     /**

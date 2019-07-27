@@ -4,9 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
+use Watson\Rememberable\Rememberable;
 
 class Mailbox extends Model
 {
+    use Rememberable;
+
     /**
      * From Name: name that will appear in the From field when a customer views your email.
      */

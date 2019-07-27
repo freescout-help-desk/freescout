@@ -3,8 +3,8 @@
     	<img src="{{ $customer->getPhotoUrl() }}" alt="" class="customer-photo">
     </div>
     <div class="customer-data">
-    	@if ($customer->getFullName(true))
-			<a href="{{ route('customers.update', ['id' => $customer->id]) }}" class="customer-name">{{ $customer->getFullName(true) }}</a>
+    	@if ($customer->getFullName(true, true))
+			<a href="{{ route('customers.update', ['id' => $customer->id]) }}" class="customer-name">{{ $customer->getFullName(true, true) }}</a>
 		@endif
 		{{-- todo: display full customer info --}}
 		<ul class="customer-contacts customer-section">

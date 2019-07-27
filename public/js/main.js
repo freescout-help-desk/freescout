@@ -320,11 +320,15 @@ function summernoteInit(selector, new_options)
 	if (typeof(new_options) == "undefined") {
 		new_options = {};
 	}
-	var buttons = {};
+	var buttons = {
+		removeformat: EditorRemoveFormatButton,
+		lists: EditorListsButton
+	};
 
 	if (typeof(new_options.insertVar) != "undefined" || new_options.insertVar) {
 		buttons.insertvar = EditorInsertVarButton;
 	}
+
 	options = {
 		minHeight: 120,
 		dialogsInBody: true,
@@ -333,7 +337,7 @@ function summernoteInit(selector, new_options)
 		disableDragAndDrop: true,
 		toolbar: [
 		    // [groupName, [list of button]]
-		    ['style', ['bold', 'italic', 'underline', 'color', 'ul', 'ol', 'link', 'codeview']],
+		    ['style', ['bold', 'italic', 'underline', 'color', 'lists', 'removeformat', 'link', 'codeview']],
 		    ['actions-select', ['insertvar']]
 		],
 		buttons: buttons,
@@ -355,7 +359,13 @@ function summernoteInit(selector, new_options)
 
 	$.extend(options, new_options);
 
-	$(selector).summernote(options);
+	var $el = $(selector);
+	// Maybe uncomment
+	/*if (!$el.val()) {
+		$el.val('div><br></div>');
+	}*/
+
+	$el.summernote(options);
 }
 
 function permissionsInit()
@@ -1958,6 +1968,7 @@ function conversationPagination()
 	});	
 }
 
+// Change customer modal
 function changeCustomerInit()
 {
 	$(document).ready(function() {
@@ -2035,6 +2046,43 @@ function changeCustomerInit()
 		    e.preventDefault();
 		});
 	});
+}
+
+// Move conversation modal
+function initMoveConv()
+{
+	$(document).ready(function() {
+		$(".btn-move-conv:visible:first").click(function(e){
+			var button = $(this);
+
+			button.button('loading');
+
+			fsAjax({
+					action: 'conversation_move',
+					mailbox_id: $('.move-conv-mailbox-id:visible:first').val(),
+					conversation_id: getGlobalAttr('conversation_id')
+				}, 
+				laroute.route('conversations.ajax'), 
+				function(response) {
+					showAjaxResult(response);
+					if (isAjaxSuccess(response)) {
+						window.location.href = '';
+					}
+					ajaxFinish();
+				}
+			);
+		});
+	});
+}
+
+// Check if ajax request was successfull
+function isAjaxSuccess(response)
+{
+	if (typeof(response.status) != "undefined" && response.status == 'success') {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 // Initialize customer select2
