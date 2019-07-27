@@ -893,6 +893,9 @@ class Helper
      */
     public static function htmlToText($text)
     {
+        // Process blockquotes.
+        $text = str_ireplace('<blockquote>', '<div>', $text);
+        $text = str_ireplace('</blockquote>', '</div>', $text);
         return (new \Html2Text\Html2Text($text))->getText();
     }
 
@@ -1022,6 +1025,39 @@ class Helper
     public static function queueWorkRestart()
     {
         \Cache::forever('illuminate:queue:restart', Carbon::now()->getTimestamp());
+    }
+
+    /**
+     * UTF-8 split text into parts with max. length.
+     */
+    public static function strSplitKeepWords($str, $max_length = 75)
+    {
+        $array_words = explode(' ', $str);
+
+        $currentLength = 0;
+
+        $index = 0;
+
+        $array_output = [''];
+
+        foreach ($array_words as $word) {
+            // +1 because the word will receive back the space in the end that it loses in explode()
+            $wordLength = strlen($word) + 1;
+
+            if (($currentLength + $wordLength) <= $max_length) {
+                $array_output[$index] .= $word . ' ';
+
+                $currentLength += $wordLength;
+            } else {
+                $index += 1;
+
+                $currentLength = $wordLength;
+
+                $array_output[$index] = $word;
+            }
+        }
+
+        return $array_output;
     }
 
 }
