@@ -626,7 +626,7 @@ class Customer extends Model
             }
         }
 
-        $this->phones = json_encode($phones_array);
+        $this->phones = \Helper::jsonEncodeUtf8($phones_array);
     }
 
     /**
@@ -708,13 +708,14 @@ class Customer extends Model
     {
         $websites = [];
         foreach ($websites_array as $key => $value) {
-            $value = filter_var((string) $value, FILTER_SANITIZE_URL);
+            // FILTER_SANITIZE_URL cuts some symbols.
+            //$value = filter_var((string) $value, FILTER_SANITIZE_URL);
             if (!preg_match("/http(s)?:\/\//i", $value)) {
                 $value = 'http://'.$value;
             }
             $websites[] = (string) $value;
         }
-        $this->websites = json_encode(array_unique($websites));
+        $this->websites = \Helper::jsonEncodeUtf8(array_unique($websites));
     }
 
     /**

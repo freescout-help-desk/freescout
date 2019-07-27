@@ -620,7 +620,7 @@ class Conversation extends Model
         $emails_array = self::sanitizeEmails($emails);
         if ($emails_array) {
             $emails_array = array_unique($emails_array);
-            $this->cc = json_encode($emails_array);
+            $this->cc = \Helper::jsonEncodeUtf8($emails_array);
         } else {
             $this->cc = null;
         }
@@ -634,7 +634,7 @@ class Conversation extends Model
         $emails_array = self::sanitizeEmails($emails);
         if ($emails_array) {
             $emails_array = array_unique($emails_array);
-            $this->bcc = json_encode($emails_array);
+            $this->bcc = \Helper::jsonEncodeUtf8($emails_array);
         } else {
             $this->bcc = null;
         }
