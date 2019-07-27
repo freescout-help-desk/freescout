@@ -2042,7 +2042,7 @@ class ConversationsController extends Controller
                 $join->on('conversations.id', '=', 'threads.conversation_id');
             });
         if ($q) {
-            $query_conversations->where(function ($query) use ($like) {
+            $query_conversations->where(function ($query) use ($like, $filters, $q) {
                 $query->where('conversations.subject', 'like', $like)
                     ->orWhere('conversations.customer_email', 'like', $like)
                     ->orWhere('conversations.number', 'like', $like)
@@ -2052,6 +2052,8 @@ class ConversationsController extends Controller
                     ->orWhere('threads.to', 'like', $like)
                     ->orWhere('threads.cc', 'like', $like)
                     ->orWhere('threads.bcc', 'like', $like);
+
+                $query = \Eventy::filter('search.conversations.or_where', $query, $filters, $q);
             });
         }
 
@@ -2098,7 +2100,7 @@ class ConversationsController extends Controller
             $query_conversations->where('conversations.created_at', '<=', date('Y-m-d 23:59:59', strtotime($filters['before'])));
         }
 
-        $query_conversations = \Eventy::filter('search.apply_filters', $query_conversations, $filters, $q);
+        $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);
 
         $query_conversations->orderBy('conversations.last_reply_at');
 
