@@ -3715,6 +3715,9 @@ a.disabled:focus {
 .conv-reply-block:not(.conv-forward-block) .cc-shifted .conv-reply-field {
     padding-left: 0;
 }
+.conv-note-block .cc-toggler {
+    display: none;
+}
 
 /**
  * Only main content is visible
