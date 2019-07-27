@@ -101,7 +101,7 @@
                         </div>
                     </div>
                 </div>
-
+                @action('conversation.after_subject_block', $conversation, $mailbox)
                 <div class="conv-block conv-reply-block conv-action-block hidden">
                     <div class="col-xs-12">
                         <form class="form-horizontal form-reply" method="POST" action="">
