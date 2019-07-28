@@ -436,11 +436,24 @@ class Customer extends Model
     protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country'];
 
     /**
+     * Fields stored as JSON.
+     */
+    protected $json_fields = ['phones', 'websites', 'social_profiles', 'chats'];
+
+    /**
      * Get customer emails.
      */
     public function emails()
     {
         return $this->hasMany('App\Email');
+    }
+
+    /**
+     * Get customer emails.
+     */
+    public function emails_cached()
+    {
+        return $this->hasMany('App\Email')->rememberForever();
     }
 
     /**
@@ -456,7 +469,7 @@ class Customer extends Model
      */
     public function getMainEmail()
     {
-        return optional($this->emails()->first())->email;
+        return optional($this->emails_cached()->first())->email;
     }
 
     /**
@@ -464,7 +477,7 @@ class Customer extends Model
      *
      * @return string
      */
-    public function getFullName($email_if_empty = false)
+    public function getFullName($email_if_empty = false, $first_part_from_email = false)
     {
         if ($this->first_name && $this->last_name) {
             return $this->first_name.' '.$this->last_name;
@@ -473,7 +486,12 @@ class Customer extends Model
         } elseif (!$this->first_name && $this->last_name) {
             return $this->last_name;
         } elseif ($email_if_empty) {
-            return $this->getMainEmail();
+            $email = $this->getMainEmail();
+            if ($first_part_from_email) {
+                return $this->getNameFromEmail($email);
+            } else {
+                return $email;
+            }
         }
 
         return '';
@@ -500,11 +518,13 @@ class Customer extends Model
      *
      * @return string
      */
-    public function getNameFromEmail()
+    public function getNameFromEmail($email = '')
     {
-        $email = $this->emails()->first();
+        if (!$email) {
+            $email = optional($this->emails_cached()->first())->email;
+        }
         if ($email) {
-            return explode('@', $email->email)[0];
+            return explode('@', $email)[0];
         } else {
             return '';
         }
@@ -558,6 +578,22 @@ class Customer extends Model
     }
 
     /**
+     * Add new email to customer.
+     */
+    public function addEmail($email_address, $check_if_exists = false)
+    {
+        // Check if email already exists and belongs to another customer.
+        if ($check_if_exists) {
+            $email = Email::where('email', $email_address)->first();
+            if ($email && !empty($email->customer_id)) {
+                return false;
+            }
+        }
+        $new_email = new Email(['email' => $email_address]);
+        $this->emails()->save($new_email);
+    }
+
+    /**
      * Get customers phones as array.
      *
      * @return array
@@ -565,7 +601,7 @@ class Customer extends Model
     public function getPhones()
     {
         if ($this->phones) {
-            return json_decode($this->phones);
+            return json_decode($this->phones, true);
         } else {
             return [];
         }
@@ -578,7 +614,19 @@ class Customer extends Model
      */
     public function setPhones(array $phones_array)
     {
-        $this->phones = json_encode(self::formatPhones($phones));
+        $phones_array = self::formatPhones($phones_array);
+
+        // Remove dubplicates.
+        $list = [];
+        foreach ($phones_array as $i => $data) {
+            if (in_array($data['value'], $list)) {
+                unset($phones_array[$i]);
+            } else {
+                $list[] = $data['value'];         
+            }
+        }
+
+        $this->phones = \Helper::jsonEncodeUtf8($phones_array);
     }
 
     /**
@@ -592,15 +640,33 @@ class Customer extends Model
     {
         $phones = [];
         foreach ($phones_array as $phone) {
-            if (!empty($phone['value']) && !empty($phone['type']) && in_array($phone['type'], array_keys(self::$phone_types))) {
+            if (is_array($phone)) {
+                if (!empty($phone['value']) && !empty($phone['type']) && in_array($phone['type'], array_keys(self::$phone_types))) {
+                    $phones[] = [
+                        'value' => (string) $phone['value'],
+                        'type'  => (int) $phone['type'],
+                    ];
+                }
+            } else {
                 $phones[] = [
-                    'value' => (string) $phone['value'],
-                    'type'  => (int) $phone['type'],
+                    'value' => (string) $phone,
+                    'type'  => self::PHONE_TYPE_WORK
                 ];
             }
         }
 
-        return json_encode($phones);
+        return $phones;
+    }
+
+    /**
+     * Add website.
+     */
+    public function addPhone($phone, $type = self::PHONE_TYPE_WORK)
+    {
+        $this->setPhones(array_merge(
+            $this->getPhones(),
+            [['value' => $phone, 'type' => $type]]
+        ));
     }
 
     /**
@@ -611,7 +677,7 @@ class Customer extends Model
     public function getSocialProfiles()
     {
         if ($this->social_profiles) {
-            return json_decode($this->social_profiles);
+            return json_decode($this->social_profiles, true);
         } else {
             return [];
         }
@@ -625,7 +691,7 @@ class Customer extends Model
     public function getWebsites($dummy_if_empty = false)
     {
         if ($this->websites) {
-            return json_decode($this->websites);
+            return json_decode($this->websites, true);
         } elseif ($dummy_if_empty) {
             return [''];
         } else {
@@ -642,17 +708,26 @@ class Customer extends Model
     {
         $websites = [];
         foreach ($websites_array as $key => $value) {
-            $value = filter_var((string) $value, FILTER_SANITIZE_URL);
+            // FILTER_SANITIZE_URL cuts some symbols.
+            //$value = filter_var((string) $value, FILTER_SANITIZE_URL);
             if (!preg_match("/http(s)?:\/\//i", $value)) {
                 $value = 'http://'.$value;
             }
             $websites[] = (string) $value;
         }
-        $this->websites = json_encode($websites);
+        $this->websites = \Helper::jsonEncodeUtf8(array_unique($websites));
     }
 
     /**
-     * Create customer or get existing.
+     * Add website.
+     */
+    public function addWebsite($website)
+    {
+        $this->setWebsites(array_merge($this->getWebsites(), [$value]));
+    }
+
+    /**
+     * Create customer or get existing and fill empty fields.
      *
      * @param string $email
      * @param array  $data  [description]
@@ -669,19 +744,22 @@ class Customer extends Model
         if ($email_obj) {
             $customer = $email_obj->customer;
 
-            if (empty($customer->first_name) && !empty($data['first_name'])) {
+            // Update name if empty.
+            /*if (empty($customer->first_name) && !empty($data['first_name'])) {
                 $customer->first_name = $data['first_name'];
                 if (empty($customer->last_name) && !empty($data['last_name'])) {
                     $customer->last_name = $data['last_name'];
                 }
                 $customer->save();
-            }
+            }*/
         } else {
             $customer = new self();
             $email_obj = new Email();
             $email_obj->email = $email;
+        }
 
-            $customer->fill($data);
+        // Set empty fields
+        if ($customer->setData($data, false) || !$customer->id) {
             $customer->save();
         }
 
@@ -689,6 +767,64 @@ class Customer extends Model
             $email_obj->customer()->associate($customer);
             $email_obj->save();
         }
+
+        return $customer;
+    }
+
+    /**
+     * Set empty fields.
+     */
+    public function setData($data, $replace_data = true, $save = false)
+    {
+        $result = false;
+
+        if ($replace_data) {
+            // Replace data.
+            $this->fill($data);
+            $result = true;
+        } else {
+            // Update empty fields.
+            foreach ($data as $key => $value) {
+                if (in_array($key, $this->fillable) && empty($this->$key)) {
+                    $this->$key = $value;
+                    $result = true;
+                }
+            }
+        }
+
+        // Set JSON values.
+        foreach ($data as $key => $value) {
+            if (!in_array($key, $this->json_fields)) {
+                continue;
+            }
+            // todo: setChats, setSocialProfiles
+            if ($key == 'phones') {
+                foreach ($value as $phone_value) {
+                    $this->addPhone($phone_value);
+                }
+                $result = true;
+            }
+            if ($key == 'websites') {
+                $this->addWebsite($value);
+                $result = true;
+            }
+        }
+
+        if ($save) {
+            $this->save();
+        }
+
+        return $result;
+    }
+
+    /**
+     * For phone conversations.
+     */
+    public static function createWithoutEmail($data = [])
+    {
+        $customer = new self();
+        $customer->fill($data);
+        $customer->save();
 
         return $customer;
     }
@@ -720,5 +856,84 @@ class Customer extends Model
     {
         // todo
         return '/img/default-avatar.png';
+    }
+
+    /**
+     * Get full representation of customer.
+     */
+    public function getEmailAndName()
+    {
+        // Email can be fetched using query.
+        $text = $this->email;
+        if (!$text) {
+            $text = $this->getMainEmail();
+        }
+        if ($this->getFullName()) {
+            if ($text) {
+                $text .= ' ('.$this->getFullName().')';
+            } else {
+                $text .= $this->getFullName();
+            }
+        }
+        return $text;
+    }
+
+    public function getNameAndEmail()
+    {
+        // Email can be fetched using query.
+        $text = $this->getFullName();
+        $email = $this->email;
+        if (!$email) {
+            $email = $this->getMainEmail();
+        }
+        if ($email) {
+            if ($text) {
+                $text .= ' <'.$email.'>';
+            } else {
+                $text .= $email;
+            }
+        }
+        return $text;
+    }
+
+    /**
+     * Get customers info for the list of emails.
+     */
+    public static function emailsToCustomers($list)
+    {
+        $result = [];
+
+        $data = Customer::select(['emails.email', 'customers.first_name', 'customers.last_name'])
+            ->join('emails', function ($join) {
+                $join->on('emails.customer_id', '=', 'customers.id');
+            })
+            ->whereIn('emails.email', $list)
+            //->groupby('customers.id')
+            ->get()
+            ->toArray();
+
+        foreach ($data as $values) {
+            // Dummy customer.
+            $customer = new Customer();
+            $customer->email = $values['email'];
+            $customer->first_name = $values['first_name'];
+            $customer->last_name = $values['last_name'];
+
+            $result[$values['email']] = $customer->getNameAndEmail();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get customer by email.
+     */
+    public static function getByEmail($email)
+    {
+        return Customer::select('customers.*')
+            ->where('emails.email', $email)
+            ->join('emails', function ($join) {
+                $join->on('emails.customer_id', '=', 'customers.id');
+            })->first();
     }
 }

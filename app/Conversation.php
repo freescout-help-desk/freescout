@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Thread;
 use App\Events\ConversationCustomerChanged;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
@@ -117,24 +118,30 @@ class Conversation extends Model
     ];
 
     /**
-     * todo: Search filters.
+     * Search filters.
      */
-    public static $filters = [
+    public static $search_filters = [
         'assigned',
         'customer',
         'mailbox',
         'status',
         'subject',
-        'tag',
+        'attachments',
         'type',
         'body',
         'number',
         'id',
         'after',
         'before',
-        'between',
-        'on',
+        //'between',
+        //'on',
     ];
+
+    /**
+     * Search mode.
+     */
+    const SEARCH_MODE_CONV = 'conversations';
+    const SEARCH_MODE_CUSTOMERS = 'customers';
 
     /**
      * Default size of the conversations table.
@@ -216,6 +223,14 @@ class Conversation extends Model
     public function customer()
     {
         return $this->belongsTo('App\Customer');
+    }
+
+    /**
+     * Cached customer.
+     */
+    public function customer_cached()
+    {
+        return $this->customer()->rememberForever();
     }
 
     /**
@@ -365,7 +380,11 @@ class Conversation extends Model
             $title = __('Created by :person<br/>:date', ['person' => ucfirst(__(
             self::$persons[$this->source_via])), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
         } else {
-            $title = __('Last reply by :person<br/>:date', ['person' => ucfirst(__(self::$persons[$this->last_reply_from])), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
+            $person = '';
+            if (!empty(self::$persons[$this->last_reply_from])) {
+                $person = __(self::$persons[$this->last_reply_from]);
+            }
+            $title = __('Last reply by :person<br/>:date', ['person' => ucfirst($person), 'date' => User::dateFormat($this->created_at, 'M j, Y H:i')]);
         }
 
         return $title;
@@ -563,7 +582,7 @@ class Conversation extends Model
     /**
      * Set folder according to the status, state and user of the conversation.
      */
-    public function updateFolder()
+    public function updateFolder($mailbox = null)
     {
         if ($this->state == self::STATE_DRAFT) {
             $folder_type = Folder::TYPE_DRAFTS;
@@ -579,8 +598,12 @@ class Conversation extends Model
             $folder_type = Folder::TYPE_UNASSIGNED;
         }
 
+        if (!$mailbox) {
+            $mailbox = $this->mailbox;
+        }
+
         // Find folder
-        $folder = $this->mailbox->folders()
+        $folder = $mailbox->folders()
             ->where('type', $folder_type)
             ->first();
 
@@ -597,7 +620,7 @@ class Conversation extends Model
         $emails_array = self::sanitizeEmails($emails);
         if ($emails_array) {
             $emails_array = array_unique($emails_array);
-            $this->cc = json_encode($emails_array);
+            $this->cc = \Helper::jsonEncodeUtf8($emails_array);
         } else {
             $this->cc = null;
         }
@@ -611,7 +634,7 @@ class Conversation extends Model
         $emails_array = self::sanitizeEmails($emails);
         if ($emails_array) {
             $emails_array = array_unique($emails_array);
-            $this->bcc = json_encode($emails_array);
+            $this->bcc = \Helper::jsonEncodeUtf8($emails_array);
         } else {
             $this->bcc = null;
         }
@@ -895,7 +918,7 @@ class Conversation extends Model
         $data = [
             'mailbox'      => $this->mailbox,
             'conversation' => $this,
-            'customer'     => $this->customer,
+            'customer'     => $this->customer_cached,
             'user'         => $user,
         ];
 
@@ -945,6 +968,41 @@ class Conversation extends Model
         }
 
         event(new ConversationCustomerChanged($this, $prev_customer_id, $prev_customer_email, $by_user, $by_customer));
+
+        return true;
+    }
+
+    /**
+     * Move conversation to another mailbox.
+     */
+    public function moveToMailbox($mailbox, $user)
+    {
+        $prev_mailbox = $this->mailbox;
+
+        // We don't know how to replace $this->mailbox object.
+        $this->mailbox_id = $mailbox->id;
+        // Check assignee.
+        if ($this->user_id && !in_array($this->user_id, $mailbox->userIdsHavingAccess())) {
+            // Assign conversation to the user who moved it.
+            $conversation->user_id = $user->id;
+        }
+        $this->updateFolder($mailbox);
+        $this->save();
+
+        // Add record to the conversation history.
+        Thread::create($this, Thread::TYPE_LINEITEM, '', [
+            'created_by_user_id' => $user->id,
+            'user_id'     => $this->user_id,
+            'state'       => Thread::STATE_PUBLISHED,
+            'action_type' => Thread::ACTION_TYPE_MOVED_FROM_MAILBOX,
+            'source_via'  => Thread::PERSON_USER,
+            'source_type' => Thread::SOURCE_TYPE_WEB,
+            'customer_id' => $this->customer_id,
+        ]);
+
+        // Update counters.
+        $prev_mailbox->updateFoldersCounters();
+        $mailbox->updateFoldersCounters();
 
         return true;
     }
@@ -1105,6 +1163,66 @@ class Conversation extends Model
         } else {
             return '';
         }
+    }
+
+    /**
+     * Get type name.
+     */
+    public function getTypeName()
+    {
+        return self::typeToName($this->type);
+    }
+
+    /**
+     * Get type name .
+     */
+    public static function typeToName($type)
+    {
+        $name = '';
+
+        switch ($type) {
+            case self::TYPE_EMAIL:
+                $name = __('Email');
+                break;
+
+            case self::TYPE_PHONE:
+                $name = __('Phone');
+                break;
+
+            case self::TYPE_CHAT:
+                $name = __('Chat');
+                break;
+
+            default:
+                $name = \Eventy::filter('conversation.type_name', $type);
+                break;
+        }
+
+        return $name;
+    }
+
+    /**
+     * Get emails which are excluded from CC and BCC.
+     */
+    public function getExcludeArray($mailbox = null)
+    {
+        if (!$mailbox) {
+            $mailbox = $this->mailbox;
+        }
+        $customer_emails = [$this->customer_email];
+        if (strstr($this->customer_email, ',')) {
+            // customer_email contains mutiple addresses (when new conversation for multiple recipients created)
+            $customer_emails = explode(',', $this->customer_email);
+        }
+        return array_merge($mailbox->getEmails(), $customer_emails);
+    }
+
+    /**
+     * Is it as phone conversation.
+     */
+    public function isPhone()
+    {
+        return ($this->type == self::TYPE_PHONE);
     }
 
     // /**

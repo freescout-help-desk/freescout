@@ -46,15 +46,25 @@ class GenerateVars extends Command
                 'locales' => config('app.locales'),
             ];
 
-            $filesystem = new Filesystem();
+            //$filesystem = new Filesystem();
 
-            $file_path = public_path('js/vars.js');
+            //$file_path = public_path('js/vars.js');
+            $file_path = storage_path('app/public/js/vars.js');
 
-            $compiled = view('js/vars', $params)->render();
+            $content = view('js/vars', $params)->render();
 
-            $filesystem->put($file_path, $compiled);
+            //$filesystem->put($file_path, $content);
+            // Save vars only if content changed
+            if (\Storage::exists('js/vars.js')) {
+                $old_content = \Storage::get('js/vars.js');
+                if ($content != $old_content) {
+                    \Storage::put('js/vars.js', $content);
+                }
+            } else {
+                \Storage::put('js/vars.js', $content);
+            }
 
-            $this->info("Created: {$file_path}");
+            $this->info("Created: ".substr($file_path, strlen(base_path())+1));
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }

@@ -27,7 +27,7 @@ class FetchEmails extends Command
      *
      * @var string
      */
-    protected $signature = 'freescout:fetch-emails {--days=3}';
+    protected $signature = 'freescout:fetch-emails {--days=3} {--unseen=1}';
 
     /**
      * The console command description.
@@ -64,6 +64,8 @@ class FetchEmails extends Command
         $successfully = true;
         Option::set('fetch_emails_last_run', $now);
 
+        $this->line('['.date('Y-m-d H:i:s').'] Fetching '.($this->option('unseen') ? 'UNREAD' : 'ALL').' emails for the last '.$this->option('days').' days.');
+
         // Get active mailboxes
         $mailboxes = Mailbox::where('in_protocol', '<>', '')
             ->where('in_server', '<>', '')
@@ -98,59 +100,92 @@ class FetchEmails extends Command
 
     public function fetch($mailbox)
     {
-        $client = new Client([
-            'host'          => $mailbox->in_server,
-            'port'          => $mailbox->in_port,
-            'encryption'    => $mailbox->getInEncryptionName(),
-            'validate_cert' => $mailbox->in_validate_cert,
-            'username'      => $mailbox->in_username,
-            'password'      => $mailbox->in_password,
-            'protocol'      => $mailbox->getInProtocolName(),
-        ]);
+        $no_charset = false;
+
+        $client = \MailHelper::getMailboxClient($mailbox);
 
         // Connect to the Server
         $client->connect();
 
-        // Get folder
+        // Get INBOX folder
+        $folders = [];
         $folder = $client->getFolder('INBOX');
 
         if (!$folder) {
             throw new \Exception('Could not get mailbox folder: INBOX', 1);
         }
-        $folders = [$folder];
+        $folders[] = $folder;
 
-        // It would be good to be able to fetch emails from Spam folder into Spam folder of the mailbox
-        // But not all mail servers provide access to it.
-        // For example DreamHost does have a Spam folder but allows IMAP access to the following folders only:
-        //      ./cur
-        //      ./new
-        //      ./tmp
+        // Fetch emails from custom IMAP folders.
+        if ($mailbox->in_protocol == Mailbox::IN_PROTOCOL_IMAP) {
+            $imap_folders = $mailbox->getInImapFolders();
 
-        // $folders = [];
+            foreach ($imap_folders as $folder_name) {
+                try {
+                    $folder = $client->getFolder($folder_name);
+                } catch (\Exception $e) {
+                    // Just log error and continue.
+                    $this->error('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$folder_name);
+                }
 
-        // if ($mailbox->in_protocol == Mailbox::IN_PROTOCOL_IMAP) {
-        //     try {
-        //         //$folders = $client->getFolders();
-        //     } catch (\Exception $e) {
-        //         // Do nothing
-        //     }
-        // }
+                if ($folder) {
+                    $folders[] = $folder;
+                }
+            }
+            // try {
+            //     //$folders = $client->getFolders();
+            // } catch (\Exception $e) {
+            //     // Do nothing
+            // }
+        }
         // if (!count($folders)) {
-        //     $folders = [$client->getFolder('INBOX')];
+        //     $folder = $client->getFolder('INBOX');
+
+        //     if (!$folder) {
+        //         throw new \Exception('Could not get mailbox folder: INBOX', 1);
+        //     }
+        //     $folders = [$folder];
         // }
 
         foreach ($folders as $folder) {
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
 
             // Get unseen messages for a period
-            $messages = $folder->query()->unseen()->since(now()->subDays($this->option('days')))->leaveUnread()->get();
+            $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
+            if ($this->option('unseen')) {
+                $messages->unseen();
+            }
+            if ($no_charset) {
+                $messages->setCharset(null);
+            }
+            $messages = $messages->get();
 
-            if ($client->getLastError()) {
-                // Throw exception for INBOX only
-                if ($folder->name == 'INBOX') {
-                    throw new \Exception($client->getLastError(), 1);
+            $last_error = $client->getLastError();
+
+            if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
+                $errors_count = count($client->getErrors());
+                // Solution for MS mailboxes.
+                // https://github.com/freescout-helpdesk/freescout/issues/176
+                $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null);
+                if ($this->option('unseen')) {
+                    $messages->unseen();
+                }
+                $messages = $messages->get();
+
+                $no_charset = true;
+                if (count($client->getErrors()) > $errors_count) {
+                    $last_error = $client->getLastError();
                 } else {
-                    $this->error('['.date('Y-m-d H:i:s').'] '.$client->getLastError());
+                    $last_error = null;
+                }
+            }
+
+            if ($last_error && !\Str::startsWith($last_error, 'Mailbox is empty')) {
+                // Throw exception for INBOX only
+                if ($folder->name == 'INBOX' && !$messages) {
+                    throw new \Exception($last_error, 1);
+                } else {
+                    $this->error('['.date('Y-m-d H:i:s').'] '.$last_error);
                 }
             }
 
@@ -228,8 +263,8 @@ class FetchEmails extends Command
                         \MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY,
                     ];
 
+                    // Try to get previous message ID from marker in body.
                     if (!$prev_message_id || !preg_match('/^('.implode('|', $reply_prefixes).')\-(\d+)\-/', $prev_message_id)) {
-                        // Try to get previous message ID from marker in body.
                         $html_body = $message->getHTMLBody(false);
                         $marker_message_id = \MailHelper::fetchMessageMarkerValue($html_body);
 
@@ -342,6 +377,15 @@ class FetchEmails extends Command
                             if (!empty($prev_thread)) {
                                 $is_reply = true;
                             }
+                        }
+                    }
+
+                    // Make sure that prev_thread belongs to the current mailbox.
+                    // It may happen when forwarding conversation for example.
+                    if ($prev_thread) {
+                        if ($prev_thread->conversation->mailbox_id != $mailbox->id) {
+                            $prev_thread = null;
+                            $is_reply = false;
                         }
                     }
 
@@ -780,7 +824,12 @@ class FetchEmails extends Command
             // Check all separators and choose the shortest reply
             $reply_bodies = [];
             foreach (Mail::$alternative_reply_separators as $alt_separator) {
-                $parts = explode($alt_separator, $body);
+                if (\Str::startsWith($alt_separator, 'regex:')) {
+                    $regex = preg_replace("/^regex:/", '', $alt_separator);
+                    $parts = preg_split($regex, $body);
+                } else {
+                    $parts = explode($alt_separator, $body);
+                }
                 if (count($parts) > 1) {
                     $reply_bodies[] = $parts[0];
                 }

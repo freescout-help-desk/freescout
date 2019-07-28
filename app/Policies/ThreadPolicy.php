@@ -22,7 +22,7 @@ class ThreadPolicy
     {
         if ($thread->created_by_user_id 
             && in_array($thread->type, [Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
-            && ($user->isAdmin() || $thread->created_by_user_id == $user->ID)
+            && ($user->isAdmin() || ($user->hasPermission(User::PERM_EDIT_CONVERSATIONS) && $thread->created_by_user_id == $user->id))
         ) {
             return true;
         } else {

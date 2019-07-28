@@ -150,9 +150,10 @@ class SystemController extends Controller
             }
 
             // If queue:work is not running, clear cache to let it start if something is wrong with the mutex
-            if ($command_name == 'queue:work' && !$last_successful_run && function_exists('shell_exec')) {
-                $status_texts[] = __('Cleared cache to force command to start.');
-                \Artisan::call('freescout:clear-cache');
+            if ($command_name == 'queue:work' && !$last_successful_run) {
+                $status_texts[] = __('Try to :%a_start%clear cache:%a_end% to force command to start.', ['%a_start%' => '<a href="'.route('system.tools').'" target="_blank">', '%a_end%' => '</a>']);
+                // This sometimes makes Status page open as non logged in user.
+                //\Artisan::call('freescout:clear-cache', ['--doNotGenerateVars' => true]);
             }
 
             $commands[] = [
@@ -238,7 +239,10 @@ class SystemController extends Controller
                 break;
 
             case 'fetch_emails':
-                \Artisan::call('freescout:fetch-emails', [], $outputLog);
+                $params = [];
+                $params['--days'] = (int)$request->days;
+                $params['--unseen'] = (int)$request->unseen;
+                \Artisan::call('freescout:fetch-emails', $params, $outputLog);
                 break;
 
             case 'migrate_db':
@@ -254,7 +258,7 @@ class SystemController extends Controller
             \Cache::forever('tools_execute_output', $output);
         }
 
-        return redirect()->route('system.tools');
+        return redirect()->route('system.tools')->withInput($request->input());
     }
 
     /**
@@ -272,12 +276,16 @@ class SystemController extends Controller
             case 'update':
                 try {
                     $status = \Updater::update();
+                    
                     // Artisan::output()
                 } catch (\Exception $e) {
-                    $response['msg'] = __('Error occured').': '.$e->getMessage();
+                    $response['msg'] = __('Error occured. Please try again or try another :%a_start%update method:%a_end%', ['%a_start%' => '<a href="'.config('app.freescout_url').'/docs/update/" target="_blank">', '%a_end%' => '</a>']);
+                    $response['msg'] .= '<br/><br/>'.$e->getMessage();
+
+                    \Helper::logException($e);
                 }
                 if (!$response['msg'] && $status) {
-                    // Adding session flash is useless as cache is cleated
+                    // Adding session flash is useless as cache is cleared
                     $response['msg_success'] = __('Application successfully updated');
                     $response['status'] = 'success';
                 }

@@ -10,7 +10,8 @@
 {{-- Global vars for JS. Set in /app/Console/Commands/GenerateJs.php --}}
 var Vars = {
     public_url: '{{ config('app.url') }}',
-    subtype_forward: '{{ \App\Thread::SUBTYPE_FORWARD }}'
+    subtype_forward: '{{ \App\Thread::SUBTYPE_FORWARD }}',
+    conv_type_phone: '{{ \App\Conversation::TYPE_PHONE }}'
 };
 
 {{-- 
@@ -25,6 +26,7 @@ var LangMessages = {
             {{-- Add here strings which you need to be translated in JS--}}
             "ajax_error": "{{ __("Error occured. Please check your internet connection and try again.") }}",
             "error_occured": "{{ __("Error occured. Please try again later.") }}",
+            "error_occured_updating": "{{ __('Error occured. Please try again or try another :%a_start%update method:%a_end%', ['%a_start%' => '<a href="'.config('app.freescout_url').'/docs/update/" target="_blank">', '%a_end%' => '</a>']) }}",
             "upload_attachments": "{{ __("Upload Attachments") }}",
             "saved_replies": "{{ __("Saved Replies") }}",
             "save_draft": "{{ __("Save Draft") }}",
@@ -64,6 +66,7 @@ var LangMessages = {
             "confirm_update": "{{ __("Please backup application files and database before you continue.") }}",
             "remove_format": "{{ __("Remove Formatting") }}",
             "list": "{{ __("List") }}",
+            "add_lower": "{{ __("add") }}",
 
             "update": "{{ __("Update") }}"
         }@if (!$loop->last),@endif

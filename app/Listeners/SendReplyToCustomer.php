@@ -23,6 +23,11 @@ class SendReplyToCustomer
     {
         $conversation = $event->conversation;
 
+        // Do not send email if this is a Phone conversation.
+        if ($conversation->isPhone()) {
+            return;
+        }
+
         // We can not check imported here, as after conversation has been imported via API
         // notifications has to be sent.
         //if (!$conversation->imported) {

@@ -246,4 +246,23 @@ class Attachment extends Model
         // Delete from DB
         self::whereIn('id', $attachment_ids)->delete();
     }
+
+    /**
+     * Generate dummy ID for attachment.
+     * Not used for now.
+     */
+    /*public static function genrateDummyId()
+    {
+        if (!$this->id) {
+            // Math.random should be unique because of its seeding algorithm.
+            // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+            // after the decimal.
+            $hash = mt_rand() / mt_getrandmax();
+            $hash = base_convert($hash, 10, 36);
+            $id = substr($hash, 2, 9);
+        } else {
+            $id = substr(md5($this->id), 0, 9);
+        }
+        return $id;
+    }*/
 }

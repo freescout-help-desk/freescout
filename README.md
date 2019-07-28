@@ -10,7 +10,7 @@
 
 </div>
 
-**FreeScout** is the super lightweight free open source help desk and shared inbox written in PHP7 (Laravel 5.5 framework) – self hosted clone of HelpScout. Now you can enjoy [free Zendesk & Help Scout](https://freescout.net) without giving up privacy or locking yourself into a service you don't control.
+**FreeScout** is the super lightweight free open source help desk and shared inbox written in PHP7 (Laravel 5.5 framework) – self hosted clone of HelpScout. Now you can enjoy free Zendesk & Help Scout without giving up privacy or locking yourself into a service you don't control.
 
 FreeScout has been developed from scratch and is not using any copyrighted Help Scout materials to comply with GitHub's [DMCA Policy](https://help.github.com/articles/dmca-takedown-policy/) (trademark, design, logos, icons, CSS, JS, HTML files are copyrighted; idea cannot be copyrighted).
 
@@ -18,6 +18,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
 
 ## Table of Contents
    * [Features](#features)
+   * [Demo](#demo)
    * [Modules](#modules)
    * [Requirements](#requirements)
    * [News & Updates](#news--updates)
@@ -34,16 +35,23 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
   * Seamless email integration.
   * Web installer & updater.
   * Starred conversations.
+  * Forwarding conversations.
+  * Phone conversations.
+  * Sending new conversations to multiple recipients at once.
   * Push notifications.
   * Auto reply.
   * Notes.
   * Pasting screenshots from the clipboard into the reply area.
   * Configuring notifications on a per user basis.
   * Open tracking.
-  * Edit/hide threads.
+  * Editing threads.
   * Search.
 
 Need anything else? Suggest features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular).
+
+## Demo
+
+[Live demo](https://demo.freescout.net)
 
 ## Modules
 
@@ -65,9 +73,10 @@ If you would like to be notified about new releases, news and updates you can su
 
 [Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
 
-Images & one-click installers:
+Images & one-click installs:
 
 * [Docker Image](http://freescout.net/docker/)
+* [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
 * [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
 
 ## Contributing

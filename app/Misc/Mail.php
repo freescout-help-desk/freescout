@@ -49,7 +49,7 @@ class Mail
      * If reply is not extracted properly from the incoming email, add here a new separator.
      * Order is not important.
      * Idially separators must contain < or > to avoid false positives.
-     * If there will be problems, convert into regular expressions.
+     * Regex separators has "regex:" in the beginning.
      */
     public static $alternative_reply_separators = [
         self::REPLY_SEPARATOR_HTML, // Our HTML separator
@@ -57,14 +57,24 @@ class Mail
 
         // Email service providers specific separators.
         '<div class="gmail_quote">', // Gmail
+        '<div name="quote" ',
         'yahoo_quoted_', // Yahoo, full: <div id=3D"ydp6h4f5c59yahoo_quoted_2937493705"
         '------------------ 原始邮件 ------------------', // QQ
+        '------------------ Original ------------------', // QQ English
+        '<div id=3D"divRplyFwdMsg" dir=', // Outlook
+        'regex:/<div style="border:none;border\-top:solid \#[A-Z0-9]{6} 1\.0pt;padding:3\.0pt 0in 0in 0in">[^<]*<p class="MsoNormal"><b>/', // MS Outlook
 
         // General separators.
         '<blockquote', // General sepator
         '<!-- originalMessage -->',
+        '‐‐‐‐‐‐‐ Original Message ‐‐‐‐‐‐‐',
         //'---Original---', // QQ separator, wait for emails from QQ and check
     ];
+
+    /**
+     * md5 of the last applied mail config.
+     */
+    public static $last_mail_config_hash = '';
 
     /**
      * Configure mail sending parameters.
@@ -82,8 +92,13 @@ class Mail
             if ($mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
                 \Config::set('mail.host', $mailbox->out_server);
                 \Config::set('mail.port', $mailbox->out_port);
-                \Config::set('mail.username', $mailbox->out_username);
-                \Config::set('mail.password', $mailbox->out_password);
+                if (!$mailbox->out_username) {
+                    \Config::set('mail.username', null);
+                    \Config::set('mail.password', null);
+                } else {
+                    \Config::set('mail.username', $mailbox->out_username);
+                    \Config::set('mail.password', $mailbox->out_password);
+                }
                 \Config::set('mail.encryption', $mailbox->getOutEncryptionName());
             }
         } else {
@@ -92,7 +107,33 @@ class Mail
             \Config::set('mail.from', ['address' => self::getSystemMailFrom(), 'name' => '']);
         }
 
+        self::reapplyMailConfig();
+    }
+
+    /**
+     * Reapply new mail config.
+     */
+    public static function reapplyMailConfig()
+    {
+        // Check hash to avoid recreating MailServiceProvider.
+        $mail_config_hash = md5(json_encode(\Config::get('mail')));
+
+        if (self::$last_mail_config_hash != $mail_config_hash) {
+            self::$last_mail_config_hash = $mail_config_hash;
+        } else {
+            return false;
+        }
+
+        // Without doing this, Swift mailer uses old config values
+        // if there were emails sent with previous config.
+        \App::forgetInstance('mailer');
+        \App::forgetInstance('swift.mailer');
+        \App::forgetInstance('swift.transport');
+
         (new \Illuminate\Mail\MailServiceProvider(app()))->register();
+        // We have to update Mailer facade manually, as it does not happen automatically
+        // and previous instance of app('mailer') is used.
+        \Mail::swap(app('mailer'));
     }
 
     /**
@@ -112,12 +153,17 @@ class Mail
         if (\Config::get('mail.driver') == self::MAIL_DRIVER_SMTP) {
             \Config::set('mail.host', Option::get('mail_host'));
             \Config::set('mail.port', Option::get('mail_port'));
-            \Config::set('mail.username', Option::get('mail_username'));
-            \Config::set('mail.password', Option::get('mail_password'));
+            if (!Option::get('mail_username')) {
+                \Config::set('mail.username', null);
+                \Config::set('mail.password', null);
+            } else {
+                \Config::set('mail.username', Option::get('mail_username'));
+                \Config::set('mail.password', Option::get('mail_password'));
+            }
             \Config::set('mail.encryption', Option::get('mail_encryption'));
         }
 
-        (new \Illuminate\Mail\MailServiceProvider(app()))->register();
+        self::reapplyMailConfig();
     }
 
     /**
@@ -261,8 +307,20 @@ class Mail
         // Get unseen messages for a period
         $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
 
-        if ($client->getLastError()) {
-            throw new \Exception($client->getLastError(), 1);
+        $last_error = $client->getLastError();
+        if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
+            // Solution for MS mailboxes.
+            // https://github.com/freescout-helpdesk/freescout/issues/176
+            $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->setCharset(null)->get();
+            if (count($client->getErrors()) > 1) {
+                $last_error = $client->getLastError();
+            } else {
+                $last_error = null;
+            }
+        }
+
+        if ($last_error) {
+            throw new \Exception($last_error, 1);
         } else {
             return true;
         }
@@ -476,5 +534,21 @@ class Mail
         }
 
         return $value;
+    }
+
+    /**
+     * Get client for fetching emails.
+     */
+    public static function getMailboxClient($mailbox)
+    {
+        return new \Webklex\IMAP\Client([
+            'host'          => $mailbox->in_server,
+            'port'          => $mailbox->in_port,
+            'encryption'    => $mailbox->getInEncryptionName(),
+            'validate_cert' => $mailbox->in_validate_cert,
+            'username'      => $mailbox->in_username,
+            'password'      => $mailbox->in_password,
+            'protocol'      => $mailbox->getInProtocolName(),
+        ]);
     }
 }

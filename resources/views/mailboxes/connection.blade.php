@@ -89,7 +89,7 @@
                             <label for="out_server" class="col-sm-2 control-label">{{ __('SMTP Server') }}</label>
 
                             <div class="col-sm-6">
-                                <input id="out_server" type="text" class="form-control input-sized" name="out_server" value="{{ old('out_server', $mailbox->out_server) }}" maxlength="255"  @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
+                                <input id="out_server" type="text" class="form-control input-sized" name="out_server" value="{{ old('out_server', $mailbox->out_server) }}" maxlength="255"  @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus data-smtp-required="true">
 
 
                                 @if (strstr($mailbox->out_server, '.gmail.'))
@@ -114,7 +114,7 @@
                             <label for="out_username" class="col-sm-2 control-label">{{ __('Username') }}</label>
 
                             <div class="col-sm-6">
-                                <input id="out_username" type="text" class="form-control input-sized" name="out_username" value="{{ old('out_username', $mailbox->out_username) }}" maxlength="100" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
+                                <input id="out_username" type="text" class="form-control input-sized" name="out_username" value="{{ old('out_username', $mailbox->out_username) }}" maxlength="100" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
 
                                 @include('partials/field_error', ['field'=>'out_username'])
                             </div>
@@ -123,7 +123,7 @@
                             <label for="out_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
                             <div class="col-sm-6">
-                                <input id="out_password" type="password" class="form-control input-sized" name="out_password" value="{{ old('out_password', $mailbox->out_password) }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
+                                <input id="out_password" type="password" class="form-control input-sized" name="out_password" value="{{ old('out_password', $mailbox->out_password) }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
 
                                 @include('partials/field_error', ['field'=>'out_password'])
                             </div>
@@ -132,7 +132,7 @@
                             <label for="out_encryption" class="col-sm-2 control-label">{{ __('Encryption') }}</label>
 
                             <div class="col-sm-6">
-                                <select id="out_encryption" class="form-control input-sized" name="out_encryption" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
+                                <select id="out_encryption" class="form-control input-sized" name="out_encryption" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus data-smtp-required="true">
                                     <option value="{{ App\Mailbox::OUT_ENCRYPTION_NONE }}" @if (old('out_encryption', $mailbox->out_encryption) == App\Mailbox::OUT_ENCRYPTION_NONE)selected="selected"@endif>{{ __('None') }}</option>
                                     <option value="{{ App\Mailbox::OUT_ENCRYPTION_SSL }}" @if (old('out_encryption', $mailbox->out_encryption) == App\Mailbox::OUT_ENCRYPTION_SSL)selected="selected"@endif>{{ __('SSL') }}</option>
                                     <option value="{{ App\Mailbox::OUT_ENCRYPTION_TLS }}" @if (old('out_encryption', $mailbox->out_encryption) == App\Mailbox::OUT_ENCRYPTION_TLS)selected="selected"@endif>{{ __('TLS') }}</option>
