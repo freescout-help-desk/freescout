@@ -67,6 +67,7 @@ class PolycastServiceProvider extends ServiceProvider
                         $query->orWhere(function ($query) use ($channel, $event, $request) {
                             $query->where('channels', 'like', '%"'.$channel.'"%')
                                 ->where('event', '=', $event)
+                                // Recors are fetched starting from opening the page or from the last event.
                                 ->where('created_at', '>=', $request->get('time'));
                         });
                     }
@@ -92,9 +93,87 @@ class PolycastServiceProvider extends ServiceProvider
                 // https://stackoverflow.com/questions/37019294/laravel-ajax-call-deletes-session-flash-data
                 \Session::reflash();
 
+                $this->processConvView($request);
+
+                \Eventy::action('polycast.receive', $request, $collection, $payload);
+
                 return ['status' => 'success', 'time' => Carbon::now()->toDateTimeString(), 'payloads' => $payload];
             });
         });
+    }
+
+    /**
+     * Process conversation viewers.
+     */
+    public function processConvView($request)
+    {
+        // Periodically save info indicating that user is still viewing the conversation.
+        $viewing_conversation_id = null;
+        if (!empty($request->data) && !empty($request->data['conversation_id'])) {
+            $viewing_conversation_id = $request->data['conversation_id'];
+        }
+        if ($viewing_conversation_id) {
+
+            $user = auth()->user();
+            $now = Carbon::now();
+            
+            $cache_key = 'conv_view_'.$user->id.'_'.$viewing_conversation_id;
+            $cache_data = \Cache::get($cache_key);
+            $view_date = null;
+            $replying_changed = false;
+
+            // t - date.
+            // r - replying.
+            if ($cache_data) {
+                if (isset($cache_data['t']) && isset($cache_data['r'])) {
+                    $view_date = Carbon::createFromFormat('Y-m-d H:i:s', $cache_data['t']);
+
+                    // Let other users know that user started to reply.
+                    if (!(int)$cache_data['r'] && (int)$request->data['replying']) {
+                        // Started to reply.
+                        \App\Events\RealtimeConvView::dispatch($viewing_conversation_id, $user, true);
+                        $replying_changed = true;
+                    } elseif ((int)$cache_data['r'] && !(int)$request->data['replying']) {
+                        // Finished to reply.
+                        \App\Events\RealtimeConvView::dispatch($viewing_conversation_id, $user, false);
+                        $replying_changed = true;
+                    }
+                } else {
+                    $replying_changed = true;
+                }
+            }
+            
+            if (!$cache_data || $replying_changed || ($view_date && $now->diffInSeconds($view_date) > 15)) {
+                // Remember date of the last view in the cache.
+                // Store for 2 minutes.
+                $cache_data = [
+                    't' => $now->toDateTimeString(),
+                    'r' => (int)$request->data['replying']
+                ];
+                \Cache::put($cache_key, $cache_data, 1);
+
+                // Job could not detect when user finishes to view converrsation.
+                // We are using cron.
+                // \App\Jobs\CheckConvView::dispatch($viewing_conversation_id, $user->id)
+                //     ->delay(now()->addSeconds(25))
+                //     ->onQueue(\Helper::QUEUE_DEFAULT);
+
+                $conv_key = 'conv_view';
+                $conv_data = \Cache::get($conv_key) ?? [];
+                $conv_data[$viewing_conversation_id][$user->id] = $cache_data;
+                \Cache::put($conv_key, $conv_data, 20 /*minutes*/);
+                
+                // \DB::table('polycast_events')->insert([
+                //     'channels'   => json_encode([['name' => 'conv.view']]),
+                //     'event'      => 'App\Events\RealtimeConvView',
+                //     'payload'    => json_encode([
+                //         'conversation_id' => $viewing_conversation_id,
+                //         'reiterating' => true
+                //     ]),
+                //     'created_at' => Carbon::now()->toDateTimeString(),
+                // ]);
+            }
+        }
     }
 
     public function register()

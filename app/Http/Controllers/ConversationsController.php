@@ -18,6 +18,7 @@ use App\Mailbox;
 use App\MailboxUser;
 use App\SendLog;
 use App\Thread;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Validator;
@@ -203,6 +204,42 @@ class ConversationsController extends Controller
             }
         }
 
+        // Notify other users that current user is viewing conversation.
+        // Eventually notification data will be saved in polycast_events table and processes 
+        // in JS in users browsers.
+
+        // $notification = new \App\Notifications\UserViewingConversationNotification(
+        //     $conversation, $user, false
+        // );
+
+        // This broadcasts to specific users.
+        // \Notification::send($mailbox->usersHavingAccess(), $notification);
+        
+        // Notification is sent to all via public channel: conview
+        // If we send notification to each user, applications having thouthans of users
+        // will be overloaded.
+        // // https://laravel.com/docs/5.5/broadcasting#broadcasting-events
+        \App\Events\RealtimeConvView::dispatch($conversation->id, $user, false);
+
+        // Get viewers.
+        $viewers = [];
+        $conv_view = \Cache::get('conv_view');
+        if ($conv_view && !empty($conv_view[$conversation->id])) {
+            $viewing_users = User::whereIn('id', array_keys($conv_view[$conversation->id]))->get();
+            foreach ($viewing_users as $viewer) {
+                if (isset($conv_view[$conversation->id][$viewer->id]['r']) && $viewer->id != $user->id) {
+                    $viewers[] = [
+                        'user'     => $viewer,
+                        'replying' => (int)$conv_view[$conversation->id][$viewer->id]['r']
+                    ];
+                }
+            }
+            // Show replying first.
+            usort($viewers, function($a, $b) {
+                return $a['replying'] < $b['replying'];
+            });
+        }
+
         return view($template, [
             'conversation'       => $conversation,
             'mailbox'            => $conversation->mailbox,
@@ -220,6 +257,7 @@ class ConversationsController extends Controller
             'name'               => $name,
             'phone'              => $phone,
             'to_email'           => $to_email,
+            'viewers'            => $viewers,
         ]);
     }
 

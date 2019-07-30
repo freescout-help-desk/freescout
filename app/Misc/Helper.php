@@ -21,6 +21,11 @@ class Helper
     const PREVIEW_MAXLENGTH = 255;
 
     /**
+     * Deafult background job queue;
+     */
+    const QUEUE_DEFAULT = 'default';
+
+    /**
      * Menu structure used to display active menu item.
      * Array are mnemonic names, strings - route names.
      * Menu has 2 levels.

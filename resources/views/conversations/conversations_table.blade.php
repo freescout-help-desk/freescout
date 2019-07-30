@@ -9,6 +9,12 @@
         // Preload users and customers
         App\Conversation::loadUsers($conversations);
         App\Conversation::loadCustomers($conversations);
+
+        // Get information on viewers
+        if (empty($no_checkboxes)) {
+            $viewers = App\Conversation::getViewersInfo($conversations);
+        }
+
         $conversations = \Eventy::filter('conversations_table.preload_table_data', $conversations);
     @endphp
 
@@ -76,7 +82,9 @@
         <tbody>
             @foreach ($conversations as $conversation)
                 <tr class="conv-row @if ($conversation->isActive()) conv-active @endif" data-conversation_id="{{ $conversation->id }}">
-                    @if (empty($no_checkboxes))<td class="conv-current"></td>@endif
+                    @if (empty($no_checkboxes))<td class="conv-current">@if (!empty($viewers[$conversation->id]))
+                                <div class="viewer-badge @if (!empty($viewers[$conversation->id]['replying'])) viewer-replying @endif" data-toggle="tooltip" title="@if (!empty($viewers[$conversation->id]['replying'])){{ __(':user is replying', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@else{{ __(':user is viewing', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@endif"><div>
+                            @endif</td>@endif
                     @if (empty($no_checkboxes))
                         <td class="conv-cb">
                             <input type="checkbox" class="conv-checkbox magic-checkbox" id="cb-{{ $conversation->id }}" name="cb_{{ $conversation->id }}" value="{{ $conversation->id }}"><label for="cb-{{ $conversation->id }}"></label>

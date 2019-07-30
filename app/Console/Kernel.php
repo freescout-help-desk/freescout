@@ -49,6 +49,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('freescout:module-check-licenses')
             ->daily();
 
+        // Check if user finished viewing conversation.
+        $schedule->command('freescout:check-conv-viewers')
+            ->everyMinute()
+            ->withoutOverlapping();
+
         // Logs monitoring.
         $alert_logs_period = config('app.alert_logs_period');
         if (config('app.alert_logs') && $alert_logs_period) {

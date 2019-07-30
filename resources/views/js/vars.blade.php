@@ -67,6 +67,8 @@ var LangMessages = {
             "remove_format": "{{ __("Remove Formatting") }}",
             "list": "{{ __("List") }}",
             "add_lower": "{{ __("add") }}",
+            "user_viewing": "{{ __(":user is viewing") }}",
+            "user_replying": "{{ __(":user is replying") }}",
 
             "update": "{{ __("Update") }}"
         }@if (!$loop->last),@endif

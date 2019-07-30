@@ -353,12 +353,16 @@ a.navbar-brand:hover img {
 .navbar-default .navbar-nav > li > a.dropdown-toggle-account {
     font-size: 17px;
     padding-right: 7px;
+    padding-left: 10px;
 }
 .navbar-nav .dropdown-toggle:hover {
 	color: #fff;
 }
 .navbar-nav .dropdown-toggle .glyphicon {
 	top: 3px;
+}
+.navbar-nav .photo-sm {
+    margin-right: 2px;
 }
 .navbar-default .navbar-toggle .icon-bar,
 .navbar-default .navbar-toggle.collapsed:hover .icon-bar {
@@ -667,11 +671,13 @@ a h4 {
     width: 50px;
     height: 50px;
     line-height: 50px;
+    font-size: 18px;
 }
 .person-photo-auto {
     float: left;
     line-height: 11px;
     text-align: center;
+    font-size: 18px;
 }
 .card-avatar:before,
 .person-photo-auto:before {
@@ -680,7 +686,8 @@ a h4 {
     content: attr(data-initial);
     border-radius: 50%;
     display: block;
-    font-size: 18px;
+    /*font-size: 18px;*/
+    font-size: inherit;
     font-style: normal;
     font-weight: 300;
     /*height: 50px;
@@ -690,6 +697,21 @@ a h4 {
     position: relative;
     text-transform: uppercase;
     /*width: 50px;*/
+}
+.photo-sm .person-photo-auto:before,
+.photo-xs .person-photo-auto:before {
+    background: #a5b2bd;
+    color: #fff;
+    content: attr(data-initial);
+    border-radius: 50%;
+    display: block;
+    font-size: inherit;
+    font-style: normal;
+    font-weight: 300;
+    line-height: inherit;
+    overflow: hidden;
+    position: relative;
+    text-transform: uppercase;
 }
 .card.no-img h4,
 .card.no-img p {
@@ -1275,6 +1297,7 @@ table.table-conversations td.conv-attachment {
 }
 .table-conversations .conv-current {
     width: 2px;
+    position: relative;
 }
 .table-conversations .conv-cb {
     width: 40px;
@@ -1356,6 +1379,9 @@ table.table-conversations td.conv-attachment {
 .table-conversations tfoot strong {
     color: #676d7a;
 }
+.table-conversations .glyphicon-earphone {
+    color: #93a1af;
+}
 .table-pager {
     float: right;
 }
@@ -1383,7 +1409,20 @@ table.table-conversations td.conv-attachment {
 button.conv-checkbox-clear {
     display: none;
 }
-
+.viewer-badge {
+    color: #fecb5a;
+    border-top: 0 solid transparent;
+    border-bottom: 12px solid transparent;
+    border-left: 12px solid;
+    left: 0;
+    top: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+.viewer-badge.viewer-replying {
+    color: #d43f3a;
+}
 @media (max-width:1000px) {
     /**
      * Make conversations table responsive
@@ -1616,12 +1655,14 @@ button.conv-checkbox-clear {
     border-bottom: 1px solid #e3e8eb;
 }
 .conv-subj-block {
-    padding: 16px 9px 24px 20px;
+    padding: 16px 9px 18px 20px;
 }
 .conv-subjwrap {
     padding-right: 145px;
     position: relative;
-    overflow: hidden;
+    /*overflow: hidden;*/
+    display: inline-block;
+    width: 100%;
 }
 .conv-subjtext {
     float: left;
@@ -1653,6 +1694,23 @@ button.conv-checkbox-clear {
 }
 .conv-numnav i:hover {
     color: #364a5a;
+}
+#conv-viewers {
+    height: 20px;
+    margin: 0;
+    position: absolute;
+    right: 7px;
+    top: 31px;
+    max-width: 140px;
+    text-align: right;
+    line-height: 18px;
+    overflow: hidden;
+}
+/*#conv-viewers > span {
+    display: inline-block;
+}*/
+.viewer-replying .person-photo {
+    background-color: #d43f3a!important;
 }
 .conv-star {
     color: #bbc4cc;
@@ -2324,6 +2382,9 @@ ul.prev-convs {
     cursor: pointer;
 }
 @media (max-width:700px) {
+    #conv-viewers {
+        max-width: 81px;
+    }
     .conv-info .btn-group button.conv-info-val span:first-child {
         display: none!important;
     }
@@ -2341,7 +2402,7 @@ ul.prev-convs {
         padding-right: 90px;
     }
     .conv-subj-block {
-        padding: 16px 2px 18px 13px;
+        padding: 16px 2px 12px 13px;
     }
     .conv-customer-block {
         padding-left: 12px!important;
@@ -3717,6 +3778,23 @@ a.disabled:focus {
 }
 .conv-note-block .cc-toggler {
     display: none;
+}
+.photo-sm .person-photo {
+    border-radius: 50%;
+    width: 21px;
+    height: 21px;
+    line-height: 22px;
+    background-color: #fff;
+    font-size: 9px;
+}
+.photo-xs .person-photo {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    line-height: 18px;
+    font-size: 7px;
+    padding: 1px;
+    background-color: transparent;
 }
 
 /**

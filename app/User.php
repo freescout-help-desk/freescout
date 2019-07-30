@@ -626,10 +626,14 @@ class User extends Authenticatable
         \Cache::forget('user_web_notifications_'.$this->id);
     }
 
-    public function getPhotoUrl()
+    public function getPhotoUrl($default_if_empty = true)
     {
-        if (!empty($this->photo_url)) {
-            return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+        if (!empty($this->photo_url) || !$default_if_empty) {
+            if (!empty($this->photo_url)) {
+                return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+            } else {
+                return '';
+            }
         } else {
             return '/img/default-avatar.png';
         }
@@ -803,6 +807,18 @@ class User extends Authenticatable
                 ->get();
 
             return $users;
+        }
+    }
+
+    /**
+     * Get user initials: FL.
+     */
+    public function getInitials($length = 2)
+    {
+        if ($length == 2) {
+            return strtoupper($this->first_name[0]).strtoupper($this->last_name[0]);
+        } else {
+            return strtoupper($this->first_name[0]);
         }
     }
 }

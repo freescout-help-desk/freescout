@@ -99,6 +99,13 @@
                         <div class="conv-numnav">
                             <i class="glyphicon conv-star @if ($conversation->isStarredByUser()) glyphicon-star @else glyphicon-star-empty @endif" title="@if ($conversation->isStarredByUser()){{ __("Unstar Conversation") }}@else{{ __("Star Conversation") }}@endif"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>
                         </div>
+                        <div id="conv-viewers">
+                            @foreach ($viewers as $viewer)
+                                <span class="photo-xs viewer-{{ $viewer['user']->id }} @if ($viewer['replying']) viewer-replying @endif" data-toggle="tooltip" title="@if ($viewer['replying']){{ __(':user is replying', ['user' => $viewer['user']->getFullName()]) }}@else{{ __(':user is viewing', ['user' => $viewer['user']->getFullName()]) }}@endif">
+                                    @include('partials/person_photo', ['person' => $viewer['user']])
+                                </span>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
                 @action('conversation.after_subject_block', $conversation, $mailbox)

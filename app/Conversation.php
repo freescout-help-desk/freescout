@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Thread;
+use App\User;
 use App\Events\ConversationCustomerChanged;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
@@ -1223,6 +1224,59 @@ class Conversation extends Model
     public function isPhone()
     {
         return ($this->type == self::TYPE_PHONE);
+    }
+
+    /**
+     * Get information on viewers for conversation table.
+     */
+    public static function getViewersInfo($conversations, $fields = ['id', 'first_name', 'last_name'])
+    {
+        $viewers_cache = \Cache::get('conv_view');
+        $viewers = [];
+        $first_user_id = null;
+        $user_ids = [];
+        foreach ($conversations as $conversation) {
+            if (!empty($viewers_cache[$conversation->id])) {
+                // Get replying viewers
+                foreach ($viewers_cache[$conversation->id] as $user_id => $viewer) {
+                    if (!$first_user_id) {
+                        $first_user_id = $user_id;
+                    }
+                    if (!empty($viewer['r'])) {
+                        $viewers[$conversation->id] = [
+                            'user'     => null,
+                            'user_id'  => $user_id,
+                            'replying' => true
+                        ];
+                        $user_ids[] = $user_id;
+                        break;
+                    }
+                }
+                // Get first non-replying viewer
+                if (empty($viewers[$conversation->id])) {
+                    $viewers[$conversation->id] = [
+                        'user'     => null,
+                        'user_id'  => $first_user_id,
+                        'replying' => false
+                    ];
+                    $user_ids[] = $first_user_id;
+                }
+            }
+        }
+        // Get all viewing users in one query
+        if ($user_ids) {
+            $user_ids = array_unique($user_ids);
+            $users = User::select($fields)->whereIn('id', $user_ids)->get();
+
+            foreach ($viewers as $i => $viewer) {
+                foreach ($users as $user) {
+                    if ($user->id == $viewer['user_id']) {
+                        $viewers[$i]['user'] = $user;
+                    }
+                }
+            }
+        }
+        return $viewers;
     }
 
     // /**
