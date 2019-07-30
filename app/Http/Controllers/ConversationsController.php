@@ -2204,8 +2204,8 @@ class ConversationsController extends Controller
         // Like is case insensitive.
         $like = '%'.mb_strtolower($q).'%';
 
-        $query_customers = Customer::select('customers.*')
-            ->join('emails', function ($join) {
+        $query_customers = Customer::select(['customers.*', 'emails.email'])
+            ->leftJoin('emails', function ($join) {
                 $join->on('customers.id', '=', 'emails.customer_id');
             })
             ->where(function ($query) use ($like) {
