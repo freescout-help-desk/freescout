@@ -99,6 +99,13 @@
                         <div class="conv-numnav">
                             <i class="glyphicon conv-star @if ($conversation->isStarredByUser()) glyphicon-star @else glyphicon-star-empty @endif" title="@if ($conversation->isStarredByUser()){{ __("Unstar Conversation") }}@else{{ __("Star Conversation") }}@endif"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>
                         </div>
+                        <div id="conv-viewers">
+                            @foreach ($viewers as $viewer)
+                                <span class="photo-xs viewer-{{ $viewer['user']->id }} @if ($viewer['replying']) viewer-replying @endif" data-toggle="tooltip" title="@if ($viewer['replying']){{ __(':user is replying', ['user' => $viewer['user']->getFullName()]) }}@else{{ __(':user is viewing', ['user' => $viewer['user']->getFullName()]) }}@endif">
+                                    @include('partials/person_photo', ['person' => $viewer['user']])
+                                </span>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
                 @action('conversation.after_subject_block', $conversation, $mailbox)
@@ -242,7 +249,7 @@
                                     {!! $thread->getActionText('', true) !!}
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
+                                    <a href="#thread-{{ $thread->id }}" class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</a>
                                 </div>
                             </div>
                             @action('thread.after_header', $thread, $loop, $threads, $conversation, $mailbox)
@@ -280,7 +287,7 @@
                                 </div>
                                 <div class="thread-info">
                                     {{--<span class="thread-type">[{{ __('Draft') }}] <span>·</span> </span>--}}
-                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
+                                    <a href="#thread-{{ $thread->id }}" class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</a>
                                 </div>
                             </div>
                             @action('thread.after_header', $thread, $loop, $threads, $conversation, $mailbox)
@@ -380,7 +387,7 @@
                                             {{--<span class="thread-type">#{{ $thread_num }} <span>·</span> </span>--}}
                                         @endif
                                     @endif
-                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
+                                    <a href="#thread-{{ $thread->id }}" class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</a><br/>
                                     {{--<a href="#thread-{{ $thread->id }}">#{{ $thread_index+1 }}</a>--}}
                                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE, App\Thread::TYPE_NOTE]))
                                         <span class="thread-status">

@@ -71,7 +71,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var defaults = {
 	            url: null,
 	            polling: 5,
-	            token: null
+	            token: null,
+	            data: ''
 	        };
 
 	        if (arguments[0] && typeof arguments[0] === "object") {
@@ -210,8 +211,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var data = {
 	                time: this.options.time,
 	                channels: channelData,
-	                '_token': this.options.token
+	                '_token': this.options.token,
+	                // freescout
+	                //data: this.options.data
 	            };
+
+	            if (typeof(this.options.data) != "undefined") {
+	            	if (typeof(this.options.data) == "function") {
+	            		data.data = this.options.data();
+	            	} else if (Array.isArray(this.options.data)) {
+	            		for (var i in this.options.data) {
+	            			if (typeof(this.options.data[i]) == "function") {
+	            				if (typeof(data.data) != "undefined") {
+	            					data.data = this.options.data[i](data.data);
+	            				} else {
+	            					data.data = this.options.data[i]({});
+	            				}
+	            			}
+	            		}
+	            	} else {
+	            		data.data = this.options.data;
+	            	}
+	            }
 
 	            var params = this.serialize(data);
 

@@ -936,4 +936,21 @@ class Customer extends Model
                 $join->on('emails.customer_id', '=', 'customers.id');
             })->first();
     }
+
+    /**
+     * Get email or phone if email is empty.
+     */
+    public function getEmailOrPhone()
+    {
+        if (!empty($this->email)) {
+            // Email can be selected with query.
+            return $this->email;
+        } elseif ($main_email = $this->getMainEmail()) {
+            return $main_email;
+        } elseif ($phones = $this->getPhones() && !empty($phones[0]['value'])) {
+            return $phones[0]['value'];
+        }
+
+        return '';
+    }
 }

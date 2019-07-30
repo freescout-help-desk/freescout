@@ -17,6 +17,8 @@ var fs_conv_editor_toolbar = [
 
 // Ajax based notifications;
 var poly;
+// List of funcions preparin data for polycast receive request
+var poly_data_closures = [];
 
 // Default validation options
 // https://devhints.io/parsley
@@ -243,10 +245,16 @@ $(document).ready(function(){
 	initAccordionHeading();
 });
 
+// Initialize bootstrap tooltip for the element
+function initTooltip(selector)
+{
+	$(selector).tooltip({container: 'body'});
+}
+
 function triggersInit()
 {
 	// Tooltips
-    $('[data-toggle="tooltip"]').tooltip({container: 'body'});
+    initTooltip('[data-toggle="tooltip"]');
     var handler = function() {
 	  return $('body [data-toggle="tooltip"]').tooltip('hide');
 	};
@@ -2426,9 +2434,22 @@ function polycastInit()
 		return;
 	}
 
+	if (getGlobalAttr('conversation_id')) {
+		poly_data_closures.push(function(data) {
+			data.conversation_id = getGlobalAttr('conversation_id');
+			if (getReplyFormMode() == 'reply') {
+				data.replying = 1;
+			} else {
+				data.replying = 0;
+			}
+			return data;
+		});
+	}
+
 	// create the connection
     poly = new Polycast(Vars.public_url+'/polycast', {
-        token: getCsrfToken()
+        token: getCsrfToken(),
+        data: poly_data_closures
     });
 
     // register callbacks for connection events
@@ -2476,6 +2497,94 @@ function polycastInit()
 	        	showBrowserNotification(event.data.browser.text, event.data.browser.url);
 	        }
 	    }
+    });
+
+	var channel = poly.subscribe('conv');
+
+	// Show who is viewing a conversation or replying.
+    channel.on('App\\Events\\RealtimeConvView', function(data, event){
+        
+        if (!data 
+        	|| data.conversation_id != getGlobalAttr('conversation_id')
+        	// Skip own notifications
+        	|| data.user_id == getGlobalAttr('auth_user_id')
+        ) {
+        	return;
+	    }
+
+	    // Show user avatar in conversation
+	    if (data.replying) {
+	    	title = Lang.get("messages.user_replying", {'user': data.user_name});
+	    } else {
+	    	title = Lang.get("messages.user_viewing", {'user': data.user_name});
+	    }
+	    var item = $('#conv-viewers .viewer-'+data.user_id+':first');
+	    var sorting_required = false;
+	    var change_title = false;
+	    var is_new = false;
+	    if (item.length) {
+		    // Existing
+		    if (!item.is(':visible')) {
+		    	item.fadeIn();
+		    }
+		    // Add/remove replying class if needed
+		    if (data.replying && !item.hasClass('viewer-replying')) {
+				item.addClass('viewer-replying');
+				change_title = true;
+				sorting_required = true;
+			}
+			if (!data.replying && item.hasClass('viewer-replying')) {
+				item.removeClass('viewer-replying');
+				change_title = true;
+				sorting_required = true;
+			}
+		} else {
+			// New
+			var item_class = 'viewer-'+data.user_id;
+			if (data.replying) {
+				item_class += ' viewer-replying';
+				sorting_required = true;
+			}
+		    var html = personPhotoHtml(data.user_initials, data.user_photo_url, 'data-toggle="tooltip" title="'+title+'" style="display:none"', item_class, 'xs');
+		    $('#conv-viewers').prepend(html);
+		}
+		// Move replying viewers to the left
+		if (change_title) {
+			// Change tooltip
+			item.attr('data-original-title', title);
+			//initTooltip('#conv-viewers .viewer-'+data.user_id+':first');
+		}
+		if (sorting_required) {
+			var html_replying = '';
+			var html_other = '';
+			$('#conv-viewers > span').each(function(i, el) {
+				if ($(el).hasClass('viewer-replying')) {
+					html_replying += el.outerHTML;
+				} else {
+					html_other += el.outerHTML;
+				}
+			});
+			$('#conv-viewers').html(html_replying+html_other);
+			initTooltip('#conv-viewers > span');
+		}
+		if (is_new) {
+			$('#conv-viewers > span').fadeIn();
+		    initTooltip('#conv-viewers .viewer-'+data.user_id+':first');
+		}
+    });
+
+	// User finished viewing conversation.
+    channel.on('App\\Events\\RealtimeConvViewFinish', function(data, event) {
+        if (!data 
+        	|| data.conversation_id != getGlobalAttr('conversation_id')
+        	// Skip own notifications
+        	|| data.user_id == getGlobalAttr('auth_user_id')
+        ) {
+        	return;
+	    }
+
+	    // Remove user avatar
+	    $('#conv-viewers .viewer-'+data.user_id+':first').fadeOut();
     });
 
     // at any point you can disconnect
@@ -3676,4 +3785,40 @@ function scrollTo(el, selector, speed, offset)
         eljq = $(selector);
     }
     $('html, body').animate({scrollTop: (eljq.offset().top+offset)}, speed);
+}
+
+// Is user replying to the conversation
+function getReplyFormMode()
+{
+	var block = $(".conv-reply-block");
+	if (block.hasClass('hidden')) {
+		return '';
+	} else if (block.hasClass('conv-forward-block')) {
+		return 'forward';
+	} else if (block.hasClass('conv-note-block')) {
+		return 'note';
+	} else {
+		return 'reply';
+	}
+}
+
+// Get HTML of the person avatar
+function personPhotoHtml(initials, photo_url, attrs, photo_class, size)
+{
+	if (typeof(size) == "undefined") {
+		size = 'sm';
+	}
+	if (typeof(photo_class) == "undefined") {
+		photo_class = '';
+	}
+
+	var html = '<span class="photo-'+size+' '+photo_class+'" '+attrs+'>';
+	if (photo_url) {
+		html += '<img class="person-photo" src="'+photo_url+'" />';
+	} else {
+		html += '<i class="person-photo person-photo-auto" data-initial="'+initials+'"></i>';
+	}
+	html += '</span>';
+
+	return html;
 }
