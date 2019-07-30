@@ -1915,6 +1915,12 @@ button.conv-checkbox-clear {
     text-align: right;
     font-size: 12px;
 }
+.thread-date {
+    color: #a5b2bd;
+}
+.thread-date:hover {
+    color: #2a3b47;
+}
 .thread-badge {
     color: #ffe19d;
     border-top: 0 solid transparent;

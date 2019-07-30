@@ -249,7 +249,7 @@
                                     {!! $thread->getActionText('', true) !!}
                                 </div>
                                 <div class="thread-info">
-                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
+                                    <a href="#thread-{{ $thread->id }}" class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</a>
                                 </div>
                             </div>
                             @action('thread.after_header', $thread, $loop, $threads, $conversation, $mailbox)
@@ -287,7 +287,7 @@
                                 </div>
                                 <div class="thread-info">
                                     {{--<span class="thread-type">[{{ __('Draft') }}] <span>·</span> </span>--}}
-                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span>
+                                    <a href="#thread-{{ $thread->id }}" class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</a>
                                 </div>
                             </div>
                             @action('thread.after_header', $thread, $loop, $threads, $conversation, $mailbox)
@@ -387,7 +387,7 @@
                                             {{--<span class="thread-type">#{{ $thread_num }} <span>·</span> </span>--}}
                                         @endif
                                     @endif
-                                    <span class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</span><br/>
+                                    <a href="#thread-{{ $thread->id }}" class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</a><br/>
                                     {{--<a href="#thread-{{ $thread->id }}">#{{ $thread_index+1 }}</a>--}}
                                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE, App\Thread::TYPE_NOTE]))
                                         <span class="thread-status">
