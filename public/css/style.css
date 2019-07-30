@@ -612,6 +612,9 @@ select[multiple].input-md {
 .form-container {
     margin-bottom: 25px;
 }
+.input-group .input-group-btn {
+    vertical-align: top;
+}
 @media (min-width: 435px) {
     .input-sized-lg {
         width: 387px;
@@ -1421,7 +1424,7 @@ button.conv-checkbox-clear {
     height: 0;
 }
 .viewer-badge.viewer-replying {
-    color: #d43f3a;
+    color: #d85552;
 }
 @media (max-width:1000px) {
     /**
@@ -2994,6 +2997,13 @@ ul.prev-convs {
 }
 .select2-container .select2-selection--multiple {
     min-height: auto;
+}
+.dropdown-menu .select2-selection__choice__remove {
+    font-size: 13.4px;
+}
+.input-group .select2:nth-child(2) .select2-selection {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
 /*.select2-with-loader .select2-selection__rendered {
     padding-right: 30px;
