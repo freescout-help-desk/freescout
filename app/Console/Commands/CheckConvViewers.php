@@ -68,6 +68,8 @@ class CheckConvViewers extends Command
                     }
                     $need_update = true;
 
+                    \Cache::forget('conv_view_'.$user_id.'_'.$conversation_id);
+
                     // Create event to let other users know that user finished viewing conversation.
                     $notification_data = [
                         'conversation_id' => $conversation_id,
