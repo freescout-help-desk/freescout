@@ -219,7 +219,7 @@ class ConversationsController extends Controller
         // If we send notification to each user, applications having thouthans of users
         // will be overloaded.
         // // https://laravel.com/docs/5.5/broadcasting#broadcasting-events
-        \App\Events\RealtimeConvView::dispatch($conversation->id, $user, false);
+        \App\Events\RealtimeConvView::dispatchSelf($conversation->id, $user, false);
 
         // Get viewers.
         $viewers = [];
