@@ -131,11 +131,11 @@ class PolycastServiceProvider extends ServiceProvider
                     // Let other users know that user started to reply.
                     if (!(int)$cache_data['r'] && (int)$request->data['replying']) {
                         // Started to reply.
-                        \App\Events\RealtimeConvView::dispatch($viewing_conversation_id, $user, true);
+                        \App\Events\RealtimeConvView::dispatchSelf($viewing_conversation_id, $user, true);
                         $replying_changed = true;
                     } elseif ((int)$cache_data['r'] && !(int)$request->data['replying']) {
                         // Finished to reply.
-                        \App\Events\RealtimeConvView::dispatch($viewing_conversation_id, $user, false);
+                        \App\Events\RealtimeConvView::dispatchSelf($viewing_conversation_id, $user, false);
                         $replying_changed = true;
                     }
                 } else {

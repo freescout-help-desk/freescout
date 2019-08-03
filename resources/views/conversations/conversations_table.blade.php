@@ -12,7 +12,7 @@
 
         // Get information on viewers
         if (empty($no_checkboxes)) {
-            $viewers = App\Conversation::getViewersInfo($conversations);
+            $viewers = App\Conversation::getViewersInfo($conversations, ['id', 'first_name', 'last_name'], [Auth::user()->id]);
         }
 
         $conversations = \Eventy::filter('conversations_table.preload_table_data', $conversations);

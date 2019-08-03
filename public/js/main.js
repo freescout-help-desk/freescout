@@ -2547,6 +2547,7 @@ function polycastInit()
 			}
 		    var html = personPhotoHtml(data.user_initials, data.user_photo_url, 'data-toggle="tooltip" title="'+title+'" style="display:none"', item_class, 'xs');
 		    $('#conv-viewers').prepend(html);
+		    is_new = true;
 		}
 		// Move replying viewers to the left
 		if (change_title) {

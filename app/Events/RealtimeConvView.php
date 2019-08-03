@@ -3,7 +3,7 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\PrivateChannel;
+//use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Queue\SerializesModels;
 
@@ -97,14 +97,15 @@ class RealtimeConvView implements ShouldBroadcastNow
     /**
      * Helper funciton.
      */
-    public static function dispatch($conversation_id, $user, $replying = false)
+    public static function dispatchSelf($conversation_id, $user, $replying = false)
     {
         $notification_data = [
             'conversation_id' => $conversation_id,
             'user_id'         => $user->id,
             'user_photo_url'  => $user->getPhotoUrl(false),
-            'user_initials'   => $user->getInitials(),
-            'user_name'       => $user->getFullName(),
+            // These has to be encoded to avoid "Unable to JSON encode payload. Error code: 5"
+            'user_initials'   => htmlentities($user->getInitials()),
+            'user_name'       => htmlentities($user->getFullName()),
             'replying'        => (int)$replying,
         ];
         event(new \App\Events\RealtimeConvView($notification_data));

@@ -1229,7 +1229,7 @@ class Conversation extends Model
     /**
      * Get information on viewers for conversation table.
      */
-    public static function getViewersInfo($conversations, $fields = ['id', 'first_name', 'last_name'])
+    public static function getViewersInfo($conversations, $fields = ['id', 'first_name', 'last_name'], $exclude_user_ids = [])
     {
         $viewers_cache = \Cache::get('conv_view');
         $viewers = [];
@@ -1242,7 +1242,7 @@ class Conversation extends Model
                     if (!$first_user_id) {
                         $first_user_id = $user_id;
                     }
-                    if (!empty($viewer['r'])) {
+                    if (!empty($viewer['r']) && !in_array($user_id, $exclude_user_ids)) {
                         $viewers[$conversation->id] = [
                             'user'     => null,
                             'user_id'  => $user_id,
@@ -1253,7 +1253,7 @@ class Conversation extends Model
                     }
                 }
                 // Get first non-replying viewer
-                if (empty($viewers[$conversation->id])) {
+                if (empty($viewers[$conversation->id]) && !in_array($user_id, $exclude_user_ids)) {
                     $viewers[$conversation->id] = [
                         'user'     => null,
                         'user_id'  => $first_user_id,

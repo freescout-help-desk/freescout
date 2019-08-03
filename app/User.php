@@ -816,9 +816,9 @@ class User extends Authenticatable
     public function getInitials($length = 2)
     {
         if ($length == 2) {
-            return strtoupper($this->first_name[0]).strtoupper($this->last_name[0]);
+            return strtoupper(mb_substr($this->first_name, 0, 1)).strtoupper(mb_substr($this->last_name, 0, 1));
         } else {
-            return strtoupper($this->first_name[0]);
+            return strtoupper(mb_substr($this->first_name, 0, 1));
         }
     }
 }
