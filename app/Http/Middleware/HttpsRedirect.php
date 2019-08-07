@@ -32,7 +32,8 @@ class HttpsRedirect {
             $request->setTrustedProxies( [ $request->getClientIp() ], array_keys($this->headers)); 
 
             if (!$request->secure() && strtolower($_SERVER['HTTPS'] ?? '') != 'on' 
-                && ($_SERVER['HTTPS'] ?? '') != 'https'
+                && ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') != 'https'
+                && ($_SERVER['HTTP_CF_VISITOR'] ?? '') != '{"scheme":"https"}'
             ) {
                 return redirect()->secure($request->getRequestUri());
             }
