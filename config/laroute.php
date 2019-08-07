@@ -22,8 +22,10 @@ return [
      * Generate absolute URLs
      *
      * Set the Application URL in config/app.php
+     *
+     * Has to be absolute for the app to work in a subdirectory.
      */
-    'absolute' => false,
+    'absolute' => true,
 
     /*
      * The Filter Method
