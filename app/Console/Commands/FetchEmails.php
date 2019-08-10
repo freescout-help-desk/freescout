@@ -831,7 +831,14 @@ class FetchEmails extends Command
                     $parts = explode($alt_separator, $body);
                 }
                 if (count($parts) > 1) {
-                    $reply_bodies[] = $parts[0];
+                    // Check if past contains any real text.
+                    $text = \Helper::htmlToText($parts[0]);
+                    $text = trim($text);
+                    $text = preg_replace('/^\s+/mu', '', $text);
+
+                    if ($text) {
+                        $reply_bodies[] = $parts[0];
+                    }
                 }
             }
             if (count($reply_bodies)) {
