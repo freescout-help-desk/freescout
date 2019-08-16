@@ -57,19 +57,19 @@
                             <div class="control-group text-help margin-top-10">
                                 <ul>
                                     <li>
-                                        <a href="https://aws.amazon.com/ses/pricing/" target="_blank">Amazon SES</a> - 
+                                        <a href="https://aws.amazon.com/ses/pricing/" target="_blank">Amazon SES</a> -
                                         <span class="text-help">{!! __("62,000 free emails per month from :%a_begin%Amazon EC2:%a_end% server.", ['%a_begin%' => '<a href="https://aws.amazon.com/ec2/" target="_blank">', '%a_end%' => '</a>']) !!}</span>
                                     </li>
                                     <li>
-                                        <a href="https://www.mailgun.com" target="_blank">Mailgun</a> - 
+                                        <a href="https://www.mailgun.com" target="_blank">Mailgun</a> -
                                         <span class="text-help">{{ __(":number free emails per month.", ['number' => '10,000']) }}</span>
                                     </li>
                                     <li>
-                                        <a href="https://www.sendinblue.com/?tap_a=30591-fb13f0&tap_s=294678-0b81e5" target="_blank">SendinBlue</a> - 
+                                        <a href="https://www.sendinblue.com/?tap_a=30591-fb13f0&tap_s=294678-0b81e5" target="_blank">SendinBlue</a> -
                                         <span class="text-help">{{ __(":number free emails per month.", ['number' => '9,000']) }}</span>
                                     </li>
                                     <li>
-                                        <a href="https://www.mailjet.com/?tap_a=25852-4bddf6&tap_s=545617-55177a&aff=545617-55177a" target="_blank">Mailjet</a> - 
+                                        <a href="https://www.mailjet.com/?tap_a=25852-4bddf6&tap_s=545617-55177a&aff=545617-55177a" target="_blank">Mailjet</a> -
                                         <span class="text-help">{{ __(":number free emails per month.", ['number' => '6,000']) }}</span>
                                     </li>
                                 </ul>
@@ -123,7 +123,7 @@
                             <label for="out_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
                             <div class="col-sm-6">
-                                <input id="out_password" type="password" class="form-control input-sized" name="out_password" value="{{ old('out_password', $mailbox->out_password) }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
+                                <input id="out_password" type="password" class="form-control input-sized" name="out_password" value="" placeholder="{{ old('out_password', !is_null($mailbox->in_password ? '****' : '') }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
 
                                 @include('partials/field_error', ['field'=>'out_password'])
                             </div>
@@ -143,7 +143,7 @@
                         </div>
                         <hr/>
                     </div>
-                    
+
                     {{--<div class="form-group margin-bottom-0">
                         <label class="col-sm-2 control-label">{{ __('Improve Delivery') }}</label>
 
@@ -152,7 +152,7 @@
                                 <div class="panel panel-default panel-spf">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-spf">SPF 
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-spf">SPF
                                                 <i class="label label-success accordion-status">Active</i>
                                                 <b class="caret"></b>
                                             </a>
@@ -168,7 +168,7 @@
                                 <div class="panel panel-default panel-ptr">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-ptr">PTR 
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-ptr">PTR
                                                 <i class="label label-success accordion-status">Active</i>
                                                 <b class="caret"></b>
                                             </a>
@@ -184,7 +184,7 @@
                                 <div class="panel panel-default panel-dmarc">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-dmarc">DMARC 
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-dmarc">DMARC
                                                 <i class="label label-success accordion-status">Active</i>
                                                 <b class="caret"></b>
                                             </a>
@@ -207,7 +207,7 @@
                             <div class="input-group input-sized">
                                 <input id="send_test" type="email" class="form-control" name="send_test_to" value="{{ old('email', \App\Option::get('send_test_to', $mailbox->email)) }}" maxlength="128" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>
                                 <span class="input-group-btn">
-                                    <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>{{ __('Send Test') }}</button> 
+                                    <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>{{ __('Send Test') }}</button>
                                 </span>
                             </div>
                             <div class="form-help">{!! __("Make sure to save settings before testing.") !!}</div>

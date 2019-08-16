@@ -33,7 +33,7 @@
            <div id="mail_driver_options_sendmail" class="mail_driver_options text-help padding-top-0 @if ($settings['mail_driver'] != 'sendmail') hidden @endif">
                 <strong>{{ __("PHP sendmail path:") }}</strong> {{ $sendmail_path }}
             </div>
-           
+
         </div>
     </div>
 
@@ -73,7 +73,7 @@
             <label for="mail_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
             <div class="col-sm-6">
-                <input id="mail_password" type="password" class="form-control input-sized" name="settings[mail_password]" value="{{ old('settings.mail_password', $settings['mail_password']) }}" maxlength="255" autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
+                <input id="mail_password" type="password" class="form-control input-sized" name="settings[mail_password]" value="{{ old('settings.mail_password', $settings['mail_password']) }}" placeholder="{{ old('settings.mail_password', !is_null($settings['mail_password'] ? '****' : '') }}" maxlength="255" autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
 
                 @include('partials/field_error', ['field'=>'settings.mail_password'])
             </div>
