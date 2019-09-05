@@ -12,6 +12,7 @@
             @endforeach
         </ul>
     @endif
+    <span class="sidebar-title-email">{{ $mailbox->email }}</span>
 </div>
 <ul class="sidebar-menu">
     @include("mailboxes/settings_menu")
