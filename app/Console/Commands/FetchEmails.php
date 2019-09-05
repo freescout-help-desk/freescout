@@ -410,11 +410,12 @@ class FetchEmails extends Command
                         $body = $message->getTextBody();
                         $body = $this->separateReply($body, false, $is_reply);
                     }
-                    if (!$body) {
-                        $this->logError('Message body is empty');
-                        $message->setFlag(['Seen']);
-                        continue;
-                    }
+                    // We have to fetch absolutely all emails, even with empty body.
+                    // if (!$body) {
+                    //     $this->logError('Message body is empty');
+                    //     $message->setFlag(['Seen']);
+                    //     continue;
+                    // }
 
                     $subject = $message->getSubject();
 
