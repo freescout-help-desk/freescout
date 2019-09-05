@@ -557,6 +557,6 @@ class Mail
      */
     public static function generateMessageId($email_address)
     {
-        return str_random(32).'@'.preg_replace("/.*@/", '', $email_address);
+        return 'fsdummy-'.str_random(16).'@'.preg_replace("/.*@/", '', $email_address);
     }
 }
