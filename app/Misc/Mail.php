@@ -559,4 +559,57 @@ class Mail
     {
         return 'fsdummy-'.str_random(16).'@'.preg_replace("/.*@/", '', $email_address);
     }
+
+    /**
+     * Fetch IMAP message by Message-ID.
+     */
+    public static function fetchMessage($mailbox, $message_id)
+    {
+        $no_charset = false;
+
+        if (!$message_id) {
+            return null;
+        }
+
+        try {
+            $client = \MailHelper::getMailboxClient($mailbox);
+            $client->connect();
+        } catch (\Exception $e) {
+            return null;
+        }
+
+        $imap_folders = array_merge(['INBOX'], $mailbox->getInImapFolders());
+
+        foreach ($imap_folders as $folder_name) {
+            try {
+                $folder = $client->getFolder($folder_name);
+                // Message-ID: <123@123.com>
+                $query = $folder->query()->text('<'.$message_id.'>')->leaveUnread()->limit(1);
+
+                if ($no_charset) {
+                    $query->setCharset(null);
+                }
+
+                $messages = $query->get();
+
+                $last_error = $client->getLastError();
+
+                if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
+                    // Solution for MS mailboxes.
+                    // https://github.com/freescout-helpdesk/freescout/issues/176
+                    $messages = $folder->query()->text('<'.$message_id.'>')->leaveUnread()->limit(1)->setCharset(null)->get();
+                    $no_charset = true;
+                }
+
+                if (count($messages)) {
+                    return $messages->first();
+                }
+
+            } catch (\Exception $e) {
+                // Do nothing.
+            }
+        }
+
+        return null;
+    }
 }

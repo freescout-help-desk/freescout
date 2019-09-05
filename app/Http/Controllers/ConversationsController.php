@@ -1478,7 +1478,7 @@ class ConversationsController extends Controller
             case 'load_edit_thread':
                 $thread = Thread::find($request->thread_id);
                 if (!$thread) {
-                    $response['msg'] = __('Conversation not found');
+                    $response['msg'] = __('Thread not found');
                 } elseif (!$user->can('edit', $thread)) {
                     $response['msg'] = __('Not enough permissions');
                 }
@@ -1791,8 +1791,16 @@ class ConversationsController extends Controller
             abort(403);
         }
 
+        // Try to fetch original body by imap
+        $body_preview = $thread->body;
+        $body_imap = $thread->fetchBody();
+        if ($body_imap) {
+            $body_preview = $body_imap;
+        }
+
         return view('conversations/ajax_html/show_original', [
             'thread' => $thread,
+            'body_preview' => $body_preview,
         ]);
     }
 

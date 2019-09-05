@@ -1147,4 +1147,15 @@ class Helper
             return false;
         }
     }
+
+    public static function purifyHtml($html)
+    {
+        $html = \Purifier::clean($html);
+
+        // Remove all kinds of spaces after tags
+        // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
+        $html = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $html);
+
+        return $html;
+    }
 }
