@@ -417,7 +417,7 @@ function mailboxConnectionInit(out_method_smtp)
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
 						showFloatingAlert('success', Lang.get("messages.email_sent"));
 					} else {
-						showAjaxError(response);
+						showAjaxError(response, true);
 					}
 					button.button('reset');
 				}, 

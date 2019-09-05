@@ -1122,7 +1122,8 @@ class Helper
         }
     }
 
-    public static function utf8ize($mixed) {
+    public static function utf8ize($mixed)
+    {
         if (is_array($mixed)) {
             foreach ($mixed as $key => $value) {
                 $mixed[$key] = self::utf8ize($value);
@@ -1131,5 +1132,19 @@ class Helper
             return utf8_encode($mixed);
         }
         return $mixed;
+    }
+
+    /**
+     * Check if host is available on the port specified.
+     */
+    public static function checkPort($host, $port, $timeout = 10)
+    {
+        $connection = @fsockopen($host, $port);
+        if (is_resource($connection)) {
+            fclose($connection);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
