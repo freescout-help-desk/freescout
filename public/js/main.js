@@ -1041,7 +1041,7 @@ function switchToNewPhoneConversation()
 // Add target blank to all links in threads.
 function processLinks()
 {
-	$('.thread-body a').attr('target', '_blank');
+	$('.thread-content a').attr('target', '_blank');
 }
 
 // Get current conversation assignee

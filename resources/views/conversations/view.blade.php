@@ -485,7 +485,9 @@
 
                                 @action('thread.before_body', $thread, $loop, $threads, $conversation, $mailbox)
 
-                                {!! $thread->getCleanBody() !!}
+                                <div class="thread-content">
+                                    {!! $thread->getCleanBody() !!}
+                                </div>
 
                                 @if ($thread->body_original)
                                     <div class='thread-meta'>
