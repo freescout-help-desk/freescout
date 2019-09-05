@@ -200,14 +200,7 @@ class FetchEmails extends Command
                     $this->line('['.date('Y-m-d H:i:s').'] '.$message_index.') '.$message->getSubject());
                     $message_index++;
 
-                    // Check if message already fetched
-                    if (Thread::where('message_id', $message_id)->first()) {
-                        $this->line('['.date('Y-m-d H:i:s').'] Message with such Message-ID has been fetched before: '.$message_id);
-                        $message->setFlag(['Seen']);
-                        continue;
-                    }
-
-                    // From
+                    // From - $from is the plain text email.
                     $from = $message->getReplyTo();
                     if (!$from) {
                         $from = $message->getFrom();
@@ -220,6 +213,21 @@ class FetchEmails extends Command
                     } else {
                         $from = $this->formatEmailList($from);
                         $from = $from[0];
+                    }
+
+                    // Message-ID can be empty.
+                    // https://stackoverflow.com/questions/8513165/php-imap-do-emails-have-to-have-a-messageid
+                    if (!$message_id) {
+                        // Generate artificial Message-ID.
+                        $message_id = \MailHelper::generateMessageId($from);
+                        $this->line('['.date('Y-m-d H:i:s').'] Message-ID is empty, generated artificial Message-ID: '.$message_id);
+                    }
+
+                    // Check if message already fetched
+                    if (Thread::where('message_id', $message_id)->first()) {
+                        $this->line('['.date('Y-m-d H:i:s').'] Message with such Message-ID has been fetched before: '.$message_id);
+                        $message->setFlag(['Seen']);
+                        continue;
                     }
 
                     // Detect prev thread
@@ -314,7 +322,9 @@ class FetchEmails extends Command
                             $original_from = $this->formatEmailList($message->getFrom());
                             $original_from = $original_from[0];
                             $is_bounce = preg_match('/^mailer\-daemon@/i', $original_from);
-                            $this->line('['.date('Y-m-d H:i:s').'] Bounce detected by From header: '.$original_from);
+                            if ($is_bounce) {
+                                $this->line('['.date('Y-m-d H:i:s').'] Bounce detected by From header: '.$original_from);
+                            }
                         }
                     }
                     // Check Return-Path header

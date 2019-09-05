@@ -551,4 +551,12 @@ class Mail
             'protocol'      => $mailbox->getInProtocolName(),
         ]);
     }
+
+    /**
+     * Generate artificial Message-ID.
+     */
+    public static function generateMessageId($email_address)
+    {
+        return str_random(32).'@'.preg_replace("/.*@/", '', $email_address);
+    }
 }
