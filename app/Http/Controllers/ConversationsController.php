@@ -1339,7 +1339,7 @@ class ConversationsController extends Controller
 
             // Conversations navigation
             case 'conversations_pagination':
-                if (isset($request->filter)) {
+                if (!empty($request->filter)) {
                     $response = $this->ajaxConversationsFilter($request, $response, $user);
                 } else {
                     $response = $this->ajaxConversationsPagination($request, $response, $user);

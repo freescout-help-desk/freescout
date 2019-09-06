@@ -1935,10 +1935,14 @@ function conversationPagination()
 {
 	$(".table-conversations .pager-nav").click(function(e){
 
-		var filter = {
-			q: getQueryParam('q'), // For search
-			f: getQueryParam('f') // For search
-		};
+		var filter = null;
+
+		if ($('body:first').hasClass('body-search')) {
+			filter = {
+				q: getQueryParam('q'), // For search
+				f: getQueryParam('f') // For search
+			};
+		}
 		var table = $(this).parents('.table-conversations:first');
 
 		var datas = table.data();

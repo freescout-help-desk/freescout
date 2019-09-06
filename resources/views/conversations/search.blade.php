@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', ($q ? $q.' - ' : '').__('Search'))
+@section('body_class', 'body-search')
 
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
