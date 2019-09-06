@@ -212,7 +212,13 @@ class MailboxesController extends Controller
             }
         }
 
-        $mailbox->fill($request->all());
+        // Do not save dummy password.
+        if (preg_match("/^\*+$/", $request->out_password)) {
+            $params = $request->except(['out_password']);
+        } else {
+            $params = $request->all();
+        }
+        $mailbox->fill($params);
         $mailbox->save();
 
         if (!empty($request->send_test_to)) {
@@ -264,7 +270,14 @@ class MailboxesController extends Controller
             'in_validate_cert' => ($request->filled('in_validate_cert') ?? false),
         ]);
 
-        $mailbox->fill($request->all());
+        // Do not save dummy password.
+        if (preg_match("/^\*+$/", $request->in_password)) {
+            $params = $request->except(['in_password']);
+        } else {
+            $params = $request->all();
+        }
+
+        $mailbox->fill($params);
 
         // Save IMAP Folders.
         // Save all custom folders except INBOX.
@@ -431,6 +444,14 @@ class MailboxesController extends Controller
                     $response['msg'] = __('Please specify recipient of the test email');
                 }
 
+                // Check if outgoing port is open.
+                if (!$response['msg']) {
+                    $test_result = \Helper::checkPort($mailbox->out_server, $mailbox->out_port);
+                    if (!$test_result) {
+                        $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->out_server.'</strong>', 'port' => '<strong>'.$mailbox->out_port.'</strong>']);
+                    }
+                }
+
                 if (!$response['msg']) {
                     $test_result = false;
 
@@ -465,6 +486,14 @@ class MailboxesController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
+                // Check if outgoing port is open.
+                if (!$response['msg']) {
+                    $test_result = \Helper::checkPort($mailbox->in_server, $mailbox->in_port);
+                    if (!$test_result) {
+                        $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->in_server.'</strong>', 'port' => '<strong>'.$mailbox->in_port.'</strong>']);
+                    }
+                }
+                
                 if (!$response['msg']) {
                     $test_result = false;
 

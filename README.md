@@ -30,6 +30,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
 
 ![FreeScout](https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/banner.png)
 
+  * No limitations on the number of users, tickets, etc.
   * 100% Mobile-friendly.
   * Multilingual (English, French, Italian, Portuguese).
   * Seamless email integration.

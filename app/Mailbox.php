@@ -598,4 +598,14 @@ class Mailbox extends Model
     {
         return \Helper::jsonToArray($this->in_imap_folders);
     }
+
+    public function outPasswordSafe()
+    {
+        return \Helper::safePassword($this->out_password);
+    }
+
+    public function inPasswordSafe()
+    {
+        return \Helper::safePassword($this->in_password);
+    }
 }

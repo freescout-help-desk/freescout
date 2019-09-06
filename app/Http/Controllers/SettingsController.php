@@ -99,6 +99,9 @@ class SettingsController extends Controller
                         'fetch_schedule' => [
                             'env' => 'APP_FETCH_SCHEDULE',
                         ],
+                        'mail_password' => [
+                            'safe_password' => true
+                        ]
                     ],
                 ];
                 break;
@@ -252,6 +255,15 @@ class SettingsController extends Controller
         $cc_required = false;
         $settings_params = $this->getSectionParams($section, 'settings');
         foreach ($settings as $i => $option_name) {
+            // Do not save dummy passwords.
+            if (!empty($settings_params[$option_name])
+                && !empty($settings_params[$option_name]['safe_password'])
+                && $request->settings[$option_name]
+                && preg_match("/^\*+$/", $request->settings[$option_name])
+            ) {
+                continue;
+            }
+
             // Option has to be saved to .env file.
             if (!empty($settings_params[$option_name]) && !empty($settings_params[$option_name]['env'])) {
                 $env_value = $request->settings[$option_name] ?? '';

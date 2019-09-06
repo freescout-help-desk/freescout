@@ -268,13 +268,8 @@ class Thread extends Model
         if (!$body) {
             $body = $this->body;
         }
-        $body = \Purifier::clean($body);
-
-        // Remove all kinds of spaces after tags
-        // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
-        $body = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $body);
-
-        return $body;
+        
+        return \Helper::purifyHtml($body);
     }
 
     /**
@@ -963,5 +958,25 @@ class Thread extends Model
     {
         return Conversation::where('id', $this->getMeta('forward_child_conversation_id'))
             ->first();
+    }
+
+    /**
+     * Fetch body via IMAP.
+     */
+    public function fetchBody()
+    {
+        $message = \MailHelper::fetchMessage($this->conversation->mailbox, $this->message_id);
+
+        if (!$message) {
+            return '';
+        }
+
+        $body = $message->getHTMLBody();
+
+        if (!$body) {
+            $body = $message->getTextBody();
+        }
+
+        return $body;
     }
 }

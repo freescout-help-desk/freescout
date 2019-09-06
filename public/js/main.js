@@ -417,7 +417,7 @@ function mailboxConnectionInit(out_method_smtp)
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
 						showFloatingAlert('success', Lang.get("messages.email_sent"));
 					} else {
-						showAjaxError(response);
+						showAjaxError(response, true);
 					}
 					button.button('reset');
 				}, 
@@ -1041,7 +1041,7 @@ function switchToNewPhoneConversation()
 // Add target blank to all links in threads.
 function processLinks()
 {
-	$('.thread-body a').attr('target', '_blank');
+	$('.thread-content a').attr('target', '_blank');
 }
 
 // Get current conversation assignee
@@ -1935,10 +1935,14 @@ function conversationPagination()
 {
 	$(".table-conversations .pager-nav").click(function(e){
 
-		var filter = {
-			q: getQueryParam('q'), // For search
-			f: getQueryParam('f') // For search
-		};
+		var filter = null;
+
+		if ($('body:first').hasClass('body-search')) {
+			filter = {
+				q: getQueryParam('q'), // For search
+				f: getQueryParam('f') // For search
+			};
+		}
 		var table = $(this).parents('.table-conversations:first');
 
 		var datas = table.data();

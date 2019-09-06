@@ -87,7 +87,7 @@
                         <label for="in_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
                         <div class="col-sm-6">
-                            <input id="in_password" type="password" class="form-control input-sized" name="in_password" value="{{ old('in_password', $mailbox->in_password) }}" maxlength="255" required autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
+                            <input id="in_password" type="password" class="form-control input-sized" name="in_password" value="{{ old('in_password', $mailbox->inPasswordSafe()) }}" maxlength="255" required autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
 
                             @include('partials/field_error', ['field'=>'in_password'])
                         </div>

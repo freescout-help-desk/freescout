@@ -230,32 +230,7 @@ class ModulesController extends Controller
                                 $response['status'] = 'success';
                             }
                         } elseif (!empty($result['error'])) {
-                            switch ($result['error']) {
-                                case 'missing':
-                                    $response['msg'] = __('License key does not exist');
-                                    break;
-                                case 'license_not_activable':
-                                    $response['msg'] = __("You have to activate each bundle's module separately");
-                                    break;
-                                case 'disabled':
-                                    $response['msg'] = __('License key has been revoked');
-                                    break;
-                                case 'no_activations_left':
-                                    $response['msg'] = __('No activations left for this license key');
-                                    break;
-                                case 'expired':
-                                    $response['msg'] = __('License key has expired');
-                                    break;
-                                case 'key_mismatch':
-                                    $response['msg'] = __('License key belongs to another module');
-                                    break;
-                                case 'invalid_item_id':
-                                    $response['msg'] = __('Module not found in the modules directory');
-                                    break;
-                                default:
-                                    $response['msg'] = __('Error code:'.' '.$result['error']);
-                                    break;
-                            }
+                            $response['msg'] = $this->getErrorMessage($result['error'], $result);
                         } else {
                             $response['msg'] = __('Error occured. Please try again later.');
                         }
@@ -465,6 +440,8 @@ class ModulesController extends Controller
 
                             \Session::flash('flash_error_unescaped', __('Error occured downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']));
                         }
+                    } elseif ($license_details['status'] && $response['msg'] = $this->getErrorMessage($license_details['status'])) {
+                        //$response['msg'] = ;
                     } else {
                         $response['msg'] = __('Error occured. Please try again later.');
                     }
@@ -521,5 +498,41 @@ class ModulesController extends Controller
         }
 
         return \Response::json($response);
+    }
+
+    public function getErrorMessage($code, $result = null)
+    {
+        $msg = '';
+
+        switch ($code) {
+            case 'missing':
+                $msg = __('License key does not exist');
+                break;
+            case 'license_not_activable':
+                $msg = __("You have to activate each bundle's module separately");
+                break;
+            case 'disabled':
+                $msg = __('License key has been revoked');
+                break;
+            case 'no_activations_left':
+                $msg = __('No activations left for this license key');
+                break;
+            case 'expired':
+                $msg = __('License key has expired');
+                break;
+            case 'key_mismatch':
+                $msg = __('License key belongs to another module');
+                break;
+            case 'invalid_item_id':
+                $msg = __('Module not found in the modules directory');
+                break;
+            default:
+                if ($result && !empty($result['error'])) {
+                    $msg = __('Error code:'.' '.$result['error']);
+                }
+                break;
+        }
+
+        return $msg;
     }
 }
