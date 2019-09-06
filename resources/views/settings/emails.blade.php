@@ -73,7 +73,7 @@
             <label for="mail_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
             <div class="col-sm-6">
-                <input id="mail_password" type="password" class="form-control input-sized" name="settings[mail_password]" value="{{ old('settings.mail_password', $settings['mail_password']) }}" maxlength="255" autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
+                <input id="mail_password" type="password" class="form-control input-sized" name="settings[mail_password]" value="{{ old('settings.mail_password', \Helper::safePassword($settings['mail_password'])) }}" maxlength="255" autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
 
                 @include('partials/field_error', ['field'=>'settings.mail_password'])
             </div>

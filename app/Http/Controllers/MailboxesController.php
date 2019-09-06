@@ -212,7 +212,13 @@ class MailboxesController extends Controller
             }
         }
 
-        $mailbox->fill($request->all());
+        // Do not save dummy password.
+        if (preg_match("/^\*+$/", $request->out_password)) {
+            $params = $request->except(['out_password']);
+        } else {
+            $params = $request->all();
+        }
+        $mailbox->fill($params);
         $mailbox->save();
 
         if (!empty($request->send_test_to)) {
@@ -264,7 +270,14 @@ class MailboxesController extends Controller
             'in_validate_cert' => ($request->filled('in_validate_cert') ?? false),
         ]);
 
-        $mailbox->fill($request->all());
+        // Do not save dummy password.
+        if (preg_match("/^\*+$/", $request->in_password)) {
+            $params = $request->except(['in_password']);
+        } else {
+            $params = $request->all();
+        }
+
+        $mailbox->fill($params);
 
         // Save IMAP Folders.
         // Save all custom folders except INBOX.

@@ -123,7 +123,7 @@
                             <label for="out_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
                             <div class="col-sm-6">
-                                <input id="out_password" type="password" class="form-control input-sized" name="out_password" value="{{ old('out_password', $mailbox->out_password) }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
+                                <input id="out_password" type="password" class="form-control input-sized" name="out_password" value="{{ old('out_password', $mailbox->outPasswordSafe()) }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
 
                                 @include('partials/field_error', ['field'=>'out_password'])
                             </div>

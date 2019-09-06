@@ -1158,4 +1158,12 @@ class Helper
 
         return $html;
     }
+
+    /**
+     * Replace password with asterisks.
+     */
+    public static function safePassword($password)
+    {
+        return str_repeat("*", mb_strlen($password));
+    }
 }
