@@ -70,6 +70,8 @@ class Attachment extends Model
         // Replace some symbols in file name.
         // Gmail can not load image if it contains spaces.
         $file_name = str_replace(' ', '-', $file_name);
+        // Browsers cannot load files with # in name as browser thinks it is an anchor tag
+        $file_name = str_replace('#', '_', $file_name);
 
         if (!$type) {
             $type = self::detectType($mime_type);
