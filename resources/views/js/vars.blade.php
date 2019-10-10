@@ -1,4 +1,4 @@
-{{-- 
+{{--
     Languages strings and custom variables passed to JS.
     After changing this file make sure to run:
         php artisan freescout:build
@@ -14,7 +14,7 @@ var Vars = {
     conv_type_phone: '{{ \App\Conversation::TYPE_PHONE }}'
 };
 
-{{-- 
+{{--
     Localized JS strings.
     Usage:
         Lang.get('messages.ajax_error');
@@ -45,6 +45,9 @@ var LangMessages = {
             "first_name": "{{ __("First Name") }}",
             "last_name": "{{ __("Last Name") }}",
             "email_addr": "{{ __("Email Address") }}",
+            "job_title": "{{ __("Job title") }}",
+            "phone": "{{ __("Phone number") }}",
+            "from_name": "{{ __("From name") }}",
             "user": "{{ __("User") }}",
             "confirm_change_customer": "{{ __("Change the customer to :customer_email?") }}",
             "invite_sent": "{{ __("Invite email has been sent") }}",
