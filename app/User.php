@@ -331,7 +331,7 @@ class User extends Authenticatable
             // Convert string in to Carbon
             $date = Carbon::parse($date);
         }
-        
+
         if ($user) {
             if ($user->time_format == self::TIME_FORMAT_12) {
                 $format = strtr($format, [
@@ -820,5 +820,35 @@ class User extends Authenticatable
         } else {
             return strtoupper(mb_substr($this->first_name, 0, 1));
         }
+    }
+
+    /**
+     * Get user phone.
+     *
+     * @return string|null
+     */
+    public function getPhone() :?string
+    {
+        return $this->phone;
+    }
+
+    /**
+     * Get user job title.
+     *
+     * @return string|null
+     */
+    public function getJobTitle() :?string
+    {
+        return $this->job_title;
+    }
+
+    /**
+     * Get user email.
+     *
+     * @return string
+     */
+    public function getEmail() :string
+    {
+        return $this->email;
     }
 }
