@@ -94,6 +94,8 @@ class EnvironmentController extends Controller
      */
     public function saveWizard(Request $request, Redirector $redirect)
     {
+        $envConfig = $this->EnvironmentManager->getEnvContent();
+
         $rules = config('installer.environment.form.rules');
         $messages = [
             'environment_custom.required_if' => trans('installer_messages.environment.wizard.form.name_required'),
