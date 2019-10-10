@@ -268,7 +268,7 @@ class Thread extends Model
         if (!$body) {
             $body = $this->body;
         }
-        
+
         return \Helper::purifyHtml($body);
     }
 
@@ -278,6 +278,15 @@ class Thread extends Model
     public function getBodyAsText()
     {
         return \Helper::htmlToText($this->body);
+    }
+
+    public function getBodyWithFormatedLinks(string $body = '') :string
+    {
+        if (!$body) {
+            $body = $this->body;
+        }
+
+        return \Helper::linkify($this->getCleanBody($body));
     }
 
     /**
@@ -771,7 +780,7 @@ class Thread extends Model
 
     /**
      * Create thread.
-     * 
+     *
      * @param  [type] $conversation_id [description]
      * @param  [type] $text            [description]
      * @param  array  $data            [description]

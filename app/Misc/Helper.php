@@ -493,7 +493,7 @@ class Helper
         // $text = urldecode($text);
 
         $text = trim(preg_replace('/[ ]+/', ' ', $text));
-        
+
         return $text;
     }
 
@@ -906,7 +906,7 @@ class Helper
 
     /**
      * Trim text removing non-breaking spaces also.
-     * 
+     *
      * @param  [type] $text [description]
      * @return [type]       [description]
      */
@@ -920,7 +920,7 @@ class Helper
 
     /**
      * Unicode escape sequences like “\u00ed” to proper UTF-8 encoded characters.
-     * 
+     *
      * @param  [type] $text [description]
      * @return [type]       [description]
      */
@@ -941,7 +941,7 @@ class Helper
         $subdirectory = '';
 
         $app_url = config('app.url');
-        
+
         // Check host to ignore default values.
         $app_host = parse_url($app_url, PHP_URL_HOST);
 
@@ -1165,5 +1165,42 @@ class Helper
     public static function safePassword($password)
     {
         return str_repeat("*", mb_strlen($password));
+    }
+
+    /**
+     * Turn all URLs in clickable links.
+     * Released under public domain
+     * https://gist.github.com/jasny/2000705
+     *
+     * @param string $value
+     * @param array  $protocols  http/https, ftp, mail
+     * @param array  $attributes
+     * @return string
+     */
+    public static function linkify($value, $protocols = ['http', 'mail'], array $attributes = [])
+    {
+        // Link attributes
+        $attr = '';
+        foreach ($attributes as $key => $val) {
+            $attr .= ' ' . $key . '="' . htmlentities($val) . '"';
+        }
+
+        $links = array();
+
+        // Extract existing links and tags
+        $value = preg_replace_callback('~(<a .*?>.*?</a>|<.*?>)~i', function ($match) use (&$links) { return '<' . array_push($links, $match[1]) . '>'; }, $value);
+
+        // Extract text links for each protocol
+        foreach ((array)$protocols as $protocol) {
+            switch ($protocol) {
+                case 'http':
+                case 'https':   $value = preg_replace_callback('~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { if ($match[1]) $protocol = $match[1]; $link = $match[2] ?: $match[3]; return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>'; }, $value); break;
+                case 'mail':    $value = preg_replace_callback('~([^\s<]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:])~', function ($match) use (&$links, $attr) { return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>'; }, $value); break;
+                default:        $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { return '<' . array_push($links, "<a $attr href=\"$protocol://{$match[1]}\">$protocol://{$match[1]}</a>") . '>'; }, $value); break;
+            }
+        }
+
+        // Insert all link
+        return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { return $links[$match[1] - 1]; }, $value);
     }
 }
