@@ -15,7 +15,7 @@
     <div id="conv-layout">
         <div id="conv-layout-header">
             <div id="conv-toolbar">
-                
+
                 <div class="conv-actions">
                     {{-- There should be no spaced between buttons --}}
                     @if (!$conversation->isPhone())<span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}">@endif</span><span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" data-toggle="tooltip"></span>@action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>--}}<div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
@@ -24,7 +24,7 @@
                             {{--<li><a href="#">{{ __("Follow") }} (todo)</a></li>--}}
                             <li><a href="#" class="conv-forward">{{ __("Forward") }}</a></li>
                             @if (count(Auth::user()->mailboxesCanView(true)) > 1)
-                                <li><a href="{{ route('conversations.ajax_html', ['action' => 
+                                <li><a href="{{ route('conversations.ajax_html', ['action' =>
                                             'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv">{{ __("Move") }}</a></li>
                             @endif
                             <li><a href="#" class="conv-delete">{{ __("Delete") }}</a></li>
@@ -39,7 +39,7 @@
                             <div class="btn-group conv-assignee" data-toggle="tooltip" title="{{ __("Assignee") }}: {{ $conversation->getAssigneeName(true) }}">
                                 <button type="button" class="btn btn-default conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i></button>
                                 <button type="button" class="btn btn-default dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span>{{ $conversation->getAssigneeName(true) }}</span> 
+                                    <span>{{ $conversation->getAssigneeName(true) }}</span>
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu conv-user">
@@ -180,7 +180,7 @@
 
                             @if (!empty($threads[0]) && $threads[0]->type == App\Thread::TYPE_NOTE && $threads[0]->created_by_user_id != Auth::user()->id && $threads[0]->created_by_user)
                                 <div class="alert alert-warning alert-switch-to-note">
-                                    <i class="glyphicon glyphicon-exclamation-sign"></i> 
+                                    <i class="glyphicon glyphicon-exclamation-sign"></i>
                                     {!! __('This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.', ['%switch_start%' => '<a href="javascript:switchToNote();void(0);">', 'switch_end' => '</a>', 'user_name' => $threads[0]->created_by_user->getFullName() ]) !!}
                                 </div>
                             @endif
@@ -214,7 +214,7 @@
                         <a href="javascript:void(0)" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
                             <li role="presentation"><a href="{{ route('customers.update', ['id' => $customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
-                            <li role="presentation"><a href="{{ route('conversations.ajax_html', ['action' => 
+                            <li role="presentation"><a href="{{ route('conversations.ajax_html', ['action' =>
                                             'change_customer']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Change Customer") }}" data-modal-no-footer="true" data-modal-on-show="changeCustomerInit" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
                             @if (count($prev_conversations))
                                 <li role="presentation" class="customer-hist-trigger"><a data-toggle="collapse" href=".collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
@@ -227,7 +227,7 @@
                     </div>--}}
                 </div>
                 @if (count($prev_conversations))
-                    {{-- 
+                    {{--
                         In mobile view previous conversations must be always hidden.
                         So the only way to achieve this is to have two blocks.
                     --}}
@@ -239,13 +239,13 @@
         </div>
         <div id="conv-layout-main">
             @foreach ($threads as $thread_index => $thread)
-                
+
                 @if ($thread->type == App\Thread::TYPE_LINEITEM)
                     <div class="thread thread-type-{{ $thread->getTypeName() }} thread-state-{{ $thread->getStateName() }}" id="thread-{{ $thread->id }}">
                         <div class="thread-message">
                             <div class="thread-header">
                                 <div class="thread-title">
-                                    @include('conversations/thread_by') 
+                                    @include('conversations/thread_by')
                                     {!! $thread->getActionText('', true) !!}
                                 </div>
                                 <div class="thread-info">
@@ -259,7 +259,7 @@
                             @if (Auth::user()->isAdmin())
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     @action('thread.menu', $thread)
-                                    <li><a href="{{ route('conversations.ajax_html', ['action' => 
+                                    <li><a href="{{ route('conversations.ajax_html', ['action' =>
                                         'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
                                 </ul>
                             @endif
@@ -274,7 +274,7 @@
                                         {{--{!! $thread->getActionDescription($conversation->number) !!}--}}
                                         <strong>@include('conversations/thread_by')</strong>
                                         @if ($thread->isForward())
-                                            {{ __('are forwarding') }} 
+                                            {{ __('are forwarding') }}
                                         @else
                                             &nbsp;
                                         @endif
@@ -325,7 +325,7 @@
                                             @else
                                                 @include('conversations/thread_by', ['as_link' => true])
                                             @endif
-                                        </strong> 
+                                        </strong>
                                         {{-- Lines below must be spaceless --}}
                                             {{--@if ($loop->last)
                                             {{ __("started the conversation") }}@elseif ($thread->type == App\Thread::TYPE_NOTE)
@@ -335,7 +335,7 @@
                                     @if ($thread->type != App\Thread::TYPE_NOTE || $thread->isForward())
                                         <div class="thread-recipients">
                                             @if ($thread->isForward()
-                                                || $loop->last 
+                                                || $loop->last
                                                 || ($thread->type == App\Thread::TYPE_CUSTOMER && count($thread->getToArray($mailbox->getEmails())))
                                                 || ($thread->type == App\Thread::TYPE_MESSAGE && !in_array($conversation->customer_email, $thread->getToArray()))
                                                 || ($thread->type == App\Thread::TYPE_MESSAGE && count($customer->emails) > 1)
@@ -443,10 +443,10 @@
                                 @if ($thread->isSendStatusError())
                                         <div class="alert alert-danger alert-light">
                                             <div>
-                                                <strong>{{ __('Message not sent to customer') }}</strong> (<a href="{{ route('conversations.ajax_html', ['action' => 
+                                                <strong>{{ __('Message not sent to customer') }}</strong> (<a href="{{ route('conversations.ajax_html', ['action' =>
                                         'send_log']) }}?thread_id={{ $thread->id }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __('View log') }}</a>)
                                             </div>
-                                            
+
                                             @if (!empty($send_status_data['bounced_by_thread']) && !empty($send_status_data['bounced_by_conversation']))
                                                 @php
                                                     $bounced_by_conversation = App\Conversation::find($send_status_data['bounced_by_conversation']);
@@ -468,7 +468,7 @@
                                 @endif
                                 @if ($thread->isForwarded())
                                     <div class="alert alert-info">
-                                        {{ __('This is a forwarded conversation.') }} 
+                                        {{ __('This is a forwarded conversation.') }}
                                         {!! __('Original conversation: :forward_parent_conversation_number', [
                                         'forward_parent_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMeta('forward_parent_conversation_id')]).'#thread-'.$thread->getMeta('forward_parent_thread_id').'">#'.$thread->getMeta('forward_parent_conversation_number').'</a>'
                                         ]) !!}
@@ -486,7 +486,7 @@
                                 @action('thread.before_body', $thread, $loop, $threads, $conversation, $mailbox)
 
                                 <div class="thread-content">
-                                    {!! $thread->getCleanBody() !!}
+                                    {!! $thread->getBodyWithFormatedLinks() !!}
                                 </div>
 
                                 @if ($thread->body_original)
@@ -525,11 +525,11 @@
                                 <li><a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}?from_thread_id={{ $thread->id }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
                                 @action('thread.menu', $thread)
                                 @if (Auth::user()->isAdmin())
-                                    <li><a href="{{ route('conversations.ajax_html', ['action' => 
+                                    <li><a href="{{ route('conversations.ajax_html', ['action' =>
                                         'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
                                 @endif
                                 @if ($thread->isReply())
-                                    <li><a href="{{ route('conversations.ajax_html', ['action' => 
+                                    <li><a href="{{ route('conversations.ajax_html', ['action' =>
                                         'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message") }}" data-trigger="modal" data-modal-title="{{ __("Original Message") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
                                 @endif
                                 {{--@if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
