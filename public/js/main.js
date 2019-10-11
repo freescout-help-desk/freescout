@@ -152,6 +152,7 @@ var EditorInsertVarButton = function (context) {
 		        '<option value="{%user.jobTitle%}">'+Lang.get("messages.job_title")+'</option>'+
 		        '<option value="{%user.phone%}">'+Lang.get("messages.phone")+'</option>'+
 		        '<option value="{%user.email%}">'+Lang.get("messages.email_addr")+'</option>'+
+		        '<option value="{%user.photoUrl%}">'+Lang.get("messages.photo_url")+'</option>'+
 		    '</optgroup>'+
 	    '</select>';
 

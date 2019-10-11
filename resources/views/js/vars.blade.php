@@ -47,6 +47,7 @@ var LangMessages = {
             "email_addr": "{{ __("Email Address") }}",
             "job_title": "{{ __("Job title") }}",
             "phone": "{{ __("Phone number") }}",
+            "photo_url": "{{ __("Profile Picture (URL)") }}",
             "from_name": "{{ __("From name") }}",
             "user": "{{ __("User") }}",
             "confirm_change_customer": "{{ __("Change the customer to :customer_email?") }}",
