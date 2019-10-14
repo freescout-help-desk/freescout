@@ -100,6 +100,7 @@ else
 		if [ $confirm_overwrite != "Y" ]; then
 		    exit;
 		fi
+		git checkout .
 	fi
 
 	printf "\nNew commits:\n";
