@@ -635,7 +635,7 @@ class User extends Authenticatable
                 return '';
             }
         } else {
-            return URL::to('/img/default-avatar.png');
+            return asset('/img/default-avatar.png');
         }
     }
 
