@@ -166,7 +166,7 @@
                     <label for="database_password">
                         Password
                     </label>
-                    <input type="text" name="database_password" id="database_password" value="{{ old('database_password', env('DB_PASSWORD')) }}" />
+                    <input type="text" name="database_password" id="database_password" value="{{ old('database_password', env('DB_PASSWORD')) }}" maxlength="50"/>
                     @if ($errors->has('database_password'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -222,7 +222,7 @@
                 </div>
             </div>
             <div class="tab" id="tab4content">
-                
+
                 <div class="form-group {{ $errors->has('admin_email') ? ' has-error ' : '' }}">
                     <label for="admin_email">
                         Email

@@ -854,8 +854,7 @@ class Customer extends Model
 
     public function getPhotoUrl()
     {
-        // todo
-        return '/img/default-avatar.png';
+        return asset('/img/default-avatar.png');
     }
 
     /**

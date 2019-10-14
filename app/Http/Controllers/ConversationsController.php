@@ -169,6 +169,7 @@ class ConversationsController extends Controller
             $prev_conversations = $mailbox->conversations()
                                     ->where('customer_id', $customer->id)
                                     ->where('id', '<>', $conversation->id)
+                                    ->where('status', '!=', Thread::STATUS_SPAM)
                                     //->limit(self::PREV_CONVERSATIONS_LIMIT)
                                     ->orderBy('created_at', 'desc')
                                     ->paginate(self::PREV_CONVERSATIONS_LIMIT);
@@ -205,7 +206,7 @@ class ConversationsController extends Controller
         }
 
         // Notify other users that current user is viewing conversation.
-        // Eventually notification data will be saved in polycast_events table and processes 
+        // Eventually notification data will be saved in polycast_events table and processes
         // in JS in users browsers.
 
         // $notification = new \App\Notifications\UserViewingConversationNotification(
@@ -214,7 +215,7 @@ class ConversationsController extends Controller
 
         // This broadcasts to specific users.
         // \Notification::send($mailbox->usersHavingAccess(), $notification);
-        
+
         // Notification is sent to all via public channel: conview
         // If we send notification to each user, applications having thouthans of users
         // will be overloaded.
@@ -926,7 +927,7 @@ class ConversationsController extends Controller
                     if (!empty($request->after_send) && $request->after_send == MailboxUser::AFTER_SEND_STAY) {
                         $show_view_link = false;
                     }
-                   
+
                     if ($is_phone) {
                         $flash_type = 'warning';
                         if ($show_view_link) {
@@ -1006,8 +1007,8 @@ class ConversationsController extends Controller
                     // Check if the last thread has same content as the new one.
                     $last_thread = $conversation->getLastThread([Thread::TYPE_MESSAGE, Thread::TYPE_NOTE]);
 
-                    if ($last_thread 
-                        && $last_thread->created_by_user_id == $user->id 
+                    if ($last_thread
+                        && $last_thread->created_by_user_id == $user->id
                         && $last_thread->body == $request->body
                     ) {
                         //\Log::error("You've already sent this message just recently.");
@@ -2054,7 +2055,7 @@ class ConversationsController extends Controller
      * Search conversations.
      */
     public function getSearchMode($request)
-    {  
+    {
         $mode = Conversation::SEARCH_MODE_CONV;
         if (!empty($request->mode) && $request->mode == Conversation::SEARCH_MODE_CUSTOMERS) {
             $mode = Conversation::SEARCH_MODE_CUSTOMERS;

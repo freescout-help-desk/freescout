@@ -44,7 +44,7 @@ $.extend(window.ParsleyConfig, {
     			return element.parent();
     		}
     	}
-    		
+
     	return help_block;
     },
     errorsWrapper: '<div class="help-block"></div>',
@@ -56,8 +56,8 @@ $.extend(window.ParsleyConfig, {
     serviceWorker: './customServiceWorker.js', // Sets a custom service worker script
     fallback: function(payload) {
         // Code that executes on browsers with no notification support
-        // "payload" is an object containing the 
-        // title, body, tag, and icon of the notification 
+        // "payload" is an object containing the
+        // title, body, tag, and icon of the notification
     }
 });*/
 
@@ -79,7 +79,7 @@ var EditorAttachmentButton = function (context) {
 			fileInput.addEventListener('change', function() {
 				if (fileInput.files) {
 					for (var i = 0; i < fileInput.files.length; i++) {
-						editorSendFile(fileInput.files[i], true);	
+						editorSendFile(fileInput.files[i], true);
 		            }
 			    }
 			});
@@ -128,12 +128,13 @@ var EditorInsertVarButton = function (context) {
 	var ui = $.summernote.ui;
 
 	// todo: fallback=
-	var contents = 
+	var contents =
 		'<select class="form-control summernote-inservar" tabindex="-1">'+
 		    '<option value="">'+Lang.get("messages.insert_var")+' ...</option>'+
 		    '<optgroup label="'+Lang.get("messages.mailbox")+'">'+
 		        '<option value="{%mailbox.email%}">'+Lang.get("messages.email")+'</option>'+
 		        '<option value="{%mailbox.name%}">'+Lang.get("messages.name")+'</option>'+
+		        '<option value="{%mailbox.fromName%}">'+Lang.get("messages.from_name")+'</option>'+
 		    '</optgroup>'+
 		    '<optgroup label="'+Lang.get("messages.conversation")+'">'+
 		        '<option value="{%conversation.number%}">'+Lang.get("messages.number")+'</option>'+
@@ -148,6 +149,10 @@ var EditorInsertVarButton = function (context) {
 		        '<option value="{%user.fullName%}">'+Lang.get("messages.full_name")+'</option>'+
 		        '<option value="{%user.firstName%}">'+Lang.get("messages.first_name")+'</option>'+
 		        '<option value="{%user.lastName%}">'+Lang.get("messages.last_name")+'</option>'+
+		        '<option value="{%user.jobTitle%}">'+Lang.get("messages.job_title")+'</option>'+
+		        '<option value="{%user.phone%}">'+Lang.get("messages.phone")+'</option>'+
+		        '<option value="{%user.email%}">'+Lang.get("messages.email_addr")+'</option>'+
+		        '<option value="{%user.photoUrl%}">'+Lang.get("messages.photo_url")+'</option>'+
 		    '</optgroup>'+
 	    '</select>';
 
@@ -277,7 +282,7 @@ function triggersInit()
 function mailboxUpdateInit(from_name_custom)
 {
 	$(document).ready(function(){
-		
+
 		summernoteInit('#signature', {insertVar: true});
 
 	    $('#from_name').change(function(event) {
@@ -301,7 +306,7 @@ function deleteMailboxModal(modal)
 				action: 'delete_mailbox',
 				mailbox_id: getGlobalAttr('mailbox_id'),
 				password: $('.delete-mailbox-pass:visible:first').val()
-			}, 
+			},
 			laroute.route('mailboxes.ajax'),
 			function(response) {
 				if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -318,7 +323,7 @@ function deleteMailboxModal(modal)
 }
 
 // Init summernote editor with default settings
-// 
+//
 // https://github.com/Studio-42/elFinder/wiki/Integration-with-Multiple-Summernote-%28fixed-functions%29
 // https://stackoverflow.com/questions/21628222/summernote-image-upload
 // https://www.kerneldev.com/2018/01/11/using-summernote-wysiwyg-editor-with-laravel/
@@ -411,7 +416,7 @@ function mailboxConnectionInit(out_method_smtp)
 					action: 'send_test',
 					mailbox_id: getGlobalAttr('mailbox_id'),
 					to: $('#send_test').val()
-				}, 
+				},
 				laroute.route('mailboxes.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
@@ -420,7 +425,7 @@ function mailboxConnectionInit(out_method_smtp)
 						showAjaxError(response, true);
 					}
 					button.button('reset');
-				}, 
+				},
 				true
 			);
 		});
@@ -437,7 +442,7 @@ function mailboxConnectionIncomingInit()
 				{
 					action: 'fetch_test',
 					mailbox_id: getGlobalAttr('mailbox_id')
-				}, 
+				},
 				laroute.route('mailboxes.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
@@ -446,7 +451,7 @@ function mailboxConnectionIncomingInit()
 						showAjaxError(response, true);
 					}
 					button.button('reset');
-				}, 
+				},
 				true
 			);
 		});
@@ -458,7 +463,7 @@ function mailboxConnectionIncomingInit()
 				{
 					action: 'imap_folders',
 					mailbox_id: getGlobalAttr('mailbox_id')
-				}, 
+				},
 				laroute.route('mailboxes.ajax'),
 				function(response) {
 
@@ -483,9 +488,9 @@ function mailboxConnectionIncomingInit()
 					}
 
 					showAjaxResult(response);
-					
+
 					button.button('reset');
-				}, 
+				},
 				true
 			);
 			e.preventDefault();
@@ -546,7 +551,7 @@ function mailSettingsInit()
 				{
 					action: 'send_test',
 					to: $('#send_test').val()
-				}, 
+				},
 				laroute.route('settings.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
@@ -555,7 +560,7 @@ function mailSettingsInit()
 						showAjaxError(response);
 					}
 					button.button('reset');
-				}, 
+				},
 				true
 			);
 		});
@@ -670,7 +675,7 @@ function loaderHide()
 function fsFloatingAlertsInit()
 {
 	var alerts = $(".alert-floating:hidden");
-			
+
 	alerts.each(function(i, el) {
 		// Stack alerts
 		var top = 0;
@@ -690,7 +695,7 @@ function fsFloatingAlertsInit()
 				close_after = 10000;
 			}
 			setTimeout(function(){
-			    el.remove(); 
+			    el.remove();
 			}, close_after);
 		}
 	});
@@ -736,7 +741,7 @@ function initConversation()
 					action: 'conversation_change_user',
 					user_id: $(this).attr('data-user_id'),
 					conversation_id: getGlobalAttr('conversation_id')
-				}, 
+				},
 				laroute.route('conversations.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
@@ -769,7 +774,7 @@ function initConversation()
 					action: 'conversation_change_status',
 					status: status,
 					conversation_id: getGlobalAttr('conversation_id')
-				}, 
+				},
 				laroute.route('conversations.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
@@ -795,7 +800,7 @@ function initConversation()
 				fsAjax({
 					action: 'restore_conversation',
 					conversation_id: getGlobalAttr('conversation_id')
-				}, 
+				},
 				laroute.route('conversations.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
@@ -841,7 +846,7 @@ function initConversation()
 				reply_block.children().find(":input[name='thread_id']:first").val('');
 				reply_block.children().find(":input[name='subtype']:first").val('');
 				//$(".conv-reply-block").children().find(":input[name='body']:first").val('');
-				
+
 				// Note never changes Assignee by default
 				reply_block.children().find(":input[name='user_id']:first").val(getConvData('user_id'));
 
@@ -883,7 +888,7 @@ function initConversation()
 			editDraft($(this));
 			e.preventDefault();
 		});
-		
+
 		// Discard draft
 		jQuery(".discard-draft-trigger").click(function(e){
 			discardDraft($(this).parents('.thread:first').attr('data-thread_id'));
@@ -910,10 +915,10 @@ function initConversation()
 							{
 								action: 'delete_conversation',
 								conversation_id: getGlobalAttr('conversation_id')
-							}, 
+							},
 							laroute.route('conversations.ajax'),
 							function(response) {
-								if (typeof(response.status) != "undefined" && response.status == "success" 
+								if (typeof(response.status) != "undefined" && response.status == "success"
 									&& typeof(response.redirect_url) != "undefined"
 								) {
 									window.location.href = response.redirect_url;
@@ -1085,7 +1090,7 @@ function showReplyForm(data)
 		.children().find(":input[name='is_note']:first").val('');
 	$(".conv-reply-block :input[name='thread_id']:first").val('');
 	$(".conv-reply-block :input[name='subtype']:first").val('');
-	
+
 	// When switching from note to reply, body has to be preserved
 	//$(".conv-reply-block").children().find(":input[name='body']:first").val(body_val);
 	$(".conv-action").addClass('inactive');
@@ -1195,7 +1200,7 @@ function convEditorInit()
 	 				return;
 	 			}
 	            for (var i = 0; i < files.length; i++) {
-					editorSendFile(files[i]);	
+					editorSendFile(files[i]);
 	            }
 	        },
 	        onBlur: function() {
@@ -1222,9 +1227,9 @@ function convEditorInit()
 	// select2 does not react on keyup or keypress
 	$(".recipient-select, .draft-changer").on('change', function(event) {
 		onReplyChange();
-		onReplyBlur(); 
+		onReplyBlur();
 	});
-		
+
 
 	// Autosave draft periodically
 	autosaveDraft();
@@ -1249,18 +1254,18 @@ function ajaxSetup()
 }
 
 function onReplyChange()
-{	
+{
 	// Mark draft as unsaved
 	if (fs_editor_change_timeout && fs_editor_change_timeout != -1) {
 		return;
-	}	
+	}
 
 	fs_editor_change_timeout = setTimeout(function(){
 		// Do not save note
 		/*if ($(".form-reply:first :input[name='is_note']:first").val()) {
 			return;
 		}*/
-	
+
 		$('.form-reply:first .note-actions .note-btn:first').removeClass('text-success');
 		fs_editor_change_timeout = null;
 		fs_reply_changed = true;
@@ -1273,7 +1278,7 @@ function onReplyBlur()
 	// If start saving draft immediately, then when Send Reply is clicked
 	// two ajax requests will be sent at the same time.
 	setTimeout(function() {
-		// Do not save if user clicked Send Reply button	
+		// Do not save if user clicked Send Reply button
 		if (fs_processing_send_reply) {
 			return;
 		}
@@ -1312,7 +1317,7 @@ function generateDummyId()
 }
 
 // Save file uploaded in editor
-function editorSendFile(file, attach) 
+function editorSendFile(file, attach)
 {
 	if (!file || typeof(file.type) == "undefined") {
 		return false;
@@ -1504,7 +1509,7 @@ function initRecipientSelector(custom_options, selector)
 		    		return;
 		    	}
 		    }
-			
+
 		    addSelect2Option(select, {
 		        id: value,
 		        text: value,
@@ -1599,7 +1604,7 @@ function initReplyForm(load_attachments, init_customer_selector)
 				}
 				loaderHide();
 				fs_processing_send_reply = false;
-			}, 
+			},
 			true,
 			function() {
 				showFloatingAlert('error', Lang.get("messages.ajax_error"));
@@ -1959,7 +1964,7 @@ function conversationPagination()
 				folder_id: getGlobalAttr('folder_id'),
 				filter: filter,
 				page: $(this).attr('data-page')
-			}, 
+			},
 			laroute.route('conversations.ajax'),
 			function(response) {
 				if (typeof(response.status) != "undefined" && response.status == 'success') {
@@ -1975,9 +1980,9 @@ function conversationPagination()
 				loaderHide();
 			}
 		);
-	
+
 		e.preventDefault();
-	});	
+	});
 }
 
 // Change customer modal
@@ -2037,8 +2042,8 @@ function changeCustomerInit()
 								action: 'conversation_change_customer',
 								customer_email: $(this).attr('data-customer_email'),
 								conversation_id: getGlobalAttr('conversation_id')
-							}, 
-							laroute.route('conversations.ajax'), 
+							},
+							laroute.route('conversations.ajax'),
 							function(response) {
 								if (typeof(response.status) != "undefined" && response.status == 'success') {
 									if (typeof(response.redirect_url) != "undefined") {
@@ -2073,8 +2078,8 @@ function initMoveConv()
 					action: 'conversation_move',
 					mailbox_id: $('.move-conv-mailbox-id:visible:first').val(),
 					conversation_id: getGlobalAttr('conversation_id')
-				}, 
-				laroute.route('conversations.ajax'), 
+				},
+				laroute.route('conversations.ajax'),
 				function(response) {
 					showAjaxResult(response);
 					if (isAjaxSuccess(response)) {
@@ -2240,7 +2245,7 @@ function showModalDialog(body, options)
 		options = {};
 	}
 	options = Object.assign(standard_options, options);
-	
+
 	triggerModal(null, options);
 }
 
@@ -2271,7 +2276,7 @@ function userProfileInit()
 			{
 				action: 'send_invite',
 				user_id: getGlobalAttr('user_id')
-			}, 
+			},
 			laroute.route('users.ajax'),
 			function(response) {
 				if (typeof(response.status) != "undefined" && response.status == 'success') {
@@ -2287,7 +2292,7 @@ function userProfileInit()
 			},
 			true
 		);
-	
+
 		e.preventDefault();
 	});
 
@@ -2315,7 +2320,7 @@ function userProfileInit()
 						{
 							action: 'reset_password',
 							user_id: getGlobalAttr('user_id')
-						}, 
+						},
 						laroute.route('users.ajax'),
 						function(response) {
 							showAjaxResult(response);
@@ -2327,7 +2332,7 @@ function userProfileInit()
 		});
 
 		e.preventDefault();
-	});	
+	});
 
 	// Delete profile photo
 	$("#user-photo-delete").click(function(e) {
@@ -2352,12 +2357,12 @@ function userProfileInit()
 						{
 							action: 'delete_photo',
 							user_id: getGlobalAttr('user_id')
-						}, 
+						},
 						laroute.route('users.ajax'),
 						function(response) {
 							$('#user-profile-photo').remove();
 							button.button('reset');
-						}, 
+						},
 						true
 					);
 				});
@@ -2393,7 +2398,7 @@ function userProfileInit()
 					modal.modal('hide');
 
 					fsAjax(
-						data, 
+						data,
 						laroute.route('users.ajax'),
 						function(response) {
 							if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -2415,7 +2420,7 @@ function userProfileInit()
 function showAjaxResult(response)
 {
 	loaderHide();
-	
+
 	if (typeof(response.status) != "undefined" && response.status == 'success') {
 		if (typeof(response['msg_success']) != "undefined") {
 			showFloatingAlert('success', response['msg_success']);
@@ -2483,19 +2488,19 @@ function polycastInit()
         */
         // console.log(data);
         // console.log(event);
-        
+
         if (typeof(event.data) != "undefined") {
         	// Show notification in the menu
-        	if (typeof(event.data.web) != "undefined" 
-	        	&& typeof(event.data.web.html) != "undefined" 
+        	if (typeof(event.data.web) != "undefined"
+	        	&& typeof(event.data.web.html) != "undefined"
 	        	&& event.data.web.html
 	        ) {
 	        	showMenuNotification(event.data.web.html);
 	        }
 
 	        // Browser push-notification
-	        if (typeof(event.data.browser) != "undefined" 
-	        	&& typeof(event.data.browser.text) != "undefined" 
+	        if (typeof(event.data.browser) != "undefined"
+	        	&& typeof(event.data.browser.text) != "undefined"
 	        	&& event.data.browser.text
 	        ) {
 	        	showBrowserNotification(event.data.browser.text, event.data.browser.url);
@@ -2507,8 +2512,8 @@ function polycastInit()
 
 	// Show who is viewing a conversation or replying.
     channel.on('App\\Events\\RealtimeConvView', function(data, event){
-        
-        if (!data 
+
+        if (!data
         	|| data.conversation_id != getGlobalAttr('conversation_id')
         	// Skip own notifications
         	|| data.user_id == getGlobalAttr('auth_user_id')
@@ -2580,7 +2585,7 @@ function polycastInit()
 
 	// User finished viewing conversation.
     channel.on('App\\Events\\RealtimeConvViewFinish', function(data, event) {
-        if (!data 
+        if (!data
         	|| data.conversation_id != getGlobalAttr('conversation_id')
         	// Skip own notifications
         	|| data.user_id == getGlobalAttr('auth_user_id')
@@ -2686,7 +2691,7 @@ function webNotificationsInit()
 			{
 				action: 'web_notifications',
 				wn_page: wn_page
-			}, 
+			},
 			laroute.route('users.ajax'),
 			function(response) {
 				if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -2719,7 +2724,7 @@ function webNotificationsInit()
 		fsAjax(
 			{
 				action: 'mark_notifications_as_read'
-			}, 
+			},
 			laroute.route('users.ajax'),
 			function(response) {
 				if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -2742,7 +2747,7 @@ function webNotificationsInit()
 	// $('.web-notifications:first .web-notification a').click(function(e) {
 	// 	$(this).parent().removeClass('is-unread');
 	// });
-	
+
 }
 
 function initSystemStatus()
@@ -2769,7 +2774,7 @@ function initSystemStatus()
 					fsAjax(
 						{
 							action: 'update'
-						}, 
+						},
 						laroute.route('system.ajax'),
 						function(response) {
 							if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -2799,7 +2804,7 @@ function initSystemStatus()
 		fsAjax(
 			{
 				action: 'check_updates'
-			}, 
+			},
 			laroute.route('system.ajax'),
 			function(response) {
 				if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -2914,7 +2919,7 @@ function saveDraft(reload_page, no_loader)
 					} else {
 						saved_text.show();
 					}
-					
+
 					setTimeout(function() {
 						saved_text.fadeOut(1000);
 				    }, 4000);
@@ -2937,7 +2942,7 @@ function saveDraft(reload_page, no_loader)
 		}
 		loaderHide();
 		finishSaveDraft();
-	}, 
+	},
 	no_loader,
 	function() {
 		showFloatingAlert('error', Lang.get("messages.ajax_error"));
@@ -2946,7 +2951,7 @@ function saveDraft(reload_page, no_loader)
 	});
 }
 
-// If draft is being sent and user clicks Send reply, 
+// If draft is being sent and user clicks Send reply,
 // we need to wait and send reply after draft has been saved.
 function finishSaveDraft()
 {
@@ -2991,7 +2996,7 @@ function loadAttachments()
 		fsAjax({
 				action: 'load_attachments',
 				conversation_id: conversation_id
-			}, 
+			},
 			laroute.route('conversations.ajax'),
 			function(response) {
 				if (typeof(response.status) != "undefined" && response.status == 'success'
@@ -3043,7 +3048,7 @@ function editDraft(button)
 	fsAjax({
 			action: 'load_draft',
 			thread_id: thread_container.attr('data-thread_id')
-		}, 
+		},
 		laroute.route('conversations.ajax'),
 		function(response) {
 			loaderHide();
@@ -3069,7 +3074,7 @@ function editDraft(button)
 // - draft of an old reply
 // - current reply
 // - current note
-// 
+//
 // If thread_id is passed, it means we are discarding an old reply draft
 function discardDraft(thread_id)
 {
@@ -3109,7 +3114,7 @@ function discardDraft(thread_id)
 					{
 						action: 'discard_draft',
 						thread_id: thread_id
-					}, 
+					},
 					laroute.route('conversations.ajax'),
 					function(response) {
 						modal.modal('hide');
@@ -3151,7 +3156,7 @@ function editThread(button)
 	fsAjax({
 			action: 'load_edit_thread',
 			thread_id: thread_container.attr('data-thread_id')
-		}, 
+		},
 		laroute.route('conversations.ajax'),
 		function(response) {
 			loaderHide();
@@ -3188,7 +3193,7 @@ function saveThreadEdit(trigger)
 			action: 'save_edit_thread',
 			thread_id: thread_container.attr('data-thread_id'),
 			body: thread_container.find('.thread-editor:first').val()
-		}, 
+		},
 		laroute.route('conversations.ajax'),
 		function(response) {
 			loaderHide();
@@ -3274,7 +3279,7 @@ function starConversationInit()
 				action: 'star_conversation',
 				conversation_id: conversation_id,
 				sub_action: sub_action
-			}, 
+			},
 			laroute.route('conversations.ajax'),
 			function(response) {
 				if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -3307,7 +3312,7 @@ function conversationsTableInit()
 		});
 	});
 
-	
+
 
 	if ("ontouchstart" in window)
 	{
@@ -3387,7 +3392,7 @@ function converstationBulkActionsInit()
 					action: 'bulk_conversation_change_user',
 					conversation_id: conv_ids,
 					user_id: user_id
-				}, 
+				},
 				laroute.route('conversations.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -3410,7 +3415,7 @@ function converstationBulkActionsInit()
 					action: 'bulk_conversation_change_status',
 					conversation_id: conv_ids,
 					status: status
-				}, 
+				},
 				laroute.route('conversations.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -3436,7 +3441,7 @@ function converstationBulkActionsInit()
 							{
 								action: 'bulk_delete_conversation',
 								conversation_id: conv_ids,
-							}, 
+							},
 							laroute.route('conversations.ajax'),
 							function(response) {
 								if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -3534,7 +3539,7 @@ function maybeShowDraft()
 	fsAjax({
 			action: 'load_draft',
 			thread_id: thread_id
-		}, 
+		},
 		laroute.route('conversations.ajax'),
 		function(response) {
 			loaderHide();
@@ -3570,7 +3575,7 @@ function saveNoteToStorage(conversation_notes)
 function loadNotesFromStorage(conversation_id)
 {
 	var conversation_notes_json = localStorageGet('conversation_notes');
-	
+
 	if (conversation_notes_json) {
 		var conversation_notes = {};
 		try {
@@ -3663,7 +3668,7 @@ function initModulesList()
 				{
 					action: 'activate',
 					alias: alias
-				}, 
+				},
 				laroute.route('modules.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -3683,7 +3688,7 @@ function initModulesList()
 				{
 					action: 'deactivate',
 					alias: alias
-				}, 
+				},
 				laroute.route('modules.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -3707,7 +3712,7 @@ function initModulesList()
 							{
 								action: 'delete',
 								alias: alias
-							}, 
+							},
 							laroute.route('modules.ajax'),
 							function(response) {
 								if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -3726,14 +3731,14 @@ function initModulesList()
 		});
 		$('.update-module-trigger').click(function(e) {
 			var button = $(this);
-			
+
 			button.button('loading');
 			var alias = button.parents('.module-card:first').attr('data-alias');
 			fsAjax(
 				{
 					action: 'update',
 					alias: alias
-				}, 
+				},
 				laroute.route('modules.ajax'),
 				function(response) {
 					if (typeof(response.status) != "undefined" && response.status == "success") {
@@ -3759,7 +3764,7 @@ function installModule(alias)
 			action: button.attr('data-action'),
 			alias: alias,
 			license: $('#module-'+alias).children().find('.license-key:first').val()
-		}, 
+		},
 		laroute.route('modules.ajax'),
 		function(response) {
 			if ((typeof(response.status) != "undefined" && response.status == "success") ||

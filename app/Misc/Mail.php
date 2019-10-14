@@ -182,6 +182,7 @@ class Mail
         if (!empty($data['mailbox'])) {
             $vars['{%mailbox.email%}'] = $data['mailbox']->email;
             $vars['{%mailbox.name%}'] = $data['mailbox']->name;
+            $vars['{%mailbox.fromName%}'] = $data['mailbox']->getMailFrom(!empty($data['user']) ? $data['user'] : null)['name'];
         }
         if (!empty($data['customer'])) {
             $vars['{%customer.fullName%}'] = $data['customer']->getFullName(true);
@@ -191,7 +192,11 @@ class Mail
         if (!empty($data['user'])) {
             $vars['{%user.fullName%}'] = $data['user']->getFullName();
             $vars['{%user.firstName%}'] = $data['user']->getFirstName();
+            $vars['{%user.phone%}'] = $data['user']->phone;
+            $vars['{%user.email%}'] = $data['user']->email;
+            $vars['{%user.jobTitle%}'] = $data['user']->job_title;
             $vars['{%user.lastName%}'] = $data['user']->last_name;
+            $vars['{%user.photoUrl%}'] = $data['user']->getPhotoUrl();
         }
 
         return strtr($text, $vars);
