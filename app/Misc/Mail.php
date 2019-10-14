@@ -196,6 +196,7 @@ class Mail
             $vars['{%user.email%}'] = $data['user']->email;
             $vars['{%user.jobTitle%}'] = $data['user']->job_title;
             $vars['{%user.lastName%}'] = $data['user']->last_name;
+            $vars['{%user.photoUrl%}'] = $data['user']->getPhotoUrl();
         }
 
         return strtr($text, $vars);
