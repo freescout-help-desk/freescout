@@ -1,2 +1,2 @@
-postdeploy: php artisan migrate
+postdeploy: php artisan migrate --force
 scheduler: php artisan schedule:run
