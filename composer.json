@@ -163,7 +163,7 @@
         "paas": {
           "compile": [
             "php artisan freescout:clear-cache",
-            "ln -s storage/app/public public/storage",
+            "ln -s /app/storage/app/public public/storage",
             "chmod -R 777 storage bootstrap/cache public/css/builds public/js/builds",
             "sed -E 's#build/[0-9a-f-]{36}/#app/#g' bootstrap/cache/config.php > bootstrap/cache/config.php.bis",
             "mv -f bootstrap/cache/config.php.bis bootstrap/cache/config.php"
