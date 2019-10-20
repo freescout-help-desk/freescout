@@ -162,6 +162,7 @@
         },
         "paas": {
           "compile": [
+            "php artisan freescout:clear-cache",
             "php artisan storage:link"
           ]
         }
