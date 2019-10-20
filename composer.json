@@ -159,6 +159,11 @@
         "laravel": {
             "dont-discover": [
             ]
+        },
+        "paas": {
+          "compile": [
+            "php artisan storage:link"
+          ]
         }
     },
     "scripts": {
@@ -177,8 +182,5 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true
-    },
-    "compile": [
-        "php artisan storage:link"
-    ]
+    }
 }
