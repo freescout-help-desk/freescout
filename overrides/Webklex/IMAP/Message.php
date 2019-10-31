@@ -475,7 +475,6 @@ class Message
                 $address->personal = false;
             }
 
-            // FreeScout fix
             $personalParts = imap_mime_header_decode($address->personal);
 
             $address->personal = '';
@@ -740,7 +739,8 @@ class Message
         }
 
         if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
-            return iconv($from, $to.'//IGNORE', $str);
+            // FreeScout #351
+            return iconv($from, $to, $str);
         } else {
             if (!$from) {
                 return mb_convert_encoding($str, $to);
