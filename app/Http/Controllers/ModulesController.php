@@ -312,6 +312,15 @@ class ModulesController extends Controller
                         \Artisan::call('freescout:clear-cache');
                     }
 
+                    // Check public folder.
+                    $public_folder = public_path().\Module::getPublicPath($alias);
+                    if (!file_exists($public_folder)) {
+                        $type = 'danger';
+                        $msg = 'Error occured creating a module symlink ('.$public_folder.'). Please check folder permissions.';
+                        \App\Module::setActive($alias, false);
+                        \Artisan::call('freescout:clear-cache');
+                    }
+
                     // \Session::flash does not work after BufferedOutput
                     $flash = [
                         'text'      => '<strong>'.$msg.'</strong><pre class="margin-top">'.$output.'</pre>',
