@@ -21,9 +21,14 @@ class Helper
     const PREVIEW_MAXLENGTH = 255;
 
     /**
-     * Deafult background job queue;
+     * Deafult background job queue.
      */
     const QUEUE_DEFAULT = 'default';
+
+    /**
+     * Background worker identifier.
+     */
+    const WORKER_IDENTIFIER = 'emails,default';
 
     /**
      * Menu structure used to display active menu item.

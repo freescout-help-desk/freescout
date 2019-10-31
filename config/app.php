@@ -180,7 +180,7 @@ return [
     | Checks for new jobs every --sleep seconds.
     | If --tries is set and job fails it is being processed right away without any delay.
     | --delay parameter does not work to set delays between retry attempts.
-    /
+    |
     | Jobs sending emails are retried manually in handle().
     | Number of retries is set in each job class.
     |-------------------------------------------------------------------------

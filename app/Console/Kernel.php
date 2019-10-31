@@ -154,7 +154,7 @@ class Kernel extends ConsoleKernel
         $pids = [];
 
         try {
-            $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep 'queue:work'"));
+            $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '".\Helper::WORKER_IDENTIFIER."'"));
             foreach ($processes as $process) {
                 preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
                 if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {
