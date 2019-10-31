@@ -531,11 +531,14 @@ class Message
     private function fetchStructure($structure, $partNumber = null)
     {
         if ($structure->type == self::TYPE_TEXT &&
-            ($structure->ifdisposition == 0 ||
-                ($structure->ifdisposition == 1 && !isset($structure->parts) && $partNumber == null)
-            )
+            # FreeScout #320
+            #($structure->ifdisposition == 0 ||
+            #    ($structure->ifdisposition == 1 && !isset($structure->parts) && $partNumber == null)
+            #)
+            (empty($structure->disposition) || strtolower($structure->disposition) != 'attachment')
         ) {
-            if ($structure->subtype == 'PLAIN') {
+            // FreeScout improvement
+            /*if (strtolower($structure->subtype) == 'plain' || strtolower($structure->subtype) == 'csv') {
                 if (!$partNumber) {
                     $partNumber = 1;
                 }
@@ -553,7 +556,7 @@ class Message
                 $this->bodies['text'] = $body;
 
                 $this->fetchAttachment($structure, $partNumber);
-            } elseif ($structure->subtype == 'HTML') {
+            } elseif (strtolower($structure->subtype) == 'html') {
                 if (!$partNumber) {
                     $partNumber = 1;
                 }
@@ -569,6 +572,42 @@ class Message
                 $body->content = $content;
 
                 $this->bodies['html'] = $body;
+            }*/
+            if (strtolower($structure->subtype) == 'html') {
+                if (!$partNumber) {
+                    $partNumber = 1;
+                }
+
+                $encoding = $this->getEncoding($structure);
+
+                $content = imap_fetchbody($this->client->getConnection(), $this->uid, $partNumber, $this->fetch_options | FT_UID);
+                $content = $this->decodeString($content, $structure->encoding);
+                $content = $this->convertEncoding($content, $encoding);
+
+                $body = new \stdClass();
+                $body->type = 'html';
+                $body->content = $content;
+
+                $this->bodies['html'] = $body;
+            } else {
+                // PLAIN.
+                if (!$partNumber) {
+                    $partNumber = 1;
+                }
+
+                $encoding = $this->getEncoding($structure);
+
+                $content = imap_fetchbody($this->client->getConnection(), $this->uid, $partNumber, $this->fetch_options | FT_UID);
+                $content = $this->decodeString($content, $structure->encoding);
+                $content = $this->convertEncoding($content, $encoding);
+
+                $body = new \stdClass();
+                $body->type = 'text';
+                $body->content = $content;
+
+                $this->bodies['text'] = $body;
+
+                $this->fetchAttachment($structure, $partNumber);
             }
         } elseif ($structure->type == self::TYPE_MULTIPART) {
             foreach ($structure->parts as $index => $subStruct) {
