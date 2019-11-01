@@ -3821,6 +3821,9 @@ a.disabled:focus {
     padding: 10px;
     border: 1px solid #ddd;
 }
+.clickable {
+    cursor: pointer;
+}
 
 /**
  * Only main content is visible

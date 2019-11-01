@@ -13,6 +13,7 @@ class WpApi
 
     const ACTION_CHECK_LICENSE = 'check_license';
     const ACTION_ACTIVATE_LICENSE = 'activate_license';
+    const ACTION_DEACTIVATE_LICENSE = 'deactivate_license';
     const ACTION_GET_VERSION = 'get_version';
 
     public static $lastError;
@@ -87,6 +88,22 @@ class WpApi
     public static function activateLicense($params)
     {
         $params['action'] = self::ACTION_ACTIVATE_LICENSE;
+
+        $endpoint = self::ENDPOINT_MODULES;
+
+        if (!empty($params['module_alias'])) {
+            $endpoint .= '/'.$params['module_alias'];
+        }
+
+        return self::request(self::METHOD_POST, $endpoint, $params);
+    }
+
+    /**
+     * Deactivate module license.
+     */
+    public static function deactivateLicense($params)
+    {
+        $params['action'] = self::ACTION_DEACTIVATE_LICENSE;
 
         $endpoint = self::ENDPOINT_MODULES;
 
