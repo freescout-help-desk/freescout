@@ -3752,6 +3752,27 @@ function initModulesList()
 
 			e.preventDefault();
 		});
+		$('.deactivate-license-trigger').click(function(e) {
+			var button = $(this);
+			var alias = button.parents('.module-card:first').attr('data-alias');
+			loaderShow();
+			fsAjax(
+				{
+					action: 'deactivate_license',
+					alias: alias,
+					license: $('#module-'+alias).children().find('.license-key-text:first').text()
+				},
+				laroute.route('modules.ajax'),
+				function(response) {
+					if (typeof(response.status) != "undefined" && response.status == "success") {
+						window.location.href = '';
+					} else {
+						showAjaxError(response);
+						loaderHide();
+					}
+				}, true
+			);
+		});
 	});
 }
 

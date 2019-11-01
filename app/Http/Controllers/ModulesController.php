@@ -312,6 +312,15 @@ class ModulesController extends Controller
                         \Artisan::call('freescout:clear-cache');
                     }
 
+                    // Check public folder.
+                    $public_folder = public_path().\Module::getPublicPath($alias);
+                    if (!file_exists($public_folder)) {
+                        $type = 'danger';
+                        $msg = 'Error occured creating a module symlink ('.$public_folder.'). Please check folder permissions.';
+                        \App\Module::setActive($alias, false);
+                        \Artisan::call('freescout:clear-cache');
+                    }
+
                     // \Session::flash does not work after BufferedOutput
                     $flash = [
                         'text'      => '<strong>'.$msg.'</strong><pre class="margin-top">'.$output.'</pre>',
@@ -354,6 +363,53 @@ class ModulesController extends Controller
                 ];
                 \Cache::forever('modules_flash', $flash);
                 $response['status'] = 'success';
+                break;
+
+            case 'deactivate_license':
+                $license = $request->license;
+                $alias = $request->alias;
+
+                if (!$license) {
+                    $response['msg'] = __('Empty license key');
+                }
+
+                if (!$response['msg']) {
+                    $params = [
+                        'license'      => $license,
+                        'module_alias' => $alias,
+                        'url'          => \App\Module::getAppUrl(),
+                    ];
+                    $result = WpApi::deactivateLicense($params);
+
+                    if (WpApi::$lastError) {
+                        $response['msg'] = WpApi::$lastError['message'];
+                    } elseif (!empty($result['code']) && !empty($result['message'])) {
+                        $response['msg'] = $result['message'];
+                    } else {
+                        if (!empty($result['status']) && $result['status'] == 'success') {
+                            // Remove remembered license key and deactivate license in DB
+                            \App\Module::deactivateLicense($alias, '');
+
+                            // Deactivate module
+                            \App\Module::setActive($alias, false);
+                            \Artisan::call('freescout:clear-cache', []);
+
+                            // Flash does not work here.
+                            $flash = [
+                                'text'      => '<strong>'.__('License successfully DEactivated!').'</strong>',
+                                'unescaped' => true,
+                                'type'      => 'success',
+                            ];
+                            \Cache::forever('modules_flash', $flash);
+
+                            $response['status'] = 'success';
+                        } elseif (!empty($result['error'])) {
+                            $response['msg'] = $this->getErrorMessage($result['error'], $result);
+                        } else {
+                            $response['msg'] = __('Error occured. Please try again later.');
+                        }
+                    }
+                }
                 break;
 
             case 'delete':

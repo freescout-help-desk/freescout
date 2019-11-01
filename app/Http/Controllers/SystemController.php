@@ -76,8 +76,11 @@ class SystemController extends Controller
         $failed_queues = $failed_jobs->pluck('queue')->unique();
 
         // Commands
-        $commands_list = ['freescout:fetch-emails', 'queue:work'];
-        foreach ($commands_list as $command_name) {
+        $commands_list = [
+            'freescout:fetch-emails' => 'freescout:fetch-emails', 
+            \Helper::WORKER_IDENTIFIER => 'queue:work'
+        ];
+        foreach ($commands_list as $command_identifier => $command_name) {
             $status_texts = [];
 
             // Check if command is running now
@@ -85,7 +88,7 @@ class SystemController extends Controller
                 $running_commands = 0;
 
                 try {
-                    $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '{$command_name}'"));
+                    $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '{$command_identifier}'"));
                     $pids = [];
                     foreach ($processes as $process) {
                         preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);

@@ -289,6 +289,7 @@ class Client {
 
         $items = imap_getmailboxes($this->connection, $this->getAddress(), $pattern);
 
+        // FreeScout fix
         if (!$items) {
             return $folders;
         }
