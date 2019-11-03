@@ -250,6 +250,7 @@ $(document).ready(function(){
 	initAccordionHeading();
 });
 
+
 // Initialize bootstrap tooltip for the element
 function initTooltip(selector)
 {
@@ -3852,4 +3853,17 @@ function personPhotoHtml(initials, photo_url, attrs, photo_class, size)
 	html += '</span>';
 
 	return html;
+}
+
+function switchHelpdeskUrl()
+{
+	var url = window.location.href.replace(/#.*/, '');
+	if (url.indexOf('?') == -1) {
+		url = url+'?';
+	} else {
+		url = url+'&';
+	}
+	url = url + 'nc='+Date.now()+"#in-app-browser-close";
+
+	window.location.href = url;
 }

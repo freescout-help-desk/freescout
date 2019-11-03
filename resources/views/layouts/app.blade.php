@@ -212,6 +212,10 @@
                                                 {{ csrf_field() }}
                                             </form>
                                         </li>
+                                        <li class="divider hidden app-url-switcher-list-item"></li>
+                                        <li>
+                                            <a href="javascript:switchHelpdeskUrl();void(0);" class="hidden app-url-switcher-list-item">{{ __('Switch Helpdesk URL' ) }}</a>
+                                        </li>
                                     </ul>
                                 </li>
 
@@ -258,6 +262,9 @@
         @if (!in_array(Route::currentRouteName(), array('mailboxes.view')))
             <div class="footer">
                 &copy; {{ date('Y') }} <a href="{{ config('app.freescout_url') }}" target="blank">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk &amp; shared mailbox' ) }}
+                    @if (!Auth::user())
+                        <a href="javascript:switchHelpdeskUrl();void(0);" class="hidden app-url-switcher-block"><br/>{{ __('Switch Helpdesk URL' ) }}</a>
+                    @endif
                     {{-- Show version to admin only --}}
                     @if (Auth::user() && Auth::user()->isAdmin())
                         <br/>
