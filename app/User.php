@@ -821,4 +821,9 @@ class User extends Authenticatable
             return strtoupper(mb_substr($this->first_name, 0, 1));
         }
     }
+
+    public function getAuthToken()
+    {
+        return md5($this->id.config('app.key'));
+    }
 }

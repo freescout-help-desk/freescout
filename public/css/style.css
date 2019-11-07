@@ -344,6 +344,9 @@ a.navbar-brand:hover img {
 	-webkit-filter: brightness(2);
 	filter: brightness(2);
 }
+.navbar-brand i {
+    color: #fff;
+}
 .dropdown-menu .dropdown-header {
 	font-size: 14px;
 }

@@ -52,10 +52,16 @@
                         </button>
 
                         <!-- Branding Image -->
-                        <a class="navbar-brand {{ \App\Misc\Helper::menuSelectedHtml('dashboard') }}" href="{{ url('/') }}" title="{{ __('Dashboard') }}">
-                            <img src="{{ asset('img/logo-brand.png') }}" />
-                            {{-- config('app.name', 'FreeScout') --}}
-                        </a>
+                        @if (\Helper::isInApp() && \Helper::isRoute('conversations.view'))
+                            <a class="navbar-brand" href="javascript: goBack(); void(0);" title="{{ __('Back') }}">
+                                <i class="glyphicon glyphicon-arrow-left"></i>
+                            </a>
+                        @else
+                            <a class="navbar-brand" href="{{ url('/') }}" title="{{ __('Dashboard') }}">
+                                <img src="{{ asset('img/logo-brand.png') }}" />
+                                {{-- config('app.name', 'FreeScout') --}}
+                            </a>
+                        @endif
                     </div>
 
                     <div class="collapse navbar-collapse" id="app-navbar-collapse">
@@ -212,9 +218,9 @@
                                                 {{ csrf_field() }}
                                             </form>
                                         </li>
-                                        <li class="divider hidden app-url-switcher-list-item"></li>
+                                        <li class="divider hidden in-app-switcher"></li>
                                         <li>
-                                            <a href="javascript:switchHelpdeskUrl();void(0);" class="hidden app-url-switcher-list-item">{{ __('Switch Helpdesk URL' ) }}</a>
+                                            <a href="javascript:switchHelpdeskUrl();void(0);" class="hidden in-app-switcher">{{ __('Switch Helpdesk URL' ) }}</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -263,7 +269,7 @@
             <div class="footer">
                 &copy; {{ date('Y') }} <a href="{{ config('app.freescout_url') }}" target="blank">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk &amp; shared mailbox' ) }}
                     @if (!Auth::user())
-                        <a href="javascript:switchHelpdeskUrl();void(0);" class="hidden app-url-switcher-block"><br/>{{ __('Switch Helpdesk URL' ) }}</a>
+                        <a href="javascript:switchHelpdeskUrl();void(0);" class="hidden in-app-switcher"><br/>{{ __('Switch Helpdesk URL' ) }}</a>
                     @endif
                     {{-- Show version to admin only --}}
                     @if (Auth::user() && Auth::user()->isAdmin())
@@ -297,11 +303,16 @@
         }
     @endphp
     @yield('javascripts')
-    @if ($__env->yieldContent('javascript'))
-        <script type="text/javascript">
-            @yield('javascript')
-            @action('javascript')
-        </script>
-    @endif
+    <script type="text/javascript">
+        @if (\Helper::isInApp()) 
+            @if (Auth::user())
+                fs_in_app_data['token'] = '{{ Auth::user()->getAuthToken() }}';
+            @else
+                fs_in_app_data['token'] = '';
+            @endif
+        @endif
+        @yield('javascript')
+        @action('javascript')
+    </script>
 </body>
 </html>

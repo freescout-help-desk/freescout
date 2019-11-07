@@ -14,6 +14,7 @@ var fs_conv_editor_toolbar = [
     ['style', ['attachment', 'bold', 'italic', 'underline', 'lists', 'removeformat', 'link', 'picture', 'codeview']],
     ['actions', ['savedraft', 'discard']],
 ];
+var fs_in_app_data = {};
 
 // Ajax based notifications;
 var poly;
@@ -2970,6 +2971,11 @@ function setUrl(url)
     }
 }
 
+function goBack()
+{
+	window.history.go(-1);
+}
+
 // Show forward conversation form
 function forwardConversation(e)
 {
@@ -3863,7 +3869,76 @@ function switchHelpdeskUrl()
 	} else {
 		url = url+'&';
 	}
-	url = url + 'nc='+Date.now()+"#in-app-browser-close";
+	url = url + 'nc='+Date.now()+"#in-app-close";
 
 	window.location.href = url;
+}
+
+function inAppPostMessage(data)
+{
+	if (typeof(webkit) != "undefined" && typeof(webkit.messageHandlers) != "undefined"
+		&& typeof(webkit.messageHandlers.cordova_iab) != "undefined"
+		&& typeof(webkit.messageHandlers.cordova_iab.postMessage) != "undefined"
+	) {
+		webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(data));
+	} else {
+		// Wait
+		setTimeout(function() {
+			inAppPostMessage(data);
+		}, 100);
+	}
+}
+
+function inApp(topic, token)
+{
+	$(document).ready(function() {
+		$('.in-app-switcher').removeClass('hidden');
+		if (!jQuery.isEmptyObject(fs_in_app_data)) {
+			fs_in_app_data['action'] = 'data';
+			inAppPostMessage(fs_in_app_data);
+		}
+		if (!getCookie('in_app')) {
+			setCookie('in_app', '1');
+		}
+	});
+}
+
+function setCookie(name, value, props) {
+    props = props || {path:"/"};
+
+    if (!props.expires) {
+    	// Max expiration date
+		var exp_date = new Date();
+	    exp_date.setSeconds(2147483647);
+    	props.expires = exp_date;
+    }
+
+    var exp = props.expires;
+    if (typeof exp == "number" && exp) {
+        var d = new Date();
+        d.setTime(d.getTime() + exp*1000);
+        exp = props.expires = d;
+    }
+    if (exp && exp.toUTCString) { 
+    	props.expires = exp.toUTCString();
+    }
+
+    value = encodeURIComponent(value);
+    var updatedCookie = name + "=" + value
+    for (var propName in props) {
+        updatedCookie += "; " + propName;
+        var propValue = props[propName];
+        if (propValue !== true) {
+        	updatedCookie += "=" + propValue;
+       	}
+    }
+
+    document.cookie = updatedCookie;
+}
+
+function getCookie(name) {
+    var matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined
 }

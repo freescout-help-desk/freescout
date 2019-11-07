@@ -282,6 +282,7 @@ class UsersController extends Controller
             'subscriptions' => $subscriptions,
             'person'        => $person,
             'users'         => $users,
+            'mobile_available' => \Eventy::filter('notifications.mobile_available', false),
         ]);
     }
 
