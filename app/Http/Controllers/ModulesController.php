@@ -313,12 +313,14 @@ class ModulesController extends Controller
                     }
 
                     // Check public folder.
-                    $public_folder = public_path().\Module::getPublicPath($alias);
-                    if (!file_exists($public_folder)) {
-                        $type = 'danger';
-                        $msg = 'Error occured creating a module symlink ('.$public_folder.'). Please check folder permissions.';
-                        \App\Module::setActive($alias, false);
-                        \Artisan::call('freescout:clear-cache');
+                    if ($module && file_exists($module->getPath().DIRECTORY_SEPARATOR.'Public')) {
+                        $public_folder = public_path().\Module::getPublicPath($alias);
+                        if (!file_exists($public_folder)) {
+                            $type = 'danger';
+                            $msg = 'Error occured creating a module symlink ('.$public_folder.'). Please check folder permissions.';
+                            \App\Module::setActive($alias, false);
+                            \Artisan::call('freescout:clear-cache');
+                        }
                     }
 
                     // \Session::flash does not work after BufferedOutput
