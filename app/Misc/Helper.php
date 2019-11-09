@@ -722,9 +722,12 @@ class Helper
         \Chumper\Zipper\Facades\Zipper::make($archive)->extractTo($to);
     }
 
-    public static function logException($e)
+    public static function logException($e, $prefix = '')
     {
-        \Log::error(self::formatException($e));
+        if ($prefix) {
+            $prefix .= ' ';
+        }
+        \Log::error($prefix.self::formatException($e));
     }
 
     /**
@@ -1207,5 +1210,23 @@ class Helper
 
         // Insert all link
         return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { return $links[$match[1] - 1]; }, $value);
+    }
+
+    /**
+     * Generates unique ID of the application.
+     */
+    public static function getAppIdentifier()
+    {
+        $identifier = md5(config('app.key').parse_url(config('app.url'), PHP_URL_HOST));
+
+        return $identifier;
+    }
+
+    /**
+     * Are we in the mobile app.
+     */
+    public static function isInApp()
+    {
+        return (int)app('request')->cookie('in_app');
     }
 }

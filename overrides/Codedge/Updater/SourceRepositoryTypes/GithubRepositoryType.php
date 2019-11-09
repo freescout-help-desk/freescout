@@ -172,6 +172,9 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
             ];
             foreach ($folders_to_move as $folder) {
                 // Move folder to the source directory as _tmp
+                if (file_exists($sourcePath.DIRECTORY_SEPARATOR.$folder.'_tmp')) {
+                    File::deleteDirectory($sourcePath.DIRECTORY_SEPARATOR.$folder.'_tmp');
+                }
                 File::move(
                     base_path($folder),
                     $sourcePath.DIRECTORY_SEPARATOR.$folder.'_tmp'

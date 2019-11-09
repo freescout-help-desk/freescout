@@ -318,7 +318,8 @@ class Subscription extends Model
             }
         }
 
-        // Notify by email and on the website
+        // - Notify by email
+        // - Real-time menu notification (uses same medium as for email)
         if (!empty($notify[self::MEDIUM_EMAIL])) {
             // Email notification (better to create them first)
             foreach ($notify[self::MEDIUM_EMAIL] as $conversation_id => $notify_info) {
@@ -335,7 +336,6 @@ class Subscription extends Model
         }
 
         // Send broadcast notifications:
-        // - Real-time menu notification (uses same medium as for email)
         // - Browser push notification
         $broadcasts = [];
         foreach ([self::MEDIUM_EMAIL, self::MEDIUM_BROWSER] as $medium) {
@@ -366,7 +366,8 @@ class Subscription extends Model
             $to_broadcast['user']->notify($broadcast_notification);
         }
 
-        // todo: mobile notification
+        // - Mobile
+        \Eventy::action('subscription.process_events', $notify);
 
         self::$occured_events = [];
     }

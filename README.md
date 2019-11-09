@@ -19,6 +19,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
 ## Table of Contents
    * [Features](#features)
    * [Demo](#demo)
+   * [Mobile Apps](#mobile-apps)
    * [Modules](#modules)
    * [Requirements](#requirements)
    * [News & Updates](#news--updates)
@@ -53,6 +54,10 @@ Need anything else? Suggest features [here](https://feedback.userreport.com/25a3
 ## Demo
 
 [Live demo](https://demo.freescout.net)
+
+## Mobile Apps
+
+<a href="https://play.google.com/store/apps/details?id=net.freescout.app" target="_blank"><img alt='Android App' src="https://freescout-helpdesk.github.io/img/apps/android.png" width="200px" /></a>
 
 ## Modules
 
