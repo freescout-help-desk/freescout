@@ -377,10 +377,10 @@ a.navbar-brand:hover img {
 .navbar-default .navbar-toggle,
 .navbar-default .navbar-toggle.collapsed:hover,
 .navbar-default .navbar-toggle:hover {
-	border-color: #fff;
+	border-color: transparent;
 }
 .navbar-default .navbar-toggle.collapsed {
-	border-color: #83b8db;
+	border-color: transparent;
 }
 .dropdown-menu>li>a {
 	padding-top: 7px;
@@ -1663,6 +1663,10 @@ button.conv-checkbox-clear {
 .conv-subj-block {
     padding: 16px 9px 18px 20px;
 }
+.conv-top-block {
+    border-top: 1px solid #e3e8eb;
+    padding: 10px 20px;
+}
 .conv-subjwrap {
     padding-right: 145px;
     position: relative;
@@ -2415,6 +2419,9 @@ ul.prev-convs {
     }
     .conv-subj-block {
         padding: 16px 2px 12px 13px;
+    }
+    .conv-top-block {
+        padding: 10px 13px;
     }
     .conv-customer-block {
         padding-left: 12px!important;
