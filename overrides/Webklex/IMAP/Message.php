@@ -777,15 +777,26 @@ class Message
             return $str;
         }
 
-        if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
-            // FreeScout #351
-            return iconv($from, $to, $str);
-        } else {
-            if (!$from) {
-                return mb_convert_encoding($str, $to);
-            }
+        try {
+            if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
+                // FreeScout #351
+                return iconv($from, $to, $str);
+            } else {
+                if (!$from) {
+                    return mb_convert_encoding($str, $to);
+                }
 
-            return mb_convert_encoding($str, $to, $from);
+                return mb_convert_encoding($str, $to, $from);
+            }
+        } catch (\Exception $e) {
+            // FreeScout #360
+            if (strstr($from, '-')) {
+                $from = str_replace('-', '', $from);
+                return $this->convertEncoding($str, $from, $to);
+            } else {
+                \Helper::logException($e, '[Webklex\IMAP\Message]');
+                return $str;
+            }
         }
     }
 
