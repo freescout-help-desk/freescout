@@ -766,6 +766,18 @@ class Helper
     }
 
     /**
+     * Log exception to activity log.
+     */
+    public static function logExceptionToActivityLog($e, $log_name, $description, $properties = [])
+    {
+        $properties['error'] = self::formatException($e);
+        activity()
+            ->withProperties($properties)
+            ->useLog($log_name)
+            ->log($description);
+    }
+
+    /**
      * Check if folder is writable.
      *
      * @param [type] $path [description]

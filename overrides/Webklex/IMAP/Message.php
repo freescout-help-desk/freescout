@@ -396,6 +396,10 @@ class Message
                 } catch (\Exception $_e) {
                     $this->date = Carbon::now();
                     \Helper::logException($_e, '[Webklex\IMAP\Message]');
+                    \Helper::logExceptionToActivityLog($_e, 
+                        \App\ActivityLog::NAME_EMAILS_FETCHING, 
+                        \App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR
+                    );
                     //throw new InvalidMessageDateException("Invalid message date. ID:".$this->getMessageId(), 1000, $e);
                 }
             }
@@ -831,6 +835,10 @@ class Message
                 return $this->convertEncoding($str, $from, $to);
             } else {
                 \Helper::logException($e, '[Webklex\IMAP\Message]');
+                \Helper::logExceptionToActivityLog($e, 
+                    \App\ActivityLog::NAME_EMAILS_FETCHING, 
+                    \App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR
+                );
                 return $str;
             }
         }
