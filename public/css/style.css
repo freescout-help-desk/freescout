@@ -167,7 +167,7 @@ body.user-is-guest {
     z-index: 9;
 }
 .sidebar-menu-toggle {
-    background: #e9edef;
+    background: #fff;
     border: 1px solid #d3dae0;
     border-radius: 3px;
     display: none;
