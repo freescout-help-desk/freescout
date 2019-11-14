@@ -36,6 +36,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
   * Web installer & updater.
   * Starred conversations.
   * Forwarding conversations.
+  * Moving conversations between mailboxes.
   * Phone conversations.
   * Sending new conversations to multiple recipients at once.
   * Push notifications.
