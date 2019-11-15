@@ -473,8 +473,7 @@ class ConversationsController extends Controller
                     $thread->save();
 
                     event(new ConversationStatusChanged($conversation));
-                    \Eventy::action('conversation.status_changed_by_user', $conversation, $user, $changed_on_reply = false, $prev_status);
-                    \Eventy::action('conversation.status_changed', $conversation, $changed_on_reply = false, $prev_status, $user);
+                    \Eventy::action('conversation.status_changed', $conversation, $user, $changed_on_reply = false, $prev_status);
 
                     $response['status'] = 'success';
                     // Flash
@@ -728,8 +727,7 @@ class ConversationsController extends Controller
                     if (!$new) {
                         if ($status_changed) {
                             event(new ConversationStatusChanged($conversation));
-                            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, $changed_on_reply = true, $prev_status);
-                            \Eventy::action('conversation.status_changed', $conversation, $changed_on_reply = true, $prev_status, $user);
+                            \Eventy::action('conversation.status_changed', $conversation, $user, $changed_on_reply = true, $prev_status);
                         }
                         if ($user_changed) {
                             event(new ConversationUserChanged($conversation, $user));
@@ -1608,8 +1606,7 @@ class ConversationsController extends Controller
                         $thread->save();
 
                         event(new ConversationStatusChanged($conversation));
-                        \Eventy::action('conversation.status_changed_by_user', $conversation, $user, $changed_on_reply = false, $prev_status);
-                        \Eventy::action('conversation.status_changed', $conversation, $changed_on_reply = false, $prev_status, $user);
+                        \Eventy::action('conversation.status_changed', $conversation, $user, $changed_on_reply = false, $prev_status);
                     }
 
                     $response['status'] = 'success';
