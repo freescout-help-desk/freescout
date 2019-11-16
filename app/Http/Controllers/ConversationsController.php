@@ -374,6 +374,7 @@ class ConversationsController extends Controller
                         $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
                     }
 
+                    $prev_user_id = $conversation->user_id;
                     $conversation->setUser($new_user_id);
                     $conversation->save();
 
@@ -393,7 +394,7 @@ class ConversationsController extends Controller
                     $thread->save();
 
                     event(new ConversationUserChanged($conversation, $user));
-                    \Eventy::action('conversation.user_changed', $conversation, $user);
+                    \Eventy::action('conversation.user_changed', $conversation, $user, $prev_user_id);
 
                     $response['status'] = 'success';
 
@@ -672,6 +673,7 @@ class ConversationsController extends Controller
                     // We need to set state, as it may have been a draft
                     $conversation->state = Conversation::STATE_PUBLISHED;
                     // Set assignee
+                    $prev_user_id = $conversation->user_id;
                     if ((int) $request->user_id != -1) {
                         // Check if user has access to the current mailbox
                         if ((int) $conversation->user_id != (int) $request->user_id && $mailbox->userHasAccess($request->user_id)) {
@@ -731,7 +733,7 @@ class ConversationsController extends Controller
                         }
                         if ($user_changed) {
                             event(new ConversationUserChanged($conversation, $user));
-                            \Eventy::action('conversation.user_changed', $conversation, $user);
+                            \Eventy::action('conversation.user_changed', $conversation, $user, $prev_user_id);
                         }
                     }
 
@@ -1537,7 +1539,7 @@ class ConversationsController extends Controller
                         if (!$conversation->mailbox->userHasAccess($new_user_id)) {
                             continue;
                         }
-
+                        $prev_user_id = $conversation->user_id;
                         $conversation->setUser($new_user_id);
                         $conversation->save();
 
@@ -1557,7 +1559,7 @@ class ConversationsController extends Controller
                         $thread->save();
 
                         event(new ConversationUserChanged($conversation, $user));
-                        \Eventy::action('conversation.user_changed', $conversation, $user);
+                        \Eventy::action('conversation.user_changed', $conversation, $user, $prev_user_id);
                     }
 
                     $response['status'] = 'success';
