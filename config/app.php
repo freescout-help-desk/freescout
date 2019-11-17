@@ -12,7 +12,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.3.10',
+    'version' => '1.3.11',
 
     /*
     |--------------------------------------------------------------------------
@@ -159,6 +159,7 @@ return [
     |-------------------------------------------------------------------------
     */
     'freescout_api' => 'https://freescout.net/wp-json/',
+    'freescout_alt_api' => 'https://cdn.freescout.net/wp-json/',
 
     /*
     |--------------------------------------------------------------------------

@@ -125,7 +125,7 @@ class UsersController extends Controller
     public function getUsersForSidebar($except_id)
     {
         if (auth()->user()->isAdmin()) {
-            return User::all()->except($except_id);
+            return User::nonDeleted()->get()/*->except($except_id)*/;
         } else {
             return [];
         }

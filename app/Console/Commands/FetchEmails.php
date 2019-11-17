@@ -713,7 +713,7 @@ class FetchEmails extends Command
         $prev_status = $conversation->status;
         $conversation->status = $mailbox->ticket_status;
         if ($conversation->status != $mailbox->ticket_status) {
-            \Eventy::action('conversation.status_changed_by_user', $conversation, $user, true, $prev_status);
+            \Eventy::action('conversation.status_changed', $conversation, $user, true, $prev_status);
         }
         $conversation->last_reply_at = $now;
         $conversation->last_reply_from = Conversation::PERSON_USER;

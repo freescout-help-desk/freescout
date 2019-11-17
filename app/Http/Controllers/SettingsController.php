@@ -280,7 +280,12 @@ class SettingsController extends Controller
             } else {
                 // If option does not exist, default will be used,
                 // so we can not just remove bool settings.
-                if (\Option::getDefault($option_name, null) === true) {
+                if (isset($settings_params[$option_name]['default'])) {
+                    $default = $settings_params[$option_name]['default'];
+                } else {
+                    $default = \Option::getDefault($option_name, null);
+                }
+                if ($default === true) {
                     Option::set($option_name, false);
                 } elseif (is_array(\Option::getDefault($option_name, -1))) {
                     Option::set($option_name, []);

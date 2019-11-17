@@ -50,6 +50,8 @@ class SendReplyToCustomer implements ShouldQueue
      */
     public function handle()
     {
+        $send_previous_messages = false;
+
         // When forwarding conversation is undone, new conversation is deleted.
         if (!$this->conversation) {
             return;
@@ -77,6 +79,7 @@ class SendReplyToCustomer implements ShouldQueue
                         }
                     }
                     $this->threads = $this->threads->merge($forwarded_replies);
+                    $send_previous_messages = true;
                 }
             }
         }
@@ -94,6 +97,11 @@ class SendReplyToCustomer implements ShouldQueue
         // If thread is draft, it means it has been undone
         if ($this->last_thread->isDraft()) {
             return;
+        }
+
+        // Remove previous messages.
+        if (!$send_previous_messages) {
+            $this->threads = $this->threads->slice(0, 1);
         }
 
         // Configure mail driver according to Mailbox settings

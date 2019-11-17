@@ -29,8 +29,6 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
 
 ## Features
 
-![FreeScout](https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/banner.png)
-
   * No limitations on the number of users, tickets, etc.
   * 100% Mobile-friendly.
   * Multilingual (English, French, Italian, Portuguese).
@@ -38,6 +36,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
   * Web installer & updater.
   * Starred conversations.
   * Forwarding conversations.
+  * Moving conversations between mailboxes.
   * Phone conversations.
   * Sending new conversations to multiple recipients at once.
   * Push notifications.
@@ -57,7 +56,7 @@ Need anything else? Suggest features [here](https://feedback.userreport.com/25a3
 
 ## Mobile Apps
 
-<a href="https://play.google.com/store/apps/details?id=net.freescout.app" target="_blank"><img alt='Android App' src="https://freescout-helpdesk.github.io/img/apps/android.png" width="200px" /></a>
+<a href="https://freescout.net/android-app/" target="_blank"><img alt="Android App" src="https://freescout-helpdesk.github.io/img/apps/android.png" width="200px" /></a>
 
 ## Modules
 
