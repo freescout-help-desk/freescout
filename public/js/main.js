@@ -15,6 +15,7 @@ var fs_conv_editor_toolbar = [
     ['actions', ['savedraft', 'discard']],
 ];
 var fs_in_app_data = {};
+var fs_actions = {};
 
 // Ajax based notifications;
 var poly;
@@ -739,6 +740,15 @@ function initConversation()
 		// Change conversation assignee
 	    jQuery(".conv-user li > a").click(function(e){
 			if (!$(this).hasClass('active')) {
+				if (!fsDoAction('conversation.user_change', {trigger: $(this)})) {
+					$(this).trigger('fs-conv-user-change');
+				}
+			}
+			e.preventDefault();
+		});
+
+	    jQuery(".conv-user li > a").bind('fs-conv-user-change', function(e){
+			//if (!$(this).hasClass('active')) {
 				fsAjax({
 					action: 'conversation_change_user',
 					user_id: $(this).attr('data-user_id'),
@@ -760,13 +770,21 @@ function initConversation()
 						loaderHide();
 					}
 				});
-			}
-			e.preventDefault();
+			//}
+			//e.preventDefault();
 		});
 
 		// Change conversation status
 	    jQuery(".conv-status li > a").click(function(e){
 			if (!$(this).hasClass('active')) {
+				if (!fsDoAction('conversation.status_change', {trigger: $(this)})) {
+					$(this).trigger('fs-conv-status-change');
+				}
+			}
+			e.preventDefault();
+		});
+	    jQuery(".conv-status li > a").bind('fs-conv-status-change', function(e){
+			//if (!$(this).hasClass('active')) {
 				var status = $(this).attr('data-status');
 				// Restore conversation button does not have a status
 				if (!status) {
@@ -792,8 +810,8 @@ function initConversation()
 					}
 					loaderHide();
 				});
-			}
-			e.preventDefault();
+			// }
+			// e.preventDefault();
 		});
 
 		// Restore conversation
@@ -1735,7 +1753,12 @@ function triggerModal(a, params)
     	body = params.body;
     }
     var footer = a.attr('data-modal-footer');
-    var no_close_btn = a.attr('data-no-close-btn');
+    if (typeof(params.footer) != "undefined") {
+    	footer = params.footer;
+    }
+    if (typeof(params.no_close_btn) == "undefined") {
+    	params.no_close_btn = a.attr('data-no-close-btn');
+    }
     if (typeof(params.no_footer) == "undefined") {
     	params.no_footer = a.attr('data-modal-no-footer');
     }
@@ -1779,7 +1802,7 @@ function triggerModal(a, params)
     for (param in params) {
     	if (params[param] === true) {
     		params[param] = 'true';
-    	} else if (params[param] === true) {
+    	} else if (params[param] === false) {
     		params[param] = 'false';
     	}
     }
@@ -1794,7 +1817,7 @@ function triggerModal(a, params)
                 '</div>',
                 '<div class="modal-body '+(fit == 'true' ? 'modal-body-fit' : '')+'"><div class="text-center modal-loader"><img src="'+Vars.public_url+'/img/loader-grey.gif" width="31" height="31"/></div></div>',
                 '<div class="modal-footer '+(params.no_footer == 'true' ? 'hidden' : '')+'">',
-                    (no_close_btn == 'true' ? '': '<button type="button" class="btn btn-default" data-dismiss="modal">'+Lang.get("messages.close")+'</button>'),
+                    (params.no_close_btn == 'true' ? '': '<button type="button" class="btn btn-default" data-dismiss="modal">'+Lang.get("messages.close")+'</button>'),
                     footer,
                 '</div>',
             '</div>',
@@ -3903,7 +3926,8 @@ function inApp(topic, token)
 	});
 }
 
-function setCookie(name, value, props) {
+function setCookie(name, value, props)
+{
     props = props || {path:"/"};
 
     if (!props.expires) {
@@ -3936,9 +3960,39 @@ function setCookie(name, value, props) {
     document.cookie = updatedCookie;
 }
 
-function getCookie(name) {
+function getCookie(name)
+{
     var matches = document.cookie.match(new RegExp(
         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
     ));
     return matches ? decodeURIComponent(matches[1]) : undefined
+}
+
+function fsAddAction(action, callback, priority)
+{
+	if (typeof(priority) == "undefined") {
+		priority = 20;
+	}
+	if (typeof(fs_actions[action]) == "undefined") {
+		fs_actions[action] = [];
+	}
+	fs_actions[action].push({
+		callback: callback,
+		priority: priority
+	});
+}
+
+function fsDoAction(action, params)
+{
+	if (typeof(fs_actions[action]) != "undefined") {
+		if (typeof(params) == "undefined") {
+			params = {};
+		}
+		for (var i in fs_actions[action]) {
+			fs_actions[action][i].callback(params);
+		}
+		return true;
+	} else {
+		return false;
+	}
 }
