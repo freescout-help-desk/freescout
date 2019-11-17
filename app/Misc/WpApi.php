@@ -18,21 +18,31 @@ class WpApi
 
     public static $lastError;
 
-    public static function url($path)
+    public static function url($path, $alternative = false)
     {
-        return \Config::get('app.freescout_api').$path;
+        if ($alternative) {
+            return \Config::get('app.freescout_alt_api').$path;
+        } else {
+            return \Config::get('app.freescout_api').$path;
+            
+        }
     }
 
     /**
      * API request.
      */
-    public static function request($method, $endpoint, $params = [])
+    public static function request($method, $endpoint, $params = [], $alternative_api = false)
     {
         self::$lastError = null;
 
+        $options = ['connect_timeout' => 7]; // seconds
+
         try {
-            $response = Zttp::$method(self::url($endpoint), $params);
+            $response = Zttp::withOptions($options)->$method(self::url($endpoint, $alternative_api), $params);
         } catch (\Exception $e) {
+            if (!$alternative_api) {
+                return self::request($method, $endpoint, $params, true);
+            }
             self::$lastError = [
                 'code'    => $e->getCode(),
                 'message' => $e->getMessage(),
