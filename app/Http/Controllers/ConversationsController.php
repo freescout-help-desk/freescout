@@ -241,6 +241,8 @@ class ConversationsController extends Controller
             });
         }
 
+        \Eventy::action('conversation.view.start', $conversation);
+
         return view($template, [
             'conversation'       => $conversation,
             'mailbox'            => $conversation->mailbox,
