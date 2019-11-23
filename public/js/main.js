@@ -3137,13 +3137,20 @@ function discardDraft(thread_id)
 		thread_id = $('.form-reply :input[name="thread_id"]').val();
 	}
 
+	// We are creating a conversation from thread
+	var from_thread_id = '';
+	if (!thread_id && getQueryParam('from_thread_id')) {
+		from_thread_id = getQueryParam('from_thread_id');
+	}
+
 	showModalDialog(confirm_html, {
 		on_show: function(modal) {
 			modal.children().find('.discard-draft-confirm:first').click(function(e) {
 				fsAjax(
 					{
 						action: 'discard_draft',
-						thread_id: thread_id
+						thread_id: thread_id,
+						from_thread_id: from_thread_id
 					},
 					laroute.route('conversations.ajax'),
 					function(response) {

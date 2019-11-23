@@ -1205,6 +1205,15 @@ class ConversationsController extends Controller
                 if (!$thread) {
                     // Discarding nont saved yet draft
                     $response['status'] = 'success';
+
+                    // Discarding a new conversation being created from thread
+                    if (!empty($request->from_thread_id)) {
+                        $original_thread = Thread::find($request->from_thread_id);
+                        if ($original_thread && $original_thread->conversation_id) {
+                            // Open original conversation
+                            $response['redirect_url'] = route('conversations.view', ['id' => $original_thread->conversation_id]);
+                        }
+                    }
                     break;
                     //$response['msg'] = __('Thread not found');
                 }
