@@ -1667,6 +1667,13 @@ button.conv-checkbox-clear {
     border-top: 1px solid #e3e8eb;
     padding: 10px 20px;
 }
+.action-visible .conv-top-block + .conv-action-wrapper .conv-action-block {
+    margin-top: 0;
+    padding-top: 15px;
+}
+.action-visible .conv-top-block + .conv-action-wrapper {
+    border-top: 1px solid #e3e8eb;
+}
 .conv-subjwrap {
     padding-right: 145px;
     position: relative;

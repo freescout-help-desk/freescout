@@ -109,98 +109,100 @@
                     </div>
                 </div>
                 @action('conversation.after_subject_block', $conversation, $mailbox)
-                <div class="conv-block conv-reply-block conv-action-block hidden">
-                    <div class="col-xs-12">
-                        <form class="form-horizontal form-reply" method="POST" action="">
-                            {{ csrf_field() }}
-                            <input type="hidden" name="conversation_id" value="{{ $conversation->id }}"/>
-                            <input type="hidden" name="mailbox_id" value="{{ $mailbox->id }}"/>
-                            <input type="hidden" name="saved_reply_id" value=""/>
-                            {{-- For drafts --}}
-                            <input type="hidden" name="thread_id" value=""/>
-                            <input type="hidden" name="is_note" value=""/>
-                            <input type="hidden" name="subtype" value=""/>
+                <div class="conv-action-wrapper">
+                    <div class="conv-block conv-reply-block conv-action-block hidden">
+                        <div class="col-xs-12">
+                            <form class="form-horizontal form-reply" method="POST" action="">
+                                {{ csrf_field() }}
+                                <input type="hidden" name="conversation_id" value="{{ $conversation->id }}"/>
+                                <input type="hidden" name="mailbox_id" value="{{ $mailbox->id }}"/>
+                                <input type="hidden" name="saved_reply_id" value=""/>
+                                {{-- For drafts --}}
+                                <input type="hidden" name="thread_id" value=""/>
+                                <input type="hidden" name="is_note" value=""/>
+                                <input type="hidden" name="subtype" value=""/>
 
-                            <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }} conv-recipient conv-recipient-to @if (empty($to_customers)) hidden @endif">
-                                <label for="to" class="control-label">{{ __('To') }}</label>
+                                <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }} conv-recipient conv-recipient-to @if (empty($to_customers)) hidden @endif">
+                                    <label for="to" class="control-label">{{ __('To') }}</label>
 
-                                <div class="conv-reply-field">
-                                    @if (!empty($to_customers))
-                                        <select name="to" id="to" class="form-control">
-                                            @foreach ($to_customers as $to_customer)
-                                                <option value="{{ $to_customer['email'] }}" @if ($to_customer['email'] == $conversation->customer_email)selected="selected"@endif>{{ $to_customer['customer']->getFullName(true) }} &lt;{{ $to_customer['email'] }}&gt;</option>
-                                            @endforeach
+                                    <div class="conv-reply-field">
+                                        @if (!empty($to_customers))
+                                            <select name="to" id="to" class="form-control">
+                                                @foreach ($to_customers as $to_customer)
+                                                    <option value="{{ $to_customer['email'] }}" @if ($to_customer['email'] == $conversation->customer_email)selected="selected"@endif>{{ $to_customer['customer']->getFullName(true) }} &lt;{{ $to_customer['email'] }}&gt;</option>
+                                                @endforeach
+                                            </select>
+                                        @endif
+                                        <select class="form-control hidden parsley-exclude draft-changer" name="to_email" id="to_email" multiple required autofocus>
                                         </select>
-                                    @endif
-                                    <select class="form-control hidden parsley-exclude draft-changer" name="to_email" id="to_email" multiple required autofocus>
-                                    </select>
-                                    @include('partials/field_error', ['field'=>'to'])
+                                        @include('partials/field_error', ['field'=>'to'])
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} @if (!$cc) hidden @endif field-cc conv-recipient">
-                                <label for="cc" class="control-label">{{ __('Cc') }}</label>
+                                <div class="form-group{{ $errors->has('cc') ? ' has-error' : '' }} @if (!$cc) hidden @endif field-cc conv-recipient">
+                                    <label for="cc" class="control-label">{{ __('Cc') }}</label>
 
-                                <div class="conv-reply-field">
+                                    <div class="conv-reply-field">
 
-                                    <select class="form-control recipient-select" name="cc[]" id="cc" multiple/>
-                                        @if ($cc)
-                                            @foreach ($cc as $cc_email)
-                                                <option value="{{ $cc_email }}" selected="selected">{{ $cc_email }}</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
+                                        <select class="form-control recipient-select" name="cc[]" id="cc" multiple/>
+                                            @if ($cc)
+                                                @foreach ($cc as $cc_email)
+                                                    <option value="{{ $cc_email }}" selected="selected">{{ $cc_email }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
 
-                                    @include('partials/field_error', ['field'=>'cc'])
+                                        @include('partials/field_error', ['field'=>'cc'])
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }} @if (!$bcc) hidden @endif field-cc conv-recipient">
-                                <label for="bcc" class="control-label">{{ __('Bcc') }}</label>
+                                <div class="form-group{{ $errors->has('bcc') ? ' has-error' : '' }} @if (!$bcc) hidden @endif field-cc conv-recipient">
+                                    <label for="bcc" class="control-label">{{ __('Bcc') }}</label>
 
-                                <div class="conv-reply-field">
-                                     <select class="form-control recipient-select" name="bcc[]" id="bcc" multiple/>
-                                        @if ($bcc)
-                                            @foreach ($bcc as $bcc_email)
-                                                <option value="{{ $bcc_email }}" selected="selected">{{ $bcc_email }}</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
+                                    <div class="conv-reply-field">
+                                         <select class="form-control recipient-select" name="bcc[]" id="bcc" multiple/>
+                                            @if ($bcc)
+                                                @foreach ($bcc as $bcc_email)
+                                                    <option value="{{ $bcc_email }}" selected="selected">{{ $bcc_email }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
 
-                                    @include('partials/field_error', ['field'=>'bcc'])
+                                        @include('partials/field_error', ['field'=>'bcc'])
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="form-group cc-toggler @if (empty($to_customers) && !$cc && !$bcc) cc-shifted @endif @if ($cc && $bcc) hidden @endif">
-                                <label class="control-label"></label>
-                                <div class="conv-reply-field">
-                                    <a href="javascript:void(0);" class="help-link" id="toggle-cc">Cc/Bcc</a>
+                                <div class="form-group cc-toggler @if (empty($to_customers) && !$cc && !$bcc) cc-shifted @endif @if ($cc && $bcc) hidden @endif">
+                                    <label class="control-label"></label>
+                                    <div class="conv-reply-field">
+                                        <a href="javascript:void(0);" class="help-link" id="toggle-cc">Cc/Bcc</a>
+                                    </div>
                                 </div>
-                            </div>
 
-                            @if (!empty($threads[0]) && $threads[0]->type == App\Thread::TYPE_NOTE && $threads[0]->created_by_user_id != Auth::user()->id && $threads[0]->created_by_user)
-                                <div class="alert alert-warning alert-switch-to-note">
-                                    <i class="glyphicon glyphicon-exclamation-sign"></i>
-                                    {!! __('This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.', ['%switch_start%' => '<a href="javascript:switchToNote();void(0);">', 'switch_end' => '</a>', 'user_name' => $threads[0]->created_by_user->getFullName() ]) !!}
+                                @if (!empty($threads[0]) && $threads[0]->type == App\Thread::TYPE_NOTE && $threads[0]->created_by_user_id != Auth::user()->id && $threads[0]->created_by_user)
+                                    <div class="alert alert-warning alert-switch-to-note">
+                                        <i class="glyphicon glyphicon-exclamation-sign"></i>
+                                        {!! __('This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.', ['%switch_start%' => '<a href="javascript:switchToNote();void(0);">', 'switch_end' => '</a>', 'user_name' => $threads[0]->created_by_user->getFullName() ]) !!}
+                                    </div>
+                                @endif
+
+                                <div class="thread-attachments attachments-upload form-group">
+                                    <ul></ul>
                                 </div>
-                            @endif
 
-                            <div class="thread-attachments attachments-upload form-group">
-                                <ul></ul>
-                            </div>
-
-                            <div class="form-group{{ $errors->has('body') ? ' has-error' : '' }} conv-reply-body">
-                                <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}">{{ old('body', $conversation->body) }}</textarea>
-                                <div class="help-block has-error">
-                                    @include('partials/field_error', ['field'=>'body'])
+                                <div class="form-group{{ $errors->has('body') ? ' has-error' : '' }} conv-reply-body">
+                                    <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}">{{ old('body', $conversation->body) }}</textarea>
+                                    <div class="help-block has-error">
+                                        @include('partials/field_error', ['field'=>'body'])
+                                    </div>
                                 </div>
-                            </div>
 
-                        </form>
+                            </form>
+                        </div>
+                        <div class="clearfix"></div>
+                        @include('conversations/editor_bottom_toolbar')
+                        @action('reply_form.after', $conversation)
                     </div>
-                    <div class="clearfix"></div>
-                    @include('conversations/editor_bottom_toolbar')
-                    @action('reply_form.after', $conversation)
                 </div>
             </div>
         </div>

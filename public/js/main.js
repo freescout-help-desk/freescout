@@ -858,11 +858,12 @@ function initConversation()
 	    	var reply_block = $(".conv-reply-block");
 	    	if (reply_block.hasClass('hidden')  /*|| $(this).hasClass('inactive')*/) {
 	    		// Show
-				$(".conv-action-block").addClass('hidden');
+				hideActionBlocks();
 				reply_block.removeClass('hidden')
 					.addClass('conv-note-block')
 					.removeClass('conv-forward-block')
 					.children().find(":input[name='is_note']:first").val(1);
+				$('#conv-subject').addClass('action-visible');
 				reply_block.children().find(":input[name='thread_id']:first").val('');
 				reply_block.children().find(":input[name='subtype']:first").val('');
 				//$(".conv-reply-block").children().find(":input[name='body']:first").val('');
@@ -1103,11 +1104,12 @@ function prepareReplyForm()
 
 function showReplyForm(data)
 {
-	$(".conv-action-block").addClass('hidden');
+	hideActionBlocks();
 	$(".conv-reply-block").removeClass('hidden')
 		.removeClass('conv-note-block')
 		.removeClass('conv-forward-block')
 		.children().find(":input[name='is_note']:first").val('');
+	$('#conv-subject').addClass('action-visible');
 	$(".conv-reply-block :input[name='thread_id']:first").val('');
 	$(".conv-reply-block :input[name='subtype']:first").val('');
 
@@ -3136,6 +3138,7 @@ function discardDraft(thread_id)
 					setReplyBody('');
 					forgetNote();
 					modal.modal('hide');
+					$('#conv-subject').removeClass('action-visible');
 				});
 			}
 		});
@@ -3182,6 +3185,7 @@ function discardDraft(thread_id)
 								$(".conv-reply-block :input[name='cc']:first").val('');
 								$(".conv-reply-block :input[name='bcc']:first").val('');
 								setReplyBody('');
+								$('#conv-subject').removeClass('action-visible');
 							}
 						} else {
 							showAjaxError(response);
@@ -3281,6 +3285,12 @@ function hideReplyEditor()
 {
 	$(".conv-action-block").addClass('hidden');
 	$(".conv-action").removeClass('inactive');
+}
+
+function hideActionBlocks()
+{
+	$(".conv-action-block").addClass('hidden');
+	$("#conv-subject").removeClass('action-visible');
 }
 
 function getReplyBody(text)
