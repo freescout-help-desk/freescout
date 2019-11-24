@@ -2102,6 +2102,7 @@ function initMoveConv()
 			fsAjax({
 					action: 'conversation_move',
 					mailbox_id: $('.move-conv-mailbox-id:visible:first').val(),
+					mailbox_email: $('.move-conv-mailbox-email:visible:first').val(),
 					conversation_id: getGlobalAttr('conversation_id')
 				},
 				laroute.route('conversations.ajax'),
@@ -2113,6 +2114,14 @@ function initMoveConv()
 					ajaxFinish();
 				}
 			);
+		});
+
+		$(".move-conv-mailbox-email:first").on('keyup keypress', function(e){
+			if ($(this).val()) {
+				$(".move-conv-mailbox-id:first").attr('disabled', 'disabled');
+			} else {
+				$(".move-conv-mailbox-id:first").removeAttr('disabled');
+			}
 		});
 	});
 }

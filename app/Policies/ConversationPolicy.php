@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Conversation;
+use App\Mailbox;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -62,5 +63,22 @@ class ConversationPolicy
         } else {
             return $user->hasPermission(User::PERM_DELETE_CONVERSATIONS);
         }
+    }
+
+    /**
+     * Determine whether current user can move conversations
+     *
+     * @param \App\User    $user
+     * @param \App\Mailbox $mailbox
+     *
+     * @return mixed
+     */
+    public function move(User $user)
+    {
+        // First check this, because it is cached in conversation page
+        if (count($user->mailboxesCanView(true)) > 1) {
+            return true;
+        }
+        return Mailbox::count() > 1;
     }
 }

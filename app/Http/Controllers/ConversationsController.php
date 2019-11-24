@@ -1699,15 +1699,22 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
-                $mailbox = Mailbox::find($request->mailbox_id);
+                if (!empty($request->mailbox_email)) {
+                    $mailbox = Mailbox::where('email', $request->mailbox_email)->first();
+                } else {
+                    $mailbox = Mailbox::find($request->mailbox_id);
+                }
+
                 if (!$mailbox) {
                     $response['msg'] = __('Mailbox not found');
                 }
 
-                $conversation->moveToMailbox($mailbox, $user);
+                if (!$response['msg']) {
+                    $conversation->moveToMailbox($mailbox, $user);
 
-                $response['status'] = 'success';
-                \Session::flash('flash_success_floating', __('Conversation Moved'));
+                    $response['status'] = 'success';
+                    \Session::flash('flash_success_floating', __('Conversation Moved'));
+                }
 
                 break;
 
