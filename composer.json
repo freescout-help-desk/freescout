@@ -125,6 +125,7 @@
             "vendor/rachidlaasri/laravel-installer/src/Providers/LaravelInstallerServiceProvider.php",
             "vendor/lord/laroute/src/Routes/Collection.php",
             "vendor/tormjens/eventy/src/Filter.php",
+            "vendor/tormjens/eventy/src/Action.php",
             "vendor/symfony/debug/ExceptionHandler.php"
         ]
     },
