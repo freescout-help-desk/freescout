@@ -1963,51 +1963,60 @@ function searchInit()
 	});
 }
 
+function loadConversations(page, table)
+{
+	var filter = null;
+
+	if ($('body:first').hasClass('body-search')) {
+		filter = {
+			q: getQueryParam('q'), // For search
+			f: getQueryParam('f') // For search
+		};
+	}
+	//var table = $(this).parents('.table-conversations:first');
+	if (typeof(table) == "undefined") {
+		table = $(".table-conversations:first");
+	}
+	if (typeof(page) == "undefined") {
+		page = table.attr('data-page');
+	}
+	var datas = table.data();
+	for (data_name in datas) {
+		if (/^filter_/.test(data_name)) {
+			filter[data_name.replace(/^filter_/, '')] = datas[data_name];
+		}
+	}
+
+	fsAjax(
+		{
+			action: 'conversations_pagination',
+			mailbox_id: getGlobalAttr('mailbox_id'),
+			folder_id: getGlobalAttr('folder_id'),
+			filter: filter,
+			page: page
+		},
+		laroute.route('conversations.ajax'),
+		function(response) {
+			if (typeof(response.status) != "undefined" && response.status == 'success') {
+				if (typeof(response.html) != "undefined") {
+					$(".table-conversations:first").replaceWith(response.html);
+					conversationPagination();
+					starConversationInit();
+					converstationBulkActionsInit();
+					triggersInit();
+				}
+			} else {
+				showAjaxError(response);
+			}
+			loaderHide();
+		}
+	);
+}
+
 function conversationPagination()
 {
 	$(".table-conversations .pager-nav").click(function(e){
-
-		var filter = null;
-
-		if ($('body:first').hasClass('body-search')) {
-			filter = {
-				q: getQueryParam('q'), // For search
-				f: getQueryParam('f') // For search
-			};
-		}
-		var table = $(this).parents('.table-conversations:first');
-
-		var datas = table.data();
-		for (data_name in datas) {
-			if (/^filter_/.test(data_name)) {
-				filter[data_name.replace(/^filter_/, '')] = datas[data_name];
-			}
-		}
-
-		fsAjax(
-			{
-				action: 'conversations_pagination',
-				mailbox_id: getGlobalAttr('mailbox_id'),
-				folder_id: getGlobalAttr('folder_id'),
-				filter: filter,
-				page: $(this).attr('data-page')
-			},
-			laroute.route('conversations.ajax'),
-			function(response) {
-				if (typeof(response.status) != "undefined" && response.status == 'success') {
-					if (typeof(response.html) != "undefined") {
-						$(".table-conversations:first").html(response.html);
-						conversationPagination();
-						starConversationInit();
-						triggersInit();
-					}
-				} else {
-					showAjaxError(response);
-				}
-				loaderHide();
-			}
-		);
-
+		loadConversations($(this).attr('data-page'), $(this).parents('.table-conversations:first'));
 		e.preventDefault();
 	});
 }
@@ -2719,6 +2728,11 @@ function polycastInit()
 
 		    if (typeof(data.folders_html) != "undefined" && data.folders_html) {
 		    	el_folders.html(data.folders_html);
+		    }
+
+		    // If there are no conversations selected refresh conversations table
+		    if (!getSelectedConversations().length) {
+		    	loadConversations();
 		    }
 	    });
 	}
@@ -3494,23 +3508,28 @@ function conversationsTableInit()
 	}
 }
 
+// Get ids of the selected conversations
+function getSelectedConversations(checkboxes)
+{
+	if (typeof(checkboxes) == "undefined") {
+		checkboxes = $('.conv-checkbox');
+	}
+
+	var conv_ids = [];
+	checkboxes.each(function() {
+		if ($(this).prop('checked')) {
+			conv_ids.push($(this).val());
+		}
+	});
+
+	return conv_ids;
+}
+
 function converstationBulkActionsInit()
 {
 	$(document).ready(function() {
 		var checkboxes = $('.conv-checkbox');
 		var bulk_buttons = $('#conversations-bulk-actions');
-
-		function getConversationsIds()
-		{
-			var conv_ids = [];
-			checkboxes.each(function() {
-				if ($(this).prop('checked')) {
-					conv_ids.push($(this).val());
-				}
-			});
-
-			return conv_ids;
-		}
 
 		$(bulk_buttons).show();
 		if ($(bulk_buttons).offset()) {
@@ -3546,7 +3565,7 @@ function converstationBulkActionsInit()
 		$(".conv-user li > a", bulk_buttons).click(function(e) {
 			var user_id = $(this).data('user_id');
 
-			var conv_ids = getConversationsIds();
+			var conv_ids = getSelectedConversations(checkboxes);
 
 			fsAjax(
 				{
@@ -3569,7 +3588,7 @@ function converstationBulkActionsInit()
 		$(".conv-status li > a", bulk_buttons).click(function(e) {
 			var status = $(this).data('status');
 
-			var conv_ids = getConversationsIds();
+			var conv_ids = getSelectedConversations(checkboxes);
 
 			fsAjax(
 				{
@@ -3596,7 +3615,7 @@ function converstationBulkActionsInit()
 					modal.children().find('.delete-conversation-ok:first').click(function(e) {
 						modal.modal('hide');
 
-						var conv_ids = getConversationsIds();
+						var conv_ids = getSelectedConversations(checkboxes);
 
 						fsAjax(
 							{

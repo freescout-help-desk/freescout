@@ -18,9 +18,11 @@
         $conversations = \Eventy::filter('conversations_table.preload_table_data', $conversations);
     @endphp
 
-    @include('/conversations/partials/bulk_actions')
+    @if (!request()->get('page'))
+        @include('/conversations/partials/bulk_actions')
+    @endif
 
-    <table class="table-conversations table" @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif >
+    <table class="table-conversations table" data-page="{{ (int)request()->get('page', 1) }}" @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif >
         <colgroup>
             {{-- todo: without this columns table becomes not 100% wide --}}
             @if (empty($no_checkboxes))<col class="conv-current">@endif
