@@ -7,6 +7,8 @@
             @endif
         @endforeach
     </select>
+    <label class="margin-top-10">{{ __('or Enter Mailbox Email') }}</label>
+	<input type="text" class="form-control move-conv-mailbox-email" />
 </div>
 
 <div class="form-group">

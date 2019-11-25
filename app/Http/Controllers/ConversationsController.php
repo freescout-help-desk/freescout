@@ -1205,6 +1205,15 @@ class ConversationsController extends Controller
                 if (!$thread) {
                     // Discarding nont saved yet draft
                     $response['status'] = 'success';
+
+                    // Discarding a new conversation being created from thread
+                    if (!empty($request->from_thread_id)) {
+                        $original_thread = Thread::find($request->from_thread_id);
+                        if ($original_thread && $original_thread->conversation_id) {
+                            // Open original conversation
+                            $response['redirect_url'] = route('conversations.view', ['id' => $original_thread->conversation_id]);
+                        }
+                    }
                     break;
                     //$response['msg'] = __('Thread not found');
                 }
@@ -1690,15 +1699,22 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
-                $mailbox = Mailbox::find($request->mailbox_id);
+                if (!empty($request->mailbox_email)) {
+                    $mailbox = Mailbox::where('email', $request->mailbox_email)->first();
+                } else {
+                    $mailbox = Mailbox::find($request->mailbox_id);
+                }
+
                 if (!$mailbox) {
                     $response['msg'] = __('Mailbox not found');
                 }
 
-                $conversation->moveToMailbox($mailbox, $user);
+                if (!$response['msg']) {
+                    $conversation->moveToMailbox($mailbox, $user);
 
-                $response['status'] = 'success';
-                \Session::flash('flash_success_floating', __('Conversation Moved'));
+                    $response['status'] = 'success';
+                    \Session::flash('flash_success_floating', __('Conversation Moved'));
+                }
 
                 break;
 

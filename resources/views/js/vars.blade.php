@@ -73,6 +73,8 @@ var LangMessages = {
             "add_lower": "{{ __("add") }}",
             "user_viewing": "{{ __(":user is viewing") }}",
             "user_replying": "{{ __(":user is replying") }}",
+            "view_new_message": "{{ __("View new message") }}",
+            "view_new_messages": "{{ __("View new messages (:count)") }}",
 
             "update": "{{ __("Update") }}"
         }@if (!$loop->last),@endif

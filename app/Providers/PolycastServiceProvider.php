@@ -81,7 +81,14 @@ class PolycastServiceProvider extends ServiceProvider
                     $item->channels = json_decode($item->channels);
                     $item->payload = json_decode($item->payload);
                     // Add extra data to the payload
+                    // This works only if payload has medius and thread_id
                     $item->data = BroadcastNotification::fetchPayloadData($item->payload);
+
+                    $event_class = '\\'.$item->event;
+                    if (method_exists($event_class, "processPayload")) {
+                        // If user is not allowed to access this event, data will be sent to empty array.
+                        $item->payload = $event_class::processPayload($item->payload);
+                    }
 
                     $item->delay = $requested->diffInSeconds($created);
                     $item->requested_at = $requested->toDateTimeString();

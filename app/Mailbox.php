@@ -152,6 +152,14 @@ class Mailbox extends Model
     }
 
     /**
+     * Get users having access to the mailbox.
+     */
+    public function users_cached()
+    {
+        return $this->users()->rememberForever();
+    }
+
+    /**
      * Get mailbox conversations.
      */
     public function conversations()
