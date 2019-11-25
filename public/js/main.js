@@ -2649,6 +2649,7 @@ function polycastInit()
 
 	    channel.on('App\\Events\\RealtimeConvNewThread', function(data, event){
 	        if (!data
+	        	|| typeof(data.conversation_id) == "undefined"
 	        	|| data.conversation_id != getGlobalAttr('conversation_id')
 	        	// Skip own notifications
 	        	|| data.user_id == getGlobalAttr('auth_user_id')
@@ -2722,16 +2723,18 @@ function polycastInit()
 	    var channel = poly.subscribe('mailbox.'+mailbox_id);
 
 	    channel.on('App\\Events\\RealtimeMailboxNewThread', function(data, event){
-	        if (!data || data.mailbox_id != mailbox_id) {
+	        if (!data || typeof(data.mailbox_id) == "undefined" || data.mailbox_id != mailbox_id) {
 	        	return;
 		    }
 
 		    if (typeof(data.folders_html) != "undefined" && data.folders_html) {
+		    	var folder_id = el_folders.children('li.active:first').attr('data-folder_id');
 		    	el_folders.html(data.folders_html);
+		    	el_folders.children('li[data-folder_id="'+folder_id+'"]').addClass('active');
 		    }
 
 		    // If there are no conversations selected refresh conversations table
-		    if (!getSelectedConversations().length) {
+		    if ($(".table-conversations:first").length && !getSelectedConversations().length) {
 		    	loadConversations();
 		    }
 	    });
