@@ -2706,6 +2706,23 @@ function polycastInit()
 	    });
 	}
 
+	// Refresh folders
+    var mailbox_id = getGlobalAttr('mailbox_id');
+    var el_folders = $('#folders');
+    if (mailbox_id && el_folders.length) {
+	    var channel = poly.subscribe('mailbox.'+mailbox_id);
+
+	    channel.on('App\\Events\\RealtimeMailboxNewThread', function(data, event){
+	        if (!data || data.mailbox_id != mailbox_id) {
+	        	return;
+		    }
+
+		    if (typeof(data.folders_html) != "undefined" && data.folders_html) {
+		    	el_folders.html(data.folders_html);
+		    }
+	    });
+	}
+
     // at any point you can disconnect
     //poly.disconnect();
 

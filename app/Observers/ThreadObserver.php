@@ -46,5 +46,6 @@ class ThreadObserver
         $conversation->save();
 
         \App\Events\RealtimeConvNewThread::dispatchSelf($thread);
+        \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id);
     }
 }

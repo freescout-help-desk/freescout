@@ -1,18 +1,18 @@
 <?php
 /**
- * New thread created in conversation.
+ * New thread created in mailbox.
  */
 namespace App\Events;
 
 use App\Conversation;
 use App\Mailbox;
-use App\Thread;
+use App\Folder;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Queue\SerializesModels;
 
-class RealtimeConvNewThread implements ShouldBroadcastNow
+class RealtimeMailboxNewThread implements ShouldBroadcastNow
 {
     use SerializesModels;
 
@@ -60,29 +60,22 @@ class RealtimeConvNewThread implements ShouldBroadcastNow
      */
     protected function channelName()
     {
-        if (!empty($this->data['conversation_id'])) {
-            return 'conv.'.$this->data['conversation_id'];
+        if (!empty($this->data['mailbox_id'])) {
+            return 'mailbox.'.$this->data['mailbox_id'];
         } else {
-            return 'conv.0';
+            return 'mailbox.0';
         }
     }
 
     /**
      * Helper funciton.
      */
-    public static function dispatchSelf($thread)
+    public static function dispatchSelf($mailbox_id)
     {
-        if ($thread->state != Thread::STATE_PUBLISHED) {
-            return;
-        }
         $notification_data = [
-            'thread_id'       => $thread->id,
-            'conversation_id' => $thread->conversation_id,
-            // conversation is prefetched in ThreadObserver.
-            'mailbox_id'      => $thread->conversation->mailbox_id,
-            //'user_id'         => $thread->created_by_user_id,
+            'mailbox_id'      => $mailbox_id
         ];
-        event(new \App\Events\RealtimeConvNewThread($notification_data));
+        event(new \App\Events\RealtimeMailboxNewThread($notification_data));
     }
 
     public static function processPayload($payload)
@@ -95,23 +88,18 @@ class RealtimeConvNewThread implements ShouldBroadcastNow
             return [];
         }
 
-        $thread = Thread::find($payload->thread_id);
-        if (!$thread) {
-            return $payload;
+        $folder = Folder::find(Conversation::getFolderParam());
+        // Just in case.
+        if (!$folder) {
+            $folder = new Folder();
         }
-
-        // Add thread html to the payload.
         $template_data = [
-            'conversation' => $thread->conversation,
-            'mailbox'      => $thread->conversation->mailbox,
-            'threads'      => [$thread],
+            'folders' => $mailbox->getAssesibleFolders(),
+            'folder'  => $folder,
+            'mailbox' => $mailbox,
         ];
 
-        $payload->thread_html = \View::make('conversations/partials/threads')->with($template_data)->render();
-        $payload->conversation_user_id = $thread->conversation->user_id;
-        $payload->conversation_status = $thread->conversation->status;
-        $payload->conversation_status_class = Conversation::$status_classes[$thread->conversation->status];
-        $payload->conversation_status_icon = Conversation::$status_icons[$thread->conversation->status];
+        $payload->folders_html = \View::make('mailboxes/partials/folders')->with($template_data)->render();
 
         return $payload;
     }
