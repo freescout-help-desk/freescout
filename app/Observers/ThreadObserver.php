@@ -44,5 +44,7 @@ class ThreadObserver
         }
 
         $conversation->save();
+
+        \App\Events\RealtimeConvNewThread::dispatchSelf($thread);
     }
 }

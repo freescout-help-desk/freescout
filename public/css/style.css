@@ -1834,18 +1834,6 @@ button.conv-checkbox-clear {
     cursor: pointer;
     color: #4f5d69;
 }
-/*.conv-assignee .btn {
-    background-color: transparent!important;;
-    border: 0;
-    box-shadow: none!important;
-    -webkit-box-shadow: none!important;
-    color: #005a9e!important;
-}*/
-/*.conv-assignee .conv-info-icon {
-    padding-right: 0!important;
-    font-size: 19px;
-    top: 1px;
-}*/
 .customer-trigger {
     display: inline-block;
     position: absolute;
@@ -2022,6 +2010,22 @@ button.conv-checkbox-clear {
     /*padding: 4px 8px;*/
     padding: 0px 11px 4px 8px;
     display: block;
+}
+.thread-type-new {
+    background-color: #d1ecff;
+    height: 40px;
+    text-align: center;
+}
+.thread-type-new .view-new-trigger {
+    line-height: 40px;
+    display: block;
+}
+.thread-type-new .view-new-trigger:hover,
+.thread-type-new .view-new-trigger:focus {
+    text-decoration: none;
+}
+.thread-type-new .thread {
+    display: none;
 }
 .thread-type-lineitem {
     background: #f9fafa;
@@ -2452,8 +2456,7 @@ ul.prev-convs {
     #conv-toolbar {
         padding-left: 6px;
     }
-    .conv-actions .conv-action/*,
-    .conv-assignee .conv-info-icon*/ {
+    .conv-actions .conv-action {
         font-size: 17px;
     }
     .thread-photo {

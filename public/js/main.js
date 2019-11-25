@@ -2633,11 +2633,99 @@ function polycastInit()
 	    $('#conv-viewers .viewer-'+data.user_id+':first').fadeOut();
     });
 
+    // Show new conversation threads
+    var conversation_id = getGlobalAttr('conversation_id');
+    if (conversation_id) {
+	    var channel = poly.subscribe('conv.'+conversation_id);
+
+	    channel.on('App\\Events\\RealtimeConvNewThread', function(data, event){
+	        if (!data
+	        	|| data.conversation_id != getGlobalAttr('conversation_id')
+	        	// Skip own notifications
+	        	|| data.user_id == getGlobalAttr('auth_user_id')
+	        ) {
+	        	return;
+		    }
+
+		    if (typeof(data.thread_html) != "undefined" && data.thread_html && !$('#thread-'+data.thread_id).length) {
+		    	var container = $('#conv-layout-main .thread-type-new');
+		    	if (container.length) {
+		    		container.prepend(data.thread_html);
+		    		$('#conv-layout-main .thread-type-new:first .view-new-trigger').text(Lang.get("messages.view_new_messages", {'count': $('#conv-layout-main .thread-type-new .thread').length }));
+		    	} else {
+		    		$('#conv-layout-main').prepend('<div class="thread thread-type-new">'+data.thread_html+'<a href="" class="view-new-trigger">'+Lang.get("messages.view_new_message")+'</a></div>');
+		    		$('#conv-layout-main .thread-type-new:first .view-new-trigger').click(function(e) {
+		    			var container = $(this).parent();
+		    			$(this).remove();
+		    			$('#conv-layout-main').prepend(container.html());
+		    			container.remove();
+		    			e.preventDefault();
+		    		});
+		    		flashElement($('#conv-layout-main .thread-type-new:first'));
+		    	}
+		    }
+
+		    // Update assignee if needed
+		    if (typeof(data.conversation_user_id) != "undefined" && data.conversation_user_id 
+		    	&& parseInt(data.conversation_user_id) != convGetUserId()
+		    ) {
+		    	$('#conv-assignee .conv-user li.active').removeClass('active');
+		    	var a = $("#conv-assignee .conv-user li a[data-user_id='"+data.conversation_user_id+"']");
+		    	a.parent().addClass('active');
+		    	$('#conv-assignee .conv-info-val span:first').text(a.text());
+		    	flashElement($('#conv-assignee'));
+		    }
+
+		    // Update status if needed
+		    if (typeof(data.conversation_status) != "undefined" && data.conversation_status 
+		    	&& parseInt(data.conversation_status) != convGetStatus()
+		    ) {
+		    	$('#conv-status .conv-status li.active').removeClass('active');
+		    	var a = $("#conv-status .conv-status li a[data-status='"+data.conversation_status+"']");
+		    	a.parent().addClass('active');
+		    	$('#conv-status .conv-info-val span:first').text(a.text());
+		    	// Update class
+		    	if (data.conversation_status_class) {
+					$.each($('#conv-status .btn'), function(index, btn) {
+						var classes = $(btn).attr('class').split(/\s+/); 
+						$.each(classes, function(index, item_class) {
+							if (item_class.indexOf('btn-') != -1 && item_class != 'btn-light') {
+								$(btn).removeClass(item_class);
+							}
+						});   
+					});
+		    	
+		    		$('#conv-status .btn').addClass('btn-'+data.conversation_status_class);
+		    	}
+		    	// Update icon
+		    	if (data.conversation_status_icon) {
+		    		$('#conv-status .btn:first .glyphicon').attr('class', 'glyphicon').addClass('glyphicon-'+data.conversation_status_icon);
+		    	}
+		    	flashElement($('#conv-status'));
+		    }
+	    });
+	}
+
     // at any point you can disconnect
     //poly.disconnect();
 
     // and when you disconnect, you can again at any point reconnect
     //poly.reconnect();
+}
+
+function convGetUserId()
+{
+	return parseInt($('#conv-assignee .conv-user li.active a:first').attr('data-user_id'));
+}
+
+function convGetStatus()
+{
+	return parseInt($('#conv-status .conv-status li.active a:first').attr('data-status'));
+}
+
+function flashElement(el)
+{
+	el.fadeOut(0).fadeIn(2000);
 }
 
 // Show notification in the menu
