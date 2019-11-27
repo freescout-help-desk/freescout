@@ -103,10 +103,20 @@
         });
 
         $('.form-send-translations').on('ajax:success', function (e, data) {
-            $('div.success-send-translations').slideDown();
+            if (typeof(data.error_msg) != "undefined") {
+                $('#error-send-general').hide();
+                $('#error-send-custom').text(data.error_msg).show();
+                $('div.error-send-translations').slideDown();
+                $('div.success-send-translations').slideUp();
+            } else {
+                $('div.success-send-translations').slideDown();
+                $('div.error-send-translations').slideUp();
+            }
         });
 
         $('.form-send-translations').on('ajax:error', function (e, data) {
+            $('#error-send-general').show();
+            $('#error-send-custom').hide();
             $('div.error-send-translations').slideDown();
         });
         

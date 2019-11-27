@@ -18,7 +18,14 @@ class TranslateController extends BaseController
         $this->manager->exportTranslations('*', false);
 
         // Archive langs folder
-        $archive_path = \Helper::createZipArchive(base_path().DIRECTORY_SEPARATOR.'resources/lang', 'lang.zip', 'lang');
+        try {
+            $archive_path = \Helper::createZipArchive(base_path().DIRECTORY_SEPARATOR.'resources/lang', 'lang.zip', 'lang');
+        } catch (\Exception $e) {
+            return [
+                'status'  => 'error',
+                'error_msg' => $e->getMessage(),
+            ];
+        }
 
         if ($archive_path) {
             $attachments[] = $archive_path;
