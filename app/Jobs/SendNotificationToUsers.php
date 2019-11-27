@@ -17,7 +17,7 @@ class SendNotificationToUsers implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     // Max retries + 1
-    public $tries = 6;
+    public $tries = 168; // One per hour
 
     public $users;
 

@@ -17,7 +17,7 @@ class SendReplyToCustomer implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     // Number of retries + 1
-    public $tries = 6;
+    public $tries = 168; // one per hour
 
     public $conversation;
 
