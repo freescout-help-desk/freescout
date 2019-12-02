@@ -422,6 +422,11 @@ a.navbar-brand:hover img {
 /**
  * Forms
  */
+.required-asterisk:before {
+    content: "*";
+    color: #d43f3a;
+    margin-left: -1px;
+}
 label.disabled {
     color: #93a1af;
 }
@@ -3302,6 +3307,33 @@ ul.prev-convs {
 }
 
 /**
+ * Sortable panel
+ */
+.panel-sortable .handle {
+    cursor: move;
+    position: absolute;
+    left: 19px;
+    padding: 6px 10px;
+    color: #a5b2bd;
+}
+.panel-sortable .handle .glyphicon {
+    font-size: 9px;
+    top: -1px;
+}
+.panel.panel-sortable > .panel-heading {
+    margin-left: 35px;
+}
+.panel.panel-sortable {
+    background-color: #fff;
+}
+.sortable-placeholder {
+    border: 1px dashed #c1cbd4;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    height: 41px;
+}
+
+/**
  * Misc
  */
 .banner {
@@ -3613,6 +3645,7 @@ a.help-icon:hover {
 .empty-content p {
     color: #a5b2bd;
     font-size: 16px;
+    padding: 0 5%;
 }
 .multi-item {
     margin-bottom: 5px;
