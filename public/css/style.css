@@ -422,6 +422,9 @@ a.navbar-brand:hover img {
 /**
  * Forms
  */
+select.placeholdered {
+    color: #B4C0D4;
+}
 .required-asterisk:before {
     content: "*";
     color: #d43f3a;

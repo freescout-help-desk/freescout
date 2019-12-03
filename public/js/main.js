@@ -16,6 +16,7 @@ var fs_conv_editor_toolbar = [
 ];
 var fs_in_app_data = {};
 var fs_actions = {};
+var fs_filters = {};
 
 // Ajax based notifications;
 var poly;
@@ -740,7 +741,7 @@ function initConversation()
 		// Change conversation assignee
 	    jQuery(".conv-user li > a").click(function(e){
 			if (!$(this).hasClass('active')) {
-				if (!fsDoAction('conversation.user_change', {trigger: $(this)})) {
+				if (fsApplyFilter('conversation.can_change_user', true, {trigger: $(this)})) {
 					$(this).trigger('fs-conv-user-change');
 				}
 			}
@@ -777,7 +778,7 @@ function initConversation()
 		// Change conversation status
 	    jQuery(".conv-status li > a").click(function(e){
 			if (!$(this).hasClass('active')) {
-				if (!fsDoAction('conversation.status_change', {trigger: $(this)})) {
+				if (fsApplyFilter('conversation.can_change_status', true, {trigger: $(this)})) {
 					$(this).trigger('fs-conv-status-change');
 				}
 			}
@@ -881,6 +882,8 @@ function initConversation()
 				$(this).removeClass('inactive');
 				//$('#body').summernote("code", '');
 				$('#body').summernote('focus');
+
+				maybeScrollToReplyBlock();
 			} /*else {
 				// Hide
 				$(".conv-action-block").addClass('hidden');
@@ -1102,7 +1105,7 @@ function prepareReplyForm()
 	$(".attachments-upload:first :input, .attachments-upload:first li").remove();
 }
 
-function showReplyForm(data)
+function showReplyForm(data, scroll_offset)
 {
 	hideActionBlocks();
 	$(".conv-reply-block").removeClass('hidden')
@@ -1153,6 +1156,11 @@ function showReplyForm(data)
 
 	// Select2 for CC/BCC
 	initRecipientSelector();
+
+	if (typeof(scroll_offset) == "undefined") {
+		scroll_offset = 0;
+	}
+	maybeScrollToReplyBlock(scroll_offset);
 }
 
 // Add an option to select2
@@ -1584,6 +1592,10 @@ function initReplyForm(load_attachments, init_customer_selector)
 	    	// This is extra protection from double click on Send button
 	    	// DOM operation are slow sometimes
 	    	if (fs_processing_send_reply) {
+	    		return;
+	    	}
+
+	    	if (!fsApplyFilter('conversation.can_submit', true)) {
 	    		return;
 	    	}
 	    	fs_processing_send_reply = true;
@@ -3217,7 +3229,7 @@ function editDraft(button)
 			loaderHide();
 			if (typeof(response.status) != "undefined" && response.status == 'success') {
 				//response.data.is_note = '';
-				showReplyForm(response.data);
+				showReplyForm(response.data, -50);
 				if (response.data.is_forward == '1') {
 					showForwardForm(response.data);
 				}
@@ -3225,7 +3237,7 @@ function editDraft(button)
 				$('.thread.thread-type-draft').show();
 				// Hide current draft
 				thread_container.hide();
-				$("html, body").animate({ scrollTop: $('.navbar:first').height() }, "slow");
+				//$("html, body").animate({ scrollTop: $('.navbar:first').height() }, "slow");
 			} else {
 				showAjaxError(response);
 			}
@@ -3989,7 +4001,7 @@ function scrollTo(el, selector, speed, offset)
     if (typeof(offset) == "undefined") {
         offset = 0;
     }
-    if (typeof(speed) == "undefined") {
+    if (typeof(speed) == "undefined" || !speed) {
         speed = 600;
     }
     var eljq = null;
@@ -4147,5 +4159,46 @@ function fsDoAction(action, params)
 		return true;
 	} else {
 		return false;
+	}
+}
+
+function fsAddFilter(filter, callback, priority)
+{
+	if (typeof(priority) == "undefined") {
+		priority = 20;
+	}
+	if (typeof(fs_filters[filter]) == "undefined") {
+		fs_filters[filter] = [];
+	}
+	fs_filters[filter].push({
+		callback: callback,
+		priority: priority
+	});
+}
+
+function fsApplyFilter(filter, value, params)
+{
+	if (typeof(fs_filters[filter]) != "undefined") {
+		if (typeof(params) == "undefined") {
+			params = {};
+		}
+		for (var i in fs_filters[filter]) {
+			value = fs_filters[filter][i].callback(value, params);
+		}
+	}
+	return value;
+}
+
+function maybeScrollToReplyBlock(offset)
+{
+	var reply_block = $('.conv-reply-block:visible:first');
+	var block_top = reply_block.position().top;
+	if (block_top > $(window).height() / 2
+		|| block_top < $(window).scrollTop()
+	) {
+		if (typeof(offset) == "undefined") {
+			offset = -20;
+		}
+		scrollTo(reply_block, '', null, offset);
 	}
 }
