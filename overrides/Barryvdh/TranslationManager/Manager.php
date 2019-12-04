@@ -206,16 +206,26 @@ class Manager
             }
         }
 
+        $existingGroups[] = self::JSON_GROUP;
+
         // Process translations by groups.
         // Get from DB translations for each module and compare to existing.
         foreach ($existingGroups as $group) {
             $dbTranslations = Translation::where('group', $group)->get();
+
             foreach ($dbTranslations as $dbTranslation) {
                 $found = false;
                 foreach ($existingTranslations as $existingKey) {
-                    if ($dbTranslation['group'].'.'.$dbTranslation['key'] == $existingKey) {
-                        $found = true;
-                        break;
+                    if ($group == self::JSON_GROUP) {
+                        if ($dbTranslation['key'] == $existingKey) {
+                            $found = true;
+                            break;
+                        }
+                    } else {
+                        if ($dbTranslation['group'].'.'.$dbTranslation['key'] == $existingKey) {
+                            $found = true;
+                            break;
+                        }
                     }
                 }
                 if (!$found) {
