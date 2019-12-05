@@ -43,7 +43,7 @@ class GenerateVars extends Command
     {
         try {
             $params = [
-                'locales' => config('app.locales'),
+                'locales' => \Helper::getAllLocales(),
             ];
 
             //$filesystem = new Filesystem();

@@ -78,7 +78,7 @@ var LangMessages = {
             "user_replying": "{{ __(":user is replying") }}",
             "view_new_message": "{{ __("View new message") }}",
             "view_new_messages": "{{ __("View new messages (:count)") }}",
-
+            @action('js.lang.messages')
             "update": "{{ __("Update") }}"
         }@if (!$loop->last),@endif
     @endforeach

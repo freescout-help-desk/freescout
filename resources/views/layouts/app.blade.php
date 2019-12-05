@@ -88,31 +88,6 @@
                                     </ul>
                                 </li>
                             @endif
-                            {{--@if (Auth::user()->isAdmin())
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
-                                        {{ __('Docs') }} <span class="caret"></span>
-                                    </a>
-
-                                    <ul class="dropdown-menu">
-                                        <li><a href="#">{{ __('New Site...') }} (todo)</a></li>
-                                    </ul>
-                                </li>
-                            
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
-                                        {{ __('Reports') }} <span class="caret"></span>
-                                    </a>
-
-                                    <ul class="dropdown-menu">
-                                        <li><a href="#">{{ __('Conversations') }} (todo)</a></li>
-                                        <li><a href="#">{{ __('Productivity') }} (todo)</a></li>
-                                        <li><a href="#">{{ __('Team') }} (todo)</a></li>
-                                        <li><a href="#">{{ __('Happiness') }} (todo)</a></li>
-                                        <li><a href="#">{{ __('Docs') }}  (todo)</a></li>
-                                    </ul>
-                                </li>
-                            @endif--}}
                             @if (Auth::user()->isAdmin() || Auth::user()->can('viewMailboxMenu', Auth::user()))
                                 <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('manage') }}">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
@@ -121,16 +96,12 @@
 
                                     <ul class="dropdown-menu">
                                         @if (Auth::user()->isAdmin())
-                                            {{--<li><a href="#">{{ __('Apps') }} (todo)</a></li>--}}
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('settings') }}"><a href="{{ route('settings') }}">{{ __('Settings') }}</a></li>
-                                            {{--<li><a href="#">{{ __('Docs') }} (todo)</a></li>--}}
                                         @endif
                                         @if (Auth::user()->can('viewMailboxMenu', Auth::user()))
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailboxes') }}"><a href="{{ route('mailboxes') }}">{{ __('Mailboxes') }}</a></li>
                                         @endif
-                                        {{--<li class="{{ \App\Misc\Helper::menuSelectedHtml('tags') }}"><a href="#">{{ __('Tags') }} (todo)</a></li>--}}
                                         @if (Auth::user()->isAdmin())
-                                            {{--<li><a href="#">{{ __('Teams') }} (todo)</a></li>--}}
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('users') }}"><a href="{{ route('users') }}">{{ __('Users') }}</a></li>
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('modules') }}"><a href="{{ route('modules') }}">{{ __('Modules') }}</a></li>
                                             <li class=""><a href="{{ asset('translations') }}">{{ __('Translate') }}</a></li>
@@ -146,7 +117,7 @@
                         <ul class="nav navbar-nav navbar-right">
                             <!-- Authentication Links -->
                             @guest
-                                {{-- <li><a href="{{ route('login') }}">{{ __('Login') }}</a></li> --}}&nbsp;
+                                &nbsp;
                             @else
                                 <li class="dropdown web-notifications">
                                     @php

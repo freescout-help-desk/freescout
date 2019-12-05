@@ -32,10 +32,10 @@
     <input type="hidden" name="after_send" id="after_send" value="{{ $after_send }}" class="parsley-exclude"/>
     <div class="btn-group btn-group-send">
     	<button class="hidden"></button>
-        <button type="button" class="btn btn-primary btn-reply-submit btn-send-text" data-loading-text="{{ __('Sending…') }}">@if (empty($new_converstion)){{ __('Send Reply') }}@else{{ __('Send') }}@endif</button>
-        <button type="button" class="btn btn-primary btn-reply-submit btn-send-forward" data-loading-text="{{ __('Sending…') }}">{{ __('Forward') }}</button>
-        <button type="button" class="btn btn-primary btn-reply-submit btn-add-note-text" data-loading-text="{{ __('Saving…') }}">{{ __('Add Note') }}</button>
-        <button type="button" class="btn btn-primary btn-reply-submit btn-create-conv" data-loading-text="{{ __('Creating…') }}">{{ __('Create') }}</button>
+        <button type="button" class="btn btn-primary btn-reply-submit btn-send-text" data-loading-text="{{ __('Sending') }}…">@if (empty($new_converstion)){{ __('Send Reply') }}@else{{ __('Send') }}@endif</button>
+        <button type="button" class="btn btn-primary btn-reply-submit btn-send-forward" data-loading-text="{{ __('Sending') }}…">{{ __('Forward') }}</button>
+        <button type="button" class="btn btn-primary btn-reply-submit btn-add-note-text" data-loading-text="{{ __('Saving') }}…">{{ __('Add Note') }}</button>
+        <button type="button" class="btn btn-primary btn-reply-submit btn-create-conv" data-loading-text="{{ __('Creating') }}…">{{ __('Create') }}</button>
         <button type="button" class="btn btn-primary btn-send-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><small class="glyphicon glyphicon-chevron-down"></small></button>
         <ul class="dropdown-menu dropdown-menu-right dropdown-after-send">
             <li @if ($after_send == App\MailboxUser::AFTER_SEND_STAY) class="active" @endif><a href="javascript:void(0)" data-after-send="{{ App\MailboxUser::AFTER_SEND_STAY }}">{{ __('Send and stay on page') }}</a></li>
@@ -69,7 +69,7 @@
 
                     <div class="form-group">
                         <div class="col-sm-9 col-sm-offset-3">
-                            <button type="submit" class="btn btn-primary" data-loading-text="{{ __('Saving…') }}" onclick="saveAfterSend(this)">
+                            <button type="submit" class="btn btn-primary" data-loading-text="{{ __('Saving') }}…" onclick="saveAfterSend(this)">
                                 {{ __('Save') }}
                             </button>
 
