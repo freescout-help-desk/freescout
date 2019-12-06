@@ -29,22 +29,47 @@ class Controller extends BaseController
             $groups = $groups->all();
         }
         $groups = [''=>'Choose a group'] + $groups;
-        $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
 
-
-        $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
-        $numTranslations = count($allTranslations);
-        $translations = [];
-        foreach($allTranslations as $translation){
-            $translations[$translation->key][$translation->locale] = $translation;
+        $selected_locale = request()->input('locale');
+        if ($selected_locale == 'en') {
+            $selected_locale = '';
+        }
+        if (!$selected_locale) {
+            foreach ($locales as $locale) {
+                if ($locale != 'en') {
+                    $selected_locale = $locale;
+                    break;
+                }
+            }
         }
 
-         return view('translation-manager::index')
+        $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
+
+        $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
+        
+        $translations = [];
+        $numTranslations = 0;
+        $numDone = 0;
+        foreach($allTranslations as $translation){
+            $translations[$translation->key][$translation->locale] = $translation;
+            if ($translation->locale == $selected_locale && $translation->value) {
+                $numDone++;
+            }
+            if ($translation->locale == 'en') {
+                $numTranslations++;
+            }
+        }
+
+        $numTodo = $numTranslations - $numDone;
+
+        return view('translation-manager::index')
             ->with('translations', $translations)
             ->with('locales', $locales)
             ->with('groups', $groups)
             ->with('group', $group)
+            ->with('selected_locale', $selected_locale)
             ->with('numTranslations', $numTranslations)
+            ->with('numTodo', $numTodo)
             ->with('numChanged', $numChanged)
             ->with('editUrl', action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]))
             ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));

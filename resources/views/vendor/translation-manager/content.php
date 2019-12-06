@@ -4,21 +4,6 @@
     }
 </style>
 
-<?php
-    $selected_locale = request()->input('locale');
-    if ($selected_locale == 'en') {
-        $selected_locale = '';
-    }
-    if (!$selected_locale) {
-        foreach ($locales as $locale) {
-            if ($locale != 'en') {
-                $selected_locale = $locale;
-                break;
-            }
-        }
-    }
-?>
-
 <div class="container">
 
 <div class="container-fluid">
@@ -132,7 +117,7 @@
                     </div>
                 </form>
                 <hr>*/ ?>
-                <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
+                <h4>Total: <?= $numTranslations ?>, untranslated: <?= $numTodo ?>, changed: <?= $numChanged ?></h4>
                 <table class="table">
                     <thead>
                     <tr>
