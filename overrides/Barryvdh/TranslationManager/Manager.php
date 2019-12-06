@@ -248,12 +248,30 @@ class Manager
         }
 
         $value = (string) $value;
-        $translation = Translation::firstOrNew([
-            'locale' => $locale,
-            'group'  => $group,
-            'key'    => $key,
-        ]);
-
+        // $translation = Translation::firstOrNew([
+        //     'locale' => $locale,
+        //     'group'  => $group,
+        //     'key'    => $key,
+        // ]);
+        try {
+            $translation = Translation::where('locale', $locale)
+                ->where('group', $group)
+                ->where(\DB::raw('BINARY `key`'), $key)
+                ->first();
+            if (!$translation) {
+                $translation = new Translation();
+                $translation->locale = $locale;
+                $translation->group  = $group;
+                $translation->key    = $key;
+            }
+        } catch (\Exception $e) {
+            $translation = Translation::firstOrNew([
+                'locale' => $locale,
+                'group' => $group,
+                'key' => $key,
+            ]);
+        }
+        
         // Check if the database is different then the files
         $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
         if ($newStatus !== (int) $translation->status) {
