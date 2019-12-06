@@ -43,7 +43,10 @@ class Controller extends BaseController
             }
         }
 
-        $numChanged = Translation::where('group', $group)->where('status', Translation::STATUS_CHANGED)->count();
+        $numChanged = Translation::where('group', $group)
+            ->where('status', Translation::STATUS_CHANGED)
+            ->where('locale', $selected_locale)
+            ->count();
 
         $allTranslations = Translation::where('group', $group)->orderBy('key', 'asc')->get();
         
