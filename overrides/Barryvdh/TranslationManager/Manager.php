@@ -109,7 +109,7 @@ class Manager
             }
             $locale = basename($jsonTranslationFile, '.json');
             // Ignore module translations backup files.
-            if (!preg_match('/^[a-zA-Z_]+$/', $locale)) {
+            if (!preg_match('/^[a-zA-Z_\-]+$/', $locale)) {
                 continue;
             }
 
@@ -119,7 +119,6 @@ class Manager
             $translations = \Lang::getLoader()->load($locale, '*', '*');
 
             //$translations = $loader->load( $locale, '*', '*' );
-
             if ($translations && is_array($translations)) {
                 foreach ($translations as $key => $value) {
                     $importedTranslation = $this->importTranslation($key, $value, $locale, $group, $replace);
@@ -244,7 +243,7 @@ class Manager
         }
 
         // Miss modules translations: fr.module.json
-        if (!preg_match('/^[a-zA-Z_]+$/', $locale)) {
+        if (!preg_match('/^[a-zA-Z_\-]+$/', $locale)) {
             return false;
         }
 
