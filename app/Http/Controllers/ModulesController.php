@@ -275,7 +275,7 @@ class ModulesController extends Controller
                                 case 'inactive':
                                     $response['msg'] = __('License key has not been activated yet');
                                 case 'site_inactive':
-                                    $response['msg'] = __('This app has not been activated yet');
+                                    $response['msg'] = __('Your domain is deactivated');
                                     break;
                             }
                         }

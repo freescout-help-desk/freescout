@@ -378,14 +378,14 @@ class Conversation extends Model
     public function getDateTitle()
     {
         if ($this->threads_count == 1) {
-            $title = __('Created by :person', ['person' => ucfirst(__(self::$persons[$this->source_via]))]);
+            $title = __('Created by :person', ['person' => __(ucfirst(self::$persons[$this->source_via]))]);
             $title .= '<br/>'.User::dateFormat($this->created_at, 'M j, Y H:i');
         } else {
             $person = '';
             if (!empty(self::$persons[$this->last_reply_from])) {
-                $person = __(self::$persons[$this->last_reply_from]);
+                $person = __(ucfirst(self::$persons[$this->last_reply_from]));
             }
-            $title = __('Last reply by :person', ['person' => ucfirst($person)]);
+            $title = __('Last reply by :person', ['person' => $person]);
             $last_reply_at = $this->created_at;
             if ($this->last_reply_at) {
                 $last_reply_at = $this->last_reply_at;

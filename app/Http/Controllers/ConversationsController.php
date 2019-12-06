@@ -1713,7 +1713,7 @@ class ConversationsController extends Controller
                     $conversation->moveToMailbox($mailbox, $user);
 
                     $response['status'] = 'success';
-                    \Session::flash('flash_success_floating', __('Conversation Moved'));
+                    \Session::flash('flash_success_floating', __('Conversation moved'));
                 }
 
                 break;
