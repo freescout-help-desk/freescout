@@ -384,27 +384,28 @@ class Manager
 
         // Return the number of found translations
         //return count( $groupKeys + $stringKeys );
-        return $groupKeys + $stringKeys;
+        //return $groupKeys + $stringKeys;
+        return array_merge($groupKeys, $stringKeys);
     }
 
     public function missingKey($namespace, $group, $key)
     {
         if (!in_array($group, $this->config['exclude_groups'])) {
             try {
-                $translation = Translation::where('locale', $this->app['config']['app.locale'])
+                $translation = Translation::where('locale', \Helper::getRealAppLocale())
                     ->where('group', $group)
                     ->where(\DB::raw('BINARY `key`'), $key)
                     ->first();
                 if (!$translation) {
                     $translation = new Translation();
-                    $translation->locale = $this->app['config']['app.locale'];
+                    $translation->locale = \Helper::getRealAppLocale();
                     $translation->group  = $group;
                     $translation->key    = $key;
                     $translation->save();
                 }
             } catch (\Exception $e) {
                 Translation::firstOrCreate([
-                    'locale' => $this->app['config']['app.locale'],
+                    'locale' => \Helper::getRealAppLocale(),
                     'group'  => $group,
                     'key'    => $key,
                 ]);
@@ -572,7 +573,7 @@ class Manager
     public function getLocales()
     {
         if (empty($this->locales)) {
-            $locales = array_merge([config('app.locale')],
+            $locales = array_merge([\Helper::getRealAppLocale()],
                 Translation::groupBy('locale')->pluck('locale')->toArray());
             foreach ($this->files->directories($this->app->langPath()) as $localeDir) {
                 if (($name = $this->files->name($localeDir)) != 'vendor') {

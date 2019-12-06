@@ -66,7 +66,7 @@ class Controller extends BaseController
         if ($locales instanceof Collection) {
             $locales = $locales->all();
         }
-        $locales = array_merge([config('app.locale')], $locales);
+        $locales = array_merge([\Helper::getRealAppLocale()], $locales);
         return array_unique($locales);
     }
 
