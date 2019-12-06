@@ -369,11 +369,7 @@ class Manager
                         // Modules
                         //if ($searchInModules) {
                         if ($moduleAlias) {
-                            //if ($moduleAlias) {
                             $groupKeys[] = '_'.$moduleAlias.'.'.$key;
-                        // } else {
-                            //     continue;
-                            // }
                         } else {
                             $stringKeys[] = $key;
                         }
@@ -381,6 +377,15 @@ class Manager
                 }
             }
         }
+
+        // Remove modules strings existing among the app strings.
+        foreach ($groupKeys as $i => $groupKey) {
+
+            if (in_array(preg_replace("/^[^\.]+\./", '', $groupKey), $stringKeys)) {
+                unset($groupKeys[$i]);
+            }
+        }
+
         // Remove duplicates
         $groupKeys = array_unique($groupKeys);
         $stringKeys = array_unique($stringKeys);
