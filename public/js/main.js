@@ -1845,6 +1845,10 @@ function triggerModal(a, params)
 
     modal.modal();
 
+    modal.on('hidden.bs.modal', function () {
+	    $(this).remove();
+	});
+
     if (body) {
     	var body_html = $(body).html();
     	if (!body_html) {
