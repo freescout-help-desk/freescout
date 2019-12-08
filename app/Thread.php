@@ -551,7 +551,7 @@ class Thread extends Model
     /**
      * Get action text.
      */
-    public function getActionText($conversation_number = '', $escape = false, $strip_tags = false, $by_user = null)
+    public function getActionText($conversation_number = '', $escape = false, $strip_tags = false, $by_user = null, $person = '')
     {
         $did_this = '';
 
@@ -560,9 +560,9 @@ class Thread extends Model
 
             if ($this->action_type == self::ACTION_TYPE_STATUS_CHANGED) {
                 if ($conversation_number) {
-                    $did_this = __('marked as :status_name conversation #:conversation_number', ['status_name' => $this->getStatusName(), 'conversation_number' => $conversation_number]);
+                    $did_this = __(':person marked as :status_name conversation #:conversation_number', ['status_name' => $this->getStatusName(), 'conversation_number' => $conversation_number]);
                 } else {
-                    $did_this = __("marked as :status_name", ['status_name' => $this->getStatusName()]);
+                    $did_this = __(":person marked as :status_name", ['status_name' => $this->getStatusName()]);
                 }
             } elseif ($this->action_type == self::ACTION_TYPE_USER_CHANGED) {
                 $assignee = $this->getAssigneeName(false, $by_user);
@@ -570,42 +570,42 @@ class Thread extends Model
                     $assignee = htmlspecialchars($assignee);
                 }
                 if ($conversation_number) {
-                    $did_this = __('assigned :assignee convsersation #:conversation_number', ['assignee' => $assignee, 'conversation_number' => $conversation_number]);
+                    $did_this = __(':person assigned :assignee convsersation #:conversation_number', ['assignee' => $assignee, 'conversation_number' => $conversation_number]);
                 } else {
-                    $did_this = __("assigned to :assignee", ['assignee' => $assignee]);
+                    $did_this = __(":person assigned to :assignee", ['assignee' => $assignee]);
                 }
             } elseif ($this->action_type == self::ACTION_TYPE_CUSTOMER_CHANGED) {
                 if ($conversation_number) {
-                    $did_this = __('changed the customer to :customer in conversation #:conversation_number', ['customer' => $this->customer->getFullName(true), 'conversation_number' => $conversation_number]);
+                    $did_this = __(':person changed the customer to :customer in conversation #:conversation_number', ['customer' => $this->customer->getFullName(true), 'conversation_number' => $conversation_number]);
                 } else {
                     $customer_name = $this->customer_cached->getFullName(true);
                     if ($escape) {
                         $customer_name = htmlspecialchars($customer_name);
                     }
-                    $did_this = __("changed the customer to :customer", ['customer' => '<a href="'.$this->customer_cached->url().'" title="'.$this->action_data.'" class="link-black">'.$customer_name.'</a>']);
+                    $did_this = __(":person changed the customer to :customer", ['customer' => '<a href="'.$this->customer_cached->url().'" title="'.$this->action_data.'" class="link-black">'.$customer_name.'</a>']);
                 }
             } elseif ($this->action_type == self::ACTION_TYPE_DELETED_TICKET) {
-                $did_this = __("deleted");
+                $did_this = __(":person deleted");
             } elseif ($this->action_type == self::ACTION_TYPE_RESTORE_TICKET) {
-                $did_this = __("restored");
+                $did_this = __(":person restored");
             } elseif ($this->action_type == self::ACTION_TYPE_MOVED_FROM_MAILBOX) {
-                $did_this = __("moved conversation from another mailbox");
+                $did_this = __(":person moved conversation from another mailbox");
             }
         } elseif ($this->state == self::STATE_DRAFT) {
             if (empty($this->edited_by_user_id)) {
-                $did_this = __('created a draft');
+                $did_this = __(':person created a draft');
             } else {
-                $did_this = __("edited :creator's draft", ['creator' => $this->created_by_user_cached->getFirstName()]);
+                $did_this = __(":person edited :creator's draft", ['creator' => $this->created_by_user_cached->getFirstName()]);
             }
         } else {
             if ($this->isForwarded()) {
-                $did_this = __('forwarded a conversation #:forward_parent_conversation_number', ['forward_parent_conversation_number' => $this->getMeta('forward_parent_conversation_number')]);
+                $did_this = __(':person forwarded a conversation #:forward_parent_conversation_number', ['forward_parent_conversation_number' => $this->getMeta('forward_parent_conversation_number')]);
             } elseif ($this->first) {
-                $did_this = __('started a new conversation #:conversation_number', ['conversation_number' => $conversation_number]);
+                $did_this = __(':person started a new conversation #:conversation_number', ['conversation_number' => $conversation_number]);
             } elseif ($this->type == self::TYPE_NOTE) {
-                $did_this = __('added a note to conversation #:conversation_number', ['conversation_number' => $conversation_number]);
+                $did_this = __(':person added a note to conversation #:conversation_number', ['conversation_number' => $conversation_number]);
             } else {
-                $did_this = __('replied to conversation #:conversation_number', ['conversation_number' => $conversation_number]);
+                $did_this = __(':person replied to conversation #:conversation_number', ['conversation_number' => $conversation_number]);
             }
         }
 
@@ -613,6 +613,13 @@ class Thread extends Model
 
         if ($strip_tags) {
             $did_this = strip_tags($did_this);
+        }
+
+        if ($person) {
+            if ($escape) {
+                $person = htmlspecialchars($person);
+            }
+            $did_this = str_replace(':person', $person, $did_this);
         }
 
         return $did_this;
@@ -627,15 +634,13 @@ class Thread extends Model
         $person = $this->getActionPerson($conversation_number);
         $did_this = $this->getActionText($conversation_number);
 
-        $description = ':person_tag_start:person:person_tag_end :did_this';
         if ($escape) {
-            $description = htmlspecialchars($description);
+            $person = htmlspecialchars($person);
+            $did_this = htmlspecialchars($did_this);
         }
 
-        return __($description, [
-            'person'           => $person,
-            'person_tag_start' => '<strong>',
-            'person_tag_end'   => '</strong>',
+        return __($did_this, [
+            'person'           => '<strong>'.$person.'</strong>',
             'did_this'         => $did_this,
         ]);
     }

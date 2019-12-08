@@ -74,24 +74,6 @@
         </div>
     </div>
 
-    <div class="form-group{{ $errors->has('settings[enrich_customer_data]') ? ' has-error' : '' }}" style="display:none">
-        <label for="enrich_customer_data" class="col-sm-2 control-label">{{ __('Enrich Customer Data') }} (todo)</label>
-
-        <div class="col-sm-6">
-            <div class="controls">
-                <div class="onoffswitch-wrap">
-                    <div class="onoffswitch">
-                        <input type="checkbox" name="settings[enrich_customer_data]" value="1" id="enrich_customer_data" class="onoffswitch-checkbox" @if (old('settings[enrich_customer_data]', $settings['enrich_customer_data']))checked="checked"@endif >
-                        <label class="onoffswitch-label" for="enrich_customer_data"></label>
-                    </div>
-
-                    <i class="glyphicon glyphicon-info-sign icon-info icon-info-inline" data-toggle="popover" data-trigger="hover" data-content="{{ __('Auto-update your customers profile with avatars, social, and location data.') }}"></i>
-                </div>
-            </div>
-            @include('partials/field_error', ['field'=>'settings.enrich_customer_data'])
-        </div>
-    </div>
-
     <div class="form-group{{ $errors->has('settings[locale]') ? ' has-error' : '' }}">
         <label for="locale" class="col-sm-2 control-label">{{ __('Default Language') }}</label>
 
@@ -99,10 +81,6 @@
             <select id="locale" class="form-control input-sized" name="settings[locale]" required autofocus>
                 @include('partials/locale_options', ['selected' => old('settings[locale]', $settings['locale'])])
             </select>
-
-            {{--<div class="help-block">
-                {{ __('Value is set in .env file using APP_TIMEZONE parameter.') }}
-            </div>--}}
 
             @include('partials/field_error', ['field'=>'settings.timezone'])
         </div>
@@ -115,10 +93,6 @@
             <select id="timezone" class="form-control input-sized" name="settings[timezone]" required autofocus>
                 @include('partials/timezone_options', ['current_timezone' => old('settings[timezone]', \Config::get('app.timezone'))])
             </select>
-
-            {{--<div class="help-block">
-                {{ __('Value is set in .env file using APP_TIMEZONE parameter.') }}
-            </div>--}}
 
             @include('partials/field_error', ['field'=>'settings.timezone'])
         </div>

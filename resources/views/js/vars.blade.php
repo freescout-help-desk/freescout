@@ -22,6 +22,9 @@ var Vars = {
 --}}
 var LangMessages = {
     @foreach ($locales as $locale)
+        @php
+            app()->setLocale($locale);
+        @endphp
         "{{ $locale }}.messages": {
             {{-- Add here strings which you need to be translated in JS--}}
             "ajax_error": "{{ __("Error occured. Please check your internet connection and try again.") }}",
@@ -75,12 +78,14 @@ var LangMessages = {
             "user_replying": "{{ __(":user is replying") }}",
             "view_new_message": "{{ __("View new message") }}",
             "view_new_messages": "{{ __("View new messages (:count)") }}",
-
+            @action('js.lang.messages')
             "update": "{{ __("Update") }}"
         }@if (!$loop->last),@endif
     @endforeach
 };
-
+@php
+    app()->setLocale(\Helper::getRealAppLocale());
+@endphp
 (function () {
     Lang = new Lang();
     Lang.setMessages(LangMessages);

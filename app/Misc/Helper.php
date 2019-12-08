@@ -889,6 +889,26 @@ class Helper
     }
 
     /**
+     * Get built in and custom locales.
+     *
+     * @return [type] [description]
+     */
+    public static function getAllLocales()
+    {
+        $app_locales = config('app.locales');
+
+        // User may add an extra translation to the app on Translate page,
+        // we should allow user to see his custom translations.
+        $custom_locales = \Helper::getCustomLocales();
+
+        if (count($custom_locales)) {
+            $app_locales = array_unique(array_merge($app_locales, $custom_locales));
+        }
+
+        return $app_locales;
+    }
+
+    /**
      *  app()->setLocale() in Localize middleware also changes config('app.locale'),
      *  so we are keeping real app locale in real_locale parameter.
      */

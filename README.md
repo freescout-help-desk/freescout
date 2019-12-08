@@ -31,7 +31,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
 
   * No limitations on the number of users, tickets, etc.
   * 100% Mobile-friendly.
-  * Multilingual (English, French, Italian, Portuguese).
+  * Multilingual (English, French, Italian, Portuguese, Russian, Dutch).
   * Seamless email integration.
   * Web installer & updater.
   * Starred conversations.

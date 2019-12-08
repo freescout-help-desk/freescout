@@ -3,8 +3,7 @@
         <div class="thread-message">
             <div class="thread-header">
                 <div class="thread-title">
-                    @include('conversations/thread_by')
-                    {!! $thread->getActionText('', true) !!}
+                    {!! $thread->getActionText('', true, false, null, view('conversations/thread_by', ['thread' => $thread])->render()) !!}
                 </div>
                 <div class="thread-info">
                     <a href="#thread-{{ $thread->id }}" class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</a>
@@ -85,10 +84,7 @@
                             @endif
                         </strong>
                         {{-- Lines below must be spaceless --}}
-                            {{--@if ($loop->last)
-                            {{ __("started the conversation") }}@elseif ($thread->type == App\Thread::TYPE_NOTE)
-                            {{ __("added a note") }}@else
-                            {{ __("replied") }}@endif--}}{{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
+                            {{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
                     </div>
                     @if ($thread->type != App\Thread::TYPE_NOTE || $thread->isForward())
                         <div class="thread-recipients">
@@ -290,42 +286,7 @@
                     <li><a href="{{ route('conversations.ajax_html', ['action' =>
                         'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message") }}" data-trigger="modal" data-modal-title="{{ __("Original Message") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
                 @endif
-                {{--@if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
-                    <li class="divider"></li>
-                    <li>
-                        <span>
-                        @if ($loop->last || $thread->status != App\Thread::STATUS_NOCHANGE)
-                            @php
-                                $show_status = true;
-                            @endphp
-                        @endif
-                        @if ($loop->last || (!$loop->last && ($thread->user_id != $threads[$loop->index+1]->user_id || $threads[$loop->index+1]->action_type == App\Thread::ACTION_TYPE_USER_CHANGED))
-                        )
-                            @if ($thread->user_id)
-                                @if ($thread->user_cached)
-                                    {{ __("Assigned:") }} <strong>{{ $thread->user_cached->getFullName() }}</strong>@if (!empty($show_status))<br/>@endif
-                                @endif
-                            @else
-                                {{ __("Assigned:") }} <strong>{{ __("Anyone") }}</strong>@if (!empty($show_status))<br/>@endif
-                            @endif
-                        @endif
-                        @if (!empty($show_status))
-                            {{ __("Status:") }} <strong>{{ $thread->getStatusName() }}</strong>
-                        @endif
-                        </span>
-                    </li>
-                @endif--}}
             </ul>
         </div>
-        {{--@if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE]))
-            @php
-                if (!empty($thread_num)) {
-                    $thread_num--;
-                } else {
-                    $thread_num = $conversation->threads_count;
-                }
-            @endphp
-            <div class="thread-type"><i class="glyphicon glyphicon-share-alt"></i> {{ $thread_num }}</div>
-        @endif--}}
     </div>
 @endif

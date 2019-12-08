@@ -12,7 +12,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.3.12',
+    'version' => '1.3.13',
 
     /*
     |--------------------------------------------------------------------------
@@ -92,7 +92,7 @@ return [
     */
 
     'locale'          => env('APP_LOCALE', 'en'),
-    'locales'         => ['en', 'fr', 'it', 'pt-PT', 'pt-BR'],
+    'locales'         => ['en', 'fr', 'it', 'pt-PT', 'pt-BR', 'ru', 'nl'],
     'default_locale'  => 'en',
 
     /*

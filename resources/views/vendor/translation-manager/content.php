@@ -4,21 +4,6 @@
     }
 </style>
 
-<?php
-    $selected_locale = request()->input('locale');
-    if ($selected_locale == 'en') {
-        $selected_locale = '';
-    }
-    if (!$selected_locale) {
-        foreach ($locales as $locale) {
-            if ($locale != 'en') {
-                $selected_locale = $locale;
-                break;
-            }
-        }
-    }
-?>
-
 <div class="container">
 
 <div class="container-fluid">
@@ -132,7 +117,7 @@
                     </div>
                 </form>
                 <hr>*/ ?>
-                <h4>Total: <?= $numTranslations ?>, changed: <?= $numChanged ?></h4>
+                <h4>Total: <?= $numTranslations ?>, untranslated: <?= $numTodo ?>, changed: <?= $numChanged ?></h4>
                 <table class="table">
                     <thead>
                     <tr>
@@ -234,7 +219,7 @@
                         Translations are not visible in the application until they are published.
                     </p>
                     <p class="block-help margin-bottom">
-                        If you want your translations to be added to the application release, you can send translations to the <?php echo \Config::get('app.name') ?> team.
+                        If you want your translations to be added to the application release, you can send translations to the <?php echo \Config::get('app.name') ?> Team.
                     </p>
                     <div class="alert alert-success success-publish-all" style="display:none;">
                         <p>Translations published!</p>
@@ -243,7 +228,14 @@
                         <p>Translations sent!</p>
                     </div>
                     <div class="alert alert-danger error-send-translations" style="display:none;">
-                        <p>Error occured sending translations. <a href="<?php echo route('system') ?>#php" target="_blank">Make sure</a> that you have PHP Zip extension enabled and check your <a href="<?php echo route('settings', ['section' => 'emails']) ?>" target="_blank">mail settings</a>.</p>
+                        <p id="error-send-general">Error occured sending translations. <a href="<?php echo route('system') ?>#php" target="_blank">Make sure</a> that you have PHP Zip extension enabled and check your <a href="<?php echo route('settings', ['section' => 'emails']) ?>" target="_blank">mail settings</a>.
+                        </p>
+                        <p id="error-send-custom">
+                        </p>
+                        <p>
+                            Alternatively you can manually archive <strong>/resources/lang</strong> folder and send  to <a href="mailto:<?php echo \Config::get('app.freescout_email') ?>"><?php echo \Config::get('app.freescout_email') ?></a>
+
+                        </p>
                     </div>
                     <div class="alert alert-success success-remove-unpublished" style="display:none;">
                         <p>Non-published translations removed!</p>

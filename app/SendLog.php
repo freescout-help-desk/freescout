@@ -167,7 +167,7 @@ class SendLog extends Model
             case self::MAIL_TYPE_PASSWORD_CHANGED:
                 return __('Password changed notification');
             case self::MAIL_TYPE_WRONG_USER_EMAIL_MESSAGE:
-                return __('User using wrong email notification');
+                return __('User replied from wrong email address');
             case self::MAIL_TYPE_TEST:
                 return __('Test email');
             case self::MAIL_TYPE_ALERT:

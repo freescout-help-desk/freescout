@@ -123,8 +123,7 @@
 													<tr>
 														<td valign="top">
 															<div style="disdivlay:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;">
-																@include('emails/user/thread_by')  
-																{!! $thread->getActionText('', true, false, $user) !!}
+																{!! $thread->getActionText('', true, false, $user, view('emails/user/thread_by', ['thread' => $thread, 'user' => $user])->render()) !!}
 															</div>
 														</td>
 														<td valign="top">
@@ -181,11 +180,6 @@
 																@endif
 															</h3>
 
-															{{--@if ($thread->type != App\Thread::TYPE_NOTE)
-																<p style="display:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; font-size:11.5px; line-height:18px; margin:0;">
-															    	@if ($thread->user_id){{ __('Assigned:') }} {{ $thread->getAssigneeName(true, $user) }} &nbsp;&nbsp;&nbsp; @endif{{ __('Status:') }} {{ $thread->getStatusName() }}<br>
-															    </p>
-															@endif--}}
 									                    </td>
 									                    <td valign="top">
 									                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; font-size:12px; line-height:18px; margin:0;" align="right">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>

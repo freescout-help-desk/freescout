@@ -118,6 +118,7 @@
             "vendor/nwidart/laravel-modules/src/Json.php",
             "vendor/codedge/laravel-selfupdater/src/SourceRepositoryTypes/GithubRepositoryType.php",
             "vendor/barryvdh/laravel-translation-manager/src/Manager.php",
+            "vendor/barryvdh/laravel-translation-manager/src/Controller.php",
             "vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php",
             "vendor/laravel/framework/src/Illuminate/Routing/UrlGenerator.php",
             "vendor/laravel/framework/src/Illuminate/Validation/Concerns/ValidatesAttributes.php",

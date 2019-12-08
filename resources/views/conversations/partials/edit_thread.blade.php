@@ -3,7 +3,7 @@
 
     <div class="thread-editor-statusbar">
         <a href="#" class="btn btn-link link-grey" onclick="cancelThreadEdit(this);return false;">{{ __('Cancel') }}</a> 
-        <button type="submit" class="btn btn-primary" data-loading-text="{{ __('Saving…') }}" onclick="saveThreadEdit(this)">
+        <button type="submit" class="btn btn-primary" data-loading-text="{{ __('Saving') }}…" onclick="saveThreadEdit(this)">
             {{ __('Save') }}
         </button>
     </div>

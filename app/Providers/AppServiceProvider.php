@@ -59,11 +59,8 @@ class AppServiceProvider extends ServiceProvider
                 // During module activation in case of any error we have to deactivate module.
                 \App\Module::deactiveModule($module->getAlias());
 
-                // if (\App::runningInConsole()) {
-                //     echo __('The plugin :module_name has been deactivated due to an error: :error_message', ['module_name' => $module->getName(), 'error_message' => $exception->getMessage()]);
-                // } else {
                 \Session::flash('flashes_floating', [[
-                    'text' => __('The plugin :module_name has been deactivated due to an error: :error_message', ['module_name' => $module->getName(), 'error_message' => $exception->getMessage()]),
+                    'text' => __('The :module_name module has been deactivated due to an error: :error_message', ['module_name' => $module->getName(), 'error_message' => $exception->getMessage()]),
                     'type' => 'danger',
                     'role' => \App\User::ROLE_ADMIN,
                 ]]);
@@ -76,7 +73,7 @@ class AppServiceProvider extends ServiceProvider
                     \App\Module::deactiveModule($module->getAlias());
 
                     \Session::flash('flashes_floating', [[
-                        'text' => __('The plugin :module_name has been deactivated due to an error: :error_message', ['module_name' => $module->getName(), 'error_message' => $exception->getMessage()]),
+                        'text' => __('The :module_name module has been deactivated due to an error: :error_message', ['module_name' => $module->getName(), 'error_message' => $exception->getMessage()]),
                         'type' => 'danger',
                         'role' => \App\User::ROLE_ADMIN,
                     ]]);

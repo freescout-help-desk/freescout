@@ -109,7 +109,7 @@ class Manager
             }
             $locale = basename($jsonTranslationFile, '.json');
             // Ignore module translations backup files.
-            if (!preg_match('/^[a-zA-Z_]+$/', $locale)) {
+            if (!preg_match('/^[a-zA-Z_\-]+$/', $locale)) {
                 continue;
             }
 
@@ -119,7 +119,6 @@ class Manager
             $translations = \Lang::getLoader()->load($locale, '*', '*');
 
             //$translations = $loader->load( $locale, '*', '*' );
-
             if ($translations && is_array($translations)) {
                 foreach ($translations as $key => $value) {
                     $importedTranslation = $this->importTranslation($key, $value, $locale, $group, $replace);
@@ -206,16 +205,26 @@ class Manager
             }
         }
 
+        $existingGroups[] = self::JSON_GROUP;
+
         // Process translations by groups.
         // Get from DB translations for each module and compare to existing.
         foreach ($existingGroups as $group) {
             $dbTranslations = Translation::where('group', $group)->get();
+
             foreach ($dbTranslations as $dbTranslation) {
                 $found = false;
                 foreach ($existingTranslations as $existingKey) {
-                    if ($dbTranslation['group'].'.'.$dbTranslation['key'] == $existingKey) {
-                        $found = true;
-                        break;
+                    if ($group == self::JSON_GROUP) {
+                        if ($dbTranslation['key'] == $existingKey) {
+                            $found = true;
+                            break;
+                        }
+                    } else {
+                        if ($dbTranslation['group'].'.'.$dbTranslation['key'] == $existingKey) {
+                            $found = true;
+                            break;
+                        }
                     }
                 }
                 if (!$found) {
@@ -234,17 +243,35 @@ class Manager
         }
 
         // Miss modules translations: fr.module.json
-        if (!preg_match('/^[a-zA-Z_]+$/', $locale)) {
+        if (!preg_match('/^[a-zA-Z_\-]+$/', $locale)) {
             return false;
         }
 
         $value = (string) $value;
-        $translation = Translation::firstOrNew([
-            'locale' => $locale,
-            'group'  => $group,
-            'key'    => $key,
-        ]);
-
+        // $translation = Translation::firstOrNew([
+        //     'locale' => $locale,
+        //     'group'  => $group,
+        //     'key'    => $key,
+        // ]);
+        try {
+            $translation = Translation::where('locale', $locale)
+                ->where('group', $group)
+                ->where(\DB::raw('BINARY `key`'), $key)
+                ->first();
+            if (!$translation) {
+                $translation = new Translation();
+                $translation->locale = $locale;
+                $translation->group  = $group;
+                $translation->key    = $key;
+            }
+        } catch (\Exception $e) {
+            $translation = Translation::firstOrNew([
+                'locale' => $locale,
+                'group' => $group,
+                'key' => $key,
+            ]);
+        }
+        
         // Check if the database is different then the files
         $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
         if ($newStatus !== (int) $translation->status) {
@@ -342,11 +369,7 @@ class Manager
                         // Modules
                         //if ($searchInModules) {
                         if ($moduleAlias) {
-                            //if ($moduleAlias) {
                             $groupKeys[] = '_'.$moduleAlias.'.'.$key;
-                        // } else {
-                            //     continue;
-                            // }
                         } else {
                             $stringKeys[] = $key;
                         }
@@ -354,6 +377,15 @@ class Manager
                 }
             }
         }
+
+        // Remove modules strings existing among the app strings.
+        foreach ($groupKeys as $i => $groupKey) {
+
+            if (in_array(preg_replace("/^[^\.]+\./", '', $groupKey), $stringKeys)) {
+                unset($groupKeys[$i]);
+            }
+        }
+
         // Remove duplicates
         $groupKeys = array_unique($groupKeys);
         $stringKeys = array_unique($stringKeys);
@@ -374,17 +406,32 @@ class Manager
 
         // Return the number of found translations
         //return count( $groupKeys + $stringKeys );
-        return $groupKeys + $stringKeys;
+        //return $groupKeys + $stringKeys;
+        return array_merge($groupKeys, $stringKeys);
     }
 
     public function missingKey($namespace, $group, $key)
     {
         if (!in_array($group, $this->config['exclude_groups'])) {
-            Translation::firstOrCreate([
-                'locale' => $this->app['config']['app.locale'],
-                'group'  => $group,
-                'key'    => $key,
-            ]);
+            try {
+                $translation = Translation::where('locale', \Helper::getRealAppLocale())
+                    ->where('group', $group)
+                    ->where(\DB::raw('BINARY `key`'), $key)
+                    ->first();
+                if (!$translation) {
+                    $translation = new Translation();
+                    $translation->locale = \Helper::getRealAppLocale();
+                    $translation->group  = $group;
+                    $translation->key    = $key;
+                    $translation->save();
+                }
+            } catch (\Exception $e) {
+                Translation::firstOrCreate([
+                    'locale' => \Helper::getRealAppLocale(),
+                    'group'  => $group,
+                    'key'    => $key,
+                ]);
+            }
         }
     }
 
@@ -548,7 +595,7 @@ class Manager
     public function getLocales()
     {
         if (empty($this->locales)) {
-            $locales = array_merge([config('app.locale')],
+            $locales = array_merge([\Helper::getRealAppLocale()],
                 Translation::groupBy('locale')->pluck('locale')->toArray());
             foreach ($this->files->directories($this->app->langPath()) as $localeDir) {
                 if (($name = $this->files->name($localeDir)) != 'vendor') {
