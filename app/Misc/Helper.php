@@ -708,8 +708,10 @@ class Helper
     public static function downloadRemoteFile($url, $destinationFilePath)
     {
         $client = new \GuzzleHttp\Client();
+        
         $client->request('GET', $url, [
             'sink' => $destinationFilePath,
+            'connect_timeout' => 7,
         ]);
     }
 

@@ -624,11 +624,17 @@ class Message
                 $content = $this->decodeString($content, $structure->encoding);
                 $content = $this->convertEncoding($content, $encoding);
 
-                $body = new \stdClass();
-                $body->type = 'html';
-                $body->content = $content;
+                // FreeScout #381
+                // Some messages (for exaple Apple Mail) may have multiple HTML parts.
+                if (empty($this->bodies['html'])) {
+                    $body = new \stdClass();
+                    $body->type = 'html';
+                    $body->content = $content;
 
-                $this->bodies['html'] = $body;
+                    $this->bodies['html'] = $body;
+                } else {
+                    $this->bodies['html']->content .= $content;
+                }
             } else {
                 // PLAIN.
                 if (!$partNumber) {
