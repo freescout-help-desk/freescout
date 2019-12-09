@@ -55,6 +55,8 @@ class Email extends Model
         }
         $email = filter_var($email, FILTER_SANITIZE_EMAIL);
         $email = mb_strtolower($email, 'UTF-8');
+        // Remove trailing dots.
+        $email = preg_replace("/\.+$/", '', $email);
 
         return $email;
     }
