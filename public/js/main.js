@@ -2070,7 +2070,8 @@ function changeCustomerInit()
 				data: function (params) {
 					return {
 						q: params.term,
-						exclude_email: input.attr('data-customer_email')
+						exclude_email: input.attr('data-customer_email'),
+						search_by: 'all'
 						//use_id: true
 					};
 				}
@@ -2105,31 +2106,68 @@ function changeCustomerInit()
 				size: 'sm',
 				on_show: function(modal) {
 					modal.children().find('.change-customer-ok:first').click(function(e) {
-						fsAjax({
-								action: 'conversation_change_customer',
-								customer_email: $(this).attr('data-customer_email'),
-								conversation_id: getGlobalAttr('conversation_id')
-							},
-							laroute.route('conversations.ajax'),
-							function(response) {
-								if (typeof(response.status) != "undefined" && response.status == 'success') {
-									if (typeof(response.redirect_url) != "undefined") {
-										window.location.href = response.redirect_url;
-									} else {
-										window.location.href = '';
-									}
-								} else {
-									showAjaxError(response);
-									loaderHide();
-								}
-							}
-						);
+						conversationChangeCustomer($(this).attr('data-customer_email'));
 					});
 				}
 			});
 		    e.preventDefault();
 		});
+
+		$("#change-customer-create-trigger a:first").click(function(e){
+			$('#change-customer-create').removeClass('hidden');
+			$(this).hide();
+			e.preventDefault();
+		});
+
+		$("#change-customer-create form:first").submit(function(e){
+			e.preventDefault();
+		});
+
+		$("#change-customer-create button:first").click(function(e){
+			var button = $(this);
+
+			button.button('loading');
+
+			var data = button.parents('form:first').serialize();
+			data += '&action=create';
+
+			fsAjax(data,
+				laroute.route('customers.ajax'),
+				function(response) {
+					showAjaxResult(response);
+
+					if (typeof(response.status) != "undefined" && response.status == 'success') {
+						conversationChangeCustomer(response.email);
+					}
+					
+					ajaxFinish();
+				}
+			);
+		});
 	});
+}
+
+function conversationChangeCustomer(email)
+{
+	fsAjax({
+			action: 'conversation_change_customer',
+			customer_email: email,
+			conversation_id: getGlobalAttr('conversation_id')
+		},
+		laroute.route('conversations.ajax'),
+		function(response) {
+			if (typeof(response.status) != "undefined" && response.status == 'success') {
+				if (typeof(response.redirect_url) != "undefined") {
+					window.location.href = response.redirect_url;
+				} else {
+					window.location.href = '';
+				}
+			} else {
+				showAjaxError(response);
+				loaderHide();
+			}
+		}
+	);
 }
 
 // Move conversation modal
