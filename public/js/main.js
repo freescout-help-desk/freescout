@@ -287,7 +287,10 @@ function mailboxUpdateInit(from_name_custom)
 {
 	$(document).ready(function(){
 
-		summernoteInit('#signature', {insertVar: true});
+		summernoteInit('#signature', {
+			insertVar: true,
+			excludeVars: ['%user.']
+		});
 
 	    $('#from_name').change(function(event) {
 			if ($(this).val() == from_name_custom) {
@@ -368,6 +371,18 @@ function summernoteInit(selector, new_options)
 					$(selector).parent().children().find('.summernote-inservar:first').on('change', function(event) {
 						$(selector).summernote('insertText', $(this).val());
 						$(this).val('');
+					});
+				}
+
+				// Hide some variables
+				if (typeof(new_options.excludeVars) != "undefined" || new_options.excludeVars) {
+					$(selector).parent().children().find('.summernote-inservar:first option').each(function(i, el) {
+						for (var var_i = 0; var_i < new_options.excludeVars.length; var_i++) {
+							if ($(el).val().indexOf(new_options.excludeVars[var_i]) != -1) {
+								$(el).parent().hide();
+								break;
+							}
+						}
 					});
 				}
 		    }
