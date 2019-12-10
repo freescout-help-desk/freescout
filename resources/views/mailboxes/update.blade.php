@@ -148,7 +148,7 @@
                             <div class="flexy">
                                 <input id="before_reply" type="text" class="form-control input-sized" name="before_reply" value="{{ old('before_reply', $mailbox->before_reply) }}" placeholder="## {{ __('Please reply above') }} ##">
 
-                                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left"  data-content="{{ __('This text will be added before each user reply sent to customer.') }}"></i>
+                                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left"  data-content="{{ __('This text will be added before each user reply sent to a customer.') }}"></i>
                             </div>
                             
                             @include('partials/field_error', ['field'=>'before_reply'])
