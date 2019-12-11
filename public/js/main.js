@@ -299,6 +299,19 @@ function mailboxUpdateInit(from_name_custom)
 				$('#from_name_custom_container').addClass('hidden');
 			}
 		});
+
+		$('#before-reply-toggle').change(function(event) {
+			if ($(this).is(':checked')) {
+				$('#before_reply').removeAttr('readonly').val($('#before_reply').attr('data-default'));
+			} else {
+				$('#before_reply').attr('readonly', 'readonly');
+				var val = $('#before_reply').val();
+				if (val) {
+					$('#before_reply').attr('data-default', val).attr('placeholder', val);
+					$('#before_reply').val('');
+				}
+			}
+		});
 	});
 }
 

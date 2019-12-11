@@ -393,6 +393,9 @@ a.navbar-brand:hover img {
     padding: 1px 11px 4px;
     width: 250px;
 }
+.form-nav-search .input-group {
+    padding-top: 3px;
+}
 /*.navbar-nav > li > .dropdown-menu {
     margin-top: -10px;
     border-radius: 3px;
@@ -422,6 +425,10 @@ a.navbar-brand:hover img {
 /**
  * Forms
  */
+.input-group-addon {
+    line-height: 11px;
+    background-color: transparent;
+}
 select.placeholdered {
     color: #B4C0D4;
 }
@@ -474,9 +481,6 @@ select.form-control {
     padding-left: 22px;
     padding-right: 7px;
     position: relative;
-}
-.input-group {
-    padding-top: 3px;
 }
 .input-group-btn .btn {
     height: 28px;
@@ -3426,9 +3430,6 @@ ul.prev-convs {
 }
 .section-search {
     line-height: inherit;
-}
-.section-search .input-group {
-    padding-top: 0;
 }
 .flexy {
     display: flex;

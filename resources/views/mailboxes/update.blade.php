@@ -142,13 +142,18 @@
                     </div>
 
                     <div class="form-group{{ $errors->has('before_reply') ? ' has-error' : '' }}">
-                        <label for="before_reply" class="col-sm-2 control-label">{{ __('Text Before The Reply') }}</label>
+                        <label for="before_reply" class="col-sm-2 control-label">{{ __('Email Header') }}</label>
 
                         <div class="col-sm-6">
                             <div class="flexy">
-                                <input id="before_reply" type="text" class="form-control input-sized" name="before_reply" value="{{ old('before_reply', $mailbox->before_reply) }}" placeholder="## {{ __('Please reply above') }} ##">
+                                <div class="input-group input-sized">
+                                    <span class="input-group-addon">
+                                        <input type="checkbox" @if ($mailbox->before_reply) checked="checked"@endif id="before-reply-toggle">
+                                    </span>
+                                    <input id="before_reply" type="text" class="form-control" @if (!$mailbox->before_reply) readonly @endif name="before_reply" value="{{ old('before_reply', $mailbox->before_reply) }}" data-default="-- {{ __('Please reply above this line') }} --" placeholder="-- {{ __('Please reply above this line') }} --">
+                                </div>
 
-                                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left"  data-content="{{ __('This text will be added before each user reply sent to a customer.') }}"></i>
+                                <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left"  data-content="{{ __('This text will be added to the begining of each email reply sent to a customer.') }}"></i>
                             </div>
                             
                             @include('partials/field_error', ['field'=>'before_reply'])
