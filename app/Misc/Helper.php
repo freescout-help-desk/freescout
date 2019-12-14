@@ -26,11 +26,6 @@ class Helper
     const QUEUE_DEFAULT = 'default';
 
     /**
-     * Background worker identifier.
-     */
-    const WORKER_IDENTIFIER = 'emails,default';
-
-    /**
      * Menu structure used to display active menu item.
      * Array are mnemonic names, strings - route names.
      * Menu has 2 levels.
@@ -1262,5 +1257,13 @@ class Helper
     public static function isInApp()
     {
         return (int)app('request')->cookie('in_app');
+    }
+
+    /**
+     * Get identifier for queue:work
+     */
+    public static function getWorkerIdentifier()
+    {
+        return md5(config('app.key'));
     }
 }
