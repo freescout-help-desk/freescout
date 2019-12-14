@@ -3343,6 +3343,11 @@ ul.prev-convs {
 /**
  * Misc
  */
+.label {
+    font-size: 13.4px;
+    font-weight: normal;
+    padding-top: 2px;
+}
 .banner {
     text-align: center;
     margin-top: 30px;
@@ -3612,13 +3617,13 @@ a.help-icon:hover {
     position: relative;
     border-top-color: #a5b2bd;
 }
-.accordion .panel-title > a .label {
+/*.accordion .panel-title > a .label {
     padding-bottom: 1px;
     position: relative;
     padding-left: 5px;
     top: -2px;
     font-style: normal;
-}
+}*/
 .accordion > .panel-default > .panel-heading {
     background-color: #fff;
     padding: 0;
