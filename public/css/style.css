@@ -3314,7 +3314,7 @@ ul.prev-convs {
 }
 
 /**
- * Sortable panel
+ * Panel
  */
 .panel-sortable .handle {
     cursor: move;
@@ -3338,6 +3338,10 @@ ul.prev-convs {
     margin-top: 5px;
     margin-bottom: 5px;
     height: 41px;
+}
+.panel-grey {
+    background-color: #f8f9f9;
+    border-color: #dde2e6;
 }
 
 /**
@@ -3890,6 +3894,14 @@ a.disabled:focus {
     margin-bottom: 4px;
 }
 
+/**
+ * Mobile
+ */
+@media (max-width:767px) {
+    .descr-block {
+        margin: 20px 0;
+    }
+}
 /**
  * Only main content is visible
  */
