@@ -1623,9 +1623,6 @@ function initReplyForm(load_attachments, init_customer_selector)
 	    		return;
 	    	}
 
-	    	if (!fsApplyFilter('conversation.can_submit', true)) {
-	    		return;
-	    	}
 	    	fs_processing_send_reply = true;
 
 	    	var button = $(this);
@@ -1634,6 +1631,11 @@ function initReplyForm(load_attachments, init_customer_selector)
 	    	form = $(".form-reply:first");
 
 	    	if (!form.parsley().validate()) {
+	    		fs_processing_send_reply = false;
+	    		return;
+	    	}
+
+	    	if (!fsApplyFilter('conversation.can_submit', true)) {
 	    		fs_processing_send_reply = false;
 	    		return;
 	    	}
@@ -3094,6 +3096,15 @@ function maybeShowConnectionRestored()
 	fs_connection_errors = 0;
 }
 
+function isNewConversation()
+{
+	if ($('#conv-layout-main .thread:first').length == 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 /**
  * Save draft automatically, on reply change or on click.
  * Validation is not needed.
@@ -3118,15 +3129,11 @@ function saveDraft(reload_page, no_loader)
 	}
 
 	var button = form.children().find('.note-actions .note-btn:first');
-	var new_conversation = false;
+	// Are we saving a draft of a new conversation
+	var new_conversation = isNewConversation();
 
 	if (typeof(no_loader) == "undefined") {
 		no_loader = false;
-	}
-
-	// Are we sasving a draft of a new conversation
-	if ($('#conv-layout-main .thread:first').length == 0) {
-		new_conversation = true;
 	}
 
 	// Do not save unchanged draft
