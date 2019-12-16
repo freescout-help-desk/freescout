@@ -194,6 +194,7 @@
                                     @include('partials/field_error', ['field'=>'subject'])
                                 </div>
                             </div>
+                            @action('conversation.create_form.after_subject', $conversation, $mailbox, $thread)
 
                             <div class="thread-attachments attachments-upload">
                                 <ul></ul>
