@@ -2084,7 +2084,8 @@ function changeCustomerInit()
 					return {
 						q: params.term,
 						exclude_email: input.attr('data-customer_email'),
-						search_by: 'all'
+						search_by: 'all',
+						page: params.page
 						//use_id: true
 					};
 				}
@@ -2269,7 +2270,8 @@ function initCustomerSelector(input, custom_options)
 					use_id: use_id,
 					search_by: search_by,
 					show_fields: show_fields,
-					allow_non_emails: allow_non_emails
+					allow_non_emails: allow_non_emails,
+					page: params.page
 				};
 			}/*,
 			beforeSend: function(){
