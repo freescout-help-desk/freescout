@@ -316,4 +316,57 @@ class CustomersController extends Controller
 
         return \Response::json($response);
     }
+
+    /**
+     * Ajax controller.
+     */
+    public function ajax(Request $request)
+    {
+        $response = [
+            'status' => 'error',
+            'msg'    => '', // this is error message
+        ];
+
+        $user = auth()->user();
+
+        switch ($request->action) {
+
+            // Change conversation user
+            case 'create':
+                // First name or email must be specified
+                $validator = Validator::make($request->all(), [
+                    'first_name' => 'required|string|max:255',
+                    'last_name'  => 'nullable|string|max:255',
+                    'email'      => 'required|email|unique:emails,email',
+                ]);
+
+                if ($validator->fails()) {
+                    foreach ($validator->errors()->getMessages()as $errors) {
+                        foreach ($errors as $field => $message) {
+                            $response['msg'] .= $message.' ';
+                        }
+                    }
+                }
+
+                if (!$response['msg']) {
+                   
+                    $customer = Customer::create($request->email, $request->all());
+                    if ($customer) {
+                        $response['email']  = $request->email;
+                        $response['status'] = 'success';
+                    }
+                }
+                break;
+
+            default:
+                $response['msg'] = 'Unknown action';
+                break;
+        }
+
+        if ($response['status'] == 'error' && empty($response['msg'])) {
+            $response['msg'] = 'Unknown error occured';
+        }
+
+        return \Response::json($response);
+    }
 }

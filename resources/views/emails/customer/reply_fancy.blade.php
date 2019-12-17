@@ -43,6 +43,9 @@
 						                <td colspan="2" style="padding:8px 0 10px 0;">
 						                    <div>
 						                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color: #232323; font-size:13px; line-height:19px; margin:0;">
+						                        	@if ($thread->source_via == App\Thread::PERSON_USER && $mailbox->before_reply)
+						                                <span style="color:#b5b5b5">{{ $mailbox->before_reply }}</span><br><br>
+						                            @endif
 					                                {!! $thread->body !!}
 
 					                                @action('reply_email.before_signature', $thread, $loop, $threads, $conversation, $mailbox)

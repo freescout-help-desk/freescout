@@ -17,6 +17,7 @@ var fs_conv_editor_toolbar = [
 var fs_in_app_data = {};
 var fs_actions = {};
 var fs_filters = {};
+var fs_body_default = '<div><br></div>';
 
 // Ajax based notifications;
 var poly;
@@ -287,13 +288,29 @@ function mailboxUpdateInit(from_name_custom)
 {
 	$(document).ready(function(){
 
-		summernoteInit('#signature', {insertVar: true});
+		summernoteInit('#signature', {
+			insertVar: true,
+			excludeVars: ['%user.']
+		});
 
 	    $('#from_name').change(function(event) {
 			if ($(this).val() == from_name_custom) {
 				$('#from_name_custom_container').removeClass('hidden');
 			} else {
 				$('#from_name_custom_container').addClass('hidden');
+			}
+		});
+
+		$('#before-reply-toggle').change(function(event) {
+			if ($(this).is(':checked')) {
+				$('#before_reply').removeAttr('readonly').val($('#before_reply').attr('data-default'));
+			} else {
+				$('#before_reply').attr('readonly', 'readonly');
+				var val = $('#before_reply').val();
+				if (val) {
+					$('#before_reply').attr('data-default', val).attr('placeholder', val);
+					$('#before_reply').val('');
+				}
 			}
 		});
 	});
@@ -368,6 +385,18 @@ function summernoteInit(selector, new_options)
 					$(selector).parent().children().find('.summernote-inservar:first').on('change', function(event) {
 						$(selector).summernote('insertText', $(this).val());
 						$(this).val('');
+					});
+				}
+
+				// Hide some variables
+				if (typeof(new_options.excludeVars) != "undefined" || new_options.excludeVars) {
+					$(selector).parent().children().find('.summernote-inservar:first option').each(function(i, el) {
+						for (var var_i = 0; var_i < new_options.excludeVars.length; var_i++) {
+							if ($(el).val().indexOf(new_options.excludeVars[var_i]) != -1) {
+								$(el).parent().hide();
+								break;
+							}
+						}
 					});
 				}
 		    }
@@ -1595,9 +1624,6 @@ function initReplyForm(load_attachments, init_customer_selector)
 	    		return;
 	    	}
 
-	    	if (!fsApplyFilter('conversation.can_submit', true)) {
-	    		return;
-	    	}
 	    	fs_processing_send_reply = true;
 
 	    	var button = $(this);
@@ -1606,6 +1632,11 @@ function initReplyForm(load_attachments, init_customer_selector)
 	    	form = $(".form-reply:first");
 
 	    	if (!form.parsley().validate()) {
+	    		fs_processing_send_reply = false;
+	    		return;
+	    	}
+
+	    	if (!fsApplyFilter('conversation.can_submit', true)) {
 	    		fs_processing_send_reply = false;
 	    		return;
 	    	}
@@ -2055,7 +2086,9 @@ function changeCustomerInit()
 				data: function (params) {
 					return {
 						q: params.term,
-						exclude_email: input.attr('data-customer_email')
+						exclude_email: input.attr('data-customer_email'),
+						search_by: 'all',
+						page: params.page
 						//use_id: true
 					};
 				}
@@ -2090,31 +2123,68 @@ function changeCustomerInit()
 				size: 'sm',
 				on_show: function(modal) {
 					modal.children().find('.change-customer-ok:first').click(function(e) {
-						fsAjax({
-								action: 'conversation_change_customer',
-								customer_email: $(this).attr('data-customer_email'),
-								conversation_id: getGlobalAttr('conversation_id')
-							},
-							laroute.route('conversations.ajax'),
-							function(response) {
-								if (typeof(response.status) != "undefined" && response.status == 'success') {
-									if (typeof(response.redirect_url) != "undefined") {
-										window.location.href = response.redirect_url;
-									} else {
-										window.location.href = '';
-									}
-								} else {
-									showAjaxError(response);
-									loaderHide();
-								}
-							}
-						);
+						conversationChangeCustomer($(this).attr('data-customer_email'));
 					});
 				}
 			});
 		    e.preventDefault();
 		});
+
+		$("#change-customer-create-trigger a:first").click(function(e){
+			$('#change-customer-create').removeClass('hidden');
+			$(this).hide();
+			e.preventDefault();
+		});
+
+		$("#change-customer-create form:first").submit(function(e){
+			e.preventDefault();
+		});
+
+		$("#change-customer-create button:first").click(function(e){
+			var button = $(this);
+
+			button.button('loading');
+
+			var data = button.parents('form:first').serialize();
+			data += '&action=create';
+
+			fsAjax(data,
+				laroute.route('customers.ajax'),
+				function(response) {
+					showAjaxResult(response);
+
+					if (typeof(response.status) != "undefined" && response.status == 'success') {
+						conversationChangeCustomer(response.email);
+					}
+					
+					ajaxFinish();
+				}
+			);
+		});
 	});
+}
+
+function conversationChangeCustomer(email)
+{
+	fsAjax({
+			action: 'conversation_change_customer',
+			customer_email: email,
+			conversation_id: getGlobalAttr('conversation_id')
+		},
+		laroute.route('conversations.ajax'),
+		function(response) {
+			if (typeof(response.status) != "undefined" && response.status == 'success') {
+				if (typeof(response.redirect_url) != "undefined") {
+					window.location.href = response.redirect_url;
+				} else {
+					window.location.href = '';
+				}
+			} else {
+				showAjaxError(response);
+				loaderHide();
+			}
+		}
+	);
 }
 
 // Move conversation modal
@@ -2203,7 +2273,8 @@ function initCustomerSelector(input, custom_options)
 					use_id: use_id,
 					search_by: search_by,
 					show_fields: show_fields,
-					allow_non_emails: allow_non_emails
+					allow_non_emails: allow_non_emails,
+					page: params.page
 				};
 			}/*,
 			beforeSend: function(){
@@ -3026,6 +3097,15 @@ function maybeShowConnectionRestored()
 	fs_connection_errors = 0;
 }
 
+function isNewConversation()
+{
+	if ($('#conv-layout-main .thread:first').length == 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 /**
  * Save draft automatically, on reply change or on click.
  * Validation is not needed.
@@ -3050,15 +3130,11 @@ function saveDraft(reload_page, no_loader)
 	}
 
 	var button = form.children().find('.note-actions .note-btn:first');
-	var new_conversation = false;
+	// Are we saving a draft of a new conversation
+	var new_conversation = isNewConversation();
 
 	if (typeof(no_loader) == "undefined") {
 		no_loader = false;
-	}
-
-	// Are we sasving a draft of a new conversation
-	if ($('#conv-layout-main .thread:first').length == 0) {
-		new_conversation = true;
 	}
 
 	// Do not save unchanged draft
@@ -3438,8 +3514,11 @@ function getReplyBody(text)
 
 function setReplyBody(text)
 {
-	$(".conv-reply-block :input[name='body']:first").val(text);
 	$('#body').summernote("code", text);
+	if (text == fs_body_default) {
+		text = '';
+	}
+	$(".conv-reply-block :input[name='body']:first").val(text);
 }
 
 // Set text in summernote editor

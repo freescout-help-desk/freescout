@@ -138,7 +138,11 @@ class Kernel extends ConsoleKernel
             }
         }
 
-        $schedule->command('queue:work', Config('app.queue_work_params'))
+        $queue_work_params = Config('app.queue_work_params');
+        // Add identifier to avoid conflicts with other FreeScout instances on the same server.
+        $queue_work_params['--queue'] .= ','.\Helper::getWorkerIdentifier();
+
+        $schedule->command('queue:work', $queue_work_params)
             ->everyMinute()
             ->withoutOverlapping()
             ->sendOutputTo(storage_path().'/logs/queue-jobs.log');
@@ -154,7 +158,7 @@ class Kernel extends ConsoleKernel
         $pids = [];
 
         try {
-            $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '".\Helper::WORKER_IDENTIFIER."'"));
+            $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '".\Helper::getWorkerIdentifier()."'"));
             foreach ($processes as $process) {
                 preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
                 if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {

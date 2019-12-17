@@ -77,10 +77,11 @@ Route::post('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReplyS
 Route::post('/mailbox/ajax', ['uses' => 'MailboxesController@ajax', 'laroute' => true])->name('mailboxes.ajax');
 
 // Customers
-Route::get('/customer/{id}/edit', 'CustomersController@update')->name('customers.update');
-Route::post('/customer/{id}/edit', 'CustomersController@updateSave');
-Route::get('/customer/{id}/', 'CustomersController@conversations')->name('customers.conversations');
-Route::get('/customer/ajax-search', ['uses' => 'CustomersController@ajaxSearch', 'laroute' => true])->name('customers.ajax_search');
+Route::get('/customers/{id}/edit', 'CustomersController@update')->name('customers.update');
+Route::post('/customers/{id}/edit', 'CustomersController@updateSave');
+Route::get('/customers/{id}/', 'CustomersController@conversations')->name('customers.conversations');
+Route::get('/customers/ajax-search', ['uses' => 'CustomersController@ajaxSearch', 'laroute' => true])->name('customers.ajax_search');
+Route::post('/customers/ajax', ['uses' => 'CustomersController@ajax', 'laroute' => true])->name('customers.ajax');
 
 // Translate
 Route::post('/translations/send', ['uses' => 'TranslateController@postSend', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('translations.send');

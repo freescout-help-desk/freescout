@@ -28,12 +28,12 @@
         </div>
   
     	<div class="form-group">
-        	<button class="btn btn-primary" type="submit">{{ __('Save') }}</button>
+        	<button class="btn btn-primary" type="submit" data-loading-text="{{ __('Saving') }}…">{{ __('Save') }}</button>
         </div>
 	</form>
 	
 </div>
 
 <div class="margin-top" id="change-customer-create-trigger">
-	<a href="javascript:alert('todo: implement creating a new customer');void(0);">{{ __('Create a new customer') }}</a>
+	<a href="#">{{ __('Create a new customer') }}</a>
 </div>

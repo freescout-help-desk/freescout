@@ -816,7 +816,7 @@ class Conversation extends Model
      */
     public static function getUserStarredConversationIds($mailbox_id, $user_id = null)
     {
-        return \Cache::rememberForever('user_starred_conversations_'.$user_id, function () use ($mailbox_id, $user_id) {
+        return \Cache::rememberForever('user_starred_conversations_'.$user_id.'_'.$mailbox_id, function () use ($mailbox_id, $user_id) {
             // Get user's folder
             $folder = Folder::select('id')
                         ->where('mailbox_id', $mailbox_id)
