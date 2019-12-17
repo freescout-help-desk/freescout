@@ -17,6 +17,7 @@ var fs_conv_editor_toolbar = [
 var fs_in_app_data = {};
 var fs_actions = {};
 var fs_filters = {};
+var fs_body_default = '<div><br></div>';
 
 // Ajax based notifications;
 var poly;
@@ -3513,8 +3514,11 @@ function getReplyBody(text)
 
 function setReplyBody(text)
 {
-	$(".conv-reply-block :input[name='body']:first").val(text);
 	$('#body').summernote("code", text);
+	if (text == fs_body_default) {
+		text = '';
+	}
+	$(".conv-reply-block :input[name='body']:first").val(text);
 }
 
 // Set text in summernote editor
