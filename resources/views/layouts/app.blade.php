@@ -17,7 +17,7 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
-
+    @action('layout.head')
     {{-- Styles --}}
     {{-- Conversation page must open immediately, so we are loading scripts present on conversation page --}}
     {{-- style.css must be the last to able to redefine styles --}}
@@ -58,7 +58,7 @@
                             </a>
                         @else
                             <a class="navbar-brand" href="{{ url('/') }}" title="{{ __('Dashboard') }}">
-                                <img src="{{ asset('img/logo-brand.png') }}" />
+                                <img src="@filter('layout.header_logo', asset('img/logo-brand.png'))" />
                                 {{-- config('app.name', 'FreeScout') --}}
                             </a>
                         @endif
