@@ -1266,4 +1266,58 @@ class Helper
     {
         return md5(config('app.key'));
     }
+
+    public static function uploadFile($file, $allowed_exts = [], $allowed_mimes = [])
+    {
+        $ext = strtolower($file->getClientOriginalExtension());
+
+        if ($allowed_exts) {
+            if (!in_array($ext, $allowed_exts)) {
+                throw new \Exception(__('Unsupported file type'), 1);
+            }
+        }
+
+        if ($allowed_mimes) {
+            $mime_type = $file->getMimeType();
+            if (!in_array($mime_type, $allowed_mimes)) {
+                throw new \Exception(__('Unsupported file type'), 1);
+            }
+        }
+        $name = \Str::random(25).'.'.$ext;
+
+        $file->storeAs('uploads', $name);
+
+        return self::uploadedFilePath($name);
+    }
+
+    public static function uploadedFileRemove($name)
+    {
+        \Storage::delete('uploads/'.$name);
+    }
+
+    public static function uploadedFilePath($name)
+    {
+        return storage_path('uploads/'.$name);
+    }
+
+    public static function uploadedFileUrl($name)
+    {
+        return \Storage::url('uploads/'.$name);
+    }
+
+    public static function addSessionError($text, $key = 'default')
+    {
+        $errors = \Session::get('errors', new \Illuminate\Support\ViewErrorBag);
+
+        if (! $errors instanceof \Illuminate\Support\ViewErrorBag) {
+            $errors = new \Illuminate\Support\ViewErrorBag;
+        }
+
+        $message_bag = new \Illuminate\Support\MessageBag;
+        $message_bag->add($key, $text);
+
+        \Session::flash(
+            'errors', $errors->put('default', $message_bag)
+        );
+    }
 }
