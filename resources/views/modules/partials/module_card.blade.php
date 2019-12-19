@@ -26,6 +26,9 @@
 		    @if (!empty($module['requiredPhpExtensionsMissing']))
 		    	| <span class="text-danger nowrap">{{ __('Required PHP extensions') }}: <strong>{{ implode(', ', $module['requiredPhpExtensionsMissing']) }}</strong></span>
 		    @endif
+		    @if (!empty($module['requiredModulesMissing']))
+		    	| <span class="text-danger nowrap">{{ __('Required Modules') }}: @foreach ($module['requiredModulesMissing'] as $missing_module => $missing_version)<strong>{{ $missing_module }} ({{ $missing_version }})</strong>@endforeach</span>
+		    @endif
 		    @if (!empty($module['installed']) && empty($module['active']) && empty($module['activated']))
 				| <a href="javascript" class="text-danger delete-module-trigger" data-loading-text="{{ __('Deleting') }}…">{{ __('Delete') }}</a>
 			@endif

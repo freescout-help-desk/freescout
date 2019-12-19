@@ -65,6 +65,7 @@ class ModulesController extends Controller
                 'requiredAppVersion'           => $module->get('requiredAppVersion'),
                 'requiredPhpExtensions'        => $module->get('requiredPhpExtensions'),
                 'requiredPhpExtensionsMissing' => \App\Module::getMissingExtensions($module->get('requiredPhpExtensions')),
+                'requiredModulesMissing'       => \App\Module::getMissingModules($module->get('requiredModules'), $modules),
                 'img'                          => $img,
                 'active'                       => $module->active(), //\App\Module::isActive($module->getAlias()),
                 'installed'                    => true,
