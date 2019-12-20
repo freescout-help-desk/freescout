@@ -902,7 +902,7 @@ class Conversation extends Model
             $query_conversations = $folder->conversations()->where('state', self::STATE_PUBLISHED);
         }
 
-        return $query_conversations;
+        return \Eventy::filter('folder.conversations_query', $query_conversations, $folder, $user_id);
     }
 
     /**

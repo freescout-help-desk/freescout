@@ -68,6 +68,10 @@ class Folder extends Model
         self::TYPE_STARRED,
     ];
 
+    // Counter mode.
+    const COUNTER_ACTIVE = 1;
+    const COUNTER_TOTAL  = 2;
+
     public $timestamps = false;
 
     protected $casts = [
@@ -195,6 +199,9 @@ class Folder extends Model
 
     public function updateCounters()
     {
+        if (\Eventy::filter('folder.update_counters', false, $this)) {
+            return;
+        }
         if ($this->type == self::TYPE_MINE && $this->user_id) {
             $this->active_count = Conversation::where('user_id', $this->user_id)
                 ->where('mailbox_id', $this->mailbox_id)
@@ -241,7 +248,7 @@ class Folder extends Model
      */
     public function getCount($folders = [])
     {
-        if ($this->type == self::TYPE_STARRED || $this->type == self::TYPE_DRAFTS) {
+        if (\Eventy::filter('folder.counter', self::COUNTER_ACTIVE, $this, $folders) == self::COUNTER_TOTAL || $this->type == self::TYPE_STARRED || $this->type == self::TYPE_DRAFTS) {
             return $this->total_count;
         } else {
             return $this->getActiveCount($folders);
@@ -272,20 +279,27 @@ class Folder extends Model
         return $active_count;
     }
 
-    public function getConversationsQuery()
+    /**
+     * Query for waiting since.
+     */
+    public function getWaitingSinceQuery()
     {
+        $query = null;
+
         if ($this->type == self::TYPE_MINE) {
             // Assigned to user.
-            return Conversation::where('user_id', $this->user_id)
+            $query = Conversation::where('user_id', $this->user_id)
                 ->where('mailbox_id', $this->mailbox_id);
         } elseif ($this->isIndirect()) {
             // Via intermediate table.
-            return Conversation::join('conversation_folder', 'conversations.id', '=', 'conversation_folder.conversation_id')
+            $query = Conversation::join('conversation_folder', 'conversations.id', '=', 'conversation_folder.conversation_id')
                     ->where('conversation_folder.folder_id', $this->id);
         } else {
             // All other conversations.
-            return $this->conversations();
+            $query = $this->conversations();
         }
+
+        return \Eventy::filter('folder.waiting_since_query', $query, $this);
     }
 
     /**
@@ -296,7 +310,7 @@ class Folder extends Model
     public function getWaitingSince()
     {
         // Get oldest active conversation.
-        $conversation = $this->getConversationsQuery()
+        $conversation = $this->getWaitingSinceQuery()
             ->where('state', Conversation::STATE_PUBLISHED)
             ->where('status', Conversation::STATUS_ACTIVE)
             ->orderBy($this->getWaitingSinceField(), 'asc')

@@ -284,7 +284,7 @@ class Mailbox extends Model
      */
     public function getAssesibleFolders()
     {
-        return $this->folders()
+        $folders = $this->folders()
             ->where(function ($query) {
                 $query->whereIn('type', \Eventy::filter('mailbox.folders.public_types', Folder::$public_types))
                     ->orWhere(function ($query2) {
@@ -294,6 +294,8 @@ class Mailbox extends Model
             })
             ->orderBy('type')
             ->get();
+
+        return \Eventy::filter('mailbox.folders', $folders);
     }
 
     /**
