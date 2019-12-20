@@ -286,7 +286,7 @@ class Mailbox extends Model
     {
         return $this->folders()
             ->where(function ($query) {
-                $query->whereIn('type', Folder::$public_types)
+                $query->whereIn('type', \Eventy::filter('mailbox.folders.public_types', Folder::$public_types))
                     ->orWhere(function ($query2) {
                         $query2->whereIn('type', Folder::$personal_types);
                         $query2->where(['user_id' => auth()->user()->id]);

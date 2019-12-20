@@ -70,6 +70,10 @@ class Folder extends Model
 
     public $timestamps = false;
 
+    protected $casts = [
+        'meta' => 'array',
+    ];
+
     /**
      * Get the mailbox to which folder belongs.
      */
@@ -115,13 +119,13 @@ class Folder extends Model
             case self::TYPE_STARRED:
                 return __('Starred');
             default:
-                return __(self::$types[$this->type]);
+                return __(\Eventy::filter('folder.type_name', self::$types[$this->type] ?? '', $this));
         }
     }
 
     public function getTypeIcon()
     {
-        return self::$type_icons[$this->type];
+        return \Eventy::filter('folder.type_icon', self::$type_icons[$this->type] ?? '', $this);
     }
 
     /**

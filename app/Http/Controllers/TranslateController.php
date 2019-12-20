@@ -74,4 +74,12 @@ class TranslateController extends BaseController
 
         return \Response::download($public_path, $file_name, $headers);
     }
+
+    /**
+     * List of strings to translate.
+     */
+    public function stringsToTranslate()
+    {
+        __(':field is required');
+    }
 }
