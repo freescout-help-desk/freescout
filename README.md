@@ -52,7 +52,7 @@ Need anything else? Suggest features [here](https://feedback.userreport.com/25a3
 
 ## Demo
 
-[Live demo](https://demo.freescout.net)
+**[Live Demo](https://demo.freescout.net)**
 
 ## Mobile Apps
 
