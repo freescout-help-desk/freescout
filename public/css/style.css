@@ -128,6 +128,7 @@ body.user-is-guest {
     position: relative;
     word-wrap: break-word;
     border-radius: 0 17px 17px 0;
+    height: 36px;
 }
 .sidebar-menu > li.menu-link > a {
     color: #337ab7;
@@ -3892,6 +3893,12 @@ a.disabled:focus {
 }
 #change-customer-create .form-group {
     margin-bottom: 4px;
+}
+.folder-name {
+    max-width: 142px;
+    display: inline-block;
+    overflow: hidden;
+    word-wrap: normal;
 }
 
 /**
