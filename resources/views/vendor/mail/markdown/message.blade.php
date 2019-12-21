@@ -21,7 +21,7 @@
     {{-- Footer --}}
     @slot('footer')
         @component('mail::footer')
-            © {{ date('Y') }} {{ config('app.name') }} — {{ __('Free open source help desk & shared mailbox' ) }}
+            © {{ date('Y') }} {{ config('app.name') }} — {{ __('Free open source help desk & shared mailbox') }}
         @endcomponent
     @endslot
 @endcomponent
