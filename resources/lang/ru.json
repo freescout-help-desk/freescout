@@ -688,5 +688,13 @@
     "Conversation moved": "Тикет перенесён",
     "The :module_name module has been deactivated due to an error: :error_message": "Модуль :module_name был деактивирован из-за ошибки: :error_message",
     "User replied from wrong email address": "Агент ответил с неверного адреса электронной почты",
-    "Your domain is deactivated": "Ваш домен деактивирован"
+    "Your domain is deactivated": "Ваш домен деактивирован",
+    ":field is required": ":field обязательное поле",
+    "Email Header": "Шапка письма",
+    "Free open source help desk & shared mailbox": "Бесплатный хелпдеск с открытым кодом и общий почтовый ящик",
+    "Please reply above this line": "Пишите ваш ответ выше этого текста",
+    "Required Modules": "Необходимые модули",
+    "Switch Helpdesk URL": "Переключить URL",
+    "The following modules have to be installed and activated: :modules": "Следующие модули должны быть установлены и активированы: :modules",
+    "This text will be added to the beginning of each email reply sent to a customer.": "Этот текст будет добавляться в начало каждого письма, отправляемого клиентам."
 }
