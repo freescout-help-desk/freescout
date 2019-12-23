@@ -1397,7 +1397,7 @@ class ConversationsController extends Controller
                     } else {
                         $conversation->removeFromFolder(Folder::TYPE_STARRED);
                     }
-                    Conversation::clearStarredByUserCache($user->id);
+                    Conversation::clearStarredByUserCache($user->id, $conversation->mailbox_id);
                     $conversation->mailbox->updateFoldersCounters(Folder::TYPE_STARRED);
                     $response['status'] = 'success';
                 }

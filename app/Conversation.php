@@ -798,7 +798,7 @@ class Conversation extends Model
         }
     }
 
-    public static function clearStarredByUserCache($user_id)
+    public static function clearStarredByUserCache($user_id, $mailbox_id)
     {
         if (!$user_id) {
             $user = auth()->user();
@@ -808,7 +808,7 @@ class Conversation extends Model
                 return false;
             }
         }
-        \Cache::forget('user_starred_conversations_'.$user_id);
+        \Cache::forget('user_starred_conversations_'.$user_id.'_'.$mailbox_id);
     }
 
     /**
