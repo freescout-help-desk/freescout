@@ -927,6 +927,12 @@ function initConversation()
 			e.preventDefault();
 		});
 
+		// Follow/Unfollow
+	    jQuery(".conv-follow").click(function(e){
+	    	followConversation($(this).attr('data-follow-action'));
+			e.preventDefault();
+		});
+
 		// View Send Log
 	    /*jQuery(".thread-send-log-trigger").click(function(e){
 	    	var thread_id = $(this).parents('.thread:first').attr('data-thread_id');
@@ -3240,6 +3246,37 @@ function forwardConversation(e)
 
 	// Load attachments
 	loadAttachments();
+}
+
+// Follow / unfollow conversation
+function followConversation(action)
+{
+	fsAjax(
+		{
+			action: action,
+			conversation_id: getGlobalAttr('conversation_id'),
+		},
+		laroute.route('conversations.ajax'),
+		function(response) {
+			if (fsIsAjaxSuccess(response)) {
+				var opposite = '';
+				if (action == 'follow') {
+					opposite = 'unfollow';
+				} else {
+					opposite = 'follow';
+				}
+				$('.conv-follow[data-follow-action="'+action+'"]').addClass('hidden');
+				$('.conv-follow[data-follow-action="'+opposite+'"]').removeClass('hidden');
+
+			}
+			showAjaxResult(response);
+		}, true
+	);
+}
+
+function fsIsAjaxSuccess(response)
+{
+	return (typeof(response.status) != "undefined" && response.status == "success");
 }
 
 // Load attachments for the draft of a new conversation of draft of the forward

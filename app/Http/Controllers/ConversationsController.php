@@ -14,6 +14,7 @@ use App\Events\UserCreatedConversationDraft;
 use App\Events\UserCreatedThreadDraft;
 use App\Events\UserReplied;
 use App\Folder;
+use App\Follower;
 use App\Mailbox;
 use App\MailboxUser;
 use App\SendLog;
@@ -241,6 +242,8 @@ class ConversationsController extends Controller
             });
         }
 
+        $is_following = $conversation->isUserFollowing($user->id);
+
         \Eventy::action('conversation.view.start', $conversation);
 
         return view($template, [
@@ -261,6 +264,7 @@ class ConversationsController extends Controller
             'phone'              => $phone,
             'to_email'           => $to_email,
             'viewers'            => $viewers,
+            'is_following'       => $is_following,
         ]);
     }
 
@@ -1714,6 +1718,47 @@ class ConversationsController extends Controller
 
                     $response['status'] = 'success';
                     \Session::flash('flash_success_floating', __('Conversation moved'));
+                }
+
+                break;
+
+            // Follow conversation
+            case 'follow':
+            case 'unfollow':
+                $conversation = Conversation::find($request->conversation_id);
+
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                }
+                if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if ($request->action == 'follow') {
+                    try {
+                        $follower = new Follower();
+                        $follower->conversation_id = $request->conversation_id;
+                        $follower->user_id = $user->id;
+                        $follower->save();
+                    } catch (\Exception $e) {
+                        // Already exists
+                    }
+                } else {
+                    $follower = Follower::where('conversation_id', $request->conversation_id)
+                        ->where('user_id', $user->id)
+                        ->first();
+                    if ($follower) {
+                        $follower->delete();
+                    }
+                }
+
+                if (!$response['msg']) {
+                    $response['status'] = 'success';
+                    if ($request->action == 'follow') {
+                        $response['msg_success'] = __('Following');
+                    } else {
+                        $response['msg_success'] = __('Unfollowed');
+                    }
                 }
 
                 break;
