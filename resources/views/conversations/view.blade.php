@@ -241,7 +241,7 @@
                     @include('conversations/partials/prev_convs_short', ['mobile' => true])
                 @endif
             @endif
-            @action('conversation.after_customer', $customer, $conversation, $mailbox)
+            @action('conversation.after_prev_convs', $customer, $conversation, $mailbox)
         </div>
         <div id="conv-layout-main">
             @include('conversations/partials/threads')
