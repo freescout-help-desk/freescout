@@ -357,9 +357,9 @@ class Mailbox extends Model
     /**
      * Get users who have access to the mailbox.
      */
-    public function usersHavingAccess($cache = false, $fields = 'users.*')
+    public function usersHavingAccess($cache = false, $fields = 'users.*', $sort = true)
     {
-        $admins = User::where('role', User::ROLE_ADMIN)->select($fields)->remember(\App\Misc\Helper::cacheTime($cache))->get();
+        $admins = User::where('role', User::ROLE_ADMIN)->select($fields)->remember(\Helper::cacheTime($cache))->get();
 
         $users = $this->users()->select($fields)->rememberForever()->get()->merge($admins)->unique();
 
@@ -368,6 +368,16 @@ class Mailbox extends Model
             if ($user->isDeleted()) {
                 $users->forget($i);
             }
+        }
+
+        // Sort by full name
+        if ($sort) {
+            $users = $users->sort(function ($a, $b) {
+                if ($a->getFullName() == $b->getFullName()) {
+                    return 0;
+                }
+                return ($a->getFullName() < $b->getFullName()) ? -1 : 1;
+            });
         }
 
         return $users;
