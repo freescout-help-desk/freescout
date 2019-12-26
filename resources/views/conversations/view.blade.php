@@ -20,17 +20,17 @@
                     {{-- There should be no spaced between buttons --}}
                     @if (!$conversation->isPhone())<span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}">@endif</span><span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" data-toggle="tooltip"></span>@action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>--}}<div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
                         <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></span>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu dropdown-with-icons">
                             <li>
-                                <a href="#" class="conv-follow @if ($is_following) hidden @endif" data-follow-action="follow">{{ __("Follow") }}</a>
-                                <a href="#" class="conv-follow @if (!$is_following) hidden @endif" data-follow-action="unfollow">{{ __("Unfollow") }}</a>
+                                <a href="#" class="conv-follow @if ($is_following) hidden @endif" data-follow-action="follow"><i class="glyphicon glyphicon-bell"></i> {{ __("Follow") }}</a>
+                                <a href="#" class="conv-follow @if (!$is_following) hidden @endif" data-follow-action="unfollow"><i class="glyphicon glyphicon-bell"></i> {{ __("Unfollow") }}</a>
                             </li>
-                            <li><a href="#" class="conv-forward">{{ __("Forward") }}</a></li>
+                            <li><a href="#" class="conv-forward"><i class="glyphicon glyphicon-share"></i> {{ __("Forward") }}</a></li>
                             @if (Auth::user()->can('move', App\Conversation::class))
                                 <li><a href="{{ route('conversations.ajax_html', ['action' =>
-                                            'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv">{{ __("Move") }}</a></li>
+                                            'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Move") }}</a></li>
                             @endif
-                            <li><a href="#" class="conv-delete">{{ __("Delete") }}</a></li>
+                            <li><a href="#" class="conv-delete"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete") }}</a></li>
                             @action('conversation.extra_action_buttons', $conversation, $mailbox)
                         </ul>
                     </div>

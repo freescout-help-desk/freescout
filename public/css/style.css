@@ -78,6 +78,9 @@ body.user-is-guest {
     left: 0;
     left: 1px;
 }
+.dropdown-with-icons .glyphicon {
+    left: -5px;
+}
 .sidebar-title .dropdown-toggle {
     cursor: pointer;
 }
