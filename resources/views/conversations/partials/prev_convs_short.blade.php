@@ -1,4 +1,4 @@
-<div class="conv-customer-hist conv-sidebar-block @if (!empty($mobile)) prev-convs-mobile @else prev-convs-full @endif">
+<div class="conv-sidebar-block @if (!empty($mobile)) sidebar-block-mobile @else sidebar-block-full @endif">
     <div class="panel-group accordion accordion-empty">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -10,8 +10,8 @@
             </div>
             <div class="collapse-conv-prev panel-collapse collapse @if (!empty($in)) in @endif">
                 <div class="panel-body">
-                    <div class="prev-convs-header2"><strong>{{ __("Previous Conversations") }}</strong> (<a data-toggle="collapse" href=".collapse-conv-prev">{{ __('close') }}</a>)</div>
-                    <ul class="prev-convs">
+                    <div class="sidebar-block-header2"><strong>{{ __("Previous Conversations") }}</strong> (<a data-toggle="collapse" href=".collapse-conv-prev">{{ __('close') }}</a>)</div>
+                    <ul class="sidebar-block-list">
                         @foreach ($prev_conversations as $prev_conversation)
                             <li>
                                 <a href="{{ $prev_conversation->url() }}" taret="_blank" class="help-link"><i class="glyphicon @if ($prev_conversation->isPhone()) glyphicon-earphone @else glyphicon-envelope @endif"></i>{{ $prev_conversation->subject }}</a>
@@ -19,7 +19,7 @@
                         @endforeach
                     </ul>
                     @if ($prev_conversations->hasMorePages()) 
-                        <a href="{{ route('customers.conversations', ['id' => $customer->id])}}" class="link-prev-convs link-blue">{{ __("View all :number", ['number' => $prev_conversations->total()]) }}</a>
+                        <a href="{{ route('customers.conversations', ['id' => $customer->id])}}" class="sidebar-block-link link-blue">{{ __("View all :number", ['number' => $prev_conversations->total()]) }}</a>
                     @endif
                 </div>
             </div>

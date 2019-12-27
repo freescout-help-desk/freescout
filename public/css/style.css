@@ -1821,12 +1821,12 @@ button.conv-checkbox-clear {
     background-color: #f1f3f5;
     height: 53px;
 }
-.conv-customer-hist .accordion .panel-title a {
+.conv-sidebar-block .accordion .panel-title a {
     color: #2a3b47;
     font-size: 13.4px;
     font-weight: bold;
 }
-.conv-customer-hist .accordion .panel-default > .panel-heading:hover {
+.conv-sidebar-block .accordion .panel-default > .panel-heading:hover {
     background-color: transparent;
 }
 .customer-snippet {
@@ -2387,38 +2387,41 @@ button.conv-checkbox-clear {
     color: #b37100;
     text-decoration: underline;
 }
-ul.prev-convs {
+ul.sidebar-block-list {
+    padding-top: 2px;
     padding-left: 0;
     list-style: none;
-    margin-bottom: 7px;
+    margin-bottom: 5px;
 }
-.prev-convs li {
-    margin-top: 4px;
+.sidebar-block-list li a {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    display: inline-block;
 }
 /*.prev-convs li:first-child {
     margin-top: 0;
 }*/
-.prev-convs .glyphicon {
+.sidebar-block-list .glyphicon {
     margin-right: 4px;
     position: relative;
     top: 2px;
 }
-.conv-customer-hist .panel-body {
+.conv-sidebar-block .panel-body {
     border-top: 0!important;
     padding-top: 0;
     padding-bottom: 6px;
 }
-.link-prev-convs {
+.sidebar-block-link {
     margin-bottom: 4px;
     display: inline-block;
 }
-.prev-convs-full {
+.sidebar-block-full {
     display: block;
 }
-.prev-convs-mobile {
+.sidebar-block-mobile {
     display: none;
 }
-.prev-convs-header2 {
+.sidebar-block-header2 {
     display: none;
 }
 .conv-star {
@@ -2650,7 +2653,7 @@ ul.prev-convs {
     .customer-social-profiles {
         position: static;
     }
-    .conv-customer-hist .panel-heading {
+    .conv-sidebar-block .panel-heading {
         display: none;
     }
     .customer-hist-trigger {
@@ -2672,21 +2675,21 @@ ul.prev-convs {
     .conv-sidebar-block .panel {
         background-color: #fff;
     }
-    .conv-customer-hist .panel-group {
+    .conv-sidebar-block .panel-group {
         margin: 0;
     }
-    .conv-customer-hist .panel-body {
+    .conv-sidebar-block .panel-body {
         /*border-top: 1px solid #e3e8eb!important;*/
         border-bottom: 0;
         padding-left: 83px;
     }
-    .prev-convs-full {
+    .sidebar-block-full {
         display: none;
     }
-    .prev-convs-mobile {
+    .sidebar-block-mobile {
         display: block;
     }
-    .prev-convs-header2 {
+    .sidebar-block-header2 {
         display: block;
     }
 }
