@@ -372,12 +372,9 @@ class Mailbox extends Model
 
         // Sort by full name
         if ($sort) {
-            $users = $users->sort(function ($a, $b) {
-                if ($a->getFullName() == $b->getFullName()) {
-                    return 0;
-                }
-                return ($a->getFullName() < $b->getFullName()) ? -1 : 1;
-            });
+            $users = $users->sortBy(function ($value, $key) {
+                return $value->getFullName();
+            }, SORT_STRING | SORT_FLAG_CASE);
         }
 
         return $users;
