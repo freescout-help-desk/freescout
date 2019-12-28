@@ -3258,7 +3258,7 @@ function followConversation(action)
 		},
 		laroute.route('conversations.ajax'),
 		function(response) {
-			if (fsIsAjaxSuccess(response)) {
+			if (isAjaxSuccess(response)) {
 				var opposite = '';
 				if (action == 'follow') {
 					opposite = 'unfollow';
@@ -3272,11 +3272,6 @@ function followConversation(action)
 			showAjaxResult(response);
 		}, true
 	);
-}
-
-function fsIsAjaxSuccess(response)
-{
-	return (typeof(response.status) != "undefined" && response.status == "success");
 }
 
 // Load attachments for the draft of a new conversation of draft of the forward
