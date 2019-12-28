@@ -236,13 +236,15 @@ class Subscription extends Model
         // Filter subscribers
         $users_to_notify = [];
         foreach ($subscriptions as $i => $subscription) {
-            // todo: follow conversation, for now jsut miss this event
-            if ($subscription->event == self::EVENT_FOLLOWED_CONVERSATION_UPDATED) {
+            // Actions on conversation where user is assignee
+            if (in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY]) && $conversation->user_id != $subscription->user_id
+            ) {
                 continue;
             }
 
-            // Actions on conversation where user is assignee
-            if (in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY]) && $conversation->user_id != $subscription->user_id
+            // Check if user is following this conversation.
+            if ($subscription->event == self::EVENT_FOLLOWED_CONVERSATION_UPDATED 
+                && !$conversation->isUserFollowing($subscription->user_id)
             ) {
                 continue;
             }
@@ -263,7 +265,7 @@ class Subscription extends Model
 
         $delay = now()->addSeconds(Conversation::UNDO_TIMOUT);
 
-        // Collection into notify array information about all users who need to be notified
+        // Collect into notify array information about all users who need to be notified
         foreach (self::$occured_events as $event) {
             // Get mailbox users ids
             $mailbox_user_ids = [];

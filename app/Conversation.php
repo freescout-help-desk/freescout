@@ -275,6 +275,30 @@ class Conversation extends Model
     }
 
     /**
+     * Get conversations followers.
+     */
+    public function followers()
+    {
+        return $this->hasMany('App\Follower');
+    }
+
+    /**
+     * Check if user is following this conversation.
+     */
+    public function isUserFollowing($user_id)
+    {
+        // We intentionally select all records from followers table,
+        // as it is more efficient than querying a particular user record.
+        foreach ($this->followers as $follower) {
+            if ($follower->user_id == $user_id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get only reply threads from conversations.
      *
      * @return Collection
@@ -798,7 +822,7 @@ class Conversation extends Model
         }
     }
 
-    public static function clearStarredByUserCache($user_id)
+    public static function clearStarredByUserCache($user_id, $mailbox_id)
     {
         if (!$user_id) {
             $user = auth()->user();
@@ -808,7 +832,7 @@ class Conversation extends Model
                 return false;
             }
         }
-        \Cache::forget('user_starred_conversations_'.$user_id);
+        \Cache::forget('user_starred_conversations_'.$user_id.'_'.$mailbox_id);
     }
 
     /**
