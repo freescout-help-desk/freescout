@@ -233,12 +233,7 @@
                     </div>--}}
                 </div>
                 @if (count($prev_conversations))
-                    {{--
-                        In mobile view previous conversations must be always hidden.
-                        So the only way to achieve this is to have two blocks.
-                    --}}
-                    @include('conversations/partials/prev_convs_short', ['in' => true])
-                    @include('conversations/partials/prev_convs_short', ['mobile' => true])
+                    @include('conversations/partials/prev_convs_short')
                 @endif
             @endif
             @action('conversation.after_prev_convs', $customer, $conversation, $mailbox)

@@ -1,4 +1,4 @@
-<div class="conv-sidebar-block @if (!empty($mobile)) sidebar-block-mobile @else sidebar-block-full @endif">
+<div class="conv-sidebar-block">
     <div class="panel-group accordion accordion-empty">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -8,7 +8,7 @@
                     </a>
                 </h4>
             </div>
-            <div class="collapse-conv-prev panel-collapse collapse @if (!empty($in)) in @endif">
+            <div class="collapse-conv-prev panel-collapse collapse in">
                 <div class="panel-body">
                     <div class="sidebar-block-header2"><strong>{{ __("Previous Conversations") }}</strong> (<a data-toggle="collapse" href=".collapse-conv-prev">{{ __('close') }}</a>)</div>
                     <ul class="sidebar-block-list">
