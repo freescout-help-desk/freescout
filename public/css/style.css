@@ -1563,7 +1563,7 @@ button.conv-checkbox-clear {
     }
     .conv-attachment {
         position: absolute;
-        left: 7;
+        left: 7px;
         top: 24px;
         text-align: center;
         width: 25px!important;
@@ -1865,9 +1865,6 @@ button.conv-checkbox-clear {
 .customer-trigger a:focus {
     color: #0078D7;
     text-decoration: none;
-}
-.customer-hist-trigger {
-    display: none;
 }
 .thread {
     position: relative;
@@ -2655,9 +2652,6 @@ ul.sidebar-block-list {
     }
     .conv-sidebar-block .panel-heading {
         display: none;
-    }
-    .customer-hist-trigger {
-        display: list-item;
     }
     .conv-sidebar-block .panel {
         background-color: #fff;
@@ -3908,7 +3902,7 @@ a.disabled:focus {
  * Only main content is visible
  */
 @media (max-width:991px) {
-    .1col-hidden {
+    .col1-hidden {
         display: none;
     }
 }
@@ -3916,7 +3910,7 @@ a.disabled:focus {
  * Left sidebar and main content are visible
  */
 @media (max-width:1100px) {
-    .2col-hidden {
+    .col2-hidden {
         display: none;
     }
 }
@@ -3924,7 +3918,7 @@ a.disabled:focus {
  * Left sidebar, main content and right siderbar are visible
  */
 @media (min-width:1101px) {
-    .3col-hidden {
+    .col3-hidden {
         display: none;
     }
 }
