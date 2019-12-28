@@ -3251,10 +3251,11 @@ function forwardConversation(e)
 // Follow / unfollow conversation
 function followConversation(action)
 {
+	var conversation_id = getGlobalAttr('conversation_id');
 	fsAjax(
 		{
 			action: action,
-			conversation_id: getGlobalAttr('conversation_id'),
+			conversation_id: conversation_id,
 		},
 		laroute.route('conversations.ajax'),
 		function(response) {
@@ -3267,7 +3268,10 @@ function followConversation(action)
 				}
 				$('.conv-follow[data-follow-action="'+action+'"]').addClass('hidden');
 				$('.conv-follow[data-follow-action="'+opposite+'"]').removeClass('hidden');
-
+				fsDoAction('conversation.'+action, {
+					user_id: getGlobalAttr('auth_user_id'),
+					conversation_id: conversation_id
+				});
 			}
 			showAjaxResult(response);
 		}, true
