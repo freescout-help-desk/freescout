@@ -1896,7 +1896,7 @@ function triggerModal(a, params)
         	if (typeof(window[on_show]) == "function") {
         		window[on_show](modal);
         	} else if (typeof(on_show) == "function") {
-        		on_show(modal);
+        		on_show(modal, a);
         	}
         }
     } else {
@@ -1908,9 +1908,9 @@ function triggerModal(a, params)
 
 			        if (on_show) {
 			        	if (typeof(window[on_show]) == "function") {
-			        		window[on_show](modal);
+			        		window[on_show](modal, a);
 			        	} else if (typeof(on_show) == "function") {
-			        		on_show(modal);
+			        		on_show(modal, a);
 			        	}
 			        }
                 },
