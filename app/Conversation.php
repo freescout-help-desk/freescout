@@ -119,6 +119,11 @@ class Conversation extends Model
     ];
 
     /**
+     * Assignee.
+     */
+    const USER_UNASSIGNED = -1;
+
+    /**
      * Search filters.
      */
     public static $search_filters = [
