@@ -2259,6 +2259,7 @@ button.conv-checkbox-clear {
 .conv-reply-block .form-group {
     margin-bottom: 5px;
 }
+.conv-reply-label,
 .conv-reply-block .form-group label {
     width: 33px;
     padding-right: 0;
@@ -2268,6 +2269,7 @@ button.conv-checkbox-clear {
     max-width: 600px;
     min-width: 150px;
 }
+.conv-reply-label,
 .conv-reply-block .control-label {
     float: left;
     text-align: right;
