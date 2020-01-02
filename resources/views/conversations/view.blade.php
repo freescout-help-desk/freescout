@@ -26,10 +26,10 @@
                                 <a href="#" class="conv-follow @if ($is_following) hidden @endif" data-follow-action="follow"><i class="glyphicon glyphicon-bell"></i> {{ __("Follow") }}</a>
                                 <a href="#" class="conv-follow @if (!$is_following) hidden @endif" data-follow-action="unfollow"><i class="glyphicon glyphicon-bell"></i> {{ __("Unfollow") }}</a>
                             </li>
-                            <li><a href="#" class="conv-forward"><i class="glyphicon glyphicon-share"></i> {{ __("Forward") }}</a></li>
+                            <li><a href="#" class="conv-forward"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
                             @if (Auth::user()->can('move', App\Conversation::class))
                                 <li><a href="{{ route('conversations.ajax_html', ['action' =>
-                                            'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Move") }}</a></li>
+                                            'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv"><i class="glyphicon glyphicon-log-out"></i> {{ __("Move") }}</a></li>
                             @endif
                             <li><a href="#" class="conv-delete"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete") }}</a></li>
                             @action('conversation.append_action_buttons', $conversation, $mailbox)
