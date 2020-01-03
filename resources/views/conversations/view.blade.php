@@ -31,7 +31,11 @@
                                 <li><a href="{{ route('conversations.ajax_html', ['action' =>
                                             'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv"><i class="glyphicon glyphicon-log-out"></i> {{ __("Move") }}</a></li>
                             @endif
-                            <li><a href="#" class="conv-delete"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete") }}</a></li>
+                            @if ($conversation->state != App\Conversation::STATE_DELETED)
+                                <li><a href="#" class="conv-delete"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete") }}</a></li>
+                            @else
+                                <li><a href="#" class="conv-delete-forever"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete Forever") }}</a></li>
+                            @endif
                             @action('conversation.append_action_buttons', $conversation, $mailbox)
                         </ul>
                     </div>

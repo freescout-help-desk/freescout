@@ -955,7 +955,7 @@ function initConversation()
 		});
 
 	    // Delete conversation
-	    jQuery(".conv-delete").click(function(e){
+	    jQuery(".conv-delete,.conv-delete-forever").click(function(e){
 	    	var confirm_html = '<div>'+
 			'<div class="text-center">'+
 			'<div class="text-larger margin-top-10">'+Lang.get("messages.confirm_delete_conversation")+'</div>'+
@@ -966,13 +966,18 @@ function initConversation()
     		'</div>'+
     		'</div>';
 
+    		var action = 'delete_conversation';
+    		if ($(this).hasClass('conv-delete-forever')) {
+    			action = 'delete_conversation_forever';
+    		}
+
 			showModalDialog(confirm_html, {
 				on_show: function(modal) {
 					modal.children().find('.delete-conversation-ok:first').click(function(e) {
 						modal.modal('hide');
 						fsAjax(
 							{
-								action: 'delete_conversation',
+								action: action,
 								conversation_id: getGlobalAttr('conversation_id')
 							},
 							laroute.route('conversations.ajax'),

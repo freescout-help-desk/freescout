@@ -1343,6 +1343,27 @@ class Conversation extends Model
         \Eventy::action('conversation.status_changed', $this, $user, $changed_on_reply = false, $prev_status);
     }
 
+    public function deleteForever()
+    {
+        self::deleteConversationsForever([$this->id]);
+    }
+
+    public static function deleteConversationsForever($conversation_ids)
+    {
+        \Eventy::action('conversations.before_delete_forever', $conversation_ids);
+
+        //$conversation_ids = $conversations->pluck('id')->toArray();
+
+        // Delete attachments.
+        $thread_ids = Thread::whereIn('conversation_id', $conversation_ids)->pluck('id')->toArray();
+        Attachment::deleteByThreadIds($thread_ids);
+
+        // Delete threads.
+        Thread::whereIn('conversation_id', $conversation_ids)->delete();
+        // Delete conversations.
+        Conversation::whereIn('id', $conversation_ids)->delete();
+    }
+
     // /**
     //  * Get conversation meta data as array.
     //  */
