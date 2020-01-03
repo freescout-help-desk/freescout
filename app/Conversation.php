@@ -4,6 +4,8 @@ namespace App;
 
 use App\Thread;
 use App\User;
+use App\Events\ConversationStatusChanged;
+use App\Events\ConversationUserChanged;
 use App\Events\ConversationCustomerChanged;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
@@ -1311,6 +1313,34 @@ class Conversation extends Model
             }
         }
         return $viewers;
+    }
+
+    public function changeStatus($new_status, $user, $create_thread = true)
+    {
+        $prev_status = $this->status;
+
+        $this->setStatus($new_status, $user);
+        $this->save();
+
+        // Create lineitem thread
+        if ($create_thread) {
+            $thread = new Thread();
+            $thread->conversation_id = $this->id;
+            $thread->user_id = $this->user_id;
+            $thread->type = Thread::TYPE_LINEITEM;
+            $thread->state = Thread::STATE_PUBLISHED;
+            $thread->status = $this->status;
+            $thread->action_type = Thread::ACTION_TYPE_STATUS_CHANGED;
+            $thread->source_via = Thread::PERSON_USER;
+            // todo: this need to be changed for API
+            $thread->source_type = Thread::SOURCE_TYPE_WEB;
+            $thread->customer_id = $this->customer_id;
+            $thread->created_by_user_id = $user->id;
+            $thread->save();
+        }
+
+        event(new ConversationStatusChanged($this));
+        \Eventy::action('conversation.status_changed', $this, $user, $changed_on_reply = false, $prev_status);
     }
 
     // /**
