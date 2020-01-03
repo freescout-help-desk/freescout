@@ -2878,6 +2878,7 @@ ul.sidebar-block-list {
  */
 .attachments-upload {
     display: none;
+    clear: both;
     /*margin-right: -15px;
     margin-left: -15px;*/
 }
