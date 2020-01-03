@@ -1171,6 +1171,9 @@ a h4 {
 /**
  * Conversations list
  */
+.mailbox-toolbar {
+    border-bottom: 1px solid #D4D9DD;
+}
 .table.table-conversations {
     margin: 0;
     table-layout: fixed;

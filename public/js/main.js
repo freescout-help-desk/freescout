@@ -330,7 +330,7 @@ function deleteMailboxModal(modal)
 			},
 			laroute.route('mailboxes.ajax'),
 			function(response) {
-				if (typeof(response.status) != "undefined" && response.status == "success") {
+				if (isAjaxSuccess(response)) {
 					window.location.href = laroute.route('mailboxes');
 					return;
 				} else {
@@ -982,7 +982,7 @@ function initConversation()
 							},
 							laroute.route('conversations.ajax'),
 							function(response) {
-								if (typeof(response.status) != "undefined" && response.status == "success"
+								if (isAjaxSuccess(response)
 									&& typeof(response.redirect_url) != "undefined"
 								) {
 									window.location.href = response.redirect_url;
@@ -1975,6 +1975,42 @@ function viewMailboxInit()
 {
 	conversationPagination();
 	starConversationInit();
+	initMailboxToolbar();
+}
+
+function initMailboxToolbar()
+{
+	$(document).ready(function() {
+		// Empty trash
+		$(".mailbox-empty-trash").click(function(e) {
+			showModalDialog('#conversations-bulk-actions-delete-modal', {
+				on_show: function(modal) {
+					modal.children().find('.delete-conversation-ok:first').click(function(e) {
+						var button = $(this);
+						button.button('loading');
+
+						fsAjax(
+							{
+								action: 'empty_trash',
+								folder_id: getGlobalAttr('folder_id')
+							},
+							laroute.route('conversations.ajax'),
+							function(response) {
+								if (isAjaxSuccess(response)) {
+									location.reload();
+								} else {
+									modal.modal('hide');
+									showAjaxError(response);
+								}
+							}, true
+						);
+						e.preventDefault();
+					});
+				}
+			});
+			e.preventDefault();
+		});
+	});
 }
 
 function searchInit()
@@ -2544,7 +2580,7 @@ function userProfileInit()
 						data,
 						laroute.route('users.ajax'),
 						function(response) {
-							if (typeof(response.status) != "undefined" && response.status == "success") {
+							if (isAjaxSuccess(response)) {
 								window.location.href = laroute.route('users');
 								return;
 							} else {
@@ -2950,7 +2986,7 @@ function webNotificationsInit()
 			},
 			laroute.route('users.ajax'),
 			function(response) {
-				if (typeof(response.status) != "undefined" && response.status == "success") {
+				if (isAjaxSuccess(response)) {
 					$(response.html).insertBefore(button.parent());
 				} else {
 					showAjaxError(response);
@@ -2983,7 +3019,7 @@ function webNotificationsInit()
 			},
 			laroute.route('users.ajax'),
 			function(response) {
-				if (typeof(response.status) != "undefined" && response.status == "success") {
+				if (isAjaxSuccess(response)) {
 					mark_button.remove();
 					$('.web-notifications-count:first').addClass('hidden');
 					$('.web-notification.is-unread').removeClass('is-unread');
@@ -3033,7 +3069,7 @@ function initSystemStatus()
 						},
 						laroute.route('system.ajax'),
 						function(response) {
-							if (typeof(response.status) != "undefined" && response.status == "success") {
+							if (isAjaxSuccess(response)) {
 								showAjaxResult(response);
 								window.location.href = '';
 							} else if (response.msg) {
@@ -3063,7 +3099,7 @@ function initSystemStatus()
 			},
 			laroute.route('system.ajax'),
 			function(response) {
-				if (typeof(response.status) != "undefined" && response.status == "success") {
+				if (isAjaxSuccess(response)) {
 					if (typeof(response.new_version_available) != "undefined" && response.new_version_available) {
 						// There are updates
 						window.location.href = '';
@@ -3422,7 +3458,7 @@ function discardDraft(thread_id)
 					laroute.route('conversations.ajax'),
 					function(response) {
 						modal.modal('hide');
-						if (typeof(response.status) != "undefined" && response.status == "success") {
+						if (isAjaxSuccess(response)) {
 							if (typeof(response.redirect_url) != "undefined" && response.redirect_url) {
 								window.location.href = response.redirect_url;
 								return;
@@ -3596,7 +3632,7 @@ function starConversationInit()
 			},
 			laroute.route('conversations.ajax'),
 			function(response) {
-				if (typeof(response.status) != "undefined" && response.status == "success") {
+				if (isAjaxSuccess(response)) {
 					// In the list there are two stars for desktop and monile
 					if (trigger.parents('.conv-row:first').length) {
 						trigger = trigger.parents('.conv-row:first').children().find('.conv-star');
@@ -3714,7 +3750,7 @@ function converstationBulkActionsInit()
 				},
 				laroute.route('conversations.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						location.reload();
 					} else {
 						showAjaxError(response);
@@ -3737,7 +3773,7 @@ function converstationBulkActionsInit()
 				},
 				laroute.route('conversations.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						location.reload();
 					} else {
 						showAjaxError(response);
@@ -3763,7 +3799,7 @@ function converstationBulkActionsInit()
 							},
 							laroute.route('conversations.ajax'),
 							function(response) {
-								if (typeof(response.status) != "undefined" && response.status == "success") {
+								if (isAjaxSuccess(response)) {
 									location.reload();
 								} else {
 									showAjaxError(response);
@@ -3782,7 +3818,6 @@ function converstationBulkActionsInit()
 			$(checkboxes).trigger('change');
 			$('table.table-conversations tr').removeClass('selected');
 		});
-
 	});
 }
 
@@ -3990,7 +4025,7 @@ function initModulesList()
 				},
 				laroute.route('modules.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						window.location.href = '';
 					} else {
 						showAjaxError(response);
@@ -4010,7 +4045,7 @@ function initModulesList()
 				},
 				laroute.route('modules.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						window.location.href = '';
 					} else {
 						showAjaxError(response);
@@ -4034,7 +4069,7 @@ function initModulesList()
 							},
 							laroute.route('modules.ajax'),
 							function(response) {
-								if (typeof(response.status) != "undefined" && response.status == "success") {
+								if (isAjaxSuccess(response)) {
 									window.location.href = '';
 								} else {
 									showAjaxError(response);
@@ -4060,7 +4095,7 @@ function initModulesList()
 				},
 				laroute.route('modules.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						window.location.href = '';
 					} else {
 						showAjaxError(response);
@@ -4083,7 +4118,7 @@ function initModulesList()
 				},
 				laroute.route('modules.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						window.location.href = '';
 					} else {
 						showAjaxError(response);
@@ -4107,7 +4142,7 @@ function installModule(alias)
 		},
 		laroute.route('modules.ajax'),
 		function(response) {
-			if ((typeof(response.status) != "undefined" && response.status == "success") ||
+			if ((isAjaxSuccess(response)) ||
 				(typeof(response.reload) != "undefined" && response.reload))
 			{
 				window.location.href = '';

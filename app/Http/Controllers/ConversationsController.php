@@ -1624,7 +1624,7 @@ class ConversationsController extends Controller
                 // At first, check if this user is able to delete conversations
                 if (!auth()->user()->isAdmin() && !auth()->user()->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS)) {
                     $response['msg'] = __('Not enough permissions');
-                    \Session::flash('flash_success_floating', __('Conversations deleted'));
+                    //\Session::flash('flash_success_floating', __('Conversations deleted'));
 
                     return \Response::json($response);
                 }
@@ -1637,28 +1637,33 @@ class ConversationsController extends Controller
                         continue;
                     }
 
-                    $folder_id = $conversation->folder_id;
-                    $conversation->state = Conversation::STATE_DELETED;
-                    $conversation->user_updated_at = date('Y-m-d H:i:s');
-                    $conversation->updateFolder();
-                    $conversation->save();
+                    if ($conversation->state != Conversation::STATE_DELETED) {
+                        // Move to Deleted folder.
+                        $conversation->state = Conversation::STATE_DELETED;
+                        $conversation->user_updated_at = date('Y-m-d H:i:s');
+                        $conversation->updateFolder();
+                        $conversation->save();
 
-                    // Create lineitem thread
-                    $thread = new Thread();
-                    $thread->conversation_id = $conversation->id;
-                    $thread->user_id = $conversation->user_id;
-                    $thread->type = Thread::TYPE_LINEITEM;
-                    $thread->state = Thread::STATE_PUBLISHED;
-                    $thread->status = Thread::STATUS_NOCHANGE;
-                    $thread->action_type = Thread::ACTION_TYPE_DELETED_TICKET;
-                    $thread->source_via = Thread::PERSON_USER;
-                    $thread->source_type = Thread::SOURCE_TYPE_WEB;
-                    $thread->customer_id = $conversation->customer_id;
-                    $thread->created_by_user_id = $user->id;
-                    $thread->save();
+                        // Create lineitem thread
+                        $thread = new Thread();
+                        $thread->conversation_id = $conversation->id;
+                        $thread->user_id = $conversation->user_id;
+                        $thread->type = Thread::TYPE_LINEITEM;
+                        $thread->state = Thread::STATE_PUBLISHED;
+                        $thread->status = Thread::STATUS_NOCHANGE;
+                        $thread->action_type = Thread::ACTION_TYPE_DELETED_TICKET;
+                        $thread->source_via = Thread::PERSON_USER;
+                        $thread->source_type = Thread::SOURCE_TYPE_WEB;
+                        $thread->customer_id = $conversation->customer_id;
+                        $thread->created_by_user_id = $user->id;
+                        $thread->save();
 
-                    // Remove conversation from drafts folder.
-                    $conversation->removeFromFolder(Folder::TYPE_DRAFTS);
+                        // Remove conversation from drafts folder.
+                        $conversation->removeFromFolder(Folder::TYPE_DRAFTS);
+                    } else {
+                        // Delete forever
+                        $conversation->deleteForever();
+                    }
 
                     if (!array_key_exists($conversation->mailbox_id, $mailboxes_to_recalculate)) {
                         $mailboxes_to_recalculate[$conversation->mailbox_id] = $conversation->mailbox;
@@ -1667,6 +1672,30 @@ class ConversationsController extends Controller
                 // Recalculate folders counters for mailboxes.
                 foreach ($mailboxes_to_recalculate as $mailbox) {
                     $mailbox->updateFoldersCounters();
+                }
+
+                $response['status'] = 'success';
+                \Session::flash('flash_success_floating', __('Conversations deleted'));
+                break;
+
+            // Delete converations.
+            case 'empty_trash':
+                // At first, check if this user is able to delete conversations
+                if (!auth()->user()->isAdmin() && !auth()->user()->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS)) {
+                    $response['msg'] = __('Not enough permissions');
+                    return \Response::json($response);
+                }
+
+                $folder = Folder::find($request->folder_id ?? '');
+
+                if (!$folder) {
+                    $response['msg'] = __('Folder not found');
+                }
+
+                if (!$response['msg']) {
+                    $conversation_ids = Conversation::where('folder_id', $folder->id)->pluck('id')->toArray();
+                    Conversation::deleteConversationsForever($conversation_ids);
+                    $folder->updateCounters();
                 }
 
                 $response['status'] = 'success';
