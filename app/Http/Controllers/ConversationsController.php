@@ -380,27 +380,7 @@ class ConversationsController extends Controller
                         $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
                     }
 
-                    $prev_user_id = $conversation->user_id;
-                    $conversation->setUser($new_user_id);
-                    $conversation->save();
-
-                    // Create lineitem thread
-                    $thread = new Thread();
-                    $thread->conversation_id = $conversation->id;
-                    $thread->user_id = $conversation->user_id;
-                    $thread->type = Thread::TYPE_LINEITEM;
-                    $thread->state = Thread::STATE_PUBLISHED;
-                    $thread->status = Thread::STATUS_NOCHANGE;
-                    $thread->action_type = Thread::ACTION_TYPE_USER_CHANGED;
-                    $thread->source_via = Thread::PERSON_USER;
-                    // todo: this need to be changed for API
-                    $thread->source_type = Thread::SOURCE_TYPE_WEB;
-                    $thread->customer_id = $conversation->customer_id;
-                    $thread->created_by_user_id = $user->id;
-                    $thread->save();
-
-                    event(new ConversationUserChanged($conversation, $user));
-                    \Eventy::action('conversation.user_changed', $conversation, $user, $prev_user_id);
+                    $conversation->changeUser($new_user_id, $user);
 
                     $response['status'] = 'success';
 
@@ -1559,27 +1539,8 @@ class ConversationsController extends Controller
                         if (!$conversation->mailbox->userHasAccess($new_user_id)) {
                             continue;
                         }
-                        $prev_user_id = $conversation->user_id;
-                        $conversation->setUser($new_user_id);
-                        $conversation->save();
 
-                        // Create lineitem thread
-                        $thread = new Thread();
-                        $thread->conversation_id = $conversation->id;
-                        $thread->user_id = $conversation->user_id;
-                        $thread->type = Thread::TYPE_LINEITEM;
-                        $thread->state = Thread::STATE_PUBLISHED;
-                        $thread->status = Thread::STATUS_NOCHANGE;
-                        $thread->action_type = Thread::ACTION_TYPE_USER_CHANGED;
-                        $thread->source_via = Thread::PERSON_USER;
-                        // todo: this need to be changed for API
-                        $thread->source_type = Thread::SOURCE_TYPE_WEB;
-                        $thread->customer_id = $conversation->customer_id;
-                        $thread->created_by_user_id = $user->id;
-                        $thread->save();
-
-                        event(new ConversationUserChanged($conversation, $user));
-                        \Eventy::action('conversation.user_changed', $conversation, $user, $prev_user_id);
+                        $conversation->changeUser($new_user_id, $user);
                     }
 
                     $response['status'] = 'success';

@@ -3757,6 +3757,7 @@ function converstationBulkActionsInit()
 					}
 				}, true
 			);
+			e.preventDefault();
 		});
 
 		// Change conversation status
@@ -3780,6 +3781,7 @@ function converstationBulkActionsInit()
 					}
 				}, true
 			);
+			e.preventDefault();
 		});
 
 		// Delete conversation
@@ -3810,6 +3812,7 @@ function converstationBulkActionsInit()
 					});
 				}
 			});
+			e.preventDefault();
 		});
 
 		$('.conv-checkbox-clear', bulk_buttons).click(function(e) {
