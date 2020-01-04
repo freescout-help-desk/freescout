@@ -153,6 +153,10 @@ class Thread extends Model
         'edited_at',
     ];
 
+    protected $casts = [
+        'meta' => 'array',
+    ];
+
     /**
      * The user assigned to this thread (assignedTo).
      */
@@ -843,6 +847,9 @@ class Thread extends Model
         if (!empty($data['action_type'])) {
             $thread->action_type = $data['action_type'];
         }
+        if (!empty($data['meta'])) {
+            $thread->setMetas($data['meta']);
+        }
 
         if ($save) {
             $thread->save();
@@ -871,12 +878,13 @@ class Thread extends Model
         return $name;
     }
 
-/**
+    /**
      * Get thread meta data as array.
      */
     public function getMetas()
     {
-        return \Helper::jsonToArray($this->meta);
+        return $this->meta;
+        //return \Helper::jsonToArray($this->meta);
     }
 
     /**
@@ -884,7 +892,8 @@ class Thread extends Model
      */
     public function setMetas($data)
     {
-        $this->meta = \Helper::jsonEncodeUtf8($data);
+        $this->meta = $data;
+        //$this->meta = \Helper::jsonEncodeUtf8($data);
     }
 
     /**

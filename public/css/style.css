@@ -2061,6 +2061,10 @@ button.conv-checkbox-clear {
 .thread-type-lineitem .thread-header {
     min-height: auto;
 }
+.thread-type-lineitem .thread-title a {
+    color: #a5b2bd;
+    font-weight: bold;
+}
 .thread-attachments {
     position: relative;
 }
