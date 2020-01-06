@@ -45,7 +45,16 @@ class ThreadObserver
 
         $conversation->save();
 
-        \Eventy::action('thread.created', $thread);
+        $is_new_conversation = false;
+        if ($conversation->threads_count == 0 && in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])) {
+            $is_new_conversation = true;
+        }
+
+        \Eventy::action('thread.created', $thread, $is_new_conversation);
+        
+        if ($is_new_conversation) {
+            \Eventy::action('conversation.created', $conversation, $thread);
+        }
 
         \App\Events\RealtimeConvNewThread::dispatchSelf($thread);
         \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id);
