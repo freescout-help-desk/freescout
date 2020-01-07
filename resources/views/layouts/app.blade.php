@@ -212,6 +212,7 @@
                                                 </div>
                                             </form>
                                         </li>
+                                        <li><a href="{{ route('conversations.search', ['f' => ['following' => 'yes']]) }}"><i class="glyphicon glyphicon-chevron-right"></i> {{ __('Followed conversations') }}</a></li>
                                     </ul>
                                 </li>
                             @endguest
