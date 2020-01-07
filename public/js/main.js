@@ -2065,7 +2065,14 @@ function searchInit()
 		initCustomerSelector($('#search-filter-customer'), {width: '100%'});
 
 		// Dates
-		$('#search-filters .input-date').flatpickr({allowInput: true})
+		$('#search-filters .input-date').flatpickr({allowInput: true});
+
+		$('#search-filters .filter-multiple').select2({
+			multiple: true,
+			tags: true
+			// Causes JS error on clear
+			//allowClear: true
+		});
 	});
 }
 

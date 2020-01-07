@@ -3001,6 +3001,7 @@ ul.sidebar-block-list {
     border: 1px solid #d6dde3;
     color: #2a3b47;
     border-radius: 3px;
+    font-size: 13.4px;
 }
 .select2-multi-dropdown.select2-dropdown {
     border-bottom: 0;
@@ -3311,6 +3312,9 @@ ul.sidebar-block-list {
 }
 #search-filters .form-group.active {
     display: block;
+}
+#search-filters .select2-container {
+    width: 100% !important;
 }
 
 /**

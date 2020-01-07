@@ -2172,7 +2172,12 @@ class ConversationsController extends Controller
             $query_conversations->where('conversations.mailbox_id', '=', $filters['mailbox']);
         }
         if (!empty($filters['status'])) {
-            $query_conversations->where('conversations.status', '=', $filters['status']);
+            if (count($filters['status']) == 1) {
+                // = is faster than IN.
+                $query_conversations->where('conversations.status', '=', $filters['status'][0]);
+            } else {
+                $query_conversations->whereIn('conversations.status', $filters['status']);
+            }
         }
         if (!empty($filters['subject'])) {
             $query_conversations->where('conversations.subject', 'like', '%'.mb_strtolower($filters['subject']).'%');
