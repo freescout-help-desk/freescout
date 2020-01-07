@@ -71,10 +71,10 @@
 			        </div>
 					<div class="col-sm-6 form-group @if (isset($filters['status'])) active @endif" data-filter="status">
 			            <label>{{ __('Status') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
-			            <select name="f[status]" class="form-control" @if (empty($filters['status'])) disabled @endif>
-			            	<option value=""></option>
+			            <select name="f[status][]" class="form-control filter-multiple" multiple @if (empty($filters['status'])) disabled @endif>
+			            	{{--<option value=""></option>--}}
 	                        @foreach (App\Conversation::$statuses as $status_id => $dummy)
-	                            <option value="{{ $status_id }}" @if (!empty($filters['status']) && $filters['status'] == $status_id)selected="selected"@endif>{{ App\Conversation::statusCodeToName($status_id) }}</option>
+	                            <option value="{{ $status_id }}" @if (!empty($filters['status']) && in_array($status_id, $filters['status']))selected="selected"@endif>{{ App\Conversation::statusCodeToName($status_id) }}</option>
 	                        @endforeach
 	                    </select>
 			        </div>
@@ -106,6 +106,13 @@
 					<div class="col-sm-6 form-group @if (isset($filters['number'])) active @endif" data-filter="number">
 			            <label>{{ __('Number') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
 			            <input type="text" name="f[number]" value="{{ $filters['number'] ?? ''}}" class="form-control" @if (empty($filters['number'])) disabled @endif>
+			        </div>
+					<div class="col-sm-6 form-group @if (isset($filters['following'])) active @endif" data-filter="following">
+			            <label>{{ __('Following') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
+			            <select name="f[following]" class="form-control" @if (empty($filters['following'])) disabled @endif>
+			            	<option value=""></option>
+	                        <option value="yes" @if (!empty($filters['following']) && $filters['following'] == 'yes')selected="selected"@endif>{{ __('Yes') }}</option>
+	                    </select>
 			        </div>
 					<div class="col-sm-6 form-group @if (isset($filters['id'])) active @endif" data-filter="id">
 			            <label>{{ __('ID') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>

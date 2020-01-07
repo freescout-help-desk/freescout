@@ -4,6 +4,8 @@ namespace App;
 
 use App\Thread;
 use App\User;
+use App\Events\ConversationStatusChanged;
+use App\Events\ConversationUserChanged;
 use App\Events\ConversationCustomerChanged;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
@@ -119,6 +121,11 @@ class Conversation extends Model
     ];
 
     /**
+     * Assignee.
+     */
+    const USER_UNASSIGNED = -1;
+
+    /**
      * Search filters.
      */
     public static $search_filters = [
@@ -131,6 +138,7 @@ class Conversation extends Model
         'type',
         'body',
         'number',
+        'following',
         'id',
         'after',
         'before',
@@ -1306,6 +1314,81 @@ class Conversation extends Model
             }
         }
         return $viewers;
+    }
+
+    public function changeStatus($new_status, $user, $create_thread = true)
+    {
+        $prev_status = $this->status;
+
+        $this->setStatus($new_status, $user);
+        $this->save();
+
+        // Create lineitem thread
+        if ($create_thread) {
+            $thread = new Thread();
+            $thread->conversation_id = $this->id;
+            $thread->user_id = $this->user_id;
+            $thread->type = Thread::TYPE_LINEITEM;
+            $thread->state = Thread::STATE_PUBLISHED;
+            $thread->status = $this->status;
+            $thread->action_type = Thread::ACTION_TYPE_STATUS_CHANGED;
+            $thread->source_via = Thread::PERSON_USER;
+            // todo: this need to be changed for API
+            $thread->source_type = Thread::SOURCE_TYPE_WEB;
+            $thread->customer_id = $this->customer_id;
+            $thread->created_by_user_id = $user->id;
+            $thread->save();
+        }
+
+        event(new ConversationStatusChanged($this));
+        \Eventy::action('conversation.status_changed', $this, $user, $changed_on_reply = false, $prev_status);
+    }
+
+    public function changeUser($new_user_id, $user, $create_thread = true)
+    {
+        $prev_user_id = $this->user_id;
+        
+        $this->setUser($new_user_id);
+        $this->save();
+
+        // Create lineitem thread
+        $thread = new Thread();
+        $thread->conversation_id = $this->id;
+        $thread->user_id = $this->user_id;
+        $thread->type = Thread::TYPE_LINEITEM;
+        $thread->state = Thread::STATE_PUBLISHED;
+        $thread->status = Thread::STATUS_NOCHANGE;
+        $thread->action_type = Thread::ACTION_TYPE_USER_CHANGED;
+        $thread->source_via = Thread::PERSON_USER;
+        // todo: this need to be changed for API
+        $thread->source_type = Thread::SOURCE_TYPE_WEB;
+        $thread->customer_id = $this->customer_id;
+        $thread->created_by_user_id = $user->id;
+        $thread->save();
+
+        event(new ConversationUserChanged($this, $user));
+        \Eventy::action('conversation.user_changed', $this, $user, $prev_user_id);
+    }
+
+    public function deleteForever()
+    {
+        self::deleteConversationsForever([$this->id]);
+    }
+
+    public static function deleteConversationsForever($conversation_ids)
+    {
+        \Eventy::action('conversations.before_delete_forever', $conversation_ids);
+
+        //$conversation_ids = $conversations->pluck('id')->toArray();
+
+        // Delete attachments.
+        $thread_ids = Thread::whereIn('conversation_id', $conversation_ids)->pluck('id')->toArray();
+        Attachment::deleteByThreadIds($thread_ids);
+
+        // Delete threads.
+        Thread::whereIn('conversation_id', $conversation_ids)->delete();
+        // Delete conversations.
+        Conversation::whereIn('id', $conversation_ids)->delete();
     }
 
     // /**

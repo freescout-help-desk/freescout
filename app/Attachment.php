@@ -239,12 +239,32 @@ class Attachment extends Model
         $attachments = self::whereIn('id', $attachment_ids)->get();
 
         // Delete from disk
+        self::deleteForever($attachments);
+    }
+
+    /**
+     * Delete attachments by thread IDs.
+     */
+    public static function deleteByThreadIds($thread_ids)
+    {
+        if (!count($thread_ids)) {
+            return;
+        }
+        $attachments = self::whereIn('thread_id', $thread_ids)->get();
+
+        // Delete from disk
+        self::deleteForever($attachments);
+    }
+
+    public static function deleteForever($attachments)
+    {
+        // Delete from disk
         foreach ($attachments as $attachment) {
             Storage::delete($attachment->getStorageFilePath());
         }
 
         // Delete from DB
-        self::whereIn('id', $attachment_ids)->delete();
+        self::whereIn('id', $attachments->pluck('id')->toArray())->delete();
     }
 
     /**

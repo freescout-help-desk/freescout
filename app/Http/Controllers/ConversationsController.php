@@ -380,27 +380,7 @@ class ConversationsController extends Controller
                         $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
                     }
 
-                    $prev_user_id = $conversation->user_id;
-                    $conversation->setUser($new_user_id);
-                    $conversation->save();
-
-                    // Create lineitem thread
-                    $thread = new Thread();
-                    $thread->conversation_id = $conversation->id;
-                    $thread->user_id = $conversation->user_id;
-                    $thread->type = Thread::TYPE_LINEITEM;
-                    $thread->state = Thread::STATE_PUBLISHED;
-                    $thread->status = Thread::STATUS_NOCHANGE;
-                    $thread->action_type = Thread::ACTION_TYPE_USER_CHANGED;
-                    $thread->source_via = Thread::PERSON_USER;
-                    // todo: this need to be changed for API
-                    $thread->source_type = Thread::SOURCE_TYPE_WEB;
-                    $thread->customer_id = $conversation->customer_id;
-                    $thread->created_by_user_id = $user->id;
-                    $thread->save();
-
-                    event(new ConversationUserChanged($conversation, $user));
-                    \Eventy::action('conversation.user_changed', $conversation, $user, $prev_user_id);
+                    $conversation->changeUser($new_user_id, $user);
 
                     $response['status'] = 'success';
 
@@ -459,28 +439,7 @@ class ConversationsController extends Controller
                         $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
                     }
 
-                    $prev_status = $conversation->status;
-
-                    $conversation->setStatus($new_status, $user);
-                    $conversation->save();
-
-                    // Create lineitem thread
-                    $thread = new Thread();
-                    $thread->conversation_id = $conversation->id;
-                    $thread->user_id = $conversation->user_id;
-                    $thread->type = Thread::TYPE_LINEITEM;
-                    $thread->state = Thread::STATE_PUBLISHED;
-                    $thread->status = $conversation->status;
-                    $thread->action_type = Thread::ACTION_TYPE_STATUS_CHANGED;
-                    $thread->source_via = Thread::PERSON_USER;
-                    // todo: this need to be changed for API
-                    $thread->source_type = Thread::SOURCE_TYPE_WEB;
-                    $thread->customer_id = $conversation->customer_id;
-                    $thread->created_by_user_id = $user->id;
-                    $thread->save();
-
-                    event(new ConversationStatusChanged($conversation));
-                    \Eventy::action('conversation.status_changed', $conversation, $user, $changed_on_reply = false, $prev_status);
+                    $conversation->changeStatus($new_status, $user);
 
                     $response['status'] = 'success';
                     // Flash
@@ -539,6 +498,11 @@ class ConversationsController extends Controller
                 $is_forward = false;
                 if (!empty($request->subtype) && (int)$request->subtype == Thread::SUBTYPE_FORWARD) {
                     $is_forward = true;
+                }
+
+                $is_multiple = false;
+                if (!empty($request->multiple_conversations)) {
+                    $is_multiple = true;
                 }
 
                 // If reply is being created from draft, there is already thread created
@@ -711,7 +675,11 @@ class ConversationsController extends Controller
 
                     if (!$is_note && !$is_forward) {
                         // Save extra recipients to CC
-                        $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                        if ($is_create && !$is_multiple && count($to_array) > 1) {
+                            $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), $to_array));
+                        } else {
+                            $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                        }
                         $conversation->setBcc($request->bcc);
                         $conversation->last_reply_at = $now;
                         $conversation->last_reply_from = Conversation::PERSON_USER;
@@ -773,7 +741,11 @@ class ConversationsController extends Controller
                     $thread->edited_by_user_id = null;
                     $thread->edited_at = null;
                     $thread->body = $request->body;
-                    $thread->setTo($to);
+                    if ($is_create && !$is_multiple && count($to_array) > 1) {
+                        $thread->setTo($to_array);
+                    } else {
+                        $thread->setTo($to);
+                    }
                     // We save CC and BCC as is and filter emails when sending replies
                     $thread->setCc($request->cc);
                     $thread->setBcc($request->bcc);
@@ -886,8 +858,8 @@ class ConversationsController extends Controller
                         \Helper::backgroundAction('conversation.user_replied', [$conversation, $thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
                     }
 
-                    // Send new conversation to multiple customers.
-                    if ($is_create && count($to_array) > 1) {
+                    // Send new conversation separately to each customer.
+                    if ($is_create && count($to_array) > 1 && $is_multiple) {
                         $prev_customers_ids = [];
                         foreach ($to_array as $i => $customer_email) {
                             // Skip first email, as conversation has already been created for it.
@@ -912,6 +884,7 @@ class ConversationsController extends Controller
                             $thread_copy = $thread->replicate();
 
                             // Save conversation.
+                            $conversation_copy->threads_count = 0;
                             $conversation_copy->customer_id = $customer_tmp->id;
                             $conversation_copy->customer_email = $customer_email;
                             $conversation_copy->push();
@@ -1452,6 +1425,32 @@ class ConversationsController extends Controller
                 }
                 break;
 
+            // Delete conversation forever
+            case 'delete_conversation_forever':
+                $conversation = Conversation::find($request->conversation_id);
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                } elseif (!$user->can('delete', $conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    $folder_id = $conversation->getCurrentFolder();
+                    $mailbox = $conversation->mailbox;
+
+                    $conversation->deleteForever();
+
+                    // Recalculate only old and new folders
+                    $mailbox->updateFoldersCounters();
+
+                    $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $folder_id]);
+
+                    $response['status'] = 'success';
+
+                    \Session::flash('flash_success_floating', __('Conversation deleted'));
+                }
+                break;
+
             // Restore conversation
             case 'restore_conversation':
                 $conversation = Conversation::find($request->conversation_id);
@@ -1554,27 +1553,8 @@ class ConversationsController extends Controller
                         if (!$conversation->mailbox->userHasAccess($new_user_id)) {
                             continue;
                         }
-                        $prev_user_id = $conversation->user_id;
-                        $conversation->setUser($new_user_id);
-                        $conversation->save();
 
-                        // Create lineitem thread
-                        $thread = new Thread();
-                        $thread->conversation_id = $conversation->id;
-                        $thread->user_id = $conversation->user_id;
-                        $thread->type = Thread::TYPE_LINEITEM;
-                        $thread->state = Thread::STATE_PUBLISHED;
-                        $thread->status = Thread::STATUS_NOCHANGE;
-                        $thread->action_type = Thread::ACTION_TYPE_USER_CHANGED;
-                        $thread->source_via = Thread::PERSON_USER;
-                        // todo: this need to be changed for API
-                        $thread->source_type = Thread::SOURCE_TYPE_WEB;
-                        $thread->customer_id = $conversation->customer_id;
-                        $thread->created_by_user_id = $user->id;
-                        $thread->save();
-
-                        event(new ConversationUserChanged($conversation, $user));
-                        \Eventy::action('conversation.user_changed', $conversation, $user, $prev_user_id);
+                        $conversation->changeUser($new_user_id, $user);
                     }
 
                     $response['status'] = 'success';
@@ -1602,28 +1582,7 @@ class ConversationsController extends Controller
                             continue;
                         }
 
-                        $prev_status = $conversation->status;
-
-                        $conversation->setStatus($new_status, $user);
-                        $conversation->save();
-
-                        // Create lineitem thread
-                        $thread = new Thread();
-                        $thread->conversation_id = $conversation->id;
-                        $thread->user_id = $conversation->user_id;
-                        $thread->type = Thread::TYPE_LINEITEM;
-                        $thread->state = Thread::STATE_PUBLISHED;
-                        $thread->status = $conversation->status;
-                        $thread->action_type = Thread::ACTION_TYPE_STATUS_CHANGED;
-                        $thread->source_via = Thread::PERSON_USER;
-                        // todo: this need to be changed for API
-                        $thread->source_type = Thread::SOURCE_TYPE_WEB;
-                        $thread->customer_id = $conversation->customer_id;
-                        $thread->created_by_user_id = $user->id;
-                        $thread->save();
-
-                        event(new ConversationStatusChanged($conversation));
-                        \Eventy::action('conversation.status_changed', $conversation, $user, $changed_on_reply = false, $prev_status);
+                        $conversation->changeStatus($new_status, $user);
                     }
 
                     $response['status'] = 'success';
@@ -1640,7 +1599,7 @@ class ConversationsController extends Controller
                 // At first, check if this user is able to delete conversations
                 if (!auth()->user()->isAdmin() && !auth()->user()->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS)) {
                     $response['msg'] = __('Not enough permissions');
-                    \Session::flash('flash_success_floating', __('Conversations deleted'));
+                    //\Session::flash('flash_success_floating', __('Conversations deleted'));
 
                     return \Response::json($response);
                 }
@@ -1653,28 +1612,33 @@ class ConversationsController extends Controller
                         continue;
                     }
 
-                    $folder_id = $conversation->folder_id;
-                    $conversation->state = Conversation::STATE_DELETED;
-                    $conversation->user_updated_at = date('Y-m-d H:i:s');
-                    $conversation->updateFolder();
-                    $conversation->save();
+                    if ($conversation->state != Conversation::STATE_DELETED) {
+                        // Move to Deleted folder.
+                        $conversation->state = Conversation::STATE_DELETED;
+                        $conversation->user_updated_at = date('Y-m-d H:i:s');
+                        $conversation->updateFolder();
+                        $conversation->save();
 
-                    // Create lineitem thread
-                    $thread = new Thread();
-                    $thread->conversation_id = $conversation->id;
-                    $thread->user_id = $conversation->user_id;
-                    $thread->type = Thread::TYPE_LINEITEM;
-                    $thread->state = Thread::STATE_PUBLISHED;
-                    $thread->status = Thread::STATUS_NOCHANGE;
-                    $thread->action_type = Thread::ACTION_TYPE_DELETED_TICKET;
-                    $thread->source_via = Thread::PERSON_USER;
-                    $thread->source_type = Thread::SOURCE_TYPE_WEB;
-                    $thread->customer_id = $conversation->customer_id;
-                    $thread->created_by_user_id = $user->id;
-                    $thread->save();
+                        // Create lineitem thread
+                        $thread = new Thread();
+                        $thread->conversation_id = $conversation->id;
+                        $thread->user_id = $conversation->user_id;
+                        $thread->type = Thread::TYPE_LINEITEM;
+                        $thread->state = Thread::STATE_PUBLISHED;
+                        $thread->status = Thread::STATUS_NOCHANGE;
+                        $thread->action_type = Thread::ACTION_TYPE_DELETED_TICKET;
+                        $thread->source_via = Thread::PERSON_USER;
+                        $thread->source_type = Thread::SOURCE_TYPE_WEB;
+                        $thread->customer_id = $conversation->customer_id;
+                        $thread->created_by_user_id = $user->id;
+                        $thread->save();
 
-                    // Remove conversation from drafts folder.
-                    $conversation->removeFromFolder(Folder::TYPE_DRAFTS);
+                        // Remove conversation from drafts folder.
+                        $conversation->removeFromFolder(Folder::TYPE_DRAFTS);
+                    } else {
+                        // Delete forever
+                        $conversation->deleteForever();
+                    }
 
                     if (!array_key_exists($conversation->mailbox_id, $mailboxes_to_recalculate)) {
                         $mailboxes_to_recalculate[$conversation->mailbox_id] = $conversation->mailbox;
@@ -1683,6 +1647,30 @@ class ConversationsController extends Controller
                 // Recalculate folders counters for mailboxes.
                 foreach ($mailboxes_to_recalculate as $mailbox) {
                     $mailbox->updateFoldersCounters();
+                }
+
+                $response['status'] = 'success';
+                \Session::flash('flash_success_floating', __('Conversations deleted'));
+                break;
+
+            // Delete converations.
+            case 'empty_trash':
+                // At first, check if this user is able to delete conversations
+                if (!auth()->user()->isAdmin() && !auth()->user()->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS)) {
+                    $response['msg'] = __('Not enough permissions');
+                    return \Response::json($response);
+                }
+
+                $folder = Folder::find($request->folder_id ?? '');
+
+                if (!$folder) {
+                    $response['msg'] = __('Folder not found');
+                }
+
+                if (!$response['msg']) {
+                    $conversation_ids = Conversation::where('folder_id', $folder->id)->pluck('id')->toArray();
+                    Conversation::deleteConversationsForever($conversation_ids);
+                    $folder->updateCounters();
                 }
 
                 $response['status'] = 'success';
@@ -2184,7 +2172,12 @@ class ConversationsController extends Controller
             $query_conversations->where('conversations.mailbox_id', '=', $filters['mailbox']);
         }
         if (!empty($filters['status'])) {
-            $query_conversations->where('conversations.status', '=', $filters['status']);
+            if (count($filters['status']) == 1) {
+                // = is faster than IN.
+                $query_conversations->where('conversations.status', '=', $filters['status'][0]);
+            } else {
+                $query_conversations->whereIn('conversations.status', $filters['status']);
+            }
         }
         if (!empty($filters['subject'])) {
             $query_conversations->where('conversations.subject', 'like', '%'.mb_strtolower($filters['subject']).'%');
@@ -2201,6 +2194,14 @@ class ConversationsController extends Controller
         }
         if (!empty($filters['number'])) {
             $query_conversations->where('conversations.number', '=', $filters['number']);
+        }
+        if (!empty($filters['following'])) {
+            if ($filters['following'] == 'yes') {
+                $query_conversations->join('followers', function ($join) {
+                    $join->on('followers.conversation_id', '=', 'conversations.id');
+                    $join->where('followers.user_id', auth()->user()->id);
+                });
+            }
         }
         if (!empty($filters['id'])) {
             $query_conversations->where('conversations.id', '=', $filters['id']);

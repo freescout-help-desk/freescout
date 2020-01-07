@@ -45,7 +45,7 @@
     <div class="text-center">
         <div class="text-larger margin-top-10">{{ __("Delete the conversations?") }}</div>
         <div class="form-group margin-top">
-            <button class="btn btn-primary delete-conversation-ok">{{ __("Delete") }}</button>
+            <button class="btn btn-primary delete-conversation-ok" data-loading-text="{{ __("Deleting") }}…">{{ __("Delete") }}</button>
             <button class="btn btn-link" data-dismiss="modal">{{ __("Cancel") }}</button>
         </div>
     </div>

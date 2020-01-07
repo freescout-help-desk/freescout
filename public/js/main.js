@@ -330,7 +330,7 @@ function deleteMailboxModal(modal)
 			},
 			laroute.route('mailboxes.ajax'),
 			function(response) {
-				if (typeof(response.status) != "undefined" && response.status == "success") {
+				if (isAjaxSuccess(response)) {
 					window.location.href = laroute.route('mailboxes');
 					return;
 				} else {
@@ -955,7 +955,7 @@ function initConversation()
 		});
 
 	    // Delete conversation
-	    jQuery(".conv-delete").click(function(e){
+	    jQuery(".conv-delete,.conv-delete-forever").click(function(e){
 	    	var confirm_html = '<div>'+
 			'<div class="text-center">'+
 			'<div class="text-larger margin-top-10">'+Lang.get("messages.confirm_delete_conversation")+'</div>'+
@@ -966,18 +966,23 @@ function initConversation()
     		'</div>'+
     		'</div>';
 
+    		var action = 'delete_conversation';
+    		if ($(this).hasClass('conv-delete-forever')) {
+    			action = 'delete_conversation_forever';
+    		}
+
 			showModalDialog(confirm_html, {
 				on_show: function(modal) {
 					modal.children().find('.delete-conversation-ok:first').click(function(e) {
 						modal.modal('hide');
 						fsAjax(
 							{
-								action: 'delete_conversation',
+								action: action,
 								conversation_id: getGlobalAttr('conversation_id')
 							},
 							laroute.route('conversations.ajax'),
 							function(response) {
-								if (typeof(response.status) != "undefined" && response.status == "success"
+								if (isAjaxSuccess(response)
 									&& typeof(response.redirect_url) != "undefined"
 								) {
 									window.location.href = response.redirect_url;
@@ -1586,7 +1591,7 @@ function initRecipientSelector(custom_options, selector)
 	return result;
 }
 
-function initReplyForm(load_attachments, init_customer_selector)
+function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 {
 	$(document).ready(function() {
 
@@ -1598,6 +1603,18 @@ function initReplyForm(load_attachments, init_customer_selector)
 		// Customer selector
 		if (typeof(init_customer_selector) != "undefined") {
 			initRecipientSelector();
+		}
+
+		// New conversation
+		if (typeof(is_new_conv) != "undefined") {
+			$('#to').on('select2:closing', function(e) {
+				var select = $(e.target);
+				if (select.val().length > 1) {
+					$('#multiple-conversations-wrap').removeClass('hidden');
+				} else {
+					$('#multiple-conversations-wrap').addClass('hidden');
+				}
+			});
 		}
 
 		// Show CC
@@ -1896,7 +1913,7 @@ function triggerModal(a, params)
         	if (typeof(window[on_show]) == "function") {
         		window[on_show](modal);
         	} else if (typeof(on_show) == "function") {
-        		on_show(modal);
+        		on_show(modal, a);
         	}
         }
     } else {
@@ -1908,9 +1925,9 @@ function triggerModal(a, params)
 
 			        if (on_show) {
 			        	if (typeof(window[on_show]) == "function") {
-			        		window[on_show](modal);
+			        		window[on_show](modal, a);
 			        	} else if (typeof(on_show) == "function") {
-			        		on_show(modal);
+			        		on_show(modal, a);
 			        	}
 			        }
                 },
@@ -1970,6 +1987,42 @@ function viewMailboxInit()
 {
 	conversationPagination();
 	starConversationInit();
+	initMailboxToolbar();
+}
+
+function initMailboxToolbar()
+{
+	$(document).ready(function() {
+		// Empty trash
+		$(".mailbox-empty-trash").click(function(e) {
+			showModalDialog('#conversations-bulk-actions-delete-modal', {
+				on_show: function(modal) {
+					modal.children().find('.delete-conversation-ok:first').click(function(e) {
+						var button = $(this);
+						button.button('loading');
+
+						fsAjax(
+							{
+								action: 'empty_trash',
+								folder_id: getGlobalAttr('folder_id')
+							},
+							laroute.route('conversations.ajax'),
+							function(response) {
+								if (isAjaxSuccess(response)) {
+									location.reload();
+								} else {
+									modal.modal('hide');
+									showAjaxError(response);
+								}
+							}, true
+						);
+						e.preventDefault();
+					});
+				}
+			});
+			e.preventDefault();
+		});
+	});
 }
 
 function searchInit()
@@ -2012,7 +2065,14 @@ function searchInit()
 		initCustomerSelector($('#search-filter-customer'), {width: '100%'});
 
 		// Dates
-		$('#search-filters .input-date').flatpickr({allowInput: true})
+		$('#search-filters .input-date').flatpickr({allowInput: true});
+
+		$('#search-filters .filter-multiple').select2({
+			multiple: true,
+			tags: true
+			// Causes JS error on clear
+			//allowClear: true
+		});
 	});
 }
 
@@ -2539,7 +2599,7 @@ function userProfileInit()
 						data,
 						laroute.route('users.ajax'),
 						function(response) {
-							if (typeof(response.status) != "undefined" && response.status == "success") {
+							if (isAjaxSuccess(response)) {
 								window.location.href = laroute.route('users');
 								return;
 							} else {
@@ -2945,7 +3005,7 @@ function webNotificationsInit()
 			},
 			laroute.route('users.ajax'),
 			function(response) {
-				if (typeof(response.status) != "undefined" && response.status == "success") {
+				if (isAjaxSuccess(response)) {
 					$(response.html).insertBefore(button.parent());
 				} else {
 					showAjaxError(response);
@@ -2978,7 +3038,7 @@ function webNotificationsInit()
 			},
 			laroute.route('users.ajax'),
 			function(response) {
-				if (typeof(response.status) != "undefined" && response.status == "success") {
+				if (isAjaxSuccess(response)) {
 					mark_button.remove();
 					$('.web-notifications-count:first').addClass('hidden');
 					$('.web-notification.is-unread').removeClass('is-unread');
@@ -3028,7 +3088,7 @@ function initSystemStatus()
 						},
 						laroute.route('system.ajax'),
 						function(response) {
-							if (typeof(response.status) != "undefined" && response.status == "success") {
+							if (isAjaxSuccess(response)) {
 								showAjaxResult(response);
 								window.location.href = '';
 							} else if (response.msg) {
@@ -3058,7 +3118,7 @@ function initSystemStatus()
 			},
 			laroute.route('system.ajax'),
 			function(response) {
-				if (typeof(response.status) != "undefined" && response.status == "success") {
+				if (isAjaxSuccess(response)) {
 					if (typeof(response.new_version_available) != "undefined" && response.new_version_available) {
 						// There are updates
 						window.location.href = '';
@@ -3417,7 +3477,7 @@ function discardDraft(thread_id)
 					laroute.route('conversations.ajax'),
 					function(response) {
 						modal.modal('hide');
-						if (typeof(response.status) != "undefined" && response.status == "success") {
+						if (isAjaxSuccess(response)) {
 							if (typeof(response.redirect_url) != "undefined" && response.redirect_url) {
 								window.location.href = response.redirect_url;
 								return;
@@ -3591,7 +3651,7 @@ function starConversationInit()
 			},
 			laroute.route('conversations.ajax'),
 			function(response) {
-				if (typeof(response.status) != "undefined" && response.status == "success") {
+				if (isAjaxSuccess(response)) {
 					// In the list there are two stars for desktop and monile
 					if (trigger.parents('.conv-row:first').length) {
 						trigger = trigger.parents('.conv-row:first').children().find('.conv-star');
@@ -3709,13 +3769,14 @@ function converstationBulkActionsInit()
 				},
 				laroute.route('conversations.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						location.reload();
 					} else {
 						showAjaxError(response);
 					}
 				}, true
 			);
+			e.preventDefault();
 		});
 
 		// Change conversation status
@@ -3732,13 +3793,14 @@ function converstationBulkActionsInit()
 				},
 				laroute.route('conversations.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						location.reload();
 					} else {
 						showAjaxError(response);
 					}
 				}, true
 			);
+			e.preventDefault();
 		});
 
 		// Delete conversation
@@ -3758,7 +3820,7 @@ function converstationBulkActionsInit()
 							},
 							laroute.route('conversations.ajax'),
 							function(response) {
-								if (typeof(response.status) != "undefined" && response.status == "success") {
+								if (isAjaxSuccess(response)) {
 									location.reload();
 								} else {
 									showAjaxError(response);
@@ -3769,6 +3831,7 @@ function converstationBulkActionsInit()
 					});
 				}
 			});
+			e.preventDefault();
 		});
 
 		$('.conv-checkbox-clear', bulk_buttons).click(function(e) {
@@ -3777,7 +3840,6 @@ function converstationBulkActionsInit()
 			$(checkboxes).trigger('change');
 			$('table.table-conversations tr').removeClass('selected');
 		});
-
 	});
 }
 
@@ -3985,7 +4047,7 @@ function initModulesList()
 				},
 				laroute.route('modules.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						window.location.href = '';
 					} else {
 						showAjaxError(response);
@@ -4005,7 +4067,7 @@ function initModulesList()
 				},
 				laroute.route('modules.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						window.location.href = '';
 					} else {
 						showAjaxError(response);
@@ -4029,7 +4091,7 @@ function initModulesList()
 							},
 							laroute.route('modules.ajax'),
 							function(response) {
-								if (typeof(response.status) != "undefined" && response.status == "success") {
+								if (isAjaxSuccess(response)) {
 									window.location.href = '';
 								} else {
 									showAjaxError(response);
@@ -4055,7 +4117,7 @@ function initModulesList()
 				},
 				laroute.route('modules.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						window.location.href = '';
 					} else {
 						showAjaxError(response);
@@ -4078,7 +4140,7 @@ function initModulesList()
 				},
 				laroute.route('modules.ajax'),
 				function(response) {
-					if (typeof(response.status) != "undefined" && response.status == "success") {
+					if (isAjaxSuccess(response)) {
 						window.location.href = '';
 					} else {
 						showAjaxError(response);
@@ -4102,7 +4164,7 @@ function installModule(alias)
 		},
 		laroute.route('modules.ajax'),
 		function(response) {
-			if ((typeof(response.status) != "undefined" && response.status == "success") ||
+			if ((isAjaxSuccess(response)) ||
 				(typeof(response.reload) != "undefined" && response.reload))
 			{
 				window.location.href = '';

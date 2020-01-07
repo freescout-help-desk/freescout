@@ -40,6 +40,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
   * Phone conversations.
   * Sending new conversations to multiple recipients at once.
   * Push notifications.
+  * Following a conversation.
   * Auto reply.
   * Notes.
   * Pasting screenshots from the clipboard into the reply area.
