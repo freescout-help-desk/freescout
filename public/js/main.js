@@ -1591,7 +1591,7 @@ function initRecipientSelector(custom_options, selector)
 	return result;
 }
 
-function initReplyForm(load_attachments, init_customer_selector)
+function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 {
 	$(document).ready(function() {
 
@@ -1603,6 +1603,18 @@ function initReplyForm(load_attachments, init_customer_selector)
 		// Customer selector
 		if (typeof(init_customer_selector) != "undefined") {
 			initRecipientSelector();
+		}
+
+		// New conversation
+		if (typeof(is_new_conv) != "undefined") {
+			$('#to').on('select2:closing', function(e) {
+				var select = $(e.target);
+				if (select.val().length > 1) {
+					$('#multiple-conversations-wrap').removeClass('hidden');
+				} else {
+					$('#multiple-conversations-wrap').addClass('hidden');
+				}
+			});
 		}
 
 		// Show CC

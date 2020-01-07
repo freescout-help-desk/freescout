@@ -144,6 +144,10 @@
                                         @endif
                                     </select>
 
+                                    <label class="checkbox @if (count($to) <= 1) hidden @endif" for="multiple_conversations" id="multiple-conversations-wrap">
+                                        <input type="checkbox" name="multiple_conversations" value="1" id="multiple_conversations"> {{ __('Send emails separately to each recipient') }}
+                                    </label>
+
                                     @include('partials/field_error', ['field'=>'to'])
                                 </div>
                             </div>
@@ -223,6 +227,6 @@
 
 @section('javascript')
     @parent
-    initReplyForm(true, true);
+    initReplyForm(true, true, true);
     initNewConversation(@if ($conversation->type == App\Conversation::TYPE_PHONE){{ 'true' }}@endif);
 @endsection

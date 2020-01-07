@@ -500,6 +500,11 @@ class ConversationsController extends Controller
                     $is_forward = true;
                 }
 
+                $is_multiple = false;
+                if (!empty($request->multiple_conversations)) {
+                    $is_multiple = true;
+                }
+
                 // If reply is being created from draft, there is already thread created
                 $thread = null;
                 $from_draft = false;
@@ -670,7 +675,11 @@ class ConversationsController extends Controller
 
                     if (!$is_note && !$is_forward) {
                         // Save extra recipients to CC
-                        $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                        if ($is_create && !$is_multiple && count($to_array) > 1) {
+                            $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), $to_array));
+                        } else {
+                            $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                        }
                         $conversation->setBcc($request->bcc);
                         $conversation->last_reply_at = $now;
                         $conversation->last_reply_from = Conversation::PERSON_USER;
@@ -732,7 +741,11 @@ class ConversationsController extends Controller
                     $thread->edited_by_user_id = null;
                     $thread->edited_at = null;
                     $thread->body = $request->body;
-                    $thread->setTo($to);
+                    if ($is_create && !$is_multiple && count($to_array) > 1) {
+                        $thread->setTo($to_array);
+                    } else {
+                        $thread->setTo($to);
+                    }
                     // We save CC and BCC as is and filter emails when sending replies
                     $thread->setCc($request->cc);
                     $thread->setBcc($request->bcc);
@@ -845,8 +858,8 @@ class ConversationsController extends Controller
                         \Helper::backgroundAction('conversation.user_replied', [$conversation, $thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
                     }
 
-                    // Send new conversation to multiple customers.
-                    if ($is_create && count($to_array) > 1) {
+                    // Send new conversation separately to each customer.
+                    if ($is_create && count($to_array) > 1 && $is_multiple) {
                         $prev_customers_ids = [];
                         foreach ($to_array as $i => $customer_email) {
                             // Skip first email, as conversation has already been created for it.
@@ -871,6 +884,7 @@ class ConversationsController extends Controller
                             $thread_copy = $thread->replicate();
 
                             // Save conversation.
+                            $conversation_copy->threads_count = 0;
                             $conversation_copy->customer_id = $customer_tmp->id;
                             $conversation_copy->customer_email = $customer_email;
                             $conversation_copy->push();

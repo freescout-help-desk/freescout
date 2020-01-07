@@ -128,6 +128,7 @@ class SendReplyToCustomer implements ShouldQueue
         $headers['Message-ID'] = $this->message_id;
 
         $this->customer_email = $this->conversation->customer_email;
+        $to_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getToArray());
         $cc_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getCcArray());
         $bcc_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getBccArray());
 
@@ -148,7 +149,14 @@ class SendReplyToCustomer implements ShouldQueue
             $bcc_array = \App\Misc\Mail::removeEmailFromArray($bcc_array, $cc_email);
         }
 
-        $this->recipients = array_merge([$this->customer_email], $cc_array, $bcc_array);
+        $this->recipients = array_merge($to_array, $cc_array, $bcc_array);
+
+        $to = [];
+        if (count($to_array) > 1) {
+            $to = $to_array;
+        } else {
+            $to = [['name' => $this->customer->getFullName(), 'email' => $this->customer_email]];
+        }
 
         // If sending fails, all recipiens fail.
         // if ($this->attempts() > 1) {
@@ -157,7 +165,7 @@ class SendReplyToCustomer implements ShouldQueue
         // }
 
         try {
-            Mail::to([['name' => $this->customer->getFullName(), 'email' => $this->customer_email]])
+            Mail::to($to)
                 ->cc($cc_array)
                 ->bcc($bcc_array)
                 ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox));
