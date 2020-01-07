@@ -152,7 +152,7 @@
 
                                     <div class="conv-reply-field">
 
-                                        <select class="form-control recipient-select" name="cc[]" id="cc" multiple/>
+                                        <select class="form-control recipient-select" name="cc[]" id="cc" multiple>
                                             @if ($cc)
                                                 @foreach ($cc as $cc_email)
                                                     <option value="{{ $cc_email }}" selected="selected">{{ $cc_email }}</option>
@@ -168,7 +168,7 @@
                                     <label for="bcc" class="control-label">{{ __('Bcc') }}</label>
 
                                     <div class="conv-reply-field">
-                                         <select class="form-control recipient-select" name="bcc[]" id="bcc" multiple/>
+                                         <select class="form-control recipient-select" name="bcc[]" id="bcc" multiple>
                                             @if ($bcc)
                                                 @foreach ($bcc as $bcc_email)
                                                     <option value="{{ $bcc_email }}" selected="selected">{{ $bcc_email }}</option>
