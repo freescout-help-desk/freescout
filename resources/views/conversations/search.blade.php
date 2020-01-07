@@ -107,6 +107,13 @@
 			            <label>{{ __('Number') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
 			            <input type="text" name="f[number]" value="{{ $filters['number'] ?? ''}}" class="form-control" @if (empty($filters['number'])) disabled @endif>
 			        </div>
+					<div class="col-sm-6 form-group @if (isset($filters['following'])) active @endif" data-filter="following">
+			            <label>{{ __('Following') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
+			            <select name="f[following]" class="form-control" @if (empty($filters['following'])) disabled @endif>
+			            	<option value=""></option>
+	                        <option value="yes" @if (!empty($filters['following']) && $filters['following'] == 'yes')selected="selected"@endif>{{ __('Yes') }}</option>
+	                    </select>
+			        </div>
 					<div class="col-sm-6 form-group @if (isset($filters['id'])) active @endif" data-filter="id">
 			            <label>{{ __('ID') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
 			            <input type="text" name="f[id]" value="{{ $filters['id'] ?? ''}}" class="form-control" @if (empty($filters['id'])) disabled @endif>

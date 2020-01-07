@@ -138,6 +138,7 @@ class Conversation extends Model
         'type',
         'body',
         'number',
+        'following',
         'id',
         'after',
         'before',

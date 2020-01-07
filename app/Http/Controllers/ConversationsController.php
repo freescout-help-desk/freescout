@@ -2190,6 +2190,14 @@ class ConversationsController extends Controller
         if (!empty($filters['number'])) {
             $query_conversations->where('conversations.number', '=', $filters['number']);
         }
+        if (!empty($filters['following'])) {
+            if ($filters['following'] == 'yes') {
+                $query_conversations->join('followers', function ($join) {
+                    $join->on('followers.conversation_id', '=', 'conversations.id');
+                    $join->where('followers.user_id', auth()->user()->id);
+                });
+            }
+        }
         if (!empty($filters['id'])) {
             $query_conversations->where('conversations.id', '=', $filters['id']);
         }
