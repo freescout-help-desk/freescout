@@ -35,6 +35,7 @@ class CreateUsersTable extends Migration
             $table->unsignedTinyInteger('time_format')->default(User::TIME_FORMAT_24);
             $table->boolean('enable_kb_shortcuts')->default(true);
             //$table->boolean('is_user_workflow_related')->default(false);
+            // Not used for now.
             $table->boolean('locked')->default(false);
             $table->rememberToken();
             $table->timestamps();
