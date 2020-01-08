@@ -331,7 +331,7 @@ class Subscription extends Model
             }
             // - Menu notification (uses same medium as for email)
             foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
-                $website_notification = new WebsiteNotification($notify_info['conversation'], $notify_info['threads'][0]);
+                $website_notification = new WebsiteNotification($notify_info['conversation'], self::chooseThread($notify_info['threads']));
                 $website_notification->delay($delay);
                 \Notification::send($notify_info['users'], $website_notification);
             }
@@ -345,11 +345,11 @@ class Subscription extends Model
                 continue;
             }
             foreach ($notify[$medium] as $notify_info) {
-                $thread_id = $notify_info['threads'][0]->id;
+                $thread_id = self::chooseThread($notify_info['threads'])->id;
 
                 foreach ($notify_info['users'] as $user) {
                     $mediums = [$medium];
-                    if (!empty($broadcasts[$notify_info['threads'][0]->id]['mediums'])) {
+                    if (!empty($broadcasts[$thread_id]['mediums'])) {
                         $mediums = array_unique(array_merge($mediums, $broadcasts[$thread_id]['mediums']));
                     }
                     $broadcasts[$thread_id] = [
@@ -363,7 +363,7 @@ class Subscription extends Model
         }
         // \Notification::sendNow($notify_info['users'], new BroadcastNotification($notify_info['conversation'], $notify_info['threads'][0]));
         foreach ($broadcasts as $thread_id => $to_broadcast) {
-            $broadcast_notification = new BroadcastNotification($to_broadcast['conversation'], $to_broadcast['threads'][0], $to_broadcast['mediums']);
+            $broadcast_notification = new BroadcastNotification($to_broadcast['conversation'], self::chooseThread($to_broadcast['threads']), $to_broadcast['mediums']);
             $broadcast_notification->delay($delay);
             $to_broadcast['user']->notify($broadcast_notification);
         }
@@ -372,6 +372,25 @@ class Subscription extends Model
         \Eventy::action('subscription.process_events', $notify);
 
         self::$occured_events = [];
+    }
+
+    /**
+     * Get fist meaningful thread for the notification.
+     */
+    public static function chooseThread($threads)
+    {
+        $actions_types = [
+            Thread::ACTION_TYPE_USER_CHANGED,
+        ];
+        // First thread is the newest.
+        foreach ($threads as $thread) {
+            if ($thread->type == Thread::TYPE_LINEITEM && !in_array($thread->action_type, $actions_types)) {
+                continue;
+            } else {
+                return $thread;
+            }
+        }
+        return $threads[0];
     }
 
     /**
