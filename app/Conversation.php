@@ -325,7 +325,7 @@ class Conversation extends Model
      *
      * @return Collection
      */
-    public function getThreads($skip = null, $take = null)
+    public function getThreads($skip = null, $take = null, $types = [])
     {
         $query = $this->threads()
             ->where('state', Thread::STATE_PUBLISHED)
@@ -336,6 +336,9 @@ class Conversation extends Model
         }
         if (!is_null($take)) {
             $query->take($take);
+        }
+        if ($types) {
+            $query->whereIn('type', $types);
         }
 
         return $query->get();
