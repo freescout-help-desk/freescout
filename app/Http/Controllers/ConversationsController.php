@@ -1677,7 +1677,7 @@ class ConversationsController extends Controller
                 \Session::flash('flash_success_floating', __('Conversations deleted'));
                 break;
 
-            // Change conversation customer
+            // Move conversation to another mailbox.
             case 'conversation_move':
                 $conversation = Conversation::find($request->conversation_id);
 
@@ -1691,14 +1691,17 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
-                if (!empty($request->mailbox_email)) {
-                    $mailbox = Mailbox::where('email', $request->mailbox_email)->first();
-                } else {
-                    $mailbox = Mailbox::find($request->mailbox_id);
-                }
+                $mailbox = null;
+                if (!$response['msg']) {
+                    if (!empty($request->mailbox_email)) {
+                        $mailbox = Mailbox::where('email', $request->mailbox_email)->first();
+                    } else {
+                        $mailbox = Mailbox::find($request->mailbox_id);
+                    }
 
-                if (!$mailbox) {
-                    $response['msg'] = __('Mailbox not found');
+                    if (!$mailbox) {
+                        $response['msg'] = __('Mailbox not found');
+                    }
                 }
 
                 if (!$response['msg']) {

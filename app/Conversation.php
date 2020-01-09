@@ -2,8 +2,11 @@
 
 namespace App;
 
+use App\Customer;
 use App\Thread;
 use App\User;
+use App\Events\UserAddedNote;
+use App\Events\UserReplied;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
 use App\Events\ConversationCustomerChanged;
@@ -946,14 +949,26 @@ class Conversation extends Model
      */
     public function getSignatureProcessed($data = [])
     {
-        if (!\App\Misc\Mail::hasVars($this->mailbox->signature)) {
-            return $this->mailbox->signature;
+        return $this->replaceTextVars($this->mailbox->signature, $data);
+    }
+
+    /**
+     * Replace vars in the text.
+     */
+    public function replaceTextVars($text, $data = [])
+    {
+        if (!\App\Misc\Mail::hasVars($text)) {
+            return $text;
         }
 
-        // `user` should contain a user who replies to the conversation.
-        $user = auth()->user();
-        if (!$user && !empty($data['thread'])) {
-            $user = $data['thread']->created_by_user;
+        if (empty($data['user'])) {
+            // `user` should contain a user who replies to the conversation.
+            $user = auth()->user();
+            if (!$user && !empty($data['thread'])) {
+                $user = $data['thread']->created_by_user;
+            }
+        } else {
+            $user = $data['user'];
         }
 
         $data = [
@@ -964,7 +979,7 @@ class Conversation extends Model
         ];
 
         // Set variables
-        return \MailHelper::replaceMailVars($this->mailbox->signature, $data);
+        return \MailHelper::replaceMailVars($text, $data);
     }
 
     /**
@@ -1392,6 +1407,110 @@ class Conversation extends Model
         Thread::whereIn('conversation_id', $conversation_ids)->delete();
         // Delete conversations.
         Conversation::whereIn('id', $conversation_ids)->delete();
+    }
+
+    /**
+     * Create note or reply.
+     */
+    public function createUserThread($user, $body, $data = [])
+    {
+        // Create thread
+        $thread = Thread::create($this, $data['type'] ?? Thread::TYPE_MESSAGE, $body, $data, false);
+        $thread->source_via = Thread::PERSON_USER;
+        $thread->source_type = Thread::SOURCE_TYPE_WEB;
+        $thread->user_id = $this->user_id;
+        $thread->status = $this->status;
+        $thread->state = Thread::STATE_PUBLISHED;
+        $thread->customer_id = $this->customer_id;
+        $thread->created_by_user_id = $user->id;
+        $thread->edited_by_user_id = null;
+        $thread->edited_at = null;
+        $thread->body = $body;
+        $thread->setTo($this->customer_email);
+        $thread->save();
+
+        // Update folders counters
+        $this->mailbox->updateFoldersCounters();
+
+        if ($thread->type == Thread::TYPE_NOTE) {
+            event(new UserAddedNote($this, $thread));
+            \Eventy::action('conversation.note_added', $this, $thread);
+        } else {
+            event(new UserReplied($this, $thread));
+            \Eventy::action('conversation.user_replied', $this, $thread);
+        }
+    }
+
+    public function forward($user, $body, $to = '', $data = [])
+    {
+        // Create thread
+        $thread = Thread::create($this, $data['type'] ?? Thread::TYPE_NOTE, $body, $data, false);
+        $thread->source_via = Thread::PERSON_USER;
+        $thread->source_type = Thread::SOURCE_TYPE_WEB;
+        $thread->user_id = $this->user_id;
+        $thread->status = $this->status;
+        $thread->state = Thread::STATE_PUBLISHED;
+        $thread->customer_id = $this->customer_id;
+        $thread->created_by_user_id = $user->id;
+        $thread->edited_by_user_id = null;
+        $thread->edited_at = null;
+        $thread->body = $body;
+        $thread->setTo($to);
+
+        // Create forwarded conversation.
+        $now = date('Y-m-d H:i:s');
+        $forwarded_conversation = $this->replicate();
+        $forwarded_conversation->type = Conversation::TYPE_EMAIL;
+        $forwarded_conversation->setPreview($thread->body);
+        $forwarded_conversation->created_by_user_id = $user->id;
+        $forwarded_conversation->source_via = Conversation::PERSON_USER;
+        $forwarded_conversation->source_type = Conversation::SOURCE_TYPE_WEB;
+        $forwarded_conversation->threads_count = 0; // Counter will be incremented in ThreadObserver.
+        $forwarded_customer = Customer::create($to);
+        $forwarded_conversation->customer_id = $forwarded_customer->id;
+        $forwarded_conversation->customer_email = $to;
+        $forwarded_conversation->subject = 'Fwd: '.$forwarded_conversation->subject;
+        $forwarded_conversation->setCc(array_merge(Conversation::sanitizeEmails($data['cc'] ?? []), [$to]));
+        $forwarded_conversation->setBcc($data['bcc'] ?? []);
+        $forwarded_conversation->last_reply_at = $now;
+        $forwarded_conversation->last_reply_from = Conversation::PERSON_USER;
+        $forwarded_conversation->user_updated_at = $now;
+        // if ($attachments_info['has_attachments']) {
+        //     $forwarded_conversation->has_attachments = true;
+        // }
+        $forwarded_conversation->updateFolder();
+        $forwarded_conversation->save();
+
+        $forwarded_thread = $thread->replicate();
+
+        // Set forwarding meta data.
+        $thread->subtype = Thread::SUBTYPE_FORWARD;
+        $thread->setMeta('forward_child_conversation_number', $forwarded_conversation->number);
+        $thread->setMeta('forward_child_conversation_id', $forwarded_conversation->id);
+        
+        $thread->save();
+
+        // Save forwarded thread.
+        $forwarded_thread->conversation_id = $forwarded_conversation->id;
+        $forwarded_thread->type = Thread::TYPE_MESSAGE;
+        $forwarded_thread->subtype = null;
+        $forwarded_thread->setTo($to);
+        // if ($attachments_info['has_attachments']) {
+        //     $forwarded_thread->has_attachments = true;
+        // }
+        $forwarded_thread->setMeta('forward_parent_conversation_number', $this->number);
+        $forwarded_thread->setMeta('forward_parent_conversation_id', $this->id);
+        $forwarded_thread->setMeta('forward_parent_thread_id', $thread->id);
+        $forwarded_thread->save();
+
+        // Update folders counters
+        $this->mailbox->updateFoldersCounters();
+
+        // Notifications to users not sent.
+        event(new UserAddedNote($this, $thread));
+        // To send email with forwarded conversation.
+        event(new UserReplied($forwarded_conversation, $forwarded_thread));
+        \Eventy::action('conversation.user_forwarded', $this, $thread, $forwarded_conversation, $forwarded_thread);
     }
 
     // /**
