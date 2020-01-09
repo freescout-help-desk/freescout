@@ -54,7 +54,6 @@
 
                 @include('conversations/partials/thread_attachments')
             </div>
-            @action('thread.after_body', $thread, $loop, $threads, $conversation, $mailbox)
         </div>
     </div>
 @else
@@ -253,6 +252,8 @@
                     <div class='thread-meta'><i class="glyphicon glyphicon-eye-open"></i> {{ __("Customer viewed :when", ['when' => App\User::dateDiffForHumansWithHours($thread->opened_at)]) }}</div>
                 @endif
 
+                @action('thread.meta', $thread, $loop, $threads, $conversation, $mailbox)
+
                 @if ($thread->has_attachments)
                     <div class="thread-attachments">
                         <i class="glyphicon glyphicon-paperclip"></i>
@@ -267,7 +268,6 @@
                     </div>
                 @endif
             </div>
-            @action('thread.after_body', $thread, $loop, $threads, $conversation, $mailbox)
         </div>
         <div class="dropdown thread-options">
             <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown"><b class="caret"></b></span>
