@@ -49,7 +49,7 @@ FreeScout has been developed from scratch and is not using any copyrighted Help 
   * Editing threads.
   * Search.
 
-Need anything else? Suggest features [here](https://feedback.userreport.com/25a3cb5f-e4bd-4470-b6f3-79fcfaa8e90f/#ideas/popular).
+Need anything else? Suggest features [here](https://freescout.net/request-feature/).
 
 ## Demo
 
