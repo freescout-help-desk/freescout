@@ -36,5 +36,7 @@ class MailboxObserver
         $mailbox->users()->delete();
         $mailbox->conversations()->delete();
         $mailbox->folders()->delete();
+
+        \Eventy::action('mailbox.before_delete', $mailbox);
     }
 }
