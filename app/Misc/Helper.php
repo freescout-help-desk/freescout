@@ -1321,7 +1321,7 @@ class Helper
         );
     }
 
-    public static function addFlashMessage($text, $type = 'danger', $role = '')
+    public static function addFloatingFlash($text, $type = 'danger', $role = '')
     {
         $flashes = \Session::get('flashes_floating', []);
 
