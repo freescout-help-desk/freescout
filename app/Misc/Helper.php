@@ -1320,4 +1320,17 @@ class Helper
             'errors', $errors->put('default', $message_bag)
         );
     }
+
+    public static function addFlashMessage($text, $type = 'danger', $role = '')
+    {
+        $flashes = \Session::get('flashes_floating', []);
+
+        $flashes[] = [
+            'text' => $text,
+            'type' => $type,
+            'role' => $role,
+        ];
+
+        \Session::flash('flashes_floating', $flashes);
+    }
 }
