@@ -1388,6 +1388,37 @@ class Conversation extends Model
         \Eventy::action('conversation.user_changed', $this, $user, $prev_user_id);
     }
 
+    public function deleteToFolder($user)
+    {
+        $folder_id = $this->getCurrentFolder();
+        
+        $this->state = Conversation::STATE_DELETED;
+        $this->user_updated_at = date('Y-m-d H:i:s');
+        $this->updateFolder();
+        $this->save();
+
+        // Create lineitem thread
+        $thread = new Thread();
+        $thread->conversation_id = $this->id;
+        $thread->user_id = $this->user_id;
+        $thread->type = Thread::TYPE_LINEITEM;
+        $thread->state = Thread::STATE_PUBLISHED;
+        $thread->status = Thread::STATUS_NOCHANGE;
+        $thread->action_type = Thread::ACTION_TYPE_DELETED_TICKET;
+        $thread->source_via = Thread::PERSON_USER;
+        // todo: this need to be changed for API
+        $thread->source_type = Thread::SOURCE_TYPE_WEB;
+        $thread->customer_id = $this->customer_id;
+        $thread->created_by_user_id = $user->id;
+        $thread->save();
+
+        // Remove conversation from drafts folder.
+        $this->removeFromFolder(Folder::TYPE_DRAFTS);
+
+        // Recalculate only old and new folders
+        $this->mailbox->updateFoldersCounters();
+    }
+
     public function deleteForever()
     {
         self::deleteConversationsForever([$this->id]);
