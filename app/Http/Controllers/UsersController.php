@@ -441,7 +441,6 @@ class UsersController extends Controller
                 }
 
                 if (!$response['msg']) {
-                    event(new UserDeleted($user, $auth_user));
 
                     // We have to process conversations one by one to move them to Unassigned folder,
                     // as conversations may be in different mailboxes
@@ -517,6 +516,8 @@ class UsersController extends Controller
                     $user->email = mb_substr($user->email, 0, User::EMAIL_MAX_LENGTH - mb_strlen($email_suffix)).$email_suffix;
 
                     $user->save();
+
+                    event(new UserDeleted($user, $auth_user));
 
                     \Session::flash('flash_success_floating', __('User deleted').': '.$user->getFullName());
 
