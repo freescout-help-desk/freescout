@@ -826,4 +826,9 @@ class User extends Authenticatable
     {
         return md5($this->id.config('app.key'));
     }
+
+    public static function findNonDeleted($id)
+    {
+        return User::nonDeleted()->where('id', $id)->first();
+    }
 }
