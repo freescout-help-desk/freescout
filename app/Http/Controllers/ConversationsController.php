@@ -597,9 +597,6 @@ class ConversationsController extends Controller
                         $conversation->type = $type;
                         $conversation->subject = $request->subject;
                         $conversation->setPreview($request->body);
-                        if ($attachments_info['has_attachments']) {
-                            $conversation->has_attachments = true;
-                        }
                         $conversation->mailbox_id = $request->mailbox_id;
                         $conversation->created_by_user_id = auth()->user()->id;
                         $conversation->source_via = Conversation::PERSON_USER;
@@ -611,6 +608,10 @@ class ConversationsController extends Controller
                         }
                     }
 
+                    if ($attachments_info['has_attachments']) {
+                        $conversation->has_attachments = true;
+                    }
+                        
                     // Customer can be empty in existing conversation if this is a draft.
                     $customer_email = '';
                     $customer = null;
