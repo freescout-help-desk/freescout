@@ -201,7 +201,7 @@
                                         <i class="glyphicon glyphicon-search"></i>
                                     </a>
 
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu dropdown-with-icons">
                                         <li>
                                             <form class="form-inline form-nav-search" role="form" action="{{ route('conversations.search') }}" target="_blank">
                                                 <div class="input-group">

@@ -45,16 +45,18 @@ class ThreadObserver
 
         $conversation->save();
 
-        $is_new_conversation = false;
-        if ($conversation->threads_count == 0 && in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])) {
-            $is_new_conversation = true;
-        }
+        // $is_new_conversation = false;
+        // if ($conversation->threads_count == 0 
+        //     && in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
+        //     && $thread->state == Thread::STATE_PUBLISHED
+        // ) {
+        //     $is_new_conversation = true;
+        // }
 
-        \Eventy::action('thread.created', $thread, $is_new_conversation);
-        
-        if ($is_new_conversation) {
-            \Eventy::action('conversation.created', $conversation, $thread);
-        }
+        // User threads are created as drafts first.
+        // if ($thread->state == Thread::STATE_PUBLISHED) {
+        //     \Eventy::action('thread.created', $thread);
+        // }
 
         \App\Events\RealtimeConvNewThread::dispatchSelf($thread);
         \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id);

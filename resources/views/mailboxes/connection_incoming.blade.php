@@ -30,6 +30,20 @@
                     </div>
 
                     <div class="form-group margin-top">
+                        <label for="email" class="col-sm-2 control-label">{{ __('Status') }}</label>
+
+                        <div class="col-sm-6">
+                            <label class="control-label">
+                                @if ($mailbox->isInActive())
+                                    <span class="text-success"><i class="glyphicon glyphicon-ok"></i> {{ __('Active') }}</span>
+                                @else
+                                    <span class="text-warning"><i class="glyphicon glyphicon-ok"></i> {{ __('Inactive') }}</span>
+                                @endif
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="email" class="col-sm-2 control-label">{{ __('Fetch From') }}</label>
 
                         <div class="col-sm-6 flexy">
@@ -57,9 +71,9 @@
                         <label for="in_server" class="col-sm-2 control-label">{{ __('Server') }}</label>
 
                         <div class="col-sm-6">
-                            <input id="in_server" type="text" class="form-control input-sized" name="in_server" value="{{ old('in_server', $mailbox->in_server) }}" maxlength="255" required autofocus>
+                            <input id="in_server" type="text" class="form-control input-sized" name="in_server" value="{{ old('in_server', $mailbox->in_server) }}" maxlength="255">
 
-                            @include('partials/field_error', ['field'=>'in_server'])
+                            {{--@include('partials/field_error', ['field'=>'in_server'])--}}
                         </div>
                     </div>
 
@@ -69,7 +83,7 @@
                         <div class="col-sm-6">
                             <input id="in_port" type="number" class="form-control input-sized" name="in_port" value="{{ old('in_port', $mailbox->in_port) }}" maxlength="5" required autofocus>
 
-                            @include('partials/field_error', ['field'=>'in_port'])
+                            {{--@include('partials/field_error', ['field'=>'in_port'])--}}
                         </div>
                     </div>
 
@@ -77,9 +91,9 @@
                         <label for="in_username" class="col-sm-2 control-label">{{ __('Username') }}</label>
 
                         <div class="col-sm-6">
-                            <input id="in_username" type="text" class="form-control input-sized" name="in_username" value="{{ old('in_username', $mailbox->in_username) }}" maxlength="100" required autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
+                            <input id="in_username" type="text" class="form-control input-sized" name="in_username" value="{{ old('in_username', $mailbox->in_username) }}" maxlength="100" {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
 
-                            @include('partials/field_error', ['field'=>'in_username'])
+                            {{--@include('partials/field_error', ['field'=>'in_username'])--}}
                         </div>
                     </div>
 
@@ -87,9 +101,9 @@
                         <label for="in_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
                         <div class="col-sm-6">
-                            <input id="in_password" type="password" class="form-control input-sized" name="in_password" value="{{ old('in_password', $mailbox->inPasswordSafe()) }}" maxlength="255" required autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
+                            <input id="in_password" type="password" class="form-control input-sized" name="in_password" value="{{ old('in_password', $mailbox->inPasswordSafe()) }}" maxlength="255" {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
 
-                            @include('partials/field_error', ['field'=>'in_password'])
+                            {{--@include('partials/field_error', ['field'=>'in_password'])--}}
                         </div>
                     </div>
 
@@ -107,7 +121,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group{{ $errors->has('in_server') ? ' has-error' : '' }}">
+                    <div class="form-group{{ $errors->has('in_imap_folders') ? ' has-error' : '' }}">
                         <label for="in_imap_folders" class="col-sm-2 control-label">{{ __('IMAP Folders') }}</label>
 
                         <div class="col-sm-6 flexy">

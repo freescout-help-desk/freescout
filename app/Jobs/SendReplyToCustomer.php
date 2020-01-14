@@ -171,20 +171,24 @@ class SendReplyToCustomer implements ShouldQueue
                 ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox));
         } catch (\Exception $e) {
             // We come here in case SMTP server unavailable for example
-            activity()
-                ->causedBy($this->customer)
-                ->withProperties([
-                    'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
-                 ])
-                ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
-                ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
+            if ($this->attempts() == 1) {
+                activity()
+                    ->causedBy($this->customer)
+                    ->withProperties([
+                        'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
+                     ])
+                    ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
+                    ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
+            }
 
             // Failures will be saved to send log when retry attempts will finish
             // Mail::failures() is empty in case of connection error.
             $this->failures = $this->recipients;
 
-            // Save to send log
-            $this->saveToSendLog($e->getMessage());
+            // Save to send log (only first attempt).
+            if ($this->attempts() == 1) {
+                $this->saveToSendLog($e->getMessage());
+            }
 
             // Retry job with delay.
             // https://stackoverflow.com/questions/35258175/how-can-i-create-delays-between-failed-queued-job-attempts-in-laravel

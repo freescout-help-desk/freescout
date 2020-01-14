@@ -241,7 +241,21 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
         $this->authorize('update', $mailbox);
 
-        return view('mailboxes/connection_incoming', ['mailbox' => $mailbox, 'flashes' => $this->mailboxActiveWarning($mailbox)]);
+        $fields = [
+            'in_server'   => $mailbox->in_server,
+            'in_port'     => $mailbox->in_port,
+            'in_username' => $mailbox->in_username,
+            'in_password' => $mailbox->in_password,
+        ];
+
+        $validator = Validator::make($fields, [
+            'in_server'   => 'required',
+            'in_port'     => 'required',
+            'in_username' => 'required',
+            'in_password' => 'required',
+        ]);
+
+        return view('mailboxes/connection_incoming', ['mailbox' => $mailbox, 'flashes' => $this->mailboxActiveWarning($mailbox)])->withErrors($validator);
     }
 
     /**
@@ -252,18 +266,18 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
         $this->authorize('update', $mailbox);
 
-        $validator = Validator::make($request->all(), [
-            'in_server'   => 'required|string|max:255',
-            'in_port'     => 'required|integer',
-            'in_username' => 'required|string|max:100',
-            'in_password' => 'required|string|max:255',
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'in_server'   => 'nullable|string|max:255',
+        //     'in_port'     => 'nullable|integer',
+        //     'in_username' => 'nullable|string|max:100',
+        //     'in_password' => 'nullable|string|max:255',
+        // ]);
 
-        if ($validator->fails()) {
-            return redirect()->route('mailboxes.connection.incoming', ['id' => $id])
-                        ->withErrors($validator)
-                        ->withInput();
-        }
+        // if ($validator->fails()) {
+        //     return redirect()->route('mailboxes.connection.incoming', ['id' => $id])
+        //                 ->withErrors($validator)
+        //                 ->withInput();
+        // }
 
         // Checkboxes
         $request->merge([

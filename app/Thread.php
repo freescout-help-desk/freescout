@@ -105,8 +105,8 @@ class Thread extends Model
     // The conversation was imported (no email notifications were sent)
     const ACTION_TYPE_IMPORTED = 5;
     //  A workflow was run on this conversation (either automatic or manual)
-    const ACTION_TYPE_WORKFLOW_MANUAL = 6;
-    const ACTION_TYPE_WORKFLOW_AUTO = 7;
+    // const ACTION_TYPE_WORKFLOW_MANUAL = 6;
+    // const ACTION_TYPE_WORKFLOW_AUTO = 7;
     // The ticket was imported from an external Service
     const ACTION_TYPE_IMPORTED_EXTERNAL = 8;
     // Conversation customer changed
@@ -117,15 +117,14 @@ class Thread extends Model
     const ACTION_TYPE_RESTORE_TICKET = 11;
 
     // Describes an optional action associated with the line item
-    // todo: values need to be checked via HelpScout API
     public static $action_types = [
         self::ACTION_TYPE_STATUS_CHANGED          => 'changed-ticket-status',
         self::ACTION_TYPE_USER_CHANGED            => 'changed-ticket-assignee',
         self::ACTION_TYPE_MOVED_FROM_MAILBOX      => 'moved-from-mailbox',
         self::ACTION_TYPE_MERGED                  => 'merged',
         self::ACTION_TYPE_IMPORTED                => 'imported',
-        self::ACTION_TYPE_WORKFLOW_MANUAL         => 'manual-workflow',
-        self::ACTION_TYPE_WORKFLOW_AUTO           => 'automatic-workflow',
+        // self::ACTION_TYPE_WORKFLOW_MANUAL         => 'manual-workflow',
+        // self::ACTION_TYPE_WORKFLOW_AUTO           => 'automatic-workflow',
         self::ACTION_TYPE_IMPORTED_EXTERNAL       => 'imported-external',
         self::ACTION_TYPE_CUSTOMER_CHANGED        => 'changed-ticket-customer',
         self::ACTION_TYPE_DELETED_TICKET          => 'deleted-ticket',

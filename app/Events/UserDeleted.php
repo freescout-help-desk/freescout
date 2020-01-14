@@ -6,7 +6,7 @@ use App\User;
 
 class UserDeleted
 {
-    public $user;
+    public $by_user;
     public $deleted_user;
 
     /**
@@ -14,9 +14,11 @@ class UserDeleted
      *
      * @return void
      */
-    public function __construct(User $user, User $deleted_user)
+    public function __construct(User $deleted_user, User $by_user)
     {
-        $this->user = $user;
+        $this->by_user = $by_user;
         $this->deleted_user = $deleted_user;
+
+        \Eventy::action('user.deleted', $deleted_user, $by_user);
     }
 }

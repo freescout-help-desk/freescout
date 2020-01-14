@@ -2061,8 +2061,9 @@ button.conv-checkbox-clear {
 .thread-type-lineitem .thread-header {
     min-height: auto;
 }
-.thread-type-lineitem .thread-title a {
-    color: #a5b2bd;
+.thread-type-lineitem .thread-title a,
+.thread-meta a {
+    color: #7d878f;
     font-weight: bold;
 }
 .thread-attachments {
