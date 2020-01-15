@@ -119,6 +119,7 @@ class PublicController extends Controller
         if (empty($thread->opened_at)) {
             $thread->opened_at = date('Y-m-d H:i:s');
             $thread->save();
+            \Eventy::action('thread.opened', $thread, $conversation);
         }
 
         // Create a 1x1 ttransparent pixel and return it
