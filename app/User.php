@@ -831,4 +831,17 @@ class User extends Authenticatable
     {
         return User::nonDeleted()->where('id', $id)->first();
     }
+
+    /**
+     * Sorting users alphabetically.
+     * It has to be done in PHP.
+     */
+    public static function sortUsers($users)
+    {
+        $users = $users->sortBy(function ($user, $i) {
+            return $user->getFullName();
+        }, SORT_STRING | SORT_FLAG_CASE);
+
+        return $users;
+    }
 }

@@ -34,6 +34,7 @@ class UsersController extends Controller
         $this->authorize('create', 'App\User');
 
         $users = User::nonDeleted()->get();
+        $users = User::sortUsers($users);
 
         return view('users/users', ['users' => $users]);
     }
@@ -125,7 +126,7 @@ class UsersController extends Controller
     public function getUsersForSidebar($except_id)
     {
         if (auth()->user()->isAdmin()) {
-            return User::nonDeleted()->get()/*->except($except_id)*/;
+            return User::sortUsers(User::nonDeleted()->get());/*->except($except_id)*/;
         } else {
             return [];
         }
