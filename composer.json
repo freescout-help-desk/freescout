@@ -31,7 +31,7 @@
         "rachidlaasri/laravel-installer": "4.0.2",
         "kitetail/zttp": "v0.6.0",
         "rap2hpoutre/laravel-log-viewer": "v1.3.3",
-        "codedge/laravel-selfupdater": "2.4.0",
+        "codedge/laravel-selfupdater": "2.2.0",
         "doctrine/dbal": "v2.10.1"
     },
     "require-dev": {
@@ -42,7 +42,7 @@
         "phpunit/phpunit": "8.5.2",
 
         "symfony/polyfill-ctype": "v1.13.*",
-        "vlucas/phpdotenv": "v3.6.0",
+        "vlucas/phpdotenv": "v2.6.1",
         "symfony/css-selector": "v4.4.2",
         "symfony/polyfill-mbstring": "v1.13.*",
         "symfony/var-dumper": "v4.4.2",
