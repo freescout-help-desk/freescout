@@ -14,7 +14,7 @@
 
         "symfony/debug": "v4.4.2",
         "devfactory/minify": "1.0.9",
-        "fideloper/proxy": "4.4.2",
+        "fideloper/proxy": "4.2.2",
         "laravel/framework": "v6.11.0",
         "laravel/tinker": "v2.1.0",
         "mews/purifier": "3.1.3",
