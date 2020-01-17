@@ -42,7 +42,7 @@
         "phpunit/phpunit": "8.5.2",
 
         "symfony/polyfill-ctype": "v1.13.*",
-        "vlucas/phpdotenv": "v4.1.0",
+        "vlucas/phpdotenv": "v3.6.0",
         "symfony/css-selector": "v4.4.2",
         "symfony/polyfill-mbstring": "v1.13.*",
         "symfony/var-dumper": "v4.4.2",
