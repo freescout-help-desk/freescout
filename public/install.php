@@ -31,7 +31,7 @@ function generateRandomKey()
 {
     return 'base64:'.base64_encode(
         //Encrypter::generateKey('AES-256-CBC');
-        random_bytes($cipher == 'AES-128-CBC' ? 16 : 32)
+        random_bytes(32)
     );
 }
 
