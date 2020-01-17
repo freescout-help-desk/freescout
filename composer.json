@@ -59,7 +59,7 @@
         "egulias/email-validator": "2.1.14",
         "swiftmailer/swiftmailer": "v6.2.*",
         "symfony/translation": "v4.4.2",
-        "nesbot/carbon": "2.28.*",
+        "nesbot/carbon": "1.26.*",
         "league/flysystem": "1.0.63",
         "erusev/parsedown": "1.7.4",
         "doctrine/inflector": "v1.3.*",
