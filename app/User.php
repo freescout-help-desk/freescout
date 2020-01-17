@@ -786,10 +786,10 @@ class User extends Authenticatable
     /**
      * Get users which current user can see.
      */
-    public function whichUsersCanView($mailboxes = null)
+    public function whichUsersCanView($mailboxes = null, $sort = true)
     {
         if ($this->isAdmin()) {
-            return User::all();
+            $users = User::nonDeleted()->get();
         } else {
             // Get user mailboxes.
             if ($mailboxes == null) {
@@ -799,15 +799,19 @@ class User extends Authenticatable
             }
 
             // Get users
-            $users = User::select('users.*')
+            $users = User::nonDeleted()->select('users.*')
                 ->join('mailbox_user', function ($join) {
                     $join->on('mailbox_user.user_id', '=', 'users.id');
                 })
                 ->whereIn('mailbox_user.mailbox_id', $mailbox_ids)
                 ->get();
-
-            return $users;
         }
+
+        if ($sort) {
+            $users = User::sortUsers($users);
+        }
+
+        return $users;
     }
 
     /**
@@ -830,5 +834,18 @@ class User extends Authenticatable
     public static function findNonDeleted($id)
     {
         return User::nonDeleted()->where('id', $id)->first();
+    }
+
+    /**
+     * Sorting users alphabetically.
+     * It has to be done in PHP.
+     */
+    public static function sortUsers($users)
+    {
+        $users = $users->sortBy(function ($user, $i) {
+            return $user->getFullName();
+        }, SORT_STRING | SORT_FLAG_CASE);
+
+        return $users;
     }
 }

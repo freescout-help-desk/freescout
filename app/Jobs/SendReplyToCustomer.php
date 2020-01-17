@@ -92,11 +92,25 @@ class SendReplyToCustomer implements ShouldQueue
         $new = false;
         $headers = [];
         $this->last_thread = $this->threads->first();
-        $prev_thread = null;
+        $last_customer_thread = null;
 
         // If thread is draft, it means it has been undone
         if ($this->last_thread->isDraft()) {
             return;
+        }
+
+        if (count($this->threads) == 1) {
+            $new = true;
+        }
+        if (!$new) {
+            $i = 0;
+            foreach ($this->threads as $thread) {
+                if ($i > 0 && $thread->type == Thread::TYPE_CUSTOMER) {
+                    $last_customer_thread = $thread;
+                    break;
+                }
+                $i++;
+            }
         }
 
         // Remove previous messages.
@@ -107,23 +121,13 @@ class SendReplyToCustomer implements ShouldQueue
         // Configure mail driver according to Mailbox settings
         \App\Misc\Mail::setMailDriver($mailbox, $this->last_thread->created_by_user);
 
-        if (count($this->threads) == 1) {
-            $new = true;
-        }
-        $i = 0;
-        foreach ($this->threads as $thread) {
-            if ($i == 1) {
-                $prev_thread = $thread;
-                break;
-            }
-            $i++;
-        }
-
         // Get penultimate email Message-Id if reply
-        if (!$new && !empty($prev_thread) && $prev_thread->message_id) {
-            $headers['In-Reply-To'] = '<'.$prev_thread->message_id.'>';
-            $headers['References'] = '<'.$prev_thread->message_id.'>';
+        if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
+
+            $headers['In-Reply-To'] = '<'.$last_customer_thread->message_id.'>';
+            $headers['References'] = '<'.$last_customer_thread->message_id.'>';
         }
+        
         $this->message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER.'-'.$this->last_thread->id.'-'.md5($this->last_thread->id).'@'.$mailbox->getEmailDomain();
         $headers['Message-ID'] = $this->message_id;
 
