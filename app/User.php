@@ -786,10 +786,10 @@ class User extends Authenticatable
     /**
      * Get users which current user can see.
      */
-    public function whichUsersCanView($mailboxes = null)
+    public function whichUsersCanView($mailboxes = null, $sort = true)
     {
         if ($this->isAdmin()) {
-            return User::all();
+            $users = User::nonDeleted()->get();
         } else {
             // Get user mailboxes.
             if ($mailboxes == null) {
@@ -799,15 +799,19 @@ class User extends Authenticatable
             }
 
             // Get users
-            $users = User::select('users.*')
+            $users = User::nonDeleted()->select('users.*')
                 ->join('mailbox_user', function ($join) {
                     $join->on('mailbox_user.user_id', '=', 'users.id');
                 })
                 ->whereIn('mailbox_user.mailbox_id', $mailbox_ids)
                 ->get();
-
-            return $users;
         }
+
+        if ($sort) {
+            $users = User::sortUsers($users);
+        }
+
+        return $users;
     }
 
     /**

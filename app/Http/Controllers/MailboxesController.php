@@ -153,7 +153,8 @@ class MailboxesController extends Controller
 
         $this->authorize('update', $mailbox);
 
-        $users = User::where('role', '!=', User::ROLE_ADMIN)->get();
+        $users = User::nonDeleted()->where('role', '!=', User::ROLE_ADMIN)->get();
+        $users = User::sortUsers($users);
 
         return view('mailboxes/permissions', ['mailbox' => $mailbox, 'users' => $users, 'mailbox_users' => $mailbox->users]);
     }
