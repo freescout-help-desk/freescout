@@ -33,7 +33,7 @@ return [
      *
      */
     'requirements' => [
-        'templateTitle' => 'Sschritt 1 | Server Vorraussetzungen',
+        'templateTitle' => 'Schritt 1 | Server Vorraussetzungen',
         'title'         => 'Server Vorraussetzungen',
         'next'          => 'Prüfe Berechtigungen',
     ],
