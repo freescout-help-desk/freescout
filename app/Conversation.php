@@ -17,6 +17,8 @@ use Watson\Rememberable\Rememberable;
 class Conversation extends Model
 {
     use Rememberable;
+    // This is obligatory.
+    public $rememberCacheDriver = 'array';
     
     /**
      * Max length of the preview.

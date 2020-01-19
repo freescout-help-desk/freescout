@@ -8,7 +8,7 @@ use Watson\Rememberable\Rememberable;
 class Customer extends Model
 {
     use Rememberable;
-
+    // This is obligatory.
     public $rememberCacheDriver = 'array';
 
     /**

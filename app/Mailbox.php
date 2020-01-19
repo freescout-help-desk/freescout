@@ -9,7 +9,9 @@ use Watson\Rememberable\Rememberable;
 class Mailbox extends Model
 {
     use Rememberable;
-
+    // This is obligatory.
+    public $rememberCacheDriver = 'array';
+    
     /**
      * From Name: name that will appear in the From field when a customer views your email.
      */
