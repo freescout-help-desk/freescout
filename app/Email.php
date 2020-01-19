@@ -8,7 +8,9 @@ use Watson\Rememberable\Rememberable;
 class Email extends Model
 {
     use Rememberable;
-
+    // This is obligatory.
+    public $rememberCacheDriver = 'array';
+    
     /**
      * Email types.
      */
