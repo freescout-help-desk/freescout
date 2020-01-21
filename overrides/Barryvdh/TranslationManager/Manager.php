@@ -515,6 +515,9 @@ class Manager
                         continue;
                     }
                     $path = $modulePath.'Resources/lang/'.$locale.'.json';
+                    if (!$this->files->exists($modulePath.'Resources/lang')) {
+                        $this->files->makeDirectory($modulePath.'Resources/lang', 0755, true);
+                    }
                 }
 
                 $translations = $groups[$group];
