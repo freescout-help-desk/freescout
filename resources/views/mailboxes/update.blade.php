@@ -19,7 +19,7 @@
     <div class="row-container form-container">
         <div class="row">
             <div class="col-xs-12">
-                <form class="form-horizontal margin-top" method="POST" action="">
+                <form class="form-horizontal margin-top" method="POST" action="" enctype="multipart/form-data">
                     {{ csrf_field() }}
 
                     <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
@@ -50,7 +50,7 @@
 
                                 <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left"  data-content="{{ __('Aliases are other email addresses that also forward to your mailbox address. Separate each email with a comma.') }}"></i>
                             </div>
-                            
+
                             @include('partials/field_error', ['field'=>'aliases'])
                         </div>
                     </div>
@@ -64,7 +64,7 @@
 
                                 <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left"  data-content="{{ __('Send a copy of all outgoing replies to specific external addresses.') }} {{ __('Separate each email with a comma.') }}"></i>
                             </div>
-                            
+
                             @include('partials/field_error', ['field'=>'auto_bcc'])
                         </div>
                     </div>
@@ -111,13 +111,13 @@
                     </div>
 
                     @action('mailbox.update.after_ticket_status', $mailbox)
-                    
+
                     {{-- Email Template option hidden until somebody needs it --}}
                     <div class="form-group{{ $errors->has('template') ? ' has-error' : '' }}" style="display:none">
                         <label for="template" class="col-sm-2 control-label">{{ __('Email Template') }} (todo)</label>
 
                         <div class="col-sm-6">
-     
+
                             <div class="controls">
                                 {{-- Afer implementing remove readonly--}}
                                 <label for="template_plain" class="radio inline plain"><input type="radio" name="template" value="{{ App\Mailbox::TEMPLATE_PLAIN }}" disabled="disabled" class="disabled" id="template_plain" @if (old('template', $mailbox->template) == App\Mailbox::TEMPLATE_PLAIN || !$mailbox->template)checked="checked"@endif> {{ __('Plain Template') }}</label>
@@ -155,8 +155,27 @@
 
                                 <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left"  data-content="{{ __('This text will be added to the beginning of each email reply sent to a customer.') }}"></i>
                             </div>
-                            
+
                             @include('partials/field_error', ['field'=>'before_reply'])
+                        </div>
+                    </div>
+
+                    <div class="form-group{{ $errors->has('image_url') ? ' has-error' : '' }}">
+                        <label for="image_url" class="col-sm-2 control-label">{{ __('Image for signature') }}</label>
+
+                        <div class="col-sm-6">
+                            <div class="controls">
+                                @if ($mailbox->image_url)
+                                    <div id="mailbox-image">
+                                        <img src="{{ $mailbox->getImageUrl() }}" alt="{{ __('Image') }}"><br/>
+                                        <a href="#" id="mailbox-image-delete" data-loading-text="{{ __('Deleting') }}…">{{ __('Delete Image') }}</a>
+                                    </div>
+                                @endif
+
+                                <input type="file" name="image_url">
+                                <p class="block-help">{{ __('JPG, GIF, PNG accepted.') }}</p>
+                            </div>
+                            @include('partials/field_error', ['field'=>'image_url'])
                         </div>
                     </div>
 

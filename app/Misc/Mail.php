@@ -183,6 +183,7 @@ class Mail
             $vars['{%mailbox.email%}'] = $data['mailbox']->email;
             $vars['{%mailbox.name%}'] = $data['mailbox']->name;
             $vars['{%mailbox.fromName%}'] = $data['mailbox']->getMailFrom(!empty($data['user']) ? $data['user'] : null)['name'];
+            $vars['{%mailbox.image%}'] = '<img src="'.$data['mailbox']->getImageUrl().'" alt="'.$data['mailbox']->name.'">';
         }
         if (!empty($data['customer'])) {
             $vars['{%customer.fullName%}'] = $data['customer']->getFullName(true);

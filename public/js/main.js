@@ -139,6 +139,7 @@ var EditorInsertVarButton = function (context) {
 		        '<option value="{%mailbox.email%}">'+Lang.get("messages.email")+'</option>'+
 		        '<option value="{%mailbox.name%}">'+Lang.get("messages.name")+'</option>'+
 		        '<option value="{%mailbox.fromName%}">'+Lang.get("messages.from_name")+'</option>'+
+		        '<option value="{%mailbox.image%}">'+Lang.get("messages.image")+'</option>'+
 		    '</optgroup>'+
 		    '<optgroup label="'+Lang.get("messages.conversation")+'">'+
 		        '<option value="{%conversation.number%}">'+Lang.get("messages.number")+'</option>'+
@@ -312,6 +313,43 @@ function mailboxUpdateInit(from_name_custom)
 					$('#before_reply').val('');
 				}
 			}
+		});
+
+		// Delete profile photo
+		$("#mailbox-image-delete").click(function(e) {
+			var button = $(this);
+
+			var confirm_html = '<div>'+
+				'<div class="text-center">'+
+				'<div class="text-larger margin-top-10">'+Lang.get("messages.confirm_delete_image")+'</div>'+
+				'<div class="form-group margin-top">'+
+				'<button class="btn btn-primary reset-password-ok">'+Lang.get("messages.delete")+'</button>'+
+				'<button class="btn btn-link" data-dismiss="modal">'+Lang.get("messages.cancel")+'</button>'+
+				'</div>'+
+				'</div>'+
+				'</div>';
+
+			showModalDialog(confirm_html, {
+				on_show: function(modal) {
+					modal.children().find('.reset-password-ok:first').click(function(e) {
+						button.button('loading');
+						modal.modal('hide');
+						fsAjax(
+							{
+								action: 'delete_image',
+								mailbox_id: getGlobalAttr('mailbox_id')
+							},
+							laroute.route('mailboxes.ajax'),
+							function(response) {
+								$('#mailbox-image').remove();
+								button.button('reset');
+							},
+							true
+						);
+					});
+				}
+			});
+			e.preventDefault();
 		});
 	});
 }

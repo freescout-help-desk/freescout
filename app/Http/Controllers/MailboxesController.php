@@ -123,11 +123,28 @@ class MailboxesController extends Controller
             'from_name_custom' => 'nullable|string|max:128',
             'ticket_status'    => 'required|integer',
             'template'         => 'required|integer',
+            'image_url'        => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'ticket_assignee'  => 'required|integer',
             'signature'        => 'nullable|string',
         ]);
 
         //event(new Registered($user = $this->create($request->all())));
+        $validator->setAttributeNames([
+            'image_url'   => __('Image'),
+        ]);
+
+        // Image
+        $validator->after(function ($validator) use ($mailbox, $request) {
+            if ($request->hasFile('image_url')) {
+                $path_url = $request->file('image_url')->store(Mailbox::IMAGE_DIRECTORY);
+
+                if ($path_url) {
+                    $mailbox->image_url = $path_url;
+                } else {
+                    $validator->errors()->add('image_url', __('Error occured processing the image. Make sure that PHP GD extension is enabled.'));
+                }
+            }
+        });
 
         if ($validator->fails()) {
             return redirect()->route('mailboxes.update', ['id' => $id])
@@ -135,8 +152,13 @@ class MailboxesController extends Controller
                         ->withInput();
         }
 
-        $mailbox->fill($request->all());
+        $request_data = $request->all();
 
+        if (isset($request_data['image_url'])) {
+            unset($request_data['image_url']);
+        }
+
+        $mailbox->fill($request_data);
         $mailbox->save();
 
         \Session::flash('flash_success_floating', __('Mailbox settings saved'));
@@ -228,7 +250,7 @@ class MailboxesController extends Controller
 
         // Sometimes background job continues to use old connection settings.
         \Helper::queueWorkRestart();
-        
+
         \Session::flash('flash_success_floating', __('Connection settings saved!'));
 
         return redirect()->route('mailboxes.connection', ['id' => $id]);
@@ -508,7 +530,7 @@ class MailboxesController extends Controller
                         $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->in_server.'</strong>', 'port' => '<strong>'.$mailbox->in_port.'</strong>']);
                     }
                 }
-                
+
                 if (!$response['msg']) {
                     $test_result = false;
 
@@ -576,6 +598,25 @@ class MailboxesController extends Controller
                 }
 
                 if (!$response['msg']) {
+                    $response['status'] = 'success';
+                }
+                break;
+
+            // Delete mailbox image
+            case 'delete_image':
+                $mailbox = Mailbox::find($request->mailbox_id);
+
+                if (!$mailbox) {
+                    $response['msg'] = __('Mailbox not found');
+                } elseif (!$user->can('update', $mailbox)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+                if (!$response['msg']) {
+                    $mailbox->removeImage();
+                    $mailbox->save();
+
+                    \Session::flash('flash_success_floating', __('Image deleted'));
+
                     $response['status'] = 'success';
                 }
                 break;

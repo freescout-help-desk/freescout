@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Watson\Rememberable\Rememberable;
 
 class Mailbox extends Model
@@ -11,7 +12,7 @@ class Mailbox extends Model
     use Rememberable;
     // This is obligatory.
     public $rememberCacheDriver = 'array';
-    
+
     /**
      * From Name: name that will appear in the From field when a customer views your email.
      */
@@ -38,6 +39,12 @@ class Mailbox extends Model
      */
     const TEMPLATE_FANCY = 1;
     const TEMPLATE_PLAIN = 2;
+
+    /**
+     * Mailbox Signature Image.
+     */
+    const IMAGE_DIRECTORY = 'mailboxes';
+    const IMAGE_QUALITY = 90;
 
     /**
      * Outgoing method. Must be listed in getMailDriverName.
@@ -109,7 +116,7 @@ class Mailbox extends Model
      *
      * @var [type]
      */
-    protected $fillable = ['name', 'slug', 'email', 'aliases', 'auto_bcc', 'from_name', 'from_name_custom', 'ticket_status', 'ticket_assignee', 'template', 'before_reply', 'signature', 'out_method', 'out_server', 'out_username', 'out_password', 'out_port', 'out_encryption', 'in_server', 'in_port', 'in_username', 'in_password', 'in_protocol', 'in_encryption', 'in_validate_cert', 'auto_reply_enabled', 'auto_reply_subject', 'auto_reply_message', 'office_hours_enabled', 'ratings', 'ratings_placement', 'ratings_text'];
+    protected $fillable = ['name', 'slug', 'email', 'aliases', 'auto_bcc', 'from_name', 'from_name_custom', 'ticket_status', 'ticket_assignee', 'template', 'image_url', 'before_reply', 'signature', 'out_method', 'out_server', 'out_username', 'out_password', 'out_port', 'out_encryption', 'in_server', 'in_port', 'in_username', 'in_password', 'in_protocol', 'in_encryption', 'in_validate_cert', 'auto_reply_enabled', 'auto_reply_subject', 'auto_reply_message', 'office_hours_enabled', 'ratings', 'ratings_placement', 'ratings_text'];
 
     protected static function boot()
     {
@@ -627,4 +634,26 @@ class Mailbox extends Model
     {
         return \Helper::safePassword($this->in_password);
     }
+
+    public function getImageUrl($default_if_empty = true)
+    {
+        if (!empty($this->image_url) || !$default_if_empty) {
+            if (!empty($this->image_url)) {
+                return Storage::url($this->image_url);
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Remove mailbox image.
+     */
+    public function removeImage()
+    {
+        if ($this->image_url) {
+            Storage::delete($this->image_url);
+        }
+        $this->image_url = '';
+    }
+
 }
