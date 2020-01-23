@@ -3,7 +3,7 @@
 <div id="editor_bottom_toolbar" style="display:none">
     <div id="editor_signature">
         @if ($mailbox->signature)
-            {!! $conversation->getSignatureProcessed() !!}
+            {!! $conversation->getSignatureProcessed([], true) !!}
         @endif
     </div>
 	<span class="editor-btm-text">{{ __('Status') }}:</span> 

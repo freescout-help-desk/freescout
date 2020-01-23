@@ -953,15 +953,15 @@ class Conversation extends Model
      * Replace vars in signature.
      * `data` contains extra info which can be used to build signature.
      */
-    public function getSignatureProcessed($data = [])
+    public function getSignatureProcessed($data = [], $escape = false)
     {
-        return $this->replaceTextVars($this->mailbox->signature, $data);
+        return $this->replaceTextVars($this->mailbox->signature, $data, $escape);
     }
 
     /**
      * Replace vars in the text.
      */
-    public function replaceTextVars($text, $data = [])
+    public function replaceTextVars($text, $data = [], $escape = false)
     {
         if (!\App\Misc\Mail::hasVars($text)) {
             return $text;
@@ -985,7 +985,7 @@ class Conversation extends Model
         ];
 
         // Set variables
-        return \MailHelper::replaceMailVars($text, $data);
+        return \MailHelper::replaceMailVars($text, $data, $escape);
     }
 
     /**
