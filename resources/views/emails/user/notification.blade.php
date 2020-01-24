@@ -123,7 +123,7 @@
 													<tr>
 														<td valign="top">
 															<div style="disdivlay:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;">
-																{!! $thread->getActionText('', true, false, $user, view('emails/user/thread_by', ['thread' => $thread, 'user' => $user])->render()) !!}
+																{!! $thread->getActionText('', true, false, $user, htmlspecialchars(view('emails/user/thread_by', ['thread' => $thread, 'user' => $user])->render())) !!}
 															</div>
 														</td>
 														<td valign="top">
