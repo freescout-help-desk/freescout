@@ -169,7 +169,7 @@ class Mail
     /**
      * Replace mail vars in the text.
      */
-    public static function replaceMailVars($text, $data = [])
+    public static function replaceMailVars($text, $data = [], $escape = false)
     {
         // Available variables to insert into email in UI.
         $vars = [];
@@ -197,6 +197,12 @@ class Mail
             $vars['{%user.jobTitle%}'] = $data['user']->job_title;
             $vars['{%user.lastName%}'] = $data['user']->last_name;
             $vars['{%user.photoUrl%}'] = $data['user']->getPhotoUrl();
+        }
+
+        if ($escape) {
+            foreach ($vars as $i => $var) {
+                $vars[$i] = htmlspecialchars($var);
+            }
         }
 
         return strtr($text, $vars);

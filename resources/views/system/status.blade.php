@@ -153,6 +153,9 @@
     </table>
 
     <h3 id="jobs" class="margin-top-40">{{ __('Background Jobs') }}</h3>
+    @if (count($queued_jobs) || count($failed_jobs))
+        {{ __('Queued and failed jobs are cleaned automatically once in a while. No need to worry or delete them manually.') }}
+    @endif
     <table class="table table-dark-header table-bordered table-responsive">
         <tbody>
             <tr>

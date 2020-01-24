@@ -553,6 +553,7 @@ class Thread extends Model
 
     /**
      * Get action text.
+     * $person must be already escaped.
      */
     public function getActionText($conversation_number = '', $escape = false, $strip_tags = false, $by_user = null, $person = '')
     {
@@ -619,9 +620,10 @@ class Thread extends Model
         }
 
         if ($person) {
-            if ($escape) {
-                $person = htmlspecialchars($person);
-            }
+            // This causes double escaping.
+            // if ($escape) {
+            //     $person = htmlspecialchars($person);
+            // }
             $did_this = str_replace(':person', $person, $did_this);
         }
 
