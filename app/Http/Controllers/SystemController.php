@@ -10,6 +10,8 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 class SystemController extends Controller
 {
+    public static $latest_version_error = '';
+
     /**
      * Create a new controller instance.
      *
@@ -169,7 +171,12 @@ class SystemController extends Controller
         // Check new version
         $new_version_available = false;
         $latest_version = \Cache::remember('latest_version', 15, function () {
-            return \Updater::getVersionAvailable();
+            try {
+                return \Updater::getVersionAvailable();
+            } catch (\Exception $e) {
+                SystemController::$latest_version_error = $e->getMessage();
+                return '';
+            }
         });
 
         if ($latest_version && version_compare($latest_version, \Config::get('app.version'), '>')) {
@@ -185,6 +192,7 @@ class SystemController extends Controller
             'permissions'           => $permissions,
             'new_version_available' => $new_version_available,
             'latest_version'        => $latest_version,
+            'latest_version_error'  => SystemController::$latest_version_error,
             'public_symlink_exists' => $public_symlink_exists,
             'env_is_writable'       => $env_is_writable,
         ]);
