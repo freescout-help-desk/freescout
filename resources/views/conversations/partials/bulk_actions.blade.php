@@ -28,13 +28,7 @@
                 @endforeach
             </ul>
         </div>
-        {{--<div class="btn-group">
-            <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{{ __("Tag") }}">
-                <span class="glyphicon glyphicon-tag"></span>
-            </button>
-            <ul class="dropdown-menu conv-tag">
-            </ul>
-        </div>--}}
+        @action('bulk_actions.before_delete', $mailbox ?? null)
         <button type="button" class="btn btn-default conv-delete" title="{{ __("Delete") }}">
             <span class="glyphicon glyphicon-trash"></span>
         </button>
