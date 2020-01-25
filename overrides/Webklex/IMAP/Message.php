@@ -297,7 +297,7 @@ class Message
      */
     private function parseHeader()
     {
-        $this->header = $header = imap_utf8(imap_fetchheader($this->client->getConnection(), $this->uid, FT_UID));
+        $this->header = $header = imap_fetchheader($this->client->getConnection(), $this->uid, FT_UID);
         if ($this->header) {
             $header = imap_rfc822_parse_headers($this->header);
         }
@@ -327,7 +327,10 @@ class Message
         }
 
         if (property_exists($header, 'subject')) {
-            $this->subject = $header->subject;
+            $this->subject = \imap_utf8($header->subject);
+            if (\Str::startsWith($this->subject, '=?UTF-8?')) {
+                $this->subject = mb_decode_mimeheader($header->subject);
+            }
         }
 
         if (property_exists($header, 'date')) {
