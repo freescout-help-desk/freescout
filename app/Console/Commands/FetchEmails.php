@@ -303,7 +303,7 @@ class FetchEmails extends Command
 
                                     // Try to get Message-ID of the original email.
                                     if (!$bounced_message_id) {
-                                        print_r(\MailHelper::parseHeaders($attachment->getContent()));
+                                        //print_r(\MailHelper::parseHeaders($attachment->getContent()));
                                         $bounced_message_id = \MailHelper::getHeader($attachment->getContent(), 'message_id');
                                     }
                                 }
@@ -331,6 +331,19 @@ class FetchEmails extends Command
                     if (!$is_bounce && preg_match("/^Return\-Path: <>/i", $message->getHeader())) {
                         $this->line('['.date('Y-m-d H:i:s').'] Bounce detected by Return-Path header.');
                         $is_bounce = true;
+                    }
+
+
+                    if ($is_bounce && !$bounced_message_id) {
+                        foreach ($attachments as $attachment_msg) {
+                            // 7.3.1 The Message/rfc822 (primary) subtype. A Content-Type of "message/rfc822" indicates that the body contains an encapsulated message, with the syntax of an RFC 822 message
+                            if ($attachment_msg->content_type == 'message/rfc822') {
+                                $bounced_message_id = \MailHelper::getHeader($attachment_msg->getContent(), 'message_id');
+                                if ($bounced_message_id) {
+                                    break;
+                                }
+                            }
+                        }
                     }
 
                     // Is it a message from Customer or User replied to the notification
