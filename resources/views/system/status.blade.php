@@ -31,7 +31,10 @@
                     @else
                         <strong class="text-success">{{ \Config::get('app.version') }}</strong> 
                         &nbsp;&nbsp;
-                        <a href="#" class="btn btn-default btn-xs check-updates-trigger" data-loading-text="{{ __('Checking') }}…">{{ __('Check for updates') }}</a>
+                        <a href="#" class="btn btn-default btn-xs check-updates-trigger" data-loading-text="{{ __('Checking') }}…">{{ __('Check for updates') }}</a> 
+                        @if ($latest_version_error)
+                            <div class="text-danger margin-top">{{ $latest_version_error }}</div>
+                        @endif
                     @endif
                 </td>
             </tr>
