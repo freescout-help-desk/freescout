@@ -107,7 +107,7 @@ class User extends Authenticatable
      *
      * @var [type]
      */
-    protected $fillable = ['role', 'first_name', 'last_name', 'email', 'password', 'role', 'timezone', 'photo_url', 'type', 'emails', 'job_title', 'phone', 'time_format', 'enable_kb_shortcuts', 'locale'];
+    protected $fillable = ['role', 'status', 'first_name', 'last_name', 'email', 'password', 'role', 'timezone', 'photo_url', 'type', 'emails', 'job_title', 'phone', 'time_format', 'enable_kb_shortcuts', 'locale'];
 
     /**
      * For array_unique function.
@@ -711,7 +711,7 @@ class User extends Authenticatable
         $user = new self();
 
         if (empty($data['email']) || empty($data['password'])) {
-            return false;
+            return null;
         }
 
         $user->fill($data);
@@ -722,10 +722,10 @@ class User extends Authenticatable
         try {
             $user->save();
         } catch (\Exception $e) {
-            return false;
+            return null;
         }
 
-        return true;
+        return $user;
     }
 
     /**
