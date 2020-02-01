@@ -75,7 +75,6 @@ Route::post('/mailbox/connection-settings/{id}/incoming', 'MailboxesController@c
 Route::get('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReply')->name('mailboxes.auto_reply');
 Route::post('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReplySave')->name('mailboxes.auto_reply.save');
 Route::post('/mailbox/ajax', ['uses' => 'MailboxesController@ajax', 'laroute' => true])->name('mailboxes.ajax');
-Route::post('/mailbox/upload', ['uses' => 'MailboxesController@upload', 'laroute' => true])->name('mailboxes.upload');
 
 // Customers
 Route::get('/customers/{id}/edit', 'CustomersController@update')->name('customers.update');
