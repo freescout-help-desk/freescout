@@ -83,7 +83,7 @@ var EditorAttachmentButton = function (context) {
 			fileInput.addEventListener('change', function() {
 				if (fileInput.files) {
 					for (var i = 0; i < fileInput.files.length; i++) {
-						editorSendFile(fileInput.files[i], true, 'conv');
+						editorSendFile(fileInput.files[i], true, true);
 		            }
 			    }
 			});
@@ -317,7 +317,7 @@ function mailboxUpdateInit(from_name_custom)
 						return;
 					}
 					for (var i = 0; i < files.length; i++) {
-						editorSendFile(files[i], undefined, 'mailbox');
+						editorSendFile(files[i], undefined, false);
 					}
 				}
 			}
@@ -1300,7 +1300,7 @@ function convEditorInit()
 	 				return;
 	 			}
 	            for (var i = 0; i < files.length; i++) {
-					editorSendFile(files[i], undefined, 'conv');
+					editorSendFile(files[i], undefined, true);
 	            }
 	        },
 	        onBlur: function() {
@@ -1417,7 +1417,7 @@ function generateDummyId()
 }
 
 // Save file uploaded in editor
-function editorSendFile(file, attach)
+function editorSendFile(file, attach, is_conv)
 {
 	if (!file || typeof(file.type) == "undefined") {
 		return false;
@@ -1428,11 +1428,11 @@ function editorSendFile(file, attach)
 	var route = '';
 	var editorId = '';
 
-	if (src == 'conv') {
+	if (is_conv) {
 		route = 'conversations.upload';
 		editorId = '#body';
 	}else{
-		route = 'mailboxes.upload';
+		route = 'uploads.upload';
 		editorId = '#signature';
 	}
 

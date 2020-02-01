@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Conversation;
 use App\Folder;
 use App\Mailbox;
-use App\Misc\Helper;
 use App\Thread;
 use App\User;
 use Illuminate\Http\Request;
@@ -623,39 +622,4 @@ class MailboxesController extends Controller
         return \Response::json($response);
     }
 
-    /**
-     * Upload files and images.
-     */
-    public function upload(Request $request)
-    {
-        $response = [
-            'status' => 'error',
-            'msg'    => '', // this is error message
-        ];
-
-        $user = auth()->user();
-
-        if (!$user) {
-            $response['msg'] = __('Please login to upload file');
-        }
-
-        if (!$request->hasFile('file') || !$request->file('file')->isValid() || !$request->file) {
-            $response['msg'] = __('Error occured uploading file');
-        }
-
-        if (!$response['msg']) {
-
-            $upload = Helper::uploadFile($request->file, ['jpg','gif','png']);
-            $filename = basename($upload);
-
-            if ($upload) {
-                $response['status'] = 'success';
-                $response['url'] = Helper::uploadedFileUrl($filename);
-            } else {
-                $response['msg'] = __('Error occured uploading file');
-            }
-        }
-
-        return \Response::json($response);
-    }
 }

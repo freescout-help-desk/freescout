@@ -103,3 +103,6 @@ Route::post('/system/action', ['uses' => 'SystemController@action', 'middleware'
 
 // Open tracking
 Route::get('/thread/read/{conversation_id}/{thread_id}', 'PublicController@setThreadAsRead')->name('open_tracking.set_read');
+
+// Uploads
+Route::post('/uploads/upload', ['uses' => 'SecureController@upload', 'laroute' => true])->name('uploads.upload');
