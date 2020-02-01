@@ -44,6 +44,10 @@
         "name": "mailboxes.ajax"
     },
     {
+        "uri": "mailbox\/upload",
+        "name": "mailboxes.upload"
+    },
+    {
         "uri": "customers\/ajax-search",
         "name": "customers.ajax_search"
     },

@@ -83,7 +83,7 @@ var EditorAttachmentButton = function (context) {
 			fileInput.addEventListener('change', function() {
 				if (fileInput.files) {
 					for (var i = 0; i < fileInput.files.length; i++) {
-						editorSendFile(fileInput.files[i], true);
+						editorSendFile(fileInput.files[i], true, 'conv');
 		            }
 			    }
 			});
@@ -286,11 +286,41 @@ function triggersInit()
 
 function mailboxUpdateInit(from_name_custom)
 {
+	var selector = '#signature',
+		excludedVars = ['%user.'];
+
 	$(document).ready(function(){
 
-		summernoteInit('#signature', {
+		summernoteInit(selector, {
 			insertVar: true,
-			excludeVars: ['%user.']
+			disableDragAndDrop: false,
+			callbacks: {
+				onInit: function() {
+					$(selector).parent().children().find('.note-statusbar').remove();
+					$(selector).parent().children().find('.summernote-inservar:first').on('change', function(event) {
+						$(selector).summernote('insertText', $(this).val());
+						$(this).val('');
+					});
+					if (typeof (excludedVars) != "undefined" || excludedVars) {
+						$(selector).parent().children().find('.summernote-inservar:first option').each(function(i, el) {
+							for (var var_i = 0; var_i < excludedVars.length; var_i++) {
+								if ($(el).val().indexOf(excludedVars[var_i]) != -1) {
+									$(el).parent().hide();
+									break;
+								}
+							}
+						});
+					}
+				},
+				onImageUpload: function(files) {
+					if (!files) {
+						return;
+					}
+					for (var i = 0; i < files.length; i++) {
+						editorSendFile(files[i], undefined, 'mailbox');
+					}
+				}
+			}
 		});
 
 	    $('#from_name').change(function(event) {
@@ -371,7 +401,7 @@ function summernoteInit(selector, new_options)
 		disableDragAndDrop: true,
 		toolbar: [
 		    // [groupName, [list of button]]
-		    ['style', ['bold', 'italic', 'underline', 'color', 'lists', 'removeformat', 'link', 'codeview']],
+		    ['style', ['bold', 'italic', 'underline', 'color', 'lists', 'removeformat', 'link', 'picture', 'codeview']],
 		    ['actions-select', ['insertvar']]
 		],
 		buttons: buttons,
@@ -1270,7 +1300,7 @@ function convEditorInit()
 	 				return;
 	 			}
 	            for (var i = 0; i < files.length; i++) {
-					editorSendFile(files[i]);
+					editorSendFile(files[i], undefined, 'conv');
 	            }
 	        },
 	        onBlur: function() {
@@ -1395,6 +1425,16 @@ function editorSendFile(file, attach)
 
 	var attachments_container = $(".attachments-upload:first");
 	var attachment_dummy_id = generateDummyId();
+	var route = '';
+	var editorId = '';
+
+	if (src == 'conv') {
+		route = 'conversations.upload';
+		editorId = '#body';
+	}else{
+		route = 'mailboxes.upload';
+		editorId = '#signature';
+	}
 
 	ajaxSetup();
 
@@ -1424,7 +1464,7 @@ function editorSendFile(file, attach)
 		data.append("attach", 0);
 	}
 	$.ajax({
-		url: laroute.route('conversations.upload'),
+		url: laroute.route(route),
 		data: data,
 		cache: false,
 		contentType: false,
@@ -1453,7 +1493,7 @@ function editorSendFile(file, attach)
 				fs_reply_changed = true;
 			} else {
 				// Embed image
-				$('#body').summernote('insertImage', response.url, function (image) {
+				$(editorId).summernote('insertImage', response.url, function (image) {
 					var editor_width = $('.note-editable:first:visible').width();
 					if (image.width() > editor_width-85) {
 						image.css('width', editor_width-85);
