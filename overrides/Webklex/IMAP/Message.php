@@ -328,7 +328,7 @@ class Message
 
         if (property_exists($header, 'subject')) {
             $this->subject = \imap_utf8($header->subject);
-            if (\Str::startsWith($this->subject, '=?UTF-8?')) {
+            if (\Str::startsWith(mb_strtolower($this->subject), '=?utf-8?')) {
                 $this->subject = mb_decode_mimeheader($header->subject);
             }
         }
