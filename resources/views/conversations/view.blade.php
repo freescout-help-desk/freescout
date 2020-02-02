@@ -18,7 +18,18 @@
 
                 <div class="conv-actions">
                     {{-- There should be no spaced between buttons --}}
-                    @if (!$conversation->isPhone())<span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}">@endif</span><span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" data-toggle="tooltip"></span>@action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>--}}<div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
+                    @if (!$conversation->isPhone())
+                        <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}"></span>
+                    @endif
+                    <span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}"></span>
+                    @if ($conversation->state != App\Conversation::STATE_DELETED)
+                        <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete") }}"></span>
+                    @else
+                        <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete-forever" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete Forever") }}"></span>
+                    @endif
+                    @action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>--}}
+
+                    <div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
                         <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></span>
                         <ul class="dropdown-menu dropdown-with-icons">
                             @action('conversation.prepend_action_buttons', $conversation, $mailbox)
@@ -32,9 +43,9 @@
                                             'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv"><i class="glyphicon glyphicon-log-out"></i> {{ __("Move") }}</a></li>
                             @endif
                             @if ($conversation->state != App\Conversation::STATE_DELETED)
-                                <li><a href="#" class="conv-delete"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete") }}</a></li>
+                                <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete") }}</a></li>
                             @else
-                                <li><a href="#" class="conv-delete-forever"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete Forever") }}</a></li>
+                                <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete-forever"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete Forever") }}</a></li>
                             @endif
                             @action('conversation.append_action_buttons', $conversation, $mailbox)
                         </ul>
