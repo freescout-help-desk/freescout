@@ -16,6 +16,7 @@
         }
 
         $conversations = \Eventy::filter('conversations_table.preload_table_data', $conversations);
+        $show_assigned = ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED || !array_key_exists($folder->type, App\Folder::$types));
     @endphp
 
     @if (!request()->get('page'))
@@ -31,7 +32,7 @@
             <col class="conv-attachment">
             <col class="conv-subject">
             <col class="conv-thread-count">
-            @if ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED)
+            @if ($show_assigned)
                 <col class="conv-owner">
             @endif
             <col class="conv-number">
@@ -50,7 +51,7 @@
             <th class="conv-subject" colspan="2">
                 <span>{{ __("Conversation") }}</span>
             </th>
-            @if ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED)
+            @if ($show_assigned)
                 <th class="conv-owner">
                     <span>{{ __("Assigned To") }}</span>
                 </th>
@@ -143,7 +144,7 @@
 
                         {{--<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}">@if ($conversation->threads_count <= 1)&nbsp;@else<span>{{ $conversation->threads_count }}</span>@endif</a>--}}
                     </td>
-                    @if ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED)
+                    @if ($show_assigned)
                         <td class="conv-owner">
                             @if ($conversation->user_id)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}"> {{ $conversation->user->getFullName() }} </a>@else &nbsp;@endif
                         </td>
@@ -159,7 +160,7 @@
         </tbody>
         <tfoot>
             <tr>
-                @if ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED)
+                @if ($show_assigned)
                     <td class="conv-totals" colspan="6">
                 @else
                     <td class="conv-totals" colspan="5">
