@@ -22,7 +22,7 @@
             ($conversation->user_id == Auth::user()->id && $mailbox->ticket_assignee != App\Mailbox::TICKET_ASSIGNEE_ANYONE) 
             || (!$conversation->user_id && $mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_REPLYING_UNASSIGNED) 
             || $mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_REPLYING)data-default="true" selected="selected"@endif>{{ __('Me') }}</option>
-        @foreach ($mailbox->usersHavingAccess() as $user)
+        @foreach ($mailbox->usersAssignable() as $user)
             @if ($user->id != Auth::user()->id)
             	<option value="{{ $user->id }}" @if ($conversation->user_id == $user->id && !in_array($mailbox->ticket_assignee, [ App\Mailbox::TICKET_ASSIGNEE_REPLYING, App\Mailbox::TICKET_ASSIGNEE_ANYONE]))data-default="true" selected="selected"@endif>{{ $user->getFullName() }}</option>
             @endif

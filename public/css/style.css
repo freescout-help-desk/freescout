@@ -2850,6 +2850,10 @@ ul.sidebar-block-list {
     padding-top: 4px;
     padding-bottom: 4px;
 }
+.table-header-nb td,
+.table-header-nb th {
+    border-top: none !important;
+}
 
 /**
  * Modal

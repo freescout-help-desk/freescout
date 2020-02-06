@@ -64,7 +64,7 @@
                                 <ul class="dropdown-menu conv-user">
                                     <li @if (!$conversation->user_id) class="active" @endif><a href="#" data-user_id="-1">{{ __("Anyone") }}</a></li>
                                     <li @if ($conversation->user_id == Auth::user()->id) class="active" @endif><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
-                                    @foreach ($mailbox->usersHavingAccess(true) as $user)
+                                    @foreach ($mailbox->usersAssignable() as $user)
                                         @if ($user->id != Auth::user()->id)
                                             <li @if ($conversation->user_id == $user->id) class="active" @endif><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
                                         @endif

@@ -156,7 +156,21 @@ class MailboxesController extends Controller
         $users = User::nonDeleted()->where('role', '!=', User::ROLE_ADMIN)->get();
         $users = User::sortUsers($users);
 
-        return view('mailboxes/permissions', ['mailbox' => $mailbox, 'users' => $users, 'mailbox_users' => $mailbox->users]);
+        $admins = User::nonDeleted()
+            ->select(['users.*', 'mailbox_user.hide'])
+            ->leftJoin('mailbox_user', function ($join) use ($mailbox) {
+                $join->on('mailbox_user.user_id', '=', 'users.id');
+                $join->where('mailbox_user.mailbox_id', $mailbox->id);
+            })
+            ->where('role', User::ROLE_ADMIN)->get();
+        $admins = User::sortUsers($admins);
+
+        return view('mailboxes/permissions', [
+            'mailbox' => $mailbox,
+            'users' => $users,
+            'admins' => $admins,
+            'mailbox_users' => $mailbox->users,
+        ]);
     }
 
     /**
@@ -172,6 +186,19 @@ class MailboxesController extends Controller
 
         $mailbox->users()->sync($request->users);
         $mailbox->syncPersonalFolders($request->users);
+
+        // Save admins settings.
+        $admins = User::nonDeleted()->where('role', User::ROLE_ADMIN)->get();
+        foreach ($admins as $admin) {
+            $mailbox_user = $admin->mailboxesWithSettings()->where('mailbox_id', $id)->first();
+            if (!$mailbox_user) {
+                // Admin may not be connected to the mailbox yet
+                $admin->mailboxes()->attach($id);
+                $mailbox_user = $admin->mailboxesWithSettings()->where('mailbox_id', $id)->first();
+            }
+            $mailbox_user->settings->hide = (isset($request->admins[$admin->id]['hide']) ? (int)$request->admins[$admin->id]['hide'] : false);
+            $mailbox_user->settings->save();
+        }
 
         \Session::flash('flash_success_floating', __('Mailbox permissions saved!'));
 
