@@ -1,0 +1,3 @@
+<Files *.*>
+Header set Content-Disposition attachment
+</Files>
