@@ -252,6 +252,14 @@ $(document).ready(function(){
 	polycastInit();
 	webNotificationsInit();
 	initAccordionHeading();
+
+	// Search button
+	$('#search-dt').click(function() {
+		var dt = $(this);
+		setTimeout(function() { 
+			dt.next().children().find('.form-control:first').focus();
+		}, 100);
+	});
 });
 
 
