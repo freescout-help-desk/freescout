@@ -118,6 +118,9 @@
                 </form>
                 <hr>*/ ?>
                 <h4>Total: <?= $numTranslations ?>, untranslated: <?= $numTodo ?>, changed: <?= $numChanged ?></h4>
+                <div class="text-help">
+                    Make sure NOT to translate placeholders like <strong>:person</strong> or <strong>:%tag_start%</strong>. Just keep them as is in the translation.
+                </div>
                 <table class="table">
                     <thead>
                     <tr>
