@@ -286,8 +286,7 @@ function triggersInit()
 
 function mailboxUpdateInit(from_name_custom)
 {
-	var selector = '#signature',
-		excludedVars = ['%user.'];
+	var selector = '#signature';
 
 	$(document).ready(function(){
 
@@ -301,16 +300,6 @@ function mailboxUpdateInit(from_name_custom)
 						$(selector).summernote('insertText', $(this).val());
 						$(this).val('');
 					});
-					if (typeof (excludedVars) != "undefined" || excludedVars) {
-						$(selector).parent().children().find('.summernote-inservar:first option').each(function(i, el) {
-							for (var var_i = 0; var_i < excludedVars.length; var_i++) {
-								if ($(el).val().indexOf(excludedVars[var_i]) != -1) {
-									$(el).parent().hide();
-									break;
-								}
-							}
-						});
-					}
 				},
 				onImageUpload: function(files) {
 					if (!files) {
