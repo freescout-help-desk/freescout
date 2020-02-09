@@ -199,7 +199,7 @@
                                 </li>
 
                                 <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle dropdown-toggle-icon" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre title="{{ __('Search') }}">
+                                    <a href="#" class="dropdown-toggle dropdown-toggle-icon" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre title="{{ __('Search') }}" id="search-dt">
                                         <i class="glyphicon glyphicon-search"></i>
                                     </a>
 

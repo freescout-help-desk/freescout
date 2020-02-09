@@ -150,7 +150,12 @@ class Mailbox extends Model
      */
     public function users()
     {
-        return $this->belongsToMany('App\User')->as('settings')->withPivot('after_send');
+        return $this->belongsToMany('App\User');
+    }
+
+    public function usersWithSettings()
+    {
+        return $this->belongsToMany('App\User')->as('settings')->withPivot('after_send')->withPivot('hide');
     }
 
     /**
@@ -363,7 +368,7 @@ class Mailbox extends Model
     {
         $admins = User::where('role', User::ROLE_ADMIN)->select($fields)->remember(\Helper::cacheTime($cache))->get();
 
-        $users = $this->users()->select($fields)->rememberForever()->get()->merge($admins)->unique();
+        $users = $this->users()->select($fields)->remember(\Helper::cacheTime($cache))->get()->merge($admins)->unique();
 
         // Exclude deleted users (better to do it in PHP).
         foreach ($users as $i => $user) {
@@ -374,10 +379,42 @@ class Mailbox extends Model
 
         // Sort by full name
         if ($sort) {
-            $users = $users->sortBy(function ($value, $key) {
-                return $value->getFullName();
-            }, SORT_STRING | SORT_FLAG_CASE);
+            $users = User::sortUsers($users);
         }
+
+        return $users;
+    }
+
+    public function usersAssignable($cache = true)
+    {
+        // Exclude hidden admins.
+        $mailbox_id = $this->id;
+        $admins = User::select(['users.*', 'mailbox_user.hide'])
+            ->leftJoin('mailbox_user', function ($join) use ($mailbox_id) {
+                $join->on('mailbox_user.user_id', '=', 'users.id');
+                $join->where('mailbox_user.mailbox_id', $mailbox_id);
+            })
+            ->where('role', User::ROLE_ADMIN)
+            ->remember(\Helper::cacheTime($cache))
+            ->get();
+
+        $users = $this->users()->select('users.*')->remember(\Helper::cacheTime($cache))->get()->merge($admins)->unique();
+
+        foreach ($users as $i => $user) {
+            if (!empty($user->hide)) {
+                $users->forget($i);
+            }
+        }
+
+        // Exclude deleted users (better to do it in PHP).
+        foreach ($users as $i => $user) {
+            if ($user->isDeleted()) {
+                $users->forget($i);
+            }
+        }
+
+        // Sort by full name
+        $users = User::sortUsers($users);
 
         return $users;
     }
@@ -498,7 +535,7 @@ class Mailbox extends Model
      */
     public function getUserSettings($user_id)
     {
-        $mailbox_user = $this->users()->where('users.id', $user_id)->first();
+        $mailbox_user = $this->usersWithSettings()->where('users.id', $user_id)->first();
         if ($mailbox_user) {
             return $mailbox_user->settings;
         } else {
@@ -506,6 +543,7 @@ class Mailbox extends Model
             // Create dummy object with default parameters
             $settings = new \StdClass();
             $settings->after_send = MailboxUser::AFTER_SEND_NEXT;
+            $settings->hide = false;
 
             return $settings;
         }

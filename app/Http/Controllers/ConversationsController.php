@@ -1313,14 +1313,14 @@ class ConversationsController extends Controller
                     $response['msg'] .= __('Action not authorized');
                 }
                 if (!$response['msg']) {
-                    $mailbox_user = $user->mailboxes()->where('mailbox_id', $request->mailbox_id)->first();
+                    $mailbox_user = $user->mailboxesWithSettings()->where('mailbox_id', $request->mailbox_id)->first();
                     if (!$mailbox_user) {
                         // Admin may not be connected to the mailbox yet
                         $user->mailboxes()->attach($request->mailbox_id);
                         // $mailbox_user = new MailboxUser();
                         // $mailbox_user->mailbox_id = $mailbox->id;
                         // $mailbox_user->user_id = $user->id;
-                        $mailbox_user = $user->mailboxes()->where('mailbox_id', $request->mailbox_id)->first();
+                        $mailbox_user = $user->mailboxesWithSettings()->where('mailbox_id', $request->mailbox_id)->first();
                     }
                     $mailbox_user->settings->after_send = $request->value;
                     $mailbox_user->settings->save();

@@ -16,12 +16,13 @@
 
     <div class="container form-container">
         <div class="row">
-            <div class="col-xs-12">
-                <h3> {{ __('Selected Users have access to this mailbox:') }}</h3>
-                <p class="block-help">{{ __('Administrators have access to all mailboxes and are not listed here.') }}</p>
-            </div>
-            <div class="col-xs-12">
-                <form method="POST" action="">
+            <form method="POST" action="">
+                <div class="col-xs-12">
+                    <h3> {{ __('Selected Users have access to this mailbox:') }}</h3>
+                    <p class="block-help">{{ __('Administrators have access to all mailboxes and are not listed here.') }}</p>
+                </div>
+                <div class="col-xs-12">
+                    
                     {{ csrf_field() }}
 
                     <p><a href="javascript:void(0)" class="sel-all">{{ __('all') }}</a> / <a href="javascript:void(0)" class="sel-none">{{ __('none') }}</a></p>
@@ -37,6 +38,28 @@
                             </div>
                         @endforeach
                     </fieldset>
+
+                </div>
+
+                <div class="col-xs-12 margin-top">
+                    <h3> {{ __('Administrators') }}:</h3>
+                </div>
+                <div class="col-md-11 col-lg-9">
+                    
+                    <table class="table">
+                        <tr class="table-header-nb">
+                            <th>&nbsp;</th>
+                            <th class="text-center">{{ __('Hide from Assign list') }}</th>
+                        </tr>
+                        <fieldset id="permissions-fields">
+                            @foreach ($admins as $admin)
+                                <tr>
+                                    <td>{{ $admin->getFullName() }}</td>
+                                    <td class="text-center"><input type="checkbox" name="admins[{{ $admin->id }}][hide]" value="1" @if (!empty($admin->hide)) checked="checked" @endif></td>
+                                </tr>
+                            @endforeach
+                        </fieldset>
+                    </table>
                     <div class="form-group margin-top">
                         
                         <button type="submit" class="btn btn-primary">
@@ -44,8 +67,8 @@
                         </button>
                     
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 @endsection
