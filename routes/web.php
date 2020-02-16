@@ -20,6 +20,7 @@ Route::redirect('/home', '/', 301);
 
 // Public routes
 Route::get('/user-setup/{hash}', 'PublicController@userSetup')->name('user_setup');
+Route::get('/attachment/download', 'PublicController@downloadAttachment')->name('download_attachment');
 Route::post('/user-setup/{hash}', 'PublicController@userSetupSave');
 
 // General routes for logged in users

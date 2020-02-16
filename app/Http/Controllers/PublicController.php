@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Attachment;
 use App\Conversation;
 use App\Option;
 use App\Thread;
 use App\User;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 use Validator;
 
 class PublicController extends Controller
@@ -51,16 +54,16 @@ class PublicController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'email'       => 'required|string|email|max:100|unique:users,email,'.$user->id,
-            'password'    => 'required|string|min:8|confirmed',
-            'job_title'   => 'max:100',
-            'phone'       => 'max:60',
-            'timezone'    => 'required|string|max:255',
+            'email' => 'required|string|email|max:100|unique:users,email,' . $user->id,
+            'password' => 'required|string|min:8|confirmed',
+            'job_title' => 'max:100',
+            'phone' => 'max:60',
+            'timezone' => 'required|string|max:255',
             'time_format' => 'required',
-            'photo_url'   => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'photo_url' => 'nullable|image|mimes:jpeg,png,jpg,gif',
         ]);
         $validator->setAttributeNames([
-            'photo_url'   => __('Photo'),
+            'photo_url' => __('Photo'),
         ]);
 
         // Photo
@@ -78,8 +81,8 @@ class PublicController extends Controller
 
         if ($validator->fails()) {
             return redirect()->route('user_setup', ['hash' => $hash])
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
 
         $request_data = $request->all();
@@ -133,5 +136,29 @@ class PublicController extends Controller
         $response->header('Pragma', 'no-cache');
 
         return $response;
+    }
+
+    /**
+     * Download an attachment
+     *
+     * @param Request $request
+     * @return ResponseFactory|Response
+     */
+    public function downloadAttachment(Request $request)
+    {
+        $id = intval($request->query('id', 0));
+        $token = $request->query('token', '');
+
+        // Get attachment by id
+        /** @var Attachment $attachment */
+        $attachment = Attachment::where('id', $id)
+            ->firstOrFail();
+
+        // Only allow download if the attachment is public or if the token matches the hash of the contents
+        if ((bool)$attachment->public === true && $token !== $attachment->access_token) {
+            return response("Forbidden", 403);
+        }
+
+        return $attachment->download();
     }
 }

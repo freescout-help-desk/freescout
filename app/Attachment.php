@@ -17,6 +17,9 @@ class Attachment extends Model
     const TYPE_MODEL = 7;
     const TYPE_OTHER = 8;
 
+    CONST PRIVATE_DISK = 'attachments';
+    // Legacy disk in which the attachments were stored before we required a valid access key.
+    CONST PUBLIC_DISK = 'public';
     const DIRECTORY = 'attachment';
 
     // https://github.com/Webklex/laravel-imap/blob/master/src/IMAP/Attachment.php
@@ -82,6 +85,8 @@ class Attachment extends Model
         $attachment->mime_type = $mime_type;
         $attachment->type = $type;
         $attachment->embedded = $embedded;
+        $attachment->access_token = bin2hex(random_bytes(32));
+        $attachment->public = false;
         $attachment->save();
 
         // Save file from content or copy file.
@@ -92,19 +97,19 @@ class Attachment extends Model
         $i = 0;
         do {
             $i++;
-            $file_path = self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir.$i.DIRECTORY_SEPARATOR.$file_name;
-        } while (Storage::exists($file_path));
+            $file_path = $file_dir.$i.DIRECTORY_SEPARATOR.$file_name;
+        } while (Storage::disk(self::PRIVATE_DISK)->exists($file_path));
 
         $file_dir .= $i.DIRECTORY_SEPARATOR;
 
         if ($uploaded_file) {
-            $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name);
+            $uploaded_file->storeAs($file_dir, $file_name, ['disk' => self::PRIVATE_DISK]);
         } else {
-            Storage::put($file_path, $content);
+            Storage::disk(self::PRIVATE_DISK)->put($file_path, $content);
         }
 
         $attachment->file_dir = $file_dir;
-        $attachment->size = Storage::size($file_path);
+        $attachment->size = Storage::disk(self::PRIVATE_DISK)->size($file_path);
         $attachment->save();
 
         return $attachment;
@@ -189,7 +194,23 @@ class Attachment extends Model
      */
     public function url()
     {
-        return Storage::url($this->getStorageFilePath());
+        if ($this->public) {
+            return $this->getDisk()->url($this->getStorageFilePath());
+        } else {
+            return route('download_attachment', ['id' => $this->id, 'token' => $this->access_token]);
+        }
+    }
+
+    /**
+     * Outputs the current Attachment as download
+     */
+    public function download()
+    {
+        return $this->getDisk()->download($this->getStorageFilePath(), $this->file_name);
+    }
+
+    private function getDisk() {
+        return $this->public ? Storage::disk(self::PUBLIC_DISK) : Storage::disk(self::PRIVATE_DISK);
     }
 
     /**
@@ -204,12 +225,18 @@ class Attachment extends Model
 
     public function getStorageFilePath()
     {
-        return self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name;
+        if ($this->public) {
+            return self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name;
+        }
+        return $this->file_dir.$this->file_name;
     }
 
     public function getLocalFilePath()
     {
-        return Storage::path(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
+        if ($this->public) {
+            return Storage::disk(self::PUBLIC_DISK)->path($this->getStorageFilePath());
+        }
+        return Storage::disk(self::PRIVATE_DISK)->path($this->getStorageFilePath());
     }
 
     public static function formatBytes($size, $precision = 0)
@@ -260,29 +287,11 @@ class Attachment extends Model
     {
         // Delete from disk
         foreach ($attachments as $attachment) {
-            Storage::delete($attachment->getStorageFilePath());
+            /** @var Attachment $attachment */
+            $attachment->getDisk()->delete($attachment->getStorageFilePath());
         }
 
         // Delete from DB
         self::whereIn('id', $attachments->pluck('id')->toArray())->delete();
     }
-
-    /**
-     * Generate dummy ID for attachment.
-     * Not used for now.
-     */
-    /*public static function genrateDummyId()
-    {
-        if (!$this->id) {
-            // Math.random should be unique because of its seeding algorithm.
-            // Convert it to base 36 (numbers + letters), and grab the first 9 characters
-            // after the decimal.
-            $hash = mt_rand() / mt_getrandmax();
-            $hash = base_convert($hash, 10, 36);
-            $id = substr($hash, 2, 9);
-        } else {
-            $id = substr(md5($this->id), 0, 9);
-        }
-        return $id;
-    }*/
 }
