@@ -259,6 +259,10 @@ class SystemController extends Controller
             case 'migrate_db':
                 \Artisan::call('migrate', ['--force' => true], $outputLog);
                 break;
+
+            case 'logout_users':
+                \Artisan::call('freescout:logout-users', [], $outputLog);
+                break;
         }
 
         $output = $outputLog->fetch();

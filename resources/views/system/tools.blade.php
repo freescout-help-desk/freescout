@@ -23,9 +23,12 @@
                 {{ __('Clear Cache') }}
             </button>
             &nbsp;
-
             <button type="submit" class="btn btn-default" name="action" value="migrate_db">
                 {{ __('Migrate DB') }}
+            </button>
+            &nbsp;
+            <button type="submit" class="btn btn-default" name="action" value="logout_users">
+                {{ __('Logout Users') }}
             </button>
         </div>
         <hr/>
