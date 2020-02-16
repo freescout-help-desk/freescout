@@ -322,10 +322,10 @@ class Manager
         if (!empty(request()->submit) && request()->submit == 'modules') {
             // Find in modules.
             $searchInModules = true;
-            $finder->in($path.DIRECTORY_SEPARATOR.'Modules')->exclude('vendor')->name('*.php')->name('*.twig')->name('*.vue')->files();
+            $finder->in($path.DIRECTORY_SEPARATOR.'Modules')->exclude('vendor')->exclude('.git')->name('*.php')->name('*.twig')->name('*.vue')->files();
         } else {
             // Find in core.
-            $exclude = ['bootstrap', 'config', 'database', 'public', 'routes', 'storage', 'tests', 'tools', 'vendor'];
+            $exclude = ['.git', 'bootstrap', 'config', 'database', 'public', 'routes', 'storage', 'tests', 'tools', 'vendor'];
             $finder->in($path)->exclude($exclude)->name('*.php')->name('*.twig')->name('*.vue')->files();
             // foreach ($exclude as $exclude_folder) {
             //     $finder->exclude($exclude_folder);

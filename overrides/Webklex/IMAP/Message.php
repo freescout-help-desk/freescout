@@ -650,11 +650,15 @@ class Message
                 $content = $this->decodeString($content, $structure->encoding);
                 $content = $this->convertEncoding($content, $encoding);
 
-                $body = new \stdClass();
-                $body->type = 'text';
-                $body->content = $content;
+                if (empty($this->bodies['text'])) {
+                    $body = new \stdClass();
+                    $body->type = 'text';
+                    $body->content = $content;
 
-                $this->bodies['text'] = $body;
+                    $this->bodies['text'] = $body;
+                } else {
+                    $this->bodies['text']->content .= $content;
+                }
 
                 $this->fetchAttachment($structure, $partNumber);
             }

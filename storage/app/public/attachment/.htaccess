@@ -1,3 +1,5 @@
-<Files *.*>
-Header set Content-Disposition attachment
-</Files>
+<IfModule mod_headers.c>
+	<Files *.*>
+		Header set Content-Disposition attachment
+	</Files>
+</IfModule>
