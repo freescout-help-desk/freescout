@@ -3831,6 +3831,9 @@ a.disabled:focus {
     top: 0;
     right: 0;
 }
+#conversations-bulk-actions .btn .caret {
+    margin-left: 2px;
+}
 .inline-block {
     display: inline-block;
 }

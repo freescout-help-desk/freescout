@@ -112,7 +112,7 @@
                 <div class="conv-subj-block">
                     <div class="conv-subjwrap">
                         <div class="conv-subjtext">
-                            {{ $conversation->subject }}
+                            {{ $conversation->getSubject() }}
                         </div>
                         @action('conversation.after_subject', $conversation, $mailbox)
                         <div class="conv-numnav">
