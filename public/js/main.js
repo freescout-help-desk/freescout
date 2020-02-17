@@ -2414,7 +2414,7 @@ function initCustomerSelector(input, custom_options)
 				    }
 				}
 			    // Check if select already has such option
-			    var data = this.$element.select2('data');
+			    var data = this.select2('data');
 			    for (i in data) {
 			    	if (data[i].id == params.term) {
 			    		return null;
@@ -2425,7 +2425,7 @@ function initCustomerSelector(input, custom_options)
 					text: params.term,
 					newOption: true
 			    }
-			},
+			}.bind(input),
 			templateResult: function (data) {
 			    var $result = $("<span></span>");
 
