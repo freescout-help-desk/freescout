@@ -155,7 +155,7 @@ class PublicController extends Controller
             ->firstOrFail();
 
         // Only allow download if the attachment is public or if the token matches the hash of the contents
-        if ((bool)$attachment->public === true && $token !== $attachment->access_token) {
+        if ((bool)$attachment->public === false && $token !== $attachment->access_token) {
             return response("Forbidden", 403);
         }
 
