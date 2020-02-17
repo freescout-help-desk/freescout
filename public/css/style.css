@@ -312,6 +312,10 @@ body.user-is-guest {
         text-overflow: ellipsis!important;
         white-space: nowrap!important;
     }
+    .sidebar-title-real.mailbox-name .glyphicon {
+        top: 2px !important;
+        font-size: 13.4px !important;
+    }
     .sidebar-title-email {
         display: none;
     }
@@ -3913,6 +3917,13 @@ a.disabled:focus {
     display: inline-block;
     overflow: hidden;
     word-wrap: normal;
+}
+.mailbox-name .glyphicon {
+    top: 2px;
+}
+.sidebar-title-real.mailbox-name .glyphicon {
+    top: 1px;
+    font-size: 16px;
 }
 
 /**

@@ -343,9 +343,13 @@ class MailboxesController extends Controller
      */
     public function view($id, $folder_id = null)
     {
-        //auth()->guard()->attempt(['email' => '', 'password' => '']);
+        $user = auth()->user();
 
-        $mailbox = Mailbox::findOrFail($id);
+        if ($user->isAdmin()) {
+            $mailbox = Mailbox::findOrFailWithSettings($id, $user->id);
+        } else {
+            $mailbox = Mailbox::findOrFail($id);
+        }
         $this->authorize('view', $mailbox);
 
         $folders = $mailbox->getAssesibleFolders();
@@ -364,8 +368,6 @@ class MailboxesController extends Controller
         }
 
         $this->authorize('view', $folder);
-
-        $user = auth()->user();
 
         $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
         $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE);
@@ -632,6 +634,31 @@ class MailboxesController extends Controller
                     $mailbox->delete();
 
                     \Session::flash('flash_success_floating', __('Mailbox deleted'));
+
+                    $response['status'] = 'success';
+                }
+                break;
+
+            // Mute notifications
+            case 'mute':
+                $mailbox = Mailbox::find($request->mailbox_id);
+
+                if (!$mailbox) {
+                    $response['msg'] = __('Mailbox not found');
+                } elseif (!$user->isAdmin()) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+
+                    $mailbox_user = $user->mailboxesWithSettings()->where('mailbox_id', $mailbox->id)->first();
+                    if (!$mailbox_user) {
+                        // User may not be connected to the mailbox yet
+                        $user->mailboxes()->attach($id);
+                        $mailbox_user = $user->mailboxesWithSettings()->where('mailbox_id', $mailbox->id)->first();
+                    }
+                    $mailbox_user->settings->mute = (bool)$request->mute;
+                    $mailbox_user->settings->save();
 
                     $response['status'] = 'success';
                 }

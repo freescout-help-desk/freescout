@@ -32,7 +32,7 @@ class Subscription extends Model
     const EVENT_CUSTOMER_REPLIED_TO_UNASSIGNED = 4;
     const EVENT_CUSTOMER_REPLIED_TO_MY = 3;
     const EVENT_CUSTOMER_REPLIED_TO_ASSIGNED = 7;
-    // Notify me when another Help Scout user replies or adds a note…
+    // Notify me when another a user replies or adds a note…
     const EVENT_USER_REPLIED_TO_UNASSIGNED = 8;
     const EVENT_USER_REPLIED_TO_MY = 5;
     const EVENT_USER_REPLIED_TO_ASSIGNED = 9;
@@ -247,6 +247,20 @@ class Subscription extends Model
                 && !$conversation->isUserFollowing($subscription->user_id)
             ) {
                 continue;
+            }
+
+            // Skip if user muted notifications for this mailbox
+            if ($subscription->user->isAdmin()) {
+
+                // Mute notifications for events not related directly to the user.
+                if (!in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_FOLLOWED_CONVERSATION_UPDATED, self::EVENT_I_AM_MENTIONED, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY])
+                ) {
+                    $mailbox_settings = $conversation->mailbox->getUserSettings($subscription->user_id);
+
+                    if (!empty($mailbox_settings->mute)) {
+                        continue;
+                    }
+                }
             }
 
             $users_to_notify[$subscription->medium][] = $subscription->user;

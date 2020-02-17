@@ -1,6 +1,6 @@
 <div class="dropdown sidebar-title sidebar-title-extra">
     <span class="sidebar-title-extra-value active-count">{{ $folder->getTypeName() }} ({{ $folder->active_count }})</span>
-    <span class="sidebar-title-real">{{ $mailbox->name }}</span>
+    <span class="sidebar-title-real mailbox-name">@include('mailboxes/partials/mute_icon', ['mailbox' => $mailbox]){{ $mailbox->name }}</span>
     <span class="sidebar-title-email">{{ $mailbox->email }}</span>
 </div>
 <ul class="sidebar-menu" id="folders">
@@ -11,7 +11,7 @@
         <div class="btn-group dropdown" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
             <a class="btn btn-trans dropdown-toggle" data-toggle="dropdown" href="#"><i class="glyphicon glyphicon-cog"></i> <b class="caret"></b></a>
             <ul class="dropdown-menu" role="menu">
-                @include("mailboxes/settings_menu")
+                @include("mailboxes/settings_menu", ['is_dropdown' => true])
             </ul>
         </div>
     @endif
