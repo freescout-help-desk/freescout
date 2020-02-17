@@ -127,17 +127,20 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Mailbox');
     }
 
-    public function mailboxesWithSettings()
-    {
-        return $this->belongsToMany('App\Mailbox')->as('settings')->withPivot('after_send')->withPivot('hide');
-    }
-
     /**
      * Cached mailboxes.
      */
     public function mailboxes_cached()
     {
         return $this->mailboxes()->rememberForever();
+    }
+
+    public function mailboxesWithSettings()
+    {
+        return $this->belongsToMany('App\Mailbox')->as('settings')
+            ->withPivot('after_send')
+            ->withPivot('hide')
+            ->withPivot('mute');
     }
 
     /**
@@ -226,6 +229,33 @@ class User extends Authenticatable
             } else {
                 return $this->mailboxes;
             }
+        }
+    }
+
+    /**
+     * Get mailboxes to which user has access.
+     */
+    public function mailboxesCanViewWithSettings($cache = false)
+    {
+        $user = $this;
+
+        if ($this->isAdmin()) {
+            $query = Mailbox::select(['mailboxes.*', 'mailbox_user.hide', 'mailbox_user.mute'])
+                        ->leftJoin('mailbox_user', function ($join) use ($user) {
+                            $join->on('mailbox_user.mailbox_id', '=', 'mailboxes.id');
+                            $join->where('mailbox_user.user_id', $user->id);
+                        });
+        } else {
+            $query = Mailbox::select(['mailboxes.*', 'mailbox_user.hide', 'mailbox_user.mute'])
+                        ->join('mailbox_user', function ($join) use ($user) {
+                            $join->on('mailbox_user.mailbox_id', '=', 'mailboxes.id');
+                            $join->where('mailbox_user.user_id', $user->id);
+                        });
+        }
+        if ($cache) {
+            return $query->rememberForever()->get();
+        } else {
+            return $query->get();
         }
     }
 

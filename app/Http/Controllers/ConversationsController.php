@@ -50,6 +50,10 @@ class ConversationsController extends Controller
         $customer = $conversation->customer_cached;
         $user = auth()->user();
 
+        if ($user->isAdmin()) {
+            $mailbox->fetchUserSettings($user->id);
+        }
+
         // Mark notifications as read
         if (!empty($request->mark_as_read)) {
             $mark_read_result = $user->unreadNotifications()->where('id', $request->mark_as_read)->update(['read_at' => now()]);

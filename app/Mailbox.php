@@ -155,7 +155,10 @@ class Mailbox extends Model
 
     public function usersWithSettings()
     {
-        return $this->belongsToMany('App\User')->as('settings')->withPivot('after_send')->withPivot('hide');
+        return $this->belongsToMany('App\User')->as('settings')
+            ->withPivot('after_send')
+            ->withPivot('hide')
+            ->withPivot('mute');
     }
 
     /**
@@ -544,9 +547,19 @@ class Mailbox extends Model
             $settings = new \StdClass();
             $settings->after_send = MailboxUser::AFTER_SEND_NEXT;
             $settings->hide = false;
+            $settings->mute = false;
 
             return $settings;
         }
+    }
+
+    public function fetchUserSettings($user_id)
+    {
+        $settings = $this->getUserSettings($user_id);
+
+        $this->after_send = $settings->after_send;
+        $this->hide = $settings->hide;
+        $this->mute = $settings->mute;
     }
 
     /**
@@ -665,4 +678,21 @@ class Mailbox extends Model
     {
         return \Helper::safePassword($this->in_password);
     }
+
+    public static function findOrFailWithSettings($id, $user_id)
+    {
+        return Mailbox::select(['mailboxes.*', 'mailbox_user.hide', 'mailbox_user.mute'])
+                        ->where('mailboxes.id', $id)
+                        ->leftJoin('mailbox_user', function ($join) use ($user_id) {
+                            $join->on('mailbox_user.mailbox_id', '=', 'mailboxes.id');
+                            $join->where('mailbox_user.user_id', $user_id);
+                        })->firstOrFail();
+    }
+
+    /*public static function getUserSettings($mailbox_id, $user_id)
+    {
+        return MailboxUser::where('mailbox_id', $mailbox_id)
+                            ->where('user_id', $user_id)
+                            ->first();
+    }*/
 }
