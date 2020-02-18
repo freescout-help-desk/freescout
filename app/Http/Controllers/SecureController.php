@@ -28,7 +28,12 @@ class SecureController extends Controller
      */
     public function dashboard()
     {
-        $mailboxes = auth()->user()->mailboxesCanView();
+        $user = auth()->user();
+        if (!$user->isAdmin()) {
+            $mailboxes = $user->mailboxesCanView();
+        } else {
+            $mailboxes = $user->mailboxesCanViewWithSettings();
+        }
 
         return view('secure/dashboard', ['mailboxes' => $mailboxes]);
     }

@@ -717,7 +717,33 @@ class Conversation extends Model
      */
     public static function sanitizeEmails($emails)
     {
-        return \App\Misc\Mail::sanitizeEmails($emails);
+        // Create customers if needed: Test <test1@example.com> 
+        if (is_array($emails)) {
+            foreach ($emails as $i => $email) {
+                preg_match("/^(.+)\s+([^\s]+)$/", $email, $m);
+                if (count($m) == 3) {
+                    $customer_name = trim($m[1]);
+                    $email_address = trim($m[2]);
+
+                    if ($customer_name) {
+                        preg_match("/^([^\s]+)\s+([^\s]+)$/", $customer_name, $m_customer);
+                        $customer_data = [];
+
+                        if (count($m_customer) == 3) {
+                            $customer_data['first_name'] = $m_customer[1];
+                            $customer_data['last_name'] = $m_customer[2];
+                        } else {
+                            $customer_data['first_name'] = $customer_name;
+                        }
+
+                        Customer::create($email_address, $customer_data);
+                    }
+
+                    $emails[$i] = $email_address;
+                }
+            }
+        }
+        return \MailHelper::sanitizeEmails($emails);
     }
 
     /**
@@ -963,7 +989,7 @@ class Conversation extends Model
      */
     public function replaceTextVars($text, $data = [], $escape = false)
     {
-        if (!\App\Misc\Mail::hasVars($text)) {
+        if (!\MailHelper::hasVars($text)) {
             return $text;
         }
 

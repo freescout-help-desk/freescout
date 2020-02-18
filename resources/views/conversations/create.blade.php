@@ -193,8 +193,7 @@
                                 <label for="subject" class="col-sm-2 control-label">{{ __('Subject') }}</label>
 
                                 <div class="col-sm-9">
-                                    <input id="subject" type="text" class="form-control" name="subject" value="{{ old('subject', $conversation->subject) }}" maxlength="998" required autofocus>
-
+                                    <input id="subject" type="text" class="form-control" name="subject" value="{{ old('subject', $conversation->subject) }}" maxlength="998" required autofocus>@action('conversation.create_form.subject_append')
                                     @include('partials/field_error', ['field'=>'subject'])
                                 </div>
                             </div>

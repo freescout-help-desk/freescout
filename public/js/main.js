@@ -252,6 +252,7 @@ $(document).ready(function(){
 	polycastInit();
 	webNotificationsInit();
 	initAccordionHeading();
+	initMuteMailbox();
 
 	// Search button
 	$('#search-dt').click(function() {
@@ -261,6 +262,54 @@ $(document).ready(function(){
 		}, 100);
 	});
 });
+
+function initMuteMailbox()
+{
+	$('.mailbox-mute-trigger, .mailbox-mute-trigger span').click(function(e) {
+
+		var button = $(this);
+		if (!button.hasClass('mailbox-mute-trigger')) {
+			button = button.parent();
+			e.stopPropagation();
+		}
+
+	    button.button('loading');
+
+	    var mute = parseInt(button.attr('data-mute'));
+
+		fsAjax(
+			{
+				action: 'mute',
+				mailbox_id: button.attr('data-mailbox-id'),
+				mute: mute
+			},
+			laroute.route('mailboxes.ajax'),
+			function(response) {
+				button.button('reset');
+				if (isAjaxSuccess(response)) {
+					setTimeout(function(){ 
+						button.children('span').addClass('hidden');
+						var new_mute;
+						if (mute == 1) {
+							new_mute = 0;
+							button.children('.glyphicon').removeClass('glyphicon-volume-off').addClass('glyphicon-volume-up');
+							button.parents('.dash-card:first, .sidebar-2col:first').children().find('.mailbox-name').prepend('<i class="glyphicon glyphicon-volume-off"></i> ');
+						} else {
+							new_mute = 1;
+							button.children('.glyphicon').removeClass('glyphicon-volume-up').addClass('glyphicon-volume-off');
+							button.parents('.dash-card:first, .sidebar-2col:first').children().find('.mailbox-name').children('.glyphicon:first').remove();
+						}
+						button.attr('data-mute', new_mute);
+						button.children('.mute-text-'+new_mute).removeClass('hidden');
+					}, 100);
+				} else {
+					showAjaxError(response);
+				}
+			}, true
+		);
+		e.preventDefault();
+	})
+}
 
 
 // Initialize bootstrap tooltip for the element
@@ -2414,7 +2463,7 @@ function initCustomerSelector(input, custom_options)
 				    }
 				}
 			    // Check if select already has such option
-			    var data = this.$element.select2('data');
+			    var data = this.select2('data');
 			    for (i in data) {
 			    	if (data[i].id == params.term) {
 			    		return null;
@@ -2425,7 +2474,7 @@ function initCustomerSelector(input, custom_options)
 					text: params.term,
 					newOption: true
 			    }
-			},
+			}.bind(input),
 			templateResult: function (data) {
 			    var $result = $("<span></span>");
 
@@ -3283,6 +3332,7 @@ function saveDraft(reload_page, no_loader)
 					form.children(':input[name="thread_id"]').val(response.thread_id);
 					form.children(':input[name="customer_id"]').val(response.customer_id);
 					$('.conv-new-number:first').text(response.number);
+					$('body:first').attr('data-conversation_id', response.conversation_id);
 
 					// Set URL if this is a new conversation
 					if (new_conversation) {

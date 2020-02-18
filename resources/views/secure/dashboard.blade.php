@@ -11,7 +11,7 @@
             @foreach ($mailboxes as $mailbox)
                 <div class="dash-card @if (!$mailbox->isActive()) dash-card-inactive @endif">
                     <div class="dash-card-content">
-                        <h3 class="text-wrap-break "><a href="{{ route('mailboxes.view', ['id' => $mailbox->id]) }}">{{ $mailbox->name }}</a></h3>
+                        <h3 class="text-wrap-break "><a href="{{ route('mailboxes.view', ['id' => $mailbox->id]) }}" class="mailbox-name">@include('mailboxes/partials/mute_icon', ['mailbox' => $mailbox]){{ $mailbox->name }}</a></h3>
                         <div class="dash-card-link text-truncate">
                             <a href="{{ route('mailboxes.view', ['id' => $mailbox->id]) }}" class="text-truncate help-link">{{ $mailbox->email }}</a>
                         </div>
@@ -46,7 +46,7 @@
                                 <div class="btn-group dropdown dropup" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
                                     <a data-toggle="dropdown" href="#" class="btn btn-trans"><i class="glyphicon glyphicon-cog dropdown-toggle"></i></a>
                                     <ul class="dropdown-menu" role="menu">
-                                        @include("mailboxes/settings_menu")
+                                        @include("mailboxes/settings_menu", ['is_dropdown' => true])
                                     </ul>
                                 </div>
                             @endif
