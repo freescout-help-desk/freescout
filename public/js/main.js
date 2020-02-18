@@ -3332,6 +3332,7 @@ function saveDraft(reload_page, no_loader)
 					form.children(':input[name="thread_id"]').val(response.thread_id);
 					form.children(':input[name="customer_id"]').val(response.customer_id);
 					$('.conv-new-number:first').text(response.number);
+					$('body:first').attr('data-conversation_id', response.conversation_id);
 
 					// Set URL if this is a new conversation
 					if (new_conversation) {
