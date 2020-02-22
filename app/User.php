@@ -52,7 +52,7 @@ class User extends Authenticatable
      * Statuses.
      */
     const STATUS_ACTIVE = 1;
-    const STATUS_DISABLED = 2; // todo
+    const STATUS_DISABLED = 2;
     const STATUS_DELETED = 3;
 
     /**
@@ -811,6 +811,16 @@ class User extends Authenticatable
     public static function nonDeleted()
     {
         return self::where('status', '!=', self::STATUS_DELETED);
+    }
+
+    public function isActive()
+    {
+        return $this->status == self::STATUS_ACTIVE;
+    }
+
+    public function isDisabled()
+    {
+        return $this->status == self::STATUS_DISABLED;
     }
 
     public function isDeleted()
