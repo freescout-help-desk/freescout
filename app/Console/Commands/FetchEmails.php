@@ -950,9 +950,9 @@ class FetchEmails extends Command
     {
         foreach ($emails as $item) {
             // Email belongs to mailbox
-            if (in_array(Email::sanitizeEmail($item->mail), $exclude_emails)) {
-                continue;
-            }
+            // if (in_array(Email::sanitizeEmail($item->mail), $exclude_emails)) {
+            //     continue;
+            // }
             $data = [];
             if (!empty($item->personal)) {
                 $name_parts = explode(' ', $item->personal, 2);
