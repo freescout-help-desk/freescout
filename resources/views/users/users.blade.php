@@ -27,6 +27,9 @@
                 @if ($user->invite_state == App\User::INVITE_STATE_SENT || $user->invite_state == App\User::INVITE_STATE_NOT_INVITED)
                     <i class="invite-state glyphicon @if ($user->invite_state == App\User::INVITE_STATE_SENT) glyphicon-hourglass invited @else glyphicon-remove not-invited @endif" data-toggle="tooltip" data-placement="bottom" title="{{ $user->getInviteStateName() }}"></i>
                 @endif
+                @if ($user->invite_state == App\User::INVITE_STATE_ACTIVATED && $user->isDisabled())
+                    <i class="invite-state not-invited glyphicon glyphicon-ban-circle" data-toggle="tooltip" data-placement="bottom" title="{{ __('Disabled') }}"></i>
+                @endif
             </a>
         @endforeach
     </div>

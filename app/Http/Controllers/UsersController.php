@@ -201,6 +201,13 @@ class UsersController extends Controller
         if (!auth()->user()->can('changeRole', $user)) {
             unset($request_data['role']);
         }
+        if ($user->status != User::STATUS_DELETED) {
+            if (!empty($request_data['disabled'])) {
+                $request_data['status'] = User::STATUS_DISABLED;
+            } else {
+                $request_data['status'] = User::STATUS_ACTIVE;
+            }
+        }
         $user->fill($request_data);
 
         if (empty($request->input('enable_kb_shortcuts'))) {

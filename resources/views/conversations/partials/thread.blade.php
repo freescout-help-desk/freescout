@@ -100,7 +100,7 @@
                                     {{ implode(', ', $thread->getToArray()) }}
                                 </div>
                             @endif
-                            @if ($thread->getCcArray($mailbox->getEmails()))
+                            @if ($thread->getCcArray())
                                 <div>
                                     <strong>
                                         {{ __("Cc") }}:
@@ -108,7 +108,7 @@
                                     {{ implode(', ', $thread->getCcArray()) }}
                                 </div>
                             @endif
-                            @if ($thread->getBccArray($mailbox->getEmails()))
+                            @if ($thread->getBccArray())
                                 <div>
                                     <strong>
                                         {{ __("Bcc") }}:

@@ -375,7 +375,7 @@ class Mailbox extends Model
 
         // Exclude deleted users (better to do it in PHP).
         foreach ($users as $i => $user) {
-            if ($user->isDeleted()) {
+            if (!$user->isActive()) {
                 $users->forget($i);
             }
         }
@@ -411,7 +411,7 @@ class Mailbox extends Model
 
         // Exclude deleted users (better to do it in PHP).
         foreach ($users as $i => $user) {
-            if ($user->isDeleted()) {
+            if (!$user->isActive()) {
                 $users->forget($i);
             }
         }

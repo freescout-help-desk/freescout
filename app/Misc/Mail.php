@@ -465,6 +465,8 @@ class Mail
             'x-autoreply'    => '',
             'x-autorespond'  => '',
             'auto-submitted' => 'auto-replied',
+            'precedence' => ['auto_reply', 'bulk', 'junk'],
+            'x-precedence' => ['auto_reply', 'bulk', 'junk'],
         ];
         $headers = explode("\n", $headers_str);
 
@@ -480,6 +482,12 @@ class Mail
                 if (strtolower($name) == $auto_header) {
                     if (!$auto_header_value) {
                         return true;
+                    } elseif (is_array($auto_header_value)) {
+                        foreach ($auto_header_value as $auto_header_value_item) {
+                            if ($value == $auto_header_value_item) {
+                                return true;
+                            }
+                        }
                     } elseif ($value == $auto_header_value) {
                         return true;
                     }
