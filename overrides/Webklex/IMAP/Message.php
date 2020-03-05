@@ -522,7 +522,9 @@ class Message
 
             $address->personal = '';
             foreach ($personalParts as $p) {
-                $address->personal .= $p->text;
+                //$address->personal .= $p->text;
+                $encoding = (property_exists($p, 'charset')) ? $p->charset : $this->getEncoding($p->text);
+                $address->personal .= $this->convertEncoding($p->text, $encoding);
             }
 
             $address->mail = ($address->mailbox && $address->host) ? $address->mailbox.'@'.$address->host : false;
