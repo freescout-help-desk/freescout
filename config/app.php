@@ -249,6 +249,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | php - attachments are downloaded via PHP.
+    |
+    | apache - attachments are downloaded via Apache's mod_xsendfile.
+    |
+    | nginx - attachments are downloaded via nginx's X-Accel-Redirect.
+    |-------------------------------------------------------------------------
+    */
+    'attachments_download_mode'    => env('APP_ATTACHMENTS_DOWNLOAD_MODE', 'php'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |

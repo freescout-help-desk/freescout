@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Attachment;
 use App\Conversation;
 use App\Option;
 use App\Thread;
@@ -133,5 +134,52 @@ class PublicController extends Controller
         $response->header('Pragma', 'no-cache');
 
         return $response;
+    }
+
+    /**
+     * Download an attachment.
+     */
+    public function downloadAttachment($dir_1, $dir_2, $dir_3, $file_name, Request $request)
+    {
+        $id = $request->query('id', '');
+        $token = $request->query('token', '');
+        $attachment = null;
+
+        // Old attachments can not be requested by id.
+        if (!$token && $id) {
+            return \Helper::denyAccess();
+        }
+
+        // Get attachment by id.
+        if ($id) {
+            $attachment = Attachment::findOrFail($id);
+        }
+        
+        if (!$attachment) {
+            $attachment = Attachment::where('file_dir', $dir_1.DIRECTORY_SEPARATOR.$dir_2.DIRECTORY_SEPARATOR.$dir_3.DIRECTORY_SEPARATOR)
+                ->where('file_name', $file_name)
+                ->firstOrFail();
+        }
+
+        // Only allow download if the attachment is public or if the token matches the hash of the contents
+        if ($token != $attachment->getToken() && (bool)$attachment->public !== true) {
+            return \Helper::denyAccess();
+        }
+
+        if (config('app.attachments_download_mode') == 'apache') {
+            // Send using Apache mod_xsendfile.
+            return response(null)
+               ->header('Content-Type' , $attachment->mime_type)
+               ->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"')
+               ->header('X-Sendfile', $attachment->getLocalFilePath());
+        } elseif (config('app.attachments_download_mode') == 'nginx') {
+            // Send using Nginx.
+            return response(null)
+               ->header('Content-Type' , $attachment->mime_type)
+               ->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"')
+               ->header('X-Accel-Redirect', $attachment->getLocalFilePath(false));
+        } else {
+            return $attachment->download();
+        }
     }
 }

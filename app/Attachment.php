@@ -19,6 +19,8 @@ class Attachment extends Model
 
     const DIRECTORY = 'attachment';
 
+    CONST DISK = 'private';
+
     // https://github.com/Webklex/laravel-imap/blob/master/src/IMAP/Attachment.php
     public static $types = [
         'message'     => self::TYPE_MESSAGE,
@@ -93,18 +95,18 @@ class Attachment extends Model
         do {
             $i++;
             $file_path = self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir.$i.DIRECTORY_SEPARATOR.$file_name;
-        } while (Storage::exists($file_path));
+        } while (Storage::disk(self::DISK)->exists($file_path));
 
         $file_dir .= $i.DIRECTORY_SEPARATOR;
 
         if ($uploaded_file) {
-            $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name);
+            $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name, ['disk' => self::DISK]);
         } else {
-            Storage::put($file_path, $content);
+            Storage::disk(self::DISK)->put($file_path, $content);
         }
 
         $attachment->file_dir = $file_dir;
-        $attachment->size = Storage::size($file_path);
+        $attachment->size = Storage::disk(self::DISK)->size($file_path);
         $attachment->save();
 
         return $attachment;
@@ -189,7 +191,28 @@ class Attachment extends Model
      */
     public function url()
     {
-        return Storage::url($this->getStorageFilePath());
+        return Storage::url($this->getStorageFilePath()).'?id='.$this->id.'&token='.$this->getToken();
+    }
+
+    /**
+     * Get hashed security token for the attachment.
+     */
+    public function getToken()
+    {
+        // \Hash::make() may contain . and / symbols which may cause problems.
+        return md5(config('app.key').$this->id.$this->size);
+    }
+
+    /**
+     * Outputs the current Attachment as download
+     */
+    public function download()
+    {
+        return $this->getDisk()->download($this->getStorageFilePath(), $this->file_name);
+    }
+
+    private function getDisk() {
+        return Storage::disk(self::DISK);
     }
 
     /**
@@ -202,14 +225,24 @@ class Attachment extends Model
         return self::formatBytes($this->size);
     }
 
+    /**
+     * attachment/...
+     */
     public function getStorageFilePath()
     {
         return self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name;
     }
 
-    public function getLocalFilePath()
+    /**
+     * /var/html/storage/app/attachment/...
+     */
+    public function getLocalFilePath($full = true)
     {
-        return Storage::path(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
+        if ($full) {
+            return $this->getDisk()->path(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
+        } else {
+            return DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name;
+        }
     }
 
     public static function formatBytes($size, $precision = 0)
@@ -260,29 +293,10 @@ class Attachment extends Model
     {
         // Delete from disk
         foreach ($attachments as $attachment) {
-            Storage::delete($attachment->getStorageFilePath());
+            $attachment->getDisk()->delete($attachment->getStorageFilePath());
         }
 
         // Delete from DB
         self::whereIn('id', $attachments->pluck('id')->toArray())->delete();
     }
-
-    /**
-     * Generate dummy ID for attachment.
-     * Not used for now.
-     */
-    /*public static function genrateDummyId()
-    {
-        if (!$this->id) {
-            // Math.random should be unique because of its seeding algorithm.
-            // Convert it to base 36 (numbers + letters), and grab the first 9 characters
-            // after the decimal.
-            $hash = mt_rand() / mt_getrandmax();
-            $hash = base_convert($hash, 10, 36);
-            $id = substr($hash, 2, 9);
-        } else {
-            $id = substr(md5($this->id), 0, 9);
-        }
-        return $id;
-    }*/
 }
