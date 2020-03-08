@@ -12,7 +12,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.4.12',
+    'version' => '1.5.0',
 
     /*
     |--------------------------------------------------------------------------
@@ -246,6 +246,17 @@ return [
         'email_branding'     => ['default' => true],
         'open_tracking'      => ['default' => true],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | php - attachments are downloaded via PHP.
+    |
+    | apache - attachments are downloaded via Apache's mod_xsendfile.
+    |
+    | nginx - attachments are downloaded via nginx's X-Accel-Redirect.
+    |-------------------------------------------------------------------------
+    */
+    'download_attachments_via'    => env('APP_DOWNLOAD_ATTACHMENTS_VIA', 'php'),
 
     /*
     |--------------------------------------------------------------------------

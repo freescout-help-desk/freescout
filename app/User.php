@@ -425,7 +425,7 @@ class User extends Authenticatable
             }
         } else {
             $diff_text = $date->diffForHumans();
-            $diff_text = preg_replace('/minutes?/', 'min', $diff_text);
+            $diff_text = preg_replace('/minute[sn]?/', 'min', $diff_text);
 
             return $diff_text;
         }
