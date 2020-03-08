@@ -256,7 +256,7 @@ return [
     | nginx - attachments are downloaded via nginx's X-Accel-Redirect.
     |-------------------------------------------------------------------------
     */
-    'attachments_download_mode'    => env('APP_ATTACHMENTS_DOWNLOAD_MODE', 'php'),
+    'download_attachments_via'    => env('APP_DOWNLOAD_ATTACHMENTS_VIA', 'php'),
 
     /*
     |--------------------------------------------------------------------------

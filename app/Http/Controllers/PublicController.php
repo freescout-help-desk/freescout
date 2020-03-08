@@ -166,13 +166,13 @@ class PublicController extends Controller
             return \Helper::denyAccess();
         }
 
-        if (config('app.attachments_download_mode') == 'apache') {
+        if (config('app.download_attachments_via') == 'apache') {
             // Send using Apache mod_xsendfile.
             return response(null)
                ->header('Content-Type' , $attachment->mime_type)
                ->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"')
                ->header('X-Sendfile', $attachment->getLocalFilePath());
-        } elseif (config('app.attachments_download_mode') == 'nginx') {
+        } elseif (config('app.download_attachments_via') == 'nginx') {
             // Send using Nginx.
             return response(null)
                ->header('Content-Type' , $attachment->mime_type)
