@@ -113,6 +113,10 @@ class SendReplyToCustomer implements ShouldQueue
             }
         }
 
+        if (config('app.email_conv_history') == 'full') {
+            $send_previous_messages = true;
+        }
+
         // Remove previous messages.
         if (!$send_previous_messages) {
             $this->threads = $this->threads->slice(0, 1);

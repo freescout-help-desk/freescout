@@ -39,41 +39,6 @@
         </div>
     </div>
 
-    <div class="form-group{{ $errors->has('settings[email_branding]') ? ' has-error' : '' }}">
-        <label for="email_branding" class="col-sm-2 control-label">{{ __('Spread the Word', ['app_name' => \Config::get('app.name')]) }}</label>
-
-        <div class="col-sm-6">
-            <div class="controls">
-                <div class="onoffswitch-wrap">
-                    <div class="onoffswitch">
-                        <input type="checkbox" name="settings[email_branding]" value="1" id="email_branding" class="onoffswitch-checkbox" @if (old('settings[email_branding]', $settings['email_branding']))checked="checked"@endif >
-                        <label class="onoffswitch-label" for="email_branding"></label>
-                    </div>
-                </div>
-            </div>
-            <p class="form-help">
-                {{ __('Add "Powered by :app_name" footer text to the outgoing emails to invite more developers to the project and make application better.', ['app_name' => \Config::get('app.name')]) }}
-            </p>
-            @include('partials/field_error', ['field'=>'settings.email_branding'])
-        </div>
-    </div>
-
-    <div class="form-group{{ $errors->has('settings[open_tracking]') ? ' has-error' : '' }}">
-        <label for="open_tracking" class="col-sm-2 control-label">{{ __('Open Tracking') }}</label>
-
-        <div class="col-sm-6">
-            <div class="controls">
-                <div class="onoffswitch-wrap">
-                    <div class="onoffswitch">
-                        <input type="checkbox" name="settings[open_tracking]" value="1" id="open_tracking" class="onoffswitch-checkbox" @if (old('settings[open_tracking]', $settings['open_tracking']))checked="checked"@endif >
-                        <label class="onoffswitch-label" for="open_tracking"></label>
-                    </div>
-                </div>
-            </div>
-            @include('partials/field_error', ['field'=>'settings.open_tracking'])
-        </div>
-    </div>
-
     <div class="form-group{{ $errors->has('settings[locale]') ? ' has-error' : '' }}">
         <label for="locale" class="col-sm-2 control-label">{{ __('Default Language') }}</label>
 
@@ -108,6 +73,56 @@
                 <label for="24hour" class="radio inline"><input type="radio" name="settings[time_format]" value="{{ App\User::TIME_FORMAT_24 }}" id="24hour" @if (old('settings[time_format]', $settings['time_format']) == App\User::TIME_FORMAT_24 || !$settings['time_format'])checked="checked"@endif> {{ __('24-hour clock (e.g. 14:13)') }}</label>
             </div>
             @include('partials/field_error', ['field'=>'settings.time_format'])
+        </div>
+    </div>
+
+    <h3 class="subheader">{{ __('Emails to Customers') }}</h3>
+
+    <div class="form-group{{ $errors->has('settings[email_conv_history]') ? ' has-error' : '' }}">
+        <label for="email_conv_history" class="col-sm-2 control-label">{{ __('Conversation History') }}</label>
+
+        <div class="col-sm-6">
+            <select id="email_conv_history" class="form-control input-sized" name="settings[email_conv_history]" required autofocus>
+                <option value="none" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'none')selected="selected"@endif>{{ __('Do not include previous messages') }}</option>
+                <option value="full" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'full')selected="selected"@endif>{{ __('Send full conversation history') }}</option>
+            </select>
+
+            @include('partials/field_error', ['field'=>'settings.email_conv_history'])
+        </div>
+    </div>
+
+    <div class="form-group{{ $errors->has('settings[open_tracking]') ? ' has-error' : '' }}">
+        <label for="open_tracking" class="col-sm-2 control-label">{{ __('Open Tracking') }}</label>
+
+        <div class="col-sm-6">
+            <div class="controls">
+                <div class="onoffswitch-wrap">
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="settings[open_tracking]" value="1" id="open_tracking" class="onoffswitch-checkbox" @if (old('settings[open_tracking]', $settings['open_tracking']))checked="checked"@endif >
+                        <label class="onoffswitch-label" for="open_tracking"></label>
+                    </div>
+                </div>
+            </div>
+            @include('partials/field_error', ['field'=>'settings.open_tracking'])
+        </div>
+    </div>
+
+    <div class="form-group{{ $errors->has('settings[email_branding]') ? ' has-error' : '' }}">
+        <label for="email_branding" class="col-sm-2 control-label">{{ __('Spread the Word', ['app_name' => \Config::get('app.name')]) }}</label>
+
+        <div class="col-sm-6">
+            <div class="controls">
+                <div class="onoffswitch-wrap">
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="settings[email_branding]" value="1" id="email_branding" class="onoffswitch-checkbox" @if (old('settings[email_branding]', $settings['email_branding']))checked="checked"@endif >
+                        <label class="onoffswitch-label" for="email_branding"></label>
+                    </div>
+                </div>
+            </div>
+            <p class="form-help">
+                {{ __('Add "Powered by :app_name" footer text to the outgoing emails to invite more developers to the project and make application better.', ['app_name' => \Config::get('app.name')]) }}
+            </p>
+            @include('partials/field_error', ['field'=>'settings.email_branding'])
         </div>
     </div>
 

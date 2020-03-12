@@ -1,7 +1,7 @@
 <form class="form-horizontal margin-top" method="POST" action="">
     {{ csrf_field() }}
 
-    <h3>{{ __('System Emails') }}</h3>
+    <h3 class="subheader">{{ __('System Emails') }}</h3>
     <div class="descr-block">
         <p>{{ __("These settings are used to send system emails (alerts to admin and invitation emails to users).") }}</p>
 
@@ -108,8 +108,7 @@
         </div>
     </div>
 
-    <hr/>
-    <h3>{{ __('Fetching Emails') }}</h3>
+    <h3 class="subheader">{{ __('Fetching Emails') }}</h3>
     <div class="form-group{{ $errors->has('settings.fetch_schedule') ? ' has-error' : '' }}">
         <label for="fetch_schedule" class="col-sm-2 control-label">{{ __('Fetch Mail Schedule') }}</label>
 
