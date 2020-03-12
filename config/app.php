@@ -260,6 +260,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | none - send to the customer only agent's reply in the email.
+    | 
+    | full - send to the customer full conversation history in the email.
+    |
+    |-------------------------------------------------------------------------
+    */
+    'email_conv_history'    => env('APP_EMAIL_CONV_HISTORY', 'none'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
