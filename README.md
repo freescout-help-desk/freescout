@@ -82,6 +82,7 @@ Images & one-click installs:
 * [Docker Image](http://freescout.net/docker/)
 * [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
 * [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
+* [Ubuntu 18.04](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu-1804)
 
 ## Contributing
 
