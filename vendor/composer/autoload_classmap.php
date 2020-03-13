@@ -2689,7 +2689,7 @@ return array(
     'Symfony\\Component\\HttpFoundation\\RequestMatcherInterface' => $vendorDir . '/symfony/http-foundation/RequestMatcherInterface.php',
     'Symfony\\Component\\HttpFoundation\\RequestStack' => $vendorDir . '/symfony/http-foundation/RequestStack.php',
     'Symfony\\Component\\HttpFoundation\\Response' => $vendorDir . '/symfony/http-foundation/Response.php',
-    'Symfony\\Component\\HttpFoundation\\ResponseHeaderBag' => $vendorDir . '/symfony/http-foundation/ResponseHeaderBag.php',
+    'Symfony\\Component\\HttpFoundation\\ResponseHeaderBag' => $baseDir . '/overrides/Symfony/Component/HttpFoundation/ResponseHeaderBag.php',
     'Symfony\\Component\\HttpFoundation\\ServerBag' => $vendorDir . '/symfony/http-foundation/ServerBag.php',
     'Symfony\\Component\\HttpFoundation\\Session\\Attribute\\AttributeBag' => $vendorDir . '/symfony/http-foundation/Session/Attribute/AttributeBag.php',
     'Symfony\\Component\\HttpFoundation\\Session\\Attribute\\AttributeBagInterface' => $vendorDir . '/symfony/http-foundation/Session/Attribute/AttributeBagInterface.php',

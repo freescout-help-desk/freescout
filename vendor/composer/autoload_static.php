@@ -222,7 +222,8 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         ),
         'Symfony\\Component\\HttpFoundation\\' => 
         array (
-            0 => __DIR__ . '/..' . '/symfony/http-foundation',
+            0 => __DIR__ . '/../..' . '/overrides/Symfony/Component/HttpFoundation',
+            1 => __DIR__ . '/..' . '/symfony/http-foundation',
         ),
         'Symfony\\Component\\Finder\\' => 
         array (
@@ -3191,7 +3192,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Symfony\\Component\\HttpFoundation\\RequestMatcherInterface' => __DIR__ . '/..' . '/symfony/http-foundation/RequestMatcherInterface.php',
         'Symfony\\Component\\HttpFoundation\\RequestStack' => __DIR__ . '/..' . '/symfony/http-foundation/RequestStack.php',
         'Symfony\\Component\\HttpFoundation\\Response' => __DIR__ . '/..' . '/symfony/http-foundation/Response.php',
-        'Symfony\\Component\\HttpFoundation\\ResponseHeaderBag' => __DIR__ . '/..' . '/symfony/http-foundation/ResponseHeaderBag.php',
+        'Symfony\\Component\\HttpFoundation\\ResponseHeaderBag' => __DIR__ . '/../..' . '/overrides/Symfony/Component/HttpFoundation/ResponseHeaderBag.php',
         'Symfony\\Component\\HttpFoundation\\ServerBag' => __DIR__ . '/..' . '/symfony/http-foundation/ServerBag.php',
         'Symfony\\Component\\HttpFoundation\\Session\\Attribute\\AttributeBag' => __DIR__ . '/..' . '/symfony/http-foundation/Session/Attribute/AttributeBag.php',
         'Symfony\\Component\\HttpFoundation\\Session\\Attribute\\AttributeBagInterface' => __DIR__ . '/..' . '/symfony/http-foundation/Session/Attribute/AttributeBagInterface.php',
