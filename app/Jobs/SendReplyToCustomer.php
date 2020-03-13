@@ -117,6 +117,8 @@ class SendReplyToCustomer implements ShouldQueue
             $send_previous_messages = true;
         }
 
+        $send_previous_messages = \Eventy::filter('jobs.send_reply_to_customer.send_previous_messages', $send_previous_messages, $this->last_thread, $this->threads, $this->conversation, $this->customer);
+
         // Remove previous messages.
         if (!$send_previous_messages) {
             $this->threads = $this->threads->slice(0, 1);
