@@ -62,11 +62,6 @@ class SendNotificationToUsers implements ShouldQueue
             return;
         }
 
-        // Include only the last two messages if configured
-        if (config('app.email_conv_history') == 'last') {
-          $this->threads = $this->threads->slice(0, 2);
-        }
-
         // All notification for the same conversation has same dummy Message-ID
         $prev_message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY.'-'.$this->conversation->id.'-'.md5($this->conversation->id).'@'.$mailbox->getEmailDomain();
         $headers['In-Reply-To'] = '<'.$prev_message_id.'>';
