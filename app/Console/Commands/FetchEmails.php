@@ -131,14 +131,6 @@ class FetchEmails extends Command
             //     // Do nothing
             // }
         }
-        // if (!count($folders)) {
-        //     $folder = $client->getFolder('INBOX');
-
-        //     if (!$folder) {
-        //         throw new \Exception('Could not get mailbox folder: INBOX', 1);
-        //     }
-        //     $folders = [$folder];
-        // }
 
         foreach ($folders as $folder) {
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
