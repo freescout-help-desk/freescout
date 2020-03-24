@@ -68,7 +68,7 @@ class SendNotificationToUsers implements ShouldQueue
         }
 
         if (config('app.email_user_history') == 'none') {
-     	    $this->threads = $this->threads->slice(0, 1);
+            $this->threads = $this->threads->slice(0, 1);
         }
 
         // All notification for the same conversation has same dummy Message-ID
