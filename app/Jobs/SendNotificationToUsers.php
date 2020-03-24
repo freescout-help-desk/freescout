@@ -62,6 +62,15 @@ class SendNotificationToUsers implements ShouldQueue
             return;
         }
 
+        // Limit conversation history
+        if (config('app.email_user_history') == 'last') {
+            $this->threads = $this->threads->slice(0, 2);
+        }
+
+        if (config('app.email_user_history') == 'none') {
+     	    $this->threads = $this->threads->slice(0, 1);
+        }
+
         // All notification for the same conversation has same dummy Message-ID
         $prev_message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY.'-'.$this->conversation->id.'-'.md5($this->conversation->id).'@'.$mailbox->getEmailDomain();
         $headers['In-Reply-To'] = '<'.$prev_message_id.'>';
