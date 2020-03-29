@@ -125,7 +125,11 @@ class Mailbox extends Model
      */
     public function setInPasswordAttribute($value)
     {
-        $this->attributes['in_password'] = encrypt($value);
+        if ($value != '') {
+            $this->attributes['in_password'] = encrypt($value);
+        } else {
+            $this->attributes['in_password'] = '';
+        }
     }
 
     /**
