@@ -11,7 +11,7 @@ class Mailbox extends Model
     use Rememberable;
     // This is obligatory.
     public $rememberCacheDriver = 'array';
-    
+
     /**
      * From Name: name that will appear in the From field when a customer views your email.
      */
@@ -666,7 +666,7 @@ class Mailbox extends Model
      */
     public function getInImapFolders()
     {
-        return \Helper::jsonToArray($this->in_imap_folders);
+        return \Helper::jsonToArray($this->in_imap_folders || '["INBOX"]');
     }
 
     public function outPasswordSafe()

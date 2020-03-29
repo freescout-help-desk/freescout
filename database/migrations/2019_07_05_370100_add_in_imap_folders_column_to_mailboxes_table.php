@@ -14,7 +14,6 @@ class AddInImapFoldersColumnToMailboxesTable extends Migration
     public function up()
     {
         Schema::table('mailboxes', function (Blueprint $table) {
-            // Additional IMAP folders, INBOX folder is fetched by default.
             $table->text('in_imap_folders')->nullable();
         });
     }
