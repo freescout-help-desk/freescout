@@ -597,7 +597,7 @@ class Mail
             return null;
         }
 
-        $imap_folders = array_merge(['INBOX'], $mailbox->getInImapFolders());
+        $imap_folders = $mailbox->getInImapFolders();
 
         foreach ($imap_folders as $folder_name) {
             try {

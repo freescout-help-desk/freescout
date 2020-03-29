@@ -126,7 +126,6 @@
 
                         <div class="col-sm-6 flexy">
                             <select id="in_imap_folders" class="form-control input-sized" name="in_imap_folders[]" multiple>
-                                <option value="INBOX" selected="selected">INBOX</option>
                                 @foreach ($mailbox->getInImapFolders() as $imap_folder)
                                     <option value="{{ $imap_folder }}" selected="selected">{{ $imap_folder }}</option>
                                 @endforeach

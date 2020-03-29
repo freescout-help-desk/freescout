@@ -255,7 +255,7 @@ class MailboxesController extends Controller
 
         // Sometimes background job continues to use old connection settings.
         \Helper::queueWorkRestart();
-        
+
         \Session::flash('flash_success_floating', __('Connection settings saved!'));
 
         return redirect()->route('mailboxes.connection', ['id' => $id]);
@@ -324,8 +324,8 @@ class MailboxesController extends Controller
         // Save IMAP Folders.
         // Save all custom folders except INBOX.
         $in_imap_folders = [];
-        foreach ($request->in_imap_folders as $imap_folder) {
-            if (mb_strtolower($imap_folder) != 'inbox') {
+        if (is_array($request->in_imap_folders)) {
+            foreach ($request->in_imap_folders as $imap_folder) {
                 $in_imap_folders[] = $imap_folder;
             }
         }
@@ -537,7 +537,7 @@ class MailboxesController extends Controller
                         $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->in_server.'</strong>', 'port' => '<strong>'.$mailbox->in_port.'</strong>']);
                     }
                 }
-                
+
                 if (!$response['msg']) {
                     $test_result = false;
 

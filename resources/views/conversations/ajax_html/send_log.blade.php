@@ -2,7 +2,7 @@
     <div class="alert alert-warning">{{ __("There were no send attempts yet") }}</div>
 @else
     @if (!empty($customers_log))
-    	<h5>{{ __("Emails to customers") }}</h5>
+    	<h5>{{ __("Emails to Customers") }}</h5>
 
     	<table class="table table-striped">
     		<tr>
@@ -32,7 +32,7 @@
 	@endif
 
     @if (!empty($users_log))
-    	<h5>{{ __("Notifications to users") }}</h5>
+    	<h5>{{ __("Notification Emails to Users") }}</h5>
 
     	<table class="table table-striped">
     		<tr>

@@ -84,6 +84,7 @@
         <div class="col-sm-6">
             <select id="email_conv_history" class="form-control input-sized" name="settings[email_conv_history]" required autofocus>
                 <option value="none" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'none')selected="selected"@endif>{{ __('Do not include previous messages') }}</option>
+                <option value="last" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'last')selected="selected"@endif>{{ __('Include the last message') }}</option>
                 <option value="full" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'full')selected="selected"@endif>{{ __('Send full conversation history') }}</option>
             </select>
 
@@ -126,7 +127,23 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <h3 class="subheader">{{ __('Notification Emails to Users') }}</h3>
+
+    <div class="form-group{{ $errors->has('settings[email_user_history]') ? ' has-error' : '' }}">
+        <label for="email_user_history" class="col-sm-2 control-label">{{ __('Conversation History') }}</label>
+
+        <div class="col-sm-6">
+            <select id="email_user_history" class="form-control input-sized" name="settings[email_user_history]" required autofocus>
+                <option value="none" @if (old('settings[email_user_history]', $settings['email_user_history']) == 'none')selected="selected"@endif>{{ __('Do not include previous messages') }}</option>
+                <option value="last" @if (old('settings[email_user_history]', $settings['email_user_history']) == 'last')selected="selected"@endif>{{ __('Include the last message') }}</option>
+                <option value="full" @if (old('settings[email_user_history]', $settings['email_user_history']) == 'full')selected="selected"@endif>{{ __('Send full conversation history') }}</option>
+            </select>
+
+            @include('partials/field_error', ['field'=>'settings.email_user_history'])
+        </div>
+    </div>
+
+    <div class="form-group margin-top">
         <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">
                 {{ __('Save') }}

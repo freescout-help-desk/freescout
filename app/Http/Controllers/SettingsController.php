@@ -111,6 +111,9 @@ class SettingsController extends Controller
                         'email_conv_history' => [
                             'env' => 'APP_EMAIL_CONV_HISTORY',
                         ],
+                        'email_user_history' => [
+                            'env' => 'APP_EMAIL_USER_HISTORY',
+                        ],
                         'locale' => [
                             'env' => 'APP_LOCALE',
                         ],
@@ -172,6 +175,7 @@ class SettingsController extends Controller
                     'email_branding'       => Option::get('email_branding'),
                     'open_tracking'        => Option::get('open_tracking'),
                     'email_conv_history'   => config('app.email_conv_history'),
+                    'email_user_history'   => config('app.email_user_history'),
                     'enrich_customer_data' => Option::get('enrich_customer_data'),
                     'time_format'          => Option::get('time_format', User::TIME_FORMAT_24),
                     'locale'               => \Helper::getRealAppLocale(),
