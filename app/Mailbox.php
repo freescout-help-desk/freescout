@@ -670,7 +670,12 @@ class Mailbox extends Model
      */
     public function getInImapFolders()
     {
-        return \Helper::jsonToArray($this->in_imap_folders || '["INBOX"]');
+        $in_imap_folders = \Helper::jsonToArray($this->in_imap_folders);
+        if (count($in_imap_folders)) {
+            return $in_imap_folders;
+        } else {
+            return ["INBOX"];
+        }
     }
 
     public function outPasswordSafe()

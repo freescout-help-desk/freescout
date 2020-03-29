@@ -324,8 +324,10 @@ class MailboxesController extends Controller
         // Save IMAP Folders.
         // Save all custom folders except INBOX.
         $in_imap_folders = [];
-        foreach ($request->in_imap_folders as $imap_folder) {
-            $in_imap_folders[] = $imap_folder;
+        if (is_array($request->in_imap_folders)) {
+            foreach ($request->in_imap_folders as $imap_folder) {
+                $in_imap_folders[] = $imap_folder;
+            }
         }
         $mailbox->setInImapFolders($in_imap_folders);
 
