@@ -84,6 +84,7 @@
         <div class="col-sm-6">
             <select id="email_conv_history" class="form-control input-sized" name="settings[email_conv_history]" required autofocus>
                 <option value="none" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'none')selected="selected"@endif>{{ __('Do not include previous messages') }}</option>
+                <option value="last" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'last')selected="selected"@endif>{{ __('Include the last message') }}</option>
                 <option value="full" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'full')selected="selected"@endif>{{ __('Send full conversation history') }}</option>
             </select>
 
