@@ -127,7 +127,7 @@
         </div>
     </div>
 
-    <h3 class="subheader">{{ __('Emails to Users') }}</h3>
+    <h3 class="subheader">{{ __('Notification Emails to Users') }}</h3>
 
     <div class="form-group{{ $errors->has('settings[email_user_history]') ? ' has-error' : '' }}">
         <label for="email_user_history" class="col-sm-2 control-label">{{ __('Conversation History') }}</label>
@@ -143,7 +143,7 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group margin-top">
         <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">
                 {{ __('Save') }}

@@ -280,7 +280,7 @@ return [
     |
     |-------------------------------------------------------------------------
     */
-    'email_user_history'    => env('APP_EMAIL_USER_HISTORY', 'none'),
+    'email_user_history'    => env('APP_EMAIL_USER_HISTORY', 'full'),
 
     /*
     |--------------------------------------------------------------------------
