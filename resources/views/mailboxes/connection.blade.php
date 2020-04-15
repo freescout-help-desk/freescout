@@ -57,19 +57,19 @@
                             <div class="control-group text-help margin-top-10">
                                 <ul>
                                     <li>
-                                        <a href="https://aws.amazon.com/ses/pricing/" target="_blank">Amazon SES</a> - 
+                                        <a href="https://aws.amazon.com/ses/pricing/" target="_blank">Amazon SES</a> -
                                         <span class="text-help">{!! __(":number free emails per month from :%a_begin%Amazon EC2:%a_end% server.", ['number' => '62 000', '%a_begin%' => '<a href="https://aws.amazon.com/ec2/" target="_blank">', '%a_end%' => '</a>']) !!}</span>
                                     </li>
                                     <li>
-                                        <a href="https://www.mailgun.com" target="_blank">Mailgun</a> - 
+                                        <a href="https://www.mailgun.com" target="_blank">Mailgun</a> -
                                         <span class="text-help">{{ __(":number free emails per month.", ['number' => '10 000']) }}</span>
                                     </li>
                                     <li>
-                                        <a href="https://www.sendinblue.com/?tap_a=30591-fb13f0&tap_s=294678-0b81e5" target="_blank">SendinBlue</a> - 
+                                        <a href="https://www.sendinblue.com/?tap_a=30591-fb13f0&tap_s=294678-0b81e5" target="_blank">SendinBlue</a> -
                                         <span class="text-help">{{ __(":number free emails per month.", ['number' => '9 000']) }}</span>
                                     </li>
                                     <li>
-                                        <a href="https://www.mailjet.com/?tap_a=25852-4bddf6&tap_s=545617-55177a&aff=545617-55177a" target="_blank">Mailjet</a> - 
+                                        <a href="https://www.mailjet.com/?tap_a=25852-4bddf6&tap_s=545617-55177a&aff=545617-55177a" target="_blank">Mailjet</a> -
                                         <span class="text-help">{{ __(":number free emails per month.", ['number' => '6 000']) }}</span>
                                     </li>
                                 </ul>
@@ -138,18 +138,33 @@
                         <hr/>
                     </div>
 
-                    <div class="form-group">
-                        <label for="send_test" class="col-sm-2 control-label">{{ __('Send Test To') }}</label>
+                    <div>
+                        <div class="form-group">
+                            <label for="send_test" class="col-sm-2 control-label">{{ __('Send Test To') }}</label>
 
-                        <div class="col-sm-6">
-                            <div class="input-group input-sized">
-                                <input id="send_test" type="email" class="form-control" name="send_test_to" value="{{ old('email', \App\Option::get('send_test_to', $mailbox->email)) }}" maxlength="128" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>
-                                <span class="input-group-btn">
-                                    <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>{{ __('Send Test') }}</button> 
-                                </span>
+                            <div class="col-sm-6">
+                                <div class="input-group input-sized">
+                                    <input id="send_test" type="email" class="form-control" name="send_test_to" value="{{ old('email', \App\Option::get('send_test_to', $mailbox->email)) }}" maxlength="128" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>
+                                    <span class="input-group-btn">
+                                        <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>{{ __('Send Test') }}</button>
+                                    </span>
+                                </div>
+                                <div class="form-help">{!! __("Make sure to save settings before testing.") !!}</div>
                             </div>
-                            <div class="form-help">{!! __("Make sure to save settings before testing.") !!}</div>
                         </div>
+                        <hr/>
+                    </div>
+
+                    <div>
+                        <div class="form-group">
+                            <label for="save_reply" class="col-sm-2 control-label">{{ __('Save Replies To Mailbox Folder') }}</label>
+
+                            <div class="col-sm-6">
+                                <input id="save_reply" type="text" class="form-control input-sized" name="reply_folder" value="{{ old('reply_folder', $mailbox->reply_folder) }}" maxlength="255">
+                                <div class="form-help">{!! __("Leave empty to not save replies.") !!}</div>
+                            </div>
+                        </div>
+                        <hr/>
                     </div>
 
                     <div class="form-group margin-top">
