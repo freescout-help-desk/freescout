@@ -65,7 +65,7 @@
 							            		{{ __('Received a new conversation') }}
 							            	@else
 								            	@if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED)
-			                                        {!! __(":person marked as :status conversation". ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>', 'status' => $thread->getStatusName()]) !!}
+			                                        {!! __(":person marked as :status conversation", ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>', 'status' => $thread->getStatusName()]) !!}
 			                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
 				                                    <strong>@include('emails/user/thread_by')</strong>  
 													{{ __("assigned to :person conversation", ['person' => $thread->getAssigneeName(false, $user)]) }}
