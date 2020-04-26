@@ -226,8 +226,8 @@ class SendReplyToCustomer implements ShouldQueue
             }
         }
 
-        $reply_folder_name = $mailbox->reply_folder;
-        if ($reply_folder_name) {
+        $imap_sent_folder = $mailbox->imap_sent_folder;
+        if ($imap_sent_folder) {
             $client = \MailHelper::getMailboxClient($mailbox);
             $client->connect();
 
@@ -240,11 +240,11 @@ class SendReplyToCustomer implements ShouldQueue
             $part1['contents.data'] = $reply_mail->render();
 
             try {
-                $folder = $client->getFolder($reply_folder_name);
+                $folder = $client->getFolder($imap_sent_folder);
                 $folder->appendMessage(imap_mail_compose($envelope, [$part1]), '\Seen', now()->format('d-M-Y H:i:s O'));
             } catch (\Exception $e) {
                 // Just log error and continue.
-                $this->saveToSendLog('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$reply_folder_name);
+                $this->saveToSendLog('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$imap_sent_folder);
             }
         }
 

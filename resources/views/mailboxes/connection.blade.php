@@ -155,18 +155,6 @@
                         <hr/>
                     </div>
 
-                    <div>
-                        <div class="form-group">
-                            <label for="save_reply" class="col-sm-2 control-label">{{ __('Save Replies To Mailbox Folder') }}</label>
-
-                            <div class="col-sm-6">
-                                <input id="save_reply" type="text" class="form-control input-sized" name="reply_folder" value="{{ old('reply_folder', $mailbox->reply_folder) }}" maxlength="255">
-                                <div class="form-help">{!! __("Leave empty to not save replies.") !!}</div>
-                            </div>
-                        </div>
-                        <hr/>
-                    </div>
-
                     <div class="form-group margin-top">
                         <div class="col-sm-6 col-sm-offset-2">
                             <button type="submit" class="btn btn-primary">
