@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Mail;
+use Webklex\IMAP\Client;
 
 class SendReplyToCustomer implements ShouldQueue
 {
@@ -63,7 +64,7 @@ class SendReplyToCustomer implements ShouldQueue
         if ($this->conversation->threads_count == 1 && count($this->threads) == 1) {
             $forward_child_thread = $this->threads[0];
             if ($forward_child_thread->isForwarded() && $forward_child_thread->getForwardParentConversation()) {
-                
+
                 // Add replies from original conversation.
                 $forwarded_replies = $forward_child_thread->getForwardParentConversation()->getReplies();
                 $forwarded_replies = $forwarded_replies->sortByDesc(function ($item, $key) {
@@ -138,7 +139,7 @@ class SendReplyToCustomer implements ShouldQueue
             $headers['In-Reply-To'] = '<'.$last_customer_thread->message_id.'>';
             $headers['References'] = '<'.$last_customer_thread->message_id.'>';
         }
-        
+
         $this->message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER.'-'.$this->last_thread->id.'-'.md5($this->last_thread->id).'@'.$mailbox->getEmailDomain();
         $headers['Message-ID'] = $this->message_id;
 
@@ -179,11 +180,13 @@ class SendReplyToCustomer implements ShouldQueue
         //     $bcc_array = [];
         // }
 
+        $reply_mail = new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox);
+
         try {
             Mail::to($to)
                 ->cc($cc_array)
                 ->bcc($bcc_array)
-                ->send(new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox));
+                ->send($reply_mail);
         } catch (\Exception $e) {
             // We come here in case SMTP server unavailable for example
             if ($this->attempts() == 1) {
@@ -220,6 +223,28 @@ class SendReplyToCustomer implements ShouldQueue
                 $this->fail($e);
 
                 return;
+            }
+        }
+
+        $reply_folder_name = $mailbox->reply_folder;
+        if ($reply_folder_name) {
+            $client = \MailHelper::getMailboxClient($mailbox);
+            $client->connect();
+
+            $envelope['from'] = $mailbox->getMailFrom()['address'];
+            $envelope['to'] = $this->customer_email;
+            $envelope['subject'] = 'Re: ' . $this->conversation->subject;
+
+            $part1['type'] = TYPETEXT;
+            $part1['subtype'] = 'html';
+            $part1['contents.data'] = $reply_mail->render();
+
+            try {
+                $folder = $client->getFolder($reply_folder_name);
+                $folder->appendMessage(imap_mail_compose($envelope, [$part1]), '\Seen', now()->format('d-M-Y H:i:s O'));
+            } catch (\Exception $e) {
+                // Just log error and continue.
+                $this->saveToSendLog('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$reply_folder_name);
             }
         }
 
