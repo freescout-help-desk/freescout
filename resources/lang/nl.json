@@ -5,7 +5,7 @@
     "yourself": "uzelf",
     "Your email update couldn't be processed": "Uw e-mailupdate kon niet worden verwerkt",
     ":first_name has access to the selected mailboxes:": ":first_name heeft toegang tot de geselecteerde mailboxen:",
-    ":host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.": ":host is niet beschikbaar op poort :port. Zorg ervoor dat :host correct is en dat de uitgaande poort :port op JOUW server open is.",
+    ":host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.": ":host is niet beschikbaar op poort :port. Zorg ervoor dat :host correct is en dat de uitgaande poort :port op UW server open is.",
     ":number commands are running at the same time. Please stop extra commands by executing the following console command:": ":number opdrachten worden tegelijkertijd uitgevoerd. Stop extra opdrachten door de volgende console-opdracht uit te voeren:",
     ":number commands were running at the same time. Commands have been restarted": ":number opdrachten werden tegelijkertijd uitgevoerd. Commando's zijn opnieuw gestart",
     ":number free emails per month.": ":number gratis emails per maand",
