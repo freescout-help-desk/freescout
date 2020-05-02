@@ -235,6 +235,14 @@ class SendReplyToCustomer implements ShouldQueue
             $envelope['to'] = $this->customer_email;
             $envelope['subject'] = 'Re: ' . $this->conversation->subject;
 
+            // Get penultimate email Message-Id if reply
+            if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
+                $envelope['custom_headers'] = Array(
+                    'In-Reply-To: <'.$last_customer_thread->message_id.'>',
+                    'References: <'.$last_customer_thread->message_id.'>'
+                );
+            }
+
             $part1['type'] = TYPETEXT;
             $part1['subtype'] = 'html';
             $part1['contents.data'] = $reply_mail->render();
