@@ -899,7 +899,8 @@ function initConversation()
 				fsAjax({
 					action: 'conversation_change_status',
 					status: status,
-					conversation_id: getGlobalAttr('conversation_id')
+					conversation_id: getGlobalAttr('conversation_id'),
+					folder_id: getQueryParam('folder_id')
 				},
 				laroute.route('conversations.ajax'),
 				function(response) {

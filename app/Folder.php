@@ -169,6 +169,10 @@ class Folder extends Model
             case self::TYPE_DELETED:
                 $order_by = [['user_updated_at' => 'desc']];
                 break;
+
+            default:
+                $order_by = \Eventy::filter('folder.conversations_order_by', $order_by, $this->type);
+                break;
         }
 
         return $order_by;
