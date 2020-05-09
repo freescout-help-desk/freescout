@@ -546,6 +546,9 @@ class Conversation extends Model
         }
         $query = self::where('folder_id', $folder->id)
             ->where('id', '<>', $this->id);
+
+        $query = \Eventy::filter('conversation.get_nearby_query', $query, $this, $mode, $folder);
+
         $order_bys = $folder->getOrderByArray();
 
         if ($mode != 'prev') {
@@ -836,6 +839,7 @@ class Conversation extends Model
             }
         } else {
             // todo: check ConversationFolder here
+            return \Eventy::filter('conversation.is_in_folder_allowed', false, $folder);
         }
 
         return false;

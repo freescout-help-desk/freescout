@@ -206,6 +206,7 @@ class CustomersController extends Controller
 
         $conversations = $customer->conversations()
             ->where('customer_id', $customer->id)
+            ->whereIn('mailbox_id', auth()->user()->mailboxesIdsCanView())
             ->orderBy('created_at', 'desc')
             ->paginate(Conversation::DEFAULT_LIST_SIZE);
 
