@@ -2204,7 +2204,7 @@ class ConversationsController extends Controller
 
         $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);
 
-        $query_conversations->orderBy('conversations.last_reply_at');
+        $query_conversations->orderBy('conversations.last_reply_at', 'DESC');
 
         return $query_conversations->paginate(Conversation::DEFAULT_LIST_SIZE);
     }
