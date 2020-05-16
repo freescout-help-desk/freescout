@@ -260,6 +260,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | File types which should be viewed in the browser instead of downloading.
+    |-------------------------------------------------------------------------
+    */
+    'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'svg', 'tif', 'tiff', 'webp', 'pdf', 'txt']),
+
+    /*
+    |--------------------------------------------------------------------------
     | none - send to the customer only agent's reply in the email.
     | 
     | last - send to the customer the last message in the email.

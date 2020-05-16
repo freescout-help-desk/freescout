@@ -166,20 +166,36 @@ class PublicController extends Controller
             return \Helper::denyAccess();
         }
 
+        $view_attachment = false;
+        $file_ext = strtolower(pathinfo($attachment->file_name, PATHINFO_EXTENSION));
+
+        // Some file type should be viewed in the browser instead of downloading.
+        if (in_array($file_ext, config('app.viewable_attachments'))) {
+            $view_attachment = true;
+        }
+
         if (config('app.download_attachments_via') == 'apache') {
             // Send using Apache mod_xsendfile.
-            return response(null)
+            $response = response(null)
                ->header('Content-Type' , $attachment->mime_type)
-               ->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"')
                ->header('X-Sendfile', $attachment->getLocalFilePath());
+
+            if (!$view_attachment) {
+                $response->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"');
+            }
         } elseif (config('app.download_attachments_via') == 'nginx') {
             // Send using Nginx.
-            return response(null)
+            $response = response(null)
                ->header('Content-Type' , $attachment->mime_type)
-               ->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"')
                ->header('X-Accel-Redirect', $attachment->getLocalFilePath(false));
+               
+            if (!$view_attachment) {
+                $response->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"');
+            }
         } else {
-            return $attachment->download();
+            $response = $attachment->download($view_attachment);
         }
+
+        return $response;
     }
 }
