@@ -1500,6 +1500,9 @@ button.conv-checkbox-clear {
         height: 80px;
         border-bottom: 1px solid #e3e8eb;
     }
+    .table.table-conversations.show-mailbox tbody tr {
+        height: 97px;
+    }
 
     .table-conversations .conv-attachment-mobile
     {

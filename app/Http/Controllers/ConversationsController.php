@@ -2324,6 +2324,7 @@ class ConversationsController extends Controller
 
         $response['html'] = view('conversations/conversations_table', [
             'conversations' => $conversations,
+            'params' => $request->params ?? [],
         ])->render();
 
         return $response;

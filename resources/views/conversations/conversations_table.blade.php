@@ -23,7 +23,7 @@
         @include('/conversations/partials/bulk_actions')
     @endif
 
-    <table class="table-conversations table" data-page="{{ (int)request()->get('page', 1) }}" @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif >
+    <table class="table-conversations table @if (!empty($params['show_mailbox']))show-mailbox @endif" data-page="{{ (int)request()->get('page', 1) }}" @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif >
         <colgroup>
             {{-- todo: without this columns table becomes not 100% wide --}}
             @if (empty($no_checkboxes))<col class="conv-current">@endif
@@ -136,7 +136,7 @@
                                 @endif
                                 {{--<span class="conv-subject-number">#{{ $conversation->number }} </span>--}}@action('conversations_table.before_subject', $conversation){{ $conversation->getSubject() }}@action('conversations_table.after_subject', $conversation)
                             </p>
-                            <p class="conv-preview">@if ($conversation->preview){{ $conversation->preview }}@else&nbsp;@endif</p>
+                            <p class="conv-preview">@if (!empty($params['show_mailbox']))[{{ $conversation->mailbox_cached->name }}]<br/>@endif{{ '' }}@if ($conversation->preview){{ $conversation->preview }}@else&nbsp;@endif</p>
                         </a>
                     </td>
                     <td class="conv-thread-count">
