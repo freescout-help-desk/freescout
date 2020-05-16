@@ -690,7 +690,6 @@
     "When a customer emails this mailbox, application can send an auto reply to the customer immediately.<br\/><br\/>Only one auto reply is sent per new conversation.": "Cuando un cliente escriba a este correo, la aplicación puede enviar una respuesta automática al cliente inmediatamente.<br\/><br\/>Solo una respuesta automática es enviada por conversación",
     "Which mailboxes will user use?": "¿Cuáles cuentas de correo usará el usuario?",
     "Who Else Will Use This Mailbox": "¿Quién más usará este correo?",
-    "Workflows": "Flujos de trabajo",
     "Yes": "Si",
     "you": "tu",
     "You are not authorized to access this resource.": "No estás autorizado a éste recurso.",
@@ -705,5 +704,19 @@
     "Your domain is deactivated": "Tu dominio se a desactivado",
     "Your email update couldn't be processed": "No se puede procesar la actualización de tu correo",
     "Your Profile": "Mi perfil",
-    "yourself": "tú mismo"
+    "yourself": "tú mismo",
+    ":person marked as :status conversation": ":person marcada\/o como una conversación :status",
+    "Administrators": "Administratoras\/es",
+    "Conversation History": "Historial de conversación",
+    "Disabled": "Deshabilitada\/o",
+    "Do not include previous messages": "No incluya mensajes anteriores",
+    "Enter IMAP folder name to save outgoing replies if your mail service provider does not do it automatically (Gmail does it), otherwise leave it blank.": "Ingrese el nombre de la carpeta IMAP para guardar las respuestas salientes si su proveedor de servicios de correo no lo hace automáticamente (Gmail lo hace), de lo contrario, déjelo en blanco.",
+    "Hide from Assign list": "Ocultar de la lista Asignado",
+    "IMAP Folder To Save Outgoing Replies": "Carpeta IMAP para guardar respuestas salientes",
+    "Include the last message": "Incluye el último mensaje",
+    "Logout Users": "Cerrar sesión usuarios",
+    "Mute Notifications": "Silenciar notificaciones",
+    "Prevent user from logging in": "Denegar inicio de sesión de usuario",
+    "Send full conversation history": "Enviar historial de conversación completo",
+    "Unmute Notifications": "Dejar de silenciar notificaciones"
 }
