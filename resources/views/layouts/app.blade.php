@@ -69,7 +69,7 @@
                         <ul class="nav navbar-nav">
                             @php
                                 $cache_mailboxes = false;
-                                if (\Helper::isRoute('conversations.view')) {
+                                if (\Helper::isRoute('conversations.view') || \Helper::isRoute('conversations.search')) {
                                     $cache_mailboxes = true;
                                 }
                                 $mailboxes = Auth::user()->mailboxesCanView($cache_mailboxes);

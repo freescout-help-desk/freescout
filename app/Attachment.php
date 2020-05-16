@@ -206,11 +206,15 @@ class Attachment extends Model
     /**
      * Outputs the current Attachment as download
      */
-    public function download()
+    public function download($view = false)
     {
+        $headers = [];
         // #533
         //return $this->getDisk()->download($this->getStorageFilePath(), \Str::ascii($this->file_name));
-        return $this->getDisk()->download($this->getStorageFilePath(), $this->file_name);
+        if ($view) {
+            $headers['Content-Disposition'] = '';
+        }
+        return $this->getDisk()->download($this->getStorageFilePath(), $this->file_name, $headers);
     }
 
     private function getDisk() {

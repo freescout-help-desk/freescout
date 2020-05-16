@@ -232,6 +232,15 @@ class Conversation extends Model
     }
 
     /**
+     * Chached mailbox.
+     * @return [type] [description]
+     */
+    public function mailbox_cached()
+    {
+        return $this->mailbox()->rememberForever();
+    }
+
+    /**
      * Get the customer associated with this conversation (primaryCustomer).
      */
     public function customer()

@@ -14,7 +14,7 @@
                     <ul class="sidebar-block-list">
                         @foreach ($prev_conversations as $prev_conversation)
                             <li>
-                                <a href="{{ $prev_conversation->url() }}" taret="_blank" class="help-link"><i class="glyphicon @if ($prev_conversation->isPhone()) glyphicon-earphone @else glyphicon-envelope @endif"></i>{{ $prev_conversation->subject }}</a>
+                                <a href="{{ $prev_conversation->url() }}" taret="_blank" class="help-link"><i class="glyphicon @if ($prev_conversation->isPhone()) glyphicon-earphone @else glyphicon-envelope @endif"></i>{{ $prev_conversation->getSubject() }}</a>
                             </li>
                         @endforeach
                     </ul>

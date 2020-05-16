@@ -172,7 +172,16 @@
                             <table class="table">
                                 <tbody>
                                     <tr>
-                                        <th colspan="2">{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}</th>
+                                        <th>{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}</th>
+                                        <th>
+                                            <form action="{{ route('system.action') }}" method="POST" class="text-right">
+                                                {{ csrf_field() }}
+
+                                                <input type="hidden" name="job_id" value="{{ $job->id }}" />
+
+                                                <button type="submit" name="action" value="cancel_job" class="btn btn-default btn-xs margin-left-10">{{ __('Cancel') }}</button>
+                                            </form>
+                                        </th>
                                     </tr>
                                     <tr>
                                         <td>{{ __('Queue') }}</td>

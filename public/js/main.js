@@ -2166,6 +2166,7 @@ function searchInit()
 function loadConversations(page, table)
 {
 	var filter = null;
+	var params = {};
 
 	if ($('body:first').hasClass('body-search')) {
 		filter = {
@@ -2187,12 +2188,18 @@ function loadConversations(page, table)
 		}
 	}
 
+	// Params
+	if (table.hasClass('show-mailbox')) {
+		params.show_mailbox = true;
+	}
+
 	fsAjax(
 		{
 			action: 'conversations_pagination',
 			mailbox_id: getGlobalAttr('mailbox_id'),
 			folder_id: getGlobalAttr('folder_id'),
 			filter: filter,
+			params: params,
 			page: page
 		},
 		laroute.route('conversations.ajax'),

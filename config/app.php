@@ -12,7 +12,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.5.5',
+    'version' => '1.5.6',
 
     /*
     |--------------------------------------------------------------------------
@@ -257,6 +257,13 @@ return [
     |-------------------------------------------------------------------------
     */
     'download_attachments_via'    => env('APP_DOWNLOAD_ATTACHMENTS_VIA', 'php'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | File types which should be viewed in the browser instead of downloading.
+    |-------------------------------------------------------------------------
+    */
+    'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'svg', 'tif', 'tiff', 'webp', 'pdf', 'txt']),
 
     /*
     |--------------------------------------------------------------------------
