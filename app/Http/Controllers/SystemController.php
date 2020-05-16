@@ -201,6 +201,11 @@ class SystemController extends Controller
     public function action(Request $request)
     {
         switch ($request->action) {
+            case 'cancel_job':
+                \App\Job::where('id', $request->job_id)->delete();
+                \Session::flash('flash_success_floating', __('Done'));
+                break;
+
             case 'delete_failed_jobs':
                 \App\FailedJob::where('queue', $request->failed_queue)->delete();
                 \Session::flash('flash_success_floating', __('Failed jobs deleted'));
