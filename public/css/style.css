@@ -2441,6 +2441,7 @@ ul.sidebar-block-list {
     }
     #conv-viewers {
         max-width: 81px;
+        top: 26px;
     }
     .conv-info .btn-group button.conv-info-val span:first-child {
         display: none!important;
