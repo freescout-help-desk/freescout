@@ -329,7 +329,7 @@ body.user-is-guest {
         width: 50px;
         padding: 0;
     }
-    .user-is-admin .sidebar-buttons {
+    .sidebar-buttons.has-settings {
         width: 100px;
     }
     .sidebar-buttons .dropdown-menu {
