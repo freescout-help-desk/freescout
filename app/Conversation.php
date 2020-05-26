@@ -1085,7 +1085,7 @@ class Conversation extends Model
         // Check assignee.
         if ($this->user_id && !in_array($this->user_id, $mailbox->userIdsHavingAccess())) {
             // Assign conversation to the user who moved it.
-            $conversation->user_id = $user->id;
+            $this->user_id = $user->id;
         }
         $this->updateFolder($mailbox);
         $this->save();
