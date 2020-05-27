@@ -33,7 +33,8 @@
         "rap2hpoutre/laravel-log-viewer": "v0.22.1",
         "codedge/laravel-selfupdater": "1.4.3",
         "doctrine/dbal": "v2.5.13",
-        "egulias/email-validator": "2.1.10"
+        "egulias/email-validator": "2.1.10",
+        "symfony/console": "v3.4.31"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v3.2.0",
@@ -55,7 +56,6 @@
         "psr/log": "1.0.*",
         "symfony/http-kernel": "v3.4.18",
         "symfony/finder": "v3.4.18",
-        "symfony/console": "v3.4.18",
         "doctrine/lexer": "v1.0.1",
         "swiftmailer/swiftmailer": "v6.1.*",
         "symfony/translation": "v3.4.18",
