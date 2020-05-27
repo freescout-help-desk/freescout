@@ -3770,14 +3770,6 @@ function conversationsTableInit()
 {
 	converstationBulkActionsInit();
 
-	$(function() {
-		$('.toggle-all:checkbox').on('click', function () {
-			$('.conv-checkbox:checkbox').prop('checked', this.checked).trigger('change');
-		});
-	});
-
-
-
 	if ("ontouchstart" in window)
 	{
 		$(document).ready(function() {
@@ -3934,6 +3926,10 @@ function converstationBulkActionsInit()
 			$(checkboxes).prop('checked', false);
 			$(checkboxes).trigger('change');
 			$('table.table-conversations tr').removeClass('selected');
+		});
+
+		$('.toggle-all:checkbox').on('click', function () {
+			$('.conv-checkbox:checkbox').prop('checked', this.checked).trigger('change');
 		});
 	});
 }
