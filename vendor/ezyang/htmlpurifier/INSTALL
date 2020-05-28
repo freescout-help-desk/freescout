@@ -15,7 +15,7 @@ with these contents.
 ---------------------------------------------------------------------------
 1.  Compatibility
 
-HTML Purifier is PHP 5 and PHP 7, and is actively tested from PHP 5.0.5
+HTML Purifier is PHP 5 and PHP 7, and is actively tested from PHP 5.3
 and up. It has no core dependencies with other libraries.
 
 These optional extensions can enhance the capabilities of HTML Purifier:
@@ -101,31 +101,6 @@ Autoload compatibility
     autoloader, but there are some cases where you will need to change
     your own code to accomodate HTML Purifier. These are those cases:
 
-    PHP VERSION IS LESS THAN 5.1.2, AND YOU'VE DEFINED __autoload
-        Because spl_autoload_register() doesn't exist in early versions
-        of PHP 5, HTML Purifier has no way of adding itself to the autoload
-        stack. Modify your __autoload function to test
-        HTMLPurifier_Bootstrap::autoload($class)
-
-        For example, suppose your autoload function looks like this:
-
-            function __autoload($class) {
-                require str_replace('_', '/', $class) . '.php';
-                return true;
-            }
-
-        A modified version with HTML Purifier would look like this:
-
-            function __autoload($class) {
-                if (HTMLPurifier_Bootstrap::autoload($class)) return true;
-                require str_replace('_', '/', $class) . '.php';
-                return true;
-            }
-
-        Note that there *is* some custom behavior in our autoloader; the
-        original autoloader in our example would work for 99% of the time,
-        but would fail when including language files.
-
     AN __autoload FUNCTION IS DECLARED AFTER OUR AUTOLOADER IS REGISTERED
         spl_autoload_register() has the curious behavior of disabling
         the existing __autoload() handler. Users need to explicitly
@@ -137,11 +112,6 @@ Autoload compatibility
         snippet of code (after your autoloader is defined) will fix it:
 
             spl_autoload_register('__autoload')
-
-    Users should also be on guard if they use a version of PHP previous
-    to 5.1.2 without an autoloader--HTML Purifier will define __autoload()
-    for you, which can collide with an autoloader that was added by *you*
-    later.
 
 
 For better performance
@@ -204,9 +174,7 @@ For advanced users
         HTMLPurifier.autoload.php
             Registers our autoload handler HTMLPurifier_Bootstrap::autoload($class).
 
-    You can do these operations by yourself--in fact, you must modify your own
-    autoload handler if you are using a version of PHP earlier than PHP 5.1.2
-    (See "Autoload compatibility" above).
+    You can do these operations by yourself, if you like.
 
 
 ---------------------------------------------------------------------------

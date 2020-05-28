@@ -11,7 +11,7 @@ pied de page, mais je recommande de lire le document.
 
 1.  Compatibilité
 
-HTML Purifier fonctionne avec PHP 5. PHP 5.0.5 est la dernière version testée.
+HTML Purifier fonctionne avec PHP 5. PHP 5.3 est la dernière version testée.
 Il ne dépend pas d'autres librairies.
 
 Les extensions optionnelles sont iconv (généralement déjà installée) et tidy

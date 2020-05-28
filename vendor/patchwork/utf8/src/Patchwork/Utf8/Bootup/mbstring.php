@@ -21,7 +21,7 @@ const MB_CASE_TITLE = 2;
 @trigger_error('You are using a fallback implementation of the mbstring extension. Installing the native one is highly recommended instead.', E_USER_DEPRECATED);
 
 function mb_convert_encoding($s, $to, $from = null) {return s\Mbstring::mb_convert_encoding($s, $to, $from);}
-function mb_convert_variables($toEncoding, $fromEncoding, &$a = null, &$b = null, &$c = null, &$d = null, &$e = null, &$f = null) {return mb_convert_variables($toEncoding, $fromEncoding, $a, $b, $c, $d, $e, $f);}
+function mb_convert_variables($toEncoding, $fromEncoding, &$a = null, &$b = null, &$c = null, &$d = null, &$e = null, &$f = null) {return s\Mbstring::mb_convert_variables($toEncoding, $fromEncoding, $a, $b, $c, $d, $e, $f);}
 function mb_decode_mimeheader($s) {return s\Mbstring::mb_decode_mimeheader($s);}
 function mb_encode_mimeheader($s, $charset = null, $transfer_enc = null, $lf = null, $indent = null) {return s\Mbstring::mb_encode_mimeheader($s, $charset, $transfer_enc, $lf, $indent);}
 function mb_convert_case($s, $mode, $enc = null) {return s\Mbstring::mb_convert_case($s, $mode, $enc);}

@@ -240,10 +240,10 @@ class Purifier
     /**
      * @param      $dirty
      * @param null $config
-     *
+     * @param \Closure|null $postCreateConfigHook
      * @return mixed
      */
-    public function clean($dirty, $config = null)
+    public function clean($dirty, $config = null, \Closure $postCreateConfigHook = null)
     {
         if (is_array($dirty)) {
             return array_map(function ($item) use ($config) {
@@ -251,7 +251,16 @@ class Purifier
             }, $dirty);
         }
 
-        return $this->purifier->purify($dirty, $config ? $this->getConfig($config) : null);
+        $configObject = null;
+        if ($config !== null) {
+            $configObject = $this->getConfig($config);
+
+            if ($postCreateConfigHook !== null) {
+                $postCreateConfigHook->call($this, $configObject);
+            }
+        }
+
+        return $this->purifier->purify($dirty, $configObject);
     }
 
     /**

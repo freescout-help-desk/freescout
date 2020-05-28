@@ -6,9 +6,6 @@ namespace XdgBaseDir;
  * Simple implementation of the XDG standard http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
  *
  * Based on the python implementation https://github.com/takluyver/pyxdg/blob/master/xdg/BaseDirectory.py
- *
- * Class Xdg
- * @package ShopwareCli\Application
  */
 class Xdg
 {
@@ -30,7 +27,13 @@ class Xdg
      */
     public function getHomeConfigDir()
     {
-        $path = getenv('XDG_CONFIG_HOME') ?: $this->getHomeDir() . DIRECTORY_SEPARATOR . '.config';
+        if ($path = getenv('XDG_CONFIG_HOME')) {
+            return $path;
+        }
+
+        $homeDir = $this->getHomeDir();
+
+        $path = DIRECTORY_SEPARATOR === $homeDir ? $homeDir.'.config' : $homeDir . DIRECTORY_SEPARATOR . '.config';
 
         return $path;
     }
@@ -104,7 +107,7 @@ class Xdg
         if (!$st['mode'] & self::S_IFDIR) {
             rmdir($fallback);
             $create = true;
-        } elseif ($st['uid'] != getmyuid() ||
+        } elseif ($st['uid'] != $this->getUid() ||
             $st['mode'] & (self::S_IRWXG | self::S_IRWXO)
         ) {
             rmdir($fallback);
@@ -118,4 +121,12 @@ class Xdg
         return $fallback;
     }
 
+    private function getUid()
+    {
+        if (function_exists('posix_getuid')) {
+            return posix_getuid();
+        }
+
+        return getmyuid();
+    }
 }

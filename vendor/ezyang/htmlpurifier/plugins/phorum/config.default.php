@@ -53,5 +53,6 @@ $config->set('Core.Encoding', $GLOBALS['PHORUM']['DATA']['CHARSET']); // we'll c
 if (strtolower($GLOBALS['PHORUM']['DATA']['CHARSET']) !== 'utf-8') {
   $config->set('Core.EscapeNonASCIICharacters', true);
 }
+$config->set('Core.AllowParseManyTags', false);
 
 // vim: et sw=4 sts=4

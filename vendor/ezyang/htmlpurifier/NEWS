@@ -9,6 +9,40 @@ NEWS ( CHANGELOG and HISTORY )                                     HTMLPurifier
     . Internal change
 ==========================
 
+4.12.0, released 2019-10-27
+! PHP 7.4 is supported, thank you Witold Wasiczko, Mateuz Turcza and
+  Edi Modrić
+- PHPDocs for HTMLModule::addElement() and Bool attr are fixed (thanks
+  Mateusz)
+
+4.11.0, released 2019-07-14
+# SafeScripting now matches case-sensitively against its whitelist (previously it was
+  case-insensitive.)  Thanks Dimitri Gritsajuk <gritsajuk.dimitri@gmail.com>
+  for reporting.
+! New directive %Core.AllowParseManyTags which allows parsing of many nested tags.
+  Thanks M. Suzuki <msuzuki1986@gmail.com> for contributing the patch.
+! purifyArray now supports multidimensional arrays.  Thanks
+  Sandro Miguel Marques <sandromiguel@sandromiguel.com> for contributing this patch.
+! initial and inherit settings available for width, height, and the min-/max-
+  versions thereof.  Thanks Michael Kliewe <info@phpgansta.de> for contributing
+  this patch.
+! More color names are supported.  Thanks Daijobou for contributing.
+- Compatibility fixes for PHP 7.3, including new CI for PHP 7.3
+  (thank you Lukas Neumann <lksnmnn@gmail.com>) and removal of
+  reserved words in our constants (thanks Darko Hrgovic <darko@darkodev.com>
+- Compatibility fixes for HHVM.  Thanks Mateusz Turcza for contributing
+  this fix.
+- HTML Purifier now never defines __autoload, fixing #196.  Thanks
+  Michael Kliewe for reporting.
+- In some situations, Config.php would report an undefined index: class
+  error; this has been fixed.  Thanks DiLong Fa for contributing
+  this fix.
+- We no longer produce <script /> tags; we always explicitly write
+  out the open and close tag.  Thanks Dimitri Gritsajuk
+  <gritsajuk.dimitri@gmail.com> for contributing this fix.
+- Better compatibility when IDNA constants are not present.  Thanks
+  Mateusz Turcza <xemlock@gmail.com> for contributing this fix.
+
 4.10.0, released 2018-02-22
 # PHP 5.3 is no longer officially supported by HTML Purifier
   (we did not specifically break support, but we are no longer

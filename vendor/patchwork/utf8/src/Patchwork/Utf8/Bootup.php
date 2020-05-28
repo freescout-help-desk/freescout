@@ -42,7 +42,7 @@ class Bootup
                 user_error('php.ini settings: Please disable mbstring.encoding_translation or set mbstring.http_input to "pass"',  E_USER_WARNING);
             }
 
-            if (MB_OVERLOAD_STRING & (int) ini_get('mbstring.func_overload')) {
+            if (defined('MB_OVERLOAD_STRING') && (MB_OVERLOAD_STRING & (int) ini_get('mbstring.func_overload'))) {
                 user_error('php.ini settings: Please disable mbstring.func_overload', E_USER_WARNING);
             }
 
