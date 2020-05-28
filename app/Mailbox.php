@@ -534,7 +534,7 @@ class Mailbox extends Model
      */
     public function getInProtocolName()
     {
-        return self::$in_protocols[$this->in_protocol];
+        return self::$in_protocols[$this->in_protocol] ?? '';
     }
 
     /**
