@@ -623,6 +623,10 @@ class FetchEmails extends Command
         $conversation->status = Conversation::STATUS_ACTIVE;
         $conversation->last_reply_at = $now;
         $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
+        // Reply from customer to deleted conversation should undelete it.
+        if ($conversation->state == Conversation::STATE_DELETED) {
+            $conversation->state = Conversation::STATE_PUBLISHED;
+        }
         // Set folder id
         $conversation->updateFolder();
         $conversation->save();

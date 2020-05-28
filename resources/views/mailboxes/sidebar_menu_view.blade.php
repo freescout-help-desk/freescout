@@ -6,8 +6,11 @@
 <ul class="sidebar-menu" id="folders">
     @include('mailboxes/partials/folders')
 </ul>
-<div class="sidebar-buttons btn-group btn-group-justified">
-    @if (Auth::user()->can('viewMailboxMenu', Auth::user()))
+@php
+    $show_settings_btn = Auth::user()->can('viewMailboxMenu', Auth::user());
+@endphp
+<div class="sidebar-buttons btn-group btn-group-justified @if ($show_settings_btn) has-settings @endif">
+    @if ($show_settings_btn)
         <div class="btn-group dropdown" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
             <a class="btn btn-trans dropdown-toggle" data-toggle="dropdown" href="#"><i class="glyphicon glyphicon-cog"></i> <b class="caret"></b></a>
             <ul class="dropdown-menu" role="menu">

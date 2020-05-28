@@ -51,7 +51,7 @@ class SendNotificationToUsers implements ShouldQueue
 
         // Threads has to be sorted here, if sorted before, they come here in wrong order
         $this->threads = $this->threads->sortByDesc(function ($item, $key) {
-            return $item->created_at;
+            return $item->id;
         });
 
         $headers = [];

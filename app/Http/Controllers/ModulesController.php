@@ -28,6 +28,7 @@ class ModulesController extends Controller
     {
         $installed_modules = [];
         $modules_directory = [];
+        $all_modules = [];
         $flashes = [];
         $updates_available = false;
 
@@ -89,6 +90,7 @@ class ModulesController extends Controller
                 if (empty($dir_module['alias'])) {
                     unset($modules_directory[$i_dir]);
                 }
+                $all_modules[$dir_module['alias']] = $dir_module['name'];
                 foreach ($installed_modules as $i_installed => $module) {
                     if ($dir_module['alias'] == $module['alias']) {
                         // Set image from director
@@ -126,6 +128,7 @@ class ModulesController extends Controller
             'modules_directory' => $modules_directory,
             'flashes'           => $flashes,
             'updates_available' => $updates_available,
+            'all_modules'       => $all_modules,
         ]);
     }
 

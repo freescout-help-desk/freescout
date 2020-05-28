@@ -228,4 +228,9 @@ class Module extends Model
 
         return $missing;
     }
+
+    public static function formatName($name)
+    {
+        return preg_replace("/ Module$/", '', $name);
+    }
 }

@@ -66,7 +66,7 @@ Need anything else? Suggest features [here](https://freescout.net/request-featur
 FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a shared hosting.
 
   * Nginx / Apache / IIS
-  * PHP 7.0 - 7.3
+  * PHP 7.0 - 7.4
   * MySQL 5.0+ / MariaDB 5.0+ / PostgreSQL
 
 ## News & Updates

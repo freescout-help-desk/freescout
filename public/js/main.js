@@ -419,6 +419,32 @@ function deleteMailboxModal(modal)
 	});
 }
 
+// Deactivate license
+function deactivateLicenseModal(modal)
+{
+	modal.children().find('.button-deactivate-license:first').click(function(e) {
+		var button = $(this);
+	    button.button('loading');
+		fsAjax(
+			{
+				action: 'deactivate_license',
+				alias: $('.deactivate-license-module:visible:first').val(),
+				license: $('.deactivate-license-key:visible:first').val()
+			},
+			laroute.route('modules.ajax'),
+			function(response) {
+				if (isAjaxSuccess(response)) {
+					window.location.href = '';
+				} else {
+					showAjaxError(response);
+					button.button('reset');
+				}
+			}, true
+		);
+		e.preventDefault();
+	});
+}
+
 // Init summernote editor with default settings
 //
 // https://github.com/Studio-42/elFinder/wiki/Integration-with-Multiple-Summernote-%28fixed-functions%29
@@ -3770,14 +3796,6 @@ function conversationsTableInit()
 {
 	converstationBulkActionsInit();
 
-	$(function() {
-		$('.toggle-all:checkbox').on('click', function () {
-			$('.conv-checkbox:checkbox').prop('checked', this.checked).trigger('change');
-		});
-	});
-
-
-
 	if ("ontouchstart" in window)
 	{
 		$(document).ready(function() {
@@ -3934,6 +3952,10 @@ function converstationBulkActionsInit()
 			$(checkboxes).prop('checked', false);
 			$(checkboxes).trigger('change');
 			$('table.table-conversations tr').removeClass('selected');
+		});
+
+		$('.toggle-all:checkbox').on('click', function () {
+			$('.conv-checkbox:checkbox').prop('checked', this.checked).trigger('change');
 		});
 	});
 }

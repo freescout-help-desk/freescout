@@ -5,7 +5,7 @@
 		<img src="{{ App\Module::IMG_DEFAULT }}" />
 	@endif
 	<div class="module-wrap">
-	    <h4>{{ preg_replace("/ Module$/", '', $module['name']) }}@if (empty($module['installed'])) <span class="label label-lightgrey">{{ __('Not Installed') }}</span>@elseif (empty($module['active'])) <span class="label label-lightgrey">{{ __('Inactive') }}</span>@else <span class="label label-success">{{ __('Active') }}</span>@endif</h4>
+	    <h4>{{ App\Module::formatName($module['name']) }}@if (empty($module['installed'])) <span class="label label-lightgrey">{{ __('Not Installed') }}</span>@elseif (empty($module['active'])) <span class="label label-lightgrey">{{ __('Inactive') }}</span>@else <span class="label label-success">{{ __('Active') }}</span>@endif</h4>
 	    <p>
 	    	{{ $module['description'] }}
 	    </p>

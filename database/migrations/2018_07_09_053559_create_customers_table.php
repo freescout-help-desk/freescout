@@ -39,7 +39,11 @@ class CreateCustomersTable extends Migration
 
             // Indexes
             // For ajax search
-            $table->index([DB::raw('first_name(80)'), DB::raw('last_name(80)')]);
+            if (DB::connection()->getPDO()->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+                $table->index([DB::raw('first_name(80)'), DB::raw('last_name(80)')]);
+            } else {
+                $table->index(['first_name', 'last_name']);
+            }
         });
     }
 

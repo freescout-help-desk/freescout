@@ -71,8 +71,13 @@ class CreateThreadsTable extends Migration
             $table->timestamp('opened_at')->nullable();
             $table->timestamps();
 
-            // https://github.com/laravel/framework/issues/9293#issuecomment-373229281
-            $table->unique([DB::raw('message_id(191)')], 'threads_message_id_index');
+            if (DB::connection()->getPDO()->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+                // https://github.com/laravel/framework/issues/9293#issuecomment-373229281
+                $table->unique([DB::raw('message_id(191)')], 'threads_message_id_index');
+            } else {
+                $table->unique('message_id', 'threads_message_id_index');
+            }
+
             // On conversation page
             $table->index(['conversation_id', 'type', 'from', 'customer_id']);
             $table->index(['conversation_id', 'created_at']);

@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Mailbox;
 use App\SendLog;
 
 class SendAutoReply
@@ -47,6 +48,14 @@ class SendAutoReply
 
             if ($auto_replies_sent >= 3) {
                 return;
+            }
+
+            // Do not send autoreplies to own mailboxes.
+            if ($conversation->customer_email) {
+                $is_internal_email = Mailbox::where('email', $conversation->customer_email)->exists();
+                if ($is_internal_email) {
+                    return;
+                }
             }
 
             // 24h limit has been disabled: https://github.com/freescout-helpdesk/freescout/pull/95

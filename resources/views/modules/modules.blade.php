@@ -14,6 +14,8 @@
     @if (count($installed_modules))
         <div class="section-heading" id="installed">
             {{ __('Installed Modules') }}
+
+            <a href="#" data-trigger="modal" data-modal-body="#deactivate_license_modal" data-modal-size="sm" data-modal-no-footer="true" data-modal-title="{{ __('Deactivate License') }}" data-modal-on-show="deactivateLicenseModal" class="small pull-right">{{ __('Deactivate License') }}</a>
         </div>
 
         @if ($updates_available)
@@ -41,6 +43,9 @@
     
     <div class="section-heading" id="directory">
         {{ __('Modules Directory') }}
+        @if (!count($installed_modules))
+            <a href="#" data-trigger="modal" data-modal-body="#deactivate_license_modal" data-modal-size="sm" data-modal-no-footer="true" data-modal-title="{{ __('Deactivate License') }}" data-modal-on-show="deactivateLicenseModal" class="small pull-right">{{ __('Deactivate License') }}</a>
+        @endif
     </div>
 
     <div class="row-container margin-top">
@@ -52,6 +57,25 @@
         @endforeach
     </div>
     <div class="clearfix margin-bottom"></div>
+
+    <div id="deactivate_license_modal" class="hidden">
+
+        <div class="form-group">
+            <select class="form-control deactivate-license-module">
+                @foreach ($all_modules as $module_alias => $module_name)
+                    <option value="{{ $module_alias }}">{{ App\Module::formatName($module_name) }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control deactivate-license-key" placeholder="{{ __('License Key') }}" />
+        </div>
+
+        <div class="margin-top margin-bottom-5">
+            <button class="btn btn-primary button-deactivate-license" data-loading-text="{{ __('Deactivate') }}…">{{ __('Deactivate') }}</button>
+            <button class="btn btn-link" data-dismiss="modal">{{ __('Cancel') }}</button>
+        </div>
+    </div>
 @endsection
 
 @section('javascript')
