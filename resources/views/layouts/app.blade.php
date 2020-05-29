@@ -112,7 +112,7 @@
                                     </ul>
                                 </li>
                             @endif
-                            @filter('menu.append')
+                            @action('menu.append')
                         </ul>
 
                         <!-- Right Side Of Navbar -->
