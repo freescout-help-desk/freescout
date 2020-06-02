@@ -27,6 +27,13 @@ body.user-is-guest {
     /*padding-bottom: 60px;*/
     min-height: 400px;
 }
+.content-full {
+    margin-top: 0;
+}
+.content-full .container {
+    padding: 0;
+    width: 100% !important;
+}
 .layout-2col {
     display: flex;
     background-color: #fff;

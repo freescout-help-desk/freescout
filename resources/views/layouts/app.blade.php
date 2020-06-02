@@ -235,7 +235,7 @@
                 </div>
             </div>
         @else
-            <div class="content">
+            <div class="content @yield('content_class')">
                 @yield('content')
             </div>
         @endif
