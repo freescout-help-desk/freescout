@@ -3941,6 +3941,36 @@ a.disabled:focus {
     padding: 10px;
     margin-bottom: 20px;
 }
+.glyphicon-spin {
+     -webkit-animation: spin 1500ms  infinite linear;
+     -moz-animation: spin 1500ms  infinite linear;
+     -o-animation: spin 1500ms  infinite linear;
+     animation: spin 1500ms  infinite linear;
+}
+@-moz-keyframes spin {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /**
  * Mobile
