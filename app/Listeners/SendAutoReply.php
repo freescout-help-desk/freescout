@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Conversation;
 use App\Mailbox;
 use App\SendLog;
 
@@ -33,6 +34,11 @@ class SendAutoReply
             }
             // Do not send auto replies to bounces.
             if ($thread->isBounce()) {
+                return;
+            }
+
+            // Do not send auto replies to spam messages.
+            if ($conversation->status == Conversation::STATUS_SPAM) {
                 return;
             }
 
