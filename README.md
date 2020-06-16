@@ -71,7 +71,7 @@ FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on 
 
 ## News & Updates
 
-If you would like to be notified about new releases, news and updates you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
+If you would like to be notified about important news and updates you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
 
 ## Installation
 

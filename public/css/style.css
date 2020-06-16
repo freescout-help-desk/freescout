@@ -27,6 +27,13 @@ body.user-is-guest {
     /*padding-bottom: 60px;*/
     min-height: 400px;
 }
+.content-full {
+    margin-top: 0;
+}
+.content-full .container {
+    padding: 0;
+    width: 100% !important;
+}
 .layout-2col {
     display: flex;
     background-color: #fff;
@@ -3933,6 +3940,41 @@ a.disabled:focus {
     background-color: #F1F3F5;
     padding: 10px;
     margin-bottom: 20px;
+}
+.glyphicon-spin {
+     -webkit-animation: spin 1500ms  infinite linear;
+     -moz-animation: spin 1500ms  infinite linear;
+     -o-animation: spin 1500ms  infinite linear;
+     animation: spin 1500ms  infinite linear;
+}
+@-moz-keyframes spin {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.dm-scrollable {
+    max-height: 415px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /**

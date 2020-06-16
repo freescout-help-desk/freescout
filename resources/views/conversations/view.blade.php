@@ -61,7 +61,7 @@
                                     <span>{{ $conversation->getAssigneeName(true) }}</span>
                                     <span class="caret"></span>
                                 </button>
-                                <ul class="dropdown-menu conv-user">
+                                <ul class="dropdown-menu conv-user dm-scrollable">
                                     <li @if (!$conversation->user_id) class="active" @endif><a href="#" data-user_id="-1">{{ __("Anyone") }}</a></li>
                                     <li @if ($conversation->user_id == Auth::user()->id) class="active" @endif><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
                                     @foreach ($mailbox->usersAssignable() as $user)

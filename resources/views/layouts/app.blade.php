@@ -112,7 +112,7 @@
                                     </ul>
                                 </li>
                             @endif
-                            @filter('menu.append')
+                            @action('menu.append')
                         </ul>
 
                         <!-- Right Side Of Navbar -->
@@ -235,7 +235,7 @@
                 </div>
             </div>
         @else
-            <div class="content">
+            <div class="content @yield('content_class')">
                 @yield('content')
             </div>
         @endif

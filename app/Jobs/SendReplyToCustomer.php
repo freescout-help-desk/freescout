@@ -211,7 +211,13 @@ class SendReplyToCustomer implements ShouldQueue
             // Retry job with delay.
             // https://stackoverflow.com/questions/35258175/how-can-i-create-delays-between-failed-queued-job-attempts-in-laravel
             if ($this->attempts() < $this->tries) {
-                $this->release(3600);
+                if ($this->attempts() == 1) {
+                    // Second attempt after 5 min.
+                    $this->release(300);
+                } else {
+                    // Others - after 1 hour.
+                    $this->release(3600);
+                }
 
                 throw $e;
             } else {

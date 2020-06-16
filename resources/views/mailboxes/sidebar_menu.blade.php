@@ -6,7 +6,7 @@
         {{ $mailbox->name }} @if (count($menu_mailboxes))<span class="caret"></span>@endif
     </span>
     @if (count($menu_mailboxes))
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu dm-scrollable">
             @foreach ($menu_mailboxes as $mailbox_item)
                 <li @if ($mailbox_item->id == $mailbox->id)class="active"@endif><a href="{{ route(Eventy::filter('mailboxes.menu_current_route', Route::currentRouteName()), ['id'=>$mailbox_item->id]) }}">{{ $mailbox_item->name }}</a></li>
             @endforeach
