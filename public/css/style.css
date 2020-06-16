@@ -3971,6 +3971,11 @@ a.disabled:focus {
     transform: rotate(360deg);
   }
 }
+.dm-scrollable {
+    max-height: 415px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
 /**
  * Mobile
