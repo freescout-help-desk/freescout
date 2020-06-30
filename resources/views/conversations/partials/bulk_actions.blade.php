@@ -9,8 +9,9 @@
                     <span class="glyphicon glyphicon-user"></span><span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu conv-user">
+                    <li><a href="#" data-user_id="-1">{{ __("Anyone") }}</a></li>
                     <li><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
-                    @foreach ($mailbox->usersHavingAccess(true) as $user)
+                    @foreach ($mailbox->usersAssignable() as $user)
                         @if ($user->id != Auth::user()->id)
                             <li><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
                         @endif

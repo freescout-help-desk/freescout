@@ -615,7 +615,7 @@ class ConversationsController extends Controller
                     if ($attachments_info['has_attachments']) {
                         $conversation->has_attachments = true;
                     }
-                        
+
                     // Customer can be empty in existing conversation if this is a draft.
                     $customer_email = '';
                     $customer = null;
@@ -1532,7 +1532,7 @@ class ConversationsController extends Controller
                         if (!$user->can('update', $conversation)) {
                             continue;
                         }
-                        if (!$conversation->mailbox->userHasAccess($new_user_id)) {
+                        if ((int) $new_user_id != -1 && !$conversation->mailbox->userHasAccess($new_user_id)) {
                             continue;
                         }
 
