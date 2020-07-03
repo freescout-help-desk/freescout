@@ -318,10 +318,16 @@ function initTooltip(selector)
 	$(selector).tooltip({container: 'body'});
 }
 
+function initTooltips()
+{
+	initTooltip('[data-toggle="tooltip"]');
+}
+
 function triggersInit()
 {
 	// Tooltips
-    initTooltip('[data-toggle="tooltip"]');
+    initTooltips();
+    
     var handler = function() {
 	  return $('body [data-toggle="tooltip"]').tooltip('hide');
 	};

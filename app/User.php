@@ -357,7 +357,7 @@ class User extends Authenticatable
      *
      * @return string
      */
-    public static function dateFormat($date, $format = 'M j, Y H:i', $user = null)
+    public static function dateFormat($date, $format = 'M j, Y H:i', $user = null, $modify_format = true)
     {
         if (!$user) {
             $user = auth()->user();
@@ -368,20 +368,22 @@ class User extends Authenticatable
         }
 
         if ($user) {
-            if ($user->time_format == self::TIME_FORMAT_12) {
-                $format = strtr($format, [
-                    'H'     => 'h',
-                    'G'     => 'g',
-                    ':i'    => ':ia',
-                    ':ia:s' => ':i:sa',
-                ]);
-            } else {
-                $format = strtr($format, [
-                    'h'     => 'H',
-                    'g'     => 'G',
-                    ':ia'   => ':i',
-                    ':i:sa' => ':i:s',
-                ]);
+            if ($modify_format) {
+                if ($user->time_format == self::TIME_FORMAT_12) {
+                    $format = strtr($format, [
+                        'H'     => 'h',
+                        'G'     => 'g',
+                        ':i'    => ':ia',
+                        ':ia:s' => ':i:sa',
+                    ]);
+                } else {
+                    $format = strtr($format, [
+                        'h'     => 'H',
+                        'g'     => 'G',
+                        ':ia'   => ':i',
+                        ':i:sa' => ':i:s',
+                    ]);
+                }
             }
             // todo: formatLocalized has to be used here and below,
             // but it returns $format value instead of formatted date
