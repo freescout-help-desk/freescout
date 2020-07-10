@@ -114,14 +114,20 @@ class SendReplyToCustomer implements ShouldQueue
             }
         }
 
-        if (config('app.email_conv_history') == 'full') {
+        // addaption by Stip Webdesign
+        $email_conv_history = $this->conversation->email_conv_history;
+        if(!$email_conv_history || $email_conv_history === 'global')
+            $email_conv_history = config('app.email_conv_history');
+
+        if ($email_conv_history == 'full') {
             $send_previous_messages = true;
         }
 
-        if (config('app.email_conv_history') == 'last') {
+        if ($email_conv_history == 'last') {
             $send_previous_messages = true;
             $this->threads = $this->threads->slice(0, 2);
         }
+        //end of addaption by Stip
 
         $send_previous_messages = \Eventy::filter('jobs.send_reply_to_customer.send_previous_messages', $send_previous_messages, $this->last_thread, $this->threads, $this->conversation, $this->customer);
 

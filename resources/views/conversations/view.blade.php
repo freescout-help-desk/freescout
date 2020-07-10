@@ -261,6 +261,12 @@
     </div>
 @endsection
 
+{{-- Addition by Stip Webdesign for email history settings --}}
+@section('body_bottom')
+    @include('conversations.partials.settings_modal', ['conversation' => $conversation])
+@append
+{{-- End of addition by Stip --}}
+
 @include('partials/editor')
 
 @section('javascript')
