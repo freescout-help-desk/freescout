@@ -1736,7 +1736,6 @@ class ConversationsController extends Controller
 
                 break;
 
-            //addition by Stip Webdesign
             case 'save_settings':
                 $conversation = Conversation::find($request->conversation_id);
 
@@ -1754,7 +1753,6 @@ class ConversationsController extends Controller
 
                 $response['status'] = 'success';
                 break;
-            //end of addition by Stip
 
             default:
                 $response['msg'] = 'Unknown action';
