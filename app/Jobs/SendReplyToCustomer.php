@@ -114,11 +114,15 @@ class SendReplyToCustomer implements ShouldQueue
             }
         }
 
-        if (config('app.email_conv_history') == 'full') {
+        $email_conv_history = $this->conversation->email_conv_history;
+        if(!$email_conv_history || $email_conv_history === 'global')
+            $email_conv_history = config('app.email_conv_history');
+
+        if ($email_conv_history == 'full') {
             $send_previous_messages = true;
         }
 
-        if (config('app.email_conv_history') == 'last') {
+        if ($email_conv_history == 'last') {
             $send_previous_messages = true;
             $this->threads = $this->threads->slice(0, 2);
         }

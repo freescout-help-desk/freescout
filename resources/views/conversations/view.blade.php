@@ -261,6 +261,10 @@
     </div>
 @endsection
 
+@section('body_bottom')
+    @include('conversations.partials.settings_modal', ['conversation' => $conversation])
+@append
+
 @include('partials/editor')
 
 @section('javascript')
