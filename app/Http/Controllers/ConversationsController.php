@@ -1736,6 +1736,24 @@ class ConversationsController extends Controller
 
                 break;
 
+            case 'save_settings':
+                $conversation = Conversation::find($request->conversation_id);
+
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                    break;
+                }
+                if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Not enough permissions');
+                    break;
+                }
+
+                $conversation->email_conv_history = $request->email_conv_history;
+                $conversation->save();
+
+                $response['status'] = 'success';
+                break;
+
             default:
                 $response['msg'] = 'Unknown action';
                 break;
