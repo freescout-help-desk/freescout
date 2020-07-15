@@ -15,7 +15,7 @@ class ConversationsAddHistorySetting extends Migration
     {
         Schema::table('conversations', function (Blueprint $table) {
             // Mute notifications for events not directly related to the user
-            $table->string('email_conv_history', 10)->default('global');
+            $table->unsignedTinyInteger('email_conv_history')->default(0);
         });
     }
 
