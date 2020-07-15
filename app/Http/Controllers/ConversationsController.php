@@ -1748,7 +1748,7 @@ class ConversationsController extends Controller
                     break;
                 }
 
-                $conversation->email_conv_history = $request->email_conv_history;
+                $conversation->email_history = $request->email_history;
                 $conversation->save();
 
                 $response['status'] = 'success';

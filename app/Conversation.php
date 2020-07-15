@@ -126,48 +126,19 @@ class Conversation extends Model
     ];
 
     /**
-     * Email history types
+     * Email history options.
      */
     const EMAIL_HISTORY_GLOBAL = 0;
     const EMAIL_HISTORY_NONE = 1;
     const EMAIL_HISTORY_LAST = 2;
     const EMAIL_HISTORY_FULL = 3;
 
-    public static $email_history_types = [
+    public static $email_history_codes = [
         self::EMAIL_HISTORY_GLOBAL => 'global',
         self::EMAIL_HISTORY_NONE   => 'none',
         self::EMAIL_HISTORY_LAST   => 'last',
         self::EMAIL_HISTORY_FULL   => 'full',
     ];
-
-    public static function getEmailConvHistoryName($type) {
-        $label = '';
-        $globalstring = false;
-
-        $global = env('APP_EMAIL_CONV_HISTORY', false);
-        if($global) {
-            $globalstring = self::getEmailConvHistoryName($global);
-        }
-
-        switch ($type) {
-            case 'global':
-                $label = __('Default');
-                if ($globalstring)
-                    $label .= ' ('.$globalstring.')';
-                break;
-            case 'none':
-                $label = __('Do not include previous messages');
-                break;
-            case 'last':
-                $label = __('Include the last message');
-                break;
-            case 'full':
-                $label = __('Send full conversation history');
-                break;
-        }
-
-        return $label;
-    }
 
     /**
      * Assignee.
@@ -1632,6 +1603,34 @@ class Conversation extends Model
         event(new UserReplied($forwarded_conversation, $forwarded_thread));
         \Eventy::action('conversation.user_forwarded', $this, $thread, $forwarded_conversation, $forwarded_thread);
     }
+
+    public function getEmailHistoryCode()
+    {
+        return self::$email_history_codes[(int)$this->email_history] ?? 'global';
+    }
+
+    public static function getEmailHistoryName($code) {
+        $label = '';
+
+        switch ($code) {
+            case 'global':
+                $label = __('Default');
+                $label .= ' ('.self::getEmailHistoryName(config('app.email_conv_history')).')';
+                break;
+            case 'none':
+                $label = __('Do not include previous messages');
+                break;
+            case 'last':
+                $label = __('Include the last message');
+                break;
+            case 'full':
+                $label = __('Send full conversation history');
+                break;
+        }
+
+        return $label;
+    }
+
 
     // /**
     //  * Get conversation meta data as array.

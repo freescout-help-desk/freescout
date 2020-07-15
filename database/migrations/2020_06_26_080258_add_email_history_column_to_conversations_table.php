@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class ConversationsAddHistorySetting extends Migration
+class AddEmailHistoryColumnToConversationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,7 @@ class ConversationsAddHistorySetting extends Migration
     public function up()
     {
         Schema::table('conversations', function (Blueprint $table) {
-            // Mute notifications for events not directly related to the user
-            $table->unsignedTinyInteger('email_conv_history')->default(0);
+            $table->unsignedTinyInteger('email_history')->default(0);
         });
     }
 
@@ -27,7 +26,7 @@ class ConversationsAddHistorySetting extends Migration
     public function down()
     {
         Schema::table('conversations', function (Blueprint $table) {
-            $table->dropColumn('email_conv_history');
+            $table->dropColumn('email_history');
         });
     }
 }
