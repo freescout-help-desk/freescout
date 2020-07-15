@@ -27,7 +27,6 @@
                     @else
                         <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete-forever" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete Forever") }}"></span>
                     @endif
-                    <span class="conv-settings conv-action glyphicon glyphicon-cog" data-toggle="modal" data-target="#settingsModal" title="{{ __("Settings") }}"></span>
                     @action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>--}}
 
                     <div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
@@ -48,6 +47,9 @@
                             @else
                                 <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete-forever"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete Forever") }}</a></li>
                             @endif
+                            <li>
+                                <a href="#" class="conv-settings" data-toggle="modal" data-target="#settingsModal"><i class="glyphicon glyphicon-cog"></i> {{ __('Settings') }}</a>
+                            </li>
                             @action('conversation.append_action_buttons', $conversation, $mailbox)
                         </ul>
                     </div>
