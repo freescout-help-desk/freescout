@@ -615,7 +615,7 @@ class ConversationsController extends Controller
                     if ($attachments_info['has_attachments']) {
                         $conversation->has_attachments = true;
                     }
-                        
+
                     // Customer can be empty in existing conversation if this is a draft.
                     $customer_email = '';
                     $customer = null;
@@ -1532,7 +1532,7 @@ class ConversationsController extends Controller
                         if (!$user->can('update', $conversation)) {
                             continue;
                         }
-                        if (!$conversation->mailbox->userHasAccess($new_user_id)) {
+                        if ((int) $new_user_id != -1 && !$conversation->mailbox->userHasAccess($new_user_id)) {
                             continue;
                         }
 
@@ -1734,6 +1734,24 @@ class ConversationsController extends Controller
                     }
                 }
 
+                break;
+
+            case 'save_settings':
+                $conversation = Conversation::find($request->conversation_id);
+
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                    break;
+                }
+                if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Not enough permissions');
+                    break;
+                }
+
+                $conversation->email_conv_history = $request->email_conv_history;
+                $conversation->save();
+
+                $response['status'] = 'success';
                 break;
 
             default:
