@@ -318,10 +318,16 @@ function initTooltip(selector)
 	$(selector).tooltip({container: 'body'});
 }
 
+function initTooltips()
+{
+	initTooltip('[data-toggle="tooltip"]');
+}
+
 function triggersInit()
 {
 	// Tooltips
-    initTooltip('[data-toggle="tooltip"]');
+    initTooltips();
+    
     var handler = function() {
 	  return $('body [data-toggle="tooltip"]').tooltip('hide');
 	};
@@ -1124,6 +1130,7 @@ function initConversation()
 		maybeShowStoredNote();
 		maybeShowDraft();
 		processLinks();
+		initConvSettings();
 	});
 }
 
@@ -4499,4 +4506,36 @@ function maybeScrollToReplyBlock(offset)
 		}
 		scrollTo(reply_block, '', null, offset);
 	}
+}
+
+
+function initConvSettings()
+{
+	var settings_modal = jQuery('#conv-settings-modal');
+    var history_select = jQuery('#email_history', settings_modal);
+
+    jQuery('.button-save-settings:first', settings_modal).on('click', function(e) {
+        e.preventDefault();
+        settings_modal.modal('hide');
+
+        fsAjax(
+            {
+                action: 'save_settings',
+                conversation_id: getGlobalAttr('conversation_id'),
+                email_history: history_select.val(),
+            },
+            laroute.route('conversations.ajax'),
+            function(response) {
+                if (typeof(response.status) != "undefined" && response.status !== 'success') {
+                    if (typeof (response.msg) != "undefined") {
+                        showFloatingAlert('error', response.msg);
+                    } else {
+                        showFloatingAlert('error', Lang.get("messages.error_occured"));
+                    }
+                    loaderHide();
+                }
+            },
+            true
+        );
+    });
 }

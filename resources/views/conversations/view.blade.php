@@ -47,6 +47,9 @@
                             @else
                                 <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete-forever"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete Forever") }}</a></li>
                             @endif
+                            <li>
+                                <a href="#" data-toggle="modal" data-target="#conv-settings-modal"><i class="glyphicon glyphicon-cog"></i> {{ __('Settings') }}</a>
+                            </li>
                             @action('conversation.append_action_buttons', $conversation, $mailbox)
                         </ul>
                     </div>
@@ -260,6 +263,10 @@
         </div>
     </div>
 @endsection
+
+@section('body_bottom')
+    @include('conversations.partials.settings_modal', ['conversation' => $conversation])
+@append
 
 @include('partials/editor')
 

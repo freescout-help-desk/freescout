@@ -19,7 +19,7 @@ class Conversation extends Model
     use Rememberable;
     // This is obligatory.
     public $rememberCacheDriver = 'array';
-    
+
     /**
      * Max length of the preview.
      */
@@ -123,6 +123,21 @@ class Conversation extends Model
         self::SOURCE_TYPE_EMAIL => 'email',
         self::SOURCE_TYPE_WEB   => 'web',
         self::SOURCE_TYPE_API   => 'api',
+    ];
+
+    /**
+     * Email history options.
+     */
+    const EMAIL_HISTORY_GLOBAL = 0;
+    const EMAIL_HISTORY_NONE = 1;
+    const EMAIL_HISTORY_LAST = 2;
+    const EMAIL_HISTORY_FULL = 3;
+
+    public static $email_history_codes = [
+        self::EMAIL_HISTORY_GLOBAL => 'global',
+        self::EMAIL_HISTORY_NONE   => 'none',
+        self::EMAIL_HISTORY_LAST   => 'last',
+        self::EMAIL_HISTORY_FULL   => 'full',
     ];
 
     /**
@@ -729,7 +744,7 @@ class Conversation extends Model
      */
     public static function sanitizeEmails($emails)
     {
-        // Create customers if needed: Test <test1@example.com> 
+        // Create customers if needed: Test <test1@example.com>
         if (is_array($emails)) {
             foreach ($emails as $i => $email) {
                 preg_match("/^(.+)\s+([^\s]+)$/", $email, $m);
@@ -773,7 +788,7 @@ class Conversation extends Model
 
     /**
      * Static function for retrieving URL.
-     * 
+     *
      * @param  [type] $id        [description]
      * @param  [type] $folder_id [description]
      * @param  [type] $thread_id [description]
@@ -1410,7 +1425,7 @@ class Conversation extends Model
     public function changeUser($new_user_id, $user, $create_thread = true)
     {
         $prev_user_id = $this->user_id;
-        
+
         $this->setUser($new_user_id);
         $this->save();
 
@@ -1436,7 +1451,7 @@ class Conversation extends Model
     public function deleteToFolder($user)
     {
         $folder_id = $this->getCurrentFolder();
-        
+
         $this->state = Conversation::STATE_DELETED;
         $this->user_updated_at = date('Y-m-d H:i:s');
         $this->updateFolder();
@@ -1563,7 +1578,7 @@ class Conversation extends Model
         $thread->subtype = Thread::SUBTYPE_FORWARD;
         $thread->setMeta('forward_child_conversation_number', $forwarded_conversation->number);
         $thread->setMeta('forward_child_conversation_id', $forwarded_conversation->id);
-        
+
         $thread->save();
 
         // Save forwarded thread.
@@ -1588,6 +1603,34 @@ class Conversation extends Model
         event(new UserReplied($forwarded_conversation, $forwarded_thread));
         \Eventy::action('conversation.user_forwarded', $this, $thread, $forwarded_conversation, $forwarded_thread);
     }
+
+    public function getEmailHistoryCode()
+    {
+        return self::$email_history_codes[(int)$this->email_history] ?? 'global';
+    }
+
+    public static function getEmailHistoryName($code) {
+        $label = '';
+
+        switch ($code) {
+            case 'global':
+                $label = __('Default');
+                $label .= ' ('.self::getEmailHistoryName(config('app.email_conv_history')).')';
+                break;
+            case 'none':
+                $label = __('Do not include previous messages');
+                break;
+            case 'last':
+                $label = __('Include the last message');
+                break;
+            case 'full':
+                $label = __('Send full conversation history');
+                break;
+        }
+
+        return $label;
+    }
+
 
     // /**
     //  * Get conversation meta data as array.

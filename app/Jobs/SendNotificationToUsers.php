@@ -117,8 +117,6 @@ class SendNotificationToUsers implements ShouldQueue
             $exception = null;
 
             try {
-                // Sleep for a while to avoid blocking by sending email service provider.
-                sleep(1);
                 Mail::to([['name' => $user->getFullName(), 'email' => $user->email]])
                     ->send(new UserNotification($user, $this->conversation, $this->threads, $headers, $from, $mailbox));
             } catch (\Exception $e) {
