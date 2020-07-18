@@ -14,7 +14,7 @@
 		    @if (!empty($module['detailsUrl']))
 		    	| <a href="{{ $module['detailsUrl'] }}" target="_blank">{{ __('View details') }}</a>
 		    @endif
-			@if (!empty($module['license']))
+			@if (!empty($module['license']) && Eventy::filter('modules.show_license', true))
 		    	<span>| {{ __('License') }}: <small><span class="license-key-text">{{ $module['license'] }}</span> <i class="deactivate-license-trigger glyphicon glyphicon-trash clickable" data-toggle="tooltip" title="{{ __('Deactivate the license for this domain (to use on another domain)') }}"></i></small></span>
 		    @endif
 		    @if (!empty($module['requiredAppVersion']) && !\Helper::checkAppVersion($module['requiredAppVersion']))
