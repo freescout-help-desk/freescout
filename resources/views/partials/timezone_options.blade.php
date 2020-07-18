@@ -1,3 +1,4 @@
+<option value="Pacific/Samoa" @if ($current_timezone == 'Pacific/Samoa')selected="selected"@endif>(GMT-11:00) Midway Island, Samoa</option>
 <option value="Pacific/Honolulu" @if ($current_timezone == 'Pacific/Honolulu')selected="selected"@endif>(GMT-10:00) Hawaiian/Aleutian Time</option>
 <option value="America/Anchorage" @if ($current_timezone == 'America/Anchorage')selected="selected"@endif>(GMT-08:00) Alaska Time</option>
 <option value="America/Los_Angeles" @if ($current_timezone == 'America/Los_Angeles')selected="selected"@endif>(GMT-07:00) Pacific Time (US)</option>
@@ -12,8 +13,10 @@
 <option value="America/Regina" @if ($current_timezone == 'America/Regina')selected="selected"@endif>(GMT-06:00) Central Time (Saskatchewan)</option>
 <option value="America/Monterrey" @if ($current_timezone == 'America/Monterrey')selected="selected"@endif>(GMT-05:00) Central Time (Mexico City, Monterey)</option>
 <option value="America/Lima" @if ($current_timezone == 'America/Lima')selected="selected"@endif>(GMT-05:00) UTC/GMT -5 hours</option>
+<option value="America/Caracas" @if ($current_timezone == 'America/Caracas')selected="selected"@endif>(GMT-04:30) Caracas, La Paz</option>
 <option value="America/Manaus" @if ($current_timezone == 'America/Manaus')selected="selected"@endif>(GMT-04:00) Atlantic Time</option>
 <option value="America/Puerto_Rico" @if ($current_timezone == 'America/Puerto_Rico')selected="selected"@endif>(GMT-04:00) Atlantic Time (Puerto Rico)</option>
+<option value="Canada/Newfoundlan" @if ($current_timezone == 'Canada/Newfoundlan')selected="selected"@endif>(GMT-03:30) Newfoundland</option>
 <option value="America/Thule" @if ($current_timezone == 'America/Thule')selected="selected"@endif>(GMT-03:00) Western Greenland Time</option>
 <option value="America/Sao_Paulo" @if ($current_timezone == 'America/Sao_Paulo')selected="selected"@endif>(GMT-03:00) Eastern Brazil</option>
 <option value="America/St_Johns" @if ($current_timezone == 'America/St_Johns')selected="selected"@endif>(GMT-02:30) Newfoundland Time</option>
@@ -33,9 +36,12 @@
 <option value="Etc/GMT-3" @if ($current_timezone == 'Etc/GMT-3')selected="selected"@endif>(GMT+03:00) Moscow</option>
 <option value="Asia/Tehran" @if ($current_timezone == 'Asia/Tehran')selected="selected"@endif>(GMT+04:30) Iran Standard Time</option>
 <option value="Asia/Dubai" @if ($current_timezone == 'Asia/Dubai')selected="selected"@endif>(GMT+04:00) UAE (Dubai)</option>
+<option value="Asia/Kabul" @if ($current_timezone == 'Asia/Kabul')selected="selected"@endif>(GMT+04:30) Kabul</option>
 <option value="Asia/Karachi" @if ($current_timezone == 'Asia/Karachi')selected="selected"@endif>(GMT+05:00) Pakistan Standard Time (Karachi)</option>
 <option value="Asia/Calcutta" @if ($current_timezone == 'Asia/Calcutta')selected="selected"@endif>(GMT+05:30) India</option>
+<option value="Asia/Kathmandu" @if ($current_timezone == 'Asia/Kathmandu')selected="selected"@endif>(GMT+05:45) Kathmandu</option>
 <option value="Asia/Dhaka" @if ($current_timezone == 'Asia/Dhaka')selected="selected"@endif>(GMT+06:00) Bangladesh Standard Time</option>
+<option value="Asia/Yangon" @if ($current_timezone == 'Asia/Yangon')selected="selected"@endif>(GMT+06:30) Yangon, Rangoon</option>
 <option value="Asia/Jakarta" @if ($current_timezone == 'Asia/Jakarta')selected="selected"@endif>(GMT+07:00) Western Indonesian Time (Jakarta)</option>
 <option value="Asia/Bangkok" @if ($current_timezone == 'Asia/Bangkok')selected="selected"@endif>(GMT+07:00) Thailand (Bangkok)</option>
 <option value="Asia/Hong_Kong" @if ($current_timezone == 'Asia/Hong_Kong')selected="selected"@endif>(GMT+08:00) Hong Kong</option>
