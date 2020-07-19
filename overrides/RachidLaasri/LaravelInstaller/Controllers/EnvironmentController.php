@@ -128,7 +128,7 @@ class EnvironmentController extends Controller
                     $request->database_charset = 'utf8';
                     $request->database_collation = 'utf8_unicode_ci';
 
-                    $this->testDbConnect($request);
+                    // $this->testDbConnect($request);
                 } else {
                     throw $e;
                 }
@@ -158,16 +158,25 @@ class EnvironmentController extends Controller
 
     public function testDbConnect($request, $params = [])
     {
-        $params = array_merge([
-            'driver'    => 'mysql',
+        $driver = $request->database_connection ?? 'mysql';
+        $config = config('database.connections.'.$driver);
+        if (!$config) {
+            $config = [];
+        }
+
+        $params = array_merge($config, $params);
+
+        $params = array_merge($params, [
+            'driver'    => $driver,
             'host'      => $request->database_hostname,
+            'port'      => $request->database_port,
             'database'  => $request->database_name,
             'username'  => $request->database_username,
             'password'  => $request->database_password,
-            'charset'   => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix'    => '',
-        ], $params);
+            // 'charset'   => 'utf8mb4',
+            // 'collation' => 'utf8mb4_unicode_ci',
+            // 'prefix'    => '',
+        ]);
 
         $params_hash = md5(json_encode($params));
         \Config::set('database.connections.install'.$params_hash, $params);
