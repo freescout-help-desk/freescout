@@ -219,17 +219,19 @@ class User extends Authenticatable
     {
         if ($this->isAdmin()) {
             if ($cache) {
-                return Mailbox::rememberForever()->get();
+                $mailboxes = Mailbox::rememberForever()->get();
             } else {
-                return Mailbox::all();
+                $mailboxes = Mailbox::all();
             }
         } else {
             if ($cache) {
-                return $this->mailboxes_cached;
+                $mailboxes = $this->mailboxes_cached;
             } else {
-                return $this->mailboxes;
+                $mailboxes = $this->mailboxes;
             }
         }
+
+        return $mailboxes->sortBy('name');
     }
 
     /**
