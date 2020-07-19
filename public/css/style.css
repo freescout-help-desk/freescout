@@ -3972,7 +3972,7 @@ a.disabled:focus {
   }
 }
 .dm-scrollable {
-    max-height: 415px;
+    max-height: 395px;
     overflow-y: auto;
     overflow-x: hidden;
 }

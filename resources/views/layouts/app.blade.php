@@ -81,7 +81,7 @@
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
                                         {{ __('Mailbox') }} <span class="caret"></span>
                                     </a>
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu dm-scrollable">
                                         @foreach ($mailboxes as $mailbox_item)
                                             <li @if ($mailbox_item->id == app('request')->id)class="active"@endif><a href="{{ route('mailboxes.view', ['id' => $mailbox_item->id]) }}">{{ $mailbox_item->name }}</a></li>
                                         @endforeach
