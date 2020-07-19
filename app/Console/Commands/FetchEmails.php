@@ -67,14 +67,12 @@ class FetchEmails extends Command
         $this->line('['.date('Y-m-d H:i:s').'] Fetching '.($this->option('unseen') ? 'UNREAD' : 'ALL').' emails for the last '.$this->option('days').' days.');
 
         // Get active mailboxes
-        $mailboxes = Mailbox::where('in_protocol', '<>', '')
-            ->where('in_server', '<>', '')
-            ->where('in_port', '<>', '')
-            ->where('in_username', '<>', '')
-            ->where('in_password', '<>', '')
-            ->get();
+        $mailboxes = Mailbox::get();
 
         foreach ($mailboxes as $mailbox) {
+            if (!$mailbox->isInActive()) {
+                continue;
+            }
             $this->info('['.date('Y-m-d H:i:s').'] Mailbox: '.$mailbox->name);
 
             $this->mailbox = $mailbox;
