@@ -252,7 +252,14 @@ class Folder extends Model
      */
     public function getCount($folders = [])
     {
-        if (\Eventy::filter('folder.counter', self::COUNTER_ACTIVE, $this, $folders) == self::COUNTER_TOTAL || $this->type == self::TYPE_STARRED || $this->type == self::TYPE_DRAFTS) {
+        $counter = \Eventy::filter('folder.counter', self::COUNTER_ACTIVE, $this, $folders);
+
+        $count = \Eventy::filter('folder.count', false, $this, $counter, $folders);
+        if ($count !== false) {
+            return $count;
+        }
+
+        if ($counter == self::COUNTER_TOTAL || $this->type == self::TYPE_STARRED || $this->type == self::TYPE_DRAFTS) {
             return $this->total_count;
         } else {
             return $this->getActiveCount($folders);
