@@ -38,8 +38,8 @@ return [
     'repository_types' => [
         'github' => [
             'type'              => 'github',
-            'repository_vendor' => 'freescout-helpdesk', //env('SELF_UPDATER_REPO_VENDOR', ''),
-            'repository_name'   => 'freescout', //env('SELF_UPDATER_REPO_NAME', ''),
+            'repository_vendor' => env('SELF_UPDATER_REPO_VENDOR', ''),
+            'repository_name'   => env('SELF_UPDATER_REPO_NAME', ''),
             'repository_url'    => '',
             'download_path'     => storage_path().DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'updater', //env('SELF_UPDATER_DOWNLOAD_PATH', sys_get_temp_dir()),
         ],
