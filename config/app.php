@@ -91,15 +91,15 @@ return [
     | locales: available locales
     */
 
-    'locale'          => env('APP_LOCALE', 'en'),
-    'locales'         => ['en', 'nl', 'fr', 'de', 'it', 'pl', 'pt-PT', 'pt-BR', 'ru', 'es', 'sv'],
-    'default_locale'  => 'en',
+    'locale'         => env('APP_LOCALE', 'en'),
+    'locales'        => ['en', 'nl', 'fr', 'de', 'it', 'pl', 'pt-PT', 'pt-BR', 'ru', 'es', 'sv'],
+    'default_locale' => 'en',
 
     /*
     | app()->setLocale() in Localize middleware also changes config('app.locale'),
     | so we are keeping real app locale in real_locale parameter.
     */
-   'real_locale' => env('APP_LOCALE', 'en'),
+    'real_locale'    => env('APP_LOCALE', 'en'),
 
     /*
     |--------------------------------------------------------------------------
@@ -144,36 +144,36 @@ return [
 
     'log' => env('APP_LOG', 'daily'), // by default logs for 5 days are kept
 
-    'log_level' => env('APP_LOG_LEVEL', 'error'),
+    'log_level'                => env('APP_LOG_LEVEL', 'error'),
 
     /*
     |--------------------------------------------------------------------------
     | FreeScout website
     |-------------------------------------------------------------------------
     */
-    'freescout_url' => 'https://freescout.net',
+    'freescout_url'            => 'https://freescout.net',
 
     /*
     |--------------------------------------------------------------------------
     | FreeScout API
     |-------------------------------------------------------------------------
     */
-    'freescout_api' => 'https://freescout.net/wp-json/',
-    'freescout_alt_api' => 'https://cdn.freescout.net/wp-json/',
+    'freescout_api'            => 'https://freescout.net/wp-json/',
+    'freescout_alt_api'        => 'https://cdn.freescout.net/wp-json/',
 
     /*
     |--------------------------------------------------------------------------
     | FreeScout eepository
     |-------------------------------------------------------------------------
     */
-    'freescout_repo' => 'https://github.com/FamilyResearchCouncil/helpdesk',
+    'freescout_repo'           => 'https://github.com/' . env('SELF_UPDATER_REPO_VENDOR') . '/' . env('SELF_UPDATER_REPO_NAME'),
 
     /*
     |--------------------------------------------------------------------------
     | FreeScout email
     |-------------------------------------------------------------------------
     */
-    'freescout_email' => 'support@freescout.net',
+    'freescout_email'          => 'support@freescout.net',
 
     /*
     |--------------------------------------------------------------------------
@@ -186,14 +186,16 @@ return [
     | Number of retries is set in each job class.
     |-------------------------------------------------------------------------
     */
-    'queue_work_params' => ['--queue' => 'emails,default', '--sleep' => '5', '--tries' => '1'],
+    'queue_work_params'        => ['--queue' => 'emails,default', '--sleep' => '5', '--tries' => '1'],
 
     /*
     |--------------------------------------------------------------------------
     | PHP extensions required by the app
     |-------------------------------------------------------------------------
     */
-    'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/ 'json', 'gd', 'fileinfo', 'openssl', 'zip', 'tokenizer'/*, 'dom', 'xmlwriter', 'libxml', 'phar'*/],
+    'required_extensions'      => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/
+        'json', 'gd', 'fileinfo', 'openssl', 'zip', 'tokenizer'/*, 'dom', 'xmlwriter', 'libxml', 'phar'*/
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -201,7 +203,7 @@ return [
     | https://support.cloudflare.com/hc/en-us/articles/200170416-What-do-the-SSL-options-mean-
     |-------------------------------------------------------------------------
     */
-    'force_https' => env('APP_FORCE_HTTPS', false),
+    'force_https'              => env('APP_FORCE_HTTPS', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -209,22 +211,22 @@ return [
     | These settings must be stored to avoid DB query in Kenel.php
     |-------------------------------------------------------------------------
     */
-    'alert_logs'        => env('APP_ALERT_LOGS', false),
-    'alert_logs_period' => env('APP_ALERT_LOGS_PERIOD', ''),
+    'alert_logs'               => env('APP_ALERT_LOGS', false),
+    'alert_logs_period'        => env('APP_ALERT_LOGS_PERIOD', ''),
 
     /*
     |--------------------------------------------------------------------------
     | Fetch Mail Schedule.
     |-------------------------------------------------------------------------
     */
-    'fetch_schedule'    => env('APP_FETCH_SCHEDULE', 1),
+    'fetch_schedule'           => env('APP_FETCH_SCHEDULE', 1),
 
     /*
     |--------------------------------------------------------------------------
     | App colors.
     |--------------------------------------------------------------------------
     */
-    'colors' => [
+    'colors'                   => [
         'main_light'    => '#0078d7',
         'main_dark'     => '#005a9e',
         'note'          => '#ffc646',
@@ -240,7 +242,7 @@ return [
     | Default options values for \Option::get()
     |--------------------------------------------------------------------------
     */
-    'options' => [
+    'options'                  => [
         'alert_fetch'        => ['default' => false],
         'alert_fetch_period' => ['default' => 15], // min
         'email_branding'     => ['default' => true],
@@ -256,14 +258,16 @@ return [
     | nginx - attachments are downloaded via nginx's X-Accel-Redirect.
     |-------------------------------------------------------------------------
     */
-    'download_attachments_via'    => env('APP_DOWNLOAD_ATTACHMENTS_VIA', 'php'),
+    'download_attachments_via' => env('APP_DOWNLOAD_ATTACHMENTS_VIA', 'php'),
 
     /*
     |--------------------------------------------------------------------------
     | File types which should be viewed in the browser instead of downloading.
     |-------------------------------------------------------------------------
     */
-    'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'svg', 'tif', 'tiff', 'webp', 'pdf', 'txt']),
+    'viewable_attachments'     => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp',
+        'gif', 'ico', 'cur', 'png', 'svg', 'tif', 'tiff', 'webp', 'pdf', 'txt'
+    ]),
 
     /*
     |--------------------------------------------------------------------------
@@ -275,7 +279,7 @@ return [
     |
     |-------------------------------------------------------------------------
     */
-    'email_conv_history'    => env('APP_EMAIL_CONV_HISTORY', 'none'),
+    'email_conv_history'       => env('APP_EMAIL_CONV_HISTORY', 'none'),
 
     /*
     |--------------------------------------------------------------------------
@@ -287,7 +291,7 @@ return [
     |
     |-------------------------------------------------------------------------
     */
-    'email_user_history'    => env('APP_EMAIL_USER_HISTORY', 'full'),
+    'email_user_history'       => env('APP_EMAIL_USER_HISTORY', 'full'),
 
     /*
     |--------------------------------------------------------------------------
