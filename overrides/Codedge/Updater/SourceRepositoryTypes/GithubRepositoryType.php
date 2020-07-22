@@ -142,7 +142,6 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
 
             // Move folders
             $folders_to_move = [
-                'vendor',
                 'app',
                 'config',
                 'database',
