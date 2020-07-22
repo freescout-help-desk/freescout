@@ -59,7 +59,7 @@ class SystemController extends Controller
         // Check if public symlink exists, if not, try to create.
         $public_symlink_exists = true;
         $public_path = public_path('storage');
-        $public_test = $public_path.DIRECTORY_SEPARATOR.'.gitignore';
+        $public_test = $public_path . DIRECTORY_SEPARATOR . '.gitignore';
 
         if (!file_exists($public_test) || !file_get_contents($public_test)) {
             \File::delete($public_path);
@@ -79,7 +79,7 @@ class SystemController extends Controller
 
         // Commands
         $commands_list = [
-            'freescout:fetch-emails' => 'freescout:fetch-emails', 
+            'freescout:fetch-emails'       => 'freescout:fetch-emails',
             \Helper::getWorkerIdentifier() => 'queue:work'
         ];
         foreach ($commands_list as $command_identifier => $command_name) {
@@ -123,7 +123,7 @@ class SystemController extends Controller
                         $commands[] = [
                             'name'        => $command_name,
                             'status'      => 'error',
-                            'status_text' => __(':number commands are running at the same time. Please stop extra commands by executing the following console command:', ['number' => $running_commands]).' kill '.implode(' | kill ', $pids),
+                            'status_text' => __(':number commands are running at the same time. Please stop extra commands by executing the following console command:', ['number' => $running_commands]) . ' kill ' . implode(' | kill ', $pids),
                         ];
                     }
                     continue;
@@ -133,30 +133,32 @@ class SystemController extends Controller
             $option_name = str_replace('freescout_', '', preg_replace('/[^a-zA-Z0-9]/', '_', $command_name));
 
             $date_text = '?';
-            $last_run = Option::get($option_name.'_last_run');
+            $last_run = Option::get($option_name . '_last_run');
             if ($last_run) {
                 $date = Carbon::createFromTimestamp($last_run);
                 $date_text = User::dateFormat($date);
             }
-            $status_texts[] = __('Last run:').' '.$date_text;
+            $status_texts[] = __('Last run:') . ' ' . $date_text;
 
             $date_text = '?';
-            $last_successful_run = Option::get($option_name.'_last_successful_run');
+            $last_successful_run = Option::get($option_name . '_last_successful_run');
             if ($last_successful_run) {
                 $date_ = Carbon::createFromTimestamp($last_successful_run);
                 $date_text = User::dateFormat($date);
             }
-            $status_texts[] = __('Last successful run:').' '.$date_text;
+            $status_texts[] = __('Last successful run:') . ' ' . $date_text;
 
             $status = 'error';
-            if ($last_successful_run && $last_run && (int) $last_successful_run >= (int) $last_run) {
+            if ($last_successful_run && $last_run && (int)$last_successful_run >= (int)$last_run) {
                 unset($status_texts[0]);
                 $status = 'success';
             }
 
             // If queue:work is not running, clear cache to let it start if something is wrong with the mutex
             if ($command_name == 'queue:work' && !$last_successful_run) {
-                $status_texts[] = __('Try to :%a_start%clear cache:%a_end% to force command to start.', ['%a_start%' => '<a href="'.route('system.tools').'" target="_blank">', '%a_end%' => '</a>']);
+                $status_texts[] = __('Try to :%a_start%clear cache:%a_end% to force command to start.', ['%a_start%' => '<a href="' . route('system.tools') . '" target="_blank">',
+                                                                                                         '%a_end%'   => '</a>'
+                ]);
                 // This sometimes makes Status page open as non logged in user.
                 //\Artisan::call('freescout:clear-cache', ['--doNotGenerateVars' => true]);
             }
@@ -296,11 +298,15 @@ class SystemController extends Controller
             case 'update':
                 try {
                     $status = \Updater::update();
-                    
+
                     // Artisan::output()
                 } catch (\Exception $e) {
-                    $response['msg'] = __('Error occured. Please try again or try another :%a_start%update method:%a_end%', ['%a_start%' => '<a href="'.config('app.freescout_url').'/docs/update/" target="_blank">', '%a_end%' => '</a>']);
-                    $response['msg'] .= '<br/><br/>'.$e->getMessage();
+                    $response['msg'] = __('Error occured. Please try again or try another :%a_start%update method:%a_end%', ['%a_start%' => '<a href="' . config('app.freescout_url') . '/docs/update/" target="_blank">',
+                                                                                                                             '%a_end%'   => '</a>'
+                    ]);
+                    $response['msg'] .= '<br/><br/>' . $e->getMessage();
+                    $response['file'] = $e->getFile() . ':' . $e->getLine();
+                    $response['trace'] = $e->getTrace();
 
                     \Helper::logException($e);
                 }
@@ -316,7 +322,7 @@ class SystemController extends Controller
                     $response['new_version_available'] = \Updater::isNewVersionAvailable(config('app.version'));
                     $response['status'] = 'success';
                 } catch (\Exception $e) {
-                    $response['msg'] = __('Error occured').': '.$e->getMessage();
+                    $response['msg'] = __('Error occured') . ': ' . $e->getMessage();
                 }
                 if (!$response['msg'] && !$response['new_version_available']) {
                     // Adding session flash is useless as cache is cleated
