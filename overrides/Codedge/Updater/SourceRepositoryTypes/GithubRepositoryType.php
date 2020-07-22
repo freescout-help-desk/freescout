@@ -34,7 +34,7 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
      * Github constructor.
      *
      * @param Client $client
-     * @param array  $config
+     * @param array $config
      */
     public function __construct(Client $client, array $config)
     {
@@ -49,10 +49,10 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
      *
      * @param string $currentVersion
      *
-     * @throws \InvalidArgumentException
+     * @return bool
      * @throws \Exception
      *
-     * @return bool
+     * @throws \InvalidArgumentException
      */
     public function isNewVersionAvailable($currentVersion = '')
     {
@@ -79,9 +79,9 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
      *
      * @param string $version
      *
+     * @return mixed
      * @throws \Exception
      *
-     * @return mixed
      */
     public function fetch($version = '')
     {
@@ -108,11 +108,11 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
         $storageFilename = "{$release->name}.zip";
 
         //if (!$this->isSourceAlreadyFetched($release->name)) {
-        if (File::exists($storagePath.DIRECTORY_SEPARATOR.$release->name)) {
-            File::deleteDirectory($storagePath.DIRECTORY_SEPARATOR.$release->name);
+        if (File::exists($storagePath . DIRECTORY_SEPARATOR . $release->name)) {
+            File::deleteDirectory($storagePath . DIRECTORY_SEPARATOR . $release->name);
         }
 
-        $storageFile = $storagePath.DIRECTORY_SEPARATOR.$storageFilename;
+        $storageFile = $storagePath . DIRECTORY_SEPARATOR . $storageFilename;
         $this->downloadRelease($this->client, $release->zipball_url, $storageFile);
 
         $this->unzipArchive($storageFile, $storagePath);
@@ -132,30 +132,11 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
 
         if ($this->hasCorrectPermissionForUpdate()) {
             if (!empty($version)) {
-                $sourcePath = $this->config['download_path'].DIRECTORY_SEPARATOR.$version;
+                $sourcePath = $this->config['download_path'] . DIRECTORY_SEPARATOR . $version;
             } else {
                 $sourcePath = File::directories($this->config['download_path'])[0];
             }
 
-            // Copy Vendor first.
-            /*if (File::exists(base_path('vendor_backup'))) {
-                File::deleteDirectory(base_path('vendor_backup'));
-            }*/
-
-            // We copy new vendor and rename to avoid error:
-            // /vendor/composer/../laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php): failed to open stream: No such file or directory in /vendor/composer/ClassLoader.php:444
-            /*File::move(
-                $sourcePath.DIRECTORY_SEPARATOR.'vendor',
-                base_path('vendor_new')
-            );
-            File::move(
-                base_path('vendor'),
-                base_path('vendor_backup')
-            );
-            File::move(
-                base_path('vendor_new'),
-                base_path('vendor')
-            );*/
 
             self::$exclude_folders = $this->config['exclude_folders'];
 
@@ -170,26 +151,35 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
                 'routes',
                 'tests',
             ];
+
             foreach ($folders_to_move as $folder) {
                 // Move folder to the source directory as _tmp
-                if (file_exists($sourcePath.DIRECTORY_SEPARATOR.$folder.'_tmp')) {
-                    File::deleteDirectory($sourcePath.DIRECTORY_SEPARATOR.$folder.'_tmp');
+                if (file_exists($sourcePath . DIRECTORY_SEPARATOR . $folder . '_tmp')) {
+                    File::deleteDirectory($sourcePath . DIRECTORY_SEPARATOR . $folder . '_tmp');
                 }
                 File::move(
                     base_path($folder),
-                    $sourcePath.DIRECTORY_SEPARATOR.$folder.'_tmp'
+                    $sourcePath . DIRECTORY_SEPARATOR . $folder . '_tmp'
                 );
-                self::$exclude_folders[] = $folder.'_tmp';
+                self::$exclude_folders[] = $folder . '_tmp';
                 File::move(
-                    $sourcePath.DIRECTORY_SEPARATOR.$folder,
+                    $sourcePath . DIRECTORY_SEPARATOR . $folder,
                     base_path($folder)
                 );
             }
 
+            $directories = (new Finder())
+                ->in($sourcePath)
+                ->exclude(self::$exclude_folders)
+                ->directories()
+                ->sort(function ($a, $b) {
+                    return strlen($b->getRealpath()) - strlen($a->getRealpath());
+                });
+
+
             // Move directories
-            collect((new Finder())->in($sourcePath)->exclude(self::$exclude_folders)->directories()->sort(function ($a, $b) {
-                return strlen($b->getRealpath()) - strlen($a->getRealpath());
-            }))->each(function ($directory) { /** @var \SplFileInfo $directory */
+            collect($directories)->each(function ($directory) {
+                /** @var \SplFileInfo $directory */
 
                 if (count(array_intersect(File::directories(
                         $directory->getRealPath()), GithubRepositoryType::$exclude_folders)) == 0
@@ -197,7 +187,7 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
                     // Copy dir
                     File::copyDirectory(
                         $directory->getRealPath(),
-                        base_path($directory->getRelativePath()).'/'.$directory->getBasename()
+                        base_path($directory->getRelativePath()) . '/' . $directory->getBasename()
                     );
                 }
                 // Delete dir
@@ -206,7 +196,8 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
 
             // Now move all the files left in the main directory
             //collect(File::allFiles($sourcePath, true))->each(function ($file) { /* @var \SplFileInfo $file */
-            collect(File::files($sourcePath, true))->each(function ($file) { /* @var \SplFileInfo $file */
+            collect(File::files($sourcePath, true))->each(function ($file) {
+                /* @var \SplFileInfo $file */
                 File::copy($file->getRealPath(), base_path($file->getFilename()));
             });
 
@@ -233,15 +224,17 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
         $subDirName = File::directories($storagePath);
         $directories = File::directories($subDirName[0]);
 
-        File::makeDirectory($storagePath.'/'.$releaseName, 493, true, true);
+        File::makeDirectory($storagePath . '/' . $releaseName, 493, true, true);
 
-        foreach ($directories as $directory) { /* @var string $directory */
-            File::moveDirectory($directory, $storagePath.'/'.$releaseName.'/'.File::name($directory));
+        foreach ($directories as $directory) {
+            /* @var string $directory */
+            File::moveDirectory($directory, $storagePath . '/' . $releaseName . '/' . File::name($directory));
         }
 
         $files = File::allFiles($subDirName[0], true);
-        foreach ($files as $file) { /* @var \SplFileInfo $file */
-            File::move($file->getRealPath(), $storagePath.'/'.$releaseName.'/'.$file->getFilename());
+        foreach ($files as $file) {
+            /* @var \SplFileInfo $file */
+            File::move($file->getRealPath(), $storagePath . '/' . $releaseName . '/' . $file->getFilename());
         }
 
         File::deleteDirectory($subDirName[0]);
@@ -258,7 +251,7 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
      */
     public function getVersionInstalled($prepend = '', $append = '')
     {
-        return $prepend.$this->config['version_installed'].$append;
+        return $prepend . $this->config['version_installed'] . $append;
     }
 
     /**
@@ -266,7 +259,7 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
      * Example: 2.6.5 or v2.6.5.
      *
      * @param string $prepend Prepend a string to the latest version
-     * @param string $append  Append a string to the latest version
+     * @param string $append Append a string to the latest version
      *
      * @return string
      */
@@ -278,7 +271,7 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
         // } else {
         $response = $this->getRepositoryReleases();
         $releaseCollection = collect(\GuzzleHttp\json_decode($response->getBody()));
-        $version = $prepend.$releaseCollection->first()->name.$append;
+        $version = $prepend . $releaseCollection->first()->name . $append;
         //}
 
         return $version;
@@ -287,9 +280,9 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
     /**
      * Get all releases for a specific repository.
      *
+     * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws \Exception
      *
-     * @return mixed|\Psr\Http\Message\ResponseInterface
      */
     protected function getRepositoryReleases()
     {
@@ -299,7 +292,7 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
 
         return $this->client->request(
             'GET',
-            self::GITHUB_API_URL.'/repos/'.$this->config['repository_vendor'].'/'.$this->config['repository_name'].'/tags'
+            self::GITHUB_API_URL . '/repos/' . $this->config['repository_vendor'] . '/' . $this->config['repository_name'] . '/tags'
         );
     }
 
