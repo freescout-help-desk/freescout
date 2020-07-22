@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # FreeScout upgrade script.
-# 
+#
 # If you need you can create /tools/pre_upgrade.sh script which will be launched in the beginning.
 
 DATE_TIME=`date +%Y-%m-%d_%H:%M:%S`
@@ -53,15 +53,15 @@ git_inited=`git status | grep 'On branch' | wc -l`
 if [ $git_inited != 1 ]; then
 
 	# Initizalize Git and install latest version of the app
-	
+
 	printf "\nGit repository is not initizalized yet. Would you like to install the latest verion of the application via Git (this will replace existing files)? (Y/n) [n]:"
 	read confirm_gitinit;
 	if [ $confirm_gitinit != "Y" ]; then
 	    exit;
 	fi
-	
+
 	git init
-	git remote add origin https://github.com/freescout-helpdesk/freescout.git
+	git remote add origin https://github.com/FamilyResearchCouncil/helpdesk
 	git fetch
 
 	# If user stop here next time he will get: "Your Git repository is on a wrong branch"
@@ -73,7 +73,7 @@ if [ $git_inited != 1 ]; then
 	git checkout -t -f origin/dist
 else
 	# Update app via Git
-	
+
 	# Check branch
 	branch=`git branch | grep '* ' | sed 's#* ##g'`;
 	if [[ $branch != 'dist' && $branch != 'master' ]]; then

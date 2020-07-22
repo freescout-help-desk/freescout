@@ -32,3 +32,4 @@ Thumbs.db
 /tools
 .well-known
 /resources/lang/module.*
+vendor/
