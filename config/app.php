@@ -166,7 +166,7 @@ return [
     | FreeScout eepository
     |-------------------------------------------------------------------------
     */
-    'freescout_repo' => 'https://github.com/freescout-helpdesk/freescout',
+    'freescout_repo' => 'https://github.com/'.env('SELF_UPDATER_REPO_VENDOR').'/'.env('SELF_UPDATER_REPO_NAME'),
 
     /*
     |--------------------------------------------------------------------------
@@ -268,9 +268,9 @@ return [
     /*
     |--------------------------------------------------------------------------
     | none - send to the customer only agent's reply in the email.
-    | 
+    |
     | last - send to the customer the last message in the email.
-    | 
+    |
     | full - send to the customer full conversation history in the email.
     |
     |-------------------------------------------------------------------------
@@ -280,7 +280,7 @@ return [
     /*
     |--------------------------------------------------------------------------
     | none - send to the user only agent's reply in the email.
-    | 
+    |
     | last - send to the user the last message in the email.
     |
     | full - send to the user full conversation history in the email.
