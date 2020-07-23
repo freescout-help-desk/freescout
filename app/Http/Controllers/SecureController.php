@@ -35,6 +35,9 @@ class SecureController extends Controller
             $mailboxes = $user->mailboxesCanViewWithSettings();
         }
 
+        // Sort by name.
+        $mailboxes = $mailboxes->sortBy('name');
+
         return view('secure/dashboard', ['mailboxes' => $mailboxes]);
     }
 

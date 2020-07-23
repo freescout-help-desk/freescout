@@ -4,7 +4,7 @@
 @section('body_attrs')@parent data-folder_id="{{ $folder->id }}"@endsection
 
 @if ($folder->active_count)
-    @section('title', '('.(int)$folder->active_count.') '.$folder->getTypeName())
+    @section('title', '('.(int)$folder->getCount().') '.$folder->getTypeName())
 @else
     @section('title', $folder->getTypeName())
 @endif
