@@ -2196,7 +2196,7 @@ function searchInit()
 	});
 }
 
-function loadConversations(page, table)
+function loadConversations(page, table, no_loader)
 {
 	var filter = null;
 	var params = {};
@@ -2208,11 +2208,14 @@ function loadConversations(page, table)
 		};
 	}
 	//var table = $(this).parents('.table-conversations:first');
-	if (typeof(table) == "undefined") {
+	if (typeof(table) == "undefined" || table === '') {
 		table = $(".table-conversations:first");
 	}
-	if (typeof(page) == "undefined") {
+	if (typeof(page) == "undefined" || page === '') {
 		page = table.attr('data-page');
+	}
+	if (typeof(no_loader) == "undefined") {
+		no_loader = false;
 	}
 	var datas = table.data();
 	for (data_name in datas) {
@@ -2249,7 +2252,8 @@ function loadConversations(page, table)
 				showAjaxError(response);
 			}
 			loaderHide();
-		}
+		},
+		no_loader
 	);
 }
 
@@ -3015,7 +3019,7 @@ function polycastInit()
 
 		    // If there are no conversations selected refresh conversations table
 		    if ($(".table-conversations:first").length && !getSelectedConversations().length) {
-		    	loadConversations();
+		    	loadConversations('', '', true);
 		    }
 	    });
 	}
