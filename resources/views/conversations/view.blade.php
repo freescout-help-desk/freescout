@@ -103,8 +103,8 @@
                             @endif
                         </div>
                     </li><li class="conv-next-prev">
-                        <a href="{{ $conversation->urlPrev() }}" class="glyphicon glyphicon-menu-left" data-toggle="tooltip" title="{{ __("Newer") }}"></a>
-                        <a href="{{ $conversation->urlNext() }}" class="glyphicon glyphicon-menu-right" data-toggle="tooltip" title="{{ __("Older") }}"></a>
+                        <a href="{{ $conversation->urlPrev(App\Conversation::getFolderParam()) }}" class="glyphicon glyphicon-menu-left" data-toggle="tooltip" title="{{ __("Newer") }}"></a>
+                        <a href="{{ $conversation->urlNext(App\Conversation::getFolderParam()) }}" class="glyphicon glyphicon-menu-right" data-toggle="tooltip" title="{{ __("Older") }}"></a>
                     </li>
                 </ul>
 

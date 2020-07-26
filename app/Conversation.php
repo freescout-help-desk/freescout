@@ -568,7 +568,8 @@ class Conversation extends Model
         } else {
             $folder = $this->folder;
         }
-        $query = self::where('folder_id', $folder->id)
+        //$query = self::where('folder_id', $folder->id)->where('id', '<>', $this->id);
+        $query = self::getQueryByFolder($folder, \Auth::id())
             ->where('id', '<>', $this->id);
 
         $query = \Eventy::filter('conversation.get_nearby_query', $query, $this, $mode, $folder);
