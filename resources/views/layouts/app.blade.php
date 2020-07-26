@@ -88,7 +88,7 @@
                                     </ul>
                                 </li>
                             @endif
-                            @if (Auth::user()->isAdmin() || Auth::user()->can('viewMailboxMenu', Auth::user()))
+                            @if (Auth::user()->isAdmin() || Eventy::filter('menu.manage.can_view', Auth::user()->can('viewMailboxMenu', Auth::user())))
                                 <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('manage') }}">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
                                         {{ __('Manage') }} <span class="caret"></span>
@@ -101,14 +101,15 @@
                                         @if (Auth::user()->can('viewMailboxMenu', Auth::user()))
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailboxes') }}"><a href="{{ route('mailboxes') }}">{{ __('Mailboxes') }}</a></li>
                                         @endif
+                                        @action('menu.manage.after_mailboxes')
                                         @if (Auth::user()->isAdmin())
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('users') }}"><a href="{{ route('users') }}">{{ __('Users') }}</a></li>
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('modules') }}"><a href="{{ route('modules') }}">{{ __('Modules') }}</a></li>
                                             <li class=""><a href="{{ asset('translations') }}">{{ __('Translate') }}</a></li>
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('logs') }}"><a href="{{ route('logs') }}">{{ __('Logs') }}</a></li>
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('system') }}"><a href="{{ route('system') }}">{{ __('System') }}</a></li>
-                                            @filter('menu.manage.append')
                                         @endif
+                                        @action('menu.manage.append')
                                     </ul>
                                 </li>
                             @endif

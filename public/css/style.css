@@ -3443,6 +3443,29 @@ ul.sidebar-block-list {
     font-size: 20px;
     font-weight: 400;
 }
+.main-heading {
+    color: #253540;
+    font-size: 20px;
+    font-weight: 400;
+    background-color: #deecf9;
+    padding: 12px 18px;
+}
+.in-heading {
+    float: right;
+    display: inline-block;
+    font-size: 13.4px;
+    margin-top: 2px;
+}
+.in-heading-item {
+    display: inline-block;
+    margin-right: 15px;
+}
+.in-heading-item .form-control {
+    display: inline-block;
+    width: auto;
+    max-width: 120px;
+    margin-left: 5px;
+}
 .section-heading {
     background-color: #deecf9;
     /*border-bottom: 1px solid #d6dde3;*/
