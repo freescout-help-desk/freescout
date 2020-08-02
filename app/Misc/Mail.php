@@ -574,9 +574,9 @@ class Mail
     /**
      * Generate artificial Message-ID.
      */
-    public static function generateMessageId($email_address)
+    public static function generateMessageId($body_for_hash, $email_address)
     {
-        return 'fsdummy-'.str_random(16).'@'.preg_replace("/.*@/", '', $email_address);
+        return 'fsdummy-'.md5(strval($body_for_hash)).'@'.preg_replace("/.*@/", '', $email_address);
     }
 
     /**

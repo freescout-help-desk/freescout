@@ -254,6 +254,7 @@ class SendReplyToCustomer implements ShouldQueue
             // Get penultimate email Message-Id if reply
             if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
                 $envelope['custom_headers'] = [
+                    'Message-ID: <'.$message_id.'>',
                     'In-Reply-To: <'.$last_customer_thread->message_id.'>',
                     'References: <'.$last_customer_thread->message_id.'>'
                 ];

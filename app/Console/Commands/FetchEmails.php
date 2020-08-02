@@ -103,7 +103,7 @@ class FetchEmails extends Command
         $client = \MailHelper::getMailboxClient($mailbox);
 
         // Connect to the Server
-        $client->connect();
+        $client->setReadOnly($mailbox->imap_read_only)->connect();
 
         $folders = [];
 
@@ -202,8 +202,9 @@ class FetchEmails extends Command
                     // Message-ID can be empty.
                     // https://stackoverflow.com/questions/8513165/php-imap-do-emails-have-to-have-a-messageid
                     if (!$message_id) {
-                        // Generate artificial Message-ID.
-                        $message_id = \MailHelper::generateMessageId($from);
+                        // Generate artificial Message-ID as hash of raw body
+                        $rawBody = $message->getRawBody();
+                        $message_id = \MailHelper::generateMessageId($rawBody, $from);
                         $this->line('['.date('Y-m-d H:i:s').'] Message-ID is empty, generated artificial Message-ID: '.$message_id);
                     }
 
@@ -415,6 +416,7 @@ class FetchEmails extends Command
                     // }
 
                     $subject = $message->getSubject();
+                    $date = $message->getDate();
 
                     $to = $this->formatEmailList($message->getTo());
                     //$to = $mailbox->removeMailboxEmailsFromList($to);
@@ -439,6 +441,7 @@ class FetchEmails extends Command
                         'bcc'         => $bcc,
                         'subject'     => $subject,
                         'body'        => $body,
+                        'date_created'=> $date,
                         'attachments' => $attachments,
                         'message'     => $message,
                         'is_bounce'   => $is_bounce,
