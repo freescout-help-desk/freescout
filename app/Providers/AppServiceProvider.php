@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -49,6 +50,10 @@ class AppServiceProvider extends ServiceProvider
             //\Artisan::call("freescout:clear-cache");
             redirect(\Helper::getSubdirectory().'/install.php')->send();
         }
+//        true, $data
+        \Eventy::addFilter('fetch_emails.should_save_thread', function($data){
+            return Arr::get($data,'subject') !== 'OOO Test';
+        });
 
         // Process module registration error - disable module and show error to admin
         \Eventy::addFilter('modules.register_error', function ($exception, $module) {
