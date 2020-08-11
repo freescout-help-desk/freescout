@@ -14,7 +14,7 @@ class AddImapReadOnlyColumnToMailboxesTable extends Migration
     public function up()
     {
         Schema::table('mailboxes', function (Blueprint $table) {
-            $table->bool('imap_read_only')->nullable();
+            $table->boolean('imap_read_only')->nullable();
         });
     }
 
