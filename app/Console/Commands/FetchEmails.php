@@ -441,7 +441,7 @@ class FetchEmails extends Command
                         'bcc'         => $bcc,
                         'subject'     => $subject,
                         'body'        => $body,
-                        'date_created'=> $date,
+                        'created_at'  => $date,
                         'attachments' => $attachments,
                         'message'     => $message,
                         'is_bounce'   => $is_bounce,
@@ -453,7 +453,7 @@ class FetchEmails extends Command
                     if ($message_from_customer) {
                         if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
                             // SendAutoReply listener will check bounce flag and will not send an auto reply if this is an auto responder.
-                            $new_thread = $this->saveCustomerThread($mailbox->id, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data['attachments'], $data['message']->getHeader());
+                            $new_thread = $this->saveCustomerThread($mailbox->id, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data["created_at"], $data['attachments'], $data['message']->getHeader());
                         } else {
                             $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
                             $message->setFlag(['Seen']);
@@ -473,7 +473,7 @@ class FetchEmails extends Command
                         }
 
                         if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
-                            $new_thread = $this->saveUserThread($data['mailbox'], $data['message_id'], $data['prev_thread'], $data['user'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['body'], $data['attachments'], $data['message']->getHeader());
+                            $new_thread = $this->saveUserThread($data['mailbox'], $data['message_id'], $data['prev_thread'], $data['user'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['body'], $data["createdi_at"], $data['attachments'], $data['message']->getHeader());
                         } else {
                             $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
                             $message->setFlag(['Seen']);
@@ -573,13 +573,14 @@ class FetchEmails extends Command
     /**
      * Save email from customer as thread.
      */
-    public function saveCustomerThread($mailbox_id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers)
+    public function saveCustomerThread($mailbox_id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $created_at, $attachments, $headers)
     {
         // Find conversation
         $new = false;
         $conversation = null;
         $prev_customer_id = null;
         $now = date('Y-m-d H:i:s');
+        if (empty($created_at)) $created_at = $now;
 
         // Customers are created before with email and name
         $customer = Customer::create($from);
@@ -601,6 +602,9 @@ class FetchEmails extends Command
             $conversation = new Conversation();
             $conversation->type = Conversation::TYPE_EMAIL;
             $conversation->state = Conversation::STATE_PUBLISHED;
+            $conversation->created_at = $created_at;
+            $conversation->updated_at = $created_at;
+            $conversation->last_reply_at = $created_at;
             $conversation->subject = $subject;
             $conversation->setPreview($body);
             $conversation->mailbox_id = $mailbox_id;
@@ -622,7 +626,7 @@ class FetchEmails extends Command
         $conversation->customer_email = $from;
         // Reply from customer makes conversation active
         $conversation->status = Conversation::STATUS_ACTIVE;
-        $conversation->last_reply_at = $now;
+        $conversation->last_reply_at = $created_at;
         $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
         // Reply from customer to deleted conversation should undelete it.
         if ($conversation->state == Conversation::STATE_DELETED) {
@@ -639,6 +643,8 @@ class FetchEmails extends Command
         $thread->type = Thread::TYPE_CUSTOMER;
         $thread->status = $conversation->status;
         $thread->state = Thread::STATE_PUBLISHED;
+        $thread->created_at = $created_at;
+        $thread->updated_at = $created_at;
         $thread->message_id = $message_id;
         $thread->headers = $headers;
         $thread->body = $body;
@@ -696,11 +702,12 @@ class FetchEmails extends Command
     /**
      * Save email reply from user as thread.
      */
-    public function saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $headers)
+    public function saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $created_at, $attachments, $headers)
     {
         $conversation = null;
         $now = date('Y-m-d H:i:s');
         $user_id = $user->id;
+        if (empty($created_at)) $created_at = $now;
 
         $conversation = $prev_thread->conversation;
         // Determine assignee
@@ -719,9 +726,9 @@ class FetchEmails extends Command
         if ($conversation->status != $mailbox->ticket_status) {
             \Eventy::action('conversation.status_changed', $conversation, $user, true, $prev_status);
         }
-        $conversation->last_reply_at = $now;
+        $conversation->last_reply_at = $created_at;
         $conversation->last_reply_from = Conversation::PERSON_USER;
-        $conversation->user_updated_at = $now;
+        $conversation->user_updated_at = $created_at;
         // Set folder id
         $conversation->updateFolder();
         $conversation->save();
@@ -736,6 +743,8 @@ class FetchEmails extends Command
         $thread->type = Thread::TYPE_MESSAGE;
         $thread->status = $conversation->status;
         $thread->state = Thread::STATE_PUBLISHED;
+        $thread->created_at = $created_at;
+        $thread->updated_at = $created_at;
         $thread->message_id = $message_id;
         $thread->headers = $headers;
         $thread->body = $body;
