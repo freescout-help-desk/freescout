@@ -165,7 +165,7 @@
                             <div class="controls">
                                 <div class="onoffswitch-wrap">
                                     <div class="onoffswitch">
-                                        <input type="checkbox" name="impacr_read_only" value="1" id="imap_read_only" class="onoffswitch-checkbox" @if (old('imap_read_only', $mailbox->imap_read_only))checked="checked"@endif >
+                                        <input type="checkbox" name="imap_read_only" value="1" id="imap_read_only" class="onoffswitch-checkbox" @if (old('imap_read_only', $mailbox->imap_read_only))checked="checked"@endif >
                                         <label class="onoffswitch-label" for="imap_read_only"></label>
                                     </div>
 
@@ -175,7 +175,7 @@
 
                             @include('partials/field_error', ['field'=>'imap_read_only'])
 
-                            <div class="form-help">{!! __("When enabling this, be sure to make the Import Job freqency longer than 1 minute and the remove the 'unseen' option from the import script.") !!}</div>
+                            <div class="form-help">{!! __("When enabling this, be sure to make the Import Job freqency longer than 1 minute in <b>Settings>Mail Settings>Fetch Mail Schedule</b> and the remove the \"unseen\" option from the import script.") !!}</div>
                         </div>
                     </div>
 

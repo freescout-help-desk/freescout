@@ -473,7 +473,7 @@ class FetchEmails extends Command
                         }
 
                         if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
-                            $new_thread = $this->saveUserThread($data['mailbox'], $data['message_id'], $data['prev_thread'], $data['user'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['body'], $data["createdi_at"], $data['attachments'], $data['message']->getHeader());
+                            $new_thread = $this->saveUserThread($data['mailbox'], $data['message_id'], $data['prev_thread'], $data['user'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['body'], $data["created_at"], $data['attachments'], $data['message']->getHeader());
                         } else {
                             $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
                             $message->setFlag(['Seen']);
