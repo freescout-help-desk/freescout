@@ -158,6 +158,27 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="imap_readonly" class="col-sm-2 control-label">{{ __('Don't Mark Read') }}</label>
+
+                        <div class="col-sm-6">
+                            <div class="controls">
+                                <div class="onoffswitch-wrap">
+                                    <div class="onoffswitch">
+                                        <input type="checkbox" name="impacr_readonly" value="1" id="imap_readonly" class="onoffswitch-checkbox" @if (old('imap_readonly', $mailbox->imap_readonly))checked="checked"@endif >
+                                        <label class="onoffswitch-label" for="imap_readonly"></label>
+                                    </div>
+
+                                    <i class="glyphicon glyphicon-info-sign icon-info icon-info-inline" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="{{ __('When importing messages, leave their state intact, do not mark them as read.') }}"></i>
+                                </div>
+                            </div>
+
+                            @include('partials/field_error', ['field'=>'imap_readonly'])
+
+                            <div class="form-help">{!! __("When enabling this, be sure to make the Import Job freqency longer and the remove the 'unseen' flag.") !!}</div>
+                        </div>
+                    </div>
+
                     <div>
                         <div class="form-group">
                             <label for="imap_sent_folder" class="col-sm-2 control-label">{{ __('IMAP Folder To Save Outgoing Replies') }}</label>
