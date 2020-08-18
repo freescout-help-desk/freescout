@@ -994,7 +994,7 @@ class Helper
                 $subdirectory = $_SERVER['SCRIPT_NAME'];
             } elseif (basename($_SERVER['PHP_SELF']) === $filename) {
                 $subdirectory = $_SERVER['PHP_SELF'];
-            } elseif (basename($_SERVER['ORIG_SCRIPT_NAME']) === $filename) {
+            } elseif (array_key_exists('ORIG_SCRIPT_NAME', $_SERVER) && basename($_SERVER['ORIG_SCRIPT_NAME']) === $filename) {
                 $subdirectory = $_SERVER['ORIG_SCRIPT_NAME']; // 1and1 shared hosting compatibility
             } else {
                 // Backtrack up the script_filename to find the portion matching
