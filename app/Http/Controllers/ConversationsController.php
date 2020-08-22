@@ -262,7 +262,7 @@ class ConversationsController extends Controller
             'to_customers'       => $to_customers,
             'prev_conversations' => $prev_conversations,
             'cc'                 => $conversation->getCcArray($exclude_array),
-            'bcc'                => $conversation->getBccArray($exclude_array),
+            'bcc'                => [], //$conversation->getBccArray($exclude_array),
             // Data for creating a phone conversation.
             'name'               => $name,
             'phone'              => $phone,
