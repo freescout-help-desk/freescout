@@ -19,6 +19,6 @@ class CustomHandle
         // Hook.
         \Eventy::action('middleware.web.custom_handle', $request);
 
-        return $next($request);
+        return \Eventy::filter('middleware.web.custom_handle.response', $next($request), $request, $next);
     }
 }
