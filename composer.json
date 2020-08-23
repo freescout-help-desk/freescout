@@ -34,7 +34,8 @@
         "codedge/laravel-selfupdater": "1.4.3",
         "doctrine/dbal": "v2.5.13",
         "egulias/email-validator": "2.1.10",
-        "symfony/console": "v3.4.31"
+        "symfony/console": "v3.4.31",
+        "javoscript/laravel-macroable-models": "1.0.4"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v3.2.0",
@@ -97,6 +98,7 @@
             "Illuminate\\Routing\\": "overrides/Illuminate/Routing/",
             "Illuminate\\Validation\\Concerns\\": "overrides/Illuminate/Validation/Concerns/",
             "Illuminate\\Mail\\": "overrides/Illuminate/Mail/",
+            "Illuminate\\Auth\\": "overrides/Illuminate/Auth/",
             "Lord\\Laroute\\Routes\\": "overrides/Lord/Laroute/Routes/",
             "TorMorten\\Eventy\\": "overrides/TorMorten/Eventy/",
             "Symfony\\Component\\Debug\\": "overrides/Symfony/Component/Debug/",
@@ -125,6 +127,7 @@
             "vendor/laravel/framework/src/Illuminate/Routing/UrlGenerator.php",
             "vendor/laravel/framework/src/Illuminate/Validation/Concerns/ValidatesAttributes.php",
             "vendor/laravel/framework/src/Illuminate/Mail/TransportManager.php",
+            "vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php",
             "vendor/rachidlaasri/laravel-installer/src/Providers/LaravelInstallerServiceProvider.php",
             "vendor/lord/laroute/src/Routes/Collection.php",
             "vendor/tormjens/eventy/src/Filter.php",
