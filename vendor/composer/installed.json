@@ -1378,6 +1378,55 @@
         "description": "Highlight PHP code in terminal"
     },
     {
+        "name": "javoscript/laravel-macroable-models",
+        "version": "1.0.4",
+        "version_normalized": "1.0.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/javoscript/laravel-macroable-models.git",
+            "reference": "2ade1984f33362c0a304da6352f95c407d5c761f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/javoscript/laravel-macroable-models/zipball/2ade1984f33362c0a304da6352f95c407d5c761f",
+            "reference": "2ade1984f33362c0a304da6352f95c407d5c761f",
+            "shasum": ""
+        },
+        "require-dev": {
+            "orchestra/testbench": "^4.6",
+            "phpunit/phpunit": "^8.5"
+        },
+        "time": "2020-03-10T01:19:26+00:00",
+        "type": "library",
+        "extra": {
+            "laravel": {
+                "providers": [
+                    "Javoscript\\MacroableModels\\MacroableModelsServiceProvider"
+                ],
+                "aliases": {
+                    "MacroableModels": "Javoscript\\MacroableModels\\Facades\\MacroableModels"
+                }
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Javoscript\\MacroableModels\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Javier Ugarte",
+                "email": "javougarte@gmail.com"
+            }
+        ],
+        "description": "A package for adding methods to Laravel models on the fly"
+    },
+    {
         "name": "kitetail/zttp",
         "version": "v0.4.0",
         "version_normalized": "0.4.0.0",
@@ -1847,17 +1896,17 @@
     },
     {
         "name": "monolog/monolog",
-        "version": "1.25.4",
-        "version_normalized": "1.25.4.0",
+        "version": "1.25.5",
+        "version_normalized": "1.25.5.0",
         "source": {
             "type": "git",
             "url": "https://github.com/Seldaek/monolog.git",
-            "reference": "3022efff205e2448b560c833c6fbbf91c3139168"
+            "reference": "1817faadd1846cd08be9a49e905dc68823bc38c0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Seldaek/monolog/zipball/3022efff205e2448b560c833c6fbbf91c3139168",
-            "reference": "3022efff205e2448b560c833c6fbbf91c3139168",
+            "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1817faadd1846cd08be9a49e905dc68823bc38c0",
+            "reference": "1817faadd1846cd08be9a49e905dc68823bc38c0",
             "shasum": ""
         },
         "require": {
@@ -1892,7 +1941,7 @@
             "ruflin/elastica": "Allow sending log messages to an Elastic Search server",
             "sentry/sentry": "Allow sending log messages to a Sentry server"
         },
-        "time": "2020-05-22T07:31:27+00:00",
+        "time": "2020-07-23T08:35:51+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -3936,29 +3985,29 @@
     },
     {
         "name": "tijsverkoyen/css-to-inline-styles",
-        "version": "2.2.2",
-        "version_normalized": "2.2.2.0",
+        "version": "2.2.3",
+        "version_normalized": "2.2.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/tijsverkoyen/CssToInlineStyles.git",
-            "reference": "dda2ee426acd6d801d5b7fd1001cde9b5f790e15"
+            "reference": "b43b05cf43c1b6d849478965062b6ef73e223bb5"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/tijsverkoyen/CssToInlineStyles/zipball/dda2ee426acd6d801d5b7fd1001cde9b5f790e15",
-            "reference": "dda2ee426acd6d801d5b7fd1001cde9b5f790e15",
+            "url": "https://api.github.com/repos/tijsverkoyen/CssToInlineStyles/zipball/b43b05cf43c1b6d849478965062b6ef73e223bb5",
+            "reference": "b43b05cf43c1b6d849478965062b6ef73e223bb5",
             "shasum": ""
         },
         "require": {
             "ext-dom": "*",
             "ext-libxml": "*",
-            "php": "^5.5 || ^7.0",
+            "php": "^5.5 || ^7.0 || ^8.0",
             "symfony/css-selector": "^2.7 || ^3.0 || ^4.0 || ^5.0"
         },
         "require-dev": {
-            "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.0"
+            "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.0 || ^7.5"
         },
-        "time": "2019-10-24T08:53:34+00:00",
+        "time": "2020-07-13T06:12:54+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {

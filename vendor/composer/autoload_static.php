@@ -18,14 +18,14 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
-        'e91d0dc994644828154ae2387ede1ca8' => __DIR__ . '/..' . '/spatie/string/src/string_functions.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
+        'e91d0dc994644828154ae2387ede1ca8' => __DIR__ . '/..' . '/spatie/string/src/string_functions.php',
         '618aa3e081fc502871177c829f6a9c2a' => __DIR__ . '/..' . '/kitetail/zttp/src/Zttp.php',
+        'cb61d74ad51d00867155534456b38b23' => __DIR__ . '/..' . '/mews/purifier/src/helpers.php',
         '9f394da3192a168c4633675768d80428' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/helpers.php',
         'd7354eb4c8441fbf08eec280b61c7c73' => __DIR__ . '/..' . '/rachidlaasri/laravel-installer/src/Helpers/functions.php',
         '72b1e3f4a2af9b30b3f137b3ec2057fc' => __DIR__ . '/..' . '/spatie/laravel-activitylog/src/helpers.php',
-        'cb61d74ad51d00867155534456b38b23' => __DIR__ . '/..' . '/mews/purifier/src/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -104,6 +104,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         ),
         'J' => 
         array (
+            'Javoscript\\MacroableModels\\' => 27,
             'JakubOnderka\\PhpConsoleHighlighter\\' => 35,
             'JakubOnderka\\PhpConsoleColor\\' => 29,
         ),
@@ -113,6 +114,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
             'Illuminate\\Routing\\' => 19,
             'Illuminate\\Mail\\' => 16,
             'Illuminate\\Foundation\\' => 22,
+            'Illuminate\\Auth\\' => 16,
             'Illuminate\\' => 11,
         ),
         'H' => 
@@ -340,6 +342,10 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         array (
             0 => __DIR__ . '/..' . '/laravel/tinker/src',
         ),
+        'Javoscript\\MacroableModels\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/javoscript/laravel-macroable-models/src',
+        ),
         'JakubOnderka\\PhpConsoleHighlighter\\' => 
         array (
             0 => __DIR__ . '/..' . '/jakub-onderka/php-console-highlighter/src',
@@ -363,6 +369,10 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Illuminate\\Foundation\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/Illuminate/Foundation',
+        ),
+        'Illuminate\\Auth\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/Illuminate/Auth',
         ),
         'Illuminate\\' => 
         array (
@@ -1508,6 +1518,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Illuminate\\Auth\\Events\\Logout' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Events/Logout.php',
         'Illuminate\\Auth\\Events\\PasswordReset' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Events/PasswordReset.php',
         'Illuminate\\Auth\\Events\\Registered' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Events/Registered.php',
+        'Illuminate\\Auth\\Events\\Validated' => __DIR__ . '/../..' . '/overrides/Illuminate/Auth/Events/Validated.php',
         'Illuminate\\Auth\\GenericUser' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/GenericUser.php',
         'Illuminate\\Auth\\GuardHelpers' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/GuardHelpers.php',
         'Illuminate\\Auth\\Middleware\\Authenticate' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php',
@@ -1522,7 +1533,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'Illuminate\\Auth\\Passwords\\TokenRepositoryInterface' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Passwords/TokenRepositoryInterface.php',
         'Illuminate\\Auth\\Recaller' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Recaller.php',
         'Illuminate\\Auth\\RequestGuard' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/RequestGuard.php',
-        'Illuminate\\Auth\\SessionGuard' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/SessionGuard.php',
+        'Illuminate\\Auth\\SessionGuard' => __DIR__ . '/../..' . '/overrides/Illuminate/Auth/SessionGuard.php',
         'Illuminate\\Auth\\TokenGuard' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/TokenGuard.php',
         'Illuminate\\Broadcasting\\BroadcastController' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Broadcasting/BroadcastController.php',
         'Illuminate\\Broadcasting\\BroadcastEvent' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Broadcasting/BroadcastEvent.php',
@@ -2260,6 +2271,9 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'JakubOnderka\\PhpConsoleColor\\ConsoleColor' => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src/ConsoleColor.php',
         'JakubOnderka\\PhpConsoleColor\\InvalidStyleException' => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src/InvalidStyleException.php',
         'JakubOnderka\\PhpConsoleHighlighter\\Highlighter' => __DIR__ . '/..' . '/jakub-onderka/php-console-highlighter/src/Highlighter.php',
+        'Javoscript\\MacroableModels\\Facades\\MacroableModels' => __DIR__ . '/..' . '/javoscript/laravel-macroable-models/src/Facades/MacroableModels.php',
+        'Javoscript\\MacroableModels\\MacroableModels' => __DIR__ . '/..' . '/javoscript/laravel-macroable-models/src/MacroableModels.php',
+        'Javoscript\\MacroableModels\\MacroableModelsServiceProvider' => __DIR__ . '/..' . '/javoscript/laravel-macroable-models/src/MacroableModelsServiceProvider.php',
         'JsonSerializable' => __DIR__ . '/..' . '/nesbot/carbon/src/JsonSerializable.php',
         'Laravel\\Tinker\\ClassAliasAutoloader' => __DIR__ . '/..' . '/laravel/tinker/src/ClassAliasAutoloader.php',
         'Laravel\\Tinker\\Console\\TinkerCommand' => __DIR__ . '/..' . '/laravel/tinker/src/Console/TinkerCommand.php',
