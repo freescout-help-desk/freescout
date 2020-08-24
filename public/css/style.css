@@ -2224,6 +2224,9 @@ button.conv-checkbox-clear {
     text-align: center;
     top: 75px;
 }*/
+.thread-content	p img {
+    max-width: 100%;
+}
 .conv-new #conv-toolbar {
     border-bottom: 1px solid #d4d9dd;
     padding: 6px 0 7px 0;
