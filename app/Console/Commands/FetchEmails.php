@@ -577,6 +577,7 @@ class FetchEmails extends Command
         $conversation = null;
         $prev_customer_id = null;
         $now = date('Y-m-d H:i:s');
+        $conv_cc = $cc;
 
         // Customers are created before with email and name
         $customer = Customer::create($from);
@@ -588,7 +589,10 @@ class FetchEmails extends Command
                 $prev_customer_id = $conversation->customer_id;
                 $prev_customer_email = $conversation->customer_email;
 
-                $cc[] = $conversation->customer_email;
+                // Do not add to CC emails from the original's BCC
+                if (!in_array($conversation->customer_email, $conversation->getBccArray())) {
+                    $conv_cc[] = $conversation->customer_email;
+                }
                 $conversation->customer_id = $customer->id;
             }
         } else {
@@ -614,8 +618,12 @@ class FetchEmails extends Command
         }
 
         // Save extra recipients to CC
-        $conversation->setCc(array_merge($cc, $to));
-        $conversation->setBcc($bcc);
+        $conversation->setCc(array_merge($conv_cc, $to));
+        // BCC should keep BCC of the first email,
+        // so we change BCC only if it contains emails.
+        if ($bcc) {
+            $conversation->setBcc($bcc);
+        }
         $conversation->customer_email = $from;
         // Reply from customer makes conversation active
         $conversation->status = Conversation::STATUS_ACTIVE;

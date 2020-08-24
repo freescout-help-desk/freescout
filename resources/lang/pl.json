@@ -718,5 +718,10 @@
     "Send full conversation history": "Wyślij pełną historię rozmowy",
     "Disabled": "Wyłączony",
     "Prevent user from logging in": "Odmów logowania użytkownikowi",
-    ":person marked as :status conversation": ":person oznaczył(a) rozmowę jako :status"
+    ":person marked as :status conversation": ":person oznaczył(a) rozmowę jako :status",
+    "Deactivate License": "Dezaktywuj Licencję",
+    "Done": "Zrobiono",
+    "Conversation Settings": "Ustawienia Rozmowy",
+    "Users are allowed to manage custom folders": "Użytkownicy mogą zarządzać folderami niestandardowymi",
+    "Default": "Domyślny"
 }
