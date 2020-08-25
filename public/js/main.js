@@ -4547,20 +4547,32 @@ function initConvSettings()
 function initUsers()
 {
 	$('#search-users').on('keyup keypress', function(e) {
-		var q = $(this).val().trim();
+		var q = $(this).val().trim().toLowerCase();
 		var clear = $('#search-users-clear i:first');
 		if (q) {
 			if (clear.hasClass('glyphicon-search')) {
 				clear.removeClass('glyphicon-search').addClass('glyphicon-remove');
 			}
+			$('#users-list .card').each(function(i, el) {
+				var texts = '';
+				$(el).children('.user-q').each(function(i, el) {
+					texts += $(el).text();
+				});
+				if (texts.toLowerCase().indexOf(q) != -1) {
+					$(el).show();
+				} else {
+					$(el).hide();
+				}
+			});
 		} else {
 			if (!clear.hasClass('glyphicon-search')) {
 				clear.removeClass('glyphicon-remove').addClass('glyphicon-search');
 			}
+			$('#users-list .card').show();
 		}
 	});
 
 	$('#search-users-clear').click(function(e) {
-		$('#search-users').val('');
+		$('#search-users').val('').keypress();
 	});
 }

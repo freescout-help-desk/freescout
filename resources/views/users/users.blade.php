@@ -24,7 +24,7 @@
         @endif
     </div>
 
-    <div class="card-list margin-top">
+    <div id="users-list" class="card-list margin-top">
         @foreach ($users as $user)
             <a href="{{ route('users.profile', ['id'=>$user->id]) }}" class="card hover-shade @if ($user->invite_state != App\User::INVITE_STATE_ACTIVATED) card-inactive @endif">
                 @if ($user->isAdmin())
@@ -35,8 +35,8 @@
                 @else
                     <i class="card-avatar" data-initial="{{ strtoupper($user->first_name[0]) }}{{ strtoupper($user->last_name[0] ?? '') }}"></i>
                 @endif
-                <h4>{{ $user->first_name }} {{ $user->last_name }}</h4>
-                <p class="text-truncate">{{ $user->email }}</p>
+                <h4 class="user-q">{{ $user->first_name }} {{ $user->last_name }}</h4>
+                <p class="text-truncate user-q">{{ $user->email }}</p>
                 @if ($user->invite_state == App\User::INVITE_STATE_SENT || $user->invite_state == App\User::INVITE_STATE_NOT_INVITED)
                     <i class="invite-state glyphicon @if ($user->invite_state == App\User::INVITE_STATE_SENT) glyphicon-hourglass invited @else glyphicon-remove not-invited @endif" data-toggle="tooltip" data-placement="bottom" title="{{ $user->getInviteStateName() }}"></i>
                 @endif
