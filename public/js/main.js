@@ -4543,3 +4543,24 @@ function initConvSettings()
         );
     });
 }
+
+function initUsers()
+{
+	$('#search-users').on('keyup keypress', function(e) {
+		var q = $(this).val().trim();
+		var clear = $('#search-users-clear i:first');
+		if (q) {
+			if (clear.hasClass('glyphicon-search')) {
+				clear.removeClass('glyphicon-search').addClass('glyphicon-remove');
+			}
+		} else {
+			if (!clear.hasClass('glyphicon-search')) {
+				clear.removeClass('glyphicon-remove').addClass('glyphicon-search');
+			}
+		}
+	});
+
+	$('#search-users-clear').click(function(e) {
+		$('#search-users').val('');
+	});
+}

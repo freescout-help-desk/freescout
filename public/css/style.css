@@ -3501,6 +3501,7 @@ ul.sidebar-block-list {
     align-items: center;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
 }
 .flexy-item {
     max-width: 100%;
@@ -4001,6 +4002,12 @@ a.disabled:focus {
     max-height: 395px;
     overflow-y: auto;
     overflow-x: hidden;
+}
+.user-admin-badge {
+    position: absolute;
+    top: 0;
+    right: 7px;
+    color: #93A1AF;
 }
 
 /**
