@@ -128,6 +128,9 @@ class SecureController extends Controller
                 $status = $record->getStatusName();
                 if ($record->status_message) {
                     $status .= '. '.$record->status_message;
+                    if ($record->status == SendLog::STATUS_SEND_ERROR) {
+                        $status .= '. Message-ID: '.$record->message_id;
+                    }
                 }
 
                 $logs[] = [
