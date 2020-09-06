@@ -61,7 +61,7 @@
     "all": "alle",
     "Alternate Emails": "Alternative E-Mail-Adresse",
     "An invite can be sent later if you aren't ready": "Eine Einladung kann auch später versendet werden wenn Sie noch nicht bereit sind",
-    "Anyone": "Jeden",
+    "Anyone": "Alle",
     "App Logs": "Anwendungs-Log",
     "App Version": "Anwendungs-Version",
     "Application successfully updated": "Anwendung erfolgreich aktualisiert",
@@ -140,7 +140,7 @@
     "Someone on your team created an account for you.": "Jemand im Team hat ein Benutzerkonto für Sieerstellt.",
     "Sorry, the page you are looking for could not be found.": "Die gesuchte Seite wurde nicht gefunden.",
     "Spam": "Spam",
-    "Spread the Word": "Weitersagen",
+    "Spread the Word": "Weiterempfehlen",
     "Star Conversation": "Gespräch mit einem Stern versehen",
     "Start a conversation from this thread": "Starte ein Gespräch aus dieser Diskussion",
     "Status": "Status",
@@ -579,7 +579,7 @@
     "Add Email": "E-Mail hinzufügen",
     "After": "Nach",
     "All": "Alle",
-    "anyone": "jeden",
+    "anyone": "alle",
     "are forwarding": "leiten weiter",
     "Assigned": "Zugewiesen",
     "Assigned to": "Zugewiesen an",
@@ -720,5 +720,8 @@
     "Send full conversation history": "Vollständigen Gesprächsverlauf senden",
     "Unmute Notifications": "Benachrichtigungen nicht mehr stumm schalten",
     "Done": "Erledigt",
-    "Deactivate License": "Lizenz deaktivieren"
+    "Deactivate License": "Lizenz deaktivieren",
+    "Default": "Standard",
+    "Users are allowed to manage custom folders": "Benutzer sind dazu berichtigt benutzerdefinierte Ordner zu verwalten",
+    "Conversation Settings": "Gesprächseinstellungen"
 }
