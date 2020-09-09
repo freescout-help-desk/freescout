@@ -180,6 +180,13 @@ class Kernel extends ConsoleKernel
     {
         $this->load(__DIR__.'/Commands');
 
+        // Swiftmailer uses $_SERVER['SERVER_NAME'] in transport_deps.php
+        // to set the host for EHLO command, if it is empty it uses [127.0.0.1].
+        // G Suite sometimes rejects emails with EHLO [127.0.0.1].
+        if (empty($_SERVER['SERVER_NAME'])) {
+            $_SERVER['SERVER_NAME'] = parse_url(config('app.url'), PHP_URL_HOST);
+        }
+
         require base_path('routes/console.php');
     }
 }

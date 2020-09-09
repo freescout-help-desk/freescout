@@ -8,6 +8,8 @@ use App\SendLog;
 
 class SendAutoReply
 {
+    const CHECK_PERIOD = 180; // min
+
     /**
      * Create the event listener.
      *
@@ -46,14 +48,29 @@ class SendAutoReply
             // application will be sending auto replies and mail server will be sending bounce messages to auto replies.
             // Bounce detection can not be 100% reliable.
             // So to prevent infinite loop, we are checking number of auto replies sent to the customer recently.
-            $created_at = \Illuminate\Support\Carbon::now()->subMinutes(10);
+            $created_at = \Illuminate\Support\Carbon::now()->subMinutes(self::CHECK_PERIOD);
+
             $auto_replies_sent = SendLog::where('customer_id', $conversation->customer_id)
                 ->where('mail_type', SendLog::MAIL_TYPE_AUTO_REPLY)
                 ->where('created_at', '>', $created_at)
                 ->count();
 
-            if ($auto_replies_sent >= 3) {
+            if ($auto_replies_sent >= 10) {
                 return;
+            }
+
+            if ($auto_replies_sent >= 2) {
+                // Find conversations from this customer 
+                $prev_conversations = Conversation::select('subject', 'id')
+                    ->where('customer_id', $conversation->customer_id)
+                    ->where('created_at', '>', $created_at)
+                    ->get();
+
+                foreach ($prev_conversations as $prev_conv) {
+                    if ($prev_conv->subject == $conversation->subject && $prev_conv->id != $conversation->id) {
+                        return;
+                    }
+                }
             }
 
             // Do not send autoreplies to own mailboxes.
