@@ -582,8 +582,14 @@ class Helper
 
         if (preg_match('/png/i', $mime_type)) {
             $src = imagecreatefrompng($file);
+
+            $kek = imagecolorallocate($src, 255, 255, 255);
+            imagefill($src, 0, 0, $kek);
         } elseif (preg_match('/gif/i', $mime_type)) {
             $src = imagecreatefromgif($file);
+            
+            $kek = imagecolorallocate($src, 255, 255, 255);
+            imagefill($src, 0, 0, $kek);
         } elseif (preg_match('/bmp/i', $mime_type)) {
             $src = imagecreatefrombmp($file);
         } else {

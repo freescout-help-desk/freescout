@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Watson\Rememberable\Rememberable;
 
 class Customer extends Model
@@ -10,6 +12,10 @@ class Customer extends Model
     use Rememberable;
     // This is obligatory.
     public $rememberCacheDriver = 'array';
+
+    const PHOTO_DIRECTORY = 'customers';
+    const PHOTO_SIZE = 50; // px
+    const PHOTO_QUALITY = 77;
 
     /**
      * Genders.
@@ -433,7 +439,7 @@ class Customer extends Model
      *
      * @var [type]
      */
-    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country'];
+    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url'];
 
     /**
      * Fields stored as JSON.
@@ -852,11 +858,6 @@ class Customer extends Model
         return $date->format($format);
     }
 
-    public function getPhotoUrl()
-    {
-        return asset('/img/default-avatar.png');
-    }
-
     /**
      * Get full representation of customer.
      */
@@ -951,5 +952,58 @@ class Customer extends Model
         }
 
         return '';
+    }
+
+    public function getPhotoUrl($default_if_empty = true)
+    {
+        if (!empty($this->photo_url) || !$default_if_empty) {
+            if (!empty($this->photo_url)) {
+                return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+            } else {
+                return '';
+            }
+        } else {
+            return asset('/img/default-avatar.png');
+        }
+    }
+
+    /**
+     * Resize and save photo.
+     */
+    public function savePhoto($real_path, $mime_type)
+    {
+        $resized_image = \App\Misc\Helper::resizeImage($real_path, $mime_type, self::PHOTO_SIZE, self::PHOTO_SIZE);
+
+        if (!$resized_image) {
+            return false;
+        }
+
+        $file_name = md5(Hash::make($this->id)).'.jpg';
+        $dest_path = Storage::path(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
+
+        $dest_dir = pathinfo($dest_path, PATHINFO_DIRNAME);
+        if (!file_exists($dest_dir)) {
+            \File::makeDirectory($dest_dir, 0755);
+        }
+
+        // Remove current photo
+        if ($this->photo_url) {
+            Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+        }
+
+        imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
+
+        return $file_name;
+    }
+
+    /**
+     * Remove user photo.
+     */
+    public function removePhoto()
+    {
+        if ($this->photo_url) {
+            Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+        }
+        $this->photo_url = '';
     }
 }
