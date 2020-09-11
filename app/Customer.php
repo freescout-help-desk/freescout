@@ -676,6 +676,15 @@ class Customer extends Model
     }
 
     /**
+     * Find customer by phone number.
+     */
+    public static function findByPhone($phone)
+    {
+        $phone = trim($phone);
+        return Customer::where('phones', 'LIKE', '%"'.$phone.'"%')->first();
+    }
+
+    /**
      * Get customers social profiles as array.
      *
      * @return array
