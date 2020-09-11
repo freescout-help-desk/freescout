@@ -2500,6 +2500,14 @@ class ConversationsController extends Controller
             }
         }
 
+        // Try to find customer by phone.
+        if (!$customer && $request->phone) {
+            $customer = Customer::findByPhone($request->phone);
+            if ($customer) {
+                $customer_email = $customer->getMainEmail();
+            }
+        }
+
         if (!$customer) {
             // Create customer with passed name, email and phone
             if (Email::sanitizeEmail($request->to_email)) {

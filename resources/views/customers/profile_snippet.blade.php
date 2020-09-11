@@ -35,13 +35,14 @@
 				</div>
 			@endif
 			@php
-				$location = array_filter([$customer->city, $customer->state,  $customer->country]);
+				$location = array_filter([$customer->city, $customer->state, $customer->getCountryName()]);
 			@endphp
-			@if ($customer->company || $customer->job_title || $location)
+			@if ($customer->company || $customer->job_title || $location || $customer->address)
 				<div class="customer-section">
 					@if ($customer->company)<div>{{ $customer->company }}</div>@endif
 					@if ($customer->job_title)<div>{{ $customer->job_title }}</div>@endif
 					@if ($location)<div>{{ implode(', ', $location) }}</div>@endif
+					@if ($customer->address)<div>{{ $customer->address }}</div>@endif
 				</div>
 			@endif
 			@if ($customer->background)

@@ -87,10 +87,10 @@ Images & one-click installs:
 
 ## Contributing
 
+* [Support the project by leaving a feedback](https://github.com/freescout-helpdesk/freescout/issues/288)
 * [Development Guide](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide)
 * [Todo list](https://github.com/freescout-helpdesk/freescout/labels/help%20wanted)
 * [Translate](https://github.com/freescout-helpdesk/freescout/wiki/Translate)
-* [Support project by leaving a feedback](https://github.com/freescout-helpdesk/freescout/wiki#support-project)
 
 ## Screenshots
 

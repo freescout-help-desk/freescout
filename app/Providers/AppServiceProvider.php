@@ -22,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
         \App\Mailbox::observe(\App\Observers\MailboxObserver::class);
         // Eloquent events for this table are not called automatically, so need to be called manually.
         //\App\MailboxUser::observe(\App\Observers\MailboxUserObserver::class);
+        \App\Email::observe(\App\Observers\EmailObserver::class);
         \App\User::observe(\App\Observers\UserObserver::class);
         \App\Conversation::observe(\App\Observers\ConversationObserver::class);
         \App\Thread::observe(\App\Observers\ThreadObserver::class);
