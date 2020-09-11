@@ -738,7 +738,9 @@ class Customer extends Model
      */
     public function addWebsite($website)
     {
-        $this->setWebsites(array_merge($this->getWebsites(), [$value]));
+        $websites = $this->getWebsites();
+        array_push($websites, $website);
+        $this->setWebsites($websites);
     }
 
     /**
@@ -1014,5 +1016,14 @@ class Customer extends Model
             Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
         $this->photo_url = '';
+    }
+
+    public function getCountryName()
+    {
+        if ($this->country && !empty(self::$countries[$this->country])) {
+            return self::$countries[$this->country];
+        } else {
+            return '';
+        }
     }
 }
