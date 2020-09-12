@@ -88,7 +88,11 @@ class RealtimeMailboxNewThread implements ShouldBroadcastNow
             return [];
         }
 
-        $folder = Folder::find(Conversation::getFolderParam());
+        $folder = null;
+        $foler_id = Conversation::getFolderParam();
+        if ($foler_id) {
+            $folder = Folder::find($foler_id);
+        }
         // Just in case.
         if (!$folder) {
             $folder = new Folder();
