@@ -416,6 +416,11 @@ class FetchEmails extends Command
 
                     $subject = $message->getSubject();
 
+                    if (preg_match('/=\?(windows-1251|utf-8|koir-8)\?[QB]\?.*\?=/i', $subject, $matches)) {
+                        $decoded = iconv_mime_decode($matches[0], 0, 'UTF-8');
+                        $subject = str_replace($matches[0], $decoded, $subject);
+                    }
+
                     $to = $this->formatEmailList($message->getTo());
                     //$to = $mailbox->removeMailboxEmailsFromList($to);
 
