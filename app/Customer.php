@@ -851,6 +851,8 @@ class Customer extends Model
         $customer->fill($data);
         $customer->save();
 
+        \Eventy::action('customer.created', $customer);
+
         return $customer;
     }
 
