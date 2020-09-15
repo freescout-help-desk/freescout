@@ -1121,6 +1121,8 @@ class Conversation extends Model
         $prev_mailbox->updateFoldersCounters();
         $mailbox->updateFoldersCounters();
 
+        \Eventy::action('conversation.moved', $this, $user, $prev_mailbox);
+
         return true;
     }
 
