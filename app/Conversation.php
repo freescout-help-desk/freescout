@@ -1478,6 +1478,8 @@ class Conversation extends Model
 
         // Recalculate only old and new folders
         $this->mailbox->updateFoldersCounters();
+
+        \Eventy::action('conversation.deleted', $this, $user);
     }
 
     public function deleteForever()
