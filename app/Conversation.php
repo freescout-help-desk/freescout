@@ -350,7 +350,7 @@ class Conversation extends Model
     }
 
     /**
-     * Get all published conversation thread in desc order.
+     * Get all published conversation threads in desc order.
      *
      * @return Collection
      */
