@@ -310,7 +310,11 @@ class SettingsController extends Controller
 
         \Session::flash('flash_success_floating', __('Settings updated'));
 
-        return redirect()->route('settings', ['section' => $section]);
+        $response = redirect()->route('settings', ['section' => $section]);
+
+        $response = \Eventy::filter('settings.after_save', $response, $request, $section, $settings);
+
+        return $response;
     }
 
     /**

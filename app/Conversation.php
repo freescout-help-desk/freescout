@@ -350,7 +350,7 @@ class Conversation extends Model
     }
 
     /**
-     * Get all published conversation thread in desc order.
+     * Get all published conversation threads in desc order.
      *
      * @return Collection
      */
@@ -1121,6 +1121,8 @@ class Conversation extends Model
         $prev_mailbox->updateFoldersCounters();
         $mailbox->updateFoldersCounters();
 
+        \Eventy::action('conversation.moved', $this, $user, $prev_mailbox);
+
         return true;
     }
 
@@ -1272,8 +1274,11 @@ class Conversation extends Model
      *
      * @return [type] [description]
      */
-    public function getWaitingSince($folder)
+    public function getWaitingSince($folder = null)
     {
+        if (!$folder) {
+            $folder = $this->folder;
+        }
         $waiting_since_field = $folder->getWaitingSinceField();
         if ($waiting_since_field) {
             return \App\User::dateDiffForHumans($this->$waiting_since_field);
@@ -1478,6 +1483,8 @@ class Conversation extends Model
 
         // Recalculate only old and new folders
         $this->mailbox->updateFoldersCounters();
+
+        \Eventy::action('conversation.deleted', $this, $user);
     }
 
     public function deleteForever()

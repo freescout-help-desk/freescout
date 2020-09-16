@@ -1003,4 +1003,15 @@ class Thread extends Model
 
         return $body;
     }
+
+    public function getActionTypeName()
+    {
+        if (!$this->action_type) {
+            return '';
+        }
+
+        $action_types = \Eventy::filter('thread.action_types', self::$action_types);
+
+        return self::$action_types[$this->action_type] ?? '';
+    }
 }

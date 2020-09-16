@@ -24,6 +24,35 @@ var poly;
 // List of funcions preparin data for polycast receive request
 var poly_data_closures = [];
 
+var fs_select2_config = {
+	//containerCssClass: "select2-multi-container", // select2-with-loader
+	dropdownCssClass: "select2-multi-dropdown",
+	//dropdownParent: $('.modal-dialog:visible:first'),
+	multiple: true,
+	//maximumSelectionLength: 1,
+	//placeholder: input.attr('placeholder'),
+	minimumInputLength: 1,
+	tags: true,
+	createTag: function (params) {
+	    return {
+			id: params.term,
+			text: params.term,
+			newOption: true
+	    }
+	},
+	templateResult: function (data) {
+	    var $result = $("<span></span>");
+
+	    $result.text(data.text);
+
+	    if (data.newOption) {
+	     	$result.append(" <em>("+Lang.get("messages.add_lower")+")</em>");
+	    }
+
+	    return $result;
+	}
+};
+
 // Default validation options
 // https://devhints.io/parsley
 window.ParsleyConfig = window.ParsleyConfig || {};
@@ -637,34 +666,7 @@ function mailboxConnectionIncomingInit()
 			e.preventDefault();
 		});
 
-		$("#in_imap_folders").select2({
-			//containerCssClass: "select2-multi-container", // select2-with-loader
-     		dropdownCssClass: "select2-multi-dropdown",
-			//dropdownParent: $('.modal-dialog:visible:first'),
-			multiple: true,
-			//maximumSelectionLength: 1,
-			//placeholder: input.attr('placeholder'),
-			minimumInputLength: 1,
-			tags: true,
-			createTag: function (params) {
-			    return {
-					id: params.term,
-					text: params.term,
-					newOption: true
-			    }
-			},
-			templateResult: function (data) {
-			    var $result = $("<span></span>");
-
-			    $result.text(data.text);
-
-			    if (data.newOption) {
-			     	$result.append(" <em>("+Lang.get("messages.add_lower")+")</em>");
-			    }
-
-			    return $result;
-			},
-		});
+		$("#in_imap_folders").select2(fs_select2_config);
 	});
 }
 
