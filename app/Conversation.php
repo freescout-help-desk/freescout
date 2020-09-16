@@ -1274,8 +1274,11 @@ class Conversation extends Model
      *
      * @return [type] [description]
      */
-    public function getWaitingSince($folder)
+    public function getWaitingSince($folder = null)
     {
+        if (!$folder) {
+            $folder = $this->folder;
+        }
         $waiting_since_field = $folder->getWaitingSinceField();
         if ($waiting_since_field) {
             return \App\User::dateDiffForHumans($this->$waiting_since_field);
