@@ -43,6 +43,12 @@ class SystemController extends Controller
             }
         }
 
+        // Functions.
+        $functions = [
+            'shell_exec (PHP)' => function_exists('shell_exec'),
+            'ps (shell)' => function_exists('shell_exec') ? shell_exec('ps') : false,
+        ];
+
         // Permissions.
         $permissions = [];
         foreach (config('installer.permissions') as $perm_path => $perm_value) {
@@ -189,6 +195,7 @@ class SystemController extends Controller
             'failed_jobs'           => $failed_jobs,
             'failed_queues'         => $failed_queues,
             'php_extensions'        => $php_extensions,
+            'functions'             => $functions,
             'permissions'           => $permissions,
             'new_version_available' => $new_version_available,
             'latest_version'        => $latest_version,
