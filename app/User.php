@@ -142,7 +142,8 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Mailbox')->as('settings')
             ->withPivot('after_send')
             ->withPivot('hide')
-            ->withPivot('mute');
+            ->withPivot('mute')
+            ->withPivot('access');
     }
 
     /**
