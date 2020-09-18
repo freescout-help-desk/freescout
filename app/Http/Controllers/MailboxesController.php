@@ -156,19 +156,18 @@ class MailboxesController extends Controller
         $users = User::nonDeleted()->where('role', '!=', User::ROLE_ADMIN)->get();
         $users = User::sortUsers($users);
 
-        $admins = User::nonDeleted()
-            ->select(['users.*', 'mailbox_user.hide'])
+        $managers = User::nonDeleted()
+            ->select(['users.*', 'mailbox_user.hide', 'mailbox_user.access'])
             ->leftJoin('mailbox_user', function ($join) use ($mailbox) {
                 $join->on('mailbox_user.user_id', '=', 'users.id');
                 $join->where('mailbox_user.mailbox_id', $mailbox->id);
-            })
-            ->where('role', User::ROLE_ADMIN)->get();
-        $admins = User::sortUsers($admins);
+            })->get();
+        $managers = User::sortUsers($managers);
 
         return view('mailboxes/permissions', [
             'mailbox' => $mailbox,
             'users' => $users,
-            'admins' => $admins,
+            'managers' => $managers,
             'mailbox_users' => $mailbox->users,
         ]);
     }
@@ -196,8 +195,20 @@ class MailboxesController extends Controller
                 $admin->mailboxes()->attach($id);
                 $mailbox_user = $admin->mailboxesWithSettings()->where('mailbox_id', $id)->first();
             }
-            $mailbox_user->settings->hide = (isset($request->admins[$admin->id]['hide']) ? (int)$request->admins[$admin->id]['hide'] : false);
+            $mailbox_user->settings->hide = (isset($request->managers[$admin->id]['hide']) ? (int)$request->managers[$admin->id]['hide'] : false);
             $mailbox_user->settings->save();
+        }
+
+        // Sets the mailbox_user.access JSON array
+        $mailbox_users = $mailbox->users;
+        foreach ($mailbox_users as $mailbox_user) {
+            $access = Array();
+            $mailbox_with_settings = $mailbox_user->mailboxesWithSettings()->where('mailbox_id', $id)->first();
+            if (!empty($request->managers[$mailbox_user->id]['access']['edit'])) $access[] = $request->managers[$mailbox_user->id]['access']['edit'];
+            if (!empty($request->managers[$mailbox_user->id]['access']['perm'])) $access[] = $request->managers[$mailbox_user->id]['access']['perm'];
+            if (!empty($request->managers[$mailbox_user->id]['access']['auto'])) $access[] = $request->managers[$mailbox_user->id]['access']['auto'];
+            $mailbox_with_settings->settings->access = json_encode($access);
+            $mailbox_with_settings->settings->save();
         }
 
         \Session::flash('flash_success_floating', __('Mailbox permissions saved!'));
