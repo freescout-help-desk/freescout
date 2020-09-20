@@ -114,30 +114,33 @@ class SendReplyToCustomer implements ShouldQueue
             }
         }
 
-        $email_conv_history = $this->conversation->getEmailHistoryCode();
-        if (!$email_conv_history || $email_conv_history === 'global') {
-            $email_conv_history = config('app.email_conv_history');
-        }
-
-        if ($email_conv_history == 'full') {
-            $send_previous_messages = true;
-        }
-
-        if ($email_conv_history == 'last') {
-            $send_previous_messages = true;
-            $this->threads = $this->threads->slice(0, 2);
-        }
-
-        if (config('app.email_conv_history') == 'last') {
-            $send_previous_messages = true;
-            $this->threads = $this->threads->slice(0, 2);
-        }
-
-        $send_previous_messages = \Eventy::filter('jobs.send_reply_to_customer.send_previous_messages', $send_previous_messages, $this->last_thread, $this->threads, $this->conversation, $this->customer);
-
-        // Remove previous messages.
+        // When sending forwarded message, all history must be sent.
         if (!$send_previous_messages) {
-            $this->threads = $this->threads->slice(0, 1);
+            $email_conv_history = $this->conversation->getEmailHistoryCode();
+            if (!$email_conv_history || $email_conv_history === 'global') {
+                $email_conv_history = config('app.email_conv_history');
+            }
+
+            if ($email_conv_history == 'full') {
+                $send_previous_messages = true;
+            }
+
+            if ($email_conv_history == 'last') {
+                $send_previous_messages = true;
+                $this->threads = $this->threads->slice(0, 2);
+            }
+
+            if (config('app.email_conv_history') == 'last') {
+                $send_previous_messages = true;
+                $this->threads = $this->threads->slice(0, 2);
+            }
+
+            $send_previous_messages = \Eventy::filter('jobs.send_reply_to_customer.send_previous_messages', $send_previous_messages, $this->last_thread, $this->threads, $this->conversation, $this->customer);
+
+            // Remove previous messages.
+            if (!$send_previous_messages) {
+                $this->threads = $this->threads->slice(0, 1);
+            }
         }
 
         // Configure mail driver according to Mailbox settings
