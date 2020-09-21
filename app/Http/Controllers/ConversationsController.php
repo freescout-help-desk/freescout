@@ -791,6 +791,18 @@ class ConversationsController extends Controller
                         $thread->setMeta('forward_child_conversation_number', $forwarded_conversation->number);
                         $thread->setMeta('forward_child_conversation_id', $forwarded_conversation->id);
                     }
+
+                    // Conversation history.
+                    if (!empty($request->conv_history)) {
+                        if ($request->conv_history != 'global') {
+                            if ($is_forward && !empty($forwarded_thread)) {
+                                $forwarded_thread->setMeta(Thread::META_CONVERSATION_HISTORY, $request->conv_history);
+                            } else {
+                                $thread->setMeta(Thread::META_CONVERSATION_HISTORY, $request->conv_history);
+                            }
+                        }
+                    }
+
                     $thread->save();
 
                     // Save forwarded thread.
@@ -1736,23 +1748,23 @@ class ConversationsController extends Controller
 
                 break;
 
-            case 'save_settings':
-                $conversation = Conversation::find($request->conversation_id);
+            // case 'save_settings':
+            //     $conversation = Conversation::find($request->conversation_id);
 
-                if (!$conversation) {
-                    $response['msg'] = __('Conversation not found');
-                    break;
-                }
-                if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
-                    $response['msg'] = __('Not enough permissions');
-                    break;
-                }
+            //     if (!$conversation) {
+            //         $response['msg'] = __('Conversation not found');
+            //         break;
+            //     }
+            //     if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
+            //         $response['msg'] = __('Not enough permissions');
+            //         break;
+            //     }
 
-                $conversation->email_history = $request->email_history;
-                $conversation->save();
+            //     $conversation->email_history = $request->email_history;
+            //     $conversation->save();
 
-                $response['status'] = 'success';
-                break;
+            //     $response['status'] = 'success';
+            //     break;
 
             default:
                 $response['msg'] = 'Unknown action';

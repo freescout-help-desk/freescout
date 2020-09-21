@@ -47,9 +47,6 @@
                             @else
                                 <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete-forever"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete Forever") }}</a></li>
                             @endif
-                            <li>
-                                <a href="#" data-toggle="modal" data-target="#conv-settings-modal"><i class="glyphicon glyphicon-cog"></i> {{ __('Settings') }}</a>
-                            </li>
                             @action('conversation.append_action_buttons', $conversation, $mailbox)
                         </ul>
                     </div>
@@ -143,6 +140,7 @@
                                 <input type="hidden" name="thread_id" value=""/>
                                 <input type="hidden" name="is_note" value=""/>
                                 <input type="hidden" name="subtype" value=""/>
+                                <input type="hidden" name="conv_history" value=""/>
 
                                 <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }} conv-recipient conv-recipient-to @if (empty($to_customers)) hidden @endif">
                                     <label for="to" class="control-label">{{ __('To') }}</label>

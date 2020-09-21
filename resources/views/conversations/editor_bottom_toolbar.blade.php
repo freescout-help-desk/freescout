@@ -42,8 +42,12 @@
             <li @if ($after_send == App\MailboxUser::AFTER_SEND_NEXT) class="active" @endif><a href="#" data-after-send="{{ App\MailboxUser::AFTER_SEND_NEXT }}">{{ __('Send and next active') }}</a></li>
             <li @if ($after_send == App\MailboxUser::AFTER_SEND_FOLDER) class="active" @endif><a href="#" data-after-send="{{ App\MailboxUser::AFTER_SEND_FOLDER }}">{{ __('Send and back to folder') }}</a></li>
             @if (empty($new_converstion))
+                <li class="divider"></li>
+                <li><a href="#" class="after-send-change" data-modal-body="#after-send-change-body" data-modal-title="{{ __('Default Redirect') }}" data-no-close-btn="true" data-modal-no-footer="true">{{ __('Change default redirect') }}…</a></li>
+            @endif
+            @if (empty($new_converstion))
             	<li class="divider"></li>
-            	<li><a href="#" class="after-send-change" data-modal-body="#after-send-change-body" data-modal-title="{{ __('Default Redirect') }}" data-no-close-btn="true" data-modal-no-footer="true">{{ __('Change default redirect') }}</a></li>
+            	<li><a href="#" data-toggle="modal" data-target="#conv-settings-modal">{{ ucfirst(mb_strtolower(__('Conversation History'))) }}…</a></li>
             @endif
         </ul>
     </div>

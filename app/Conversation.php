@@ -128,16 +128,16 @@ class Conversation extends Model
     /**
      * Email history options.
      */
-    const EMAIL_HISTORY_GLOBAL = 0;
-    const EMAIL_HISTORY_NONE = 1;
-    const EMAIL_HISTORY_LAST = 2;
-    const EMAIL_HISTORY_FULL = 3;
+    // const EMAIL_HISTORY_GLOBAL = 0;
+    // const EMAIL_HISTORY_NONE = 1;
+    // const EMAIL_HISTORY_LAST = 2;
+    // const EMAIL_HISTORY_FULL = 3;
 
     public static $email_history_codes = [
-        self::EMAIL_HISTORY_GLOBAL => 'global',
-        self::EMAIL_HISTORY_NONE   => 'none',
-        self::EMAIL_HISTORY_LAST   => 'last',
-        self::EMAIL_HISTORY_FULL   => 'full',
+        'global',
+        'none',
+        'last',
+        'full',
     ];
 
     /**
@@ -1612,10 +1612,10 @@ class Conversation extends Model
         \Eventy::action('conversation.user_forwarded', $this, $thread, $forwarded_conversation, $forwarded_thread);
     }
 
-    public function getEmailHistoryCode()
-    {
-        return self::$email_history_codes[(int)$this->email_history] ?? 'global';
-    }
+    // public function getEmailHistoryCode()
+    // {
+    //     return self::$email_history_codes[(int)$this->email_history] ?? 'global';
+    // }
 
     public static function getEmailHistoryName($code) {
         $label = '';

@@ -144,6 +144,9 @@ class Thread extends Model
         self::SOURCE_TYPE_API   => 'api',
     ];
 
+    // Metas.
+    const META_CONVERSATION_HISTORY = 'ch';
+
     protected $dates = [
         'opened_at',
         'created_at',

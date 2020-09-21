@@ -4514,17 +4514,33 @@ function maybeScrollToReplyBlock(offset)
 	}
 }
 
-
 function initConvSettings()
 {
 	var settings_modal = jQuery('#conv-settings-modal');
     var history_select = jQuery('#email_history', settings_modal);
 
-    jQuery('.button-save-settings:first', settings_modal).on('click', function(e) {
+	$('#conv-settings-modal').on('show.bs.modal', function (e) {
+		var is_forward = $(".conv-reply-block.conv-forward-block").length;
+
+		if (is_forward) {
+			$('#email_history option[value="global"]').hide();
+			$('#email_history option[value="none"]').hide();
+			if ($('#email_history').val() == 'global') {
+				$('#email_history').val('full');
+			}
+		} else {
+			$('#email_history option[value="global"]').show();
+			$('#email_history option[value="none"]').show();
+		}
+	})
+
+    $('.button-save-settings:first', settings_modal).on('click', function(e) {
         e.preventDefault();
         settings_modal.modal('hide');
 
-        fsAjax(
+        $(".conv-reply-block").children().find(":input[name='conv_history']:first").val(history_select.val());
+
+        /*fsAjax(
             {
                 action: 'save_settings',
                 conversation_id: getGlobalAttr('conversation_id'),
@@ -4542,7 +4558,19 @@ function initConvSettings()
                 }
             },
             true
-        );
+        );*/
+    });
+
+
+    $('.button-cancel-settings:first', settings_modal).on('click', function(e) {
+        e.preventDefault();
+        settings_modal.modal('hide');
+
+	   	var value = $(".conv-reply-block").children().find(":input[name='conv_history']:first").val();
+	   	if (!value) {
+	   		value = 'global';
+	   	}
+		jQuery('#email_history', jQuery('#conv-settings-modal')).val(value);
     });
 }
 
