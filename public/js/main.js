@@ -1128,6 +1128,35 @@ function initConversation()
 			e.preventDefault();
 		});
 
+		// Edit subject
+		jQuery(".conv-subjtext").click(function(e){
+	    	$(this).addClass('conv-subj-editing');
+		});
+
+		// Save subject
+	    jQuery(".conv-subj-editor button:first").click(function(e){
+	    	var button = $(this);
+	    	button.button('loading');
+	    	var value = $('#conv-subj-value').val();
+			fsAjax(
+				{
+					action: 'update_subject',
+					conversation_id: getGlobalAttr('conversation_id'),
+					value: value
+				},
+				laroute.route('conversations.ajax'),
+				function(response) {
+					if (isAjaxSuccess(response)) {
+						$('.conv-subjtext > span:first').text(value);
+					} else {
+						showAjaxError(response);
+					}
+					button.parents('.conv-subj-editing:first').removeClass('conv-subj-editing');
+					button.button('reset');
+				}, true
+			);
+		});
+
 		starConversationInit();
 		maybeShowStoredNote();
 		maybeShowDraft();

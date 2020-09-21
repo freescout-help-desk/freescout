@@ -1748,6 +1748,28 @@ class ConversationsController extends Controller
 
                 break;
 
+            case 'update_subject':
+                $conversation = Conversation::find($request->conversation_id);
+
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                }
+                if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                $subject = $request->value ?? '';
+                $subject = trim($subject);
+
+                if (!$response['msg'] && $subject) {
+                    $conversation->subject = $subject;
+                    $conversation->save();
+
+                    $response['status'] = 'success';
+                }
+
+                break;
+
             // case 'save_settings':
             //     $conversation = Conversation::find($request->conversation_id);
 

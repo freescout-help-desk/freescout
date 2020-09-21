@@ -1724,7 +1724,15 @@ button.conv-checkbox-clear {
     line-height: 30px;
     word-wrap: break-word;
     margin-right: 8px;
+    width: 100%;
     max-width: 100%;
+}
+.conv-subj-editor,
+.conv-subj-editing > span {
+    display: none;
+}
+.conv-subj-editing .conv-subj-editor {
+    display: table;
 }
 .conv-numnav {
     margin: 0;

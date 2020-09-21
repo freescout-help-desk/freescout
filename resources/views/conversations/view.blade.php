@@ -112,7 +112,13 @@
                 <div class="conv-subj-block">
                     <div class="conv-subjwrap">
                         <div class="conv-subjtext">
-                            {{ $conversation->getSubject() }}
+                            <span>{{ $conversation->getSubject() }}</span>
+                            <div class="input-group input-group-lg conv-subj-editor">
+                                <input type="text" id="conv-subj-value" class="form-control" value="{{ $conversation->getSubject() }}" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button" data-loading-text="…"><i class="glyphicon glyphicon-ok"></i></button>
+                                </span>
+                            </div>
                         </div>
                         @action('conversation.after_subject', $conversation, $mailbox)
                         <div class="conv-numnav">
