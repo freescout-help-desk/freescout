@@ -217,6 +217,9 @@
                                         </li>
                                         <li><a href="{{ route('conversations.search', ['f' => ['following' => 'yes']]) }}"><i class="glyphicon glyphicon-chevron-right"></i> {{ __("Conversations I'm following") }}</a></li>
                                         <li><a href="{{ route('conversations.search', ['f' => ['assigned' => Auth::user()->id, 'status' => [App\Conversation::STATUS_ACTIVE, App\Conversation::STATUS_PENDING]]]) }}"><i class="glyphicon glyphicon-chevron-right"></i> {{ __('My open conversations') }}</a></li>
+                                        @if (in_array(Route::currentRouteName(), ['mailboxes.view', 'mailboxes.view.folder']))
+                                            <li><a href="{{ route('conversations.search', ['f' => ['mailbox' => app('request')->id]]) }}"><i class="glyphicon glyphicon-chevron-right"></i> {{ __("All from current mailbox") }}</a></li>
+                                        @endif
                                     </ul>
                                 </li>
                             @endguest
