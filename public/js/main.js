@@ -1128,6 +1128,35 @@ function initConversation()
 			e.preventDefault();
 		});
 
+		// Edit subject
+		jQuery(".conv-subjtext").click(function(e){
+	    	$(this).addClass('conv-subj-editing');
+		});
+
+		// Save subject
+	    jQuery(".conv-subj-editor button:first").click(function(e){
+	    	var button = $(this);
+	    	button.button('loading');
+	    	var value = $('#conv-subj-value').val();
+			fsAjax(
+				{
+					action: 'update_subject',
+					conversation_id: getGlobalAttr('conversation_id'),
+					value: value
+				},
+				laroute.route('conversations.ajax'),
+				function(response) {
+					if (isAjaxSuccess(response)) {
+						$('.conv-subjtext > span:first').text(value);
+					} else {
+						showAjaxError(response);
+					}
+					button.parents('.conv-subj-editing:first').removeClass('conv-subj-editing');
+					button.button('reset');
+				}, true
+			);
+		});
+
 		starConversationInit();
 		maybeShowStoredNote();
 		maybeShowDraft();
@@ -2419,6 +2448,75 @@ function initMoveConv()
 				$(".move-conv-mailbox-id:first").removeAttr('disabled');
 			}
 		});
+	});
+}
+
+// Move conversation modal
+function initMergeConv()
+{
+	$(document).ready(function() {
+		initTooltips();
+
+		initMergeConvSelect();
+
+		$(".btn-merge-conv:visible:first").click(function(e){
+			var button = $(this);
+
+			button.button('loading');
+
+			fsAjax({
+					action: 'conversation_merge',
+					merge_conversation_id: $('.conv-merge-id:checked').val(),
+					conversation_id: getGlobalAttr('conversation_id')
+				},
+				laroute.route('conversations.ajax'),
+				function(response) {
+					showAjaxResult(response);
+					if (isAjaxSuccess(response)) {
+						window.location.href = '';
+					}
+					ajaxFinish();
+				}
+			);
+
+			e.preventDefault();
+		});
+
+		$(".btn-merge-search:visible:first").click(function(e){
+			var button = $(this);
+
+			button.button('loading');
+
+			fsAjax({
+					action: 'merge_search',
+					number: $('.merge-conv-number:visible:first').val(),
+				},
+				laroute.route('conversations.ajax'),
+				function(response) {
+					showAjaxResult(response);
+					if (isAjaxSuccess(response) && response.html) {
+						$('.conv-merge-search-result:first td:first').html(response.html);
+						$('.conv-merge-search-result:first').removeClass('hidden');
+						initTooltips();
+						initMergeConvSelect();
+					} else {
+						if ($('.conv-merge-search-result:first .conv-merge-id').is(':checked')) {
+							$('.btn-merge-conv:visible:first').attr('disabled', 'disabled');
+						}
+						$('.conv-merge-search-result:first td:first').html(response.html);
+						$('.conv-merge-search-result:first').addClass('hidden');
+					}
+					ajaxFinish();
+				}
+			);
+		});
+	});
+}
+
+function initMergeConvSelect()
+{
+	$('.conv-merge-id').click(function() {
+		$('.btn-merge-conv:visible:first').removeAttr('disabled');
 	});
 }
 
@@ -4514,17 +4612,33 @@ function maybeScrollToReplyBlock(offset)
 	}
 }
 
-
 function initConvSettings()
 {
 	var settings_modal = jQuery('#conv-settings-modal');
     var history_select = jQuery('#email_history', settings_modal);
 
-    jQuery('.button-save-settings:first', settings_modal).on('click', function(e) {
+	$('#conv-settings-modal').on('show.bs.modal', function (e) {
+		var is_forward = $(".conv-reply-block.conv-forward-block").length;
+
+		if (is_forward) {
+			$('#email_history option[value="global"]').hide();
+			$('#email_history option[value="none"]').hide();
+			if ($('#email_history').val() == 'global') {
+				$('#email_history').val('full');
+			}
+		} else {
+			$('#email_history option[value="global"]').show();
+			$('#email_history option[value="none"]').show();
+		}
+	})
+
+    $('.button-save-settings:first', settings_modal).on('click', function(e) {
         e.preventDefault();
         settings_modal.modal('hide');
 
-        fsAjax(
+        $(".conv-reply-block").children().find(":input[name='conv_history']:first").val(history_select.val());
+
+        /*fsAjax(
             {
                 action: 'save_settings',
                 conversation_id: getGlobalAttr('conversation_id'),
@@ -4542,7 +4656,19 @@ function initConvSettings()
                 }
             },
             true
-        );
+        );*/
+    });
+
+
+    $('.button-cancel-settings:first', settings_modal).on('click', function(e) {
+        e.preventDefault();
+        settings_modal.modal('hide');
+
+	   	var value = $(".conv-reply-block").children().find(":input[name='conv_history']:first").val();
+	   	if (!value) {
+	   		value = 'global';
+	   	}
+		jQuery('#email_history', jQuery('#conv-settings-modal')).val(value);
     });
 }
 

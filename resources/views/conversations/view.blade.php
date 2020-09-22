@@ -38,6 +38,8 @@
                                 <a href="#" class="conv-follow @if (!$is_following) hidden @endif" data-follow-action="unfollow"><i class="glyphicon glyphicon-bell"></i> {{ __("Unfollow") }}</a>
                             </li>
                             <li><a href="#" class="conv-forward"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
+                            <li><a href="{{ route('conversations.ajax_html', ['action' =>
+                                            'merge_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Merge Conversations") }}" data-modal-no-footer="true" data-modal-on-show="initMergeConv"><i class="glyphicon glyphicon-indent-left"></i> {{ __("Merge") }}</a></li>
                             @if (Auth::user()->can('move', App\Conversation::class))
                                 <li><a href="{{ route('conversations.ajax_html', ['action' =>
                                             'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv"><i class="glyphicon glyphicon-log-out"></i> {{ __("Move") }}</a></li>
@@ -47,9 +49,6 @@
                             @else
                                 <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete-forever"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete Forever") }}</a></li>
                             @endif
-                            <li>
-                                <a href="#" data-toggle="modal" data-target="#conv-settings-modal"><i class="glyphicon glyphicon-cog"></i> {{ __('Settings') }}</a>
-                            </li>
                             @action('conversation.append_action_buttons', $conversation, $mailbox)
                         </ul>
                     </div>
@@ -115,7 +114,13 @@
                 <div class="conv-subj-block">
                     <div class="conv-subjwrap">
                         <div class="conv-subjtext">
-                            {{ $conversation->getSubject() }}
+                            <span>{{ $conversation->getSubject() }}</span>
+                            <div class="input-group input-group-lg conv-subj-editor">
+                                <input type="text" id="conv-subj-value" class="form-control" value="{{ $conversation->getSubject() }}" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button" data-loading-text="…"><i class="glyphicon glyphicon-ok"></i></button>
+                                </span>
+                            </div>
                         </div>
                         @action('conversation.after_subject', $conversation, $mailbox)
                         <div class="conv-numnav">
@@ -143,6 +148,7 @@
                                 <input type="hidden" name="thread_id" value=""/>
                                 <input type="hidden" name="is_note" value=""/>
                                 <input type="hidden" name="subtype" value=""/>
+                                <input type="hidden" name="conv_history" value=""/>
 
                                 <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }} conv-recipient conv-recipient-to @if (empty($to_customers)) hidden @endif">
                                     <label for="to" class="control-label">{{ __('To') }}</label>
