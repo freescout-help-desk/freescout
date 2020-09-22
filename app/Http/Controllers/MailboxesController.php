@@ -89,7 +89,7 @@ class MailboxesController extends Controller
     {
         $mailbox = Mailbox::findOrFail($id);
         //$this->authorize('update', $mailbox);
-        if (!auth()->user()->can('update', $mailbox)) {
+        if (!auth()->user()->can('updateSettings', $mailbox)) {
             $accessible_route = \Eventy::filter('mailbox.accessible_settings_route', '', auth()->user(), $mailbox);
             if ($accessible_route) {
                 return redirect()->route($accessible_route, ['id' => $mailbox->id]);
@@ -98,9 +98,17 @@ class MailboxesController extends Controller
             }
         }
 
+        $user = auth()->user();
+        $mailbox_user = $user->mailboxesWithSettings()->where('mailbox_id', $id)->first();
+        if (!$mailbox_user && $user->isAdmin()) {
+            // Admin may not be connected to the mailbox yet
+            $user->mailboxes()->attach($id);
+            $mailbox_user = $user->mailboxesWithSettings()->where('mailbox_id', $id)->first();
+        }
+
         //$mailboxes = Mailbox::all()->except($id);
 
-        return view('mailboxes/update', ['mailbox' => $mailbox, 'flashes' => $this->mailboxActiveWarning($mailbox)]);
+        return view('mailboxes/update', ['mailbox' => $mailbox, 'mailbox_user' => $mailbox_user, 'flashes' => $this->mailboxActiveWarning($mailbox)]);
     }
 
     /**
@@ -113,7 +121,15 @@ class MailboxesController extends Controller
     {
         $mailbox = Mailbox::findOrFail($id);
 
-        $this->authorize('update', $mailbox);
+        $this->authorize('updateSettings', $mailbox);
+
+        // if not admin, the text only fields don't pass so spike them into the request.
+        if (!auth()->user()->isAdmin()) {
+            $request->merge([
+                'name' => $mailbox->name,
+                'email' => $mailbox->email
+            ]);
+        }
 
         $validator = Validator::make($request->all(), [
             'name'             => 'required|string|max:40',
@@ -124,7 +140,6 @@ class MailboxesController extends Controller
             'ticket_status'    => 'required|integer',
             'template'         => 'required|integer',
             'ticket_assignee'  => 'required|integer',
-            'signature'        => 'nullable|string',
         ]);
 
         //event(new Registered($user = $this->create($request->all())));
@@ -151,24 +166,23 @@ class MailboxesController extends Controller
     {
         $mailbox = Mailbox::findOrFail($id);
 
-        $this->authorize('update', $mailbox);
+        $this->authorize('updatePermissions', $mailbox);
 
         $users = User::nonDeleted()->where('role', '!=', User::ROLE_ADMIN)->get();
         $users = User::sortUsers($users);
 
-        $admins = User::nonDeleted()
-            ->select(['users.*', 'mailbox_user.hide'])
+        $managers = User::nonDeleted()
+            ->select(['users.*', 'mailbox_user.hide', 'mailbox_user.access'])
             ->leftJoin('mailbox_user', function ($join) use ($mailbox) {
                 $join->on('mailbox_user.user_id', '=', 'users.id');
                 $join->where('mailbox_user.mailbox_id', $mailbox->id);
-            })
-            ->where('role', User::ROLE_ADMIN)->get();
-        $admins = User::sortUsers($admins);
+            })->get();
+        $managers = User::sortUsers($managers);
 
         return view('mailboxes/permissions', [
             'mailbox' => $mailbox,
             'users' => $users,
-            'admins' => $admins,
+            'managers' => $managers,
             'mailbox_users' => $mailbox->users,
         ]);
     }
@@ -182,7 +196,7 @@ class MailboxesController extends Controller
     public function permissionsSave($id, Request $request)
     {
         $mailbox = Mailbox::findOrFail($id);
-        $this->authorize('update', $mailbox);
+        $this->authorize('updatePermissions', $mailbox);
 
         $mailbox->users()->sync($request->users);
         $mailbox->syncPersonalFolders($request->users);
@@ -196,8 +210,20 @@ class MailboxesController extends Controller
                 $admin->mailboxes()->attach($id);
                 $mailbox_user = $admin->mailboxesWithSettings()->where('mailbox_id', $id)->first();
             }
-            $mailbox_user->settings->hide = (isset($request->admins[$admin->id]['hide']) ? (int)$request->admins[$admin->id]['hide'] : false);
+            $mailbox_user->settings->hide = (isset($request->managers[$admin->id]['hide']) ? (int)$request->managers[$admin->id]['hide'] : false);
             $mailbox_user->settings->save();
+        }
+
+        // Sets the mailbox_user.access JSON array
+        $mailbox_users = $mailbox->users;
+        foreach ($mailbox_users as $mailbox_user) {
+            $access = Array();
+            $mailbox_with_settings = $mailbox_user->mailboxesWithSettings()->where('mailbox_id', $id)->first();
+            foreach (\App\Mailbox::$USER_ACCESS_PERMISSIONS as $label=>$perm) {
+                if (!empty($request->managers[$mailbox_user->id]['access'][$perm])) $access[] = $request->managers[$mailbox_user->id]['access'][$perm];
+            }
+            $mailbox_with_settings->settings->access = json_encode($access);
+            $mailbox_with_settings->settings->save();
         }
 
         \Session::flash('flash_success_floating', __('Mailbox permissions saved!'));
@@ -410,7 +436,7 @@ class MailboxesController extends Controller
     public function autoReply($id)
     {
         $mailbox = Mailbox::findOrFail($id);
-        $this->authorize('update', $mailbox);
+        $this->authorize('updateAutoReply', $mailbox);
 
         if (!$mailbox->auto_reply_subject) {
             $mailbox->auto_reply_subject = 'Re: {%subject%}';
@@ -428,7 +454,8 @@ class MailboxesController extends Controller
     {
         $mailbox = Mailbox::findOrFail($id);
 
-        $this->authorize('update', $mailbox);
+//        $this->authorize('update', $mailbox);
+        $this->authorize('updateAutoReply', $mailbox);
 
         $request->merge([
             'auto_reply_enabled'     => ($request->filled('auto_reply_enabled') ?? false),
@@ -461,6 +488,54 @@ class MailboxesController extends Controller
 
         return redirect()->route('mailboxes.auto_reply', ['id' => $id]);
     }
+
+    /**
+     * Auto reply settings.
+     */
+    public function emailSignature($id)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+        $this->authorize('updateAutoReply', $mailbox);
+
+        if (!$mailbox->auto_reply_subject) {
+            $mailbox->auto_reply_subject = 'Re: {%subject%}';
+        }
+
+        return view('mailboxes/email_signature', [
+            'mailbox' => $mailbox,
+        ]);
+    }
+
+    /**
+     * Save auto reply settings.
+     */
+    public function emailSignatureSave($id, Request $request)
+    {
+        $mailbox = Mailbox::findOrFail($id);
+
+        $this->authorize('updateEmailSignature', $mailbox);
+
+        $validator = Validator::make($request->all(), [
+            'signature'        => 'nullable|string',
+        ]);
+
+        //event(new Registered($user = $this->create($request->all())));
+
+        if ($validator->fails()) {
+            return redirect()->route('mailboxes.email_signature', ['id' => $id])
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $mailbox->fill($request->all());
+
+        $mailbox->save();
+
+        \Session::flash('flash_success_floating', __('Mailbox settings saved'));
+
+        return redirect()->route('mailboxes.email_signature', ['id' => $id]);
+    }
+
 
     /**
      * Users ajax controller.

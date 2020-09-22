@@ -22,7 +22,7 @@
                     <p class="block-help">{{ __('Administrators have access to all mailboxes and are not listed here.') }}</p>
                 </div>
                 <div class="col-xs-12">
-                    
+
                     {{ csrf_field() }}
 
                     <p><a href="javascript:void(0)" class="sel-all">{{ __('all') }}</a> / <a href="javascript:void(0)" class="sel-none">{{ __('none') }}</a></p>
@@ -42,30 +42,46 @@
                 </div>
 
                 <div class="col-xs-12 margin-top">
-                    <h3> {{ __('Administrators') }}:</h3>
+                    <h3> {{ __('Access Settings') }}:</h3>
                 </div>
                 <div class="col-md-11 col-lg-9">
-                    
+
                     <table class="table">
                         <tr class="table-header-nb">
                             <th>&nbsp;</th>
-                            <th class="text-center">{{ __('Hide from Assign list') }}</th>
+                            <th class="text-center"> {{ __('Hide from Assign list') }}</th>
+                            @foreach (\App\Mailbox::$USER_ACCESS_PERMISSIONS as $label=>$perm)
+                            <th class="text-center"> {{ __($label) }}</th>
+                            @endforeach
                         </tr>
                         <fieldset id="permissions-fields">
-                            @foreach ($admins as $admin)
+                            @foreach ($managers as $mailbox_user)
                                 <tr>
-                                    <td>{{ $admin->getFullName() }}</td>
-                                    <td class="text-center"><input type="checkbox" name="admins[{{ $admin->id }}][hide]" value="1" @if (!empty($admin->hide)) checked="checked" @endif></td>
+                                    <td>{{ $mailbox_user->getFullName() }}
+                                        @if ($mailbox_user->isAdmin())
+                                            ({{ __('Administrator') }})
+                                            <td class="text-center"><input type="checkbox" name="managers[{{ $mailbox_user->id }}][hide]" value="1" @if (!empty($mailbox_user->hide)) checked="checked" @endif></td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center"></td>
+                                        @else
+                                            <td></td>
+                                            @foreach (\App\Mailbox::$USER_ACCESS_PERMISSIONS as $label=>$perm)
+                                            <td class="text-center"><input type="checkbox" name="managers[{{ $mailbox_user->id }}][access][{{ $perm }}]" value="{{ $perm }}" @if (!empty($mailbox_user->access) && in_array($perm, json_decode($mailbox_user->access))) checked="checked" @endif></td>
+                                            @endforeach
+                                        @endif
+
+                                    </td>
                                 </tr>
                             @endforeach
                         </fieldset>
                     </table>
                     <div class="form-group margin-top">
-                        
+
                         <button type="submit" class="btn btn-primary">
                             {{ __('Save') }}
                         </button>
-                    
+
                     </div>
                 </div>
             </form>
