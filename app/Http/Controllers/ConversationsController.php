@@ -174,7 +174,8 @@ class ConversationsController extends Controller
             $prev_conversations = $mailbox->conversations()
                                     ->where('customer_id', $customer->id)
                                     ->where('id', '<>', $conversation->id)
-                                    ->where('status', '!=', Thread::STATUS_SPAM)
+                                    ->where('status', '!=', Conversation::STATUS_SPAM)
+                                    ->where('state', Conversation::STATE_PUBLISHED)
                                     //->limit(self::PREV_CONVERSATIONS_LIMIT)
                                     ->orderBy('created_at', 'desc')
                                     ->paginate(self::PREV_CONVERSATIONS_LIMIT);
@@ -1707,6 +1708,35 @@ class ConversationsController extends Controller
 
                 break;
 
+            // Merge conversations
+            case 'conversation_merge':
+                $conversation = Conversation::find($request->conversation_id);
+
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                }
+                if (!$response['msg'] && !$user->can('view', $conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                $merge_conversation = Conversation::find($request->merge_conversation_id);
+
+                if (!$merge_conversation) {
+                    $response['msg'] = __('Conversation not found');
+                }
+                if (!$response['msg'] && !$user->can('view', $merge_conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    $conversation->mergeConversations($merge_conversation, $user);
+
+                    $response['status'] = 'success';
+                    \Session::flash('flash_success_floating', __('Conversations merged'));
+                }
+
+                break;
+
             // Follow conversation
             case 'follow':
             case 'unfollow':
@@ -1770,23 +1800,24 @@ class ConversationsController extends Controller
 
                 break;
 
-            // case 'save_settings':
-            //     $conversation = Conversation::find($request->conversation_id);
+            case 'merge_search':
+                $conversation = Conversation::where('number', $request->number)->first();
 
-            //     if (!$conversation) {
-            //         $response['msg'] = __('Conversation not found');
-            //         break;
-            //     }
-            //     if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
-            //         $response['msg'] = __('Not enough permissions');
-            //         break;
-            //     }
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                }
+                if (!$response['msg'] && !$user->can('view', $conversation)) {
+                    $response['msg'] = __('Conversation not found');
+                }
 
-            //     $conversation->email_history = $request->email_history;
-            //     $conversation->save();
+                if (!$response['msg']) {
+                    $response['html'] = \View::make('conversations/partials/merge_search_result')->with([
+                            'conversation' => $conversation
+                        ])->render();
+                    $response['status'] = 'success';
+                }
 
-            //     $response['status'] = 'success';
-            //     break;
+                break;
 
             default:
                 $response['msg'] = 'Unknown action';
@@ -1814,6 +1845,8 @@ class ConversationsController extends Controller
                 return $this->ajaxHtmlChangeCustomer();
             case 'move_conv':
                 return $this->ajaxHtmlMoveConv();
+            case 'merge_conv':
+                return $this->ajaxHtmlMergeConv();
         }
 
         abort(404);
@@ -1945,6 +1978,46 @@ class ConversationsController extends Controller
         return view('conversations/ajax_html/move_conv', [
             'conversation' => $conversation,
             'mailboxes'    => $user->mailboxesCanView(),
+        ]);
+    }
+    
+    /**
+     * Merge conversations.
+     */
+    public function ajaxHtmlMergeConv()
+    {
+        $conversation_id = Input::get('conversation_id');
+        if (!$conversation_id) {
+            abort(404);
+        }
+
+        $conversation = Conversation::find($conversation_id);
+        if (!$conversation) {
+            abort(404);
+        }
+
+        $user = auth()->user();
+
+        if (!$user->can('view', $conversation)) {
+            \Helper::denyAccess();
+        }
+
+        $prev_conversations = [];
+
+        if ($conversation->customer_id) {
+            $prev_conversations = $conversation->mailbox->conversations()
+                                    ->where('customer_id', $conversation->customer_id)
+                                    ->where('id', '<>', $conversation->id)
+                                    ->where('status', '!=', Conversation::STATUS_SPAM)
+                                    ->where('state', Conversation::STATE_PUBLISHED)
+                                    ->orderBy('created_at', 'desc')
+                                    ->paginate(500);
+        }
+
+        return view('conversations/ajax_html/merge_conv', [
+            'conversation' => $conversation,
+            'prev_conversations' => $prev_conversations,
+
         ]);
     }
 

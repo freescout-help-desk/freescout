@@ -146,6 +146,9 @@ class Thread extends Model
 
     // Metas.
     const META_CONVERSATION_HISTORY = 'ch';
+    const META_PREV_CONVERSATION = 'pc';
+    const META_MERGED_WITH_CONV = 'mwc';
+    const META_MERGED_INTO_CONV = 'mic';
 
     protected $dates = [
         'opened_at',
@@ -597,6 +600,17 @@ class Thread extends Model
                 $did_this = __(":person restored");
             } elseif ($this->action_type == self::ACTION_TYPE_MOVED_FROM_MAILBOX) {
                 $did_this = __(":person moved conversation from another mailbox");
+            } elseif ($this->action_type == self::ACTION_TYPE_MERGED) {
+                if (!empty($this->getMeta(Thread::META_MERGED_WITH_CONV))) {
+                    $did_this = __(":person merged with another conversation");
+                } else {
+                    $merge_conversation = Conversation::find($this->getMeta(Thread::META_MERGED_INTO_CONV));
+                    $merge_conversation_number = '';
+                    if ($merge_conversation) {
+                        $merge_conversation_number = $merge_conversation->number;
+                    }
+                    $did_this = __(":person merged into conversation #:conversation_number", ['conversation_number' => $merge_conversation_number]);
+                }
             }
         } elseif ($this->state == self::STATE_DRAFT) {
             if (empty($this->edited_by_user_id)) {

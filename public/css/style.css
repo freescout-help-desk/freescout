@@ -4021,6 +4021,18 @@ a.disabled:focus {
     right: 7px;
     color: #93A1AF;
 }
+.alert .glyphicon {
+    vertical-align: text-top;
+}
+.conv-merge-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+.conv-merge-list .radio,
+.conv-merge-search-result .radio {
+    margin-top: 0;
+    margin-bottom: 0;
+}
 
 /**
  * Mobile

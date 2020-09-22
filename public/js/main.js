@@ -2451,6 +2451,75 @@ function initMoveConv()
 	});
 }
 
+// Move conversation modal
+function initMergeConv()
+{
+	$(document).ready(function() {
+		initTooltips();
+
+		initMergeConvSelect();
+
+		$(".btn-merge-conv:visible:first").click(function(e){
+			var button = $(this);
+
+			button.button('loading');
+
+			fsAjax({
+					action: 'conversation_merge',
+					merge_conversation_id: $('.conv-merge-id:checked').val(),
+					conversation_id: getGlobalAttr('conversation_id')
+				},
+				laroute.route('conversations.ajax'),
+				function(response) {
+					showAjaxResult(response);
+					if (isAjaxSuccess(response)) {
+						window.location.href = '';
+					}
+					ajaxFinish();
+				}
+			);
+
+			e.preventDefault();
+		});
+
+		$(".btn-merge-search:visible:first").click(function(e){
+			var button = $(this);
+
+			button.button('loading');
+
+			fsAjax({
+					action: 'merge_search',
+					number: $('.merge-conv-number:visible:first').val(),
+				},
+				laroute.route('conversations.ajax'),
+				function(response) {
+					showAjaxResult(response);
+					if (isAjaxSuccess(response) && response.html) {
+						$('.conv-merge-search-result:first td:first').html(response.html);
+						$('.conv-merge-search-result:first').removeClass('hidden');
+						initTooltips();
+						initMergeConvSelect();
+					} else {
+						if ($('.conv-merge-search-result:first .conv-merge-id').is(':checked')) {
+							$('.btn-merge-conv:visible:first').attr('disabled', 'disabled');
+						}
+						$('.conv-merge-search-result:first td:first').html(response.html);
+						$('.conv-merge-search-result:first').addClass('hidden');
+					}
+					ajaxFinish();
+				}
+			);
+		});
+	});
+}
+
+function initMergeConvSelect()
+{
+	$('.conv-merge-id').click(function() {
+		$('.btn-merge-conv:visible:first').removeAttr('disabled');
+	});
+}
+
 // Check if ajax request was successfull
 function isAjaxSuccess(response)
 {

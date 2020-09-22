@@ -1125,6 +1125,55 @@ class Conversation extends Model
 
         return true;
     }
+    /**
+     * Merge conversations
+     */
+    public function mergeConversations($merge_conversation, $user)
+    {
+        // Move all threads from old to new conversation.
+        foreach ($merge_conversation->threads as $thread) {
+            $thread->conversation_id = $this->id;
+            $thread->setMeta(Thread::META_PREV_CONVERSATION, $merge_conversation->id);
+            $thread->save();
+        }
+
+        // Add record to the new conversation.
+        Thread::create($this, Thread::TYPE_LINEITEM, '', [
+            'created_by_user_id' => $user->id,
+            'user_id'     => $this->user_id,
+            'state'       => Thread::STATE_PUBLISHED,
+            'action_type' => Thread::ACTION_TYPE_MERGED,
+            'source_via'  => Thread::PERSON_USER,
+            'source_type' => Thread::SOURCE_TYPE_WEB,
+            'customer_id' => $this->customer_id,
+            'meta'        => [Thread::META_MERGED_WITH_CONV => $merge_conversation->id],
+        ]);
+
+        // Add record to the old conversation.
+        Thread::create($merge_conversation, Thread::TYPE_LINEITEM, '', [
+            'created_by_user_id' => $user->id,
+            'user_id'     => $merge_conversation->user_id,
+            'state'       => Thread::STATE_PUBLISHED,
+            'action_type' => Thread::ACTION_TYPE_MERGED,
+            'source_via'  => Thread::PERSON_USER,
+            'source_type' => Thread::SOURCE_TYPE_WEB,
+            'customer_id' => $merge_conversation->customer_id,
+            'meta'        => [Thread::META_MERGED_INTO_CONV => $this->id],
+        ]);
+
+        // Delete old conversation.
+        $merge_conversation->deleteToFolder($user);
+
+        // Update counters.
+        $this->mailbox->updateFoldersCounters();
+        if ($this->mailbox_id != $merge_conversation->mailbox_id) {
+            $merge_conversation->mailbox->updateFoldersCounters();
+        }
+
+        \Eventy::action('conversation.merged', $this, $merge_conversation, $user);
+
+        return true;
+    }
 
     /**
      * Get all users for conversations in one query.
