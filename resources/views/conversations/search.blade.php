@@ -23,7 +23,7 @@
 	        <li class="no-link"><h3>{{ __('Filters') }}</h3></li>
 			@foreach ($filters_list as $filter)
 	            <li class="menu-link menu-padded">
-	            	<a href="#" data-filter="{{ $filter }}" @if (isset($filters[$filter]))class="active"@endif>{{ $filter }}:</a>
+	            	<a href="#" data-filter="{{ $filter }}" @if (isset($filters[$filter]))class="active"@endif>{{ __($filter) }}:</a>
 	            </li>
 	        @endforeach
 	    @endif
