@@ -98,6 +98,16 @@ class Mailbox extends Model
 {%mailbox.name%}</span>';
 
     /**
+     * Mailbox User Access Permissions.
+     */
+    public static $USER_ACCESS_PERMISSIONS = [
+        'Edit Mailbox' => 'edit',
+        'Permissions' => 'perm',
+        'Auto Replies' => 'auto',
+        'Email Signature' => 'sig'
+    ];
+
+    /**
      * Default values.
      */
     protected $attributes = [

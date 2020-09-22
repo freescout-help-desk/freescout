@@ -52,7 +52,7 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        if ($user->isAdmin() || $user->id == $model->id) {
+        if ($user->isAdmin() || $user->id == $model->id || $user->canManageMailbox($model->id)) {
             return true;
         } else {
             return false;
@@ -102,6 +102,8 @@ class UserPolicy
     public function viewMailboxMenu(User $user)
     {
         if ($user->isAdmin() || \Eventy::filter('user.can_view_mailbox_menu', false, $user)) {
+            return true;
+        } else if ($user->hasManageMailboxAccess()) {
             return true;
         } else {
             return false;

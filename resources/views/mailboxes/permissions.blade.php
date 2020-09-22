@@ -50,9 +50,9 @@
                         <tr class="table-header-nb">
                             <th>&nbsp;</th>
                             <th class="text-center"> {{ __('Hide from Assign list') }}</th>
-                            <th class="text-center"> {{ __('Edit Mailbox') }}</th>
-                            <th class="text-center"> {{ __('Permissions') }}</th>
-                            <th class="text-center"> {{ __('Auto Replies') }}</th>
+                            @foreach (\App\Mailbox::$USER_ACCESS_PERMISSIONS as $label=>$perm)
+                            <th class="text-center"> {{ __($label) }}</th>
+                            @endforeach
                         </tr>
                         <fieldset id="permissions-fields">
                             @foreach ($managers as $mailbox_user)
@@ -66,10 +66,11 @@
                                             <td class="text-center"></td>
                                         @else
                                             <td></td>
-                                            <td class="text-center"><input type="checkbox" name="managers[{{ $mailbox_user->id }}][access][edit]" value="edit" @if (!empty($mailbox_user->access) && in_array('edit', json_decode($mailbox_user->access))) checked="checked" @endif></td>
-                                            <td class="text-center"><input type="checkbox" name="managers[{{ $mailbox_user->id }}][access][perm]" value="perm" @if (!empty($mailbox_user->access) && in_array('perm', json_decode($mailbox_user->access))) checked="checked" @endif></td>
-                                            <td class="text-center"><input type="checkbox" name="managers[{{ $mailbox_user->id }}][access][auto]" value="auto" @if (!empty($mailbox_user->access) && in_array('auto', json_decode($mailbox_user->access))) checked="checked" @endif></td>
+                                            @foreach (\App\Mailbox::$USER_ACCESS_PERMISSIONS as $label=>$perm)
+                                            <td class="text-center"><input type="checkbox" name="managers[{{ $mailbox_user->id }}][access][{{ $perm }}]" value="{{ $perm }}" @if (!empty($mailbox_user->access) && in_array($perm, json_decode($mailbox_user->access))) checked="checked" @endif></td>
+                                            @endforeach
                                         @endif
+
                                     </td>
                                 </tr>
                             @endforeach
