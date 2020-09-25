@@ -38,7 +38,6 @@ class MailboxPolicy
         if ($user->isAdmin()) {
             return true;
         } else {
-            // Use cached users for Realtime events
             if ($mailbox->users->contains($user)) {
                 return true;
             } else {

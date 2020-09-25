@@ -29,9 +29,17 @@ class MailboxesController extends Controller
      */
     public function mailboxes()
     {
-        //$this->authorize('create', 'App\Mailbox');
-        //$mailboxes = Mailbox::all();
-        $mailboxes = auth()->user()->mailboxesCanView();
+        $user = auth()->user();
+
+        $mailboxes = $user->mailboxesCanView();
+
+        if (!\Eventy::filter('user.can_view_mailbox_menu', false, $user)) {
+            foreach ($mailboxes as $i => $mailbox) {
+                if (!$user->canManageMailbox($mailbox->id)) {
+                    $mailboxes->forget($i);
+                }
+            }
+        }
 
         return view('mailboxes/mailboxes', ['mailboxes' => $mailboxes]);
     }
@@ -88,9 +96,24 @@ class MailboxesController extends Controller
     public function update($id)
     {
         $mailbox = Mailbox::findOrFail($id);
-        //$this->authorize('update', $mailbox);
-        if (!auth()->user()->can('updateSettings', $mailbox)) {
-            $accessible_route = \Eventy::filter('mailbox.accessible_settings_route', '', auth()->user(), $mailbox);
+        $user = auth()->user();
+        if (!$user->can('updateSettings', $mailbox) && !$user->can('updateEmailSignature', $mailbox)) {
+            $accessible_route = '';
+
+            $mailbox_settings = $user->mailboxSettings($mailbox->id);
+            $access_permissions = json_decode($mailbox_settings->access);
+
+            if ($access_permissions && is_array($access_permissions)) {
+                foreach ($access_permissions as $perm) {
+                    $accessible_route = Mailbox::getAccessPermissionRoute($perm);
+                    if ($accessible_route) {
+                        break;
+                    }
+                }
+            }
+            if (!$accessible_route) {
+                $accessible_route = \Eventy::filter('mailbox.accessible_settings_route', '', auth()->user(), $mailbox);
+            }
             if ($accessible_route) {
                 return redirect()->route($accessible_route, ['id' => $mailbox->id]);
             } else {
@@ -121,33 +144,52 @@ class MailboxesController extends Controller
     {
         $mailbox = Mailbox::findOrFail($id);
 
-        $this->authorize('updateSettings', $mailbox);
-
-        // if not admin, the text only fields don't pass so spike them into the request.
-        if (!auth()->user()->isAdmin()) {
-            $request->merge([
-                'name' => $mailbox->name,
-                'email' => $mailbox->email
-            ]);
+        $user = auth()->user();
+        
+        if (!$user->can('updateSettings', $mailbox) && !$user->can('updateEmailSignature', $mailbox)) {
+            \Helper::denyAccess();
         }
 
-        $validator = Validator::make($request->all(), [
-            'name'             => 'required|string|max:40',
-            'email'            => 'required|string|email|max:128|unique:mailboxes,email,'.$id,
-            'aliases'          => 'nullable|string|max:255',
-            'from_name'        => 'required|integer',
-            'from_name_custom' => 'nullable|string|max:128',
-            'ticket_status'    => 'required|integer',
-            'template'         => 'required|integer',
-            'ticket_assignee'  => 'required|integer',
-        ]);
+        if ($user->can('updateSettings', $mailbox)) {
 
-        //event(new Registered($user = $this->create($request->all())));
+            // if not admin, the text only fields don't pass so spike them into the request.
+            if (!auth()->user()->isAdmin()) {
+                $request->merge([
+                    'name' => $mailbox->name,
+                    'email' => $mailbox->email
+                ]);
+            }
 
-        if ($validator->fails()) {
-            return redirect()->route('mailboxes.update', ['id' => $id])
-                        ->withErrors($validator)
-                        ->withInput();
+            $validator = Validator::make($request->all(), [
+                'name'             => 'required|string|max:40',
+                'email'            => 'required|string|email|max:128|unique:mailboxes,email,'.$id,
+                'aliases'          => 'nullable|string|max:255',
+                'from_name'        => 'required|integer',
+                'from_name_custom' => 'nullable|string|max:128',
+                'ticket_status'    => 'required|integer',
+                'template'         => 'required|integer',
+                'ticket_assignee'  => 'required|integer',
+            ]);
+
+            //event(new Registered($user = $this->create($request->all())));
+
+            if ($validator->fails()) {
+                return redirect()->route('mailboxes.update', ['id' => $id])
+                            ->withErrors($validator)
+                            ->withInput();
+            }
+        }
+
+        if ($user->can('updateEmailSignature', $mailbox)) {
+            $validator = Validator::make($request->all(), [
+                'signature'        => 'nullable|string',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->route('mailboxes.email_signature', ['id' => $id])
+                    ->withErrors($validator)
+                    ->withInput();
+            }
         }
 
         $mailbox->fill($request->all());
@@ -198,6 +240,8 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
         $this->authorize('updatePermissions', $mailbox);
 
+        $user = auth()->user();
+
         $mailbox->users()->sync($request->users);
         $mailbox->syncPersonalFolders($request->users);
 
@@ -214,15 +258,24 @@ class MailboxesController extends Controller
             $mailbox_user->settings->save();
         }
 
-        // Sets the mailbox_user.access JSON array
+        // Sets the mailbox_user.access array
         $mailbox_users = $mailbox->users;
         foreach ($mailbox_users as $mailbox_user) {
-            $access = Array();
+            $access = [];
             $mailbox_with_settings = $mailbox_user->mailboxesWithSettings()->where('mailbox_id', $id)->first();
-            foreach (\App\Mailbox::$USER_ACCESS_PERMISSIONS as $label=>$perm) {
-                if (!empty($request->managers[$mailbox_user->id]['access'][$perm])) $access[] = $request->managers[$mailbox_user->id]['access'][$perm];
+
+            foreach (\App\Mailbox::$access_permissions as $perm) {
+                if (!empty($request->managers[$mailbox_user->id]['access'][$perm])) {
+                    $access[] = $request->managers[$mailbox_user->id]['access'][$perm];
+                }
             }
-            $mailbox_with_settings->settings->access = json_encode($access);
+
+            if ($user->id == $mailbox_user->id && !$user->isAdmin()) {
+                // User with Permission priv's can't edit their own additional priv's.
+            } else {
+                $mailbox_with_settings->settings->access = json_encode($access);
+            }
+            $mailbox_with_settings->settings->hide = (isset($request->managers[$mailbox_user->id]['hide']) ? (int)$request->managers[$mailbox_user->id]['hide'] : false);
             $mailbox_with_settings->settings->save();
         }
 
@@ -376,7 +429,7 @@ class MailboxesController extends Controller
         } else {
             $mailbox = Mailbox::findOrFail($id);
         }
-        $this->authorize('view', $mailbox);
+        $this->authorize('viewCached', $mailbox);
 
         $folders = $mailbox->getAssesibleFolders();
 
@@ -504,36 +557,6 @@ class MailboxesController extends Controller
         return view('mailboxes/email_signature', [
             'mailbox' => $mailbox,
         ]);
-    }
-
-    /**
-     * Save auto reply settings.
-     */
-    public function emailSignatureSave($id, Request $request)
-    {
-        $mailbox = Mailbox::findOrFail($id);
-
-        $this->authorize('updateEmailSignature', $mailbox);
-
-        $validator = Validator::make($request->all(), [
-            'signature'        => 'nullable|string',
-        ]);
-
-        //event(new Registered($user = $this->create($request->all())));
-
-        if ($validator->fails()) {
-            return redirect()->route('mailboxes.email_signature', ['id' => $id])
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        $mailbox->fill($request->all());
-
-        $mailbox->save();
-
-        \Session::flash('flash_success_floating', __('Mailbox settings saved'));
-
-        return redirect()->route('mailboxes.email_signature', ['id' => $id]);
     }
 
 

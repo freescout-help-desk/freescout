@@ -23,7 +23,7 @@ class FolderPolicy
         if ($user->isAdmin()) {
             return true;
         } else {
-            if ($folder->user_id == $user->id || $user->mailboxes->contains($folder->mailbox)) {
+            if ($folder->user_id == $user->id || $user->mailboxesSettings()->pluck('mailbox_id')->contains($folder->mailbox_id)) {
                 return true;
             } else {
                 return false;

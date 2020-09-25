@@ -39,7 +39,16 @@
                         @endforeach
                     </fieldset>
 
+                    <div class="form-group margin-top">
+
+                        <button type="submit" class="btn btn-primary">
+                            {{ __('Save') }}
+                        </button>
+
+                    </div>
+
                 </div>
+
 
                 <div class="col-xs-12 margin-top">
                     <h3> {{ __('Access Settings') }}:</h3>
@@ -50,28 +59,30 @@
                         <tr class="table-header-nb">
                             <th>&nbsp;</th>
                             <th class="text-center"> {{ __('Hide from Assign list') }}</th>
-                            @foreach (\App\Mailbox::$USER_ACCESS_PERMISSIONS as $label=>$perm)
-                            <th class="text-center"> {{ __($label) }}</th>
+                            @foreach (\App\Mailbox::$access_permissions as $perm)
+                                <th class="text-center"> {{ \App\Mailbox::getAccessPermissionName($perm) }}</th>
                             @endforeach
                         </tr>
                         <fieldset id="permissions-fields">
                             @foreach ($managers as $mailbox_user)
                                 <tr>
-                                    <td>{{ $mailbox_user->getFullName() }}
+                                    <td>
+                                        {{ $mailbox_user->getFullName() }}
                                         @if ($mailbox_user->isAdmin())
                                             ({{ __('Administrator') }})
-                                            <td class="text-center"><input type="checkbox" name="managers[{{ $mailbox_user->id }}][hide]" value="1" @if (!empty($mailbox_user->hide)) checked="checked" @endif></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                            <td class="text-center"></td>
-                                        @else
-                                            <td></td>
-                                            @foreach (\App\Mailbox::$USER_ACCESS_PERMISSIONS as $label=>$perm)
-                                            <td class="text-center"><input type="checkbox" name="managers[{{ $mailbox_user->id }}][access][{{ $perm }}]" value="{{ $perm }}" @if (!empty($mailbox_user->access) && in_array($perm, json_decode($mailbox_user->access))) checked="checked" @endif></td>
-                                            @endforeach
                                         @endif
-
                                     </td>
+                                    <td class="text-center"><input type="checkbox" name="managers[{{ $mailbox_user->id }}][hide]" value="1" @if (!empty($mailbox_user->hide)) checked="checked" @endif></td>
+                                            
+                                    @foreach (\App\Mailbox::$access_permissions as $perm)
+                                        <td class="text-center">
+                                            @if (!$mailbox_user->isAdmin())
+                                                <input type="checkbox" name="managers[{{ $mailbox_user->id }}][access][{{ $perm }}]" value="{{ $perm }}" @if (count($managers) > 10) data-toggle="tooltip" title="{{ \App\Mailbox::getAccessPermissionName($perm) }}" @endif @if (!empty($mailbox_user->access) && in_array($perm, json_decode($mailbox_user->access))) checked="checked" @endif @if (Auth::id() == $mailbox_user->id && !Auth::user()->isAdmin()) disabled @endif/> 
+                                            @else
+                                                <input type="checkbox" name="" value="" checked="checked" disabled />
+                                            @endif
+                                        </td>
+                                    @endforeach
                                 </tr>
                             @endforeach
                         </fieldset>

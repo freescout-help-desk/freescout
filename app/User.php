@@ -264,6 +264,29 @@ class User extends Authenticatable
         }
     }
 
+    public function mailboxesSettings($cache = true)
+    {
+        $user = $this;
+
+        $query = MailboxUser::where('user_id', $user->id);
+
+        if ($cache) {
+            return $query->rememberForever()->get();
+        } else {
+            return $query->get();
+        }
+    }
+
+    public function mailboxSettings($mailbox_id)
+    {
+        $settings = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
+
+        if (!$settings) {
+            return Mailbox::getDummySettings();
+        }
+
+        return $settings;
+    }
     /**
      * Get IDs of mailboxes to which user has access.
      */
@@ -289,12 +312,11 @@ class User extends Authenticatable
         if ($this->isAdmin()) {
             return true;
         } else {
-            $mailboxes = $this->mailboxesCanViewWithSettings();
+            //$mailboxes = $this->mailboxesCanViewWithSettings(true);
+            $mailboxes = $this->mailboxesSettings();
             foreach ($mailboxes as $mailbox) {
-                if ($mailbox->access) {
-                    if (!empty(json_decode($mailbox->access))) {
-                        return true;
-                    }
+                if (!empty(json_decode($mailbox->access))) {
+                    return true;
                 }
             };
         }
@@ -308,12 +330,11 @@ class User extends Authenticatable
         if ($this->isAdmin()) {
             return true;
         } else {
-            $mailbox = $this->mailboxesCanViewWithSettings()->where('id', $mailbox_id)->first();
-            if ($mailbox->access) {
-                if (!empty(json_decode($mailbox->access))) {
-                    return true;
-                }
-            };
+            //$mailbox = $this->mailboxesCanViewWithSettings(true)->where('id', $mailbox_id)->first();
+            $mailbox = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
+            if ($mailbox && !empty(json_decode($mailbox->access))) {
+                return true;
+            }
         }
     }
 
@@ -321,8 +342,11 @@ class User extends Authenticatable
         if ($this->isAdmin()) {
             return true;
         } else {
-            $mailbox = $this->mailboxesCanViewWithSettings()->where('id', $mailbox_id)->first();
-            if (in_array($perm, json_decode($mailbox->access))) return true;
+            //$mailbox = $this->mailboxesCanViewWithSettings(true)->where('id', $mailbox_id)->first();
+            $mailbox = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
+            if ($mailbox && !empty($mailbox->access) && in_array($perm, json_decode($mailbox->access))) {
+                return true;
+            }
         }
     }
 

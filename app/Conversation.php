@@ -1181,7 +1181,7 @@ class Conversation extends Model
     public static function loadUsers($conversations)
     {
         $user_ids = $conversations->pluck('user_id')->unique()->toArray();
-        if (!$user_ids) {
+        if (!$user_ids || (count($user_ids) == 1 && empty($user_ids[0]))) {
             return;
         }
 
