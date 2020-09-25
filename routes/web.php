@@ -75,6 +75,8 @@ Route::get('/mailbox/connection-settings/{id}/incoming', 'MailboxesController@co
 Route::post('/mailbox/connection-settings/{id}/incoming', 'MailboxesController@connectionIncomingSave')->name('mailboxes.connection.incoming.save');
 Route::get('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReply')->name('mailboxes.auto_reply');
 Route::post('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReplySave')->name('mailboxes.auto_reply.save');
+Route::get('/mailbox/settings/{id}/email-signature', 'MailboxesController@emailSignature')->name('mailboxes.email_signature');
+Route::post('/mailbox/settings/{id}/email-signature', 'MailboxesController@emailSignatureSave')->name('mailboxes.email_signature.save');
 Route::post('/mailbox/ajax', ['uses' => 'MailboxesController@ajax', 'laroute' => true])->name('mailboxes.ajax');
 
 // Customers
