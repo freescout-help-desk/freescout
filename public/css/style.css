@@ -4034,6 +4034,12 @@ a.disabled:focus {
     margin-bottom: 0;
 }
 
+@media (max-width: 350px) {
+    .conv-next-prev {
+        display: none !important;
+    }
+}
+
 /**
  * Mobile
  */
