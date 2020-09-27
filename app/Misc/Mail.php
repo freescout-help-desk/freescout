@@ -574,9 +574,14 @@ class Mail
     /**
      * Generate artificial Message-ID.
      */
-    public static function generateMessageId($email_address)
+    public static function generateMessageId($email_address, $raw_body = '')
     {
-        return 'fsdummy-'.str_random(16).'@'.preg_replace("/.*@/", '', $email_address);
+        $hash = str_random(16);
+        if ($raw_body) {
+            $hash = md5(strval($raw_body));
+        }
+
+        return 'fs-'.$hash.'@'.preg_replace("/.*@/", '', $email_address);
     }
 
     /**
