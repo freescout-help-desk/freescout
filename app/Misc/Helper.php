@@ -1359,4 +1359,8 @@ class Helper
         // return number_format($size)." bytes";
     }
 
+    public static function isPrint()
+    {
+        return (bool)app('request')->input('print');
+    }
 }

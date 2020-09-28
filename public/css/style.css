@@ -3381,6 +3381,51 @@ ul.sidebar-block-list {
 }
 
 /**
+ * Print version
+ */
+body.print {
+    margin: 8px;
+}
+.print #conv-layout-customer,
+.print .navbar,
+.print .footer,
+.print #conv-toolbar,
+.print .conv-top-block,
+.print .thread-type-draft,
+.print .thread-options,
+.print .thread-to-first,
+.print .thread-status,
+.print .thread-photo,
+.print .conv-star,
+.print .thread-type-lineitem,
+.print #conv_tags,
+.print .sidebar-2col {
+    display: none;
+}
+.print #conv-layout-header,
+.print .content-2col {
+    display: block;
+    float: none;
+}
+.print .thread-header,
+.print #conv-layout-header,
+.print #conv-layout-main {
+    float: none;
+    padding: 0;
+}
+.print .thread {
+    background-color: #ffffff !important;
+    box-shadow: none !important;
+}
+.print .thread .thread-person {
+    color: #253540;
+}
+.print .thread-body {
+    margin: 0;
+    padding-left: 12px;
+}
+
+/**
  * Misc
  */
 .label {
