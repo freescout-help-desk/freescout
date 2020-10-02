@@ -311,7 +311,7 @@ class ModulesController extends Controller
                         $type = 'success';
                         $msg = __('":name" module successfully activated!', ['name' => $name]);
                     } else {
-                        // Deactivate module
+                        // Deactivate the module.
                         \App\Module::setActive($alias, false);
                         \Artisan::call('freescout:clear-cache');
                     }
@@ -325,6 +325,11 @@ class ModulesController extends Controller
                             \App\Module::setActive($alias, false);
                             \Artisan::call('freescout:clear-cache');
                         }
+                    }
+
+                    if ($type == 'success') {
+                        // Migrate again, in case migration did not work in the moment the module was activated.
+                        \Artisan::call('migrate');
                     }
 
                     // \Session::flash does not work after BufferedOutput
