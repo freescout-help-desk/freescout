@@ -22,19 +22,23 @@
             <tr id="version">
                 <th>{{ __('App Version') }}</th>
                 <td class="table-main-col">
-                    @if ($new_version_available)
-                        <strong class="text-danger">{{ \Config::get('app.version') }}</strong>
-                        <div class="alert alert-danger margin-top-10">
-                            {{ __('A new version is available') }}: <strong>{{ $latest_version }}</strong> <a href="{{ config('app.freescout_repo') }}/releases" target="_blank">({{ __('View details') }})</a>
-                            <button class="btn btn-default btn-sm update-trigger margin-left-10" data-loading-text="{{ __('Updating') }}…{{ __('This may take several minutes') }}"><small class="glyphicon glyphicon-refresh"></small> {{ __('Update Now') }}</button>
-                        </div>
-                    @else
-                        <strong class="text-success">{{ \Config::get('app.version') }}</strong> 
-                        &nbsp;&nbsp;
-                        <a href="#" class="btn btn-default btn-xs check-updates-trigger" data-loading-text="{{ __('Checking') }}…">{{ __('Check for updates') }}</a> 
-                        @if ($latest_version_error)
-                            <div class="text-danger margin-top">{{ $latest_version_error }}</div>
+                    @if (!\Config::get('app.disable_updating'))
+                        @if ($new_version_available)
+                            <strong class="text-danger">{{ \Config::get('app.version') }}</strong>
+                            <div class="alert alert-danger margin-top-10">
+                                {{ __('A new version is available') }}: <strong>{{ $latest_version }}</strong> <a href="{{ config('app.freescout_repo') }}/releases" target="_blank">({{ __('View details') }})</a>
+                                <button class="btn btn-default btn-sm update-trigger margin-left-10" data-loading-text="{{ __('Updating') }}…{{ __('This may take several minutes') }}"><small class="glyphicon glyphicon-refresh"></small> {{ __('Update Now') }}</button>
+                            </div>
+                        @else
+                            <strong class="text-success">{{ \Config::get('app.version') }}</strong>
+                            &nbsp;&nbsp;
+                            <a href="#" class="btn btn-default btn-xs check-updates-trigger" data-loading-text="{{ __('Checking') }}…">{{ __('Check for updates') }}</a>
+                            @if ($latest_version_error)
+                                <div class="text-danger margin-top">{{ $latest_version_error }}</div>
+                            @endif
                         @endif
+                    @else
+                        <strong class="text-success">{{ \Config::get('app.version') }}</strong>
                     @endif
                 </td>
             </tr>

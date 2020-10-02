@@ -92,6 +92,28 @@ class Mailbox extends Model
     const RATINGS_PLACEMENT_BELOW = 2;
 
     /**
+     * Access permissions.
+     */
+    const ACCESS_PERM_EDIT         = 'edit';
+    const ACCESS_PERM_PERMISSIONS  = 'perm';
+    const ACCESS_PERM_AUTO_REPLIES = 'auto';
+    const ACCESS_PERM_SIGNATURE    = 'sig';
+
+    public static $access_permissions = [
+        self::ACCESS_PERM_EDIT,
+        self::ACCESS_PERM_PERMISSIONS,
+        self::ACCESS_PERM_AUTO_REPLIES,
+        self::ACCESS_PERM_SIGNATURE,
+    ];
+
+    public static $access_routes = [
+        self::ACCESS_PERM_EDIT => 'mailboxes.update',
+        self::ACCESS_PERM_PERMISSIONS => 'mailboxes.permissions',
+        self::ACCESS_PERM_AUTO_REPLIES => 'mailboxes.auto_reply',
+        self::ACCESS_PERM_SIGNATURE => 'mailboxes.update',
+    ];
+
+    /**
      * Default signature set when mailbox created.
      */
     const DEFAULT_SIGNATURE = '<br><span style="color:#808080;">--<br>
@@ -162,7 +184,8 @@ class Mailbox extends Model
         return $this->belongsToMany('App\User')->as('settings')
             ->withPivot('after_send')
             ->withPivot('hide')
-            ->withPivot('mute');
+            ->withPivot('mute')
+            ->withPivot('access');
     }
 
     /**
@@ -547,14 +570,23 @@ class Mailbox extends Model
             return $mailbox_user->settings;
         } else {
             // Admin may have no record in mailbox_user table
-            // Create dummy object with default parameters
-            $settings = new \StdClass();
-            $settings->after_send = MailboxUser::AFTER_SEND_NEXT;
-            $settings->hide = false;
-            $settings->mute = false;
-
-            return $settings;
+            return self::getDummySettings();
         }
+    }
+
+    /**
+     * Create dummy object with default parameters
+     * @return [type] [description]
+     */
+    public static function getDummySettings()
+    {
+        $settings = new \StdClass();
+        $settings->after_send = MailboxUser::AFTER_SEND_NEXT;
+        $settings->hide = false;
+        $settings->mute = false;
+        $settings->access = [];
+
+        return $settings;
     }
 
     public function fetchUserSettings($user_id)
@@ -564,6 +596,7 @@ class Mailbox extends Model
         $this->after_send = $settings->after_send;
         $this->hide = $settings->hide;
         $this->mute = $settings->mute;
+        $this->access = $settings->access;
     }
 
     /**
@@ -690,7 +723,7 @@ class Mailbox extends Model
 
     public static function findOrFailWithSettings($id, $user_id)
     {
-        return Mailbox::select(['mailboxes.*', 'mailbox_user.hide', 'mailbox_user.mute'])
+        return Mailbox::select(['mailboxes.*', 'mailbox_user.hide', 'mailbox_user.mute', 'mailbox_user.access'])
                         ->where('mailboxes.id', $id)
                         ->leftJoin('mailbox_user', function ($join) use ($user_id) {
                             $join->on('mailbox_user.mailbox_id', '=', 'mailboxes.id');
@@ -704,4 +737,25 @@ class Mailbox extends Model
                             ->where('user_id', $user_id)
                             ->first();
     }*/
+
+    public static function getAccessPermissionName($perm)
+    {
+        $access_permissions = [
+            self::ACCESS_PERM_EDIT => __('Edit Mailbox'),
+            self::ACCESS_PERM_PERMISSIONS => __('Permissions'),
+            self::ACCESS_PERM_AUTO_REPLIES => __('Auto Replies'),
+            self::ACCESS_PERM_SIGNATURE => __('Email Signature'),
+        ];
+        $access_permissions = \Eventy::filter('mailbox.access_permissions_list', $access_permissions);
+
+        return $access_permissions[$perm] ?? '';
+    }
+
+    public static function getAccessPermissionRoute($perm)
+    {
+        $route = self::$access_routes[$perm] ?? '';
+        $route = \Eventy::filter('mailbox.access_permissions_route', $route, $perm);
+
+        return $route;
+    }
 }

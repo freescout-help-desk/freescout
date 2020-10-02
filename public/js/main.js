@@ -1157,6 +1157,11 @@ function initConversation()
 			);
 		});
 
+		// Print
+		if (getQueryParam('print')) {
+			window.print();
+		}
+
 		starConversationInit();
 		maybeShowStoredNote();
 		maybeShowDraft();

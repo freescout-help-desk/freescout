@@ -77,13 +77,27 @@
                     <div class="thread-person">
                         <strong>
                             @if ($thread->type == App\Thread::TYPE_CUSTOMER)
-                                <a href="{{ $thread->customer_cached->url() }}">{{ $thread->customer_cached->getFullName(true) }}</a>
+                                @if (\Helper::isPrint())
+                                    {{ $thread->customer_cached->getFullName(true) }}
+                                @else
+                                    <a href="{{ $thread->customer_cached->url() }}">{{ $thread->customer_cached->getFullName(true) }}</a>
+                                @endif
                             @else
-                                @include('conversations/thread_by', ['as_link' => true])
+                                @if (\Helper::isPrint())
+                                    {{ $thread->created_by_user_cached->getFullName() }}
+                                @else
+                                    @include('conversations/thread_by', ['as_link' => true])
+                                @endif
                             @endif
                         </strong>
+                        @if (\Helper::isPrint())
+                            <small>&lt;{{ ($thread->type == App\Thread::TYPE_CUSTOMER ? $thread->customer_cached->getMainEmail() : $thread->created_by_user_cached->email ) }}&gt;</small>
+                            @if ($thread->isNote())
+                                [{{ __('Note') }}]
+                            @endif
+                        @endif
                         {{-- Lines below must be spaceless --}}
-                            {{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
+                        {{ \Eventy::action('thread.after_person_action', $thread, $loop, $threads, $conversation, $mailbox) }}
                     </div>
                     @if ($thread->type != App\Thread::TYPE_NOTE || $thread->isForward())
                         <div class="thread-recipients">
@@ -92,6 +106,7 @@
                                 || ($thread->type == App\Thread::TYPE_CUSTOMER && count($thread->getToArray($mailbox->getEmails())))
                                 || ($thread->type == App\Thread::TYPE_MESSAGE && !in_array($conversation->customer_email, $thread->getToArray()))
                                 || ($thread->type == App\Thread::TYPE_MESSAGE && count($customer->emails) > 1)
+                                || \Helper::isPrint()
                             )
                                 <div>
                                     <strong>
@@ -285,6 +300,9 @@
                 @if ($thread->isReply())
                     <li><a href="{{ route('conversations.ajax_html', ['action' =>
                         'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message") }}" data-trigger="modal" data-modal-title="{{ __("Original Message") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
+                @endif
+                @if ($thread->isReply() || $thread->isNote())
+                    <li><a href="{{ \Request::getRequestUri() }}&amp;print_thread_id={{ $thread->id }}&amp;print=1" target="_blank">{{ __("Print") }}</a></li>
                 @endif
             </ul>
         </div>

@@ -34,6 +34,7 @@
   * Web installer & updater.
   * Starred conversations.
   * Forwarding conversations.
+  * Merging conversations.
   * Moving conversations between mailboxes.
   * Phone conversations.
   * Sending new conversations to multiple recipients at once.

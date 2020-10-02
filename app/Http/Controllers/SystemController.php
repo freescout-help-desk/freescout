@@ -85,7 +85,7 @@ class SystemController extends Controller
 
         // Commands
         $commands_list = [
-            'freescout:fetch-emails' => 'freescout:fetch-emails', 
+            'freescout:fetch-emails' => 'freescout:fetch-emails',
             \Helper::getWorkerIdentifier() => 'queue:work'
         ];
         foreach ($commands_list as $command_identifier => $command_name) {
@@ -174,19 +174,23 @@ class SystemController extends Controller
             ];
         }
 
-        // Check new version
+        // Check new version if enabled
         $new_version_available = false;
-        $latest_version = \Cache::remember('latest_version', 15, function () {
-            try {
-                return \Updater::getVersionAvailable();
-            } catch (\Exception $e) {
-                SystemController::$latest_version_error = $e->getMessage();
-                return '';
-            }
-        });
+        if (!\Config::get('app.disable_updating')) {
+            $latest_version = \Cache::remember('latest_version', 15, function () {
+                try {
+                    return \Updater::getVersionAvailable();
+                } catch (\Exception $e) {
+                    SystemController::$latest_version_error = $e->getMessage();
+                    return '';
+                }
+            });
 
-        if ($latest_version && version_compare($latest_version, \Config::get('app.version'), '>')) {
-            $new_version_available = true;
+            if ($latest_version && version_compare($latest_version, \Config::get('app.version'), '>')) {
+                $new_version_available = true;
+            }
+        } else {
+            $latest_version = \Config::get('app.version');
         }
 
         return view('system/status', [
@@ -303,7 +307,7 @@ class SystemController extends Controller
             case 'update':
                 try {
                     $status = \Updater::update();
-                    
+
                     // Artisan::output()
                 } catch (\Exception $e) {
                     $response['msg'] = __('Error occured. Please try again or try another :%a_start%update method:%a_end%', ['%a_start%' => '<a href="'.config('app.freescout_url').'/docs/update/" target="_blank">', '%a_end%' => '</a>']);
@@ -319,14 +323,18 @@ class SystemController extends Controller
                 break;
 
             case 'check_updates':
-                try {
-                    $response['new_version_available'] = \Updater::isNewVersionAvailable(config('app.version'));
-                    $response['status'] = 'success';
-                } catch (\Exception $e) {
-                    $response['msg'] = __('Error occured').': '.$e->getMessage();
-                }
-                if (!$response['msg'] && !$response['new_version_available']) {
-                    // Adding session flash is useless as cache is cleated
+                if (!\Config::get('app.disable_updating')) {
+                    try {
+                        $response['new_version_available'] = \Updater::isNewVersionAvailable(config('app.version'));
+                        $response['status'] = 'success';
+                    } catch (\Exception $e) {
+                        $response['msg'] = __('Error occured').': '.$e->getMessage();
+                    }
+                    if (!$response['msg'] && !$response['new_version_available']) {
+                        // Adding session flash is useless as cache is cleated
+                        $response['msg_success'] = __('You have the latest version installed');
+                    }
+                } else {
                     $response['msg_success'] = __('You have the latest version installed');
                 }
                 break;

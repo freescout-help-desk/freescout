@@ -44,7 +44,7 @@ class ConversationsController extends Controller
     public function view(Request $request, $id)
     {
         $conversation = Conversation::findOrFail($id);
-        $this->authorize('view', $conversation);
+        $this->authorize('viewCached', $conversation);
 
         $mailbox = $conversation->mailbox;
         $customer = $conversation->customer_cached;
@@ -109,7 +109,8 @@ class ConversationsController extends Controller
             return redirect()->away($conversation->url($folder->id));
         }
 
-        $after_send = $conversation->mailbox->getUserSettings($user->id)->after_send;
+        //$after_send = $conversation->mailbox->getUserSettings($user->id)->after_send;
+        $after_send = $user->mailboxSettings($conversation->mailbox_id)->after_send;
 
         // Detect customers and emails to which user can reply
         $to_customers = [];
@@ -287,6 +288,7 @@ class ConversationsController extends Controller
 
         $folder = $mailbox->folders()->where('type', Folder::TYPE_DRAFTS)->first();
 
+        // todo: use $user->mailboxSettings()
         $after_send = $mailbox->getUserSettings(auth()->user()->id)->after_send;
 
         // Create conversation from thread
@@ -2034,6 +2036,7 @@ class ConversationsController extends Controller
         if (!empty($request->after_send)) {
             $after_send = $request->after_send;
         } else {
+            // todo: use $user->mailboxSettings()
             $after_send = $conversation->mailbox->getUserSettings($user->id)->after_send;
         }
         if (!empty($after_send)) {

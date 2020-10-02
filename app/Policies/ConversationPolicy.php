@@ -33,6 +33,26 @@ class ConversationPolicy
     }
 
     /**
+     * Cached version.
+     * 
+     * @param  User         $user         [description]
+     * @param  Conversation $conversation [description]
+     * @return [type]                     [description]
+     */
+    public function viewCached(User $user, Conversation $conversation)
+    {
+        if ($user->isAdmin()) {
+            return true;
+        } else {
+            if ($conversation->mailbox->users_cached->contains($user)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
      * Determine whether the user can update the conversation.
      *
      * @param \App\User         $user

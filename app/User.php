@@ -142,7 +142,8 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Mailbox')->as('settings')
             ->withPivot('after_send')
             ->withPivot('hide')
-            ->withPivot('mute');
+            ->withPivot('mute')
+            ->withPivot('access');
     }
 
     /**
@@ -244,13 +245,13 @@ class User extends Authenticatable
         $user = $this;
 
         if ($this->isAdmin()) {
-            $query = Mailbox::select(['mailboxes.*', 'mailbox_user.hide', 'mailbox_user.mute'])
+            $query = Mailbox::select(['mailboxes.*', 'mailbox_user.hide', 'mailbox_user.mute', 'mailbox_user.access'])
                         ->leftJoin('mailbox_user', function ($join) use ($user) {
                             $join->on('mailbox_user.mailbox_id', '=', 'mailboxes.id');
                             $join->where('mailbox_user.user_id', $user->id);
                         });
         } else {
-            $query = Mailbox::select(['mailboxes.*', 'mailbox_user.hide', 'mailbox_user.mute'])
+            $query = Mailbox::select(['mailboxes.*', 'mailbox_user.hide', 'mailbox_user.mute', 'mailbox_user.access'])
                         ->join('mailbox_user', function ($join) use ($user) {
                             $join->on('mailbox_user.mailbox_id', '=', 'mailboxes.id');
                             $join->where('mailbox_user.user_id', $user->id);
@@ -263,6 +264,29 @@ class User extends Authenticatable
         }
     }
 
+    public function mailboxesSettings($cache = true)
+    {
+        $user = $this;
+
+        $query = MailboxUser::where('user_id', $user->id);
+
+        if ($cache) {
+            return $query->rememberForever()->get();
+        } else {
+            return $query->get();
+        }
+    }
+
+    public function mailboxSettings($mailbox_id)
+    {
+        $settings = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
+
+        if (!$settings) {
+            return Mailbox::getDummySettings();
+        }
+
+        return $settings;
+    }
     /**
      * Get IDs of mailboxes to which user has access.
      */
@@ -280,6 +304,53 @@ class User extends Authenticatable
         $ids = $this->mailboxesIdsCanView();
         return in_array($mailbox_id, $ids);
     }
+
+    /**
+     * Check to see if the user can manage any mailboxes
+     */
+    public function hasManageMailboxAccess() {
+        if ($this->isAdmin()) {
+            return true;
+        } else {
+            //$mailboxes = $this->mailboxesCanViewWithSettings(true);
+            $mailboxes = $this->mailboxesSettings();
+            foreach ($mailboxes as $mailbox) {
+                if (!empty(json_decode($mailbox->access))) {
+                    return true;
+                }
+            };
+        }
+    }
+
+    /**
+     * Check to see if the user can manage a specific mailbox
+     */
+    public function canManageMailbox($mailbox_id)
+    {
+        if ($this->isAdmin()) {
+            return true;
+        } else {
+            //$mailbox = $this->mailboxesCanViewWithSettings(true)->where('id', $mailbox_id)->first();
+            $mailbox = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
+            if ($mailbox && !empty(json_decode($mailbox->access))) {
+                return true;
+            }
+        }
+    }
+
+    public function hasManageMailboxPermission($mailbox_id, $perm) {
+        if ($this->isAdmin()) {
+            return true;
+        } else {
+            //$mailbox = $this->mailboxesCanViewWithSettings(true)->where('id', $mailbox_id)->first();
+            $mailbox = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
+            if ($mailbox && !empty($mailbox->access) && in_array($perm, json_decode($mailbox->access))) {
+                return true;
+            }
+        }
+    }
+
+
 
     /**
      * Generate random password for the user.

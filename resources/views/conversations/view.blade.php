@@ -1,7 +1,13 @@
 @extends('layouts.app')
 
 @section('title_full', '#'.$conversation->number.' '.$conversation->getSubject().($customer ? ' - '.$customer->getFullName(true) : ''))
-@section('body_class', 'body-conv')
+
+@if (app('request')->input('print'))
+    @section('body_class', 'body-conv print')
+@else
+    @section('body_class', 'body-conv')
+@endif
+
 @section('body_attrs')@parent data-conversation_id="{{ $conversation->id }}"@endsection
 
 @section('sidebar')
@@ -38,6 +44,7 @@
                                 <a href="#" class="conv-follow @if (!$is_following) hidden @endif" data-follow-action="unfollow"><i class="glyphicon glyphicon-bell"></i> {{ __("Unfollow") }}</a>
                             </li>
                             <li><a href="#" class="conv-forward"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
+                            <li><a href="{{ \Request::getRequestUri() }}&amp;print=1" target="_blank"><i class="glyphicon glyphicon-print"></i> {{ __("Print") }}</a></li>
                             <li><a href="{{ route('conversations.ajax_html', ['action' =>
                                             'merge_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Merge Conversations") }}" data-modal-no-footer="true" data-modal-on-show="initMergeConv"><i class="glyphicon glyphicon-indent-left"></i> {{ __("Merge") }}</a></li>
                             @if (Auth::user()->can('move', App\Conversation::class))
