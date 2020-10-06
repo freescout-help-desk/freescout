@@ -53,7 +53,7 @@
                 <div class="col-xs-12 margin-top">
                     <h3> {{ __('Access Settings') }}:</h3>
                 </div>
-                <div class="col-md-11 col-lg-9">
+                <div class="col-md-11 col-lg-9" style="overflow-x: auto;">
 
                     <table class="table">
                         <tr class="table-header-nb">
@@ -73,11 +73,11 @@
                                         @endif
                                     </td>
                                     <td class="text-center"><input type="checkbox" name="managers[{{ $mailbox_user->id }}][hide]" value="1" @if (!empty($mailbox_user->hide)) checked="checked" @endif></td>
-                                            
+
                                     @foreach (\App\Mailbox::$access_permissions as $perm)
                                         <td class="text-center">
                                             @if (!$mailbox_user->isAdmin())
-                                                <input type="checkbox" name="managers[{{ $mailbox_user->id }}][access][{{ $perm }}]" value="{{ $perm }}" @if (count($managers) > 10) data-toggle="tooltip" title="{{ \App\Mailbox::getAccessPermissionName($perm) }}" @endif @if (!empty($mailbox_user->access) && in_array($perm, json_decode($mailbox_user->access))) checked="checked" @endif @if (Auth::id() == $mailbox_user->id && !Auth::user()->isAdmin()) disabled @endif/> 
+                                                <input type="checkbox" name="managers[{{ $mailbox_user->id }}][access][{{ $perm }}]" value="{{ $perm }}" @if (count($managers) > 10) data-toggle="tooltip" title="{{ \App\Mailbox::getAccessPermissionName($perm) }}" @endif @if (!empty($mailbox_user->access) && in_array($perm, json_decode($mailbox_user->access))) checked="checked" @endif @if (Auth::id() == $mailbox_user->id && !Auth::user()->isAdmin()) disabled @endif/>
                                             @else
                                                 <input type="checkbox" name="" value="" checked="checked" disabled />
                                             @endif

@@ -645,6 +645,7 @@ class Customer extends Model
     public static function formatPhones(array $phones_array)
     {
         $phones = [];
+
         foreach ($phones_array as $phone) {
             if (is_array($phone)) {
                 if (!empty($phone['value']) && !empty($phone['type']) && in_array($phone['type'], array_keys(self::$phone_types))) {
@@ -669,10 +670,17 @@ class Customer extends Model
      */
     public function addPhone($phone, $type = self::PHONE_TYPE_WORK)
     {
-        $this->setPhones(array_merge(
-            $this->getPhones(),
-            [['value' => $phone, 'type' => $type]]
-        ));
+        if (is_string($phone)) {
+            $this->setPhones(array_merge(
+                $this->getPhones(),
+                [['value' => $phone, 'type' => $type]]
+            ));
+        } else {
+            $this->setPhones(array_merge(
+                $this->getPhones(),
+                [$phone]
+            ));
+        }
     }
 
     /**
@@ -725,6 +733,9 @@ class Customer extends Model
         foreach ($websites_array as $key => $value) {
             // FILTER_SANITIZE_URL cuts some symbols.
             //$value = filter_var((string) $value, FILTER_SANITIZE_URL);
+            if (isset($value['value'])) {
+                $value = $value['value'];
+            }
             if (!preg_match("/http(s)?:\/\//i", $value)) {
                 $value = 'http://'.$value;
             }
@@ -739,8 +750,64 @@ class Customer extends Model
     public function addWebsite($website)
     {
         $websites = $this->getWebsites();
+        if (isset($website['value'])) {
+            $website = $website['value'];
+        }
         array_push($websites, $website);
         $this->setWebsites($websites);
+    }
+
+    /**
+     * Sanitize social profiles.
+     *
+     * @param array $list [description]
+     *
+     * @return array [description]
+     */
+    public static function formatSocialProfiles(array $list)
+    {
+        $social_profiles = [];
+        foreach ($list as $social_profile) {
+            if (is_array($social_profile)) {
+                if (!empty($social_profile['value']) && !empty($social_profile['type']) 
+                    && in_array($social_profile['type'], array_keys(self::$social_types))
+                ) {
+                    $social_profiles[] = [
+                        'value' => (string) $social_profile['value'],
+                        'type'  => (int) $social_profile['type'],
+                    ];
+                }
+            } else {
+                $social_profiles[] = [
+                    'value' => (string) $social_profile,
+                    'type'  => self::SOCIAL_TYPE_OTHER,
+                ];
+            }
+        }
+
+        return $social_profiles;
+    }
+
+    /**
+     * Set social profiles as JSON.
+     *
+     * @param array $websites_array
+     */
+    public function setSocialProfiles(array $sp_array)
+    {
+        $sp_array = self::formatSocialProfiles($sp_array);
+
+        // Remove dubplicates.
+        $list = [];
+        foreach ($sp_array as $i => $data) {
+            if (in_array($data['value'], $list)) {
+                unset($sp_array[$i]);
+            } else {
+                $list[] = $data['value'];         
+            }
+        }
+
+        $this->social_profiles = \Helper::jsonEncodeUtf8($sp_array);
     }
 
     /**
@@ -789,6 +856,8 @@ class Customer extends Model
             $email_obj->save();
         }
 
+        // Todo: check phone uniqueness.
+
         if ($new) {
             \Eventy::action('customer.created', $customer);
         }
@@ -802,6 +871,11 @@ class Customer extends Model
     public function setData($data, $replace_data = true, $save = false)
     {
         $result = false;
+
+        // todo: photoUrl.
+        if (isset($data['photo_url'])) {
+            unset($data['photo_url']);
+        }
 
         if ($replace_data) {
             // Replace data.
@@ -818,22 +892,56 @@ class Customer extends Model
         }
 
         // Set JSON values.
+        if (!empty($data['phone'])) {
+            $this->addPhone($data['phone']);
+        }
         foreach ($data as $key => $value) {
-            if (!in_array($key, $this->json_fields)) {
+            if (!in_array($key, $this->json_fields) && $key != 'emails') {
                 continue;
             }
-            // todo: setChats, setSocialProfiles
+            // todo: setChats
+            if ($key == 'emails') {
+                foreach ($value as $email_data) {
+                    if (!empty($email_data['value'])) {
+                        if (!$this->id) {
+                            $this->save();
+                        }
+                        $email_created = Email::create($email_data['value'], $this->id, $email_data['type']);
+
+                        if ($email_created) {
+                            $result = true;
+                        }
+                    }
+                }
+            }
             if ($key == 'phones') {
-                foreach ($value as $phone_value) {
-                    $this->addPhone($phone_value);
+                if (isset($value['value'])) {
+                    $this->addPhone($value);
+                } else {
+                    foreach ($value as $phone_value) {
+                        $this->addPhone($phone_value);
+                    }
                 }
                 $result = true;
             }
             if ($key == 'websites') {
-                $this->addWebsite($value);
+                if (is_array($value)) {
+                    foreach ($value as $website) {
+                        $this->addWebsite($website);
+                    }
+                } else {
+                    $this->addWebsite($value);
+                }
+                $result = true;
+            }
+            if ($key == 'social_profiles') {
+                $this->setSocialProfiles($value);
                 $result = true;
             }
         }
+
+        // Maybe Todo: check phone uniqueness.
+        // Same phone can be written in many ways, so it's almost useless to chek uniqueness.
 
         if ($save) {
             $this->save();
@@ -843,12 +951,14 @@ class Customer extends Model
     }
 
     /**
+     * Create a customer, email is not required.
      * For phone conversations.
      */
     public static function createWithoutEmail($data = [])
     {
         $customer = new self();
-        $customer->fill($data);
+        $customer->setData($data);
+
         $customer->save();
 
         \Eventy::action('customer.created', $customer);
@@ -864,6 +974,16 @@ class Customer extends Model
     public function url()
     {
         return route('customers.update', ['id'=>$this->id]);
+    }
+
+    /**
+     * Get view customer URL.
+     *
+     * @return string
+     */
+    public function urlView()
+    {
+        return route('customers.conversations', ['id'=>$this->id]);
     }
 
     /**

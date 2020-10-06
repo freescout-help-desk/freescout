@@ -53,14 +53,14 @@
                         </div>
                     @endif
 
-                    @if ($user->invite_state == App\User::INVITE_STATE_ACTIVATED)
+                    @if (auth()->user()->isAdmin() && $user->invite_state == App\User::INVITE_STATE_ACTIVATED)
                         <div class="form-group{{ $errors->has('disabled') ? ' has-error' : '' }}">
                             <label for="disabled" class="col-sm-2 control-label">{{ __('Disabled') }}</label>
 
                             <div class="col-sm-6">
          
                                 <div class="controls">
-                                    <label for="user_disabled" class="checkbox inline plain"><input type="checkbox" name="disabled" value="{{ App\User::STATUS_DISABLED }}" id="user_disabled" @if (old('disabled', $user->status) == App\User::STATUS_DISABLED)checked="checked"@endif> {{ __('Prevent user from logging in') }}</label>
+                                    <label for="user_disabled" class="checkbox inline plain"><input type="checkbox" name="disabled" value="{{ App\User::STATUS_DISABLED }}" id="user_disabled" @if (old('disabled', $user->status) == App\User::STATUS_DISABLED)checked="checked"@endif> <span class="text-help">{{ __('Prevent user from logging in') }}</span></label>
                                 </div>
                                 @include('partials/field_error', ['field'=>'disabled'])
                             </div>

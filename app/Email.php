@@ -69,4 +69,19 @@ class Email extends Model
     {
         return explode('@', $this->email)[0];
     }
+
+    public static function create($email, $customer_id, $type = self::TYPE_WORK)
+    {
+        try {
+            $email_obj = new Email();
+            $email_obj->email = $email;
+            $email_obj->type = array_key_exists($type, self::$types) ? $type : self::TYPE_WORK;
+            $email_obj->customer_id = $customer_id;
+            $email_obj->save();
+
+            return $email_obj;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }

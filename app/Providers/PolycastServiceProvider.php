@@ -78,8 +78,8 @@ class PolycastServiceProvider extends ServiceProvider
                 $payload = $collection->map(function ($item, $key) use ($request) {
                     $created = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item->created_at);
                     $requested = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $request->get('time'));
-                    $item->channels = json_decode($item->channels);
-                    $item->payload = json_decode($item->payload);
+                    $item->channels = json_decode($item->channels, false);
+                    $item->payload = json_decode($item->payload, false);
                     // Add extra data to the payload
                     // This works only if payload has medius and thread_id
                     $item->data = BroadcastNotification::fetchPayloadData($item->payload);

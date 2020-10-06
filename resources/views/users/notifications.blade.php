@@ -34,7 +34,7 @@
                         </th>
                         <td class="text-center">{{ __('Email') }}<br/><input type="checkbox" class="sel-all" value="email"></td>
                         <td class="text-center">{{ __('Browser') }}<br/><input type="checkbox" class="sel-all" value="browser"></td>
-                        <td class="text-center">{{ __('Mobile') }}<br/><small>(<a href="https://freescout.net/module/mobile-notifications/" target="_blank">Android</a>)</small><br/><input type="checkbox" class="sel-all" @if (!$mobile_available) disabled="disabled" @endif value="mobile"></td>
+                        <td class="text-center">{{ __('Mobile') }}<br/><small>(<a href="https://freescout.net/module/mobile-notifications/" target="_blank">Android</a> / <a href="https://freescout.net/ios-app/" target="_blank">iOS</a>)</small><br/><input type="checkbox" class="sel-all" @if (!$mobile_available) disabled="disabled" @endif value="mobile"></td>
                     </tr>
                     <tr>
                         <td>{{ __('There is a new conversation') }}</td>
