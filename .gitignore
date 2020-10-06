@@ -27,6 +27,7 @@ Thumbs.db
 /Modules
 /Modules/**/.git
 /public/modules
+/public/docs
 /storage/.ignore_locales
 /storage/.installed
 /tools
