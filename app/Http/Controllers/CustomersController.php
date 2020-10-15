@@ -171,10 +171,10 @@ class CustomersController extends Controller
      */
     public function permissions($id)
     {
-        $user = User::findOrFail($id);
+        $user = \App\User::findOrFail($id);
         $this->authorize('update', $user);
 
-        $mailboxes = Mailbox::all();
+        $mailboxes = \App\Mailbox::all();
 
         return view('users/permissions', ['user' => $user, 'mailboxes' => $mailboxes, 'user_mailboxes' => $user->mailboxes]);
     }
@@ -187,7 +187,7 @@ class CustomersController extends Controller
      */
     public function permissionsSave($id, Request $request)
     {
-        $user = User::findOrFail($id);
+        $user = \App\User::findOrFail($id);
         $this->authorize('update', $user);
 
         $user->mailboxes()->sync($request->mailboxes);

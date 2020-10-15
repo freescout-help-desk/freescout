@@ -50,7 +50,7 @@ class Attachment extends Model
      */
     public function thread()
     {
-        return $this->belongsTo('App\Thread');
+        return $this->belongsTo(\App\Thread::class);
     }
 
     /**

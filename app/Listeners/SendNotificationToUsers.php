@@ -29,11 +29,11 @@ class SendNotificationToUsers
 
         // Detect event type by event class
         switch (get_class($event)) {
-            case 'App\Events\UserReplied':
+            case \App\Events\UserReplied::class:
                 $caused_by_user_id = $event->thread->created_by_user_id;
                 $event_type = Subscription::EVENT_TYPE_USER_REPLIED;
                 break;
-            case 'App\Events\UserAddedNote':
+            case \App\Events\UserAddedNote::class:
                 $caused_by_user_id = $event->thread->created_by_user_id;
                 // When conversation is forwarded only notification
                 // about child forward conversation is sent.
@@ -41,21 +41,21 @@ class SendNotificationToUsers
                     $event_type = Subscription::EVENT_TYPE_USER_ADDED_NOTE;
                 }
                 break;
-            case 'App\Events\UserCreatedConversation':
+            case \App\Events\UserCreatedConversation::class:
                 $caused_by_user_id = $event->conversation->created_by_user_id;
                 $event_type = Subscription::EVENT_TYPE_NEW;
                 break;
-            case 'App\Events\CustomerCreatedConversation':
+            case \App\Events\CustomerCreatedConversation::class:
                 // Do not send notification if conversation is spam.
                 if ($event->conversation->status != Conversation::STATUS_SPAM) {
                     $event_type = Subscription::EVENT_TYPE_NEW;
                 }
                 break;
-            case 'App\Events\ConversationUserChanged':
+            case \App\Events\ConversationUserChanged::class:
                 $caused_by_user_id = $event->user->id;
                 $event_type = Subscription::EVENT_TYPE_ASSIGNED;
                 break;
-            case 'App\Events\CustomerReplied':
+            case \App\Events\CustomerReplied::class:
                 $event_type = Subscription::EVENT_TYPE_CUSTOMER_REPLIED;
                 break;
         }

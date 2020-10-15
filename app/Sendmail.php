@@ -21,7 +21,7 @@ class Sendmail extends Model
      */
     public function customer()
     {
-        return $this->belongsTo('App\Customer');
+        return $this->belongsTo(\App\Customer::class);
     }
 
     /**
@@ -29,6 +29,6 @@ class Sendmail extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(\App\User::class);
     }
 }

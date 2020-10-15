@@ -176,12 +176,12 @@ class Mailbox extends Model
      */
     public function users()
     {
-        return $this->belongsToMany('App\User');
+        return $this->belongsToMany(\App\User::class);
     }
 
     public function usersWithSettings()
     {
-        return $this->belongsToMany('App\User')->as('settings')
+        return $this->belongsToMany(\App\User::class)->as('settings')
             ->withPivot('after_send')
             ->withPivot('hide')
             ->withPivot('mute')
@@ -201,7 +201,7 @@ class Mailbox extends Model
      */
     public function conversations()
     {
-        return $this->hasMany('App\Conversation');
+        return $this->hasMany(\App\Conversation::class);
     }
 
     /**
@@ -209,7 +209,7 @@ class Mailbox extends Model
      */
     public function folders()
     {
-        return $this->hasMany('App\Folder');
+        return $this->hasMany(\App\Folder::class);
     }
 
     /**

@@ -13,75 +13,75 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'Illuminate\Auth\Events\Registered' => [
-            'App\Listeners\LogRegisteredUser',
+        \Illuminate\Auth\Events\Registered::class => [
+            \App\Listeners\LogRegisteredUser::class,
         ],
 
-        'Illuminate\Auth\Events\Login' => [
-            'App\Listeners\RememberUserLocale',
-            'App\Listeners\LogSuccessfulLogin',
-            'App\Listeners\ActivateUser',
+        \Illuminate\Auth\Events\Login::class => [
+            \App\Listeners\RememberUserLocale::class,
+            \App\Listeners\LogSuccessfulLogin::class,
+            \App\Listeners\ActivateUser::class,
         ],
 
-        'Illuminate\Auth\Events\Failed' => [
-            'App\Listeners\LogFailedLogin',
+        \Illuminate\Auth\Events\Failed::class => [
+            \App\Listeners\LogFailedLogin::class,
         ],
 
-        'Illuminate\Auth\Events\Logout' => [
-            'App\Listeners\LogSuccessfulLogout',
+        \Illuminate\Auth\Events\Logout::class => [
+            \App\Listeners\LogSuccessfulLogout::class,
         ],
 
-        'Illuminate\Auth\Events\Lockout' => [
-            'App\Listeners\LogLockout',
+        \Illuminate\Auth\Events\Lockout::class => [
+            \App\Listeners\LogLockout::class,
         ],
 
-        'Illuminate\Auth\Events\PasswordReset' => [
-            'App\Listeners\LogPasswordReset',
-            'App\Listeners\SendPasswordChanged',
+        \Illuminate\Auth\Events\PasswordReset::class => [
+            \App\Listeners\LogPasswordReset::class,
+            \App\Listeners\SendPasswordChanged::class,
         ],
 
-        'App\Events\UserDeleted' => [
-            'App\Listeners\LogUserDeletion',
+        \App\Events\UserDeleted::class => [
+            \App\Listeners\LogUserDeletion::class,
         ],
 
-        'App\Events\ConversationStatusChanged' => [
-            'App\Listeners\UpdateMailboxCounters',
+        \App\Events\ConversationStatusChanged::class => [
+            \App\Listeners\UpdateMailboxCounters::class,
         ],
 
-        'App\Events\ConversationUserChanged' => [
-            'App\Listeners\UpdateMailboxCounters',
-            'App\Listeners\SendNotificationToUsers',
+        \App\Events\ConversationUserChanged::class => [
+            \App\Listeners\UpdateMailboxCounters::class,
+            \App\Listeners\SendNotificationToUsers::class,
         ],
 
-        'App\Events\UserCreatedConversationDraft' => [
-
-        ],
-
-        'App\Events\UserCreatedThreadDraft' => [
+        \App\Events\UserCreatedConversationDraft::class => [
 
         ],
 
-        'App\Events\UserReplied' => [
-             'App\Listeners\SendReplyToCustomer',
-             'App\Listeners\SendNotificationToUsers',
+        \App\Events\UserCreatedThreadDraft::class => [
+
         ],
 
-        'App\Events\CustomerReplied' => [
-            'App\Listeners\SendNotificationToUsers',
+        \App\Events\UserReplied::class => [
+             \App\Listeners\SendReplyToCustomer::class,
+             \App\Listeners\SendNotificationToUsers::class,
         ],
 
-        'App\Events\UserCreatedConversation' => [
-            'App\Listeners\SendReplyToCustomer',
-            'App\Listeners\SendNotificationToUsers',
+        \App\Events\CustomerReplied::class => [
+            \App\Listeners\SendNotificationToUsers::class,
         ],
 
-        'App\Events\CustomerCreatedConversation' => [
-            'App\Listeners\SendAutoReply',
-            'App\Listeners\SendNotificationToUsers',
+        \App\Events\UserCreatedConversation::class => [
+            \App\Listeners\SendReplyToCustomer::class,
+            \App\Listeners\SendNotificationToUsers::class,
         ],
 
-        'App\Events\UserAddedNote' => [
-            'App\Listeners\SendNotificationToUsers',
+        \App\Events\CustomerCreatedConversation::class => [
+            \App\Listeners\SendAutoReply::class,
+            \App\Listeners\SendNotificationToUsers::class,
+        ],
+
+        \App\Events\UserAddedNote::class => [
+            \App\Listeners\SendNotificationToUsers::class,
         ],
     ];
 

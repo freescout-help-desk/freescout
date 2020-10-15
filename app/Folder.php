@@ -83,7 +83,7 @@ class Folder extends Model
      */
     public function mailbox()
     {
-        return $this->belongsTo('App\Mailbox');
+        return $this->belongsTo(\App\Mailbox::class);
     }
 
     /**
@@ -91,7 +91,7 @@ class Folder extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(\App\User::class);
     }
 
     /**
@@ -99,7 +99,7 @@ class Folder extends Model
      */
     public function conversations()
     {
-        return $this->hasMany('App\Conversation');
+        return $this->hasMany(\App\Conversation::class);
     }
 
     public function getTypeName()

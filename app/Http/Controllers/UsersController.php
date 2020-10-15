@@ -31,7 +31,7 @@ class UsersController extends Controller
      */
     public function users()
     {
-        $this->authorize('create', 'App\User');
+        $this->authorize('create', \App\User::class);
 
         $users = User::nonDeleted()->get();
         $users = User::sortUsers($users);
@@ -44,7 +44,7 @@ class UsersController extends Controller
      */
     public function create()
     {
-        $this->authorize('create', 'App\User');
+        $this->authorize('create', \App\User::class);
         $mailboxes = Mailbox::all();
 
         return view('users/create', ['mailboxes' => $mailboxes]);
@@ -57,7 +57,7 @@ class UsersController extends Controller
      */
     public function createSave(Request $request)
     {
-        $this->authorize('create', 'App\User');
+        $this->authorize('create', \App\User::class);
 
         $rules = [
             'role'       => 'integer',

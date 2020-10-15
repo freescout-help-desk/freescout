@@ -82,7 +82,7 @@ class SecureController extends Controller
                 $log = [];
                 $log['date'] = $activity->created_at;
                 if ($activity->causer) {
-                    if ($activity->causer_type == 'App\User') {
+                    if ($activity->causer_type == \App\User::class) {
                         $cols = addCol($cols, 'user');
                         $log['user'] = $activity->causer;
                     } else {

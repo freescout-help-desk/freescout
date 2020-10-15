@@ -43,7 +43,7 @@
         "fzaninotto/faker": "v1.7.1",
         "mockery/mockery": "1.1.0",
         "phpunit/phpunit": "6.5.8",
-
+        "imanghafoori/laravel-microscope": "1.0.*",
         "symfony/polyfill-ctype": "v1.10.*",
         "vlucas/phpdotenv": "v2.5.1",
         "symfony/css-selector": "v3.4.18",

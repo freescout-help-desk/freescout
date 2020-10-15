@@ -167,7 +167,7 @@ class Thread extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(\App\User::class);
     }
 
     /**
@@ -183,7 +183,7 @@ class Thread extends Model
      */
     public function customer()
     {
-        return $this->belongsTo('App\Customer');
+        return $this->belongsTo(\App\Customer::class);
     }
 
     /**
@@ -199,7 +199,7 @@ class Thread extends Model
      */
     public function conversation()
     {
-        return $this->belongsTo('App\Conversation');
+        return $this->belongsTo(\App\Conversation::class);
     }
 
     /**
@@ -207,8 +207,8 @@ class Thread extends Model
      */
     public function attachments()
     {
-        return $this->hasMany('App\Attachment')->where('embedded', false);
-        //return $this->hasMany('App\Attachment');
+        return $this->hasMany(\App\Attachment::class)->where('embedded', false);
+        //return $this->hasMany(\App\Attachment::class);
     }
 
     /**
@@ -216,7 +216,7 @@ class Thread extends Model
      */
     public function embeds()
     {
-        return $this->hasMany('App\Attachment')->where('embedded', true);
+        return $this->hasMany(\App\Attachment::class)->where('embedded', true);
     }
 
     /**
@@ -232,7 +232,7 @@ class Thread extends Model
      */
     public function created_by_user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(\App\User::class);
     }
 
     /**
@@ -248,7 +248,7 @@ class Thread extends Model
      */
     public function created_by_customer()
     {
-        return $this->belongsTo('App\Customer');
+        return $this->belongsTo(\App\Customer::class);
     }
 
     /**
@@ -256,7 +256,7 @@ class Thread extends Model
      */
     public function edited_by_user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(\App\User::class);
     }
 
     /**
