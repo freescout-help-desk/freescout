@@ -155,7 +155,11 @@
                             {{--<span class="thread-type">#{{ $thread_num }} <span>·</span> </span>--}}
                         @endif
                     @endif
-                    <a href="#thread-{{ $thread->id }}" class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</a><br/>
+                    @if (!\Helper::isPrint())
+                        <a href="#thread-{{ $thread->id }}" class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</a><br/>
+                    @else
+                        <a href="#thread-{{ $thread->id }}" class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateFormat($thread->created_at) }}</a><br/>
+                    @endif
                     {{--<a href="#thread-{{ $thread->id }}">#{{ $thread_index+1 }}</a>--}}
                     @if (in_array($thread->type, [App\Thread::TYPE_CUSTOMER, App\Thread::TYPE_MESSAGE, App\Thread::TYPE_NOTE]))
                         <span class="thread-status">
