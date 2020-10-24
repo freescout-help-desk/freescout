@@ -63,8 +63,8 @@ class Attachment extends Model
         }
 
         // Check extension.
-        $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $extension)) {
+        $extension = pathinfo($file_name, PATHINFO_EXTENSION);
+        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', strtolower($extension))) {
             // Add underscore to the extension if file has restricted extension.
             $file_name = $file_name.'_';
         }
@@ -72,6 +72,13 @@ class Attachment extends Model
         // Replace some symbols in file name.
         // Gmail can not load image if it contains spaces.
         $file_name = preg_replace('/[ #]/', '-', $file_name);
+
+        if (strlen($file_name) > 255) {
+            $without_ext = pathinfo($file_name, PATHINFO_FILENAME);
+            // 125 because file name may have unicode symbols.
+            $file_name = \Helper::substrUnicode($without_ext, 0, 125-strlen($extension)-1);
+            $file_name .= '.'.$extension;
+        }
 
         if (!$type) {
             $type = self::detectType($mime_type);

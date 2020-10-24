@@ -1368,4 +1368,9 @@ class Helper
     {
         return config('app.env') != 'production';
     }
+
+    public static function substrUnicode($str, $s, $l = null)
+    {
+        return join("", array_slice(preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY), $s, $l));
+    }
 }
