@@ -587,7 +587,7 @@ class MailboxesController extends Controller
                 }
 
                 // Check if outgoing port is open.
-                if (!$response['msg']) {
+                if (!$response['msg'] && $mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
                     $test_result = \Helper::checkPort($mailbox->out_server, $mailbox->out_port);
                     if (!$test_result) {
                         $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->out_server.'</strong>', 'port' => '<strong>'.$mailbox->out_port.'</strong>']);
