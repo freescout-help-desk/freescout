@@ -93,6 +93,20 @@ class Attachment extends Model
         $attachment->embedded = $embedded;
         $attachment->save();
 
+        $file_info = self::saveFileToDisk($attachment, $file_name, $content, $uploaded_file);
+
+        $attachment->file_dir = $file_info['file_dir'];
+        $attachment->size = Storage::disk(self::DISK)->size($file_info['file_path']);
+        $attachment->save();
+
+        return $attachment;
+    }
+
+    /**
+     * Save file to the disk and return file_dir.
+     */
+    public static function saveFileToDisk($attachment, $file_name, $content, $uploaded_file)
+    {
         // Save file from content or copy file.
         // We have to keep file name as is, so if file exists we create extra folder.
         // Examples: 1/2/3
@@ -112,11 +126,10 @@ class Attachment extends Model
             Storage::disk(self::DISK)->put($file_path, $content);
         }
 
-        $attachment->file_dir = $file_dir;
-        $attachment->size = Storage::disk(self::DISK)->size($file_path);
-        $attachment->save();
-
-        return $attachment;
+        return [
+            'file_dir'  => $file_dir,
+            'file_path' => $file_path,
+        ];
     }
 
     /**
