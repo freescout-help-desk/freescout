@@ -275,7 +275,15 @@ class SettingsController extends Controller
             // Option has to be saved to .env file.
             if (!empty($settings_params[$option_name]) && !empty($settings_params[$option_name]['env'])) {
                 $env_value = $request->settings[$option_name] ?? '';
-                \Helper::setEnvFileVar($settings_params[$option_name]['env'], $env_value);
+
+                // Escape quotes.
+                $env_value_ecaped = $env_value;
+                if (strstr($env_value, '"')) {
+                    $env_value_ecaped = '"'.str_replace('"', '\"', $env_value).'"';
+                }
+
+                \Helper::setEnvFileVar($settings_params[$option_name]['env'], $env_value_ecaped);
+
                 config($option_name, $env_value);
                 $cc_required = true;
                 continue;
