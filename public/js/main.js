@@ -496,7 +496,7 @@ function summernoteInit(selector, new_options)
 		lists: EditorListsButton
 	};
 
-	if (typeof(new_options.insertVar) != "undefined" || new_options.insertVar) {
+	if (typeof(new_options.insertVar) == "undefined" || new_options.insertVar) {
 		buttons.insertvar = EditorInsertVarButton;
 	}
 
