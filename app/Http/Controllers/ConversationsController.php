@@ -667,7 +667,7 @@ class ConversationsController extends Controller
                     // List of emails.
                     $to_list = [];
                     if ($is_forward) {
-                        $to = $request->to_email;
+                        $to = $request->to_email[0];
                     } else {
                         if (!empty($request->to)) {
                             // When creating a new conversation, to is a list of emails.
@@ -763,33 +763,44 @@ class ConversationsController extends Controller
                     if (!empty($request->saved_reply_id)) {
                         $thread->saved_reply_id = $request->saved_reply_id;
                     }
-                    if ($is_forward) {
-                        // Create forwarded conversation.
-                        $forwarded_conversation = $conversation->replicate();
-                        $forwarded_conversation->type = Conversation::TYPE_EMAIL;
-                        $forwarded_conversation->setPreview($thread->body);
-                        $forwarded_conversation->created_by_user_id = auth()->user()->id;
-                        $forwarded_conversation->source_via = Conversation::PERSON_USER;
-                        $forwarded_conversation->source_type = Conversation::SOURCE_TYPE_WEB;
-                        $forwarded_conversation->threads_count = 0; // Counter will be incremented in ThreadObserver.
-                        $forwarded_customer = Customer::create($customer_email);
-                        $forwarded_conversation->customer_id = $forwarded_customer->id;
-                        $forwarded_conversation->customer_email = $customer_email;
-                        $forwarded_conversation->subject = 'Fwd: '.$forwarded_conversation->subject;
-                        $forwarded_conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
-                        $forwarded_conversation->setBcc($request->bcc);
-                        $forwarded_conversation->last_reply_at = $now;
-                        $forwarded_conversation->last_reply_from = Conversation::PERSON_USER;
-                        $forwarded_conversation->user_updated_at = $now;
-                        if ($attachments_info['has_attachments']) {
-                            $forwarded_conversation->has_attachments = true;
-                        }
-                        $forwarded_conversation->updateFolder();
-                        $forwarded_conversation->save();
+                    
+                    $forwarded_conversations = [];
+                    $forwarded_threads = [];
 
-                        $forwarded_thread = $thread->replicate();
+                    if ($is_forward) {
+                        // Create forwarded conversations.
+                        foreach ($to_array as $recipient_email) {
+                            $forwarded_conversation = $conversation->replicate();
+                            $forwarded_conversation->type = Conversation::TYPE_EMAIL;
+                            $forwarded_conversation->setPreview($thread->body);
+                            $forwarded_conversation->created_by_user_id = auth()->user()->id;
+                            $forwarded_conversation->source_via = Conversation::PERSON_USER;
+                            $forwarded_conversation->source_type = Conversation::SOURCE_TYPE_WEB;
+                            $forwarded_conversation->threads_count = 0; // Counter will be incremented in ThreadObserver.
+                            $forwarded_customer = Customer::create($recipient_email);
+                            $forwarded_conversation->customer_id = $forwarded_customer->id;
+                            $forwarded_conversation->customer_email = $recipient_email;
+                            $forwarded_conversation->subject = 'Fwd: '.$forwarded_conversation->subject;
+                            //$forwarded_conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                            $forwarded_conversation->setCc(Conversation::sanitizeEmails($request->cc));
+                            $forwarded_conversation->setBcc($request->bcc);
+                            $forwarded_conversation->last_reply_at = $now;
+                            $forwarded_conversation->last_reply_from = Conversation::PERSON_USER;
+                            $forwarded_conversation->user_updated_at = $now;
+                            if ($attachments_info['has_attachments']) {
+                                $forwarded_conversation->has_attachments = true;
+                            }
+                            $forwarded_conversation->updateFolder();
+                            $forwarded_conversation->save();
+
+                            $forwarded_thread = $thread->replicate();
+
+                            $forwarded_conversations[] = $forwarded_conversation;
+                            $forwarded_threads[] = $forwarded_thread;
+                        }
 
                         // Set forwarding meta data.
+                        // todo: store array of numbers and IDs.
                         $thread->subtype = Thread::SUBTYPE_FORWARD;
                         $thread->setMeta('forward_child_conversation_number', $forwarded_conversation->number);
                         $thread->setMeta('forward_child_conversation_id', $forwarded_conversation->id);
@@ -798,8 +809,10 @@ class ConversationsController extends Controller
                     // Conversation history.
                     if (!empty($request->conv_history)) {
                         if ($request->conv_history != 'global') {
-                            if ($is_forward && !empty($forwarded_thread)) {
-                                $forwarded_thread->setMeta(Thread::META_CONVERSATION_HISTORY, $request->conv_history);
+                            if ($is_forward && !empty($forwarded_threads)) {
+                                foreach ($forwarded_threads as $forwarded_thread) {
+                                    $forwarded_thread->setMeta(Thread::META_CONVERSATION_HISTORY, $request->conv_history);
+                                }
                             } else {
                                 $thread->setMeta(Thread::META_CONVERSATION_HISTORY, $request->conv_history);
                             }
@@ -810,16 +823,20 @@ class ConversationsController extends Controller
 
                     // Save forwarded thread.
                     if ($is_forward) {
-                        $forwarded_thread->conversation_id = $forwarded_conversation->id;
-                        $forwarded_thread->type = Thread::TYPE_MESSAGE;
-                        $forwarded_thread->subtype = null;
-                        if ($attachments_info['has_attachments']) {
-                            $forwarded_thread->has_attachments = true;
+                        foreach ($forwarded_conversations as $i => $forwarded_conversation) {
+                            $forwarded_thread = $forwarded_threads[$i];
+
+                            $forwarded_thread->conversation_id = $forwarded_conversation->id;
+                            $forwarded_thread->type = Thread::TYPE_MESSAGE;
+                            $forwarded_thread->subtype = null;
+                            if ($attachments_info['has_attachments']) {
+                                $forwarded_thread->has_attachments = true;
+                            }
+                            $forwarded_thread->setMeta('forward_parent_conversation_number', $conversation->number);
+                            $forwarded_thread->setMeta('forward_parent_conversation_id', $conversation->id);
+                            $forwarded_thread->setMeta('forward_parent_thread_id', $thread->id);
+                            $forwarded_thread->save();
                         }
-                        $forwarded_thread->setMeta('forward_parent_conversation_number', $conversation->number);
-                        $forwarded_thread->setMeta('forward_parent_conversation_id', $conversation->id);
-                        $forwarded_thread->setMeta('forward_parent_thread_id', $thread->id);
-                        $forwarded_thread->save();
                     }
 
                     // If thread has been created from draft, remove the draft
@@ -843,11 +860,22 @@ class ConversationsController extends Controller
                     // Set thread_id for uploaded attachments
                     if ($attachments_info['attachments']) {
                         if ($is_forward) {
-                            $attachment_thread_id = $forwarded_thread->id;
+                            // Copy attachments for each thread.
+                            if (count($forwarded_threads) > 1) {
+                                $attachments = Attachment::whereIn('id', $attachments_info['attachments'])->get();
+                            }
+                            foreach ($forwarded_threads as $i => $forwarded_thread) {
+                                if ($i == 0) {
+                                    Attachment::whereIn('id', $attachments_info['attachments'])->update(['thread_id' => $forwarded_thread->id]);
+                                } else {
+                                    foreach ($attachments as $attachment) {
+                                        $attachment->duplicate($forwarded_thread->id);
+                                    }
+                                }
+                            }
                         } else {
-                            $attachment_thread_id = $thread->id;
+                            Attachment::whereIn('id', $attachments_info['attachments'])->update(['thread_id' => $thread->id]);
                         }
-                        Attachment::whereIn('id', $attachments_info['attachments'])->update(['thread_id' => $attachment_thread_id]);
                     }
 
                     // When user creates a new conversation it may be saved as draft first.
@@ -861,11 +889,15 @@ class ConversationsController extends Controller
                         // Forward.
                         // Notifications to users not sent.
                         event(new UserAddedNote($conversation, $thread));
-                        // To send email with forwarded conversation.
-                        event(new UserReplied($forwarded_conversation, $forwarded_thread));
-                        \Eventy::action('conversation.user_forwarded_can_undo', $conversation, $thread, $forwarded_conversation, $forwarded_thread);
-                        // After Conversation::UNDO_TIMOUT period trigger final event.
-                        \Helper::backgroundAction('conversation.user_forwarded', [$conversation, $thread, $forwarded_conversation, $forwarded_thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
+                        foreach ($forwarded_conversations as $i => $forwarded_conversation) {
+                            $forwarded_thread = $forwarded_threads[$i];
+
+                            // To send email with forwarded conversation.
+                            event(new UserReplied($forwarded_conversation, $forwarded_thread));
+                            \Eventy::action('conversation.user_forwarded_can_undo', $conversation, $thread, $forwarded_conversation, $forwarded_thread);
+                            // After Conversation::UNDO_TIMOUT period trigger final event.
+                            \Helper::backgroundAction('conversation.user_forwarded', [$conversation, $thread, $forwarded_conversation, $forwarded_thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
+                        }
                     } elseif ($is_note) {
                         // Note.
                         event(new UserAddedNote($conversation, $thread));
@@ -1286,7 +1318,7 @@ class ConversationsController extends Controller
                 }
                 break;
 
-            // Load attachments from all threads in conversation.
+            // Load attachments from all threads in conversation (when forwarding).
             case 'load_attachments':
                 $conversation = Conversation::find($request->conversation_id);
                 if (!$conversation) {
@@ -1305,11 +1337,13 @@ class ConversationsController extends Controller
                         foreach ($conversation->threads as $thread) {
                             if ($thread->has_attachments) {
                                 foreach ($thread->attachments as $attachment) {
+                                    $attachment_copy = $attachment->duplicate($thread->id);
+
                                     $attachments[] = [
-                                        'id'   => $attachment->id,
-                                        'name' => $attachment->file_name,
-                                        'size' => $attachment->size,
-                                        'url'  => $attachment->url(),
+                                        'id'   => $attachment_copy->id,
+                                        'name' => $attachment_copy->file_name,
+                                        'size' => $attachment_copy->size,
+                                        'url'  => $attachment_copy->url(),
                                     ];
                                 }
                             }

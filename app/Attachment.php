@@ -325,4 +325,33 @@ class Attachment extends Model
         // Delete from DB
         self::whereIn('id', $attachments->pluck('id')->toArray())->delete();
     }
+
+    /**
+     * Create a copy of the attachment and it's file.
+     */
+    public function duplicate($thread_id)
+    {
+        $new_attachment = $this->replicate();
+        $new_attachment->thread_id = $thread_id;
+
+        $new_attachment->save();
+
+        try {
+            $attachment_file = new \Illuminate\Http\UploadedFile(
+                $this->getLocalFilePath(), $this->file_name,
+                null, null, true
+            );
+
+            $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, '', $attachment_file);
+
+            if (!empty($file_info['file_dir'])) {
+                $new_attachment->file_dir = $file_info['file_dir'];
+                $new_attachment->save();
+            }
+        } catch (\Exception $e) {
+            \Helper::logException($e);
+        }
+
+        return $new_attachment;
+    }
 }

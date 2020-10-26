@@ -3624,7 +3624,7 @@ function showForwardForm(data, reply_block)
 
 	// Show recipient selector
 	initRecipientSelector({
-		maximumSelectionLength: 1
+		//maximumSelectionLength: 1
 	}, $('#to_email:not(.select2-hidden-accessible)'));
 }
 
