@@ -63,8 +63,8 @@ class Attachment extends Model
         }
 
         // Check extension.
-        $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $extension)) {
+        $extension = pathinfo($file_name, PATHINFO_EXTENSION);
+        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', strtolower($extension))) {
             // Add underscore to the extension if file has restricted extension.
             $file_name = $file_name.'_';
         }
@@ -72,6 +72,13 @@ class Attachment extends Model
         // Replace some symbols in file name.
         // Gmail can not load image if it contains spaces.
         $file_name = preg_replace('/[ #]/', '-', $file_name);
+
+        if (strlen($file_name) > 255) {
+            $without_ext = pathinfo($file_name, PATHINFO_FILENAME);
+            // 125 because file name may have unicode symbols.
+            $file_name = \Helper::substrUnicode($without_ext, 0, 125-strlen($extension)-1);
+            $file_name .= '.'.$extension;
+        }
 
         if (!$type) {
             $type = self::detectType($mime_type);
@@ -86,6 +93,20 @@ class Attachment extends Model
         $attachment->embedded = $embedded;
         $attachment->save();
 
+        $file_info = self::saveFileToDisk($attachment, $file_name, $content, $uploaded_file);
+
+        $attachment->file_dir = $file_info['file_dir'];
+        $attachment->size = Storage::disk(self::DISK)->size($file_info['file_path']);
+        $attachment->save();
+
+        return $attachment;
+    }
+
+    /**
+     * Save file to the disk and return file_dir.
+     */
+    public static function saveFileToDisk($attachment, $file_name, $content, $uploaded_file)
+    {
         // Save file from content or copy file.
         // We have to keep file name as is, so if file exists we create extra folder.
         // Examples: 1/2/3
@@ -105,11 +126,10 @@ class Attachment extends Model
             Storage::disk(self::DISK)->put($file_path, $content);
         }
 
-        $attachment->file_dir = $file_dir;
-        $attachment->size = Storage::disk(self::DISK)->size($file_path);
-        $attachment->save();
-
-        return $attachment;
+        return [
+            'file_dir'  => $file_dir,
+            'file_path' => $file_path,
+        ];
     }
 
     /**
@@ -304,5 +324,34 @@ class Attachment extends Model
 
         // Delete from DB
         self::whereIn('id', $attachments->pluck('id')->toArray())->delete();
+    }
+
+    /**
+     * Create a copy of the attachment and it's file.
+     */
+    public function duplicate($thread_id)
+    {
+        $new_attachment = $this->replicate();
+        $new_attachment->thread_id = $thread_id;
+
+        $new_attachment->save();
+
+        try {
+            $attachment_file = new \Illuminate\Http\UploadedFile(
+                $this->getLocalFilePath(), $this->file_name,
+                null, null, true
+            );
+
+            $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, '', $attachment_file);
+
+            if (!empty($file_info['file_dir'])) {
+                $new_attachment->file_dir = $file_info['file_dir'];
+                $new_attachment->save();
+            }
+        } catch (\Exception $e) {
+            \Helper::logException($e);
+        }
+
+        return $new_attachment;
     }
 }

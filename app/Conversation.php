@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Attachment;
 use App\Customer;
 use App\Thread;
 use App\User;
@@ -1589,7 +1590,7 @@ class Conversation extends Model
         }
     }
 
-    public function forward($user, $body, $to = '', $data = [])
+    public function forward($user, $body, $to = '', $data = [], $include_attachments = false)
     {
         // Create thread
         $thread = Thread::create($this, $data['type'] ?? Thread::TYPE_NOTE, $body, $data, false);
@@ -1623,9 +1624,6 @@ class Conversation extends Model
         $forwarded_conversation->last_reply_at = $now;
         $forwarded_conversation->last_reply_from = Conversation::PERSON_USER;
         $forwarded_conversation->user_updated_at = $now;
-        // if ($attachments_info['has_attachments']) {
-        //     $forwarded_conversation->has_attachments = true;
-        // }
         $forwarded_conversation->updateFolder();
         $forwarded_conversation->save();
 
@@ -1650,6 +1648,52 @@ class Conversation extends Model
         $forwarded_thread->setMeta('forward_parent_conversation_id', $this->id);
         $forwarded_thread->setMeta('forward_parent_thread_id', $thread->id);
         $forwarded_thread->save();
+
+        // Add attachments if needed.
+        if ($include_attachments) {
+
+            $replies = $this->getReplies();
+
+            $has_attachments = false;
+            foreach ($replies as $reply_thread) {
+                
+                $thread_has_attachments = false;
+                foreach ($reply_thread->attachments as $attachment) {
+                    $new_attachment = $attachment->replicate();
+                    $new_attachment->thread_id = $forwarded_thread->id;
+                    // We need to copy attachment file, because conversations
+                    // can be deleted along with attachments.
+                    $new_attachment->save();
+
+                    try {
+                        $attachment_file = new \Illuminate\Http\UploadedFile(
+                            $attachment->getLocalFilePath(), $attachment->file_name,
+                            null, null, true
+                        );
+
+                        $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, '', $attachment_file);
+
+                        if (!empty($file_info['file_dir'])) {
+                            $new_attachment->file_dir = $file_info['file_dir'];
+                            $new_attachment->save();
+
+                            $has_attachments = true;
+                            $thread_has_attachments = true;
+                        }
+                    } catch (\Exception $e) {
+                        \Helper::logException($e);
+                    }
+                }
+                if ($thread_has_attachments) {
+                    $forwarded_thread->has_attachments = true;
+                    $forwarded_thread->save();
+                }
+            }
+            if ($has_attachments) {
+                $forwarded_conversation->has_attachments = true;
+                $forwarded_conversation->save();
+            }
+        }
 
         // Update folders counters
         $this->mailbox->updateFoldersCounters();

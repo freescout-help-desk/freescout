@@ -496,7 +496,7 @@ function summernoteInit(selector, new_options)
 		lists: EditorListsButton
 	};
 
-	if (typeof(new_options.insertVar) != "undefined" || new_options.insertVar) {
+	if (typeof(new_options.insertVar) == "undefined" || new_options.insertVar) {
 		buttons.insertvar = EditorInsertVarButton;
 	}
 
@@ -3624,7 +3624,7 @@ function showForwardForm(data, reply_block)
 
 	// Show recipient selector
 	initRecipientSelector({
-		maximumSelectionLength: 1
+		//maximumSelectionLength: 1
 	}, $('#to_email:not(.select2-hidden-accessible)'));
 }
 

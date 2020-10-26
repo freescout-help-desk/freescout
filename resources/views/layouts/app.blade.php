@@ -246,15 +246,19 @@
 
         @if (!in_array(Route::currentRouteName(), array('mailboxes.view')))
             <div class="footer">
-                &copy; 2018-{{ date('Y') }} <a href="{{ config('app.freescout_url') }}" target="blank">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk & shared mailbox') }}
-                    @if (!Auth::user())
-                        <a href="javascript:switchHelpdeskUrl();void(0);" class="hidden in-app-switcher"><br/>{{ __('Switch Helpdesk URL') }}</a>
-                    @endif
-                    {{-- Show version to admin only --}}
-                    @if (Auth::user() && Auth::user()->isAdmin())
-                        <br/>
-                        <a href="{{ route('system') }}">{{ config('app.version') }}</a>
-                    @endif
+                @if (!\Eventy::filter('footer.text', ''))
+                    &copy; 2018-{{ date('Y') }} <a href="{{ config('app.freescout_url') }}" target="blank">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk & shared mailbox') }}
+                @else
+                    {!! \Eventy::filter('footer.text', '') !!}
+                @endif
+                @if (!Auth::user())
+                    <a href="javascript:switchHelpdeskUrl();void(0);" class="hidden in-app-switcher"><br/>{{ __('Switch Helpdesk URL') }}</a>
+                @endif
+                {{-- Show version to admin only --}}
+                @if (Auth::user() && Auth::user()->isAdmin())
+                    <br/>
+                    <a href="{{ route('system') }}">{{ config('app.version') }}</a>
+                @endif
             </div>
         @endif
     </div>

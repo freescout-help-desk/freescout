@@ -13,6 +13,8 @@ class CreateNotificationsTable extends Migration
      */
     public function up()
     {
+        \DB::statement('SET SESSION sql_require_primary_key=0');
+        
         Schema::create('notifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('type');

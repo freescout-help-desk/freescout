@@ -4475,6 +4475,7 @@ var Clipboard = /** @class */ (function () {
             var item = lists.head(clipboardData.items);
             if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
                 this.context.invoke('editor.insertImagesOrCallback', [item.getAsFile()]);
+                event.preventDefault();
             }
             this.context.invoke('editor.afterCommand');
         }

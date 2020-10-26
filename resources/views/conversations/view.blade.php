@@ -168,7 +168,7 @@
                                                 @endforeach
                                             </select>
                                         @endif
-                                        <select class="form-control hidden parsley-exclude draft-changer" name="to_email" id="to_email" multiple required autofocus>
+                                        <select class="form-control hidden parsley-exclude draft-changer" name="to_email[]" id="to_email" multiple required autofocus>
                                         </select>
                                         @include('partials/field_error', ['field'=>'to'])
                                     </div>
