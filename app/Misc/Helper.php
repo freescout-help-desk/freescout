@@ -1373,4 +1373,17 @@ class Helper
     {
         return join("", array_slice(preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY), $s, $l));
     }
+
+    /**
+     * Disable sql_require_primary_key option to avoid errors when migrating.
+     */
+    public static function disableSqlRequirePrimaryKey()
+    {
+        try {
+            \DB::statement('SET SESSION sql_require_primary_key=0');
+        } catch (\Exception $e) {
+            // General error: 1193 Unknown system variable 'sql_require_primary_key'.
+            // Do nothing.
+        }
+    }
 }
