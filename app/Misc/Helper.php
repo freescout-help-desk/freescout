@@ -851,11 +851,15 @@ class Helper
     public static function setEnvFileVar($key, $value)
     {
         $env_path = app()->environmentFilePath();
-        $contents = file_get_contents($env_path);
-
-        // Maybe validate value and add quotes.
-        // str_contains($key, '=')
-        // !preg_match('/^[a-zA-Z_]+$/', $key)
+        $contents = file_get_contents($env_path);        
+        
+        if (strstr($value, '"')) {
+            // Escape quotes.
+            $value = '"'.str_replace('"', '\"', $value).'"';
+        } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $value) && $value !== '') {
+            // Add quotes.
+            $value = '"'.$value.'"';
+        }
 
         $old_value = '';
         // Match the given key at the beginning of a line
