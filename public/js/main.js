@@ -204,7 +204,7 @@ var EditorRemoveFormatButton = function (context) {
 
 	// create button
 	var button = ui.button({
-		contents: '<i class="glyphicon glyphicon-remove"></i>',
+		contents: '<i class="note-icon-eraser"></i>',
 		tooltip: Lang.get("messages.remove_format"),
 		container: 'body',
 		click: function () {
@@ -1408,7 +1408,7 @@ function convEditorInit()
 		dialogsFade: true,
 		disableResizeEditor: true,
 		followingToolbar: false,
-		toolbar: fs_conv_editor_toolbar,
+		toolbar: fsApplyFilter('conversation.editor_toolbar', fs_conv_editor_toolbar),
 		buttons: fs_conv_editor_buttons,
 		callbacks: {
 	 		onImageUpload: function(files) {
