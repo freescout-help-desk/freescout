@@ -779,6 +779,8 @@ class ConversationsController extends Controller
                             $forwarded_conversation->threads_count = 0; // Counter will be incremented in ThreadObserver.
                             $forwarded_customer = Customer::create($recipient_email);
                             $forwarded_conversation->customer_id = $forwarded_customer->id;
+                            // Reload customer object, otherwise it stores previous customer.
+                            $forwarded_conversation->load('customer');
                             $forwarded_conversation->customer_email = $recipient_email;
                             $forwarded_conversation->subject = 'Fwd: '.$forwarded_conversation->subject;
                             //$forwarded_conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
