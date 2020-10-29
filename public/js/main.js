@@ -204,7 +204,7 @@ var EditorRemoveFormatButton = function (context) {
 
 	// create button
 	var button = ui.button({
-		contents: '<i class="note-icon-eraser"></i>',
+		contents: '<i class="note-icon-close"></i>',
 		tooltip: Lang.get("messages.remove_format"),
 		container: 'body',
 		click: function () {
