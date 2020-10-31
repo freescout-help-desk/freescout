@@ -310,7 +310,8 @@ class SettingsController extends Controller
             \Helper::clearCache(['--doNotGenerateVars' => true]);
         }
 
-        \Session::flash('flash_success_floating', __('Settings updated'));
+        // \Helper::clearCache prevents \Session::flash() from displaying.
+        $request->session()->flash('flash_success_floating', __('Settings updated'));
 
         $response = redirect()->route('settings', ['section' => $section]);
 

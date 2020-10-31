@@ -6,7 +6,7 @@
 <div class="container">
     <div class="flexy-container">
         <div class="flexy-item">
-            <span class="heading">{{ __('Users') }}</span>
+            <span class="heading">{{ __('Users') }}@if (count($users)) <small>({{ count($users) }})</small>@endif</span>
         </div>
         <div class="flexy-item margin-left">
             <a href="{{ route('users.create') }}" class="btn btn-bordered">{{ __('New User') }}</a>

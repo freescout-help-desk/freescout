@@ -444,6 +444,9 @@ a.navbar-brand:hover img {
     line-height: 11px;
     background-color: transparent;
 }
+.input-group-addon-grey {
+    background-color: #eee;
+}
 select.placeholdered {
     color: #B4C0D4;
 }
