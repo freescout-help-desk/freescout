@@ -63,6 +63,15 @@ class SystemController extends Controller
                 'value'  => $value,
             ];
         }
+
+        // Check if cache files are writable.
+        $non_writable_cache_file = '';
+        if (function_exists('shell_exec')) {
+            $non_writable_cache_file = shell_exec('find '.base_path('storage/framework/cache/data/').' -type f | xargs -I {} sh -c \'[ ! -w "{}" ] && echo {}\' 2>&1 | head -n 1');
+            $non_writable_cache_file = trim($non_writable_cache_file);
+        }
+        
+
         // Check if public symlink exists, if not, try to create.
         $public_symlink_exists = true;
         $public_path = public_path('storage');
@@ -207,6 +216,7 @@ class SystemController extends Controller
             'latest_version_error'  => SystemController::$latest_version_error,
             'public_symlink_exists' => $public_symlink_exists,
             'env_is_writable'       => $env_is_writable,
+            'non_writable_cache_file' => $non_writable_cache_file,
         ]);
     }
 

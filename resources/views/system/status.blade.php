@@ -119,10 +119,29 @@
                 <tr>
                     <th>{{ $perm_path }}</th>
                     <td class="table-main-col">
-                        @if ($perm['status'])
-                            <strong class="text-success">OK</strong>
+                        @if ($perm_path == 'storage/framework/cache/data/')
+                            @if ($non_writable_cache_file)
+                                <strong class="text-danger">{{ __('Non-writable files found') }}</strong>
+                                <br/>
+                                <span class="text-danger">{{ $non_writable_cache_file }}</span>
+                                <br/><br/>
+                                {{ __('Run the following command') }} (<a href="https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#6-configuring-web-server" target="_blank">{{ __('read more') }}</a>):<br/>
+                                <code>sudo chown -R www-data:www-data {{ base_path() }}</code>
+                            @elseif (!$perm['status'])
+                                <strong class="text-danger">{{ __('Not writable') }} @if ($perm['value'])({{ $perm['value'] }})@endif</strong>
+                            @else
+                                <strong class="text-success">OK</strong>
+                            @endif
                         @else
-                            <strong class="text-danger">{{ __('Not writable') }} @if ($perm['value'])({{ $perm['value'] }})@endif</strong>
+                            @if ($perm['status'])
+                                <strong class="text-success">OK</strong>
+                            @else
+                                <strong class="text-danger">{{ __('Not writable') }} @if ($perm['value'])({{ $perm['value'] }})@endif</strong>
+
+                                <br/><br/>
+                                {{ __('Run the following command') }} (<a href="https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#6-configuring-web-server" target="_blank">{{ __('read more') }}</a>):<br/>
+                                <code>sudo chown -R www-data:www-data {{ base_path() }}</code>
+                            @endif
                         @endif
                     </td>
                 </tr>
