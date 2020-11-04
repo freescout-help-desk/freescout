@@ -1246,12 +1246,16 @@ class Conversation extends Model
     /**
      * Add conversation to folder via conversation_folder table.
      */
-    public function addToFolder($folder_type)
+    public function addToFolder($folder_type, $user_id = null)
     {
-        // Find folder
-        $folder = Folder::where('mailbox_id', $this->mailbox_id)
-                    ->where('type', $folder_type)
-                    ->first();
+        // Find folder.
+        $folder_query = Folder::where('mailbox_id', $this->mailbox_id)
+                    ->where('type', $folder_type);
+        if ($user_id) {
+            $folder_query->where('user_id', $user_id);
+        }
+        $folder = $folder_query->first();
+
         if (!$folder) {
             return false;
         }
@@ -1273,20 +1277,29 @@ class Conversation extends Model
         //     'conversation_id' => $this->id,
         // ];
         // ConversationFolder::updateOrCreate($values, $values);
+        
+        return true;
     }
 
-    public function removeFromFolder($folder_type)
+    public function removeFromFolder($folder_type, $user_id = null)
     {
         // Find folder
-        $folder = Folder::where('mailbox_id', $this->mailbox_id)
-                    ->where('type', $folder_type)
-                    ->first();
+        $folder_query = Folder::where('mailbox_id', $this->mailbox_id)
+                    ->where('type', $folder_type);
+        
+        if ($user_id) {
+            $folder_query->where('user_id', $user_id);
+        }
+        $folder = $folder_query->first();
+
         if (!$folder) {
             return false;
         }
 
         $this->folders()->detach($folder->id);
         $folder->updateCounters();
+
+        return true;
     }
 
     /**
