@@ -4178,20 +4178,28 @@ function forgetNote(conversation_id)
 
 function saveNoteToStorage(conversation_notes)
 {
-	localStorageSet('conversation_notes', JSON.stringify(conversation_notes));
+	localStorageSetObject('conversation_notes', conversation_notes);
+}
+
+function localStorageSetObject(key, obj) {
+	localStorageSet('conversation_notes', JSON.stringify(obj));
 }
 
 function loadNotesFromStorage(conversation_id)
 {
-	var conversation_notes_json = localStorageGet('conversation_notes');
+	return localStorageGetObject('conversation_notes');
+}
 
-	if (conversation_notes_json) {
-		var conversation_notes = {};
+function localStorageGetObject(key) {
+	var json = localStorageGet(key);
+
+	if (json) {
+		var obj = {};
 		try {
-			conversation_notes = JSON.parse(conversation_notes_json);
+			obj = JSON.parse(json);
 		} catch (e) {}
-		if (conversation_notes && typeof(conversation_notes) == 'object') {
-			return conversation_notes;
+		if (obj && typeof(obj) == 'object') {
+			return obj;
 		} else {
 			return {};
 		}
