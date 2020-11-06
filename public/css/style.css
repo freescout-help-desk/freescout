@@ -354,6 +354,16 @@ h1, h2, h3, h4, h5, h6 {
 /**
  * Navbar
  */
+.navbar-brand.navbar-brand-with-text > img {
+    display: inline-block;
+}
+.navbar-brand-with-text:hover {
+    background-color: transparent !important;
+}
+.navbar-brand-with-text span {
+    color: #fff;
+    font-weight: bold;
+}
 a.navbar-brand.active img,
 a.navbar-brand:hover img {
 	-webkit-filter: brightness(2);
