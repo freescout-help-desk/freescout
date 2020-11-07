@@ -1426,9 +1426,9 @@ class ConversationsController extends Controller
 
                 if (!$response['msg']) {
                     if ($request->sub_action == 'star') {
-                        $conversation->addToFolder(Folder::TYPE_STARRED);
+                        $conversation->addToFolder(Folder::TYPE_STARRED, $user->id);
                     } else {
-                        $conversation->removeFromFolder(Folder::TYPE_STARRED);
+                        $conversation->removeFromFolder(Folder::TYPE_STARRED, $user->id);
                     }
                     Conversation::clearStarredByUserCache($user->id, $conversation->mailbox_id);
                     $conversation->mailbox->updateFoldersCounters(Folder::TYPE_STARRED);

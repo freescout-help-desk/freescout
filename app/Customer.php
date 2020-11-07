@@ -1156,4 +1156,24 @@ class Customer extends Model
             return '';
         }
     }
+
+    /**
+     * Get first and last name.
+     */
+    public static function parseName($name)
+    {
+        $data = [];
+
+        if (!$name) {
+            return $data;
+        }
+
+        $name_parts = explode(' ', $name, 2);
+        $data['first_name'] = $name_parts[0];
+        if (!empty($name_parts[1])) {
+            $data['last_name'] = $name_parts[1];
+        }
+
+        return $data;
+    }
 }
