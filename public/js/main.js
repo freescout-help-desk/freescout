@@ -4182,7 +4182,7 @@ function saveNoteToStorage(conversation_notes)
 }
 
 function localStorageSetObject(key, obj) {
-	localStorageSet('conversation_notes', JSON.stringify(obj));
+	localStorageSet(key, JSON.stringify(obj));
 }
 
 function loadNotesFromStorage(conversation_id)
