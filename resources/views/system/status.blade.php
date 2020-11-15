@@ -72,6 +72,14 @@
                 <th>{{ __('PHP Version') }}</th>
                 <td class="table-main-col">PHP {{ phpversion() }}</td>
             </tr>
+            <tr>
+                <th>PHP upload_max_filesize / post_max_size</th>
+                <td class="table-main-col">{{ ini_get('upload_max_filesize') }} / {{ ini_get('post_max_size') }}</td>
+            </tr>
+            <tr>
+                <th>Nginx client_max_body_size</th>
+                <td class="table-main-col">?</td>
+            </tr>
         </tbody>
     </table>
 
