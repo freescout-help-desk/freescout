@@ -51,7 +51,7 @@ class MailboxesController extends Controller
     {
         $this->authorize('create', 'App\Mailbox');
 
-        $users = User::where('role', '!=', User::ROLE_ADMIN)->get();
+        $users = User::nonDeleted()->where('role', '!=', User::ROLE_ADMIN)->get();
 
         return view('mailboxes/create', ['users' => $users]);
     }
