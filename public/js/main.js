@@ -2433,13 +2433,18 @@ function initMoveConv()
 					action: 'conversation_move',
 					mailbox_id: $('.move-conv-mailbox-id:visible:first').val(),
 					mailbox_email: $('.move-conv-mailbox-email:visible:first').val(),
-					conversation_id: getGlobalAttr('conversation_id')
+					conversation_id: getGlobalAttr('conversation_id'),
+					folder_id: getQueryParam('folder_id')
 				},
 				laroute.route('conversations.ajax'),
 				function(response) {
 					showAjaxResult(response);
 					if (isAjaxSuccess(response)) {
-						window.location.href = '';
+						if (typeof(response.redirect_url) != "undefined" && response.redirect_url) {
+							window.location.href = response.redirect_url;
+						} else {
+							window.location.href = '';
+						}
 					}
 					ajaxFinish();
 				}

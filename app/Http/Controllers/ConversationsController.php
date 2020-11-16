@@ -1738,7 +1738,20 @@ class ConversationsController extends Controller
                 }
 
                 if (!$response['msg']) {
+                    $prev_folder_id = Conversation::getFolderParam();
+                    $prev_mailbox_id = $conversation->mailbox_id;
+
                     $conversation->moveToMailbox($mailbox, $user);
+
+                    // If user does not have access to the new mailbox,
+                    // redirect to the previous mailbox.
+                    if (!$mailbox->userHasAccess($user->id)) {
+                        if (!empty($prev_folder_id)) {
+                            $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $prev_mailbox_id, 'folder_id' => $prev_folder_id]);
+                        } else {
+                            $response['redirect_url'] = route('mailboxes.view', ['id' => $prev_mailbox_id]);
+                        }
+                    }
 
                     $response['status'] = 'success';
                     \Session::flash('flash_success_floating', __('Conversation moved'));
