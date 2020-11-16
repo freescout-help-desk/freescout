@@ -281,6 +281,7 @@
                                 <li>
                                     <a href="{{ $attachment->url() }}" class="break-words" target="_blank">{{ $attachment->file_name }}</a>
                                     <span class="text-help">({{ $attachment->getSizeName() }})</span>
+                                    <a href="{{ $attachment->url() }}" class="btn btn-sm btn-default" download><i class="glyphicon glyphicon-download"></i></a>
                                 </li>
                             @endforeach
                         </ul>
