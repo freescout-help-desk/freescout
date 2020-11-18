@@ -1443,6 +1443,16 @@ table.table-conversations td.conv-attachment {
     line-height: 24px;
     font-size: 16px;
 }
+.table-pager a.pager-nav.disabled {
+    color: #a5b2bd;
+    opacity: 0.3;
+}
+.table-pager a.pager-nav.disabled:hover {
+    color: #a5b2bd;
+}
+.table-pager a.pager-nav:hover {
+    color: #333;
+}
 /*.conv-subject-number {
     display: none;
 }*/
@@ -3374,6 +3384,33 @@ ul.sidebar-block-list {
 #search-filters .select2-container {
     width: 100% !important;
 }
+.customers-pager {
+    margin: 0 13px 20px 13px;
+    padding: 4px 0 0 10px;
+    font-size: 20px;
+    background-color: #f1f3f5;
+}
+.customers-pager a.disabled {
+    color: #93a1af;
+    opacity: 0.3;
+}
+.customers-pager a {
+    color: #93a1af;
+    padding-right: 8px;
+    text-decoration: none !important;
+}
+.customers-pager a.disabled:hover {
+    color: #93a1af;
+}
+.customers-pager a:hover {
+    color: #333;
+}
+/*.customers-pager a:hover,
+.customers-pager a:active
+.customers-pager a:focus, {
+    text-decoration: none !important;
+    border-bottom: 0;
+}*/
 
 /**
  * Panel
