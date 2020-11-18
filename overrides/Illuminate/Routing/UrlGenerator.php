@@ -299,6 +299,20 @@ class UrlGenerator implements UrlGeneratorContract
     public function route($name, $parameters = [], $absolute = true)
     {
         if (! is_null($route = $this->routes->getByName($name))) {
+            // Pass x_ parameters globally.
+            foreach (request()->query() as $param => $value) {
+                if (preg_match("/^x_/", $param)) {
+                    $parameters[$param] = $value;
+                }
+            }
+            // Pass xs_ parameters only on the same page.
+            if ($name == \Route::current()) {
+                foreach (request()->query() as $param => $value) {
+                    if (preg_match("/^xs_/", $param)) {
+                        $parameters[$param] = $value;
+                    }
+                }
+            }
             return $this->toRoute($route, $parameters, $absolute);
         }
 
