@@ -128,11 +128,11 @@ class CustomersController extends Controller
             }
         }
 
-        $customer->fill($request->all());
+        $customer->setData($request->all());
         // Websites
-        if (!empty($request->websites)) {
-            $customer->setWebsites($request->websites);
-        }
+        // if (!empty($request->websites)) {
+        //     $customer->setWebsites($request->websites);
+        // }
         $customer->save();
 
         $customer->syncEmails($request->emails);
@@ -162,6 +162,8 @@ class CustomersController extends Controller
 
         $flash_message = __('Customer saved successfully.').' '.$flash_message;
         \Session::flash('flash_success_unescaped', $flash_message);
+        
+        \Session::flash('customer.updated', 1);
 
         return redirect()->route('customers.update', ['id' => $id]);
     }

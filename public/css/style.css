@@ -2663,8 +2663,8 @@ ul.sidebar-block-list {
     .customer-name {
         float: left;
         margin-right: 7px;
-        font-weight: bold;
-        font-size: 18px;
+        /*font-weight: bold;
+        font-size: 18px;*/
     }
     .customer-section {
         margin-top: 0px;
@@ -2699,6 +2699,10 @@ ul.sidebar-block-list {
     }
     .customer-social-profiles {
         position: static;
+    }
+    .profile-preview .customer-social-profiles {
+        position: absolute;
+        top: 43px;
     }
     .conv-sidebar-block .panel-heading {
         display: none;
@@ -2924,6 +2928,15 @@ ul.sidebar-block-list {
     display: table;
     width: auto;
     min-width: 320px;
+}
+.modal-iframe {
+    width: 100%;
+    height: calc(100vh - 151px);
+}
+@media (max-width:767px) {
+    .modal-iframe {
+        height: calc(100vh - 112px);
+    }
 }
 /**
  * Attachments

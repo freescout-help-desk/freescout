@@ -306,7 +306,7 @@ class UrlGenerator implements UrlGeneratorContract
                 }
             }
             // Pass xs_ parameters only on the same page.
-            if ($name == \Route::current()) {
+            if ($name == \Route::currentRouteName()) {
                 foreach (request()->query() as $param => $value) {
                     if (preg_match("/^xs_/", $param)) {
                         $parameters[$param] = $value;

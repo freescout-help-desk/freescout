@@ -2,7 +2,7 @@
     <div class="container">
         <div class="card-list margin-top">
             @foreach ($customers as $customer)
-                <a href="{{ route('customers.update', ['id' => $customer->id]) }}" class="card hover-shade">
+                <a href="{{ Eventy::filter('customer.card.url', route('customers.update', ['id' => $customer->id]), $customer) }}" class="card hover-shade" @action('customer.card.link', $customer) >
                     <img src="{{ $customer->getPhotoUrl() }}" />
                     <h4>{{ $customer->first_name }} {{ $customer->last_name }}</h4>
                     <p class="text-truncate"><small>{{ $customer->getEmailOrPhone() }}</small></p>
