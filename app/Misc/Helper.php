@@ -38,7 +38,7 @@ class Helper
             'conversations.view',
             'conversations.create',
             'conversations.draft',
-            'conversations.search',
+            //'conversations.search',
         ],
         'manage' => [
             'settings'  => 'settings',

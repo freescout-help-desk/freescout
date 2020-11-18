@@ -174,6 +174,13 @@ class Customer extends Model
     ];
 
     /**
+     * Search filters.
+     */
+    public static $search_filters = [
+        'mailbox',
+    ];
+
+    /**
      * Countries list.
      */
     public static $countries = [

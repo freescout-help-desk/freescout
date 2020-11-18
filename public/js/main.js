@@ -2189,7 +2189,7 @@ function searchInit()
 		conversationPagination();
 		starConversationInit();
 
-		$(".sidebar-menu .menu-link a").click(function(e){
+		$(".sidebar-menu .menu-link a").filter('[data-filter]').click(function(e){
 			var trigger = $(this);
 			var filter = trigger.attr('data-filter');
 			if (!trigger.parent().hasClass('active')) {

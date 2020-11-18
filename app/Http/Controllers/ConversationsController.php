@@ -2237,15 +2237,21 @@ class ConversationsController extends Controller
             session()->put('recent_search_queries', $recent_search_queries);
         }
 
-        $conversations = $this->searchQuery($request, $user, $q, $filters);
+        $conversations = [];
+        if (\Eventy::filter('search.is_needed', true, 'conversations')) {
+            $conversations = $this->searchQuery($request, $user, $q, $filters);
+        }
         $customers = $this->searchCustomers($request, $user);
 
         // Dummy folder
         $folder = $this->getSearchFolder($conversations);
 
         // List of available filters.
-        $filters_list = \Eventy::filter('search.filters_list', Conversation::$search_filters, $mode, $filters, $q);
-        //$filters_list_all = \Eventy::filter('search.filters_list_all', array_merge(Conversation::$search_filters, Customer::$search_filters), $filters, $q);
+        if ($mode == Conversation::SEARCH_MODE_CONV) {
+            $filters_list = \Eventy::filter('search.filters_list', Conversation::$search_filters, $mode, $filters, $q);
+        } else {
+            $filters_list = \Eventy::filter('search.filters_list_customers', Customer::$search_filters, $mode, $filters, $q);
+        }
 
         $mailboxes = \Cache::remember('search_filter_mailboxes_'.$user->id, 5, function () use ($user) {
             return $user->mailboxesCanView();
@@ -2465,6 +2471,14 @@ class ConversationsController extends Controller
                     ->orWhere('customers.zip', 'like', $like)
                     ->orWhere('emails.email', 'like', $like);
             });
+
+        if (!empty($filters['mailbox'])) {
+            $query_customers->join('conversations', function ($join) use ($filters) {
+                $join->on('conversations.customer_id', '=', 'customers.id');
+                //$join->on('conversations.mailbox_id', '=', $filters['mailbox']);
+            });
+            $query_customers->where('conversations.mailbox_id', '=', $filters['mailbox']);
+        }
 
         $query_customers = \Eventy::filter('search.customers.apply_filters', $query_customers, $filters, $q);
 
