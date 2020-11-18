@@ -363,6 +363,18 @@ class CustomersController extends Controller
                 }
                 break;
 
+            // Conversations navigation
+            case 'customers_pagination':
+            
+                $customers = app('App\Http\Controllers\ConversationsController')->searchCustomers($request, $user);
+
+                $response['status'] = 'success';
+
+                $response['html'] = view('customers/partials/customers_table', [
+                    'customers' => $customers,
+                ])->render();
+                break;
+
             default:
                 $response['msg'] = 'Unknown action';
                 break;

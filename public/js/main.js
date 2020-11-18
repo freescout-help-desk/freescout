@@ -2189,6 +2189,8 @@ function searchInit()
 		conversationPagination();
 		starConversationInit();
 
+		customersPagination();
+
 		$(".sidebar-menu .menu-link a").filter('[data-filter]').click(function(e){
 			var trigger = $(this);
 			var filter = trigger.attr('data-filter');
@@ -2293,10 +2295,61 @@ function loadConversations(page, table, no_loader)
 	);
 }
 
+function loadCustomers(page, table)
+{
+	var filter = null;
+	//var params = {};
+
+	if ($('body:first').hasClass('body-search')) {
+		filter = {
+			q: getQueryParam('q'), // For search
+			f: getQueryParam('f') // For search
+		};
+	}
+	if (typeof(page) == "undefined" || page === '') {
+		page = table.attr('data-page');
+	}
+	/*var datas = table.data();
+	for (data_name in datas) {
+		if (/^filter_/.test(data_name)) {
+			filter[data_name.replace(/^filter_/, '')] = datas[data_name];
+		}
+	}*/
+
+	fsAjax(
+		{
+			action: 'customers_pagination',
+			filter: filter,
+			//params: params,
+			page: page
+		},
+		laroute.route('customers.ajax'),
+		function(response) {
+			if (isAjaxSuccess(response)) {
+				if (typeof(response.html) != "undefined") {
+					table.replaceWith(response.html);
+					customersPagination();
+				}
+			} else {
+				showAjaxError(response);
+			}
+			loaderHide();
+		}
+	);
+}
+
 function conversationPagination()
 {
 	$(".table-conversations .pager-nav").click(function(e){
 		loadConversations($(this).attr('data-page'), $(this).parents('.table-conversations:first'));
+		e.preventDefault();
+	});
+}
+
+function customersPagination()
+{
+	$(".table-customers .pager-nav").click(function(e){
+		loadCustomers($(this).attr('data-page'), $(this).parents('.table-customers:first'));
 		e.preventDefault();
 	});
 }

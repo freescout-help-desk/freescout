@@ -145,7 +145,7 @@
 		@if ($mode == App\Conversation::SEARCH_MODE_CONV)
 	    	@include('conversations/conversations_table', ['params' => ['show_mailbox' => (count(Auth::user()->mailboxesCanView(true)) > 1)]])
 	    @else
-	    	@include('customers/partials/list')
+	    	@include('customers/partials/customers_table')
 	    @endif
 	</div>
 @endsection
