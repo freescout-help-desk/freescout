@@ -37,7 +37,7 @@
 <body class="@if (!Auth::user()) user-is-guest @endif @if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class')" @yield('body_attrs') @if (Auth::user()) data-auth_user_id="{{ Auth::user()->id }}" @endif>
     <div id="app">
 
-        @if (Auth::user())
+        @if (Auth::user() && empty(app('request')->x_embed))
 
             <nav class="navbar navbar-default navbar-static-top">
                 <div class="container">
@@ -244,7 +244,7 @@
             </div>
         @endif
 
-        @if (!in_array(Route::currentRouteName(), array('mailboxes.view')))
+        @if (!in_array(Route::currentRouteName(), array('mailboxes.view')) && empty(app('request')->x_embed))
             <div class="footer">
                 @if (!\Eventy::filter('footer.text', ''))
                     &copy; 2018-{{ date('Y') }} <a href="{{ config('app.freescout_url') }}" target="blank">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk & shared mailbox') }}
