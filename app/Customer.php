@@ -1148,13 +1148,18 @@ class Customer extends Model
     {
         if (!empty($this->photo_url) || !$default_if_empty) {
             if (!empty($this->photo_url)) {
-                return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+                return self::getPhotoUrlByFileName($this->photo_url);
             } else {
                 return '';
             }
         } else {
             return asset('/img/default-avatar.png');
         }
+    }
+
+    public static function getPhotoUrlByFileName($file_name)
+    {
+        return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
     }
 
     /**
@@ -1234,11 +1239,13 @@ class Customer extends Model
 
         $sp['type_name'] = self::$social_type_names[$sp['type']];
 
-        if (!preg_match("/^https?:\/\//i", $sp['value'])) {
-            $sp['value'] = 'http://'.$sp['value'];
+        $sp['value_url'] = $sp['value'];
+
+        if (!preg_match("/^https?:\/\//i", $sp['value_url'])) {
+            $sp['value_url'] = 'http://'.$sp['value_url'];
         }
-        if (empty($sp['value'])) {
-            $sp['value'] = '';
+        if (empty($sp['value_url'])) {
+            $sp['value_url'] = '';
         }
 
         return $sp;
