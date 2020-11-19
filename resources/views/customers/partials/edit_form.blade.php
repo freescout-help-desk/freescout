@@ -241,13 +241,13 @@
                     </div>
                 </div>
 
-                <div class="form-group{{ $errors->has('background') ? ' has-error' : '' }}">
-                    <label for="background" class="col-sm-2 control-label">{{ __('Notes') }}</label>
+                <div class="form-group{{ $errors->has('notes') ? ' has-error' : '' }}">
+                    <label for="notes" class="col-sm-2 control-label">{{ __('Notes') }}</label>
 
                     <div class="col-sm-6">
-                        <textarea id="background" class="form-control input-sized-lg" name="background" rows="2">{{ old('background', $customer->background) }}</textarea>
+                        <textarea id="notes" class="form-control input-sized-lg" name="notes" rows="2">{{ old('notes', $customer->notes) }}</textarea>
 
-                        @include('partials/field_error', ['field'=>'background'])
+                        @include('partials/field_error', ['field'=>'notes'])
                     </div>
                 </div>
 

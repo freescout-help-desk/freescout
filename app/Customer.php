@@ -446,7 +446,7 @@ class Customer extends Model
      *
      * @var [type]
      */
-    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url', 'age', 'gender', 'background'];
+    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url', 'age', 'gender', 'notes'];
 
     /**
      * Fields stored as JSON.
@@ -920,8 +920,8 @@ class Customer extends Model
             unset($data['photo_url']);
         }
 
-        if (!empty($data['notes']) && empty($data['background'])) {
-            $data['background'] = $data['notes'];
+        if (!empty($data['background']) && empty($data['notes'])) {
+            $data['notes'] = $data['background'];
         }
 
         if ($replace_data) {

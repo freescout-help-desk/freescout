@@ -46,9 +46,9 @@
 					@if ($customer->address)<div>{{ $customer->address }}</div>@endif
 				</div>
 			@endif
-			@if ($customer->background)
+			@if ($customer->notes)
 				<div class="customer-section">
-					<i>{{ $customer->background }}</i>
+					<i>{{ $customer->notes }}</i>
 				</div>
 			@endif
 		</div>
