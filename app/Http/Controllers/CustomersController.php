@@ -67,11 +67,25 @@ class CustomersController extends Controller
             //'emails'     => 'array|required_without:first_name',
             //'emails.1'   => 'nullable|email|required_without:first_name',
             'emails.*'   => 'nullable|email|distinct|required_without:first_name',
+            'photo_url'   => 'nullable|image|mimes:jpeg,png,jpg,gif',
         ]);
         $validator->setAttributeNames([
-            //'emails.1'   => __('Email'),
+            'photo_url'   => __('Photo'),
             'emails.*'   => __('Email'),
         ]);
+
+        // Photo
+        $validator->after(function ($validator) use ($customer, $request) {
+            if ($request->hasFile('photo_url')) {
+                $path_url = $customer->savePhoto($request->file('photo_url')->getRealPath(), $request->file('photo_url')->getMimeType());
+
+                if ($path_url) {
+                    $customer->photo_url = $path_url;
+                } else {
+                    $validator->errors()->add('photo_url', __('Error occured processing the image. Make sure that PHP GD extension is enabled.'));
+                }
+            }
+        });
 
         if ($validator->fails()) {
             return redirect()->route('customers.update', ['id' => $id])
@@ -128,7 +142,13 @@ class CustomersController extends Controller
             }
         }
 
-        $customer->setData($request->all());
+        $request_data = $request->all();
+
+        if (isset($request_data['photo_url'])) {
+            unset($request_data['photo_url']);
+        }
+
+        $customer->setData($request_data);
         // Websites
         // if (!empty($request->websites)) {
         //     $customer->setWebsites($request->websites);

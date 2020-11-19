@@ -14,7 +14,7 @@ class Customer extends Model
     public $rememberCacheDriver = 'array';
 
     const PHOTO_DIRECTORY = 'customers';
-    const PHOTO_SIZE = 50; // px
+    const PHOTO_SIZE = 64; // px
     const PHOTO_QUALITY = 77;
 
     /**

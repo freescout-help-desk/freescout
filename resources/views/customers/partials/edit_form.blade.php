@@ -3,7 +3,7 @@
 <div class="container form-container">
     <div class="row">
         <div class="col-xs-12">
-            <form class="form-horizontal margin-top" method="POST" action="" type="multipart/form-data">
+            <form class="form-horizontal margin-top" method="POST" action="" enctype="multipart/form-data">
                 {{ csrf_field() }}
 
                 <div class="form-group{{ $errors->has('first_name') ? ' has-error' : '' }}">
@@ -237,10 +237,10 @@
                         <input type="file" name="photo_url">
                         <p class="block-help">{{ __('Image will be re-sized to 200x200. JPG, GIF, PNG accepted.') }}</p>
 
-                        @include('partials/field_error', ['field'=>'first_name'])
+                        @include('partials/field_error', ['field'=>'photo_url'])
                     </div>
                 </div>
-                
+
                 <div class="form-group{{ $errors->has('background') ? ' has-error' : '' }}">
                     <label for="background" class="col-sm-2 control-label">{{ __('Notes') }}</label>
 
