@@ -370,7 +370,12 @@ function triggersInit()
 	});
 
 	// Modal windows
-	$('a[data-trigger="modal"]').click(function(e) {
+	initModals();
+}
+
+function initModals()
+{
+	$('a[data-trigger="modal"][data-modal-applied!="1"]').attr('data-modal-applied', '1').click(function(e) {
     	triggerModal($(this));
     	e.preventDefault();
 	});
@@ -2346,6 +2351,7 @@ function loadCustomers(page, table)
 				if (typeof(response.html) != "undefined") {
 					table.replaceWith(response.html);
 					customersPagination();
+					initModals();
 				}
 			} else {
 				showAjaxError(response);

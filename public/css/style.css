@@ -454,6 +454,9 @@ a.navbar-brand:hover img {
     line-height: 11px;
     background-color: transparent;
 }
+.input-group-flex {
+    display: flex;
+}
 .input-group-addon-grey {
     background-color: #eee;
 }

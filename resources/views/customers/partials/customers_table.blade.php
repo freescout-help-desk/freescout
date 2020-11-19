@@ -1,5 +1,5 @@
 @if (count($customers))
-    <div class="table-customers">
+    <div class="table-customers" data-page="{{ (int)request()->get('page', 1) }}">
         <div class="container">
             <div class="card-list margin-top">
                 @foreach ($customers as $customer)

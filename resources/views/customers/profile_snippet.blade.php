@@ -27,11 +27,12 @@
 		<div class="customer-extra">
 			@if ($customer->getSocialProfiles() || $customer->getWebsites())
 				<div class="customer-social-profiles">
-					@if ($customer->getWebsites())
-						@foreach ($customer->getWebsites() as $website)
-				            <a href="{{ $website }}" target="_blank" title="{{ parse_url($website, PHP_URL_HOST) }}" class="glyphicon glyphicon-globe"></a>
-				        @endforeach
-					@endif
+					@foreach ($customer->getWebsites() as $website)
+			            <a href="{{ $website }}" target="_blank" title="{{ parse_url($website, PHP_URL_HOST) }}" data-toggle="tooltip" class="glyphicon glyphicon-globe"></a>
+			        @endforeach
+					@foreach ($customer->getSocialProfiles() as $sp)
+			            <a href="{{ App\Customer::formatSocialProfile($sp)['value'] }}" target="_blank" data-toggle="tooltip" title="{{ App\Customer::formatSocialProfile($sp)['type_name'] }}" class="glyphicon glyphicon-user"></a>
+			        @endforeach
 				</div>
 			@endif
 			@php
@@ -47,7 +48,7 @@
 			@endif
 			@if ($customer->background)
 				<div class="customer-section">
-					{{ $customer->background }}
+					<i>{{ $customer->background }}</i>
 				</div>
 			@endif
 		</div>

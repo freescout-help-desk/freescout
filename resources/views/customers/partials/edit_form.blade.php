@@ -3,7 +3,7 @@
 <div class="container form-container">
     <div class="row">
         <div class="col-xs-12">
-            <form class="form-horizontal margin-top" method="POST" action="">
+            <form class="form-horizontal margin-top" method="POST" action="" type="multipart/form-data">
                 {{ csrf_field() }}
 
                 <div class="form-group{{ $errors->has('first_name') ? ' has-error' : '' }}">
@@ -121,7 +121,7 @@
                                 @if (isset($social_profile['type']) && isset($social_profile['value']))
                                     <div class="multi-item">
                                         <div>
-                                            <div class="input-group input-sized-lg">
+                                            <div class="input-group input-group-flex input-sized-lg">
                                                 <select class="form-control" name="social_profiles[{{ $i }}][type]">
                                                     <option value=""></option>
                                                     @foreach (App\Customer::$social_types as $social_type_id => $social_type_code)
@@ -143,6 +143,7 @@
                     </div>
                 </div>
 
+                {{--
                 <div class="form-group{{ $errors->has('age') ? ' has-error' : '' }}">
                     <label for="age" class="col-sm-2 control-label">{{ __('Age') }}</label>
 
@@ -166,7 +167,7 @@
                         @include('partials/field_error', ['field'=>'gender'])
                     </div>
                 </div>
-
+                --}}
                 <div class="form-group{{ $errors->has('gender') ? ' has-error' : '' }}">
                     <label for="country" class="col-sm-2 control-label">{{ __('Country') }}</label>
 
@@ -228,9 +229,20 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="form-group{{ $errors->has('photo_url') ? ' has-error' : '' }} margin-bottom-0">
+                    <label for="photo_url" class="col-sm-2 control-label">{{ __('Photo') }}</label>
 
+                    <div class="col-sm-6">
+                        <input type="file" name="photo_url">
+                        <p class="block-help">{{ __('Image will be re-sized to 200x200. JPG, GIF, PNG accepted.') }}</p>
+
+                        @include('partials/field_error', ['field'=>'first_name'])
+                    </div>
+                </div>
+                
                 <div class="form-group{{ $errors->has('background') ? ' has-error' : '' }}">
-                    <label for="background" class="col-sm-2 control-label">{{ __('Background') }}</label>
+                    <label for="background" class="col-sm-2 control-label">{{ __('Notes') }}</label>
 
                     <div class="col-sm-6">
                         <textarea id="background" class="form-control input-sized-lg" name="background" rows="2">{{ old('background', $customer->background) }}</textarea>

@@ -920,6 +920,10 @@ class Customer extends Model
             unset($data['photo_url']);
         }
 
+        if (!empty($data['notes']) && empty($data['background'])) {
+            $data['background'] = $data['notes'];
+        }
+
         if ($replace_data) {
             // Replace data.
             $this->fill($data);
@@ -1220,5 +1224,23 @@ class Customer extends Model
         }
 
         return $data;
+    }
+
+    public static function formatSocialProfile($sp)
+    {
+        if (empty($sp['type']) || !isset(self::$social_type_names[$sp['type']])) {
+            $sp['type'] = self::SOCIAL_TYPE_OTHER;
+        }
+
+        $sp['type_name'] = self::$social_type_names[$sp['type']];
+
+        if (!preg_match("/^https?:\/\//i", $sp['value'])) {
+            $sp['value'] = 'http://'.$sp['value'];
+        }
+        if (empty($sp['value'])) {
+            $sp['value'] = '';
+        }
+
+        return $sp;
     }
 }
