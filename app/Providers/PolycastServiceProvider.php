@@ -8,6 +8,7 @@
 
 namespace App\Providers;
 
+use App\Conversation;
 use App\Notifications\BroadcastNotification;
 use Carbon\Carbon;
 use Illuminate\Broadcasting\BroadcastManager;
@@ -118,6 +119,13 @@ class PolycastServiceProvider extends ServiceProvider
         $viewing_conversation_id = null;
         if (!empty($request->data) && !empty($request->data['conversation_id'])) {
             $viewing_conversation_id = $request->data['conversation_id'];
+
+            if (!empty($request->data['conversation_view_start'])) {
+                $conversation = Conversation::find($request->data['conversation_id']);
+                if ($conversation) {
+                    \Eventy::action('conversation.view.start', $conversation);
+                }
+            }
         }
         if ($viewing_conversation_id) {
 

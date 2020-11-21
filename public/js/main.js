@@ -18,6 +18,7 @@ var fs_in_app_data = {};
 var fs_actions = {};
 var fs_filters = {};
 var fs_body_default = '<div><br></div>';
+var fs_prev_focus = true;
 
 // Ajax based notifications;
 var poly;
@@ -2965,6 +2966,10 @@ function polycastInit()
 			} else {
 				data.replying = 0;
 			}
+			if (!fs_prev_focus && document.hasFocus()) {
+				data.conversation_view_start = 1;
+			}
+			fs_prev_focus = document.hasFocus();
 			// If conversation_id is passed it means that user is viewing the converation
 			if (document.hasFocus() || data.replying) {
 				data.conversation_id = getGlobalAttr('conversation_id');
