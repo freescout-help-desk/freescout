@@ -2960,7 +2960,10 @@ function polycastInit()
 
 	if (getGlobalAttr('conversation_id')) {
 		poly_data_closures.push(function(data) {
-			data.conversation_id = getGlobalAttr('conversation_id');
+			// If conversation_id is passed it means that user is viewing the converation
+			if (document.hasFocus()) {
+				data.conversation_id = getGlobalAttr('conversation_id');
+			}
 			if (getReplyFormMode() == 'reply') {
 				data.replying = 1;
 			} else {
