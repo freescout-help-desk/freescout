@@ -2960,14 +2960,14 @@ function polycastInit()
 
 	if (getGlobalAttr('conversation_id')) {
 		poly_data_closures.push(function(data) {
-			// If conversation_id is passed it means that user is viewing the converation
-			if (document.hasFocus()) {
-				data.conversation_id = getGlobalAttr('conversation_id');
-			}
 			if (getReplyFormMode() == 'reply') {
 				data.replying = 1;
 			} else {
 				data.replying = 0;
+			}
+			// If conversation_id is passed it means that user is viewing the converation
+			if (document.hasFocus() || data.replying) {
+				data.conversation_id = getGlobalAttr('conversation_id');
 			}
 			return data;
 		});
