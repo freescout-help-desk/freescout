@@ -235,7 +235,7 @@
 
                     <div class="col-sm-6">
                         <input type="file" name="photo_url">
-                        <p class="block-help">{{ __('Image will be re-sized to 200x200. JPG, GIF, PNG accepted.') }}</p>
+                        <p class="block-help">(JPG, GIF, PNG)</p>
 
                         @include('partials/field_error', ['field'=>'photo_url'])
                     </div>
@@ -250,6 +250,8 @@
                         @include('partials/field_error', ['field'=>'notes'])
                     </div>
                 </div>
+
+                @action('customer.edit.after_fields', $customer, $errors)
 
                 <div class="form-group">
                     <div class="col-sm-6 col-sm-offset-2">
