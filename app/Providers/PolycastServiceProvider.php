@@ -120,10 +120,10 @@ class PolycastServiceProvider extends ServiceProvider
         if (!empty($request->data) && !empty($request->data['conversation_id'])) {
             $viewing_conversation_id = $request->data['conversation_id'];
 
-            if (!empty($request->data['conversation_view_start'])) {
+            if (!empty($request->data['conversation_view_focus'])) {
                 $conversation = Conversation::find($request->data['conversation_id']);
                 if ($conversation) {
-                    \Eventy::action('conversation.view.start', $conversation);
+                    \Eventy::action('conversation.view.focus', $conversation);
                 }
             }
         }

@@ -2967,7 +2967,7 @@ function polycastInit()
 				data.replying = 0;
 			}
 			if (!fs_prev_focus && document.hasFocus()) {
-				data.conversation_view_start = 1;
+				data.conversation_view_focus = 1;
 			}
 			fs_prev_focus = document.hasFocus();
 			// If conversation_id is passed it means that user is viewing the converation
