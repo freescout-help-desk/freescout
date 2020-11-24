@@ -3139,6 +3139,7 @@ ul.sidebar-block-list {
     list-style: none;
     padding: 0;
     max-height: 70vh;
+    clear: both;
 }
 .web-notifications-header {
     background-color: #fff;
