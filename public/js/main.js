@@ -3698,6 +3698,8 @@ function showForwardForm(data, reply_block)
 	}
 	reply_block.children().find(":input[name='subtype']:first").val(Vars.subtype_forward);
 	reply_block.children().find(":input[name='to']:first").addClass('hidden');
+	reply_block.children().find("#cc").val('').trigger('change');
+	reply_block.children().find("#bcc").val('').trigger('change');
 	reply_block.children().find(":input[name='to_email']:first").removeClass('hidden').removeClass('parsley-exclude').next('.select2:first').show();
 	reply_block.addClass('inactive');
 	reply_block.addClass('conv-forward-block');
