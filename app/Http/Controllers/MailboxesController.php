@@ -290,7 +290,7 @@ class MailboxesController extends Controller
     public function connectionOutgoing($id)
     {
         $mailbox = Mailbox::findOrFail($id);
-        $this->authorize('update', $mailbox);
+        $this->authorize('admin', $mailbox);
 
         return view('mailboxes/connection', ['mailbox' => $mailbox, 'sendmail_path' => ini_get('sendmail_path'), 'flashes' => $this->mailboxActiveWarning($mailbox)]);
     }
@@ -301,7 +301,7 @@ class MailboxesController extends Controller
     public function connectionOutgoingSave($id, Request $request)
     {
         $mailbox = Mailbox::findOrFail($id);
-        $this->authorize('update', $mailbox);
+        $this->authorize('admin', $mailbox);
 
         if ($request->out_method == Mailbox::OUT_METHOD_SMTP) {
             $validator = Validator::make($request->all(), [
@@ -346,7 +346,7 @@ class MailboxesController extends Controller
     public function connectionIncoming($id)
     {
         $mailbox = Mailbox::findOrFail($id);
-        $this->authorize('update', $mailbox);
+        $this->authorize('admin', $mailbox);
 
         $fields = [
             'in_server'   => $mailbox->in_server,
@@ -371,7 +371,7 @@ class MailboxesController extends Controller
     public function connectionIncomingSave($id, Request $request)
     {
         $mailbox = Mailbox::findOrFail($id);
-        $this->authorize('update', $mailbox);
+        $this->authorize('admin', $mailbox);
 
         // $validator = Validator::make($request->all(), [
         //     'in_server'   => 'nullable|string|max:255',
@@ -463,7 +463,7 @@ class MailboxesController extends Controller
     {
         $flashes = [];
 
-        if ($mailbox) {
+        if ($mailbox && \Auth::user()->can('admin', $mailbox)) {
             if (Route::currentRouteName() != 'mailboxes.connection' && !$mailbox->isOutActive()) {
                 $flashes[] = [
                     'type'      => 'warning',
@@ -580,7 +580,7 @@ class MailboxesController extends Controller
 
                 if (!$mailbox) {
                     $response['msg'] = __('Mailbox not found');
-                } elseif (!$user->can('update', $mailbox)) {
+                } elseif (!$user->can('admin', $mailbox)) {
                     $response['msg'] = __('Not enough permissions');
                 } elseif (empty($request->to)) {
                     $response['msg'] = __('Please specify recipient of the test email');
@@ -624,7 +624,7 @@ class MailboxesController extends Controller
 
                 if (!$mailbox) {
                     $response['msg'] = __('Mailbox not found');
-                } elseif (!$user->can('update', $mailbox)) {
+                } elseif (!$user->can('admin', $mailbox)) {
                     $response['msg'] = __('Not enough permissions');
                 }
 
@@ -661,7 +661,7 @@ class MailboxesController extends Controller
 
                 if (!$mailbox) {
                     $response['msg'] = __('Mailbox not found');
-                } elseif (!$user->can('update', $mailbox)) {
+                } elseif (!$user->can('admin', $mailbox)) {
                     $response['msg'] = __('Not enough permissions');
                 }
 
@@ -713,7 +713,7 @@ class MailboxesController extends Controller
 
                 if (!$mailbox) {
                     $response['msg'] = __('Mailbox not found');
-                } elseif (!$user->can('update', $mailbox)) {
+                } elseif (!$user->can('admin', $mailbox)) {
                     $response['msg'] = __('Not enough permissions');
                 } elseif (!Hash::check($request->password, $user->password)) {
                     $response['msg'] = __('Please double check your password, and try again');

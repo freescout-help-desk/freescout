@@ -68,6 +68,19 @@ class MailboxPolicy
     }
 
     /**
+     * Determine whether the user can admin the mailbox.
+     *
+     * @param \App\User    $user
+     * @param \App\Mailbox $mailbox
+     *
+     * @return mixed
+     */
+    public function admin(User $user, Mailbox $mailbox)
+    {
+        return $user->isAdmin();
+    }
+
+    /**
      * Determine whether the user can update the mailbox.
      *
      * @param \App\User    $user
@@ -83,7 +96,6 @@ class MailboxPolicy
             return false;
         }
     }
-
 
     /**
      * Determine whether the user can update the mailbox auto reply.
