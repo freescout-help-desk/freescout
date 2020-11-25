@@ -1945,6 +1945,21 @@ function getQueryParam(name, qs) {
         params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
     }
 
+    // Process arrays
+    for (var param in params) {
+    	
+    	var m = param.match(/^([^\[]+)\[([^\[]+)\]$/i);
+
+    	if (m && m.length) {
+    		if (typeof(params[m[1]]) == "undefined") {
+    			params[m[1]] = {};
+    		}
+    		if (typeof(params[m[1]]) == "object") {
+    			params[m[1]][m[2]] = params[param];
+    		}
+    	}
+    }
+
     if (typeof(params[name]) != "undefined") {
     	return params[name];
     } else {
