@@ -992,6 +992,8 @@ class Customer extends Model
         // Maybe Todo: check phone uniqueness.
         // Same phone can be written in many ways, so it's almost useless to chek uniqueness.
 
+        \Eventy::action('customer.set_data', $this, $data, $replace_data);
+
         if ($save) {
             $this->save();
         }

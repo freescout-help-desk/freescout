@@ -51,6 +51,7 @@
 					<i>{{ $customer->notes }}</i>
 				</div>
 			@endif
+			@action('customer.profile.extra', $customer, $conversation ?? '')
 		</div>
 		@action('customer.profile_data', $customer, $conversation ?? '')
 	</div>

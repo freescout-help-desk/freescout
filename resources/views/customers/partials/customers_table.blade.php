@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        @if ($customers)
+        @if ($customers->lastPage() > 1)
             <div class="customers-pager">
                 {{ $customers->links('conversations/conversations_pagination') }}
             </div>

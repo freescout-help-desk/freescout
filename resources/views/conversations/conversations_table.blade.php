@@ -125,7 +125,7 @@
                         @endif
                     </td>
                     <td class="conv-subject">
-                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}">
+                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty(request()->x_embed)) target="_blank"@endif>
                             <span class="conv-fader"></span>
                             <p>
                                 @if ($conversation->has_attachments)
