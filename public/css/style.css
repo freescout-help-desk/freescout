@@ -454,6 +454,9 @@ a.navbar-brand:hover img {
     line-height: 11px;
     background-color: transparent;
 }
+.input-group-flex {
+    display: flex;
+}
 .input-group-addon-grey {
     background-color: #eee;
 }
@@ -1442,6 +1445,16 @@ table.table-conversations td.conv-attachment {
     width: 25px;
     line-height: 24px;
     font-size: 16px;
+}
+.table-pager a.pager-nav.disabled {
+    color: #a5b2bd;
+    opacity: 0.3;
+}
+.table-pager a.pager-nav.disabled:hover {
+    color: #a5b2bd;
+}
+.table-pager a.pager-nav:hover {
+    color: #333;
 }
 /*.conv-subject-number {
     display: none;
@@ -2663,8 +2676,8 @@ ul.sidebar-block-list {
     .customer-name {
         float: left;
         margin-right: 7px;
-        font-weight: bold;
-        font-size: 18px;
+        /*font-weight: bold;
+        font-size: 18px;*/
     }
     .customer-section {
         margin-top: 0px;
@@ -2699,6 +2712,10 @@ ul.sidebar-block-list {
     }
     .customer-social-profiles {
         position: static;
+    }
+    .profile-preview .customer-social-profiles {
+        position: absolute;
+        top: 43px;
     }
     .conv-sidebar-block .panel-heading {
         display: none;
@@ -2925,6 +2942,15 @@ ul.sidebar-block-list {
     width: auto;
     min-width: 320px;
 }
+.modal-iframe {
+    width: 100%;
+    height: calc(100vh - 151px);
+}
+@media (max-width:767px) {
+    .modal-iframe {
+        height: calc(100vh - 112px);
+    }
+}
 /**
  * Attachments
  */
@@ -3113,6 +3139,7 @@ ul.sidebar-block-list {
     list-style: none;
     padding: 0;
     max-height: 70vh;
+    clear: both;
 }
 .web-notifications-header {
     background-color: #fff;
@@ -3361,6 +3388,33 @@ ul.sidebar-block-list {
 #search-filters .select2-container {
     width: 100% !important;
 }
+.customers-pager {
+    margin: 0 13px 20px 13px;
+    padding: 4px 0 0 10px;
+    font-size: 20px;
+    background-color: #f1f3f5;
+}
+.customers-pager a.disabled {
+    color: #93a1af;
+    opacity: 0.3;
+}
+.customers-pager a {
+    color: #93a1af;
+    padding-right: 8px;
+    text-decoration: none !important;
+}
+.customers-pager a.disabled:hover {
+    color: #93a1af;
+}
+.customers-pager a:hover {
+    color: #333;
+}
+/*.customers-pager a:hover,
+.customers-pager a:active
+.customers-pager a:focus, {
+    text-decoration: none !important;
+    border-bottom: 0;
+}*/
 
 /**
  * Panel

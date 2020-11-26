@@ -439,14 +439,18 @@ class User extends Authenticatable
         }
         if (is_string($date)) {
             // Convert string in to Carbon
-            $date = Carbon::parse($date);
+            try {
+                $date = Carbon::parse($date);
+            } catch (\Exception $e) {
+                $date = null;
+            }
         }
 
         if (!$date) {
             return '';
         }
 
-        if ($user) {
+        if ($user && $user !== false) {
             if ($modify_format) {
                 if ($user->time_format == self::TIME_FORMAT_12) {
                     $format = strtr($format, [

@@ -18,6 +18,7 @@ var fs_in_app_data = {};
 var fs_actions = {};
 var fs_filters = {};
 var fs_body_default = '<div><br></div>';
+var fs_prev_focus = true;
 
 // Ajax based notifications;
 var poly;
@@ -370,7 +371,12 @@ function triggersInit()
 	});
 
 	// Modal windows
-	$('a[data-trigger="modal"]').click(function(e) {
+	initModals();
+}
+
+function initModals()
+{
+	$('a[data-trigger="modal"][data-modal-applied!="1"]').attr('data-modal-applied', '1').click(function(e) {
     	triggerModal($(this));
     	e.preventDefault();
 	});
@@ -742,10 +748,24 @@ function multiInputInit()
 	$(document).ready(function() {
 	    $('.multi-add').click(function() {
 	    	var clone = $(this).parents('.multi-container:first').children('.multi-item:first').clone(true, true);
+	    	var index = parseInt($(this).parents('.multi-container:first').children('.block-help:last').attr('data-max-i'));
+	    	if (isNaN(index)) {
+	    		index = 0;
+	    	}
+	    	index++;
+
+	    	clone.find(':input').each(function(i, el) {
+	    		var name = $(el).attr('name');
+	    		name = name.replace(/^([^\[]+\[)([0-9]+)(\])/, "$1"+index+"$3");
+	    		$(el).attr('name', name.replace(/^([\[]+\[)([0-9]+)(\])/, "$1"+index+"$3"));
+	    	});
+
 	    	clone.find(':input').val('');
 	    	clone.find('.help-block').remove();
 	    	clone.removeClass('has-error');
 	    	clone.insertAfter($(this).parents('.multi-container:first').children('.multi-item:last'));
+
+	    	$(this).parents('.multi-container:first').children('.block-help:last').attr('data-max-i', index);
 		});
 		$('.multi-remove').click(function() {
 	    	if ($(this).parents('.multi-container:first').children('.multi-item').length > 1) {
@@ -1925,6 +1945,21 @@ function getQueryParam(name, qs) {
         params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
     }
 
+    // Process arrays
+    for (var param in params) {
+    	
+    	var m = param.match(/^([^\[]+)\[([^\[]+)\]$/i);
+
+    	if (m && m.length) {
+    		if (typeof(params[m[1]]) == "undefined") {
+    			params[m[1]] = {};
+    		}
+    		if (typeof(params[m[1]]) == "object") {
+    			params[m[1]][m[2]] = params[param];
+    		}
+    	}
+    }
+
     if (typeof(params[name]) != "undefined") {
     	return params[name];
     } else {
@@ -2189,7 +2224,9 @@ function searchInit()
 		conversationPagination();
 		starConversationInit();
 
-		$(".sidebar-menu .menu-link a").click(function(e){
+		customersPagination();
+
+		$(".sidebar-menu .menu-link a").filter('[data-filter]').click(function(e){
 			var trigger = $(this);
 			var filter = trigger.attr('data-filter');
 			if (!trigger.parent().hasClass('active')) {
@@ -2293,10 +2330,65 @@ function loadConversations(page, table, no_loader)
 	);
 }
 
+function loadCustomers(page, table)
+{
+	var filter = null;
+	//var params = {};
+
+	if ($('body:first').hasClass('body-search')) {
+		filter = {
+			q: getQueryParam('q'), // For search
+			f: getQueryParam('f') // For search
+		};
+	}
+	if (typeof(table) == "undefined" || table === '') {
+		table = $(".table-customers:first");
+	}
+	if (typeof(page) == "undefined" || page === '') {
+		page = table.attr('data-page');
+	}
+	/*var datas = table.data();
+	for (data_name in datas) {
+		if (/^filter_/.test(data_name)) {
+			filter[data_name.replace(/^filter_/, '')] = datas[data_name];
+		}
+	}*/
+
+	fsAjax(
+		{
+			action: 'customers_pagination',
+			filter: filter,
+			//params: params,
+			page: page
+		},
+		laroute.route('customers.ajax'),
+		function(response) {
+			if (isAjaxSuccess(response)) {
+				if (typeof(response.html) != "undefined") {
+					table.replaceWith(response.html);
+					customersPagination();
+					initModals();
+				}
+			} else {
+				showAjaxError(response);
+			}
+			loaderHide();
+		}
+	);
+}
+
 function conversationPagination()
 {
 	$(".table-conversations .pager-nav").click(function(e){
 		loadConversations($(this).attr('data-page'), $(this).parents('.table-conversations:first'));
+		e.preventDefault();
+	});
+}
+
+function customersPagination()
+{
+	$(".table-customers .pager-nav").click(function(e){
+		loadCustomers($(this).attr('data-page'), $(this).parents('.table-customers:first'));
 		e.preventDefault();
 	});
 }
@@ -2433,13 +2525,18 @@ function initMoveConv()
 					action: 'conversation_move',
 					mailbox_id: $('.move-conv-mailbox-id:visible:first').val(),
 					mailbox_email: $('.move-conv-mailbox-email:visible:first').val(),
-					conversation_id: getGlobalAttr('conversation_id')
+					conversation_id: getGlobalAttr('conversation_id'),
+					folder_id: getQueryParam('folder_id')
 				},
 				laroute.route('conversations.ajax'),
 				function(response) {
 					showAjaxResult(response);
 					if (isAjaxSuccess(response)) {
-						window.location.href = '';
+						if (typeof(response.redirect_url) != "undefined" && response.redirect_url) {
+							window.location.href = response.redirect_url;
+						} else {
+							window.location.href = '';
+						}
 					}
 					ajaxFinish();
 				}
@@ -2879,11 +2976,18 @@ function polycastInit()
 
 	if (getGlobalAttr('conversation_id')) {
 		poly_data_closures.push(function(data) {
-			data.conversation_id = getGlobalAttr('conversation_id');
 			if (getReplyFormMode() == 'reply') {
 				data.replying = 1;
 			} else {
 				data.replying = 0;
+			}
+			if (!fs_prev_focus && document.hasFocus()) {
+				data.conversation_view_focus = 1;
+			}
+			fs_prev_focus = document.hasFocus();
+			// If conversation_id is passed it means that user is viewing the converation
+			if (document.hasFocus() || data.replying) {
+				data.conversation_id = getGlobalAttr('conversation_id');
 			}
 			return data;
 		});
@@ -3609,6 +3713,8 @@ function showForwardForm(data, reply_block)
 	}
 	reply_block.children().find(":input[name='subtype']:first").val(Vars.subtype_forward);
 	reply_block.children().find(":input[name='to']:first").addClass('hidden');
+	reply_block.children().find("#cc").val('').trigger('change');
+	reply_block.children().find("#bcc").val('').trigger('change');
 	reply_block.children().find(":input[name='to_email']:first").removeClass('hidden').removeClass('parsley-exclude').next('.select2:first').show();
 	reply_block.addClass('inactive');
 	reply_block.addClass('conv-forward-block');

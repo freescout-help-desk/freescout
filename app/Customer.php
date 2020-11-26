@@ -14,7 +14,7 @@ class Customer extends Model
     public $rememberCacheDriver = 'array';
 
     const PHOTO_DIRECTORY = 'customers';
-    const PHOTO_SIZE = 50; // px
+    const PHOTO_SIZE = 64; // px
     const PHOTO_QUALITY = 77;
 
     /**
@@ -51,7 +51,7 @@ class Customer extends Model
         self::PHONE_TYPE_HOME   => 'home',
         self::PHONE_TYPE_OTHER  => 'other',
         self::PHONE_TYPE_MOBILE => 'mobile',
-        self::PHONE_TYPE_FAX    => 'Fax',
+        self::PHONE_TYPE_FAX    => 'fax',
         self::PHONE_TYPE_PAGER  => 'pager',
     ];
 
@@ -171,6 +171,13 @@ class Customer extends Model
         self::SOCIAL_TYPE_FLICKR     => 'Flickr',
         self::SOCIAL_TYPE_VK         => 'VK',
         self::SOCIAL_TYPE_OTHER      => 'Other',
+    ];
+
+    /**
+     * Search filters.
+     */
+    public static $search_filters = [
+        'mailbox',
     ];
 
     /**
@@ -439,7 +446,7 @@ class Customer extends Model
      *
      * @var [type]
      */
-    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url'];
+    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url', 'age', 'gender', 'notes'];
 
     /**
      * Fields stored as JSON.
@@ -604,10 +611,17 @@ class Customer extends Model
      *
      * @return array
      */
-    public function getPhones()
+    public function getPhones($dummy_if_empty = false)
     {
-        if ($this->phones) {
-            return json_decode($this->phones, true);
+        $phones = json_decode($this->phones, true);
+
+        if (is_array($phones) && count($phones)) {
+            return $phones;
+        } elseif ($dummy_if_empty) {
+            return [[
+                'type' => self::PHONE_TYPE_WORK,
+                'value' => '',
+            ]];
         } else {
             return [];
         }
@@ -648,7 +662,10 @@ class Customer extends Model
 
         foreach ($phones_array as $phone) {
             if (is_array($phone)) {
-                if (!empty($phone['value']) && !empty($phone['type']) && in_array($phone['type'], array_keys(self::$phone_types))) {
+                if (!empty($phone['value'])) {
+                    if (empty($phone['type']) || !in_array($phone['type'], array_keys(self::$phone_types))) {
+                        $phone['type'] = self::PHONE_TYPE_WORK;
+                    }
                     $phones[] = [
                         'value' => (string) $phone['value'],
                         'type'  => (int) $phone['type'],
@@ -697,10 +714,17 @@ class Customer extends Model
      *
      * @return array
      */
-    public function getSocialProfiles()
+    public function getSocialProfiles($dummy_if_empty = false)
     {
-        if ($this->social_profiles) {
+        $social_profiles = json_decode($this->social_profiles, true);
+
+        if (is_array($social_profiles) && count($social_profiles)) {
             return json_decode($this->social_profiles, true);
+        } elseif ($dummy_if_empty) {
+            return [[
+                'type' => '',
+                'value' => '',
+            ]];
         } else {
             return [];
         }
@@ -713,8 +737,9 @@ class Customer extends Model
      */
     public function getWebsites($dummy_if_empty = false)
     {
-        if ($this->websites) {
-            return json_decode($this->websites, true);
+        $websites = json_decode($this->websites, true);
+        if (is_array($websites) && count($websites)) {
+            return $websites;
         } elseif ($dummy_if_empty) {
             return [''];
         } else {
@@ -735,6 +760,9 @@ class Customer extends Model
             //$value = filter_var((string) $value, FILTER_SANITIZE_URL);
             if (isset($value['value'])) {
                 $value = $value['value'];
+            }
+            if (!$value || preg_match("/^http(s)?:?\/?\/?$/i", $value)) {
+                continue;
             }
             if (!preg_match("/http(s)?:\/\//i", $value)) {
                 $value = 'http://'.$value;
@@ -769,12 +797,28 @@ class Customer extends Model
         $social_profiles = [];
         foreach ($list as $social_profile) {
             if (is_array($social_profile)) {
-                if (!empty($social_profile['value']) && !empty($social_profile['type']) 
-                    && in_array($social_profile['type'], array_keys(self::$social_types))
-                ) {
+                if (!empty($social_profile['value']) && !empty($social_profile['type'])) {
+
+                    $type = null;
+
+                    if (is_numeric($social_profile['type']) && in_array($social_profile['type'], array_keys(self::$social_types))) {
+                        $type = (int)$social_profile['type'];
+                    } else {
+                        // Find type.
+                        foreach (self::$social_types as $type_id => $type_name) {
+                            if ($type_name == strtolower($social_profile['type'])) {
+                                $type = $type_id;
+                            }
+                        }
+                    }
+
+                    if (!$type) {
+                        continue;
+                    }
+
                     $social_profiles[] = [
                         'value' => (string) $social_profile['value'],
-                        'type'  => (int) $social_profile['type'],
+                        'type'  => $type,
                     ];
                 }
             } else {
@@ -877,6 +921,10 @@ class Customer extends Model
             unset($data['photo_url']);
         }
 
+        if (!empty($data['background']) && empty($data['notes'])) {
+            $data['notes'] = $data['background'];
+        }
+
         if ($replace_data) {
             // Replace data.
             $this->fill($data);
@@ -918,17 +966,19 @@ class Customer extends Model
                 if (isset($value['value'])) {
                     $this->addPhone($value);
                 } else {
-                    foreach ($value as $phone_value) {
-                        $this->addPhone($phone_value);
-                    }
+                    $this->setPhones($value);
+                    // foreach ($value as $phone_value) {
+                    //     $this->addPhone($phone_value);
+                    // }
                 }
                 $result = true;
             }
             if ($key == 'websites') {
                 if (is_array($value)) {
-                    foreach ($value as $website) {
-                        $this->addWebsite($website);
-                    }
+                    $this->setWebsites($value);
+                    // foreach ($value as $website) {
+                    //     $this->addWebsite($website);
+                    // }
                 } else {
                     $this->addWebsite($value);
                 }
@@ -942,6 +992,8 @@ class Customer extends Model
 
         // Maybe Todo: check phone uniqueness.
         // Same phone can be written in many ways, so it's almost useless to chek uniqueness.
+
+        \Eventy::action('customer.set_data', $this, $data, $replace_data);
 
         if ($save) {
             $this->save();
@@ -1099,13 +1151,18 @@ class Customer extends Model
     {
         if (!empty($this->photo_url) || !$default_if_empty) {
             if (!empty($this->photo_url)) {
-                return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+                return self::getPhotoUrlByFileName($this->photo_url);
             } else {
                 return '';
             }
         } else {
             return asset('/img/default-avatar.png');
         }
+    }
+
+    public static function getPhotoUrlByFileName($file_name)
+    {
+        return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
     }
 
     /**
@@ -1175,5 +1232,25 @@ class Customer extends Model
         }
 
         return $data;
+    }
+
+    public static function formatSocialProfile($sp)
+    {
+        if (empty($sp['type']) || !isset(self::$social_type_names[$sp['type']])) {
+            $sp['type'] = self::SOCIAL_TYPE_OTHER;
+        }
+
+        $sp['type_name'] = self::$social_type_names[$sp['type']];
+
+        $sp['value_url'] = $sp['value'];
+
+        if (!preg_match("/^https?:\/\//i", $sp['value_url'])) {
+            $sp['value_url'] = 'http://'.$sp['value_url'];
+        }
+        if (empty($sp['value_url'])) {
+            $sp['value_url'] = '';
+        }
+
+        return $sp;
     }
 }
