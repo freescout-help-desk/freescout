@@ -737,8 +737,9 @@ class Customer extends Model
      */
     public function getWebsites($dummy_if_empty = false)
     {
-        if ($this->websites) {
-            return json_decode($this->websites, true);
+        $websites = json_decode($this->websites, true);
+        if (is_array($websites) && count($websites)) {
+            return $websites;
         } elseif ($dummy_if_empty) {
             return [''];
         } else {

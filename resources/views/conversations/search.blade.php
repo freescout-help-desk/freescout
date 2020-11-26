@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', ($q ? $q.' - ' : '').__('Search'))
+@section('title', ($q ? $q.' - ' : '').strip_tags(Eventy::filter('search.title', __('Search'))))
 @section('body_class', 'body-search')
 
 @section('sidebar')
