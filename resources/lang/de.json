@@ -233,7 +233,7 @@
     "Deleted user": "Benutzer gelöscht",
     "Deleting": "Löschen",
     "Deleting this mailbox will remove all historical data and deactivate related workflows and reports.": "Durch das Löschen dieses Postfaches werden alle historischen Daten und damit verbundene Berichte und Workflows deaktiviert.",
-    "Deleting this User will deactivate workflows they are tied to and assign their conversations to:": "Beim Löschen dieses Benutzers werden auch die ihm zugeordneten Workflows deaktiviert und seine Gespräche werden zugewiesen an:",
+    "Deleting :name will deactivate workflows they are tied to and assign their conversations to:": "Beim Löschen dieses Benutzers werden auch die ihm zugeordneten Workflows deaktiviert und seine Gespräche werden zugewiesen an:",
     "Delivery error": "Zustellungsfehler",
     "Discard": "Verwerfen",
     "Discard this draft?": "Diesen Entwurf verwerfen?",

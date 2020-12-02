@@ -207,7 +207,7 @@
     "Deleted user": "Usuario eliminado",
     "Deleting": "Borrando",
     "Deleting this mailbox will remove all historical data and deactivate related workflows and reports.": "Borrar este correo eliminará toda la información histórica, desactivará flujos de trabajo relacionados y reportes.",
-    "Deleting this User will deactivate workflows they are tied to and assign their conversations to:": "Eliminar este usuario desactivará los flujos de trabajo a los que están vinculados y asignará sus conversaciones a:",
+    "Deleting :name will deactivate workflows they are tied to and assign their conversations to:": "Eliminar este usuario desactivará los flujos de trabajo a los que están vinculados y asignará sus conversaciones a:",
     "Delivery error": "Error de entrega",
     "Disable certificate validation if receiving \"Certificate failure\" error.": "Desactivar validación de certificado si se recibe el error \"Falla del certificado\"",
     "Discard": "Descartar",

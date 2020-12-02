@@ -448,7 +448,7 @@
     "Re-send invite email": "Renvoyer l'e-mail d'invitation",
     "Send invite email": "Envoyer un e-mail d'invitation",
     "Delete user": "Supprimer l'utilisateur",
-    "Deleting this User will deactivate workflows they are tied to and assign their conversations to:": "La suppression de cet utilisateur désactivera les workflows auxquels il est lié et assignera ses conversations à:",
+    "Deleting :name will deactivate workflows they are tied to and assign their conversations to:": "La suppression de cet utilisateur désactivera les workflows auxquels il est lié et assignera ses conversations à:",
     "If you are sure, type :delete and click the red button.": "Si vous êtes sûr, tapez :delete et cliquez sur le bouton rouge.",
     "Type :delete": "Tapez :delete",
     "Current Password": "Mot de passe actuel",

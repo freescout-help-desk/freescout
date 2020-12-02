@@ -241,7 +241,7 @@
     "Re-send invite email": "Wyślij ponownie e-mail z zaproszeniem",
     "Send invite email": "Wyślij e-mail z zaproszeniem",
     "Delete user": "Usuń użytkownika",
-    "Deleting this User will deactivate workflows they are tied to and assign their conversations to:": "Usunięcie tego Użytkownika dezaktywuje przepływy pracy, z którymi jest związany i przepisuje jego rozmowy dla:",
+    "Deleting :name will deactivate workflows they are tied to and assign their conversations to:": "Usunięcie tego Użytkownika :name dezaktywuje przepływy pracy, z którymi jest związany i przepisuje jego rozmowy dla:",
     "If you are sure, type :delete and click the red button.": "Jeśli jesteś pewien, wpisz :delete i kliknij czerwony przycisk.",
     "Type :delete": "Typ :delete",
     "Create a New User": "Utwórz Nowego Użytkownika",
