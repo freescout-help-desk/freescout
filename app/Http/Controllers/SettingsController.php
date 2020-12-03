@@ -276,6 +276,10 @@ class SettingsController extends Controller
             if (!empty($settings_params[$option_name]) && !empty($settings_params[$option_name]['env'])) {
                 $env_value = $request->settings[$option_name] ?? '';
 
+                if (!empty($settings_params[$option_name]['env_encode'])) {
+                    $env_value = base64_encode($env_value);
+                }
+
                 \Helper::setEnvFileVar($settings_params[$option_name]['env'], $env_value);
 
                 config($option_name, $env_value);
