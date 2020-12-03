@@ -138,7 +138,7 @@
     "Sending": "Отправка",
     "Send invite email": "Отправить письмо-приглашение",
     "Delete user": "Удалить агента",
-    "Deleting this User will deactivate workflows they are tied to and assign their conversations to:": "Удаление этого пользователя приведет к деактивации сценариев, к которым он привязан, и назначит его тикеты:",
+    "Deleting :name will deactivate workflows they are tied to and assign their conversations to:": "Удаление агента :name приведет к деактивации сценариев, к которым он привязан, и назначит его тикеты:",
     "If you are sure, type :delete and click the red button.": "Если вы уверены, введите :delete и нажмите красную кнопку.",
     "Type :delete": "Введите :delete",
     "Auto Bcc": "Автоматическая скрытая копия",

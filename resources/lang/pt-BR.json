@@ -145,7 +145,7 @@
     "Deleted user": "Usuário deletado",
     "Deleting": "Excluindo",
     "Deleting this mailbox will remove all historical data and deactivate related workflows and reports.": "A exclusão dessa caixa de correio removerá todos os dados históricos e desativará fluxos de trabalho e relatórios relacionados.",
-    "Deleting this User will deactivate workflows they are tied to and assign their conversations to:": "A exclusão deste usuário desativará os fluxos de trabalho aos quais eles estão vinculados e atribuirá suas conversas a:",
+    "Deleting :name will deactivate workflows they are tied to and assign their conversations to:": "A exclusão deste usuário desativará os fluxos de trabalho aos quais eles estão vinculados e atribuirá suas conversas a:",
     "Delivery error": "Erro de entrega",
     "Discard": "Descartar",
     "Discard this draft?": "Descartar este rascunho?",

@@ -205,7 +205,7 @@
     "Deleted draft": "Concept verwijderd",
     "Deleted user": "Gebruiker verwijderd",
     "Deleting": "Verwijderen",
-    "Deleting this User will deactivate workflows they are tied to and assign their conversations to:": "Het verwijderen van deze gebruiker deactiveert workflows waaraan ze zijn gekoppeld en wijst hun gesprekken toe aan:",
+    "Deleting :name will deactivate workflows they are tied to and assign their conversations to:": "Het verwijderen van deze gebruiker deactiveert workflows waaraan ze zijn gekoppeld en wijst hun gesprekken toe aan:",
     "Deleting this mailbox will remove all historical data and deactivate related workflows and reports.": "Als u deze mailbox verwijdert, worden alle historische gegevens verwijderd en worden gerelateerde workflows en rapporten gedeactiveerd.",
     "Delivery error": "Bezorgfout",
     "Disable certificate validation if receiving \"Certificate failure\" error.": "Schakel certificaatvalidatie uit als de fout 'Certificate failure' wordt weergegeven.",

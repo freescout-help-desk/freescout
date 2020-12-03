@@ -18,6 +18,7 @@
 		            	<tr>
 						    <td>
 						        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0;">
+						        	@if ($loop->index == 1)<!-- originalMessage -->@endif
 						        	@if (!$loop->first)
 							            <tr>
 							                <td style="padding:8px 0 10px 0;">
@@ -57,7 +58,7 @@
 	                                            </div>
 	                                        </div>
 						                </td>
-						            </tr>
+						            </tr>{{--@if ($loop->count > 1 && $loop->last)</blockquote>@endif--}}
 						        </table>
 						    </td>
 						</tr>

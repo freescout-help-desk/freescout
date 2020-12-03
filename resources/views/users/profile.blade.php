@@ -238,7 +238,7 @@
     <div id="delete_user_modal" class="hidden">
         <div>
         <div class="text-center">
-            <div class="col-sm-10 col-sm-offset-1 text-large margin-top-10 margin-bottom">{!! __("Deleting this User will deactivate workflows they are tied to and assign their conversations to:") !!}</div>
+            <div class="col-sm-10 col-sm-offset-1 text-large margin-top-10 margin-bottom">{!! __("Deleting :name will deactivate workflows they are tied to and assign their conversations to:", ['name' => '<strong>'.htmlspecialchars($user->getFullName()).'</strong>']) !!}</div>
             <form class="assign_form form-horizontal">
                 @foreach (App\Mailbox::all() as $mailbox)
                     <div class="col-sm-9 col-sm-offset-1">
