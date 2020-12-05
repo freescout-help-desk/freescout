@@ -388,7 +388,7 @@ class ModulesController extends Controller
                     $params = [
                         'license'      => $license,
                         'module_alias' => $alias,
-                        'url'          => \App\Module::getAppUrl(),
+                        'url'          => (!empty($request->any_url) ? '*' : \App\Module::getAppUrl()),
                     ];
                     $result = WpApi::deactivateLicense($params);
 

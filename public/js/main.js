@@ -470,7 +470,8 @@ function deactivateLicenseModal(modal)
 			{
 				action: 'deactivate_license',
 				alias: $('.deactivate-license-module:visible:first').val(),
-				license: $('.deactivate-license-key:visible:first').val()
+				license: $('.deactivate-license-key:visible:first').val(),
+				any_url: 1,
 			},
 			laroute.route('modules.ajax'),
 			function(response) {
