@@ -315,6 +315,12 @@ class ConversationsController extends Controller
             }
         }
 
+        $to = [];
+
+        if ($request->get('to')) {
+            $to = [$request->get('to')];
+        }
+
         return view('conversations/create', [
             'conversation' => $conversation,
             'thread'       => $thread,
@@ -322,7 +328,7 @@ class ConversationsController extends Controller
             'folder'       => $folder,
             'folders'      => $mailbox->getAssesibleFolders(),
             'after_send'   => $after_send,
-            'to'           => [],
+            'to'           => $to,
         ]);
     }
 
