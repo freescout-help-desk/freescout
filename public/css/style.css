@@ -366,8 +366,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 a.navbar-brand.active img,
 a.navbar-brand:hover img {
-	-webkit-filter: brightness(2);
-	filter: brightness(2);
+	-webkit-filter: brightness(1.1);
+	filter: brightness(1.1);
 }
 .navbar-brand i {
     color: #fff;
