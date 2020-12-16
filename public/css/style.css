@@ -846,7 +846,7 @@ a h4 {
 .dash-card a.dash-card-list-item,
 .dash-card a.dash-card-list-item:hover,
 .dash-card a.dash-card-list-item:focus {
-    color: #2a3b47;
+    color: #93a1af;
 }
 .dash-card a.dash-card-list-item:hover {
     text-decoration: underline;
@@ -877,6 +877,22 @@ a h4 {
 .dash-card-list-item strong {
     display: block;
     float: right;
+}
+.dash-card-list a:nth-of-type(-n+2),
+.dash-card-list a:nth-of-type(-n+2) strong {
+    color: #2a3b47;
+}
+.dash-card-list a:nth-of-type(n+3) strong {
+    font-weight: normal;
+}
+.dash-card-list a:nth-of-type(1) strong.has-value {
+    background-color: #85919e;
+    color: #fff;
+    padding: 0px 7px 0 7px !important;
+    border-radius: 18px;
+    text-align: center;
+    height: 20px;
+    margin-right: -7px !important;
 }
 .dash-card-inactive-content {
     display: none;
