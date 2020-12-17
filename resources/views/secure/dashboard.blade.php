@@ -18,12 +18,50 @@
                         <div class="dash-card-list">
                             @php
                                 $main_folders = $mailbox->getMainFolders();
+                                $count_mine = 0;
                             @endphp
+                            
                             @foreach ($main_folders as $folder)
                                 @php
                                     $active_count = $folder->getCount($main_folders);
+                                    $open_count = $folder->getOpenCount($main_folders);
                                 @endphp
-                                <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$active_count) dash-card-item-empty @endif" title="@if ($active_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $active_count)<span class="waiting-since">/ {{ $folder->getWaitingSince() }}</span>@endif<strong @if ((int)$active_count) class="has-value" @endif>{{ $active_count }}</strong></a>
+                                @if ($folder->getType() == $folder::TYPE_UNASSIGNED)
+                                    <!-- <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$open_count) dash-card-item-empty @endif" title="@if ($open_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $open_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong>{{ $open_count }}</strong></a> -->
+                                    <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$open_count) dash-card-item-empty @else dash-card-list-inverse-red @endif" title="@if ($open_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $open_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong>{{ $open_count }}</strong></a>
+                                    
+                                @elseif ($folder->getType() == $folder::TYPE_MINE)
+                                    @php 
+                                        $count_mine = $open_count;
+                                    @endphp
+
+                                    @if (($active_count != 0) && ($active_count != $open_count))
+                                        <!-- <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$open_count) dash-card-item-empty @endif" title="@if ($open_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $open_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong>{{ $active_count }}<span class="dash-card-list-item-unobtrusive"> / {{ $open_count }}</span></strong></a> -->
+                                        <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$open_count) dash-card-item-empty @endif" title="@if ($open_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $open_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong class=""><i class="glyphicon glyphicon-time glyph-working" style=""></i>&nbsp;{{ $active_count }} / <span class="dash-card-list-item-waiting">{{ $open_count }}</span></strong></a>
+                                    @elseif (($active_count == 0) and ($open_count != 0))
+                                        <!-- <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$open_count) dash-card-item-empty @endif" title="@if ($open_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $open_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong>{{ $active_count }}<span class="dash-card-list-item-unobtrusive"> / {{ $open_count }}</span></strong></a> -->
+                                        <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$open_count) dash-card-item-empty @endif" title="@if ($open_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $open_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong class="dash-card-list-item-waiting">{{ $open_count }}</strong></a>
+                                    @elseif ($active_count === $open_count)
+                                        <!-- <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$open_count) dash-card-item-empty @endif" title="@if ($open_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $open_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong>{{ $active_count }}<span class="dash-card-list-item-unobtrusive"> / {{ $open_count }}</span></strong></a> -->
+                                        <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$open_count) dash-card-item-empty @endif" title="@if ($open_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $open_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong class="all-items-active">{{ $active_count }}<span class=""> / {{ $open_count }}</span></strong></a>
+                                    @else
+                                        <!-- <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$open_count) dash-card-item-empty @endif" title="@if ($open_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $open_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong><span class="dash-card-list-item-unobtrusive">0 / {{ $open_count }}</span></strong></a> -->
+                                        <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$open_count) dash-card-item-empty @endif" title="@if ($open_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $open_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong><span class="dash-card-list-item-waiting">{{ $open_count }}</span></strong></a> 
+                                    @endif
+                                @elseif ($folder->getType() == $folder::TYPE_STARRED)
+                                    <!-- <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$active_count) dash-card-item-empty @endif" title="@if ($active_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $active_count)<span class="waiting-since">/ {{ $folder->getWaitingSince() }}</span>@endif<strong>&#11088;&nbsp;{{ $active_count }}</strong></a> -->
+                                    <!-- Icon &#11088; -->
+                                    @if ($active_count != 0)
+                                        <a class="dash-card-list-item-starred" href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$active_count) dash-card-item-empty @endif" title="@if ($active_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">@if (!$folder->isIndirect() && $active_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong><i class="glyphicon glyphicon-star dropdown-toggle dash-icon-starred"></i>&nbsp;{{ $active_count }}</strong></a>
+                                    @endif
+                                @elseif ($folder->getType() == $folder::TYPE_ASSIGNED)
+                                    @php 
+                                        $count_assigned = $open_count - $count_mine;
+                                    @endphp
+                                    <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$count_assigned) dash-card-item-empty @endif" title="@if ($count_assigned){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $count_assigned)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong>{{ $count_assigned }}</strong></a>
+                                @else
+                                    <a href="{{ route('mailboxes.view.folder', ['id' => $mailbox->id, 'folder_id' => $folder->id]) }}" class="dash-card-list-item @if (!$active_count) dash-card-item-empty @endif" title="@if ($active_count){{  __('Waiting Since') }}@else{{  __('View conversations') }}@endif">{{ $folder->getTypeName() }}@if (!$folder->isIndirect() && $active_count)<span class="waiting-since">  {{ $folder->getWaitingSince() }}</span>@endif<strong>{{ $active_count }}</strong></a>
+                                @endif
                             @endforeach
                         </div>
                         <div class="dash-card-inactive-content">
