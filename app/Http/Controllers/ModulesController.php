@@ -388,7 +388,7 @@ class ModulesController extends Controller
                     $params = [
                         'license'      => $license,
                         'module_alias' => $alias,
-                        'url'          => \App\Module::getAppUrl(),
+                        'url'          => (!empty($request->any_url) ? '*' : \App\Module::getAppUrl()),
                     ];
                     $result = WpApi::deactivateLicense($params);
 
@@ -398,12 +398,15 @@ class ModulesController extends Controller
                         $response['msg'] = $result['message'];
                     } else {
                         if (!empty($result['status']) && $result['status'] == 'success') {
-                            // Remove remembered license key and deactivate license in DB
-                            \App\Module::deactivateLicense($alias, '');
+                            $db_module = \App\Module::getByAlias($alias);
+                            if ($db_module && trim($db_module->license) == trim($license)) {
+                                // Remove remembered license key and deactivate license in DB
+                                \App\Module::deactivateLicense($alias, '');
 
-                            // Deactivate module
-                            \App\Module::setActive($alias, false);
-                            \Artisan::call('freescout:clear-cache', []);
+                                // Deactivate module
+                                \App\Module::setActive($alias, false);
+                                \Artisan::call('freescout:clear-cache', []);
+                            }
 
                             // Flash does not work here.
                             $flash = [
