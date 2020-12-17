@@ -317,8 +317,9 @@ class ConversationsController extends Controller
 
         $to = [];
 
-        if ($request->get('to')) {
-            $to = [$request->get('to')];
+        $prefill_to = \App\Email::sanitizeEmail($request->get('to'));
+        if ($prefill_to) {
+            $to = [$prefill_to];
         }
 
         return view('conversations/create', [
