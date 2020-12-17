@@ -23,7 +23,7 @@ body.user-is-guest {
     width: 100%;
 }
 .content {
-    margin-top: 20px;
+    margin-top: 65px;
     /*padding-bottom: 60px;*/
     min-height: 400px;
 }
@@ -44,6 +44,7 @@ body.user-is-guest {
     justify-content: space-between;
     min-height: calc((100vh) - (54px));
     width: 100%;
+    margin-top: 50px;
 }
 .sidebar-2col {
     width: 260px;
