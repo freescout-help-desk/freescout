@@ -354,6 +354,11 @@ h1, h2, h3, h4, h5, h6 {
 /**
  * Navbar
  */
+
+.navbar-brand {
+    padding: 5px 15px 5px;
+ }
+
 .navbar-brand.navbar-brand-with-text > img {
     display: inline-block;
 }
