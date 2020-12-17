@@ -621,7 +621,7 @@ select[multiple].input-md {
 }
 .btn-trans {
     color: #93a1af;
-    background-color: #f9f9f9;
+    background-color: transparent;
     border-color: #d3dae0;
 }
 .btn-trans:hover {
@@ -835,6 +835,9 @@ a h4 {
     position: absolute;
     right: 0;
     text-align: right;
+}
+.dash-card .btn-trans {
+    background-color: #f9f9f9;
 }
 .dash-card h3 {
     padding-left: 20px;
