@@ -655,6 +655,11 @@ class ConversationsController extends Controller
                     $prev_status = $conversation->status;
 
                     $conversation->status = $request->status;
+                    if (Conversation::STATUS_CLOSED === $conversation->status) {
+                        $conversation->closed_by_user_id = $request->user_id;
+                        $conversation->closed_at = date('Y-m-d H:i:s');
+                    }
+
                     // We need to set state, as it may have been a draft
                     $conversation->state = Conversation::STATE_PUBLISHED;
                     // Set assignee
