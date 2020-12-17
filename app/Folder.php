@@ -102,6 +102,10 @@ class Folder extends Model
         return $this->hasMany('App\Conversation');
     }
 
+    public function getType() {
+        return $this->type;
+    }
+
     public function getTypeName()
     {
         // To make name translatable.
@@ -241,6 +245,29 @@ class Folder extends Model
                 ->count();
         }
         $this->save();
+    }
+
+	/**
+     * Get count of only all open items for the folders list.
+     *
+     * @param array $folders [description]
+     *
+     * @return [type] [description]
+     */
+    public function getOpenCount($folders = [])
+    {
+        $counter = \Eventy::filter('folder.counter', self::COUNTER_TOTAL, $this, $folders);
+
+        $count = \Eventy::filter('folder.count', false, $this, $counter, $folders);
+        if ($count !== false) {
+            return $count;
+        }
+                
+        if ($counter == self::COUNTER_TOTAL || $this->type == self::TYPE_STARRED || $this->type == self::TYPE_DRAFTS || $this->type == self::TYPE_ASSIGNED ) {
+            return $this->total_count;
+        } else {
+            return $this->getActiveCount($folders);
+        }
     }
 
     /**
