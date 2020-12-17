@@ -1157,6 +1157,9 @@ a h4 {
     color: #72808e;
     text-decoration: none;
 }
+.profile-preview {
+    position: relative;
+}
 .profile-preview .customer-social-profiles {
     top: 61px;
 }
@@ -3734,10 +3737,11 @@ a.help-icon:hover {
 .link-grey:hover,
 .link-grey:focus {
     color: #93a1af!important;
+    text-decoration: none!important;
 }
 .link-grey:hover {
     color: #4f5d6b!important;
-    text-decoration: none;
+    text-decoration: none!important;
 }
 .link-underlined {
     text-decoration: underline;
