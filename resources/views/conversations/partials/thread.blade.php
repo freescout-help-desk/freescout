@@ -257,7 +257,7 @@
 
                 @action('thread.before_body', $thread, $loop, $threads, $conversation, $mailbox)
 
-                <div class="thread-content">
+                <div class="thread-content" dir="auto">
                     {!! $thread->getBodyWithFormatedLinks() !!}
                 </div>
 
