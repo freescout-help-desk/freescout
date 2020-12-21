@@ -129,6 +129,14 @@ class FetchEmails extends Command
 
         $folders = [];
 
+        // Fetch All
+        $unseen = $this->option('unseen');
+
+        if ($mailbox->fetch_all) {
+            $this->info('Mailbox is set to fetch all in settings');
+            $unseen = false;
+        }
+
         // Fetch emails from custom IMAP folders.
         if ($mailbox->in_protocol == Mailbox::IN_PROTOCOL_IMAP) {
             $imap_folders = $mailbox->getInImapFolders();
@@ -158,7 +166,7 @@ class FetchEmails extends Command
 
             // Get unseen messages for a period
             $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
-            if ($this->option('unseen')) {
+            if ($unseen) {
                 $messages->unseen();
             }
             if ($no_charset) {
@@ -173,7 +181,7 @@ class FetchEmails extends Command
                 // Solution for MS mailboxes.
                 // https://github.com/freescout-helpdesk/freescout/issues/176
                 $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null);
-                if ($this->option('unseen')) {
+                if ($unseen) {
                     $messages->unseen();
                 }
                 $messages = $messages->get();

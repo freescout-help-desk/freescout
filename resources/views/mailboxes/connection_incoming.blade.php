@@ -158,17 +158,31 @@
                         </div>
                     </div>
 
-                    <div>
-                        <div class="form-group">
-                            <label for="imap_sent_folder" class="col-sm-2 control-label">{{ __('IMAP Folder To Save Outgoing Replies') }}</label>
+                    <div class="form-group">
+                        <label for="fetch_all" class="col-sm-2 control-label">{{ __('Fetch All') }}</label>
 
-                            <div class="col-sm-6">
-                                <input id="imap_sent_folder" type="text" class="form-control input-sized" name="imap_sent_folder" value="{{ old('imap_sent_folder', $mailbox->imap_sent_folder) }}" maxlength="255" placeholder="Sent">
-                                <div class="form-help">{!! __("Enter IMAP folder name to save outgoing replies if your mail service provider does not do it automatically (Gmail does it), otherwise leave it blank.") !!}</div>
+                        <div class="col-sm-6">
+                            <div class="controls">
+                                <div class="onoffswitch-wrap">
+                                    <div class="onoffswitch">
+                                        <input type="checkbox" name="fetch_all" value="1" id="fetch_all" class="onoffswitch-checkbox" @if (old('fetch_all', $mailbox->fetch_all))checked="checked"@endif >
+                                        <label class="onoffswitch-label" for="fetch_all"></label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <hr/>
                     </div>
+
+                    <div class="form-group">
+                        <label for="imap_sent_folder" class="col-sm-2 control-label">{{ __('IMAP Folder To Save Outgoing Replies') }}</label>
+
+                        <div class="col-sm-6">
+                            <input id="imap_sent_folder" type="text" class="form-control input-sized" name="imap_sent_folder" value="{{ old('imap_sent_folder', $mailbox->imap_sent_folder) }}" maxlength="255" placeholder="Sent">
+                            <div class="form-help">{!! __("Enter IMAP folder name to save outgoing replies if your mail service provider does not do it automatically (Gmail does it), otherwise leave it blank.") !!}</div>
+                        </div>
+                    </div>
+
+                    <hr/>
 
                     <div class="form-group margin-top-2">
                         <div class="col-sm-6 col-sm-offset-2">

@@ -391,6 +391,10 @@ class MailboxesController extends Controller
             'in_validate_cert' => ($request->filled('in_validate_cert') ?? false),
         ]);
 
+        $request->merge([
+            'fetch_all' => ($request->filled('fetch_all') ?? false),
+        ]);
+
         // Do not save dummy password.
         if (preg_match("/^\*+$/", $request->in_password)) {
             $params = $request->except(['in_password']);
