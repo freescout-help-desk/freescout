@@ -120,6 +120,10 @@ class SettingsController extends Controller
                         'timezone' => [
                             'env' => 'APP_TIMEZONE',
                         ],
+                        'user_permissions' => [
+                            'env' => 'APP_USER_PERMISSIONS',
+                            'env_encode' => true,
+                        ],
                     ],
                 ];
                 break;
@@ -171,7 +175,7 @@ class SettingsController extends Controller
                 $settings = [
                     'company_name'         => Option::get('company_name', \Config::get('app.name')),
                     'next_ticket'          => (Option::get('next_ticket') >= Conversation::max('number') + 1) ? Option::get('next_ticket') : Conversation::max('number') + 1,
-                    'user_permissions'     => Option::get('user_permissions', []),
+                    'user_permissions'     => User::getUserPermissions(),
                     'email_branding'       => Option::get('email_branding'),
                     'open_tracking'        => Option::get('open_tracking'),
                     'email_conv_history'   => config('app.email_conv_history'),
@@ -275,6 +279,10 @@ class SettingsController extends Controller
             // Option has to be saved to .env file.
             if (!empty($settings_params[$option_name]) && !empty($settings_params[$option_name]['env'])) {
                 $env_value = $request->settings[$option_name] ?? '';
+
+                if (is_array($env_value)) {
+                    $env_value = json_encode($env_value);
+                }
 
                 if (!empty($settings_params[$option_name]['env_encode'])) {
                     $env_value = base64_encode($env_value);

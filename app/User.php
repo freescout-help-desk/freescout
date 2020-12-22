@@ -805,12 +805,34 @@ class User extends Authenticatable
 
     public function hasPermission($permission)
     {
-        $permissions = Option::get('user_permissions');
+        $permissions = self::getUserPermissions();
+
         if (!empty($permissions) && is_array($permissions) && in_array($permission, $permissions)) {
             return true;
         } else {
             return false;
         }
+    }
+
+    public static function getUserPermissions()
+    {
+        $permissions = [];
+        $permissions_json = config('app.user_permissions');
+
+        if ($permissions_json) {
+            $permissions_json = base64_decode($permissions_json);
+            try {
+                $permissions = json_decode($permissions_json, true);
+            } catch (\Exception $e) {
+                // Do nothing.
+            }
+        }
+
+        if (!is_array($permissions)) {
+            $permissions = [];
+        }
+
+        return $permissions;
     }
 
     /**
