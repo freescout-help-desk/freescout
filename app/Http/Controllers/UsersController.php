@@ -263,6 +263,21 @@ class UsersController extends Controller
         $user->mailboxes()->sync($request->mailboxes);
         $user->syncPersonalFolders($request->mailboxes);
 
+        // Save permissions.
+        $user_permissions = $request->user_permissions ?? [];
+        $permissions = [];
+
+        foreach (User::getUserPermissionsList() as $permission_id) {
+            $new_has_permission = in_array($permission_id, $user_permissions);
+
+            if ($user->hasPermission($permission_id, false) != $new_has_permission) {
+                $permissions[$permission_id] = (int)(bool)$new_has_permission;
+                $save_user = true;
+            }
+        }
+        $user->permissions = $permissions;
+        $user->save();
+
         \Session::flash('flash_success_floating', __('Permissions saved successfully'));
 
         return redirect()->route('users.permissions', ['id' => $id]);

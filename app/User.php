@@ -111,6 +111,10 @@ class User extends Authenticatable
      */
     protected $fillable = ['role', 'status', 'first_name', 'last_name', 'email', 'password', 'role', 'timezone', 'photo_url', 'type', 'emails', 'job_title', 'phone', 'time_format', 'enable_kb_shortcuts', 'locale'];
 
+    protected $casts = [
+        'permissions' => 'array',
+    ];
+    
     /**
      * For array_unique function.
      *
@@ -551,7 +555,7 @@ class User extends Authenticatable
         if (!empty($user_permission_names[$user_permission])) {
             return $user_permission_names[$user_permission];
         } else {
-            return \Event::fire('filter.user_permission_name', [$user_permission]);
+            return \Eventy::filter('user_permissions.name', '', $user_permission);
         }
     }
 
@@ -803,18 +807,26 @@ class User extends Authenticatable
         $this->photo_url = '';
     }
 
-    public function hasPermission($permission)
+    public function hasPermission($permission, $check_own_permissions = true)
     {
-        $permissions = self::getUserPermissions();
+        $has_permission = false;
 
-        if (!empty($permissions) && is_array($permissions) && in_array($permission, $permissions)) {
-            return true;
-        } else {
-            return false;
+        $global_permissions = self::getGlobalUserPermissions();
+
+        if (!empty($global_permissions) && is_array($global_permissions) && in_array($permission, $global_permissions)) {
+            $has_permission = true;
         }
+
+        if ($check_own_permissions && !empty($this->permissions)) {
+            if (isset($this->permissions[$permission])) {
+                $has_permission = (bool)$this->permissions[$permission];
+            }
+        }
+
+        return $has_permission;
     }
 
-    public static function getUserPermissions()
+    public static function getGlobalUserPermissions()
     {
         $permissions = [];
         $permissions_json = config('app.user_permissions');
@@ -1000,5 +1012,10 @@ class User extends Authenticatable
         }, SORT_STRING | SORT_FLAG_CASE);
 
         return $users;
+    }
+
+    public static function getUserPermissionsList()
+    {
+        return \Eventy::filter('user_permissions.list', self::$user_permissions);
     }
 }

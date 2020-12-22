@@ -29,7 +29,7 @@
         <label for="email" class="col-sm-2 control-label">{{ __('User Permissions') }}</label>
 
         <div class="col-sm-6">
-            @foreach (App\User::$user_permissions as $permission_id)
+            @foreach (App\User::getUserPermissionsList() as $permission_id)
                 <div class="control-group">
                     <label class="checkbox" for="user_permission_{{ $permission_id }}">
                         <input type="checkbox" name="settings[user_permissions][]" value="{{ $permission_id }}" id="user_permission_{{ $permission_id }}" @if (in_array($permission_id, old('settings[user_permissions]', $settings['user_permissions']))) checked="checked" @endif> {{ App\User::getUserPermissionName($permission_id) }}
