@@ -297,5 +297,6 @@
         @yield('javascript')
         @action('javascript')
     </script>
+    @yield('footer-scripts')
 </body>
 </html>
