@@ -61,7 +61,7 @@
                         @foreach (App\User::getUserPermissionsList() as $permission_id)
                             <div class="control-group">
                                 <label class="checkbox" for="user_permission_{{ $permission_id }}">
-                                    <input type="checkbox" name="user_permissions[]" value="{{ $permission_id }}" id="user_permission_{{ $permission_id }}" @if ($user->hasPermission($permission_id)) checked="checked" @endif> @if ($user->hasPermission($permission_id, false) != $user->hasPermission($permission_id)) <span style="font-weight:bold">@else<span>@endif{{ App\User::getUserPermissionName($permission_id) }}</span>
+                                    <input type="checkbox" name="user_permissions[]" value="{{ $permission_id }}" id="user_permission_{{ $permission_id }}" @if ($user->hasPermission($permission_id)) checked="checked" @endif> @if ($user->hasPermission($permission_id, false) != $user->hasPermission($permission_id)) <span style="font-weight:bold">@else<span class="text-help">@endif{{ App\User::getUserPermissionName($permission_id) }}</span>
                                 </label>
                             </div>
                         @endforeach

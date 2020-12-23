@@ -58,14 +58,17 @@ class UsersController extends Controller
     public function createSave(Request $request)
     {
         $this->authorize('create', 'App\User');
+        $auth_user = auth()->user();
 
         $rules = [
-            'role'       => 'integer',
             'first_name' => 'required|string|max:20',
             'last_name'  => 'required|string|max:30',
             'email'      => 'required|string|email|max:100|unique:users',
-            'role'       => ['required', Rule::in(array_keys(User::$roles))],
+            //'role'       => ['required', Rule::in(array_keys(User::$roles))],
         ];
+        if ($auth_user->isAdmin()) {
+            $rules['role'] = ['required', Rule::in(array_keys(User::$roles))];
+        }
         if (empty($request->send_invite)) {
             $rules['password'] = 'required|string|max:255';
         }
@@ -79,6 +82,9 @@ class UsersController extends Controller
 
         $user = new User();
         $user->fill($request->all());
+        if (!$auth_user->can('changeRole', $user)) {
+            $user->role = User::ROLE_USER;
+        }
         if (empty($request->send_invite)) {
             // Set password from request
             $user->password = Hash::make($request->password);

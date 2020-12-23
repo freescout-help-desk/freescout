@@ -72,10 +72,11 @@ class User extends Authenticatable
      * Global user permissions.
      */
     const PERM_DELETE_CONVERSATIONS = 1;
-    const PERM_EDIT_CONVERSATIONS = 2;
-    const PERM_EDIT_SAVED_REPLIES = 3;
-    const PERM_EDIT_TAGS = 4;
-    const PERM_EDIT_CUSTOM_FOLDERS = 5;
+    const PERM_EDIT_CONVERSATIONS   = 2;
+    const PERM_EDIT_SAVED_REPLIES   = 3;
+    const PERM_EDIT_TAGS            = 4;
+    const PERM_EDIT_CUSTOM_FOLDERS  = 5;
+    const PERM_EDIT_USERS           = 10;
 
     public static $user_permissions = [
         self::PERM_DELETE_CONVERSATIONS,
@@ -83,6 +84,7 @@ class User extends Authenticatable
         self::PERM_EDIT_SAVED_REPLIES,
         self::PERM_EDIT_TAGS,
         self::PERM_EDIT_CUSTOM_FOLDERS,
+        self::PERM_EDIT_USERS,
     ];
 
     const WEBSITE_NOTIFICATIONS_PAGE_SIZE = 25;
@@ -550,6 +552,7 @@ class User extends Authenticatable
             self::PERM_EDIT_SAVED_REPLIES   => __('Users are allowed to edit/delete saved replies'),
             self::PERM_EDIT_TAGS            => __('Users are allowed to manage tags'),
             self::PERM_EDIT_CUSTOM_FOLDERS  => __('Users are allowed to manage custom folders'),
+            self::PERM_EDIT_USERS           => __('Users are allowed to manage users'),
         ];
 
         if (!empty($user_permission_names[$user_permission])) {
