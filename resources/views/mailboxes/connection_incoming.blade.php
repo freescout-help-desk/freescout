@@ -137,6 +137,24 @@
                         </div>
                     </div>
 
+                   <div class="form-group{{ $errors->has('in_imap_handling') ? ' has-error' : '' }}">
+                        <label for="in_imap_handling" class="col-sm-2 control-label">{{ __('IMAP Handling') }}</label>
+
+                        <div class="col-sm-6">
+                            <div class="flexy">
+                                <select id="in_imap_handling" class="form-control input-sized" name="in_imap_handling" required autofocus>
+                                    <option value="{{ App\Mailbox::IN_IMAP_HANDLING_KEEP }}" @if (old('in_imap_handling', $mailbox->in_imap_handling) == App\Mailbox::IN_IMAP_HANDLING_KEEP)selected="selected"@endif> {{__('Keep Mails on Server')}}</option>
+                                    <option value="{{ App\Mailbox::IN_IMAP_HANDLING_DELETE }}" @if (old('in_imap_handling', $mailbox->in_imap_handling) == App\Mailbox::IN_IMAP_HANDLING_DELETE)selected="selected"@endif>{{__('Remove Mails from Server')}}</option>
+                                    <option value="{{ App\Mailbox::IN_IMAP_HANDLING_DELAY_WEEK }}" @if (old('in_imap_handling', $mailbox->in_imap_handling) == App\Mailbox::IN_IMAP_HANDLING_DELAY_WEEK)selected="selected"@endif>{{__('Remove After 1 Week')}}</option>
+                                    <option value="{{ App\Mailbox::IN_IMAP_HANDLING_DELAY_MONTH }}" @if (old('in_imap_handling', $mailbox->in_imap_handling) == App\Mailbox::IN_IMAP_HANDLING_DELAY_MONTH)selected="selected"@endif>{{__('Remove After 1 Month')}}</option>
+                                </select>
+                            </div>
+
+                            @include('partials/field_error', ['field'=>'in_imap_handling'])
+                        </div>
+                    </div>
+
+
                     <div class="form-group{{ $errors->has('in_validate_cert') ? ' has-error' : '' }}">
                         <label for="in_validate_cert" class="col-sm-2 control-label">{{ __('Validate Certificate') }}</label>
 
