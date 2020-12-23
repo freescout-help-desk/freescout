@@ -121,6 +121,7 @@ class FetchEmails extends Command
     public function fetch($mailbox)
     {
         $no_charset = false;
+        $days_until_delete = 0;
 
         $client = \MailHelper::getMailboxClient($mailbox);
 
@@ -156,6 +157,24 @@ class FetchEmails extends Command
         foreach ($folders as $folder) {
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
 
+             // time-delayed imap message handling - nickbe
+            if ($mailbox->in_imap_handling == Mailbox::IN_IMAP_HANDLING_DELAY_WEEK) {
+                // get expunge list of messages older than a week
+                $days_until_delete = 8;                
+            } elseif ($mailbox->in_imap_handling == Mailbox::IN_IMAP_HANDLING_DELAY_MONTH) {
+                // get expunge list of messages older than roughly a month
+                $days_until_delete = 30;
+            } // otherwise the mails will be kept indefinetely until manually deleted
+
+            if ($days_until_delete > 0) {
+
+                $messages = $folder->query()->seen()->before(now()->subDays($days_until_delete));
+                $messages = $messages->get();
+                foreach ($messages as $message_id => $message) {
+                    $message->delete();
+                }
+            }
+            
             // Get unseen messages for a period
             $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
             if ($this->option('unseen')) {
@@ -559,6 +578,12 @@ class FetchEmails extends Command
                 if ($message_from_customer && $is_bounce) {
                     $this->saveBounceData($new_thread, $bounced_message_id, $from);
                 }
+                
+                // nickbe - delete each mail after fetching
+                if ($mailbox->in_imap_handling == Mailbox::IN_IMAP_HANDLING_DELETE) {
+                    $message->delete();
+                }
+                
             } else {
                 $this->logError('Error occured processing message');
             }
