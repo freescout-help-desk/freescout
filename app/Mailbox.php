@@ -84,6 +84,21 @@ class Mailbox extends Model
         self::IN_ENCRYPTION_SSL  => 'ssl',
         self::IN_ENCRYPTION_TLS  => 'tls',
     ];
+    
+       /**
+     * IMAP handling.
+     */
+    const IN_IMAP_HANDLING_KEEP = 0;
+    const IN_IMAP_HANDLING_DELETE = 1;
+    const IN_IMAP_HANDLING_DELAY_WEEK = 2;
+    const IN_IMAP_HANDLING_DELAY_MONTH = 3;
+
+    public static $in_imap_handling = [
+        self::IN_IMAP_HANDLING_KEEP => '',
+        self::IN_IMAP_HANDLING_DELETE  => 'delete',
+        self::IN_IMAP_HANDLING_DELAY_WEEK  => 'week',
+        self::IN_IMAP_HANDLING_DELAY_MONTH  => 'month',
+    ];
 
     /**
      * Ratings Playcement: place ratings text above/below signature.
@@ -131,7 +146,7 @@ class Mailbox extends Model
      *
      * @var [type]
      */
-    protected $fillable = ['name', 'email', 'aliases', 'auto_bcc', 'from_name', 'from_name_custom', 'ticket_status', 'ticket_assignee', 'template', 'before_reply', 'signature', 'out_method', 'out_server', 'out_username', 'out_password', 'out_port', 'out_encryption', 'in_server', 'in_port', 'in_username', 'in_password', 'in_protocol', 'in_encryption', 'in_validate_cert', 'auto_reply_enabled', 'auto_reply_subject', 'auto_reply_message', 'office_hours_enabled', 'ratings', 'ratings_placement', 'ratings_text', 'imap_sent_folder'];
+    protected $fillable = ['name', 'email', 'aliases', 'auto_bcc', 'from_name', 'from_name_custom', 'ticket_status', 'ticket_assignee', 'template', 'before_reply', 'signature', 'out_method', 'out_server', 'out_username', 'out_password', 'out_port', 'out_encryption', 'in_server', 'in_port', 'in_username', 'in_password', 'in_protocol', 'in_encryption', 'in_validate_cert', 'auto_reply_enabled', 'auto_reply_subject', 'auto_reply_message', 'office_hours_enabled', 'ratings', 'ratings_placement', 'ratings_text', 'imap_sent_folder', 'in_imap_handling'];
 
     protected static function boot()
     {
@@ -540,6 +555,16 @@ class Mailbox extends Model
         return self::$out_encryptions[$this->out_encryption];
     }
 
+     /**
+     * Get incoming email handling.
+     *
+     * @return string
+     */
+    public function getInMailHandling()
+    {
+        return self::$in_imap_handling[$this->in_imap_handling];
+    }
+    
     /**
      * Get incoming email encryption protocol.
      *
