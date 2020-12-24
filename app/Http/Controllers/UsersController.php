@@ -58,14 +58,17 @@ class UsersController extends Controller
     public function createSave(Request $request)
     {
         $this->authorize('create', 'App\User');
+        $auth_user = auth()->user();
 
         $rules = [
-            'role'       => 'integer',
             'first_name' => 'required|string|max:20',
             'last_name'  => 'required|string|max:30',
             'email'      => 'required|string|email|max:100|unique:users',
-            'role'       => ['required', Rule::in(array_keys(User::$roles))],
+            //'role'       => ['required', Rule::in(array_keys(User::$roles))],
         ];
+        if ($auth_user->isAdmin()) {
+            $rules['role'] = ['required', Rule::in(array_keys(User::$roles))];
+        }
         if (empty($request->send_invite)) {
             $rules['password'] = 'required|string|max:255';
         }
@@ -79,6 +82,9 @@ class UsersController extends Controller
 
         $user = new User();
         $user->fill($request->all());
+        if (!$auth_user->can('changeRole', $user)) {
+            $user->role = User::ROLE_USER;
+        }
         if (empty($request->send_invite)) {
             // Set password from request
             $user->password = Hash::make($request->password);
@@ -262,6 +268,21 @@ class UsersController extends Controller
 
         $user->mailboxes()->sync($request->mailboxes);
         $user->syncPersonalFolders($request->mailboxes);
+
+        // Save permissions.
+        $user_permissions = $request->user_permissions ?? [];
+        $permissions = [];
+
+        foreach (User::getUserPermissionsList() as $permission_id) {
+            $new_has_permission = in_array($permission_id, $user_permissions);
+
+            if ($user->hasPermission($permission_id, false) != $new_has_permission) {
+                $permissions[$permission_id] = (int)(bool)$new_has_permission;
+                $save_user = true;
+            }
+        }
+        $user->permissions = $permissions;
+        $user->save();
 
         \Session::flash('flash_success_floating', __('Permissions saved successfully'));
 

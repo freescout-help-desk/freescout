@@ -35,7 +35,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        if ($user->isAdmin()) {
+        if ($user->isAdmin() || $user->hasPermission(User::PERM_EDIT_USERS)) {
             return true;
         } else {
             return false;
@@ -52,7 +52,11 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        if ($user->isAdmin() || $user->id == $model->id || $user->canManageMailbox($model->id)) {
+        if ($user->isAdmin() 
+            || $user->id == $model->id
+            || $user->hasPermission(User::PERM_EDIT_USERS)
+            || $user->canManageMailbox($model->id)
+        ) {
             return true;
         } else {
             return false;

@@ -72,10 +72,11 @@ class User extends Authenticatable
      * Global user permissions.
      */
     const PERM_DELETE_CONVERSATIONS = 1;
-    const PERM_EDIT_CONVERSATIONS = 2;
-    const PERM_EDIT_SAVED_REPLIES = 3;
-    const PERM_EDIT_TAGS = 4;
-    const PERM_EDIT_CUSTOM_FOLDERS = 5;
+    const PERM_EDIT_CONVERSATIONS   = 2;
+    const PERM_EDIT_SAVED_REPLIES   = 3;
+    const PERM_EDIT_TAGS            = 4;
+    const PERM_EDIT_CUSTOM_FOLDERS  = 5;
+    const PERM_EDIT_USERS           = 10;
 
     public static $user_permissions = [
         self::PERM_DELETE_CONVERSATIONS,
@@ -83,6 +84,7 @@ class User extends Authenticatable
         self::PERM_EDIT_SAVED_REPLIES,
         self::PERM_EDIT_TAGS,
         self::PERM_EDIT_CUSTOM_FOLDERS,
+        self::PERM_EDIT_USERS,
     ];
 
     const WEBSITE_NOTIFICATIONS_PAGE_SIZE = 25;
@@ -111,6 +113,10 @@ class User extends Authenticatable
      */
     protected $fillable = ['role', 'status', 'first_name', 'last_name', 'email', 'password', 'role', 'timezone', 'photo_url', 'type', 'emails', 'job_title', 'phone', 'time_format', 'enable_kb_shortcuts', 'locale'];
 
+    protected $casts = [
+        'permissions' => 'array',
+    ];
+    
     /**
      * For array_unique function.
      *
@@ -546,12 +552,13 @@ class User extends Authenticatable
             self::PERM_EDIT_SAVED_REPLIES   => __('Users are allowed to edit/delete saved replies'),
             self::PERM_EDIT_TAGS            => __('Users are allowed to manage tags'),
             self::PERM_EDIT_CUSTOM_FOLDERS  => __('Users are allowed to manage custom folders'),
+            self::PERM_EDIT_USERS           => __('Users are allowed to manage users'),
         ];
 
         if (!empty($user_permission_names[$user_permission])) {
             return $user_permission_names[$user_permission];
         } else {
-            return \Event::fire('filter.user_permission_name', [$user_permission]);
+            return \Eventy::filter('user_permissions.name', '', $user_permission);
         }
     }
 
@@ -803,14 +810,44 @@ class User extends Authenticatable
         $this->photo_url = '';
     }
 
-    public function hasPermission($permission)
+    public function hasPermission($permission, $check_own_permissions = true)
     {
-        $permissions = Option::get('user_permissions');
-        if (!empty($permissions) && is_array($permissions) && in_array($permission, $permissions)) {
-            return true;
-        } else {
-            return false;
+        $has_permission = false;
+
+        $global_permissions = self::getGlobalUserPermissions();
+
+        if (!empty($global_permissions) && is_array($global_permissions) && in_array($permission, $global_permissions)) {
+            $has_permission = true;
         }
+
+        if ($check_own_permissions && !empty($this->permissions)) {
+            if (isset($this->permissions[$permission])) {
+                $has_permission = (bool)$this->permissions[$permission];
+            }
+        }
+
+        return $has_permission;
+    }
+
+    public static function getGlobalUserPermissions()
+    {
+        $permissions = [];
+        $permissions_json = config('app.user_permissions');
+
+        if ($permissions_json) {
+            $permissions_json = base64_decode($permissions_json);
+            try {
+                $permissions = json_decode($permissions_json, true);
+            } catch (\Exception $e) {
+                // Do nothing.
+            }
+        }
+
+        if (!is_array($permissions)) {
+            $permissions = [];
+        }
+
+        return $permissions;
     }
 
     /**
@@ -978,5 +1015,10 @@ class User extends Authenticatable
         }, SORT_STRING | SORT_FLAG_CASE);
 
         return $users;
+    }
+
+    public static function getUserPermissionsList()
+    {
+        return \Eventy::filter('user_permissions.list', self::$user_permissions);
     }
 }

@@ -821,7 +821,7 @@ a h4 {
 }
 .dash-card-content {
     padding-bottom: 60px;
-    padding-top: 20px;
+    padding-top: 15px;
 }
 .dash-card-content h3 a,
 .dash-card-content h3 a:hover,
@@ -843,8 +843,10 @@ a h4 {
     padding-left: 20px;
     padding-right: 20px;
     margin-bottom: 8px;
-    margin-top: 0;
+    margin-top: -15px;
+    padding-top: 13px;
     margin-bottom: 0;
+    background-color: #eff1f4;
 }
 .dash-card a.dash-card-list-item,
 .dash-card a.dash-card-list-item:hover,
@@ -857,7 +859,11 @@ a h4 {
 .dash-card-link {
     padding-left: 20px;
     padding-right: 20px;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
+    padding-right: 20px;
+    padding-bottom: 7px;
+    background-color: #eff1f4;
+    border-bottom: 1px solid #d9e1e7;
 }
 .dash-card-list-item {
     font-size: 14px;
