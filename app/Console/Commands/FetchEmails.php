@@ -154,7 +154,9 @@ class FetchEmails extends Command
         }
 
         $unseen = \Eventy::filter('fetch_emails.unseen', $this->option('unseen'), $mailbox);
-        $this->line('['.date('Y-m-d H:i:s').'] Fetching: '.($unseen ? 'UNREAD' : 'ALL'));
+        if ($unseen != $this->option('unseen')) {
+            $this->line('['.date('Y-m-d H:i:s').'] Fetching: '.($unseen ? 'UNREAD' : 'ALL'));
+        }
 
         foreach ($folders as $folder) {
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
