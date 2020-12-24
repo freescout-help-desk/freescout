@@ -186,6 +186,7 @@
 
                                     <ul class="dropdown-menu">
                                         <li><a href="{{ route('users.profile', ['id'=>Auth::user()->id]) }}">{{ __('Your Profile') }}</a></li>
+                                        @action('menu_right.user.after_profile')
                                         <li class="divider"></li>
                                         <li>
                                             <a href="{{ route('logout') }}"
