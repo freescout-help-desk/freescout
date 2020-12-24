@@ -44,6 +44,11 @@ class ClearCache extends Command
             $this->call('config:clear');
         } else {
             $this->call('config:cache');
+            // Laravel users `require` function to include config.php
+            // If opcache is being used for few seconds config.php is being cached.
+            if (function_exists('opcache_invalidate')) {
+                opcache_invalidate(app()->getCachedConfigPath());
+            }
         }
         // Regenerate vars to get new data from .env
         if (!$this->option('doNotGenerateVars')) {
