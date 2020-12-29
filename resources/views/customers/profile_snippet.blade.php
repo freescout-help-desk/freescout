@@ -6,7 +6,6 @@
     	@if ($customer->getFullName(true, true))
 			<a href="{{ route('customers.update', ['id' => $customer->id]) }}" class="customer-name">{{ $customer->getFullName(true, true) }}</a>
 		@endif
-		{{-- todo: display full customer info --}}
 		<ul class="customer-contacts customer-section">
 			@if (!empty($main_email))
 		    	@foreach ($customer->emails as $email)

@@ -1213,6 +1213,9 @@ a h4 {
 .customer-contacts .contact-main:hover {
     color: #3197d6;
 }
+.customer-extra {
+    clip: both;
+}
 .customer-section {
     margin-top: 10px;
     color: #93a1af;
