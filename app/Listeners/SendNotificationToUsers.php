@@ -62,11 +62,12 @@ class SendNotificationToUsers
         if (empty($event->conversation) || !$event_type) {
             return;
         }
-        $conversation = $event->conversation;
 
-        // We can not check imported here, as after conversation has been imported via API
-        // notifications has to be sent.
-        //if (!$conversation->imported) {
+        // Ignore imported threads.
+        if (!empty($event->thread) && $event->thread->imported) {
+            return;
+        }
+        $conversation = $event->conversation;
 
         // Using the last argument you can make event to be processed immediately
         Subscription::registerEvent($event_type, $conversation, $caused_by_user_id/*, true*/);
