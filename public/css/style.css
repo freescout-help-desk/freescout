@@ -851,9 +851,7 @@ a h4 {
     margin-bottom: 0;
     background-color: #eff1f4;
 }
-.dash-card a.dash-card-list-item,
-.dash-card a.dash-card-list-item:hover,
-.dash-card a.dash-card-list-item:focus {
+.dash-card a.dash-card-list-item {
     color: #93a1af;
 }
 .dash-card a.dash-card-list-item:hover {
