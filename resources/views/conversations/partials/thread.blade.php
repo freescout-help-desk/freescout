@@ -101,12 +101,13 @@
                     </div>
                     @if ($thread->type != App\Thread::TYPE_NOTE || $thread->isForward())
                         <div class="thread-recipients">
-                            @if ($thread->isForward()
+                            @if (($thread->isForward()
                                 || $loop->last
                                 || ($thread->type == App\Thread::TYPE_CUSTOMER && count($thread->getToArray($mailbox->getEmails())))
                                 || ($thread->type == App\Thread::TYPE_MESSAGE && !in_array($conversation->customer_email, $thread->getToArray()))
                                 || ($thread->type == App\Thread::TYPE_MESSAGE && count($customer->emails) > 1)
-                                || \Helper::isPrint()
+                                || \Helper::isPrint())
+                                && $thread->getToArray()
                             )
                                 <div>
                                     <strong>
