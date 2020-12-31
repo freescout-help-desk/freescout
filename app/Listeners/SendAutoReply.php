@@ -27,7 +27,7 @@ class SendAutoReply
     {
         $conversation = $event->conversation;
 
-        if (/*!$conversation->imported &&*/ $conversation->mailbox->auto_reply_enabled) {
+        if (!$conversation->imported && $conversation->mailbox->auto_reply_enabled) {
             $thread = $conversation->threads()->first();
 
             // Do not send auto reply to auto responders.

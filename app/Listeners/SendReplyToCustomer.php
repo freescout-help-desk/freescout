@@ -28,10 +28,17 @@ class SendReplyToCustomer
             return;
         }
 
+        $replies = $conversation->getReplies();
+
+        // Ignore imported messages.
+        if ($replies && $replies->first() && $replies->first()->imported) {
+            return;
+        }
+
         // We can not check imported here, as after conversation has been imported via API
         // notifications has to be sent.
         //if (!$conversation->imported) {
-        \App\Jobs\SendReplyToCustomer::dispatch($conversation, $conversation->getReplies(), $conversation->customer)
+        \App\Jobs\SendReplyToCustomer::dispatch($conversation, $replies, $conversation->customer)
             ->delay(now()->addSeconds(Conversation::UNDO_TIMOUT))
             ->onQueue('emails');
     }

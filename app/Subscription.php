@@ -154,16 +154,16 @@ class Subscription extends Model
      */
     public static function usersToNotify($event_type, $conversation, $threads, $mailbox_user_ids = null)
     {
-        // We can not check imported here, as after conversation has been imported via API
-        // notifications has to be sent.
-        // if ($conversation->imported) {
-        //     return true;
-        // }
+        $thread = $threads[0];
+
+        // Ignore imported threads.
+        if ($thread->imported) {
+            return true;
+        }
 
         // Detect events
         $events = [];
 
-        $thread = $threads[0];
         $prev_thread = null;
         if (!empty($threads[1])) {
             $prev_thread = $threads[1];
