@@ -357,6 +357,9 @@ h1, h2, h3, h4, h5, h6 {
 .navbar-brand {
     padding: 12px 15px 12px;
  }
+ .navbar-brand-with-text {
+    line-height: 24px;
+ }
 .navbar-brand.navbar-brand-with-text > img {
     display: inline-block;
 }
