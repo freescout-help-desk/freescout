@@ -25,8 +25,8 @@
 
     <table class="table-conversations table @if (!empty($params['show_mailbox']))show-mailbox @endif" data-page="{{ (int)request()->get('page', 1) }}" @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif >
         <colgroup>
-            {{-- todo: without this columns table becomes not 100% wide --}}
-            @if (empty($no_checkboxes))<col class="conv-current">@endif
+            {{-- todo: without this column table becomes not 100% wide --}}
+            <col class="conv-current">
             @if (empty($no_checkboxes))<col class="conv-cb">@endif
             @if (empty($no_customer))<col class="conv-customer">@endif
             <col class="conv-attachment">
@@ -40,7 +40,7 @@
         </colgroup>
         <thead>
         <tr>
-            @if (empty($no_checkboxes))<th class="conv-current">&nbsp;</th>@endif
+            <th class="conv-current">&nbsp;</th>
             @if (empty($no_checkboxes))<th class="conv-cb"><input type="checkbox" class="toggle-all magic-checkbox" id="toggle-all"><label for="toggle-all"></label></th>@endif
             @if (empty($no_customer))
                 <th class="conv-customer">
@@ -87,7 +87,7 @@
                 <tr class="conv-row @if ($conversation->isActive()) conv-active @endif" data-conversation_id="{{ $conversation->id }}">
                     @if (empty($no_checkboxes))<td class="conv-current">@if (!empty($viewers[$conversation->id]))
                                 <div class="viewer-badge @if (!empty($viewers[$conversation->id]['replying'])) viewer-replying @endif" data-toggle="tooltip" title="@if (!empty($viewers[$conversation->id]['replying'])){{ __(':user is replying', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@else{{ __(':user is viewing', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@endif"><div>
-                            @endif</td>@endif
+                            @endif</td>@else<td class="conv-current"></td>@endif
                     @if (empty($no_checkboxes))
                         <td class="conv-cb">
                             <input type="checkbox" class="conv-checkbox magic-checkbox" id="cb-{{ $conversation->id }}" name="cb_{{ $conversation->id }}" value="{{ $conversation->id }}"><label for="cb-{{ $conversation->id }}"></label>
