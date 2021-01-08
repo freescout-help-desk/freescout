@@ -158,11 +158,16 @@ class FetchEmails extends Command
             $this->line('['.date('Y-m-d H:i:s').'] Fetching: '.($unseen ? 'UNREAD' : 'ALL'));
         }
 
+        $days = \Eventy::filter('fetch_emails.days', $this->option('days'), $mailbox);
+        if ($days != $this->option('days')) {
+            $this->line('['.date('Y-m-d H:i:s').'] Fetching: last '.$days.' days');
+        }
+
         foreach ($folders as $folder) {
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
 
             // Get unseen messages for a period
-            $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
+            $messages = $folder->query()->since(now()->subDays($days))->leaveUnread();
             if ($unseen) {
                 $messages->unseen();
             }
@@ -177,7 +182,7 @@ class FetchEmails extends Command
                 $errors_count = count($client->getErrors());
                 // Solution for MS mailboxes.
                 // https://github.com/freescout-helpdesk/freescout/issues/176
-                $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null);
+                $messages = $folder->query()->since(now()->subDays($days))->leaveUnread()->setCharset(null);
                 if ($unseen) {
                     $messages->unseen();
                 }
