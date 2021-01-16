@@ -769,10 +769,17 @@ class User extends Authenticatable
 
     /**
      * Resize and save user photo.
+     *
+     * $uploaded_file can be \File or string.
      */
-    public function savePhoto($uploaded_file)
+    public function savePhoto($uploaded_file, $mime_type = '')
     {
-        $resized_image = \App\Misc\Helper::resizeImage($uploaded_file->getRealPath(), $uploaded_file->getMimeType(), self::PHOTO_SIZE, self::PHOTO_SIZE);
+        $real_path = $uploaded_file;
+        if (!is_string($uploaded_file)) {
+            $real_path = $uploaded_file->getRealPath();
+            $mime_type = $uploaded_file->getMimeType();
+        }
+        $resized_image = \App\Misc\Helper::resizeImage($real_path, $mime_type, self::PHOTO_SIZE, self::PHOTO_SIZE);
 
         if (!$resized_image) {
             return false;

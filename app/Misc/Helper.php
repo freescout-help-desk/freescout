@@ -1390,4 +1390,33 @@ class Helper
             // Do nothing.
         }
     }
+
+    public static function downloadRemoteFileAsTmp($uri)
+    {
+        try {
+            $headers = get_headers($uri);
+
+            if (!preg_match("/200/", $headers[0])) {
+                return false;
+            }
+
+            $contents = file_get_contents($uri);
+
+            if (!$contents) {
+                return false;
+            }
+
+            $temp_file = tempnam(sys_get_temp_dir(), 'fs');
+
+            \File::put($temp_file, $contents);
+
+            return $temp_file;
+
+        } catch (\Exception $e) {
+
+            \Helper::logException($e, 'Error downloading a remote file ('.$uri.'): ');
+
+            return false;
+        }
+    }
 }

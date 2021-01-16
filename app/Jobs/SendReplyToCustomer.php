@@ -253,31 +253,38 @@ class SendReplyToCustomer implements ShouldQueue
 
         $imap_sent_folder = $mailbox->imap_sent_folder;
         if ($imap_sent_folder) {
-            $client = \MailHelper::getMailboxClient($mailbox);
-            $client->connect();
-
-            $envelope['from'] = $mailbox->getMailFrom()['address'];
-            $envelope['to'] = $this->customer_email;
-            $envelope['subject'] = 'Re: ' . $this->conversation->subject;
-
-            // Get penultimate email Message-Id if reply
-            if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
-                $envelope['custom_headers'] = [
-                    'In-Reply-To: <'.$last_customer_thread->message_id.'>',
-                    'References: <'.$last_customer_thread->message_id.'>'
-                ];
-            }
-
-            $part1['type'] = TYPETEXT;
-            $part1['subtype'] = 'html';
-            $part1['contents.data'] = $reply_mail->render();
-
             try {
-                $folder = $client->getFolder($imap_sent_folder);
-                $folder->appendMessage(imap_mail_compose($envelope, [$part1]), '\Seen', now()->format('d-M-Y H:i:s O'));
+                $client = \MailHelper::getMailboxClient($mailbox);
+                $client->connect();
+
+                $envelope['from'] = $mailbox->getMailFrom()['address'];
+                $envelope['to'] = $this->customer_email;
+                $envelope['subject'] = 'Re: ' . $this->conversation->subject;
+
+                // Get penultimate email Message-Id if reply
+                if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
+                    $envelope['custom_headers'] = [
+                        'In-Reply-To: <'.$last_customer_thread->message_id.'>',
+                        'References: <'.$last_customer_thread->message_id.'>'
+                    ];
+                }
+
+                $part1['type'] = TYPETEXT;
+                $part1['subtype'] = 'html';
+                $part1['contents.data'] = $reply_mail->render();
+
+                try {
+                    $folder = $client->getFolder($imap_sent_folder);
+                    $folder->appendMessage(imap_mail_compose($envelope, [$part1]), '\Seen', now()->format('d-M-Y H:i:s O'));
+                } catch (\Exception $e) {
+                    // Just log error and continue.
+                    \Helper::logException($e, 'Could not save outgoing reply to the IMAP folder, IMAP folder not found: '.$imap_sent_folder.' - ');
+                    //$this->saveToSendLog('['.date('Y-m-d H:i:s').'] Could not save outgoing reply to the IMAP folder: '.$imap_sent_folder);
+                }
             } catch (\Exception $e) {
                 // Just log error and continue.
-                $this->saveToSendLog('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$imap_sent_folder);
+                //$this->saveToSendLog('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$imap_sent_folder);
+                \Helper::logException($e, 'Could not save outgoing reply to the IMAP folder: '.$imap_sent_folder.' - ');
             }
         }
 
