@@ -932,9 +932,11 @@ class FetchEmails extends Command
         if ($is_reply) {
             // Check all separators and choose the shortest reply
             $reply_bodies = [];
-
             $altseps = Mail::$alternative_reply_separators;
-            $altseps[] = $this->mailbox->before_reply;
+
+            if (!empty($this->mailbox->before_reply)) {
+                $altseps[] = $this->mailbox->before_reply;
+            }
 
             foreach ($altseps as $alt_separator) {
                 if (\Str::startsWith($alt_separator, 'regex:')) {
