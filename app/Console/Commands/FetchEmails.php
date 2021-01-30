@@ -932,18 +932,18 @@ class FetchEmails extends Command
         if ($is_reply) {
             // Check all separators and choose the shortest reply
             $reply_bodies = [];
-            $altseps = Mail::$alternative_reply_separators;
+            $reply_separators = Mail::$alternative_reply_separators;
 
             if (!empty($this->mailbox->before_reply)) {
-                $altseps[] = $this->mailbox->before_reply;
+                $reply_separators[] = $this->mailbox->before_reply;
             }
 
-            foreach ($altseps as $alt_separator) {
-                if (\Str::startsWith($alt_separator, 'regex:')) {
-                    $regex = preg_replace("/^regex:/", '', $alt_separator);
+            foreach ($reply_separators as $reply_separator) {
+                if (\Str::startsWith($reply_separator, 'regex:')) {
+                    $regex = preg_replace("/^regex:/", '', $reply_separator);
                     $parts = preg_split($regex, $result);
                 } else {
-                    $parts = explode($alt_separator, $result);
+                    $parts = explode($reply_separator, $result);
                 }
                 if (count($parts) > 1) {
                     // Check if past contains any real text.

@@ -721,6 +721,11 @@ class Mailbox extends Model
         return \Helper::safePassword($this->in_password);
     }
 
+    public function getReplySeparator()
+    {
+        return $this->before_reply ?: \MailHelper::REPLY_SEPARATOR_TEXT;
+    }
+
     public static function findOrFailWithSettings($id, $user_id)
     {
         return Mailbox::select(['mailboxes.*', 'mailbox_user.hide', 'mailbox_user.mute', 'mailbox_user.access'])

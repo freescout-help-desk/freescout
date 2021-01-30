@@ -27,7 +27,7 @@
 			<td>
 				<table class="content" width="100%" border="0" cellspacing="0" cellpadding="0">
 				    <tr>
-				        <td height="45" valign="bottom"><p align="center" style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; font-size:12px; color:#B5B9BD; line-height:16px; margin:0;">{{ $mailbox->before_reply ?: App\Misc\Mail::REPLY_SEPARATOR_TEXT }}</p></td>
+				        <td height="45" valign="bottom"><p align="center" style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; font-size:12px; color:#B5B9BD; line-height:16px; margin:0;">{{ $mailbox->getReplySeparator() }}</p></td>
 				    </tr>
 				    <tr>
 				        <td height="12"></td>

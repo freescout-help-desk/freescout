@@ -1,4 +1,6 @@
-{{ $mailbox->before_reply ?: App\Misc\Mail::REPLY_SEPARATOR_TEXT }}
+@if ($mailbox->before_reply){{ $mailbox->getReplySeparator() }}
+
+@endif
 @foreach ($threads as $thread)
 -----------------------------------------------------------
 @if (!$loop->first)## {{--@if ($loop->last){{ __(':person sent a message', ['person' => $thread->getFromName($mailbox)]) }}@else {{ __(':person replied', ['person' => $thread->getFromName($mailbox)]) }}@endif--}}{{ $thread->getFromName($mailbox) }}, {{ __('on :date', ['date' => App\Customer::dateFormat($thread->created_at, 'M j @ H:i')]) }} ({{ \Config::get('app.timezone') }}):@endif 
