@@ -73,7 +73,7 @@ FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on 
 
 [Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
 
-**Images & one-click installs:**
+Images & one-click installs:
 
 * [Docker Image](http://freescout.net/docker/)
 * [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
