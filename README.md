@@ -18,10 +18,11 @@
    * [Features](#features)
    * [Demo](#demo)
    * [Mobile Apps](#mobile-apps)
-   * [Modules](#modules)
    * [Requirements](#requirements)
-   * [News & Updates](#news--updates)
    * [Installation](#installation)
+   * [Modules](#modules)
+   * [Tools & Integrations](#tools--integrations)
+   * [News & Updates](#news--updates)
    * [Contributing](#contributing)
    * [Screenshots](#screenshots)
 
@@ -60,10 +61,6 @@ Mobile apps support the same functionality and modules as the web version of you
 
 <a href="https://freescout.net/android-app/" target="_blank" rel="nofollow"><img alt="Android App" src="https://freescout-helpdesk.github.io/img/apps/android.png" width="200px" /></a> <a href="https://freescout.net/ios-app/" target="_blank" rel="nofollow"><img alt="iOS App" src="https://freescout-helpdesk.github.io/img/apps/ios.png?v=1" width="200px" /></a>
 
-## Modules
-
-[Available modules](https://freescout.net/modules/)
-
 ## Requirements
 
 FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a shared hosting.
@@ -72,13 +69,22 @@ FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on 
   * PHP 7.0 - 7.4
   * MySQL 5.0+ / MariaDB 5.0+ / PostgreSQL
 
-## News & Updates
-
-If you would like to be notified about important news and updates you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
-
 ## Installation
 
 [Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
+
+## Modules
+
+[Available modules](https://freescout.net/modules/)
+
+## Tools & Integrations
+  
+  * [API](https://api-docs.freescout.net/)
+  * [Zapier Integration](https://freescout.net/zapier/)
+
+## News & Updates
+
+If you would like to be notified about important news and updates you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
 
 Images & one-click installs:
 
