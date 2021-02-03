@@ -73,6 +73,14 @@ FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on 
 
 [Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
 
+**Images & one-click installs:**
+
+* [Docker Image](http://freescout.net/docker/)
+* [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
+* [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
+* [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
+* [Ubuntu 18.04](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu-1804)
+
 ## Modules
 
 [Available modules](https://freescout.net/modules/)
@@ -85,14 +93,6 @@ FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on 
 ## News & Updates
 
 If you would like to be notified about important news and updates you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
-
-Images & one-click installs:
-
-* [Docker Image](http://freescout.net/docker/)
-* [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
-* [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
-* [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
-* [Ubuntu 18.04](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu-1804)
 
 ## Contributing
 
