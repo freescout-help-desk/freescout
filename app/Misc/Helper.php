@@ -26,6 +26,11 @@ class Helper
     const QUEUE_DEFAULT = 'default';
 
     /**
+     * Stores list of global entities (for caching).
+     */
+    public static $global_entities = [];
+
+    /**
      * Menu structure used to display active menu item.
      * Array are mnemonic names, strings - route names.
      * Menu has 2 levels.
@@ -460,6 +465,16 @@ class Helper
         } else {
             return 0;
         }
+    }
+
+    public static function setGlobalEntity($name, $entity)
+    {
+        self::$global_entities[$name] = $entity;
+    }
+
+    public static function getGlobalEntity($name)
+    {
+        return self::$global_entities[$name] ?? null;
     }
 
     /**

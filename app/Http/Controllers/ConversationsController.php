@@ -50,6 +50,10 @@ class ConversationsController extends Controller
         $customer = $conversation->customer_cached;
         $user = auth()->user();
 
+        // To let other parts of the app easily access.
+        \Helper::setGlobalEntity('conversation', $conversation);
+        \Helper::setGlobalEntity('mailbox', $mailbox);
+
         if ($user->isAdmin()) {
             $mailbox->fetchUserSettings($user->id);
         }
