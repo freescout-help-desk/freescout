@@ -567,7 +567,7 @@ class Helper
                     }
                 } else {
                     if ($current_route == $secondary_routes) {
-                        return $primary_name == $menu_item_name;
+                        return $primary_name == $menu_item_name || $menu_item_name == $secondary_routes;
                     }
                 }
             }
