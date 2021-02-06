@@ -11,7 +11,7 @@
 
 @section('content')
 
-    <div class="section-heading-noborder">
+    <div class="section-heading margin-bottom">
         {{ __('Connection Settings') }}
     </div>
 

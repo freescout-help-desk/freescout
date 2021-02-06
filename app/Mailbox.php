@@ -767,4 +767,11 @@ class Mailbox extends Model
 
         return $route;
     }
+
+    public function setMetaParam($param, $value)
+    {
+        $meta = $this->meta;
+        $meta[$param] = $value;
+        $this->meta = $meta;
+    }
 }
