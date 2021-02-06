@@ -126,6 +126,10 @@ class Mailbox extends Model
         'signature' => self::DEFAULT_SIGNATURE,
     ];
 
+    protected $casts = [
+        'meta' => 'array',
+    ];
+
     /**
      * Attributes fillable using fill() method.
      *
