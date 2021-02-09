@@ -40,7 +40,7 @@
                     <form class="form-import" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postImport') ?>" data-remote="true" role="form">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                         <div class="form-group">
-                            <p>1. Import existing translations (non-published pending translations will be overwritten).</p>
+                            <p>1. Import existing translations (<strong>non-published pending translations will be overwritten or deleted</strong>).</p>
                             <div class="row">
                                 <div class="col-sm-12">
                                 <?php /*<div class="col-sm-3">*/ ?>
@@ -250,7 +250,7 @@
                     <form class="form-inline form-send-translations pull-left" method="POST" action="<?php echo action('TranslateController@postSend') ?>" data-remote="true" role="form" data-confirm="This will publish translations and send them to <?php echo \Config::get('app.name') ?> team by email.">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                         &nbsp;&nbsp;
-                        <button type="submit" class="btn btn-default" data-disable-with="Sending…" >Send Translations to <?php echo \Config::get('app.name') ?> Team</button>
+                        <button type="submit" class="btn btn-primary" data-disable-with="Sending…" >Publish and Send to <?php echo \Config::get('app.name') ?> Team</button>
                     </form>
                     <form class="form-inline form-download pull-left" method="POST" target="_blank" action="<?php echo action('TranslateController@postDownload') ?>" onsubmit="javascript:confirm('This will publish translations and download them as ZIP archive.');">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">

@@ -54,6 +54,9 @@ class Controller extends BaseController
         $numTranslations = 0;
         $numDone = 0;
         foreach($allTranslations as $translation){
+            if ($translation->locale != $selected_locale && $translation->locale != 'en') {
+                continue;
+            }
             $translations[$translation->key][$translation->locale] = $translation;
             if ($translation->locale == $selected_locale && $translation->value) {
                 $numDone++;
@@ -133,6 +136,7 @@ class Controller extends BaseController
                     $translation->locale = $locale;
                     $translation->group  = $group;
                     $translation->key    = $key;
+                    $translation->hash   = md5($locale.$group.$key);
                 }
             } catch (\Exception $e) {
                 $translation = Translation::firstOrNew([
@@ -159,6 +163,14 @@ class Controller extends BaseController
     public function postImport(Request $request)
     {
         $replace = $request->get('replace', false);
+        
+        set_time_limit(0);
+        ini_set('max_execution_time', '600');
+        ini_set('memory_limit', '500M');
+
+        // Clean translations table.
+        Translation::truncate();
+
         $counter = $this->manager->importTranslations($replace);
 
         return ['status' => 'ok', 'counter' => $counter];

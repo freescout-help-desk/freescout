@@ -59,6 +59,7 @@ class Manager
             $vendor = false;
         }
 
+        // PHP translations in /resources/lang/.
         foreach ($this->files->directories($base) as $langPath) {
             $locale = basename($langPath);
 
@@ -115,19 +116,23 @@ class Manager
 
             $group = self::JSON_GROUP;
             // Retrieves JSON entries of the given locale only.
-            // Modules JSON translations are also loaded.
-            $translations = \Lang::getLoader()->load($locale, '*', '*');
+            // No need to use - Modules JSON translations are also loaded.
+            //$translations = \Lang::getLoader()->load($locale, '*', '*');
 
             //$translations = $loader->load( $locale, '*', '*' );
+            
+            $translations = $this->readTranslationsFromJsonFile($jsonTranslationFile);
             if ($translations && is_array($translations)) {
                 foreach ($translations as $key => $value) {
                     $importedTranslation = $this->importTranslation($key, $value, $locale, $group, $replace);
                     $counter += $importedTranslation ? 1 : 0;
                 }
             }
+            unset($translations);
         }
 
         // Import modules translations.
+        // Saving translations to DB takes a lot of time and memory.
         $modules = \Module::all();
         foreach ($modules as $key => $module) {
             $moduleLangPath = $module->getPath().'/Resources/lang/';
@@ -148,8 +153,9 @@ class Manager
 
                 $group = '_'.$module->getAlias();
 
-                $loader = new \Illuminate\Translation\FileLoader($this->files, $moduleLangPath);
-                $translations = \Lang::getLoader()->load($locale, '*', '*');
+                // $loader = new \Illuminate\Translation\FileLoader($this->files, $moduleLangPath);
+                // $translations = \Lang::getLoader()->load($locale, '*', '*');
+                $translations = $this->readTranslationsFromJsonFile($jsonTranslationFile);
 
                 if ($translations && is_array($translations)) {
                     foreach ($translations as $key => $value) {
@@ -157,16 +163,32 @@ class Manager
                         $counter += $importedTranslation ? 1 : 0;
                     }
                 }
+                unset($translations);
             }
         }
 
         // Find translations in files.
+        // This is done quickly.
         $existingTranslations = $this->findTranslations();
 
         // Remove translations which do not exist in files.
         $this->removeNonexisting($existingTranslations);
 
         return $counter;
+    }
+
+    public function readTranslationsFromJsonFile($path)
+    {
+        if (!file_exists($path)) {
+            return [];
+        }
+        $decoded = json_decode(file_get_contents($path), true);
+
+        if (is_null($decoded) || json_last_error() !== JSON_ERROR_NONE) {
+            return [];
+        }
+
+        return $decoded;
     }
 
     /**
@@ -253,30 +275,62 @@ class Manager
         //     'group'  => $group,
         //     'key'    => $key,
         // ]);
+        $hash = md5($locale.$group.$key);
+
+        $data = [
+            'locale' => $locale,
+            'group' => $group,
+            'key' => $key,
+            'value' => $value,
+            'hash' => $hash,
+        ];
+        $inserted = 0;
         try {
-            $translation = Translation::where('locale', $locale)
-                ->where('group', $group)
-                ->where(\DB::raw('BINARY `key`'), $key)
-                ->first();
+            $inserted = \DB::table('ltm_translations')->insert($data);
+        } catch(\Exception $e) {
+            
+        }
+
+        if ($replace && !$inserted) {
+            Translation::where('hash', $hash)->update(['value' => $value]);
+        }
+
+        return true;
+
+        // Consumes too much memory.
+        /*try {
+            // $translation = Translation::where('locale', $locale)
+            //     ->where('group', $group)
+            //     ->where(\DB::raw('BINARY `key`'), $key)
+            //     ->first();
+            $translation = Translation::where('hash', $hash)->first();
+                
             if (!$translation) {
                 $translation = new Translation();
                 $translation->locale = $locale;
                 $translation->group  = $group;
                 $translation->key    = $key;
+                $translation->hash    = $hash;
             }
         } catch (\Exception $e) {
-            $translation = Translation::firstOrNew([
+            // $translation = Translation::firstOrNew([
+            //     'locale' => $locale,
+            //     'group' => $group,
+            //     'key' => $key,
+            // ]);
+            $translation = Translation::firstOrNew(['hash' => $hash], [
                 'locale' => $locale,
                 'group' => $group,
                 'key' => $key,
+                'hash' => $hash,
             ]);
         }
         
         // Check if the database is different then the files
-        $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
-        if ($newStatus !== (int) $translation->status) {
-            $translation->status = $newStatus;
-        }
+        // $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
+        // if ($newStatus !== (int) $translation->status) {
+        //     $translation->status = $newStatus;
+        // }
 
         // Only replace when empty, or explicitly told so
         if ($replace || !$translation->value) {
@@ -284,8 +338,9 @@ class Manager
         }
 
         $translation->save();
+        unset($translation);
 
-        return true;
+        return true;*/
     }
 
     public function findTranslations($path = null)
