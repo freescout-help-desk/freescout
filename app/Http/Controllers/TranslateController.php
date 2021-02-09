@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use \Barryvdh\TranslationManager\Models\Translation;
 use Barryvdh\TranslationManager\Controller as BaseController;
 
 class TranslateController extends BaseController
@@ -14,6 +15,13 @@ class TranslateController extends BaseController
     public function postSend()
     {
         $result = false;
+
+        // Count changed translations.
+        $changed_data = Translation::select(['locale', 'group', \DB::raw('count(*) as changed')])
+            ->where('status', Translation::STATUS_CHANGED)
+            ->groupBy(['locale', 'group'])
+            ->get()
+            ->toArray();
 
         $this->manager->exportTranslations('*', false);
 
@@ -31,7 +39,7 @@ class TranslateController extends BaseController
             $attachments[] = $archive_path;
 
             // Send archive to developers
-            $result = \MailHelper::sendEmailToDevs('Translations', '', $attachments, auth()->user());
+            $result = \MailHelper::sendEmailToDevs('Translations', json_encode($changed_data), $attachments, auth()->user());
         }
 
         if ($result) {
