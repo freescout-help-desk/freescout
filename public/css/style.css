@@ -3818,7 +3818,8 @@ a.help-icon:hover {
     top: -1px;
     border-bottom: 0;
 }
-.accordion .panel-title > a {
+.accordion .panel-title > a,
+.accordion-disabled .panel-title > div {
     display: block;
     text-decoration: none;
     color: #2a3b47;
@@ -3846,6 +3847,9 @@ a.help-icon:hover {
 }
 .accordion > .panel-default > .panel-heading:hover {
     background-color: #f4f5f5;
+}
+.accordion-disabled > .panel-default > .panel-heading:hover {
+    background-color: #fff;
 }
 .accordion-status {
     margin-left: 4px;
