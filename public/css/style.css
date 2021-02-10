@@ -358,7 +358,12 @@ h1, h2, h3, h4, h5, h6 {
     padding: 12px 15px 12px;
  }
  .navbar-brand-with-text {
+    text-overflow: ellipsis;
     line-height: 24px;
+    overflow: hidden;
+    max-width: 100vw;
+    white-space: nowrap;
+    padding-right: 60px;
  }
 .navbar-brand.navbar-brand-with-text > img {
     display: inline-block;
@@ -397,6 +402,10 @@ a.navbar-brand:hover img {
 }
 .navbar-nav .photo-sm {
     margin-right: 2px;
+}
+.navbar-toggle {
+    position: absolute;
+    right: 0;
 }
 .navbar-default .navbar-toggle .icon-bar,
 .navbar-default .navbar-toggle.collapsed:hover .icon-bar {
@@ -439,12 +448,11 @@ a.navbar-brand:hover img {
         padding-top: 14px;
         padding-bottom: 14px;
     }
-    /*.navbar-nav.navbar-right {
-        position: relative;
-        top: 1px;
-    }*/
 }
 @media (max-width:767px) {
+    .navbar-brand-with-text img + span {
+        display: none;
+    }
 	.navbar-collapse {
 		background-color:#fff;
 	}
