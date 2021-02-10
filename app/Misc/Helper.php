@@ -1434,4 +1434,17 @@ class Helper
             return false;
         }
     }
+
+    public static function downloadRemoteFileAsTmpFile($uri)
+    {
+        $file_path = self::downloadRemoteFileAsTmp($uri);
+        if ($file_path) {
+            return new \Illuminate\Http\UploadedFile(
+                $file_path, basename($file_path),
+                null, null, true
+            );
+        } else {
+            return null;
+        }
+    }
 }
