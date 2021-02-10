@@ -18,10 +18,11 @@
    * [Features](#features)
    * [Demo](#demo)
    * [Mobile Apps](#mobile-apps)
-   * [Modules](#modules)
    * [Requirements](#requirements)
-   * [News & Updates](#news--updates)
    * [Installation](#installation)
+   * [Modules](#modules)
+   * [Tools & Integrations](#tools--integrations)
+   * [News & Updates](#news--updates)
    * [Contributing](#contributing)
    * [Screenshots](#screenshots)
 
@@ -60,10 +61,6 @@ Mobile apps support the same functionality and modules as the web version of you
 
 <a href="https://freescout.net/android-app/" target="_blank" rel="nofollow"><img alt="Android App" src="https://freescout-helpdesk.github.io/img/apps/android.png" width="200px" /></a> <a href="https://freescout.net/ios-app/" target="_blank" rel="nofollow"><img alt="iOS App" src="https://freescout-helpdesk.github.io/img/apps/ios.png?v=1" width="200px" /></a>
 
-## Modules
-
-[Available modules](https://freescout.net/modules/)
-
 ## Requirements
 
 FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a shared hosting.
@@ -71,10 +68,6 @@ FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on 
   * Nginx / Apache / IIS
   * PHP 7.0 - 7.4
   * MySQL 5.0+ / MariaDB 5.0+ / PostgreSQL
-
-## News & Updates
-
-If you would like to be notified about important news and updates you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
 
 ## Installation
 
@@ -87,6 +80,19 @@ Images & one-click installs:
 * [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
 * [Ubuntu 18.04](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu-1804)
+
+## Modules
+
+[Available modules](https://freescout.net/modules/)
+
+## Tools & Integrations
+  
+  * [API](https://api-docs.freescout.net/)
+  * [Zapier Integration](https://freescout.net/zapier/)
+
+## News & Updates
+
+If you would like to be notified about important news and updates you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
 
 ## Contributing
 

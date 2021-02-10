@@ -126,6 +126,10 @@ class Mailbox extends Model
         'signature' => self::DEFAULT_SIGNATURE,
     ];
 
+    protected $casts = [
+        'meta' => 'array',
+    ];
+
     /**
      * Attributes fillable using fill() method.
      *
@@ -721,6 +725,11 @@ class Mailbox extends Model
         return \Helper::safePassword($this->in_password);
     }
 
+    public function getReplySeparator()
+    {
+        return $this->before_reply ?: \MailHelper::REPLY_SEPARATOR_TEXT;
+    }
+
     public static function findOrFailWithSettings($id, $user_id)
     {
         return Mailbox::select(['mailboxes.*', 'mailbox_user.hide', 'mailbox_user.mute', 'mailbox_user.access'])
@@ -757,5 +766,12 @@ class Mailbox extends Model
         $route = \Eventy::filter('mailbox.access_permissions_route', $route, $perm);
 
         return $route;
+    }
+
+    public function setMetaParam($param, $value)
+    {
+        $meta = $this->meta;
+        $meta[$param] = $value;
+        $this->meta = $meta;
     }
 }

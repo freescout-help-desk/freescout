@@ -26,6 +26,11 @@ class Helper
     const QUEUE_DEFAULT = 'default';
 
     /**
+     * Stores list of global entities (for caching).
+     */
+    public static $global_entities = [];
+
+    /**
      * Menu structure used to display active menu item.
      * Array are mnemonic names, strings - route names.
      * Menu has 2 levels.
@@ -462,6 +467,16 @@ class Helper
         }
     }
 
+    public static function setGlobalEntity($name, $entity)
+    {
+        self::$global_entities[$name] = $entity;
+    }
+
+    public static function getGlobalEntity($name)
+    {
+        return self::$global_entities[$name] ?? null;
+    }
+
     /**
      * Remove from text all tags, double spaces, etc.
      */
@@ -552,7 +567,7 @@ class Helper
                     }
                 } else {
                     if ($current_route == $secondary_routes) {
-                        return $primary_name == $menu_item_name;
+                        return $primary_name == $menu_item_name || $menu_item_name == $secondary_routes;
                     }
                 }
             }
@@ -1417,6 +1432,19 @@ class Helper
             \Helper::logException($e, 'Error downloading a remote file ('.$uri.'): ');
 
             return false;
+        }
+    }
+
+    public static function downloadRemoteFileAsTmpFile($uri)
+    {
+        $file_path = self::downloadRemoteFileAsTmp($uri);
+        if ($file_path) {
+            return new \Illuminate\Http\UploadedFile(
+                $file_path, basename($file_path),
+                null, null, true
+            );
+        } else {
+            return null;
         }
     }
 }

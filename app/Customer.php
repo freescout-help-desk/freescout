@@ -874,6 +874,12 @@ class Customer extends Model
         if ($email_obj) {
             $customer = $email_obj->customer;
 
+            // In case somehow the email has no customer.
+            if (!$customer) {
+                // Customer will be saved and connected to the email later.
+                $customer = new self();
+            }
+
             // Update name if empty.
             /*if (empty($customer->first_name) && !empty($data['first_name'])) {
                 $customer->first_name = $data['first_name'];
