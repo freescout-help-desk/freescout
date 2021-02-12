@@ -31,6 +31,15 @@ class Helper
     public static $global_entities = [];
 
     /**
+     * Files with such extensions are being renamed on upload.
+     */
+    public static $restricted_extensions = [
+        'php.*',
+        'sh',
+        'pl',
+    ];
+
+    /**
      * Menu structure used to display active menu item.
      * Array are mnemonic names, strings - route names.
      * Menu has 2 levels.
@@ -1292,7 +1301,7 @@ class Helper
         return md5(config('app.key'));
     }
 
-    public static function uploadFile($file, $allowed_exts = [], $allowed_mimes = [])
+    public static function uploadFile($file, $allowed_exts = [], $allowed_mimes = [], $sanitize_file_name = true)
     {
         $ext = strtolower($file->getClientOriginalExtension());
 
@@ -1308,11 +1317,15 @@ class Helper
                 throw new \Exception(__('Unsupported file type'), 1);
             }
         }
-        $name = \Str::random(25).'.'.$ext;
+        $file_name = \Str::random(25).'.'.$ext;
 
-        $file->storeAs('uploads', $name);
+        if ($sanitize_file_name) {
+            $file_name = \Helper::sanitizeUploadedFileName($file_name);
+        }
 
-        return self::uploadedFilePath($name);
+        $file->storeAs('uploads', $file_name);
+
+        return self::uploadedFilePath($file_name);
     }
 
     public static function uploadedFileRemove($name)
@@ -1446,5 +1459,17 @@ class Helper
         } else {
             return null;
         }
+    }
+
+    public static function sanitizeUploadedFileName($file_name)
+    {
+        // Check extension.
+        $extension = pathinfo($file_name, PATHINFO_EXTENSION);
+        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', strtolower($extension))) {
+            // Add underscore to the extension if file has restricted extension.
+            $file_name = $file_name.'_';
+        }
+
+        return $file_name;
     }
 }

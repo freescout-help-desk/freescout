@@ -1554,7 +1554,7 @@ function generateDummyId()
 }
 
 // Save file uploaded in editor
-function editorSendFile(file, attach, is_conv)
+function editorSendFile(file, attach, is_conv, editor_id)
 {
 	if (!file || typeof(file.type) == "undefined") {
 		return false;
@@ -1563,14 +1563,15 @@ function editorSendFile(file, attach, is_conv)
 	var attachments_container = $(".attachments-upload:first");
 	var attachment_dummy_id = generateDummyId();
 	var route = '';
-	var editorId = '';
 
 	if (is_conv) {
 		route = 'conversations.upload';
-		editorId = '#body';
-	}else{
+		editor_id = '#body';
+	} else {
 		route = 'uploads.upload';
-		editorId = '#signature';
+		if (typeof(editor_id) == "undefined" || !editor_id) {
+			editor_id = '#signature';
+		}
 	}
 
 	ajaxSetup();
@@ -1628,9 +1629,14 @@ function editorSendFile(file, attach, is_conv)
 			}
 			if (attach) {
 				fs_reply_changed = true;
+
+				if (typeof(response.attachment_id) == "undefined" && typeof(response.url) != "undefined" && response.url) {
+					// Insert link to uploaded file into the editor
+					$(editor_id).summernote('pasteHTML', '<a href="'+response.url+'">'+file.name+'</a>');
+				}
 			} else {
 				// Embed image
-				$(editorId).summernote('insertImage', response.url, function (image) {
+				$(editor_id).summernote('insertImage', response.url, function (image) {
 					var editor_width = $('.note-editable:first:visible').width();
 					if (image.width() > editor_width-85) {
 						image.css('width', editor_width-85);
