@@ -88,6 +88,7 @@ Images & one-click installs:
 ## Tools & Integrations
   
   * [API](https://api-docs.freescout.net/)
+  * [Migrate to FreeScout](http://freescout.net/migrate/) (from any help desk)
   * [Zapier Integration](https://freescout.net/zapier/)
 
 ## News & Updates
