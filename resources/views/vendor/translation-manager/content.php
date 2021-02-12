@@ -40,7 +40,7 @@
                     <form class="form-import" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postImport') ?>" data-remote="true" role="form">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                         <div class="form-group">
-                            <p>1. Import existing translations (<strong>non-published pending translations will be overwritten or deleted</strong>).</p>
+                            <p>1. Import translations from existing .json files (<strong>non-published pending translations will be overwritten or deleted</strong>).</p>
                             <div class="row">
                                 <div class="col-sm-12">
                                 <?php /*<div class="col-sm-3">*/ ?>
