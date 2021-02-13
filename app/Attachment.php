@@ -34,15 +34,6 @@ class Attachment extends Model
         'other'       => self::TYPE_OTHER,
     ];
 
-    /**
-     * Files with such extensions are being renamed on upload.
-     */
-    public static $restricted_extensions = [
-        'php.*',
-        'sh',
-        'pl',
-    ];
-
     public $timestamps = false;
 
     /**
@@ -62,12 +53,8 @@ class Attachment extends Model
             return false;
         }
 
-        // Check extension.
-        $extension = pathinfo($file_name, PATHINFO_EXTENSION);
-        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', strtolower($extension))) {
-            // Add underscore to the extension if file has restricted extension.
-            $file_name = $file_name.'_';
-        }
+        // Add underscore to the extension if file has restricted extension.
+        $file_name = \Helper::sanitizeUploadedFileName($file_name);
 
         // Replace some symbols in file name.
         // Gmail can not load image if it contains spaces.

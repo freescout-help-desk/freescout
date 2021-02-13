@@ -30,7 +30,7 @@
 
   * No limitations on the number of users, tickets, etc.
   * 100% Mobile-friendly.
-  * Multilingual (English, French, Italian, Polish, Portuguese, Russian, Dutch, German, Spanish, Swedish).
+  * Multilingual (English, French, Japanese, Italian, Polish, Portuguese, Russian, Dutch, German, Spanish, Swedish).
   * Seamless email integration.
   * Web installer & updater.
   * Starred conversations.
@@ -79,7 +79,7 @@ Images & one-click installs:
 * [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
 * [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
-* [Ubuntu 18.04](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu-1804)
+* [Ubuntu](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu-1804) (bash script)
 
 ## Modules
 
@@ -88,6 +88,7 @@ Images & one-click installs:
 ## Tools & Integrations
   
   * [API](https://api-docs.freescout.net/)
+  * [Migrate to FreeScout](http://freescout.net/migrate/) (from any help desk)
   * [Zapier Integration](https://freescout.net/zapier/)
 
 ## News & Updates
