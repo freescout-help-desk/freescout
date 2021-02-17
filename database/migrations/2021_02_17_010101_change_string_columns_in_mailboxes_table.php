@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddMetaColumnToMailboxesTable extends Migration
+class ChangeStringColumnsInMailboxesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -18,9 +18,6 @@ class AddMetaColumnToMailboxesTable extends Migration
             $table->text('in_server')->nullable()->change();
             $table->text('out_server')->nullable()->change();
             $table->text('auto_bcc')->nullable()->change();
-
-            // Meta data in JSON format.
-            $table->text('meta')->nullable();
         });
     }
 
@@ -31,8 +28,6 @@ class AddMetaColumnToMailboxesTable extends Migration
      */
     public function down()
     {
-        Schema::table('mailboxes', function (Blueprint $table) {
-            $table->dropColumn('meta');
-        });
+
     }
 }
