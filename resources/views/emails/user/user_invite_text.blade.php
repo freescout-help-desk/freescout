@@ -1,4 +1,4 @@
-{{ __(':user created an account for you at :app_url', ['user' => $user->getFullName(), 'app_url' => '['.\Config::get('app.url').']']) }}
+{{ __('Hi :user, an account has been created for you at :app_url', ['user' => $user->getFullName(), 'app_url' => '['.\Config::get('app.url').']']) }}
 
 {{ __('Create a Password') }}
 -------------------------------------------------
