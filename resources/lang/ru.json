@@ -391,7 +391,7 @@
     ":person replied to conversation": ":person ответил(а) на тикет",
     ":person started the conversation": ":person создал(а) тикет",
     "Attached:": "Прикреплено:",
-    ":user created an account for you at :app_url": "Пользователь :user создал для вас аккаунт в :app_url",
+    "Hi :user, an account has been created for you at :app_url": ":user, для вас был создан аккаунт в :app_url",
     "Create a Password": "Создать пароль",
     "Welcome to the team!": "Добро пожаловать в команду!",
     "Someone on your team created an account for you.": "Кто-то в вашей команде создал для вас аккаунт.",

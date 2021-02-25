@@ -25,6 +25,8 @@ class AddHashColumnToLtmTranslationsTable extends Migration
      */
     public function down()
     {
-
+        Schema::table('ltm_translations', function (Blueprint $table) {
+            $table->dropColumn('hash');
+        });
     }
 }

@@ -323,8 +323,15 @@ abstract class Module extends ServiceProvider
      */
     protected function registerFiles()
     {
-        foreach ($this->get('files', []) as $file) {
-            include $this->path.'/'.$file;
+        try {
+            foreach ($this->get('files', []) as $file) {
+                include $this->path.'/'.$file;
+            }
+        } catch (\Exception $e) {
+            $e = \Eventy::filter('modules.register_error', $e, $this);
+            if ($e) {
+                throw $e;
+            }
         }
     }
 

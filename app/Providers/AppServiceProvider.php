@@ -54,6 +54,10 @@ class AppServiceProvider extends ServiceProvider
         // Process module registration error - disable module and show error to admin
         \Eventy::addFilter('modules.register_error', function ($exception, $module) {
 
+            $msg = __('The :module_name module has been deactivated due to an error: :error_message', ['module_name' => $module->getName(), 'error_message' => $exception->getMessage()]);
+
+            \Log::error($msg);
+
             // request() does is empty at this stage
             if (!empty($_POST['action']) && $_POST['action'] == 'activate') {
 
@@ -61,7 +65,7 @@ class AppServiceProvider extends ServiceProvider
                 \App\Module::deactiveModule($module->getAlias());
 
                 \Session::flash('flashes_floating', [[
-                    'text' => __('The :module_name module has been deactivated due to an error: :error_message', ['module_name' => $module->getName(), 'error_message' => $exception->getMessage()]),
+                    'text' => $msg,
                     'type' => 'danger',
                     'role' => \App\User::ROLE_ADMIN,
                 ]]);
@@ -74,7 +78,7 @@ class AppServiceProvider extends ServiceProvider
                     \App\Module::deactiveModule($module->getAlias());
 
                     \Session::flash('flashes_floating', [[
-                        'text' => __('The :module_name module has been deactivated due to an error: :error_message', ['module_name' => $module->getName(), 'error_message' => $exception->getMessage()]),
+                        'text' => $msg,
                         'type' => 'danger',
                         'role' => \App\User::ROLE_ADMIN,
                     ]]);
