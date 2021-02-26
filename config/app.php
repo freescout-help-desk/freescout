@@ -267,6 +267,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Case insensitive regular expression, containing a list of 
+    | mail server error responses, returned when a mail server can not deliver an email
+    | to one or more recipients. If FreeScout receives one of the listed
+    | error responses from the mail server, it does not try to resend the email
+    | to avoid sending multiple duplicate emails to other recipients.
+    |
+    | https://github.com/freescout-helpdesk/freescout/issues/870#issuecomment-786477909
+    |
+    |-------------------------------------------------------------------------
+    */
+    'no_retry_mail_errors'    => env('APP_NO_RETRY_MAIL_ERRORS', '(no valid recipients|does not comply with RFC)'),
+
+    /*
+    |--------------------------------------------------------------------------
     | none - send to the customer only agent's reply in the email.
     |
     | last - send to the customer the last message in the email.
