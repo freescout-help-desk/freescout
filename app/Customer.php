@@ -84,45 +84,45 @@ class Customer extends Model
     /**
      * Chat types.
      */
-    const CHAT_TYPE_AIM = 1;
-    const CHAT_TYPE_GTALK = 2;
-    const CHAT_TYPE_ICQ = 3;
-    const CHAT_TYPE_XMPP = 4;
-    const CHAT_TYPE_MSN = 5;
-    const CHAT_TYPE_SKYPE = 6;
-    const CHAT_TYPE_YAHOO = 7;
-    const CHAT_TYPE_QQ = 8;
-    const CHAT_TYPE_WECHAT = 10;
-    const CHAT_TYPE_OTHER = 9;
+    // const CHAT_TYPE_AIM = 1;
+    // const CHAT_TYPE_GTALK = 2;
+    // const CHAT_TYPE_ICQ = 3;
+    // const CHAT_TYPE_XMPP = 4;
+    // const CHAT_TYPE_MSN = 5;
+    // const CHAT_TYPE_SKYPE = 6;
+    // const CHAT_TYPE_YAHOO = 7;
+    // const CHAT_TYPE_QQ = 8;
+    // const CHAT_TYPE_WECHAT = 10;
+    // const CHAT_TYPE_OTHER = 9;
 
     /**
      * For API.
      */
-    public static $chat_types = [
-        self::CHAT_TYPE_AIM    => 'aim',
-        self::CHAT_TYPE_GTALK  => 'gtalk',
-        self::CHAT_TYPE_ICQ    => 'icq',
-        self::CHAT_TYPE_XMPP   => 'xmpp',
-        self::CHAT_TYPE_MSN    => 'msn',
-        self::CHAT_TYPE_SKYPE  => 'skype',
-        self::CHAT_TYPE_YAHOO  => 'yahoo',
-        self::CHAT_TYPE_QQ     => 'qq',
-        self::CHAT_TYPE_WECHAT => 'wechat', // Extra
-        self::CHAT_TYPE_OTHER  => 'other',
-    ];
+    // public static $chat_types = [
+    //     self::CHAT_TYPE_AIM    => 'aim',
+    //     self::CHAT_TYPE_GTALK  => 'gtalk',
+    //     self::CHAT_TYPE_ICQ    => 'icq',
+    //     self::CHAT_TYPE_XMPP   => 'xmpp',
+    //     self::CHAT_TYPE_MSN    => 'msn',
+    //     self::CHAT_TYPE_SKYPE  => 'skype',
+    //     self::CHAT_TYPE_YAHOO  => 'yahoo',
+    //     self::CHAT_TYPE_QQ     => 'qq',
+    //     self::CHAT_TYPE_WECHAT => 'wechat', // Extra
+    //     self::CHAT_TYPE_OTHER  => 'other',
+    // ];
 
-    public static $chat_type_names = [
-        self::CHAT_TYPE_AIM    => 'AIM',
-        self::CHAT_TYPE_GTALK  => 'Google+',
-        self::CHAT_TYPE_ICQ    => 'ICQ',
-        self::CHAT_TYPE_XMPP   => 'XMPP',
-        self::CHAT_TYPE_MSN    => 'MSN',
-        self::CHAT_TYPE_SKYPE  => 'Skype',
-        self::CHAT_TYPE_YAHOO  => 'Yahoo',
-        self::CHAT_TYPE_QQ     => 'QQ',
-        self::CHAT_TYPE_WECHAT => 'WeChat', // Extra
-        self::CHAT_TYPE_OTHER  => 'Other',
-    ];
+    // public static $chat_type_names = [
+    //     self::CHAT_TYPE_AIM    => 'AIM',
+    //     self::CHAT_TYPE_GTALK  => 'Google+',
+    //     self::CHAT_TYPE_ICQ    => 'ICQ',
+    //     self::CHAT_TYPE_XMPP   => 'XMPP',
+    //     self::CHAT_TYPE_MSN    => 'MSN',
+    //     self::CHAT_TYPE_SKYPE  => 'Skype',
+    //     self::CHAT_TYPE_YAHOO  => 'Yahoo',
+    //     self::CHAT_TYPE_QQ     => 'QQ',
+    //     self::CHAT_TYPE_WECHAT => 'WeChat', // Extra
+    //     self::CHAT_TYPE_OTHER  => 'Other',
+    // ];
 
     /**
      * Social types.
@@ -446,12 +446,12 @@ class Customer extends Model
      *
      * @var [type]
      */
-    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url', 'age', 'gender', 'notes'];
+    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url', 'age', 'gender', 'notes', 'channel', 'channel_id', 'social_profiles'];
 
     /**
      * Fields stored as JSON.
      */
-    protected $json_fields = ['phones', 'websites', 'social_profiles', 'chats'];
+    protected $json_fields = ['phones', 'websites', 'social_profiles'];
 
     /**
      * Get customer emails.
@@ -847,7 +847,7 @@ class Customer extends Model
             if (in_array($data['value'], $list)) {
                 unset($sp_array[$i]);
             } else {
-                $list[] = $data['value'];         
+                $list[] = $data['value'];
             }
         }
 
@@ -953,7 +953,6 @@ class Customer extends Model
             if (!in_array($key, $this->json_fields) && $key != 'emails') {
                 continue;
             }
-            // todo: setChats
             if ($key == 'emails') {
                 foreach ($value as $email_data) {
                     if (!empty($email_data['value'])) {
@@ -1258,5 +1257,33 @@ class Customer extends Model
         }
 
         return $sp;
+    }
+
+    public function setPhotoFromRemoteFile($url)
+    {
+        $headers = get_headers($url);
+
+        if (!preg_match("/200/", $headers[0])) {
+            return false;
+        }
+
+        $image_data = file_get_contents($url);
+
+        if (!$image_data) {
+            return false;
+        }
+
+        $temp_file = tempnam(sys_get_temp_dir(), 'photo');
+
+        \File::put($temp_file, $image_data);
+
+        $photo_url = $this->savePhoto($temp_file, \File::mimeType($temp_file));
+
+        if ($photo_url) {
+            $this->photo_url = $photo_url;
+            return true;
+        } else {
+            return false;
+        }
     }
 }
