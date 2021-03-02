@@ -1226,7 +1226,7 @@ a h4 {
     clip: both;
 }
 .customer-section {
-    margin-top: 10px;
+    margin-top: 9px;
     color: #93a1af;
     word-wrap: break-word;
 }
@@ -2468,8 +2468,15 @@ button.conv-checkbox-clear {
     display: none;
 }
 .conv-note-block #editor_signature,
-.conv-type-chat #editor_signature {
+.conv-type-chat #editor_signature,
+.conv-type-chat .cc-toggler,
+.conv-type-chat .conv-reply-block:not(.conv-note-block) .note-btn {
     display: none;
+}
+.conv-type-chat .conv-reply-block:not(.conv-note-block) .note-btn-attachment,
+.conv-type-chat .conv-reply-block:not(.conv-note-block) .note-actions .note-btn,
+.conv-type-chat .conv-reply-block:not(.conv-note-block) .btn-codeview + .note-btn-group .note-btn {
+    display: block;
 }
 .alert-switch-to-note {
     -webkit-box-shadow: inset 5px 0 0 0 #ffc646;

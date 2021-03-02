@@ -104,6 +104,7 @@ var EditorAttachmentButton = function (context) {
 	var button = ui.button({
 		contents: '<i class="glyphicon glyphicon-paperclip"></i>',
 		tooltip: Lang.get("messages.upload_attachments"),
+		className: 'note-btn-attachment',
 		container: 'body',
 		click: function () {
 			var element = document.createElement('div');
