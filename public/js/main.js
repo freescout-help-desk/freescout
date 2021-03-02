@@ -1424,7 +1424,7 @@ function convEditorInit()
 	    lists: EditorListsButton
 	});
 
-	$('#body').summernote({
+	var options = {
 		minHeight: 120,
 		dialogsInBody: true,
 		dialogsFade: true,
@@ -1452,7 +1452,18 @@ function convEditorInit()
 		    	onReplyChange();
 		    }
 	    }
-	});
+	};
+
+	// Allow to insert only plain text in chats
+	if (convIsChat()) {
+		options.callbacks.onPaste = function (e) {
+	        var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+	        e.preventDefault();
+	        document.execCommand('insertText', false, bufferText);
+	    };
+	}
+
+	$('#body').summernote(options);
 	var html = $('#editor_bottom_toolbar').html();
 	$('.note-statusbar').addClass('note-statusbar-toolbar form-inline').html(html);
 
