@@ -3172,6 +3172,11 @@ function polycastInit()
 		    			e.preventDefault();
 		    		});
 		    		flashElement($('#conv-layout-main .thread-type-new:first'));
+	    			$.titleAlert('✉ '+Lang.get("messages.new_message"), {
+					    requireBlur: true,
+					    stopOnFocus: true,
+					    interval: 600
+					});
 		    		if (convIsChat()) {
 		    			setTimeout(function() {
 							$('#conv-layout-main .thread-type-new:first .view-new-trigger').click();
