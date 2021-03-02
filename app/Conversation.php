@@ -1411,6 +1411,14 @@ class Conversation extends Model
     }
 
     /**
+     * Is it as chat conversation.
+     */
+    public function isChat()
+    {
+        return ($this->type == self::TYPE_CHAT);
+    }
+
+    /**
      * Get information on viewers for conversation table.
      */
     public static function getViewersInfo($conversations, $fields = ['id', 'first_name', 'last_name'], $exclude_user_ids = [])
@@ -1816,6 +1824,11 @@ class Conversation extends Model
         $conversation->mailbox->updateFoldersCounters();
 
         return true;
+    }
+
+    public function getChannelName()
+    {
+        return \Eventy::filter('conversation.channel_name', '', $this->channel);
     }
 
     // /**

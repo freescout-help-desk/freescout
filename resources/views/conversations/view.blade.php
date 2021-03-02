@@ -131,6 +131,7 @@
                                 </span>
                             </div>
                         </div>
+                        @if ($conversation->isChat() && $conversation->getChannelName())<span class="conv-tags"><span class="fs-tag fs-tag-md"><a class="fs-tag-name" href="#">{{ $conversation->getChannelName() }}</a></span></span>@endif
                         @action('conversation.after_subject', $conversation, $mailbox)
                         <div class="conv-numnav">
                             <i class="glyphicon conv-star @if ($conversation->isStarredByUser()) glyphicon-star @else glyphicon-star-empty @endif" title="@if ($conversation->isStarredByUser()){{ __("Unstar Conversation") }}@else{{ __("Star Conversation") }}@endif"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>

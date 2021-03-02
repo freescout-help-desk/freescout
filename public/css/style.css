@@ -4194,6 +4194,45 @@ a.disabled:focus {
     margin-top: 0;
     margin-bottom: 0;
 }
+.conv-tags {
+    float: left;
+    overflow: hidden;
+}
+.conv-tags .fs-tag {
+    margin-top: 8px;
+    margin-right: 8px;
+}
+.fs-tag {
+    background: #9eaab5;
+    border-radius: 2px;
+    color: #fff;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: normal;
+    padding: 2px 4px 1px 4px;
+    line-height: 14px;
+    margin: 0 4px 0 0;
+}
+.fs-tag-name,
+.fs-tag-name:hover,
+.fs-tag-name:focus {
+    text-decoration: none;
+    color: #fff;
+}
+.fs-tag-name:hover[href="#"] {
+    cursor: default;
+}
+.fs-tag-md {
+    padding: 5px 7px 5px 7px;
+    font-size: 15px;
+    border-radius: 3px;
+    background-color: #97a4b0;
+}
+.conv-subject .fs-tag {
+    margin-right: 6px;
+    position: relative;
+    top: 1px;
+}
 
 @media (max-width: 350px) {
     .conv-next-prev {
