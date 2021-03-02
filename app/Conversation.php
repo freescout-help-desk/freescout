@@ -1828,7 +1828,7 @@ class Conversation extends Model
 
     public function getChannelName()
     {
-        return \Eventy::filter('conversation.channel_name', '', $this->channel);
+        return \Eventy::filter('channel.name', '', $this->channel);
     }
 
     // /**

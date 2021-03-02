@@ -1295,4 +1295,9 @@ class Customer extends Model
             return false;
         }
     }
+
+    public function getChannelName()
+    {
+        return \Eventy::filter('channel.name', '', $this->channel);
+    }
 }
