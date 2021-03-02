@@ -3172,6 +3172,11 @@ function polycastInit()
 		    			e.preventDefault();
 		    		});
 		    		flashElement($('#conv-layout-main .thread-type-new:first'));
+		    		if (convIsChat()) {
+		    			setTimeout(function() {
+							$('#conv-layout-main .thread-type-new:first .view-new-trigger').click();
+					    }, 3000);
+		    		}
 		    	}
 		    }
 
@@ -3245,6 +3250,11 @@ function polycastInit()
 
     // and when you disconnect, you can again at any point reconnect
     //poly.reconnect();
+}
+
+function convIsChat()
+{
+	return $('#conv-layout').hasClass('conv-type-chat');
 }
 
 function convGetUserId()

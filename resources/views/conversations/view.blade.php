@@ -18,7 +18,7 @@
 @section('content')
     @include('partials/flash_messages')
 
-    <div id="conv-layout">
+    <div id="conv-layout" class="conv-type-{{ strtolower($conversation->getTypeName()) }}">
         <div id="conv-layout-header">
             <div id="conv-toolbar">
 

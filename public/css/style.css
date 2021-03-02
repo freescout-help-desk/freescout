@@ -2467,7 +2467,8 @@ button.conv-checkbox-clear {
 .conv-note-block .alert-switch-to-note {
     display: none;
 }
-.conv-note-block #editor_signature {
+.conv-note-block #editor_signature,
+.conv-type-chat #editor_signature {
     display: none;
 }
 .alert-switch-to-note {
