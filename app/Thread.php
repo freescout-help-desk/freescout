@@ -2,6 +2,15 @@
 
 namespace App;
 
+use App\Events\ConversationStatusChanged;
+use App\Events\ConversationUserChanged;
+use App\Events\UserAddedNote;
+use App\Events\CustomerCreatedConversation;
+use App\Events\UserCreatedConversation;
+use App\Events\UserCreatedConversationDraft;
+use App\Events\UserCreatedThreadDraft;
+use App\Events\UserReplied;
+use App\Events\CustomerReplied;
 use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model
@@ -874,6 +883,223 @@ class Thread extends Model
         }
 
         return $thread;
+    }
+
+    public static function createExtended($data = [], $conversation, $customer = null, $update_conv = true)
+    {
+        if (empty($data['type']) || empty($data['body'])) {
+            return false;
+        }
+
+        $is_customer = ($data['type'] == Thread::TYPE_CUSTOMER);
+
+        if (!$customer && !empty($data['customer_id'])) {
+            $customer = Customer::find($data['customer_id']);
+        }
+        if (!$customer) {
+            $customer = $conversation->customer;
+        }
+
+        $user_id = $data['user_id'] ?? null;
+
+        // Check type.
+        if ($data['type'] == Thread::TYPE_CUSTOMER && empty($customer)) {
+            return false;
+            //return $this->getErrorResponse('`customer` parameter is required', 'customer');
+        }
+        if (($data['type'] == Thread::TYPE_MESSAGE || $data['type'] == Thread::TYPE_NOTE) && empty($user_id)) {
+            return false;
+            //return $this->getErrorResponse('`user` parameter is required', 'user');
+        }
+
+        // Create thread.
+        $now = date('Y-m-d H:i:s');
+
+        // New conversation.
+        $new = !$conversation->threads_count;
+
+        $thread = new Thread();
+        $thread->conversation_id = $conversation->id;
+        $thread->type = $data['type'];
+        if ($is_customer) {
+            $thread->source_via = Thread::PERSON_CUSTOMER;
+            $thread->created_by_customer_id = $customer->id;
+        } else {
+            $thread->source_via = Thread::PERSON_USER;
+            $thread->created_by_user_id = $user_id;
+            $thread->edited_by_user_id = null;
+            $thread->edited_at = null;
+        }
+        $thread->source_type = Thread::SOURCE_TYPE_API;
+        $thread->state = $data['state'] ?? Thread::STATE_PUBLISHED;
+        $thread->customer_id = $customer->id ?? $conversation->customer_id ?? null;
+        $thread->body = $data['body'];
+        if (!$is_customer) {
+            $thread->setTo([$customer->getMainEmail()]);
+        }
+        
+        $cc = \MailHelper::sanitizeEmails($data['cc'] ?? []);
+        $thread->setCc($cc);
+
+        $bcc = \MailHelper::sanitizeEmails($data['bcc'] ?? []);
+        $thread->setBcc($bcc);
+        $thread->imported = (int)($data['imported'] ?? false);
+        if ($thread->imported && !empty($data['created_at'])) {
+            $thread->created_at = self::utcStringToServerDate($data['created_at']);
+        }
+        if ($new) {
+            $thread->first = true;
+        }
+
+        // Process attachments.
+        if (!empty($data['attachments'])) {
+            $has_attachments = false;
+            foreach ($data['attachments'] as $attachment) {
+
+                if (empty($attachment['file_name'])
+                    || empty($attachment['mime_type'])
+                    || (empty($attachment['data']) && empty($attachment['file_url']))
+                ) {
+                    continue;
+                }
+                $content = null;
+                $uploaded_file = null;
+                if (!empty($attachment['data'])) {
+                    // BASE64 string.
+                    $content = base64_decode($attachment['data']);
+                    if (!$content) {
+                        continue;
+                    }
+                } else {
+                    // URL.
+                    $uploaded_file = \Helper::downloadRemoteFileAsTmpFile($attachment['file_url']);
+                    if (!$uploaded_file) {
+                        continue;
+                    }
+                }
+                if (!$has_attachments) {
+                    $thread->save();
+                }
+                $attachment = Attachment::create(
+                    $attachment['file_name'],
+                    $attachment['mime_type'],
+                    null,
+                    $content,
+                    $uploaded_file = $uploaded_file,
+                    $embedded = false,
+                    $thread->id,
+                    $user_id ?? null
+                );
+
+                if ($attachment) {
+                    $has_attachments = true;
+                }
+            }
+            if ($has_attachments) {
+                $thread->has_attachments = true;
+                $conversation->has_attachments = true;
+            }
+        }
+        
+        $thread->save();
+        
+        if ($new) {
+            if ($is_customer) {
+                $conversation->source_via = Conversation::PERSON_CUSTOMER;
+                $conversation->created_by_customer_id = $customer->id;
+            } else {
+                $conversation->source_via = Conversation::PERSON_USER;
+                $conversation->created_by_user_id = $user_id;
+            }
+        }
+
+        $conversation->setCc($cc);
+        // BCC should keep BCC of the first email,
+        // so we change BCC only if it contains emails.
+        if ($bcc) {
+            $conversation->setBcc($bcc);
+        }
+
+        if ($thread->isReply()) {
+            $conversation->last_reply_at = $now;
+            if ($is_customer) {
+                $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
+                // Reply from customer makes conversation active
+                $conversation->status = Conversation::STATUS_ACTIVE;
+            } else {
+                $conversation->last_reply_from = Conversation::PERSON_USER;
+                $conversation->user_updated_at = $now;
+                $conversation->status = Conversation::STATUS_PENDING;
+            }
+        }
+
+        // Set specific status
+        if (!empty($data['status'])) {
+            $conversation->status = $data['status'];
+        }
+        
+        if ($update_conv) {
+            $conversation->customer_id = $customer->id;
+
+            if ($is_customer) {
+                $conversation->customer_email = $customer->getMainEmail();
+            }
+        }
+
+        // Update conversation here if needed.
+        if ($is_customer) {
+            if ($new) {
+                $conversation = \Eventy::filter('conversation.created_by_customer', $conversation, $thread, $customer);
+            } else {
+                $conversation = \Eventy::filter('conversation.customer_replied', $conversation, $thread, $customer);
+            }
+        }
+        // save() will check if something in the model has changed. If it hasn't it won't run a db query.
+        $conversation->save();
+
+        // Update folders counters
+        if (!$new) {
+            // Update folders counters
+            $conversation->mailbox->updateFoldersCounters();
+        }
+
+        // Events.
+
+        // Conversation customer changed
+        // Not used anywhere
+        // if ($prev_customer_id) {
+        //     event(new ConversationCustomerChanged($conversation, $prev_customer_id, $prev_customer_email, null, $customer));
+        // }
+    
+        if ($new) {
+            if ($is_customer) {
+                event(new CustomerCreatedConversation($conversation, $thread));
+                \Eventy::action('conversation.created_by_customer', $conversation, $thread, $customer);
+            } else {
+                // New conversation.
+                event(new UserCreatedConversation($conversation, $thread));
+                \Eventy::action('conversation.created_by_user_can_undo', $conversation, $thread);
+                // After Conversation::UNDO_TIMOUT period trigger final event.
+                \Helper::backgroundAction('conversation.created_by_user', [$conversation, $thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
+            }
+        } elseif ($data['type'] == Thread::TYPE_NOTE) {
+            // Note.
+            event(new UserAddedNote($conversation, $thread));
+            \Eventy::action('conversation.note_added', $conversation, $thread);
+        } else {
+            // Reply.
+            if ($is_customer) {
+                event(new CustomerReplied($conversation, $thread));
+                \Eventy::action('conversation.customer_replied', $conversation, $thread, $customer);
+            } else {
+                event(new UserReplied($conversation, $thread));
+                \Eventy::action('conversation.user_replied_can_undo', $conversation, $thread);
+                // After Conversation::UNDO_TIMOUT period trigger final event.
+                \Helper::backgroundAction('conversation.user_replied', [$conversation, $thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
+            }
+        }
+
+        return true;
     }
 
     /**

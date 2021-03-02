@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Email;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -483,6 +484,14 @@ class Customer extends Model
     public function getMainEmail()
     {
         return optional($this->emails_cached()->first())->email;
+    }
+
+    /**
+     * Get main email.
+     */
+    public static function getMainEmailStatic($customer_id)
+    {
+        return Email::select('email')->where('customer_id', $customer_id)->pluck('email');
     }
 
     /**
