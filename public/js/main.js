@@ -104,6 +104,7 @@ var EditorAttachmentButton = function (context) {
 	var button = ui.button({
 		contents: '<i class="glyphicon glyphicon-paperclip"></i>',
 		tooltip: Lang.get("messages.upload_attachments"),
+		className: 'note-btn-attachment',
 		container: 'body',
 		click: function () {
 			var element = document.createElement('div');
@@ -1423,7 +1424,7 @@ function convEditorInit()
 	    lists: EditorListsButton
 	});
 
-	$('#body').summernote({
+	var options = {
 		minHeight: 120,
 		dialogsInBody: true,
 		dialogsFade: true,
@@ -1451,7 +1452,18 @@ function convEditorInit()
 		    	onReplyChange();
 		    }
 	    }
-	});
+	};
+
+	// Allow to insert only plain text in chats
+	if (convIsChat()) {
+		options.callbacks.onPaste = function (e) {
+	        var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+	        e.preventDefault();
+	        document.execCommand('insertText', false, bufferText);
+	    };
+	}
+
+	$('#body').summernote(options);
 	var html = $('#editor_bottom_toolbar').html();
 	$('.note-statusbar').addClass('note-statusbar-toolbar form-inline').html(html);
 
@@ -3172,6 +3184,16 @@ function polycastInit()
 		    			e.preventDefault();
 		    		});
 		    		flashElement($('#conv-layout-main .thread-type-new:first'));
+	    			$.titleAlert('✉ '+Lang.get("messages.new_message"), {
+					    requireBlur: true,
+					    stopOnFocus: true,
+					    interval: 600
+					});
+		    		if (convIsChat()) {
+		    			setTimeout(function() {
+							$('#conv-layout-main .thread-type-new:first .view-new-trigger').click();
+					    }, 3000);
+		    		}
 		    	}
 		    }
 
@@ -3245,6 +3267,11 @@ function polycastInit()
 
     // and when you disconnect, you can again at any point reconnect
     //poly.reconnect();
+}
+
+function convIsChat()
+{
+	return $('#conv-layout').hasClass('conv-type-chat');
 }
 
 function convGetUserId()

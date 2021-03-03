@@ -18,7 +18,7 @@
 @section('content')
     @include('partials/flash_messages')
 
-    <div id="conv-layout">
+    <div id="conv-layout" class="conv-type-{{ strtolower($conversation->getTypeName()) }}">
         <div id="conv-layout-header">
             <div id="conv-toolbar">
 
@@ -45,10 +45,14 @@
                                 <a href="#" class="conv-follow @if ($is_following) hidden @endif" data-follow-action="follow"><i class="glyphicon glyphicon-bell"></i> {{ __("Follow") }}</a>
                                 <a href="#" class="conv-follow @if (!$is_following) hidden @endif" data-follow-action="unfollow"><i class="glyphicon glyphicon-bell"></i> {{ __("Unfollow") }}</a>
                             </li>
-                            <li><a href="#" class="conv-forward"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
+                            @if (!$conversation->isChat())
+                                <li><a href="#" class="conv-forward"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
+                            @endif
                             <li><a href="{{ \Request::getRequestUri() }}&amp;print=1" target="_blank"><i class="glyphicon glyphicon-print"></i> {{ __("Print") }}</a></li>
-                            <li><a href="{{ route('conversations.ajax_html', ['action' =>
-                                            'merge_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Merge Conversations") }}" data-modal-no-footer="true" data-modal-on-show="initMergeConv"><i class="glyphicon glyphicon-indent-left"></i> {{ __("Merge") }}</a></li>
+                            @if (!$conversation->isChat())
+                                <li><a href="{{ route('conversations.ajax_html', ['action' =>
+                                                'merge_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Merge Conversations") }}" data-modal-no-footer="true" data-modal-on-show="initMergeConv"><i class="glyphicon glyphicon-indent-left"></i> {{ __("Merge") }}</a></li>
+                            @endif
                             @if (Auth::user()->can('move', App\Conversation::class))
                                 <li><a href="{{ route('conversations.ajax_html', ['action' =>
                                             'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv"><i class="glyphicon glyphicon-log-out"></i> {{ __("Move") }}</a></li>
@@ -131,6 +135,7 @@
                                 </span>
                             </div>
                         </div>
+                        @if ($conversation->isChat() && $conversation->getChannelName())<span class="conv-tags"><span class="fs-tag fs-tag-md"><a class="fs-tag-name" href="#">{{ $conversation->getChannelName() }}</a></span></span>@endif
                         @action('conversation.after_subject', $conversation, $mailbox)
                         <div class="conv-numnav">
                             <i class="glyphicon conv-star @if ($conversation->isStarredByUser()) glyphicon-star @else glyphicon-star-empty @endif" title="@if ($conversation->isStarredByUser()){{ __("Unstar Conversation") }}@else{{ __("Star Conversation") }}@endif"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>
@@ -253,8 +258,10 @@
                         <a href="javascript:void(0)" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
                             <li role="presentation"><a href="{{ route('customers.update', ['id' => $customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
-                            <li role="presentation"><a href="{{ route('conversations.ajax_html', ['action' =>
+                            @if (!$conversation->isChat())
+                                <li role="presentation"><a href="{{ route('conversations.ajax_html', ['action' =>
                                             'change_customer']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Change Customer") }}" data-modal-no-footer="true" data-modal-on-show="changeCustomerInit" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
+                            @endif
                             @if (count($prev_conversations))
                                 <li role="presentation" class="col3-hidden"><a data-toggle="collapse" href=".collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
                             @endif

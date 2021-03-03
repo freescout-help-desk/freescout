@@ -13,8 +13,8 @@
 	<div id="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" class="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" style="width:100%!important; margin:0; padding:0">
 	            
 		@foreach ($threads as $thread)
+			@if ($loop->index == 1)<!-- originalMessage --><div class="gmail_quote" style="height:0; font-size:0px; line-height:0px; color:#ffffff;"></div>@endif
 	        <div style="width:100%; margin:0;">
-	        	@if ($loop->index == 1)<!-- originalMessage -->@endif
 	        	@if (!$loop->first)
                 	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0;">
 						<tr>

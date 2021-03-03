@@ -27,6 +27,11 @@ class Conversation extends Model
     const PREVIEW_MAXLENGTH = 255;
 
     /**
+     * Default subject length.
+     */
+    const SUBJECT_LENGTH = 80;
+
+    /**
      * Conversation reply undo timeout in seconds.
      * Value has to be larger than close_after in fsFloatingAlertsInit.
      */
@@ -48,7 +53,7 @@ class Conversation extends Model
      */
     const TYPE_EMAIL = 1;
     const TYPE_PHONE = 2;
-    const TYPE_CHAT = 3; // not used
+    const TYPE_CHAT = 3;
 
     public static $types = [
         self::TYPE_EMAIL => 'email',
@@ -1411,6 +1416,14 @@ class Conversation extends Model
     }
 
     /**
+     * Is it as chat conversation.
+     */
+    public function isChat()
+    {
+        return ($this->type == self::TYPE_CHAT);
+    }
+
+    /**
      * Get information on viewers for conversation table.
      */
     public static function getViewersInfo($conversations, $fields = ['id', 'first_name', 'last_name'], $exclude_user_ids = [])
@@ -1745,6 +1758,88 @@ class Conversation extends Model
         return $label;
     }
 
+    /**
+     * Create conversation.
+     *
+     * $threads should go from old to new.
+     */
+    public static function create($data, $threads, $customer)
+    {
+        $conversation = new Conversation();
+        $conversation->type = $data['type'];
+        $conversation->subject = $data['subject'];
+        $conversation->mailbox_id = $data['mailbox_id'];
+        $conversation->source_type = $data['source_type'];
+        $conversation->customer_id = $customer->id;
+        $conversation->customer_email = $customer->getMainEmail().'';
+        $conversation->state = $data['state'] ?? Conversation::STATE_PUBLISHED;
+        $conversation->imported = (int)($data['imported'] ?? false);
+        $conversation->closed_at = $data['closed_at'] ?? null;
+        $conversation->channel = $data['channel'] ?? null;
+
+        // Set assignee
+        $conversation->user_id = null;
+        if (!empty($data['user_id'])) {
+            $user_assignee = User::find($data['user_id']);
+            if ($user_assignee) {
+                $conversation->user_id = $user_assignee->id;
+            }
+        }
+
+        $conversation->updateFolder();
+        $conversation->save();
+
+        // Create threads.
+        $threads = array_reverse($threads);
+        $thread_created = false;
+        $last_customer_id = null;
+        foreach ($threads as $thread) {
+
+            $thread['conversation_id'] = $conversation->id;
+
+            if ($conversation->imported) {
+                $thread['imported'] = true;
+            }
+            if (!empty($data['status'])) {
+                $thread['status'] = $data['status'];
+            }
+
+            $thread_result = Thread::createExtended($thread, $conversation, $customer, false);
+            if ($thread_result) {
+                $thread_created = true;
+            }
+        }
+
+        // If no threads created, delete conversation
+        if (!$thread_created) {
+            $conversation->delete();
+            return false;
+        }
+
+        // Restore customer if needed.
+        // if ($last_customer_id && $last_customer_id != $customer->id) {
+        //     // Otherwise it does not save.
+        //     $conversation = $conversation->fresh();
+        //     $conversation->customer_id = $customer->id;
+        //     $conversation->customer_email = $customer->getMainEmail();
+        //     $conversation->save();
+        // }
+
+        // Update folders counters
+        $conversation->mailbox->updateFoldersCounters();
+
+        return true;
+    }
+
+    public function getChannelName()
+    {
+        return \Eventy::filter('channel.name', '', $this->channel);
+    }
+
+    public static function subjectFromText($text)
+    {
+        return \Helper::textPreview($text, self::SUBJECT_LENGTH);
+    }
 
     // /**
     //  * Get conversation meta data as array.

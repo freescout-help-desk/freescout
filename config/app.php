@@ -12,7 +12,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.6.16',
+    'version' => '1.6.17',
 
     /*
     |--------------------------------------------------------------------------
@@ -264,6 +264,20 @@ return [
     |-------------------------------------------------------------------------
     */
     'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'svg', 'tif', 'tiff', 'webp', 'pdf', 'txt']),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Case insensitive regular expression, containing a list of 
+    | mail server error responses, returned when a mail server can not deliver an email
+    | to one or more recipients. If FreeScout receives one of the listed
+    | error responses from the mail server, it does not try to resend the email
+    | to avoid sending multiple duplicate emails to other recipients.
+    |
+    | https://github.com/freescout-helpdesk/freescout/issues/870#issuecomment-786477909
+    |
+    |-------------------------------------------------------------------------
+    */
+    'no_retry_mail_errors'    => env('APP_NO_RETRY_MAIL_ERRORS', '(no valid recipients|does not comply with RFC)'),
 
     /*
     |--------------------------------------------------------------------------
