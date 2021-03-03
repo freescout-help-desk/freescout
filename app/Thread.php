@@ -295,7 +295,7 @@ class Thread extends Model
      */
     public function getBodyAsText()
     {
-        return \Helper::htmlToText($this->body);
+        return \Helper::htmlToText($this->body, true);
     }
 
     public function getBodyWithFormatedLinks(string $body = '') :string
