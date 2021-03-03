@@ -1477,4 +1477,9 @@ class Helper
 
         return $file_name;
     }
+
+    public static function remoteFileName($file_url)
+    {
+        return preg_replace("/\?.*/", '', basename($file_url));
+    }
 }
