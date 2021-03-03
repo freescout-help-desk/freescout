@@ -957,24 +957,32 @@ class Thread extends Model
             foreach ($data['attachments'] as $attachment) {
 
                 if (empty($attachment['file_name'])
-                    || empty($attachment['mime_type'])
+                    //|| empty($attachment['mime_type'])
                     || (empty($attachment['data']) && empty($attachment['file_url']))
                 ) {
                     continue;
                 }
                 $content = null;
                 $uploaded_file = null;
+
                 if (!empty($attachment['data'])) {
                     // BASE64 string.
                     $content = base64_decode($attachment['data']);
                     if (!$content) {
                         continue;
                     }
+                    if (empty($attachment['mime_type'])) {
+                        $f = finfo_open();
+                        $attachment['mime_type'] = finfo_buffer($f, $content, FILEINFO_MIME_TYPE);
+                    }
                 } else {
                     // URL.
                     $uploaded_file = \Helper::downloadRemoteFileAsTmpFile($attachment['file_url']);
                     if (!$uploaded_file) {
                         continue;
+                    }
+                    if (empty($attachment['mime_type'])) {
+                        $attachment['mime_type'] = $uploaded_file->getClientMimeType();
                     }
                 }
                 if (!$has_attachments) {

@@ -27,6 +27,11 @@ class Conversation extends Model
     const PREVIEW_MAXLENGTH = 255;
 
     /**
+     * Default subject length.
+     */
+    const SUBJECT_LENGTH = 80;
+
+    /**
      * Conversation reply undo timeout in seconds.
      * Value has to be larger than close_after in fsFloatingAlertsInit.
      */
@@ -1829,6 +1834,11 @@ class Conversation extends Model
     public function getChannelName()
     {
         return \Eventy::filter('channel.name', '', $this->channel);
+    }
+
+    public static function subjectFromText($text)
+    {
+        return \Helper::textPreview($text, self::SUBJECT_LENGTH);
     }
 
     // /**
