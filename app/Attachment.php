@@ -34,6 +34,10 @@ class Attachment extends Model
         'other'       => self::TYPE_OTHER,
     ];
 
+    public static $type_extensions = [
+        self::TYPE_VIDEO => ['flv', 'mp4', 'm3u8', 'ts', '3gp', 'mov', 'avi', 'wmv']
+    ];
+
     public $timestamps = false;
 
     /**
@@ -53,6 +57,8 @@ class Attachment extends Model
             return false;
         }
 
+        $orig_extension = pathinfo($file_name, PATHINFO_EXTENSION);
+
         // Add underscore to the extension if file has restricted extension.
         $file_name = \Helper::sanitizeUploadedFileName($file_name);
 
@@ -62,13 +68,14 @@ class Attachment extends Model
 
         if (strlen($file_name) > 255) {
             $without_ext = pathinfo($file_name, PATHINFO_FILENAME);
+            $extension = pathinfo($file_name, PATHINFO_EXTENSION);
             // 125 because file name may have unicode symbols.
             $file_name = \Helper::substrUnicode($without_ext, 0, 125-strlen($extension)-1);
             $file_name .= '.'.$extension;
         }
 
         if (!$type) {
-            $type = self::detectType($mime_type);
+            $type = self::detectType($mime_type, $orig_extension);
         }
 
         $attachment = new self();
@@ -158,13 +165,18 @@ class Attachment extends Model
      *
      * @return int
      */
-    public static function detectType($mime_type)
+    public static function detectType($mime_type, $extension = '')
     {
         if (preg_match("/^text\//", $mime_type)) {
             return self::TYPE_TEXT;
         } elseif (preg_match("/^message\//", $mime_type)) {
             return self::TYPE_MESSAGE;
         } elseif (preg_match("/^application\//", $mime_type)) {
+            // This is tricky mime type.
+            // For .mp4 mime type can be application/octet-stream
+            if (!empty($extension) && in_array(strtolower($extension), self::$type_extensions[self::TYPE_VIDEO])) {
+                return self::TYPE_VIDEO;
+            }
             return self::TYPE_APPLICATION;
         } elseif (preg_match("/^audio\//", $mime_type)) {
             return self::TYPE_AUDIO;
