@@ -257,7 +257,7 @@ class ProviderRepository
     public function writeManifest($manifest)
     {
         if (!is_writable(dirname($this->manifestPath))) {
-            throw new Exception('The bootstrap/cache directory must be present and writable.');
+            throw new Exception('The bootstrap/cache directory must be present and writable: '.$this->manifestPath);
         }
 
         $this->files->put(
