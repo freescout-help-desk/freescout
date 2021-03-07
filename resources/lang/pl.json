@@ -507,7 +507,6 @@
     "This is a test system mail sent by :app_name. It means that mail settings are fine.": "To jest testowa wiadomość systemowa wysłana przez :app_name. Oznacza to, że ustawienia poczty są w porządku.",
     "System Alert": "Ostrzeżenie Systemowe",
     "You can adjust alert settings :%a_begin%here:a_end": "Możesz dostosować ustawienia ostrzeżeń :%a_begin%tutaj:a_end ",
-    ":user created an account for you at :app_url": ":user utworzył(a) dla Ciebie konto pod adresem :app_url ",
     "Create a Password": "Utwórz Hasło",
     "Welcome to the team!": "Witaj w zespole!",
     "Someone on your team created an account for you.": "Ktoś z twojego zespołu utworzył dla Ciebie konto.",
@@ -753,5 +752,7 @@
     "Run the following command": "Wykonaj następującą komendę",
     "read more": "czytaj więcej",
     "Access denied": "Dostęp zabroniony",
-    "Users are allowed to manage users": "Użytkownicy mogą zarządzać użytkownikami"
+    "Users are allowed to manage users": "Użytkownicy mogą zarządzać użytkownikami",
+    "New message": "Nowa wiadomość",
+    "Hi :user, an account has been created for you at :app_url": "Witaj, :user. Zostało utworzone dla Ciebie konto na :app_url"
 }

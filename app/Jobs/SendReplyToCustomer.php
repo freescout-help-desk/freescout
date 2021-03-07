@@ -199,6 +199,8 @@ class SendReplyToCustomer implements ShouldQueue
         //     $bcc_array = [];
         // }
 
+        $headers['X-FreeScout-Mail-Type'] = 'customer.message';
+
         $reply_mail = new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox);
 
         try {
