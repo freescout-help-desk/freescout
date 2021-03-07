@@ -114,6 +114,8 @@ class SendNotificationToUsers implements ShouldQueue
             // Set user language
             app()->setLocale($user->getLocale());
 
+            $headers['X-FreeScout-Mail-Type'] = 'user.notification';
+
             $exception = null;
 
             try {
