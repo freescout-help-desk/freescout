@@ -1107,7 +1107,7 @@ class Thread extends Model
             }
         }
 
-        return true;
+        return $thread;
     }
 
     /**

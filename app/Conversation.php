@@ -1793,6 +1793,7 @@ class Conversation extends Model
         $threads = array_reverse($threads);
         $thread_created = false;
         $last_customer_id = null;
+        $thread_result = null;
         foreach ($threads as $thread) {
 
             $thread['conversation_id'] = $conversation->id;
@@ -1828,7 +1829,10 @@ class Conversation extends Model
         // Update folders counters
         $conversation->mailbox->updateFoldersCounters();
 
-        return true;
+        return [
+            'conversation' => $conversation,
+            'thread' => $thread_result
+        ];
     }
 
     public function getChannelName()
