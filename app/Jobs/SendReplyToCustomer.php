@@ -127,6 +127,10 @@ class SendReplyToCustomer implements ShouldQueue
             $email_conv_history = 'full';
         }
 
+        if ($is_forward && $email_conv_history == 'none') {
+            $email_conv_history = 'full';
+        }
+
         if ($email_conv_history == 'full') {
             $send_previous_messages = true;
         }
