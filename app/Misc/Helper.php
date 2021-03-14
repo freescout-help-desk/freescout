@@ -1482,4 +1482,10 @@ class Helper
     {
         return preg_replace("/\?.*/", '', basename($file_url));
     }
+
+    public static function binaryDataMimeType($data)
+    {
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        return $finfo->buffer($data);
+    }
 }
