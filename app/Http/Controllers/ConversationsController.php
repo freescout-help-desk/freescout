@@ -323,7 +323,7 @@ class ConversationsController extends Controller
 
         $prefill_to = \App\Email::sanitizeEmail($request->get('to'));
         if ($prefill_to) {
-            $to = [$prefill_to];
+            $to = [$prefill_to => $prefill_to];
         }
 
         return view('conversations/create', [
