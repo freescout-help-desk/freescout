@@ -779,7 +779,7 @@ function multiInputInit()
 	} );
 }
 
-function fsAjax(data, url, success_callback, no_loader, error_callback)
+function fsAjax(data, url, success_callback, no_loader, error_callback, custom_options)
 {
 	if (!url) {
 		console.log('Empty URL');
@@ -808,14 +808,20 @@ function fsAjax(data, url, success_callback, no_loader, error_callback)
 		}
 	}
 
-	$.ajax({
+	var options = {
 		url: url,
 		method: 'post',
 		dataType: 'json',
 		data: data,
 		success: success_callback,
 		error: error_callback
-   });
+    };
+
+    if (typeof(custom_options) == "object") {
+    	options = {...options, ...custom_options};
+    }
+
+	$.ajax(options);
 }
 
 // Show loader
