@@ -66,7 +66,7 @@ Mobile apps support the same functionality and modules as the web version of you
 FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a shared hosting.
 
   * Nginx / Apache / IIS
-  * PHP 7.0 - 7.4
+  * PHP 7.1 - 8.x
   * MySQL 5.0+ / MariaDB 5.0+ / PostgreSQL
 
 ## Installation

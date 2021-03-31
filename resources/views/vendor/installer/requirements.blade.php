@@ -19,7 +19,7 @@
                     <strong>
                         <small>
                             <?php /*(version {{ $phpSupportInfo['minimum'] }} required)*/ ?>
-                            (7.0 - 7.3)
+                            (7.1 - 8.x)
                         </small>
                     </strong>
                     <span class="float-right">
