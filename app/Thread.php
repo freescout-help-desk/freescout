@@ -885,7 +885,7 @@ class Thread extends Model
         return $thread;
     }
 
-    public static function createExtended($data = [], $conversation, $customer = null, $update_conv = true)
+    public static function createExtended($data = [], $conversation = null, $customer = null, $update_conv = true)
     {
         if (empty($data['type']) || empty($data['body'])) {
             return false;

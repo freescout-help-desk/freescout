@@ -353,7 +353,7 @@
     "Recipient unsubscribed": "受信者が購読を解除",
     "Recommended permissions": "推奨される権限",
     "Registered": "登録済み",
-    "Remove filter": "フィルターを外す",
+    "Remove filter": "フィルターの解除",
     "Remove Formatting": "書式設定の削除",
     "Reply": "返信",
     "Replying to this notification will email :name": "この通知に返信すると、 :name にメールが送信されます。",
@@ -518,7 +518,6 @@
     ":person restored": ":person が復元",
     ":person sent a message": ":person がメッセージを送信しました",
     ":person started the conversation": ":person が会話を始めました",
-    ":user created an account for you at :app_url": ":user は :app_url であなたのアカウントを作成しました",
     ":user is replying": ":user が返信しています",
     ":user is viewing": ":user が表示しています",
     ".env file": ".env ファイル",
@@ -753,5 +752,5 @@
     "Remarks": "備考",
     "Social Profiles": "ソーシャルプロファイル",
     "Type :delete": "タイプ :delete",
-    "Remember Me": "Remember Me"
+    "Remember Me": "ログイン状態を記憶"
 }

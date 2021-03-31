@@ -6,7 +6,7 @@
 <br/><br/>
 
 [![PHP version](https://freescout-helpdesk.github.io/img/badges/PHP-7.0%2B-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) [![Laravel version](https://freescout-helpdesk.github.io/img/badges/Laravel-5.5-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) 
-[![Build Status](https://freescout-helpdesk.github.io/img/badges/travis.svg)](https://freescout-helpdesk.github.io/img/badges/travis.svg) [![HitCount](http://hits.dwyl.io/freescout-helpdesk/freescout.svg)](http://hits.dwyl.io/freescout-helpdesk/freescout)
+[![Build Status](https://freescout-helpdesk.github.io/img/badges/travis.svg)](https://freescout-helpdesk.github.io/img/badges/travis.svg) [![HitCount](http://hits.dwyl.com/freescout-helpdesk/freescout.svg)](https://github.com/freescout-helpdesk/freescout)
 
 </div>
 
@@ -66,7 +66,7 @@ Mobile apps support the same functionality and modules as the web version of you
 FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a shared hosting.
 
   * Nginx / Apache / IIS
-  * PHP 7.0 - 7.4
+  * PHP 7.1 - 8.x
   * MySQL 5.0+ / MariaDB 5.0+ / PostgreSQL
 
 ## Installation
