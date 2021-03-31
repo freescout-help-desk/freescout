@@ -1,98 +1,101 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\DBAL\Driver;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
-use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Driver\DriverException as DeprecatedDriverException;
+use Doctrine\DBAL\Exception\ConnectionException;
+use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Exception\InvalidFieldNameException;
+use Doctrine\DBAL\Exception\LockWaitTimeoutException;
+use Doctrine\DBAL\Exception\NonUniqueFieldNameException;
+use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
+use Doctrine\DBAL\Exception\ReadOnlyException;
+use Doctrine\DBAL\Exception\SyntaxErrorException;
+use Doctrine\DBAL\Exception\TableExistsException;
+use Doctrine\DBAL\Exception\TableNotFoundException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\SqliteSchemaManager;
 
+use function strpos;
+
 /**
- * Abstract base implementation of the {@link Doctrine\DBAL\Driver} interface for SQLite based drivers.
- *
- * @author Steve Müller <st.mueller@dzh-online.de>
- * @link   www.doctrine-project.org
- * @since  2.5
+ * Abstract base implementation of the {@link Driver} interface for SQLite based drivers.
  */
 abstract class AbstractSQLiteDriver implements Driver, ExceptionConverterDriver
 {
     /**
      * {@inheritdoc}
      *
+     * @deprecated
+     *
      * @link http://www.sqlite.org/c3ref/c_abort.html
      */
-    public function convertException($message, DriverException $exception)
+    public function convertException($message, DeprecatedDriverException $exception)
     {
-        if (strpos($exception->getMessage(), 'must be unique') !== false ||
+        if (strpos($exception->getMessage(), 'database is locked') !== false) {
+            return new LockWaitTimeoutException($message, $exception);
+        }
+
+        if (
+            strpos($exception->getMessage(), 'must be unique') !== false ||
             strpos($exception->getMessage(), 'is not unique') !== false ||
             strpos($exception->getMessage(), 'are not unique') !== false ||
             strpos($exception->getMessage(), 'UNIQUE constraint failed') !== false
         ) {
-            return new Exception\UniqueConstraintViolationException($message, $exception);
+            return new UniqueConstraintViolationException($message, $exception);
         }
 
-        if (strpos($exception->getMessage(), 'may not be NULL') !== false ||
+        if (
+            strpos($exception->getMessage(), 'may not be NULL') !== false ||
             strpos($exception->getMessage(), 'NOT NULL constraint failed') !== false
         ) {
-            return new Exception\NotNullConstraintViolationException($message, $exception);
+            return new NotNullConstraintViolationException($message, $exception);
         }
 
         if (strpos($exception->getMessage(), 'no such table:') !== false) {
-            return new Exception\TableNotFoundException($message, $exception);
+            return new TableNotFoundException($message, $exception);
         }
 
         if (strpos($exception->getMessage(), 'already exists') !== false) {
-            return new Exception\TableExistsException($message, $exception);
+            return new TableExistsException($message, $exception);
         }
 
         if (strpos($exception->getMessage(), 'has no column named') !== false) {
-            return new Exception\InvalidFieldNameException($message, $exception);
+            return new InvalidFieldNameException($message, $exception);
         }
 
         if (strpos($exception->getMessage(), 'ambiguous column name') !== false) {
-            return new Exception\NonUniqueFieldNameException($message, $exception);
+            return new NonUniqueFieldNameException($message, $exception);
         }
 
         if (strpos($exception->getMessage(), 'syntax error') !== false) {
-            return new Exception\SyntaxErrorException($message, $exception);
+            return new SyntaxErrorException($message, $exception);
         }
 
         if (strpos($exception->getMessage(), 'attempt to write a readonly database') !== false) {
-            return new Exception\ReadOnlyException($message, $exception);
+            return new ReadOnlyException($message, $exception);
         }
 
         if (strpos($exception->getMessage(), 'unable to open database file') !== false) {
-            return new Exception\ConnectionException($message, $exception);
+            return new ConnectionException($message, $exception);
         }
 
-        return new Exception\DriverException($message, $exception);
+        return new DriverException($message, $exception);
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated Use Connection::getDatabase() instead.
      */
-    public function getDatabase(\Doctrine\DBAL\Connection $conn)
+    public function getDatabase(Connection $conn)
     {
         $params = $conn->getParams();
 
-        return isset($params['path']) ? $params['path'] : null;
+        return $params['path'] ?? null;
     }
 
     /**
@@ -106,7 +109,7 @@ abstract class AbstractSQLiteDriver implements Driver, ExceptionConverterDriver
     /**
      * {@inheritdoc}
      */
-    public function getSchemaManager(\Doctrine\DBAL\Connection $conn)
+    public function getSchemaManager(Connection $conn)
     {
         return new SqliteSchemaManager($conn);
     }

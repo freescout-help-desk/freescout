@@ -55,7 +55,7 @@ class Command
      */
     public static function getDefaultName()
     {
-        $class = \get_called_class();
+        $class = static::class;
         $r = new \ReflectionProperty($class, 'defaultName');
 
         return $class === $r->class ? static::$defaultName : null;
@@ -223,7 +223,7 @@ class Command
         if (null !== $this->processTitle) {
             if (\function_exists('cli_set_process_title')) {
                 if (!@cli_set_process_title($this->processTitle)) {
-                    if ('Darwin' === PHP_OS) {
+                    if ('Darwin' === \PHP_OS) {
                         $output->writeln('<comment>Running "cli_set_process_title" as an unprivileged user is not supported on MacOS.</comment>', OutputInterface::VERBOSITY_VERY_VERBOSE);
                     } else {
                         cli_set_process_title($this->processTitle);
@@ -348,7 +348,7 @@ class Command
     public function getDefinition()
     {
         if (null === $this->definition) {
-            throw new LogicException(sprintf('Command class "%s" is not correctly initialized. You probably forgot to call the parent constructor.', \get_class($this)));
+            throw new LogicException(sprintf('Command class "%s" is not correctly initialized. You probably forgot to call the parent constructor.', static::class));
         }
 
         return $this->definition;
@@ -437,8 +437,6 @@ class Command
      * This feature should be used only when creating a long process command,
      * like a daemon.
      *
-     * PHP 5.5+ or the proctitle PECL library is required
-     *
      * @param string $title The process title
      *
      * @return $this
@@ -453,14 +451,10 @@ class Command
     /**
      * Returns the command name.
      *
-     * @return string The command name
+     * @return string|null
      */
     public function getName()
     {
-        if (!$this->name) {
-            throw new LogicException(sprintf('The command defined in "%s" cannot have an empty name.', \get_class($this)));
-        }
-
         return $this->name;
     }
 
@@ -567,7 +561,7 @@ class Command
     public function setAliases($aliases)
     {
         if (!\is_array($aliases) && !$aliases instanceof \Traversable) {
-            throw new InvalidArgumentException('$aliases must be an array or an instance of \Traversable');
+            throw new InvalidArgumentException('$aliases must be an array or an instance of \Traversable.');
         }
 
         foreach ($aliases as $alias) {

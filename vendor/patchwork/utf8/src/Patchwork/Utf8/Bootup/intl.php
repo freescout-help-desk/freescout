@@ -17,8 +17,12 @@ const GRAPHEME_EXTR_MAXCHARS = 2;
 
 @trigger_error('You are using a fallback implementation of the intl extension. Installing the native one is highly recommended instead.', E_USER_DEPRECATED);
 
-function normalizer_is_normalized($s, $form = s\Normalizer::NFC) {return s\Normalizer::isNormalized($s, $form);}
-function normalizer_normalize($s, $form = s\Normalizer::NFC) {return s\Normalizer::normalize($s, $form);}
+if (!function_exists('normalizer_is_normalized')) {
+    function normalizer_is_normalized($s, $form = s\Normalizer::NFC) {return s\Normalizer::isNormalized($s, $form);}
+}
+if (!function_exists('normalizer_normalize')) {
+    function normalizer_normalize($s, $form = s\Normalizer::NFC) {return s\Normalizer::normalize($s, $form);}
+}
 
 function grapheme_extract($s, $size, $type = 0, $start = 0, &$next = 0) {return s\Intl::grapheme_extract($s, $size, $type, $start, $next);}
 function grapheme_stripos($s, $needle, $offset = 0) {return s\Intl::grapheme_stripos($s, $needle, $offset);}

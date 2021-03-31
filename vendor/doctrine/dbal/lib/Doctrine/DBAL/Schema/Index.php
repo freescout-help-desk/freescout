@@ -1,25 +1,18 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\DBAL\Schema;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use InvalidArgumentException;
+
+use function array_filter;
+use function array_keys;
+use function array_map;
+use function array_search;
+use function array_shift;
+use function count;
+use function is_string;
+use function strtolower;
 
 class Index extends AbstractAsset implements Constraint
 {
@@ -29,55 +22,57 @@ class Index extends AbstractAsset implements Constraint
      *
      * @var Identifier[]
      */
-    protected $_columns = array();
+    protected $_columns = [];
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     protected $_isUnique = false;
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     protected $_isPrimary = false;
 
     /**
      * Platform specific flags for indexes.
      * array($flagName => true)
      *
-     * @var array
+     * @var true[]
      */
-    protected $_flags = array();
+    protected $_flags = [];
 
     /**
      * Platform specific options
      *
      * @todo $_flags should eventually be refactored into options
-     *
-     * @var array
+     * @var mixed[]
      */
-    private $options = array();
+    private $options = [];
 
     /**
-     * @param string   $indexName
+     * @param string   $name
      * @param string[] $columns
-     * @param boolean  $isUnique
-     * @param boolean  $isPrimary
+     * @param bool     $isUnique
+     * @param bool     $isPrimary
      * @param string[] $flags
-     * @param array    $options
+     * @param mixed[]  $options
      */
-    public function __construct($indexName, array $columns, $isUnique = false, $isPrimary = false, array $flags = array(), array $options = array())
-    {
+    public function __construct(
+        $name,
+        array $columns,
+        $isUnique = false,
+        $isPrimary = false,
+        array $flags = [],
+        array $options = []
+    ) {
         $isUnique = $isUnique || $isPrimary;
 
-        $this->_setName($indexName);
-        $this->_isUnique = $isUnique;
+        $this->_setName($name);
+        $this->_isUnique  = $isUnique;
         $this->_isPrimary = $isPrimary;
-        $this->options = $options;
+        $this->options    = $options;
 
         foreach ($columns as $column) {
             $this->_addColumn($column);
         }
+
         foreach ($flags as $flag) {
             $this->addFlag($flag);
         }
@@ -88,15 +83,15 @@ class Index extends AbstractAsset implements Constraint
      *
      * @return void
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function _addColumn($column)
     {
-        if (is_string($column)) {
-            $this->_columns[$column] = new Identifier($column);
-        } else {
-            throw new \InvalidArgumentException("Expecting a string as Index Column");
+        if (! is_string($column)) {
+            throw new InvalidArgumentException('Expecting a string as Index Column');
         }
+
+        $this->_columns[$column] = new Identifier($column);
     }
 
     /**
@@ -112,10 +107,21 @@ class Index extends AbstractAsset implements Constraint
      */
     public function getQuotedColumns(AbstractPlatform $platform)
     {
-        $columns = array();
+        $subParts = $platform->supportsColumnLengthIndexes() && $this->hasOption('lengths')
+            ? $this->getOption('lengths') : [];
+
+        $columns = [];
 
         foreach ($this->_columns as $column) {
-            $columns[] = $column->getQuotedName($platform);
+            $length = array_shift($subParts);
+
+            $quotedColumn = $column->getQuotedName($platform);
+
+            if ($length !== null) {
+                $quotedColumn .= '(' . $length . ')';
+            }
+
+            $columns[] = $quotedColumn;
         }
 
         return $columns;
@@ -126,21 +132,21 @@ class Index extends AbstractAsset implements Constraint
      */
     public function getUnquotedColumns()
     {
-        return array_map(array($this, 'trimQuotes'), $this->getColumns());
+        return array_map([$this, 'trimQuotes'], $this->getColumns());
     }
 
     /**
      * Is the index neither unique nor primary key?
      *
-     * @return boolean
+     * @return bool
      */
     public function isSimpleIndex()
     {
-        return !$this->_isPrimary && !$this->_isUnique;
+        return ! $this->_isPrimary && ! $this->_isUnique;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isUnique()
     {
@@ -148,7 +154,7 @@ class Index extends AbstractAsset implements Constraint
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isPrimary()
     {
@@ -156,25 +162,25 @@ class Index extends AbstractAsset implements Constraint
     }
 
     /**
-     * @param string  $columnName
-     * @param integer $pos
+     * @param string $name
+     * @param int    $pos
      *
-     * @return boolean
+     * @return bool
      */
-    public function hasColumnAtPosition($columnName, $pos = 0)
+    public function hasColumnAtPosition($name, $pos = 0)
     {
-        $columnName   = $this->trimQuotes(strtolower($columnName));
+        $name         = $this->trimQuotes(strtolower($name));
         $indexColumns = array_map('strtolower', $this->getUnquotedColumns());
 
-        return array_search($columnName, $indexColumns) === $pos;
+        return array_search($name, $indexColumns) === $pos;
     }
 
     /**
      * Checks if this index exactly spans the given column names in the correct order.
      *
-     * @param array $columnNames
+     * @param string[] $columnNames
      *
-     * @return boolean
+     * @return bool
      */
     public function spansColumns(array $columnNames)
     {
@@ -183,9 +189,14 @@ class Index extends AbstractAsset implements Constraint
         $sameColumns     = true;
 
         for ($i = 0; $i < $numberOfColumns; $i++) {
-            if ( ! isset($columnNames[$i]) || $this->trimQuotes(strtolower($columns[$i])) !== $this->trimQuotes(strtolower($columnNames[$i]))) {
-                $sameColumns = false;
+            if (
+                isset($columnNames[$i])
+                && $this->trimQuotes(strtolower($columns[$i])) === $this->trimQuotes(strtolower($columnNames[$i]))
+            ) {
+                continue;
             }
+
+            $sameColumns = false;
         }
 
         return $sameColumns;
@@ -194,15 +205,13 @@ class Index extends AbstractAsset implements Constraint
     /**
      * Checks if the other index already fulfills all the indexing and constraint needs of the current one.
      *
-     * @param Index $other
-     *
-     * @return boolean
+     * @return bool
      */
     public function isFullfilledBy(Index $other)
     {
         // allow the other index to be equally large only. It being larger is an option
         // but it creates a problem with scenarios of the kind PRIMARY KEY(foo,bar) UNIQUE(foo)
-        if (count($other->getColumns()) != count($this->getColumns())) {
+        if (count($other->getColumns()) !== count($this->getColumns())) {
             return false;
         }
 
@@ -210,27 +219,27 @@ class Index extends AbstractAsset implements Constraint
         $sameColumns = $this->spansColumns($other->getColumns());
 
         if ($sameColumns) {
-            if ( ! $this->samePartialIndex($other)) {
+            if (! $this->samePartialIndex($other)) {
                 return false;
             }
 
-            if ( ! $this->isUnique() && ! $this->isPrimary()) {
-                // this is a special case: If the current key is neither primary or unique, any uniqe or
+            if (! $this->hasSameColumnLengths($other)) {
+                return false;
+            }
+
+            if (! $this->isUnique() && ! $this->isPrimary()) {
+                // this is a special case: If the current key is neither primary or unique, any unique or
                 // primary key will always have the same effect for the index and there cannot be any constraint
                 // overlaps. This means a primary or unique index can always fulfill the requirements of just an
                 // index that has no constraints.
                 return true;
             }
 
-            if ($other->isPrimary() != $this->isPrimary()) {
+            if ($other->isPrimary() !== $this->isPrimary()) {
                 return false;
             }
 
-            if ($other->isUnique() != $this->isUnique()) {
-                return false;
-            }
-
-            return true;
+            return $other->isUnique() === $this->isUnique();
         }
 
         return false;
@@ -239,23 +248,21 @@ class Index extends AbstractAsset implements Constraint
     /**
      * Detects if the other index is a non-unique, non primary index that can be overwritten by this one.
      *
-     * @param Index $other
-     *
-     * @return boolean
+     * @return bool
      */
     public function overrules(Index $other)
     {
         if ($other->isPrimary()) {
             return false;
-        } elseif ($this->isSimpleIndex() && $other->isUnique()) {
+        }
+
+        if ($this->isSimpleIndex() && $other->isUnique()) {
             return false;
         }
 
-        if ($this->spansColumns($other->getColumns()) && ($this->isPrimary() || $this->isUnique()) && $this->samePartialIndex($other)) {
-            return true;
-        }
-
-        return false;
+        return $this->spansColumns($other->getColumns())
+            && ($this->isPrimary() || $this->isUnique())
+            && $this->samePartialIndex($other);
     }
 
     /**
@@ -271,11 +278,11 @@ class Index extends AbstractAsset implements Constraint
     /**
      * Adds Flag for an index that translates to platform specific handling.
      *
-     * @example $index->addFlag('CLUSTERED')
-     *
      * @param string $flag
      *
      * @return Index
+     *
+     * @example $index->addFlag('CLUSTERED')
      */
     public function addFlag($flag)
     {
@@ -289,7 +296,7 @@ class Index extends AbstractAsset implements Constraint
      *
      * @param string $flag
      *
-     * @return boolean
+     * @return bool
      */
     public function hasFlag($flag)
     {
@@ -311,7 +318,7 @@ class Index extends AbstractAsset implements Constraint
     /**
      * @param string $name
      *
-     * @return boolean
+     * @return bool
      */
     public function hasOption($name)
     {
@@ -329,7 +336,7 @@ class Index extends AbstractAsset implements Constraint
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getOptions()
     {
@@ -338,21 +345,32 @@ class Index extends AbstractAsset implements Constraint
 
     /**
      * Return whether the two indexes have the same partial index
-     * @param \Doctrine\DBAL\Schema\Index $other
      *
-     * @return boolean
+     * @return bool
      */
     private function samePartialIndex(Index $other)
     {
-        if ($this->hasOption('where') && $other->hasOption('where') && $this->getOption('where') == $other->getOption('where')) {
+        if (
+            $this->hasOption('where')
+            && $other->hasOption('where')
+            && $this->getOption('where') === $other->getOption('where')
+        ) {
             return true;
         }
 
-        if ( ! $this->hasOption('where') && ! $other->hasOption('where')) {
-            return true;
-        }
-
-        return false;
+        return ! $this->hasOption('where') && ! $other->hasOption('where');
     }
 
+    /**
+     * Returns whether the index has the same column lengths as the other
+     */
+    private function hasSameColumnLengths(self $other): bool
+    {
+        $filter = static function (?int $length): bool {
+            return $length !== null;
+        };
+
+        return array_filter($this->options['lengths'] ?? [], $filter)
+            === array_filter($other->options['lengths'] ?? [], $filter);
+    }
 }

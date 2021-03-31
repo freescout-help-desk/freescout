@@ -106,7 +106,8 @@ class WindowsStreamWrapper
 
     public function dir_readdir()
     {
-        if (list(, $c) = each($this->handle)) {
+        if (($c = current($this->handle)) !== false) {
+            next($this->handle);
             return $c;
         }
 

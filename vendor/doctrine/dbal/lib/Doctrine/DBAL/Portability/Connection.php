@@ -1,58 +1,47 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\DBAL\Portability;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\DBAL\ColumnCase;
+use Doctrine\DBAL\Connection as BaseConnection;
+use Doctrine\DBAL\Driver\PDO\Connection as PDOConnection;
+use PDO;
+
+use function func_get_args;
+
+use const CASE_LOWER;
+use const CASE_UPPER;
 
 /**
  * Portability wrapper for a Connection.
- *
- * @link   www.doctrine-project.org
- * @since  2.0
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class Connection extends \Doctrine\DBAL\Connection
+class Connection extends BaseConnection
 {
-    const PORTABILITY_ALL               = 255;
-    const PORTABILITY_NONE              = 0;
-    const PORTABILITY_RTRIM             = 1;
-    const PORTABILITY_EMPTY_TO_NULL     = 4;
-    const PORTABILITY_FIX_CASE          = 8;
+    public const PORTABILITY_ALL           = 255;
+    public const PORTABILITY_NONE          = 0;
+    public const PORTABILITY_RTRIM         = 1;
+    public const PORTABILITY_EMPTY_TO_NULL = 4;
+    public const PORTABILITY_FIX_CASE      = 8;
 
-    const PORTABILITY_DB2               = 13;
-    const PORTABILITY_ORACLE            = 9;
-    const PORTABILITY_POSTGRESQL        = 13;
-    const PORTABILITY_SQLITE            = 13;
-    const PORTABILITY_OTHERVENDORS      = 12;
-    const PORTABILITY_DRIZZLE           = 13;
-    const PORTABILITY_SQLANYWHERE       = 13;
-    const PORTABILITY_SQLSRV            = 13;
-
-    /**
-     * @var integer
+    /**#@+
+     *
+     * @deprecated Will be removed as internal implementation details.
      */
+    public const PORTABILITY_DB2          = 13;
+    public const PORTABILITY_ORACLE       = 9;
+    public const PORTABILITY_POSTGRESQL   = 13;
+    public const PORTABILITY_SQLITE       = 13;
+    public const PORTABILITY_OTHERVENDORS = 12;
+    public const PORTABILITY_DRIZZLE      = 13;
+    public const PORTABILITY_SQLANYWHERE  = 13;
+    public const PORTABILITY_SQLSRV       = 13;
+    /**#@-*/
+
+    /** @var int */
     private $portability = self::PORTABILITY_NONE;
 
-    /**
-     * @var integer
-     */
+    /** @var int */
     private $case;
 
     /**
@@ -64,31 +53,18 @@ class Connection extends \Doctrine\DBAL\Connection
         if ($ret) {
             $params = $this->getParams();
             if (isset($params['portability'])) {
-                if ($this->getDatabasePlatform()->getName() === "oracle") {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_ORACLE;
-                } elseif ($this->getDatabasePlatform()->getName() === "postgresql") {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_POSTGRESQL;
-                } elseif ($this->getDatabasePlatform()->getName() === "sqlite") {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_SQLITE;
-                } elseif ($this->getDatabasePlatform()->getName() === "drizzle") {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_DRIZZLE;
-                } elseif ($this->getDatabasePlatform()->getName() === 'sqlanywhere') {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_SQLANYWHERE;
-                } elseif ($this->getDatabasePlatform()->getName() === 'db2') {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_DB2;
-                } elseif ($this->getDatabasePlatform()->getName() === 'mssql') {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_SQLSRV;
-                } else {
-                    $params['portability'] = $params['portability'] & self::PORTABILITY_OTHERVENDORS;
-                }
-                $this->portability = $params['portability'];
+                $this->portability = $params['portability'] = (new OptimizeFlags())(
+                    $this->getDatabasePlatform(),
+                    $params['portability']
+                );
             }
+
             if (isset($params['fetch_case']) && $this->portability & self::PORTABILITY_FIX_CASE) {
-                if ($this->_conn instanceof \Doctrine\DBAL\Driver\PDOConnection) {
+                if ($this->_conn instanceof PDOConnection) {
                     // make use of c-level support for case handling
-                    $this->_conn->setAttribute(\PDO::ATTR_CASE, $params['fetch_case']);
+                    $this->_conn->setAttribute(PDO::ATTR_CASE, $params['fetch_case']);
                 } else {
-                    $this->case = ($params['fetch_case'] == \PDO::CASE_LOWER) ? CASE_LOWER : CASE_UPPER;
+                    $this->case = $params['fetch_case'] === ColumnCase::LOWER ? CASE_LOWER : CASE_UPPER;
                 }
             }
         }
@@ -97,7 +73,7 @@ class Connection extends \Doctrine\DBAL\Connection
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getPortability()
     {
@@ -105,7 +81,7 @@ class Connection extends \Doctrine\DBAL\Connection
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getFetchCase()
     {
@@ -115,9 +91,9 @@ class Connection extends \Doctrine\DBAL\Connection
     /**
      * {@inheritdoc}
      */
-    public function executeQuery($query, array $params = array(), $types = array(), QueryCacheProfile $qcp = null)
+    public function executeQuery($sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null)
     {
-        $stmt = new Statement(parent::executeQuery($query, $params, $types, $qcp), $this);
+        $stmt = new Statement(parent::executeQuery($sql, $params, $types, $qcp), $this);
         $stmt->setFetchMode($this->defaultFetchMode);
 
         return $stmt;
@@ -125,10 +101,12 @@ class Connection extends \Doctrine\DBAL\Connection
 
     /**
      * {@inheritdoc}
+     *
+     * @return Statement
      */
-    public function prepare($statement)
+    public function prepare($sql)
     {
-        $stmt = new Statement(parent::prepare($statement), $this);
+        $stmt = new Statement(parent::prepare($sql), $this);
         $stmt->setFetchMode($this->defaultFetchMode);
 
         return $stmt;
@@ -139,9 +117,9 @@ class Connection extends \Doctrine\DBAL\Connection
      */
     public function query()
     {
-        $this->connect();
+        $connection = $this->getWrappedConnection();
 
-        $stmt = call_user_func_array(array($this->_conn, 'query'), func_get_args());
+        $stmt = $connection->query(...func_get_args());
         $stmt = new Statement($stmt, $this);
         $stmt->setFetchMode($this->defaultFetchMode);
 

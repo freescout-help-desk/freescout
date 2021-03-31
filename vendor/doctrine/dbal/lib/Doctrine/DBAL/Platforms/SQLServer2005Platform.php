@@ -1,21 +1,4 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\DBAL\Platforms;
 
@@ -32,6 +15,8 @@ namespace Doctrine\DBAL\Platforms;
  *   NVARCHAR(max) replace the old TEXT, NTEXT and IMAGE types. See
  *   {@link http://www.sql-server-helper.com/faq/sql-server-2005-varchar-max-p01.aspx}
  *   for more information.
+ *
+ * @deprecated Use SQL Server 2012 or newer
  */
 class SQLServer2005Platform extends SQLServerPlatform
 {
@@ -46,7 +31,7 @@ class SQLServer2005Platform extends SQLServerPlatform
     /**
      * {@inheritDoc}
      */
-    public function getClobTypeDeclarationSQL(array $field)
+    public function getClobTypeDeclarationSQL(array $column)
     {
         return 'VARCHAR(MAX)';
     }
@@ -58,6 +43,6 @@ class SQLServer2005Platform extends SQLServerPlatform
      */
     protected function getReservedKeywordsClass()
     {
-        return 'Doctrine\DBAL\Platforms\Keywords\SQLServer2005Keywords';
+        return Keywords\SQLServer2005Keywords::class;
     }
 }

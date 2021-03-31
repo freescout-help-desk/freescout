@@ -21,6 +21,7 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Terminal;
 
 /**
  * The QuestionHelper class provides helpers to interact with the user.
@@ -31,7 +32,7 @@ class QuestionHelper extends Helper
 {
     private $inputStream;
     private static $shell;
-    private static $stty;
+    private static $stty = true;
 
     /**
      * Asks a question to the user.
@@ -101,7 +102,7 @@ class QuestionHelper extends Helper
      */
     public function setInputStream($stream)
     {
-        @trigger_error(sprintf('The %s() method is deprecated since Symfony 3.2 and will be removed in 4.0. Use %s::setStream() instead.', __METHOD__, StreamableInputInterface::class), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The %s() method is deprecated since Symfony 3.2 and will be removed in 4.0. Use %s::setStream() instead.', __METHOD__, StreamableInputInterface::class), \E_USER_DEPRECATED);
 
         if (!\is_resource($stream)) {
             throw new InvalidArgumentException('Input stream must be a valid resource.');
@@ -121,7 +122,7 @@ class QuestionHelper extends Helper
     public function getInputStream()
     {
         if (0 === \func_num_args() || func_get_arg(0)) {
-            @trigger_error(sprintf('The %s() method is deprecated since Symfony 3.2 and will be removed in 4.0. Use %s::getStream() instead.', __METHOD__, StreamableInputInterface::class), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The %s() method is deprecated since Symfony 3.2 and will be removed in 4.0. Use %s::getStream() instead.', __METHOD__, StreamableInputInterface::class), \E_USER_DEPRECATED);
         }
 
         return $this->inputStream;
@@ -154,10 +155,15 @@ class QuestionHelper extends Helper
     {
         $this->writePrompt($output, $question);
 
-        $inputStream = $this->inputStream ?: STDIN;
+        $inputStream = $this->inputStream ?: \STDIN;
         $autocomplete = $question->getAutocompleterValues();
 
-        if (null === $autocomplete || !$this->hasSttyAvailable()) {
+        if (\function_exists('sapi_windows_cp_set')) {
+            // Codepage used by cmd.exe on Windows to allow special characters (éàüñ).
+            @sapi_windows_cp_set(1252);
+        }
+
+        if (null === $autocomplete || !self::$stty || !Terminal::hasSttyAvailable()) {
             $ret = false;
             if ($question->isHidden()) {
                 try {
@@ -197,20 +203,34 @@ class QuestionHelper extends Helper
         $message = $question->getQuestion();
 
         if ($question instanceof ChoiceQuestion) {
-            $maxWidth = max(array_map([$this, 'strlen'], array_keys($question->getChoices())));
-
-            $messages = (array) $question->getQuestion();
-            foreach ($question->getChoices() as $key => $value) {
-                $width = $maxWidth - $this->strlen($key);
-                $messages[] = '  [<info>'.$key.str_repeat(' ', $width).'</info>] '.$value;
-            }
-
-            $output->writeln($messages);
+            $output->writeln(array_merge([
+                $question->getQuestion(),
+            ], $this->formatChoiceQuestionChoices($question, 'info')));
 
             $message = $question->getPrompt();
         }
 
         $output->write($message);
+    }
+
+    /**
+     * @param string $tag
+     *
+     * @return string[]
+     */
+    protected function formatChoiceQuestionChoices(ChoiceQuestion $question, $tag)
+    {
+        $messages = [];
+
+        $maxWidth = max(array_map('self::strlen', array_keys($choices = $question->getChoices())));
+
+        foreach ($choices as $key => $value) {
+            $padding = str_repeat(' ', $maxWidth - self::strlen($key));
+
+            $messages[] = sprintf("  [<$tag>%s$padding</$tag>] %s", $key, $value);
+        }
+
+        return $messages;
     }
 
     /**
@@ -263,7 +283,7 @@ class QuestionHelper extends Helper
             } elseif ("\177" === $c) { // Backspace Character
                 if (0 === $numMatches && 0 !== $i) {
                     --$i;
-                    $fullChoice = substr($fullChoice, 0, -1);
+                    $fullChoice = self::substr($fullChoice, 0, $i);
                     // Move cursor backwards
                     $output->write("\033[1D");
                 }
@@ -277,7 +297,7 @@ class QuestionHelper extends Helper
                 }
 
                 // Pop the last character off the end of our string
-                $ret = substr($ret, 0, $i);
+                $ret = self::substr($ret, 0, $i);
             } elseif ("\033" === $c) {
                 // Did we read an escape sequence?
                 $c .= fread($inputStream, 2);
@@ -303,7 +323,7 @@ class QuestionHelper extends Helper
                         $remainingCharacters = substr($ret, \strlen(trim($this->mostRecentlyEnteredValue($fullChoice))));
                         $output->write($remainingCharacters);
                         $fullChoice .= $remainingCharacters;
-                        $i = \strlen($fullChoice);
+                        $i = self::strlen($fullChoice);
                     }
 
                     if ("\n" === $c) {
@@ -409,7 +429,7 @@ class QuestionHelper extends Helper
             return $value;
         }
 
-        if ($this->hasSttyAvailable()) {
+        if (self::$stty && Terminal::hasSttyAvailable()) {
             $sttyMode = shell_exec('stty -g');
 
             shell_exec('stty -echo');
@@ -494,21 +514,5 @@ class QuestionHelper extends Helper
         }
 
         return self::$shell;
-    }
-
-    /**
-     * Returns whether Stty is available or not.
-     *
-     * @return bool
-     */
-    private function hasSttyAvailable()
-    {
-        if (null !== self::$stty) {
-            return self::$stty;
-        }
-
-        exec('stty 2>&1', $output, $exitcode);
-
-        return self::$stty = 0 === $exitcode;
     }
 }

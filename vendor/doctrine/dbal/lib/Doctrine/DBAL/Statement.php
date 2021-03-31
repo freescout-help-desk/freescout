@@ -1,36 +1,28 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\DBAL;
 
-use PDO;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Abstraction\Result;
+use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Driver\Statement as DriverStatement;
+use Doctrine\DBAL\Exception\NoKeyValue;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
+use IteratorAggregate;
+use PDO;
+use PDOStatement;
+use Throwable;
+use Traversable;
+
+use function array_shift;
+use function is_array;
+use function is_string;
 
 /**
  * A thin wrapper around a Doctrine\DBAL\Driver\Statement that adds support
  * for logging, DBAL mapping types, etc.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
  */
-class Statement implements \IteratorAggregate, DriverStatement
+class Statement implements IteratorAggregate, DriverStatement, Result
 {
     /**
      * The SQL statement.
@@ -42,16 +34,16 @@ class Statement implements \IteratorAggregate, DriverStatement
     /**
      * The bound parameters.
      *
-     * @var array
+     * @var mixed[]
      */
-    protected $params = array();
+    protected $params = [];
 
     /**
      * The parameter types.
      *
-     * @var array
+     * @var int[]|string[]
      */
-    protected $types = array();
+    protected $types = [];
 
     /**
      * The underlying driver statement.
@@ -63,28 +55,30 @@ class Statement implements \IteratorAggregate, DriverStatement
     /**
      * The underlying database platform.
      *
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     protected $platform;
 
     /**
      * The connection this statement is bound to and executed on.
      *
-     * @var \Doctrine\DBAL\Connection
+     * @var Connection
      */
     protected $conn;
 
     /**
      * Creates a new <tt>Statement</tt> for the given SQL and <tt>Connection</tt>.
      *
-     * @param string                    $sql  The SQL of the statement.
-     * @param \Doctrine\DBAL\Connection $conn The connection on which the statement should be executed.
+     * @internal The statement can be only instantiated by {@link Connection}.
+     *
+     * @param string     $sql  The SQL of the statement.
+     * @param Connection $conn The connection on which the statement should be executed.
      */
     public function __construct($sql, Connection $conn)
     {
-        $this->sql = $sql;
-        $this->stmt = $conn->getWrappedConnection()->prepare($sql);
-        $this->conn = $conn;
+        $this->sql      = $sql;
+        $this->stmt     = $conn->getWrappedConnection()->prepare($sql);
+        $this->conn     = $conn;
         $this->platform = $conn->getDatabasePlatform();
     }
 
@@ -96,31 +90,32 @@ class Statement implements \IteratorAggregate, DriverStatement
      * type and the value undergoes the conversion routines of the mapping type before
      * being bound.
      *
-     * @param string $name  The name or position of the parameter.
-     * @param mixed  $value The value of the parameter.
-     * @param mixed  $type  Either a PDO binding type or a DBAL mapping type name or instance.
+     * @param string|int $param The name or position of the parameter.
+     * @param mixed      $value The value of the parameter.
+     * @param mixed      $type  Either a PDO binding type or a DBAL mapping type name or instance.
      *
-     * @return boolean TRUE on success, FALSE on failure.
+     * @return bool TRUE on success, FALSE on failure.
      */
-    public function bindValue($name, $value, $type = null)
+    public function bindValue($param, $value, $type = ParameterType::STRING)
     {
-        $this->params[$name] = $value;
-        $this->types[$name] = $type;
+        $this->params[$param] = $value;
+        $this->types[$param]  = $type;
         if ($type !== null) {
             if (is_string($type)) {
                 $type = Type::getType($type);
             }
+
             if ($type instanceof Type) {
-                $value = $type->convertToDatabaseValue($value, $this->platform);
+                $value       = $type->convertToDatabaseValue($value, $this->platform);
                 $bindingType = $type->getBindingType();
             } else {
-                $bindingType = $type; // PDO::PARAM_* constants
+                $bindingType = $type;
             }
 
-            return $this->stmt->bindValue($name, $value, $bindingType);
-        } else {
-            return $this->stmt->bindValue($name, $value);
+            return $this->stmt->bindValue($param, $value, $bindingType);
         }
+
+        return $this->stmt->bindValue($param, $value);
     }
 
     /**
@@ -128,30 +123,34 @@ class Statement implements \IteratorAggregate, DriverStatement
      *
      * Binding a parameter by reference does not support DBAL mapping types.
      *
-     * @param string       $name   The name or position of the parameter.
-     * @param mixed        $var    The reference to the variable to bind.
-     * @param integer      $type   The PDO binding type.
-     * @param integer|null $length Must be specified when using an OUT bind
+     * @param string|int $param    The name or position of the parameter.
+     * @param mixed      $variable The reference to the variable to bind.
+     * @param int        $type     The PDO binding type.
+     * @param int|null   $length   Must be specified when using an OUT bind
      *                             so that PHP allocates enough memory to hold the returned value.
      *
-     * @return boolean TRUE on success, FALSE on failure.
+     * @return bool TRUE on success, FALSE on failure.
      */
-    public function bindParam($name, &$var, $type = PDO::PARAM_STR, $length = null)
+    public function bindParam($param, &$variable, $type = ParameterType::STRING, $length = null)
     {
-        $this->params[$name] = $var;
-        $this->types[$name] = $type;
+        $this->params[$param] = $variable;
+        $this->types[$param]  = $type;
 
-        return $this->stmt->bindParam($name, $var, $type, $length);
+        if ($this->stmt instanceof PDOStatement) {
+            $length = $length ?? 0;
+        }
+
+        return $this->stmt->bindParam($param, $variable, $type, $length);
     }
 
     /**
      * Executes the statement with the currently bound parameters.
      *
-     * @param array|null $params
+     * @param mixed[]|null $params
      *
-     * @return boolean TRUE on success, FALSE on failure.
+     * @return bool TRUE on success, FALSE on failure.
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws Exception
      */
     public function execute($params = null)
     {
@@ -166,23 +165,17 @@ class Statement implements \IteratorAggregate, DriverStatement
 
         try {
             $stmt = $this->stmt->execute($params);
-        } catch (\Exception $ex) {
+        } catch (Throwable $ex) {
             if ($logger) {
                 $logger->stopQuery();
             }
-            throw DBALException::driverExceptionDuringQuery(
-                $this->conn->getDriver(),
-                $ex,
-                $this->sql,
-                $this->conn->resolveParams($this->params, $this->types)
-            );
+
+            $this->conn->handleExceptionDuringQuery($ex, $this->sql, $this->params, $this->types);
         }
 
         if ($logger) {
             $logger->stopQuery();
         }
-        $this->params = array();
-        $this->types = array();
 
         return $stmt;
     }
@@ -190,7 +183,9 @@ class Statement implements \IteratorAggregate, DriverStatement
     /**
      * Closes the cursor, freeing the database resources used by this statement.
      *
-     * @return boolean TRUE on success, FALSE on failure.
+     * @deprecated Use Result::free() instead.
+     *
+     * @return bool TRUE on success, FALSE on failure.
      */
     public function closeCursor()
     {
@@ -200,7 +195,7 @@ class Statement implements \IteratorAggregate, DriverStatement
     /**
      * Returns the number of columns in the result set.
      *
-     * @return integer
+     * @return int
      */
     public function columnCount()
     {
@@ -210,7 +205,9 @@ class Statement implements \IteratorAggregate, DriverStatement
     /**
      * Fetches the SQLSTATE associated with the last operation on the statement.
      *
-     * @return string
+     * @deprecated The error information is available via exceptions.
+     *
+     * @return string|int|bool
      */
     public function errorCode()
     {
@@ -218,9 +215,9 @@ class Statement implements \IteratorAggregate, DriverStatement
     }
 
     /**
-     * Fetches extended error information associated with the last operation on the statement.
+     * {@inheritDoc}
      *
-     * @return array
+     * @deprecated The error information is available via exceptions.
      */
     public function errorInfo()
     {
@@ -229,12 +226,16 @@ class Statement implements \IteratorAggregate, DriverStatement
 
     /**
      * {@inheritdoc}
+     *
+     * @deprecated Use one of the fetch- or iterate-related methods.
      */
     public function setFetchMode($fetchMode, $arg2 = null, $arg3 = null)
     {
         if ($arg2 === null) {
             return $this->stmt->setFetchMode($fetchMode);
-        } elseif ($arg3 === null) {
+        }
+
+        if ($arg3 === null) {
             return $this->stmt->setFetchMode($fetchMode, $arg2);
         }
 
@@ -244,6 +245,8 @@ class Statement implements \IteratorAggregate, DriverStatement
     /**
      * Required by interface IteratorAggregate.
      *
+     * @deprecated Use iterateNumeric(), iterateAssociative() or iterateColumn() instead.
+     *
      * {@inheritdoc}
      */
     public function getIterator()
@@ -252,29 +255,27 @@ class Statement implements \IteratorAggregate, DriverStatement
     }
 
     /**
-     * Fetches the next row from a result set.
+     * {@inheritdoc}
      *
-     * @param integer|null $fetchMode
-     *
-     * @return mixed The return value of this function on success depends on the fetch type.
-     *               In all cases, FALSE is returned on failure.
+     * @deprecated Use fetchNumeric(), fetchAssociative() or fetchOne() instead.
      */
-    public function fetch($fetchMode = null)
+    public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
         return $this->stmt->fetch($fetchMode);
     }
 
     /**
-     * Returns an array containing all of the result set rows.
+     * {@inheritdoc}
      *
-     * @param integer|null $fetchMode
-     * @param mixed        $fetchArgument
-     *
-     * @return array An array containing all of the remaining rows in the result set.
+     * @deprecated Use fetchAllNumeric(), fetchAllAssociative() or fetchFirstColumn() instead.
      */
-    public function fetchAll($fetchMode = null, $fetchArgument = 0)
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
     {
-        if ($fetchArgument !== 0) {
+        if ($ctorArgs !== null) {
+            return $this->stmt->fetchAll($fetchMode, $fetchArgument, $ctorArgs);
+        }
+
+        if ($fetchArgument !== null) {
             return $this->stmt->fetchAll($fetchMode, $fetchArgument);
         }
 
@@ -282,11 +283,9 @@ class Statement implements \IteratorAggregate, DriverStatement
     }
 
     /**
-     * Returns a single column from the next row of a result set.
+     * {@inheritDoc}
      *
-     * @param integer $columnIndex
-     *
-     * @return mixed A single column from the next row of a result set or FALSE if there are no more rows.
+     * @deprecated Use fetchOne() instead.
      */
     public function fetchColumn($columnIndex = 0)
     {
@@ -294,13 +293,279 @@ class Statement implements \IteratorAggregate, DriverStatement
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * @throws Exception
+     */
+    public function fetchNumeric()
+    {
+        try {
+            if ($this->stmt instanceof Result) {
+                return $this->stmt->fetchNumeric();
+            }
+
+            return $this->stmt->fetch(FetchMode::NUMERIC);
+        } catch (Exception $e) {
+            $this->conn->handleDriverException($e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws Exception
+     */
+    public function fetchAssociative()
+    {
+        try {
+            if ($this->stmt instanceof Result) {
+                return $this->stmt->fetchAssociative();
+            }
+
+            return $this->stmt->fetch(FetchMode::ASSOCIATIVE);
+        } catch (Exception $e) {
+            $this->conn->handleDriverException($e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws Exception
+     */
+    public function fetchOne()
+    {
+        try {
+            if ($this->stmt instanceof Result) {
+                return $this->stmt->fetchOne();
+            }
+
+            return $this->stmt->fetch(FetchMode::COLUMN);
+        } catch (Exception $e) {
+            $this->conn->handleDriverException($e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws Exception
+     */
+    public function fetchAllNumeric(): array
+    {
+        try {
+            if ($this->stmt instanceof Result) {
+                return $this->stmt->fetchAllNumeric();
+            }
+
+            return $this->stmt->fetchAll(FetchMode::NUMERIC);
+        } catch (Exception $e) {
+            $this->conn->handleDriverException($e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws Exception
+     */
+    public function fetchAllAssociative(): array
+    {
+        try {
+            if ($this->stmt instanceof Result) {
+                return $this->stmt->fetchAllAssociative();
+            }
+
+            return $this->stmt->fetchAll(FetchMode::ASSOCIATIVE);
+        } catch (Exception $e) {
+            $this->conn->handleDriverException($e);
+        }
+    }
+
+    /**
+     * Returns an associative array with the keys mapped to the first column and the values mapped to the second column.
+     *
+     * The result must contain at least two columns.
+     *
+     * @return array<mixed,mixed>
+     *
+     * @throws Exception
+     */
+    public function fetchAllKeyValue(): array
+    {
+        $this->ensureHasKeyValue();
+
+        $data = [];
+
+        foreach ($this->fetchAllNumeric() as [$key, $value]) {
+            $data[$key] = $value;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Returns an associative array with the keys mapped to the first column and the values being
+     * an associative array representing the rest of the columns and their values.
+     *
+     * @return array<mixed,array<string,mixed>>
+     *
+     * @throws Exception
+     */
+    public function fetchAllAssociativeIndexed(): array
+    {
+        $data = [];
+
+        foreach ($this->fetchAll(FetchMode::ASSOCIATIVE) as $row) {
+            $data[array_shift($row)] = $row;
+        }
+
+        return $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws Exception
+     */
+    public function fetchFirstColumn(): array
+    {
+        try {
+            if ($this->stmt instanceof Result) {
+                return $this->stmt->fetchFirstColumn();
+            }
+
+            return $this->stmt->fetchAll(FetchMode::COLUMN);
+        } catch (Exception $e) {
+            $this->conn->handleDriverException($e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return Traversable<int,array<int,mixed>>
+     *
+     * @throws Exception
+     */
+    public function iterateNumeric(): Traversable
+    {
+        try {
+            if ($this->stmt instanceof Result) {
+                while (($row = $this->stmt->fetchNumeric()) !== false) {
+                    yield $row;
+                }
+            } else {
+                while (($row = $this->stmt->fetch(FetchMode::NUMERIC)) !== false) {
+                    yield $row;
+                }
+            }
+        } catch (Exception $e) {
+            $this->conn->handleDriverException($e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return Traversable<int,array<string,mixed>>
+     *
+     * @throws Exception
+     */
+    public function iterateAssociative(): Traversable
+    {
+        try {
+            if ($this->stmt instanceof Result) {
+                while (($row = $this->stmt->fetchAssociative()) !== false) {
+                    yield $row;
+                }
+            } else {
+                while (($row = $this->stmt->fetch(FetchMode::ASSOCIATIVE)) !== false) {
+                    yield $row;
+                }
+            }
+        } catch (Exception $e) {
+            $this->conn->handleDriverException($e);
+        }
+    }
+
+    /**
+     * Returns an iterator over the result set with the keys mapped to the first column
+     * and the values mapped to the second column.
+     *
+     * The result must contain at least two columns.
+     *
+     * @return Traversable<mixed,mixed>
+     *
+     * @throws Exception
+     */
+    public function iterateKeyValue(): Traversable
+    {
+        $this->ensureHasKeyValue();
+
+        foreach ($this->iterateNumeric() as [$key, $value]) {
+            yield $key => $value;
+        }
+    }
+
+    /**
+     * Returns an iterator over the result set with the keys mapped to the first column and the values being
+     * an associative array representing the rest of the columns and their values.
+     *
+     * @return Traversable<mixed,array<string,mixed>>
+     *
+     * @throws Exception
+     */
+    public function iterateAssociativeIndexed(): Traversable
+    {
+        while (($row = $this->stmt->fetch(FetchMode::ASSOCIATIVE)) !== false) {
+            yield array_shift($row) => $row;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return Traversable<int,mixed>
+     *
+     * @throws Exception
+     */
+    public function iterateColumn(): Traversable
+    {
+        try {
+            if ($this->stmt instanceof Result) {
+                while (($value = $this->stmt->fetchOne()) !== false) {
+                    yield $value;
+                }
+            } else {
+                while (($value = $this->stmt->fetch(FetchMode::COLUMN)) !== false) {
+                    yield $value;
+                }
+            }
+        } catch (Exception $e) {
+            $this->conn->handleDriverException($e);
+        }
+    }
+
+    /**
      * Returns the number of rows affected by the last execution of this statement.
      *
-     * @return integer The number of affected rows.
+     * @return int The number of affected rows.
      */
     public function rowCount()
     {
         return $this->stmt->rowCount();
+    }
+
+    public function free(): void
+    {
+        if ($this->stmt instanceof Result) {
+            $this->stmt->free();
+
+            return;
+        }
+
+        $this->stmt->closeCursor();
     }
 
     /**
@@ -311,5 +576,14 @@ class Statement implements \IteratorAggregate, DriverStatement
     public function getWrappedStatement()
     {
         return $this->stmt;
+    }
+
+    private function ensureHasKeyValue(): void
+    {
+        $columnCount = $this->columnCount();
+
+        if ($columnCount < 2) {
+            throw NoKeyValue::fromColumnCount($columnCount);
+        }
     }
 }

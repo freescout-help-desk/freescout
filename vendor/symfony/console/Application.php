@@ -21,6 +21,7 @@ use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Exception\ExceptionInterface;
+use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Helper\DebugFormatterHelper;
 use Symfony\Component\Console\Helper\FormatterHelper;
@@ -120,7 +121,7 @@ class Application
 
         $renderException = function ($e) use ($output) {
             if (!$e instanceof \Exception) {
-                $e = class_exists(FatalThrowableError::class) ? new FatalThrowableError($e) : new \ErrorException($e->getMessage(), $e->getCode(), E_ERROR, $e->getFile(), $e->getLine());
+                $e = class_exists(FatalThrowableError::class) ? new FatalThrowableError($e) : new \ErrorException($e->getMessage(), $e->getCode(), \E_ERROR, $e->getFile(), $e->getLine());
             }
             if ($output instanceof ConsoleOutputInterface) {
                 $this->renderException($e, $output->getErrorOutput());
@@ -138,7 +139,7 @@ class Application
         }
 
         if (null !== $this->dispatcher && $this->dispatcher->hasListeners(ConsoleEvents::EXCEPTION)) {
-            @trigger_error(sprintf('The "ConsoleEvents::EXCEPTION" event is deprecated since Symfony 3.3 and will be removed in 4.0. Listen to the "ConsoleEvents::ERROR" event instead.'), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The "ConsoleEvents::EXCEPTION" event is deprecated since Symfony 3.3 and will be removed in 4.0. Listen to the "ConsoleEvents::ERROR" event instead.'), \E_USER_DEPRECATED);
         }
 
         $this->configureIO($input, $output);
@@ -459,6 +460,10 @@ class Application
         // Will throw if the command is not correctly initialized.
         $command->getDefinition();
 
+        if (!$command->getName()) {
+            throw new LogicException(sprintf('The command defined in "%s" cannot have an empty name.', \get_class($command)));
+        }
+
         $this->commands[$command->getName()] = $command;
 
         foreach ($command->getAliases() as $alias) {
@@ -483,6 +488,11 @@ class Application
 
         if (!$this->has($name)) {
             throw new CommandNotFoundException(sprintf('The command "%s" does not exist.', $name));
+        }
+
+        // When the command has a different name than the one used at the command loader level
+        if (!isset($this->commands[$name])) {
+            throw new CommandNotFoundException(sprintf('The "%s" command cannot be found because it is registered under multiple names. Make sure you don\'t set a different name via constructor or "setName()".', $name));
         }
 
         $command = $this->commands[$name];
@@ -524,6 +534,10 @@ class Application
     {
         $namespaces = [];
         foreach ($this->all() as $command) {
+            if ($command->isHidden()) {
+                continue;
+            }
+
             $namespaces = array_merge($namespaces, $this->extractAllNamespaces($command->getName()));
 
             foreach ($command->getAliases() as $alias) {
@@ -567,7 +581,7 @@ class Application
 
         $exact = \in_array($namespace, $namespaces, true);
         if (\count($namespaces) > 1 && !$exact) {
-            throw new CommandNotFoundException(sprintf("The namespace \"%s\" is ambiguous.\nDid you mean one of these?\n%s", $namespace, $this->getAbbreviationSuggestions(array_values($namespaces))), array_values($namespaces));
+            throw new CommandNotFoundException(sprintf("The namespace \"%s\" is ambiguous.\nDid you mean one of these?\n%s.", $namespace, $this->getAbbreviationSuggestions(array_values($namespaces))), array_values($namespaces));
         }
 
         return $exact ? $namespace : reset($namespaces);
@@ -599,6 +613,10 @@ class Application
             }
         }
 
+        if ($this->has($name)) {
+            return $this->get($name);
+        }
+
         $allCommands = $this->commandLoader ? array_merge($this->commandLoader->getNames(), array_keys($this->commands)) : array_keys($this->commands);
         $expr = preg_replace_callback('{([^:]+|)}', function ($matches) { return preg_quote($matches[1]).'[^:]*'; }, $name);
         $commands = preg_grep('{^'.$expr.'}', $allCommands);
@@ -617,6 +635,11 @@ class Application
             $message = sprintf('Command "%s" is not defined.', $name);
 
             if ($alternatives = $this->findAlternatives($name, $allCommands)) {
+                // remove hidden commands
+                $alternatives = array_filter($alternatives, function ($name) {
+                    return !$this->get($name)->isHidden();
+                });
+
                 if (1 == \count($alternatives)) {
                     $message .= "\n\nDid you mean this?\n    ";
                 } else {
@@ -625,14 +648,19 @@ class Application
                 $message .= implode("\n    ", $alternatives);
             }
 
-            throw new CommandNotFoundException($message, $alternatives);
+            throw new CommandNotFoundException($message, array_values($alternatives));
         }
 
         // filter out aliases for commands which are already on the list
         if (\count($commands) > 1) {
             $commandList = $this->commandLoader ? array_merge(array_flip($this->commandLoader->getNames()), $this->commands) : $this->commands;
-            $commands = array_unique(array_filter($commands, function ($nameOrAlias) use ($commandList, $commands, &$aliases) {
-                $commandName = $commandList[$nameOrAlias] instanceof Command ? $commandList[$nameOrAlias]->getName() : $nameOrAlias;
+            $commands = array_unique(array_filter($commands, function ($nameOrAlias) use (&$commandList, $commands, &$aliases) {
+                if (!$commandList[$nameOrAlias] instanceof Command) {
+                    $commandList[$nameOrAlias] = $this->commandLoader->get($nameOrAlias);
+                }
+
+                $commandName = $commandList[$nameOrAlias]->getName();
+
                 $aliases[$nameOrAlias] = $commandName;
 
                 return $commandName === $nameOrAlias || !\in_array($commandName, $commands);
@@ -648,16 +676,17 @@ class Application
                 $maxLen = max(Helper::strlen($abbrev), $maxLen);
             }
             $abbrevs = array_map(function ($cmd) use ($commandList, $usableWidth, $maxLen) {
-                if (!$commandList[$cmd] instanceof Command) {
-                    return $cmd;
+                if ($commandList[$cmd]->isHidden()) {
+                    return false;
                 }
+
                 $abbrev = str_pad($cmd, $maxLen, ' ').' '.$commandList[$cmd]->getDescription();
 
                 return Helper::strlen($abbrev) > $usableWidth ? Helper::substr($abbrev, 0, $usableWidth - 3).'...' : $abbrev;
             }, array_values($commands));
-            $suggestions = $this->getAbbreviationSuggestions($abbrevs);
+            $suggestions = $this->getAbbreviationSuggestions(array_filter($abbrevs));
 
-            throw new CommandNotFoundException(sprintf("Command \"%s\" is ambiguous.\nDid you mean one of these?\n%s", $name, $suggestions), array_values($commands));
+            throw new CommandNotFoundException(sprintf("Command \"%s\" is ambiguous.\nDid you mean one of these?\n%s.", $name, $suggestions), array_values($commands));
         }
 
         return $this->get($exact ? $name : reset($commands));
@@ -755,7 +784,7 @@ class Application
                 $len = 0;
             }
 
-            $width = $this->terminal->getWidth() ? $this->terminal->getWidth() - 1 : PHP_INT_MAX;
+            $width = $this->terminal->getWidth() ? $this->terminal->getWidth() - 1 : \PHP_INT_MAX;
             // HHVM only accepts 32 bits integer in str_split, even when PHP_INT_MAX is a 64 bit integer: https://github.com/facebook/hhvm/issues/1327
             if (\defined('HHVM_VERSION') && $width > 1 << 31) {
                 $width = 1 << 31;
@@ -824,7 +853,7 @@ class Application
      */
     protected function getTerminalWidth()
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated as of 3.2 and will be removed in 4.0. Create a Terminal instance instead.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s()" method is deprecated as of 3.2 and will be removed in 4.0. Create a Terminal instance instead.', __METHOD__), \E_USER_DEPRECATED);
 
         return $this->terminal->getWidth();
     }
@@ -838,7 +867,7 @@ class Application
      */
     protected function getTerminalHeight()
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated as of 3.2 and will be removed in 4.0. Create a Terminal instance instead.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s()" method is deprecated as of 3.2 and will be removed in 4.0. Create a Terminal instance instead.', __METHOD__), \E_USER_DEPRECATED);
 
         return $this->terminal->getHeight();
     }
@@ -852,7 +881,7 @@ class Application
      */
     public function getTerminalDimensions()
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated as of 3.2 and will be removed in 4.0. Create a Terminal instance instead.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s()" method is deprecated as of 3.2 and will be removed in 4.0. Create a Terminal instance instead.', __METHOD__), \E_USER_DEPRECATED);
 
         return [$this->terminal->getWidth(), $this->terminal->getHeight()];
     }
@@ -871,7 +900,7 @@ class Application
      */
     public function setTerminalDimensions($width, $height)
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated as of 3.2 and will be removed in 4.0. Set the COLUMNS and LINES env vars instead.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s()" method is deprecated as of 3.2 and will be removed in 4.0. Set the COLUMNS and LINES env vars instead.', __METHOD__), \E_USER_DEPRECATED);
 
         putenv('COLUMNS='.$width);
         putenv('LINES='.$height);
@@ -1093,8 +1122,7 @@ class Application
      */
     public function extractNamespace($name, $limit = null)
     {
-        $parts = explode(':', $name);
-        array_pop($parts);
+        $parts = explode(':', $name, -1);
 
         return implode(':', null === $limit ? $parts : \array_slice($parts, 0, $limit));
     }
@@ -1145,7 +1173,7 @@ class Application
         }
 
         $alternatives = array_filter($alternatives, function ($lev) use ($threshold) { return $lev < 2 * $threshold; });
-        ksort($alternatives, SORT_NATURAL | SORT_FLAG_CASE);
+        ksort($alternatives, \SORT_NATURAL | \SORT_FLAG_CASE);
 
         return array_keys($alternatives);
     }

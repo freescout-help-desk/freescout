@@ -707,7 +707,7 @@ TABLE;
             ]);
 
         $style = new TableStyle();
-        $style->setPadType(STR_PAD_LEFT);
+        $style->setPadType(\STR_PAD_LEFT);
         $table->setColumnStyle(3, $style);
 
         $table->render();
@@ -729,7 +729,7 @@ TABLE;
     public function testThrowsWhenTheCellInAnArray()
     {
         $this->expectException('Symfony\Component\Console\Exception\InvalidArgumentException');
-        $this->expectExceptionMessage('A cell must be a TableCell, a scalar or an object implementing __toString, array given.');
+        $this->expectExceptionMessage('A cell must be a TableCell, a scalar or an object implementing "__toString()", "array" given.');
         $table = new Table($output = $this->getOutputStream());
         $table
             ->setHeaders(['ISBN', 'Title', 'Author', 'Price'])
@@ -753,7 +753,7 @@ TABLE;
             ->setColumnWidth(3, 10);
 
         $style = new TableStyle();
-        $style->setPadType(STR_PAD_LEFT);
+        $style->setPadType(\STR_PAD_LEFT);
         $table->setColumnStyle(3, $style);
 
         $table->render();
@@ -784,7 +784,7 @@ TABLE;
             ->setColumnWidths([15, 0, -1, 10]);
 
         $style = new TableStyle();
-        $style->setPadType(STR_PAD_LEFT);
+        $style->setPadType(\STR_PAD_LEFT);
         $table->setColumnStyle(3, $style);
 
         $table->render();
@@ -863,6 +863,6 @@ TABLE;
     {
         rewind($output->getStream());
 
-        return str_replace(PHP_EOL, "\n", stream_get_contents($output->getStream()));
+        return str_replace(\PHP_EOL, "\n", stream_get_contents($output->getStream()));
     }
 }

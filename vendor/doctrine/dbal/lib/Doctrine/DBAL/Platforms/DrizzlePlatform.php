@@ -1,34 +1,31 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\DBAL\Platforms;
 
 use Doctrine\DBAL\Schema\Identifier;
-use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\Types\BinaryType;
+use InvalidArgumentException;
+
+use function array_merge;
+use function array_unique;
+use function array_values;
+use function count;
+use function func_get_args;
+use function implode;
+use function is_array;
+use function is_bool;
+use function is_numeric;
+use function is_string;
+use function sprintf;
+use function trim;
 
 /**
  * Drizzle platform
  *
- * @author Kim Hemsø Rasmussen <kimhemsoe@gmail.com>
+ * @deprecated
  */
 class DrizzlePlatform extends AbstractPlatform
 {
@@ -53,9 +50,7 @@ class DrizzlePlatform extends AbstractPlatform
      */
     public function getConcatExpression()
     {
-        $args = func_get_args();
-
-        return 'CONCAT(' . join(', ', (array) $args) . ')';
+        return 'CONCAT(' . implode(', ', func_get_args()) . ')';
     }
 
     /**
@@ -63,7 +58,7 @@ class DrizzlePlatform extends AbstractPlatform
      */
     protected function getDateArithmeticIntervalExpression($date, $operator, $interval, $unit)
     {
-        $function = '+' === $operator ? 'DATE_ADD' : 'DATE_SUB';
+        $function = $operator === '+' ? 'DATE_ADD' : 'DATE_SUB';
 
         return $function . '(' . $date . ', INTERVAL ' . $interval . ' ' . $unit . ')';
     }
@@ -79,7 +74,7 @@ class DrizzlePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getBooleanTypeDeclarationSQL(array $field)
+    public function getBooleanTypeDeclarationSQL(array $column)
     {
         return 'BOOLEAN';
     }
@@ -87,18 +82,18 @@ class DrizzlePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getIntegerTypeDeclarationSQL(array $field)
+    public function getIntegerTypeDeclarationSQL(array $column)
     {
-        return 'INT' . $this->_getCommonIntegerTypeDeclarationSQL($field);
+        return 'INT' . $this->_getCommonIntegerTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef)
+    protected function _getCommonIntegerTypeDeclarationSQL(array $column)
     {
         $autoinc = '';
-        if ( ! empty($columnDef['autoincrement'])) {
+        if (! empty($column['autoincrement'])) {
             $autoinc = ' AUTO_INCREMENT';
         }
 
@@ -108,17 +103,17 @@ class DrizzlePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getBigIntTypeDeclarationSQL(array $field)
+    public function getBigIntTypeDeclarationSQL(array $column)
     {
-        return 'BIGINT' . $this->_getCommonIntegerTypeDeclarationSQL($field);
+        return 'BIGINT' . $this->_getCommonIntegerTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getSmallIntTypeDeclarationSQL(array $field)
+    public function getSmallIntTypeDeclarationSQL(array $column)
     {
-        return 'INT' . $this->_getCommonIntegerTypeDeclarationSQL($field);
+        return 'INT' . $this->_getCommonIntegerTypeDeclarationSQL($column);
     }
 
     /**
@@ -142,7 +137,7 @@ class DrizzlePlatform extends AbstractPlatform
      */
     protected function initializeDoctrineTypeMappings()
     {
-        $this->doctrineTypeMapping = array(
+        $this->doctrineTypeMapping = [
             'boolean'       => 'boolean',
             'varchar'       => 'string',
             'varbinary'     => 'binary',
@@ -156,13 +151,13 @@ class DrizzlePlatform extends AbstractPlatform
             'timestamp'     => 'datetime',
             'double'        => 'float',
             'bigint'        => 'bigint',
-        );
+        ];
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getClobTypeDeclarationSQL(array $field)
+    public function getClobTypeDeclarationSQL(array $column)
     {
         return 'TEXT';
     }
@@ -170,7 +165,7 @@ class DrizzlePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getBlobTypeDeclarationSQL(array $field)
+    public function getBlobTypeDeclarationSQL(array $column)
     {
         return 'BLOB';
     }
@@ -194,7 +189,7 @@ class DrizzlePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    protected function _getCreateTableSQL($tableName, array $columns, array $options = array())
+    protected function _getCreateTableSQL($name, array $columns, array $options = [])
     {
         $queryFields = $this->getColumnDeclarationListSQL($columns);
 
@@ -213,25 +208,25 @@ class DrizzlePlatform extends AbstractPlatform
 
         // attach all primary keys
         if (isset($options['primary']) && ! empty($options['primary'])) {
-            $keyColumns = array_unique(array_values($options['primary']));
+            $keyColumns   = array_unique(array_values($options['primary']));
             $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
         }
 
         $query = 'CREATE ';
 
-        if (!empty($options['temporary'])) {
+        if (! empty($options['temporary'])) {
             $query .= 'TEMPORARY ';
         }
 
-        $query .= 'TABLE ' . $tableName . ' (' . $queryFields . ') ';
+        $query .= 'TABLE ' . $name . ' (' . $queryFields . ') ';
         $query .= $this->buildTableOptions($options);
         $query .= $this->buildPartitionOptions($options);
 
-        $sql[] = $query;
+        $sql = [$query];
 
         if (isset($options['foreignKeys'])) {
             foreach ((array) $options['foreignKeys'] as $definition) {
-                $sql[] = $this->getCreateForeignKeySQL($definition, $tableName);
+                $sql[] = $this->getCreateForeignKeySQL($definition, $name);
             }
         }
 
@@ -241,7 +236,7 @@ class DrizzlePlatform extends AbstractPlatform
     /**
      * Build SQL for table options
      *
-     * @param array $options
+     * @param mixed[] $options
      *
      * @return string
      */
@@ -251,17 +246,17 @@ class DrizzlePlatform extends AbstractPlatform
             return $options['table_options'];
         }
 
-        $tableOptions = array();
+        $tableOptions = [];
 
         // Collate
-        if ( ! isset($options['collate'])) {
+        if (! isset($options['collate'])) {
             $options['collate'] = 'utf8_unicode_ci';
         }
 
         $tableOptions[] = sprintf('COLLATE %s', $options['collate']);
 
         // Engine
-        if ( ! isset($options['engine'])) {
+        if (! isset($options['engine'])) {
             $options['engine'] = 'InnoDB';
         }
 
@@ -276,7 +271,7 @@ class DrizzlePlatform extends AbstractPlatform
         if (isset($options['comment'])) {
             $comment = trim($options['comment'], " '");
 
-            $tableOptions[] = sprintf("COMMENT = %s ", $this->quoteStringLiteral($comment));
+            $tableOptions[] = sprintf('COMMENT = %s ', $this->quoteStringLiteral($comment));
         }
 
         // Row format
@@ -290,13 +285,13 @@ class DrizzlePlatform extends AbstractPlatform
     /**
      * Build SQL for partition options.
      *
-     * @param array $options
+     * @param mixed[] $options
      *
      * @return string
      */
     private function buildPartitionOptions(array $options)
     {
-        return (isset($options['partition_options']))
+        return isset($options['partition_options'])
             ? ' ' . $options['partition_options']
             : '';
     }
@@ -314,7 +309,7 @@ class DrizzlePlatform extends AbstractPlatform
      */
     protected function getReservedKeywordsClass()
     {
-        return 'Doctrine\DBAL\Platforms\Keywords\DrizzleKeywords';
+        return Keywords\DrizzleKeywords::class;
     }
 
     /**
@@ -331,31 +326,36 @@ class DrizzlePlatform extends AbstractPlatform
     public function getListTableColumnsSQL($table, $database = null)
     {
         if ($database) {
-            $database = "'" . $database . "'";
+            $databaseSQL = $this->quoteStringLiteral($database);
         } else {
-            $database = 'DATABASE()';
+            $databaseSQL = 'DATABASE()';
         }
 
-        return "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_COMMENT, IS_NULLABLE, IS_AUTO_INCREMENT, CHARACTER_MAXIMUM_LENGTH, COLUMN_DEFAULT," .
-               " NUMERIC_PRECISION, NUMERIC_SCALE, COLLATION_NAME" .
-               " FROM DATA_DICTIONARY.COLUMNS" .
-               " WHERE TABLE_SCHEMA=" . $database . " AND TABLE_NAME = '" . $table . "'";
+        return 'SELECT COLUMN_NAME, DATA_TYPE, COLUMN_COMMENT, IS_NULLABLE, IS_AUTO_INCREMENT,' .
+               ' CHARACTER_MAXIMUM_LENGTH, COLUMN_DEFAULT, NUMERIC_PRECISION, NUMERIC_SCALE, COLLATION_NAME' .
+               ' FROM DATA_DICTIONARY.COLUMNS' .
+               ' WHERE TABLE_SCHEMA=' . $databaseSQL . ' AND TABLE_NAME = ' . $this->quoteStringLiteral($table);
     }
 
     /**
-     * {@inheritDoc}
+     * @param string      $table
+     * @param string|null $database
+     *
+     * @return string
      */
     public function getListTableForeignKeysSQL($table, $database = null)
     {
         if ($database) {
-            $database = "'" . $database . "'";
+            $databaseSQL = $this->quoteStringLiteral($database);
         } else {
-            $database = 'DATABASE()';
+            $databaseSQL = 'DATABASE()';
         }
 
-        return "SELECT CONSTRAINT_NAME, CONSTRAINT_COLUMNS, REFERENCED_TABLE_NAME, REFERENCED_TABLE_COLUMNS, UPDATE_RULE, DELETE_RULE" .
-               " FROM DATA_DICTIONARY.FOREIGN_KEYS" .
-               " WHERE CONSTRAINT_SCHEMA=" . $database . " AND CONSTRAINT_TABLE='" . $table . "'";
+        return 'SELECT CONSTRAINT_NAME, CONSTRAINT_COLUMNS, REFERENCED_TABLE_NAME, REFERENCED_TABLE_COLUMNS,'
+            . ' UPDATE_RULE, DELETE_RULE'
+            . ' FROM DATA_DICTIONARY.FOREIGN_KEYS'
+            . ' WHERE CONSTRAINT_SCHEMA=' . $databaseSQL
+            . ' AND CONSTRAINT_TABLE=' . $this->quoteStringLiteral($table);
     }
 
     /**
@@ -364,14 +364,17 @@ class DrizzlePlatform extends AbstractPlatform
     public function getListTableIndexesSQL($table, $database = null)
     {
         if ($database) {
-            $database = "'" . $database . "'";
+            $databaseSQL = $this->quoteStringLiteral($database);
         } else {
-            $database = 'DATABASE()';
+            $databaseSQL = 'DATABASE()';
         }
 
-        return "SELECT INDEX_NAME AS 'key_name', COLUMN_NAME AS 'column_name', IS_USED_IN_PRIMARY AS 'primary', IS_UNIQUE=0 AS 'non_unique'" .
-               " FROM DATA_DICTIONARY.INDEX_PARTS" .
-               " WHERE TABLE_SCHEMA=" . $database . " AND TABLE_NAME='" . $table . "'";
+        return "SELECT INDEX_NAME AS 'key_name',"
+            . " COLUMN_NAME AS 'column_name',"
+            . " IS_USED_IN_PRIMARY AS 'primary',"
+            . " IS_UNIQUE=0 AS 'non_unique'"
+            . ' FROM DATA_DICTIONARY.INDEX_PARTS'
+            . ' WHERE TABLE_SCHEMA=' . $databaseSQL . ' AND TABLE_NAME=' . $this->quoteStringLiteral($table);
     }
 
     /**
@@ -417,20 +420,24 @@ class DrizzlePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getDropIndexSQL($index, $table=null)
+    public function getDropIndexSQL($index, $table = null)
     {
         if ($index instanceof Index) {
             $indexName = $index->getQuotedName($this);
         } elseif (is_string($index)) {
             $indexName = $index;
         } else {
-            throw new \InvalidArgumentException('DrizzlePlatform::getDropIndexSQL() expects $index parameter to be string or \Doctrine\DBAL\Schema\Index.');
+            throw new InvalidArgumentException(
+                __METHOD__ . '() expects $index parameter to be string or ' . Index::class . '.'
+            );
         }
 
         if ($table instanceof Table) {
             $table = $table->getQuotedName($this);
-        } elseif (!is_string($table)) {
-            throw new \InvalidArgumentException('DrizzlePlatform::getDropIndexSQL() expects $table parameter to be string or \Doctrine\DBAL\Schema\Table.');
+        } elseif (! is_string($table)) {
+            throw new InvalidArgumentException(
+                __METHOD__ . '() expects $table parameter to be string or ' . Table::class . '.'
+            );
         }
 
         if ($index instanceof Index && $index->isPrimary()) {
@@ -443,7 +450,9 @@ class DrizzlePlatform extends AbstractPlatform
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $table
+     *
+     * @return string
      */
     protected function getDropPrimaryKeySQL($table)
     {
@@ -453,9 +462,9 @@ class DrizzlePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getDateTimeTypeDeclarationSQL(array $fieldDeclaration)
+    public function getDateTimeTypeDeclarationSQL(array $column)
     {
-        if (isset($fieldDeclaration['version']) && $fieldDeclaration['version'] == true) {
+        if (isset($column['version']) && $column['version'] === true) {
             return 'TIMESTAMP';
         }
 
@@ -465,7 +474,7 @@ class DrizzlePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getTimeTypeDeclarationSQL(array $fieldDeclaration)
+    public function getTimeTypeDeclarationSQL(array $column)
     {
         return 'TIME';
     }
@@ -473,7 +482,7 @@ class DrizzlePlatform extends AbstractPlatform
     /**
      * {@inheritDoc}
      */
-    public function getDateTypeDeclarationSQL(array $fieldDeclaration)
+    public function getDateTypeDeclarationSQL(array $column)
     {
         return 'DATE';
     }
@@ -483,11 +492,13 @@ class DrizzlePlatform extends AbstractPlatform
      */
     public function getAlterTableSQL(TableDiff $diff)
     {
-        $columnSql = array();
-        $queryParts = array();
+        $columnSql  = [];
+        $queryParts = [];
 
-        if ($diff->newName !== false) {
-            $queryParts[] =  'RENAME TO ' . $diff->getNewName()->getQuotedName($this);
+        $newName = $diff->getNewName();
+
+        if ($newName !== false) {
+            $queryParts[] = 'RENAME TO ' . $newName->getQuotedName($this);
         }
 
         foreach ($diff->addedColumns as $column) {
@@ -495,8 +506,10 @@ class DrizzlePlatform extends AbstractPlatform
                 continue;
             }
 
-            $columnArray = $column->toArray();
-            $columnArray['comment'] = $this->getColumnComment($column);
+            $columnArray = array_merge($column->toArray(), [
+                'comment' => $this->getColumnComment($column),
+            ]);
+
             $queryParts[] = 'ADD ' . $this->getColumnDeclarationSQL($column->getQuotedName($this), $columnArray);
         }
 
@@ -513,14 +526,14 @@ class DrizzlePlatform extends AbstractPlatform
                 continue;
             }
 
-            /* @var $columnDiff \Doctrine\DBAL\Schema\ColumnDiff */
-            $column = $columnDiff->column;
+            $column      = $columnDiff->column;
             $columnArray = $column->toArray();
 
             // Do not generate column alteration clause if type is binary and only fixed property has changed.
             // Drizzle only supports binary type columns with variable length.
             // Avoids unnecessary table alteration statements.
-            if ($columnArray['type'] instanceof BinaryType &&
+            if (
+                $columnArray['type'] instanceof BinaryType &&
                 $columnDiff->hasChanged('fixed') &&
                 count($columnDiff->changedProperties) === 1
             ) {
@@ -528,7 +541,7 @@ class DrizzlePlatform extends AbstractPlatform
             }
 
             $columnArray['comment'] = $this->getColumnComment($column);
-            $queryParts[] =  'CHANGE ' . ($columnDiff->getOldColumnName()->getQuotedName($this)) . ' '
+            $queryParts[]           =  'CHANGE ' . ($columnDiff->getOldColumnName()->getQuotedName($this)) . ' '
                     . $this->getColumnDeclarationSQL($column->getQuotedName($this), $columnArray);
         }
 
@@ -539,19 +552,21 @@ class DrizzlePlatform extends AbstractPlatform
 
             $oldColumnName = new Identifier($oldColumnName);
 
-            $columnArray = $column->toArray();
+            $columnArray            = $column->toArray();
             $columnArray['comment'] = $this->getColumnComment($column);
-            $queryParts[] =  'CHANGE ' . $oldColumnName->getQuotedName($this) . ' '
+            $queryParts[]           =  'CHANGE ' . $oldColumnName->getQuotedName($this) . ' '
                     . $this->getColumnDeclarationSQL($column->getQuotedName($this), $columnArray);
         }
 
-        $sql = array();
-        $tableSql = array();
+        $sql      = [];
+        $tableSql = [];
 
-        if ( ! $this->onSchemaAlterTable($diff, $tableSql)) {
+        if (! $this->onSchemaAlterTable($diff, $tableSql)) {
             if (count($queryParts) > 0) {
-                $sql[] = 'ALTER TABLE ' . $diff->getName($this)->getQuotedName($this) . ' ' . implode(", ", $queryParts);
+                $sql[] = 'ALTER TABLE ' . $diff->getName($this)->getQuotedName($this)
+                    . ' ' . implode(', ', $queryParts);
             }
+
             $sql = array_merge(
                 $this->getPreAlterTableIndexForeignKeySQL($diff),
                 $sql,
@@ -569,8 +584,10 @@ class DrizzlePlatform extends AbstractPlatform
     {
         if ($table instanceof Table) {
             $table = $table->getQuotedName($this);
-        } elseif (!is_string($table)) {
-            throw new \InvalidArgumentException('getDropTableSQL() expects $table parameter to be string or \Doctrine\DBAL\Schema\Table.');
+        } elseif (! is_string($table)) {
+            throw new InvalidArgumentException(
+                __METHOD__ . '() expects $table parameter to be string or ' . Table::class . '.'
+            );
         }
 
         return 'DROP TEMPORARY TABLE ' . $table;
@@ -583,12 +600,14 @@ class DrizzlePlatform extends AbstractPlatform
     {
         if (is_array($item)) {
             foreach ($item as $key => $value) {
-                if (is_bool($value) || is_numeric($item)) {
-                    $item[$key] = ($value) ? 'true' : 'false';
+                if (! is_bool($value) && ! is_numeric($value)) {
+                    continue;
                 }
+
+                $item[$key] = $value ? 'true' : 'false';
             }
         } elseif (is_bool($item) || is_numeric($item)) {
-           $item = ($item) ? 'true' : 'false';
+            $item = $item ? 'true' : 'false';
         }
 
         return $item;
@@ -599,15 +618,17 @@ class DrizzlePlatform extends AbstractPlatform
      */
     public function getLocateExpression($str, $substr, $startPos = false)
     {
-        if ($startPos == false) {
+        if ($startPos === false) {
             return 'LOCATE(' . $substr . ', ' . $str . ')';
         }
 
-        return 'LOCATE(' . $substr . ', ' . $str . ', '.$startPos.')';
+        return 'LOCATE(' . $substr . ', ' . $str . ', ' . $startPos . ')';
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @deprecated Use application-generated UUIDs instead
      */
     public function getGuidExpression()
     {

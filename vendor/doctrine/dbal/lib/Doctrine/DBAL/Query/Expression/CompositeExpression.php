@@ -1,43 +1,27 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\DBAL\Query\Expression;
 
+use Countable;
+
+use function array_merge;
+use function count;
+use function implode;
+
 /**
  * Composite expression is responsible to build a group of similar expression.
- *
- * @link   www.doctrine-project.org
- * @since  2.1
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class CompositeExpression implements \Countable
+class CompositeExpression implements Countable
 {
     /**
      * Constant that represents an AND composite expression.
      */
-    const TYPE_AND = 'AND';
+    public const TYPE_AND = 'AND';
 
     /**
      * Constant that represents an OR composite expression.
      */
-    const TYPE_OR  = 'OR';
+    public const TYPE_OR = 'OR';
 
     /**
      * The instance type of composite expression.
@@ -49,17 +33,17 @@ class CompositeExpression implements \Countable
     /**
      * Each expression part of the composite expression.
      *
-     * @var array
+     * @var self[]|string[]
      */
-    private $parts = array();
+    private $parts = [];
 
     /**
-     * Constructor.
+     * @internal Use the and() / or() factory methods.
      *
-     * @param string $type  Instance type of composite expression.
-     * @param array  $parts Composition of expressions to be joined on composite expression.
+     * @param string          $type  Instance type of composite expression.
+     * @param self[]|string[] $parts Composition of expressions to be joined on composite expression.
      */
-    public function __construct($type, array $parts = array())
+    public function __construct($type, array $parts = [])
     {
         $this->type = $type;
 
@@ -67,15 +51,35 @@ class CompositeExpression implements \Countable
     }
 
     /**
+     * @param self|string $part
+     * @param self|string ...$parts
+     */
+    public static function and($part, ...$parts): self
+    {
+        return new self(self::TYPE_AND, array_merge([$part], $parts));
+    }
+
+    /**
+     * @param self|string $part
+     * @param self|string ...$parts
+     */
+    public static function or($part, ...$parts): self
+    {
+        return new self(self::TYPE_OR, array_merge([$part], $parts));
+    }
+
+    /**
      * Adds multiple parts to composite expression.
      *
-     * @param array $parts
+     * @deprecated This class will be made immutable. Use with() instead.
      *
-     * @return \Doctrine\DBAL\Query\Expression\CompositeExpression
+     * @param self[]|string[] $parts
+     *
+     * @return CompositeExpression
      */
-    public function addMultiple(array $parts = array())
+    public function addMultiple(array $parts = [])
     {
-        foreach ((array) $parts as $part) {
+        foreach ($parts as $part) {
             $this->add($part);
         }
 
@@ -85,23 +89,50 @@ class CompositeExpression implements \Countable
     /**
      * Adds an expression to composite expression.
      *
+     * @deprecated This class will be made immutable. Use with() instead.
+     *
      * @param mixed $part
      *
-     * @return \Doctrine\DBAL\Query\Expression\CompositeExpression
+     * @return CompositeExpression
      */
     public function add($part)
     {
-        if ( ! empty($part) || ($part instanceof self && $part->count() > 0)) {
-            $this->parts[] = $part;
+        if (empty($part)) {
+            return $this;
         }
+
+        if ($part instanceof self && count($part) === 0) {
+            return $this;
+        }
+
+        $this->parts[] = $part;
 
         return $this;
     }
 
     /**
+     * Returns a new CompositeExpression with the given parts added.
+     *
+     * @param self|string $part
+     * @param self|string ...$parts
+     */
+    public function with($part, ...$parts): self
+    {
+        $that = clone $this;
+
+        $that->parts[] = $part;
+
+        foreach ($parts as $part) {
+            $that->parts[] = $part;
+        }
+
+        return $that;
+    }
+
+    /**
      * Retrieves the amount of expressions on composite expression.
      *
-     * @return integer
+     * @return int
      */
     public function count()
     {
@@ -115,7 +146,7 @@ class CompositeExpression implements \Countable
      */
     public function __toString()
     {
-        if (count($this->parts) === 1) {
+        if ($this->count() === 1) {
             return (string) $this->parts[0];
         }
 

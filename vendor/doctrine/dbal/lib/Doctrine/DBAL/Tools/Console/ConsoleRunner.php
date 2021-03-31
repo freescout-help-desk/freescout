@@ -1,21 +1,4 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\DBAL\Tools\Console;
 
@@ -23,10 +6,17 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Tools\Console\Command\ImportCommand;
 use Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand;
 use Doctrine\DBAL\Tools\Console\Command\RunSqlCommand;
-use Symfony\Component\Console\Helper\HelperSet;
 use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
-use Symfony\Component\Console\Application;
 use Doctrine\DBAL\Version;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\HelperSet;
+use TypeError;
+
+use function sprintf;
+use function trigger_error;
+
+use const E_USER_DEPRECATED;
 
 /**
  * Handles running the Console Tools inside Symfony Console context.
@@ -36,56 +26,74 @@ class ConsoleRunner
     /**
      * Create a Symfony Console HelperSet
      *
-     * @param Connection $connection
+     * @deprecated use a ConnectionProvider instead.
      *
      * @return HelperSet
      */
-    static public function createHelperSet(Connection $connection)
+    public static function createHelperSet(Connection $connection)
     {
-        return new HelperSet(array(
-            'db' => new ConnectionHelper($connection)
-        ));
+        return new HelperSet([
+            'db' => new ConnectionHelper($connection),
+        ]);
     }
 
     /**
-     * Runs console with the given helperset.
+     * Runs console with the given connection provider or helperset (deprecated).
      *
-     * @param \Symfony\Component\Console\Helper\HelperSet  $helperSet
-     * @param \Symfony\Component\Console\Command\Command[] $commands
+     * @param ConnectionProvider|HelperSet $helperSetOrConnectionProvider
+     * @param Command[]                    $commands
      *
      * @return void
      */
-    static public function run(HelperSet $helperSet, $commands = array())
+    public static function run($helperSetOrConnectionProvider, $commands = [])
     {
         $cli = new Application('Doctrine Command Line Interface', Version::VERSION);
 
         $cli->setCatchExceptions(true);
-        $cli->setHelperSet($helperSet);
 
-        self::addCommands($cli);
+        $connectionProvider = null;
+        if ($helperSetOrConnectionProvider instanceof HelperSet) {
+            @trigger_error(sprintf(
+                'Passing an instance of "%s" as the first argument is deprecated. Pass an instance of "%s" instead.',
+                HelperSet::class,
+                ConnectionProvider::class
+            ), E_USER_DEPRECATED);
+            $connectionProvider = null;
+            $cli->setHelperSet($helperSetOrConnectionProvider);
+        } elseif ($helperSetOrConnectionProvider instanceof ConnectionProvider) {
+            $connectionProvider = $helperSetOrConnectionProvider;
+        } else {
+            throw new TypeError(sprintf(
+                'First argument must be an instance of "%s" or "%s"',
+                HelperSet::class,
+                ConnectionProvider::class
+            ));
+        }
+
+        self::addCommands($cli, $connectionProvider);
 
         $cli->addCommands($commands);
         $cli->run();
     }
 
     /**
-     * @param Application $cli
-     *
      * @return void
      */
-    static public function addCommands(Application $cli)
+    public static function addCommands(Application $cli, ?ConnectionProvider $connectionProvider = null)
     {
-        $cli->addCommands(array(
-            new RunSqlCommand(),
+        $cli->addCommands([
+            new RunSqlCommand($connectionProvider),
             new ImportCommand(),
-            new ReservedWordsCommand(),
-        ));
+            new ReservedWordsCommand($connectionProvider),
+        ]);
     }
 
     /**
      * Prints the instructions to create a configuration file
+     *
+     * @return void
      */
-    static public function printCliConfigTemplate()
+    public static function printCliConfigTemplate()
     {
         echo <<<'HELP'
 You are missing a "cli-config.php" or "config/cli-config.php" file in your
@@ -93,14 +101,17 @@ project, which is required to get the Doctrine-DBAL Console working. You can use
 following sample as a template:
 
 <?php
-use Doctrine\DBAL\Tools\Console\ConsoleRunner;
-
-// replace with the mechanism to retrieve DBAL connection in your app
-$connection = getDBALConnection();
+use Doctrine\DBAL\Tools\Console\ConnectionProvider\SingleConnectionProvider;
 
 // You can append new commands to $commands array, if needed
 
-return ConsoleRunner::createHelperSet($connection);
+// replace with the mechanism to retrieve DBAL connection(s) in your app
+// and return a Doctrine\DBAL\Tools\Console\ConnectionProvider instance.
+$connection = getDBALConnection();
+
+// in case you have a single connection you can use SingleConnectionProvider
+// otherwise you need to implement the Doctrine\DBAL\Tools\Console\ConnectionProvider interface with your custom logic
+return new SingleConnectionProvider($connection);
 
 HELP;
     }
