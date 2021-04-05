@@ -604,7 +604,7 @@ class MailboxesController extends Controller
                     }
 
                     if (!$test_result && !$response['msg']) {
-                        $response['msg'] = __('Error occurend sending email. Please check your mail server logs for more details.');
+                        $response['msg'] = __('Error occurred sending email. Please check your mail server logs for more details.');
                     }
                 }
 
@@ -646,7 +646,7 @@ class MailboxesController extends Controller
                     }
 
                     if (!$test_result && !$response['msg']) {
-                        $response['msg'] = __('Error occurend connecting to the server');
+                        $response['msg'] = __('Error occurred connecting to the server');
                     }
                 }
 
