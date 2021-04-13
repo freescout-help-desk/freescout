@@ -675,7 +675,7 @@
     "Mailbox permissions saved!": "Uprawnienia do skrzynki pocztowej zapisane!",
     "Connection settings saved!": "Ustawienia połączenia zostały zapisane!",
     "Sending emails need to be configured for the mailbox in order to send emails to customers and support agents": "Wysyłanie wiadomości e-mail musi być skonfigurowane dla skrzynki pocztowej w celu wysyłania wiadomości e-mail do klientów i agentów wsparcia",
-    "Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address": "Odbieranie wiadomości e-mail musi być skonfigurowane dla skrzynki pocztowej, aby pobierać wiadomości e-mail z adresu e-mail wsparcia",
+    "Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address": "Odbieranie wiadomości e-mail musi być skonfigurowane dla skrzynki pocztowej, aby pobierać wiadomości",
     "Receiving Emails": "Odbieranie E-maili",
     "Auto Reply status saved": "Status Automatycznej Odpowiedzi zapisany",
     ":host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.": ":host nie jest dostępny na :port porcie. Upewnij się, że adres :host jest poprawny i że port wychodzący :port na serwerze jest otwarty.",
