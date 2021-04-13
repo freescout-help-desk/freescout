@@ -55,6 +55,11 @@ class SendAutoReply implements ShouldQueue
         $headers['Message-ID'] = $message_id;
 
         $customer_email = $this->conversation->customer_email;
+
+        if (!$customer_email) {
+            // When message is received via Chat, customer has no email adddress.
+            return;
+        }
         $recipients = [$customer_email];
         $failures = [];
         $exception = null;
