@@ -363,7 +363,7 @@ class SettingsController extends Controller
                     }
 
                     if (!$test_result && !$response['msg']) {
-                        $response['msg'] = __('Error occurend sending email. Please check your mail server logs for more details.');
+                        $response['msg'] = __('Error occurred sending email. Please check your mail server logs for more details.');
                     }
                 }
 
