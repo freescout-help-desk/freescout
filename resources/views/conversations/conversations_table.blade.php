@@ -35,6 +35,7 @@
             @if ($show_assigned)
                 <col class="conv-owner">
             @endif
+            @action('conversations_table.col_before_conv_number')
             <col class="conv-number">
             <col class="conv-date">
         </colgroup>
@@ -64,6 +65,7 @@
                     </ul>
                 </th>--}}
             @endif
+            @action('conversations_table.th_before_conv_number')
             <th class="conv-number">
                 <span>{{ __("Number") }}</span>
             </th>
@@ -149,6 +151,7 @@
                             @if ($conversation->user_id)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}"> {{ $conversation->user->getFullName() }} </a>@else &nbsp;@endif
                         </td>
                     @endif
+                    @action('conversations_table.td_before_conv_number', $conversation)
                     <td class="conv-number">
                         <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}"><i>#</i>{{ $conversation->number }}</a>
                     </td>
