@@ -93,7 +93,7 @@ Images & one-click installs:
 
 ## News & Updates
 
-If you would like to be notified about important news and updates you can subscribe [here](https://feedburner.google.com/fb/a/mailverify?uri=freescout)
+If you would like to be notified about important news and updates you can subscribe [here](https://freescout.net/subscribe/)
 
 ## Contributing
 
