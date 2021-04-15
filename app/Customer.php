@@ -437,6 +437,10 @@ class Customer extends Model
         'ZW' => 'Zimbabwe',
     ];
 
+    protected $casts = [
+        'meta' => 'array',
+    ];
+
     /**
      * Attributes which are not fillable using fill() method.
      */
@@ -1299,5 +1303,27 @@ class Customer extends Model
     public function getChannelName()
     {
         return \Eventy::filter('channel.name', '', $this->channel);
+    }
+
+    /**
+     * Get thread meta value.
+     */
+    public function getMeta($key, $default = null)
+    {
+        if (isset($this->meta[$key])) {
+            return $this->meta[$key];
+        } else {
+            return $default;
+        }
+    }
+
+    /**
+     * Set thread meta value.
+     */
+    public function setMeta($key, $value)
+    {
+        $meta = $this->meta;
+        $meta[$key] = $value;
+        $this->meta = $meta;
     }
 }
