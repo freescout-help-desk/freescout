@@ -259,7 +259,7 @@
                 @action('thread.before_body', $thread, $loop, $threads, $conversation, $mailbox)
 
                 <div class="thread-content" dir="auto">
-                    {!! $thread->getBodyWithFormatedLinks() !!}
+                    {!! \Eventy::filter('thread.body_output', $thread->getBodyWithFormatedLinks(), $thread, $conversation, $mailbox) !!}
                 </div>
 
                 @if ($thread->body_original)
