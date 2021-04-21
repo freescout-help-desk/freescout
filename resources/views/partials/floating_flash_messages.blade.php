@@ -1,5 +1,6 @@
 @if (session('flash_success_floating'))
     @section('body_bottom')
+        @parent
         <div class="alert alert-success alert-floating">
             <div><i class="glyphicon glyphicon-ok"></i>{!! session('flash_success_floating') !!}</div>
         </div>
@@ -7,6 +8,7 @@
 @endif
 @if (session('flash_warning_floating'))
     @section('body_bottom')
+        @parent
         <div class="alert alert-warning alert-floating">
             <div>{!! session('flash_warning_floating') !!}</div>
         </div>
@@ -14,6 +16,7 @@
 @endif
 @if (session('flash_error_floating'))
     @section('body_bottom')
+        @parent
         <div class="alert alert-danger alert-floating">
             <div><i class="glyphicon glyphicon-exclamation-sign"></i>{!! session('flash_error_floating') !!}</div>
         </div>
