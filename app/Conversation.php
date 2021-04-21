@@ -159,6 +159,7 @@ class Conversation extends Model
         'customer',
         'mailbox',
         'status',
+        'state',
         'subject',
         'attachments',
         'type',
@@ -513,6 +514,34 @@ class Conversation extends Model
 
             case self::STATUS_OPEN:
                 return __('Open');
+                break;
+
+            default:
+                return '';
+                break;
+        }
+    }
+
+    /**
+     * Convert state code to name.
+     *
+     * @param int $status
+     *
+     * @return string
+     */
+    public static function stateCodeToName($status)
+    {
+        switch ($status) {
+            case self::STATE_DRAFT:
+                return __('Draft');
+                break;
+
+            case self::STATE_PUBLISHED:
+                return __('Published');
+                break;
+
+            case self::STATE_DELETED:
+                return __('Deleted');
                 break;
 
             default:

@@ -2367,6 +2367,14 @@ class ConversationsController extends Controller
                 $query_conversations->whereIn('conversations.status', $filters['status']);
             }
         }
+        if (!empty($filters['state'])) {
+            if (count($filters['state']) == 1) {
+                // = is faster than IN.
+                $query_conversations->where('conversations.state', '=', $filters['state'][0]);
+            } else {
+                $query_conversations->whereIn('conversations.state', $filters['state']);
+            }
+        }
         if (!empty($filters['subject'])) {
             $query_conversations->where('conversations.subject', 'like', '%'.mb_strtolower($filters['subject']).'%');
         }
