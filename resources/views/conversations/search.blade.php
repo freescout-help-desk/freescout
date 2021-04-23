@@ -75,6 +75,15 @@
                         @endforeach
                     </select>
 		        </div>
+				<div class="col-sm-6 form-group @if (isset($filters['state'])) active @endif" data-filter="state">
+		            <label>{{ __('State') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
+		            <select name="f[state][]" class="form-control filter-multiple" multiple @if (empty($filters['state'])) disabled @endif>
+		            	{{--<option value=""></option>--}}
+                        @foreach (App\Conversation::$states as $state_id => $dummy)
+                            <option value="{{ $state_id }}" @if (!empty($filters['state']) && in_array($state_id, $filters['state']))selected="selected"@endif>{{ App\Conversation::stateCodeToName($state_id) }}</option>
+                        @endforeach
+                    </select>
+		        </div>
 				<div class="col-sm-6 form-group @if (isset($filters['subject'])) active @endif" data-filter="subject">
 		            <label>{{ __('Subject') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
 		            <input type="text" name="f[subject]" value="{{ $filters['subject'] ?? ''}}" class="form-control" @if (empty($filters['subject'])) disabled @endif>

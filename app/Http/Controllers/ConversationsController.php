@@ -2333,8 +2333,8 @@ class ConversationsController extends Controller
             $query_conversations->where(function ($query) use ($like, $filters, $q) {
                 $query->where('conversations.subject', 'like', $like)
                     ->orWhere('conversations.customer_email', 'like', $like)
-                    ->orWhere('conversations.number', 'like', $like)
-                    ->orWhere('conversations.id', 'like', $like)
+                    ->orWhere('conversations.number', $q)
+                    ->orWhere('conversations.id', $q)
                     ->orWhere('threads.body', 'like', $like)
                     ->orWhere('threads.from', 'like', $like)
                     ->orWhere('threads.to', 'like', $like)
@@ -2365,6 +2365,14 @@ class ConversationsController extends Controller
                 $query_conversations->where('conversations.status', '=', $filters['status'][0]);
             } else {
                 $query_conversations->whereIn('conversations.status', $filters['status']);
+            }
+        }
+        if (!empty($filters['state'])) {
+            if (count($filters['state']) == 1) {
+                // = is faster than IN.
+                $query_conversations->where('conversations.state', '=', $filters['state'][0]);
+            } else {
+                $query_conversations->whereIn('conversations.state', $filters['state']);
             }
         }
         if (!empty($filters['subject'])) {

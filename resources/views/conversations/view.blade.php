@@ -287,6 +287,7 @@
 @endsection
 
 @section('body_bottom')
+    @parent
     @include('conversations.partials.settings_modal', ['conversation' => $conversation])
 @append
 

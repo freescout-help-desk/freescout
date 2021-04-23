@@ -753,5 +753,6 @@
     "Access denied": "Zugang verweigert",
     "Deleting :name will deactivate workflows they are tied to and assign their conversations to:": "Durch das Löschen von :name werden diesem Benutzer zugeordnete Workflows deaktiviert und neue Gespräche werden zugeordnet zu:",
     "Users are allowed to manage users": "Benutzer sind dazu berechtigt Benutzer zu verwalten",
-    "Hi :user, an account has been created for you at :app_url": "Hallo :user, für Sie wurde ein Konto auf :app_url angelegt"
+    "Hi :user, an account has been created for you at :app_url": "Hallo :user, für Sie wurde ein Konto auf :app_url angelegt",
+    "New message": "Neue Nachricht"
 }
