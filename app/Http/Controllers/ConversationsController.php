@@ -2333,8 +2333,8 @@ class ConversationsController extends Controller
             $query_conversations->where(function ($query) use ($like, $filters, $q) {
                 $query->where('conversations.subject', 'like', $like)
                     ->orWhere('conversations.customer_email', 'like', $like)
-                    ->orWhere('conversations.number', $q)
-                    ->orWhere('conversations.id', $q)
+                    ->orWhere('conversations.number', (int)$q)
+                    ->orWhere('conversations.id', (int)$q)
                     ->orWhere('threads.body', 'like', $like)
                     ->orWhere('threads.from', 'like', $like)
                     ->orWhere('threads.to', 'like', $like)
