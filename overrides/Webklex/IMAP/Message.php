@@ -520,6 +520,14 @@ class Message
 
             $personalParts = imap_mime_header_decode($address->personal);
 
+            if (!is_array($personalParts)) {
+                $p = new \stdClass();
+                $p->text = $address->personal;
+                $personalParts = [
+                     $p
+                ];
+            }
+
             $address->personal = '';
             foreach ($personalParts as $p) {
                 //$address->personal .= $p->text;
