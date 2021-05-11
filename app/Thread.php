@@ -959,7 +959,7 @@ class Thread extends Model
                 $content = null;
                 $uploaded_file = null;
 
-                if (get_class($attachment) == 'Illuminate\Http\UploadedFile') {
+                if (is_object($attachment) && get_class($attachment) == 'Illuminate\Http\UploadedFile') {
 
                     $uploaded_file = $attachment;
                     $attachment = [];

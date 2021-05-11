@@ -353,4 +353,9 @@ class Attachment extends Model
 
         return $new_attachment;
     }
+
+    public function getFileContents()
+    {
+        return $this->getDisk()->get($this->getStorageFilePath());
+    }
 }
