@@ -443,10 +443,16 @@ a.navbar-brand:hover img {
 /*.navbar-nav.navbar-right > li > .dropdown-menu {
     margin-top: -8px;
 }*/
+.section-heading-right {
+    display: block;
+}
 @media (min-width: 768px) {
     .navbar-nav > li > a.dropdown-toggle-icon {
         padding-top: 14px;
         padding-bottom: 14px;
+    }
+    .section-heading-right {
+        float: right;
     }
 }
 @media (max-width:767px) {

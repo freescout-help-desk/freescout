@@ -15,7 +15,10 @@
         <div class="section-heading" id="installed">
             {{ __('Installed Modules') }}
 
-            <a href="#" data-trigger="modal" data-modal-body="#deactivate_license_modal" data-modal-size="sm" data-modal-no-footer="true" data-modal-title="{{ __('Deactivate License') }}" data-modal-on-show="deactivateLicenseModal" class="small pull-right">{{ __('Deactivate License') }}</a>
+            <span class="section-heading-right">
+                <a href="#" data-trigger="modal" data-modal-body="#deactivate_license_modal" data-modal-size="sm" data-modal-no-footer="true" data-modal-title="{{ __('Deactivate License') }}" data-modal-on-show="deactivateLicenseModal" class="small">{{ __('Deactivate License') }}</a> | 
+                <a href="https://freescout.net/remind-license-keys/" target="_blank" class="small">{{ __('Remind License Keys') }}</a>
+            </span>
         </div>
 
         @if ($updates_available)
