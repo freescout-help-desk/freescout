@@ -9,6 +9,7 @@
                     <a href="{{ $attachment->url() }}" download><i class="glyphicon glyphicon-download-alt small"></i></a>
                 </li>
             @endforeach
+            @action('thread.attachments_list_append', $thread, $conversation, $mailbox)
         </ul>
     </div>
 @endif

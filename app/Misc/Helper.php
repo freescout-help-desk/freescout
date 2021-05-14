@@ -675,34 +675,37 @@ class Helper
      * Create zip archive.
      * Source example: public/files/*
      * File name example: test.zip.
+     * storage_path without app/
      */
-    public static function createZipArchive($source, $file_name, $folder = '')
+    public static function createZipArchive($source, $file_name, $folder = '', $storage_file_path = '')
     {
         if (!$source || !$file_name) {
             return false;
         }
         $files = glob($source);
 
-        //$dest_folder = storage_path().DIRECTORY_SEPARATOR.'app/zipper';
-        // if (!file_exists($dest_folder)) {
-        //     $mkdir_result = File::makeDirectory($dest_folder, 0755);
-        //     if (!$mkdir_result) {
-        //         return false;
-        //     }
-        // }
-
-        $storage_path = 'app/zipper'.DIRECTORY_SEPARATOR.$file_name;
-        $dest_path = storage_path().DIRECTORY_SEPARATOR.$storage_path;
+        if (!$storage_file_path) {
+            $storage_file_path = 'zipper'.DIRECTORY_SEPARATOR.$file_name;
+        } else {
+            // if (!self::getPrivateStorage()->exists($storage_path)) {
+            //     self::getPrivateStorage()->makeDirectory($storage_path);
+            // }
+        }
+        $dest_path = storage_path().DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.$storage_file_path;
 
         // If file exists it has to be deleted, otherwise Zipper will add file to the existing archive
-        // By some reason \Storage not finding $storage_path file
-        // todo: use \Storage
-        if (\File::exists($dest_path)) {
-            \File::delete($dest_path);
+        if (self::getPrivateStorage()->exists($storage_file_path)) {
+            self::getPrivateStorage()->delete($storage_file_path);
         }
+
         \Chumper\Zipper\Facades\Zipper::make($dest_path)->folder($folder)->add($files)->close();
 
         return $dest_path;
+    }
+
+    public static function getPrivateStorage()
+    {
+        return \Storage::disk('private');
     }
 
     public static function formatException($e)
