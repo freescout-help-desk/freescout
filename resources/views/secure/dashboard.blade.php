@@ -11,9 +11,9 @@
             @foreach ($mailboxes as $mailbox)
                 <div class="dash-card @if (!$mailbox->isActive()) dash-card-inactive @endif">
                     <div class="dash-card-content">
-                        <h3 class="text-wrap-break "><a href="{{ route('mailboxes.view', ['id' => $mailbox->id]) }}" class="mailbox-name">@include('mailboxes/partials/mute_icon', ['mailbox' => $mailbox]){{ $mailbox->name }}</a></h3>
+                        <h3 class="text-wrap-break "><a href="{{ $mailbox->url() }}" class="mailbox-name">@include('mailboxes/partials/mute_icon', ['mailbox' => $mailbox]){{ $mailbox->name }}</a></h3>
                         <div class="dash-card-link text-truncate">
-                            <a href="{{ route('mailboxes.view', ['id' => $mailbox->id]) }}" class="text-truncate help-link">{{ $mailbox->email }}</a>
+                            <a href="{{ $mailbox->url() }}" class="text-truncate help-link">{{ $mailbox->email }}</a>
                         </div>
                         <div class="dash-card-list">
                             @php
@@ -42,7 +42,7 @@
                     
                     <div class="dash-card-footer">
                         <div class="btn-group btn-group-justified btn-group-rounded">
-                            @if (Auth::user()->can('viewMailboxMenu', Auth::user()))
+                            @if (\Eventy::filter('mailbox.show_buttons', true, $mailbox) && Auth::user()->can('viewMailboxMenu', Auth::user()))
                                 <div class="btn-group dropdown dropup" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
                                     <a data-toggle="dropdown" href="#" class="btn btn-trans"><i class="glyphicon glyphicon-cog dropdown-toggle"></i></a>
                                     <ul class="dropdown-menu" role="menu">
@@ -50,10 +50,10 @@
                                     </ul>
                                 </div>
                             @endif
-                            @if ($mailbox->isActive())
+                            @if (\Eventy::filter('mailbox.show_buttons', true, $mailbox) && $mailbox->isActive())
                                 <a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("New Conversation") }}"><i class="glyphicon glyphicon-envelope"></i></a>
                             @endif
-                            <a href="{{ route('mailboxes.view', ['mailbox_id' => $mailbox->id]) }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("Open Mailbox") }}"><i class="glyphicon glyphicon-arrow-right"></i></a>
+                            <a href="{{ $mailbox->url() }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("Open Mailbox") }}"><i class="glyphicon glyphicon-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>

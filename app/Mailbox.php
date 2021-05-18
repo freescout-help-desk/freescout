@@ -680,7 +680,7 @@ class Mailbox extends Model
      */
     public function url()
     {
-        return route('mailboxes.view', ['id' => $this->id]);
+        return \Eventy::filter('mailbox.url', route('mailboxes.view', ['id' => $this->id]), $this);
     }
 
     /**

@@ -9,7 +9,7 @@
 @php
     $show_settings_btn = Auth::user()->can('viewMailboxMenu', Auth::user());
 @endphp
-@if (\Eventy::filter('mailbox.show_sidebar_buttons', true, $mailbox))
+@if (\Eventy::filter('mailbox.show_buttons', true, $mailbox))
     <div class="sidebar-buttons btn-group btn-group-justified @if ($show_settings_btn) has-settings @endif">
         @if ($show_settings_btn)
             <div class="btn-group dropdown" data-toggle="tooltip" title="{{ __("Mailbox Settings") }}">
