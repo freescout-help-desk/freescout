@@ -273,10 +273,14 @@ class Folder extends Model
     {
         $active_count = $this->active_count;
         if ($this->type == self::TYPE_ASSIGNED) {
-            if ($folders) {
-                $mine_folder = $folders->firstWhere('type', self::TYPE_MINE);
-            } else {
-                $mine_folder = $this->mailbox->folders()->where('type', self::TYPE_MINE)->first();
+            $mine_folder = \Eventy::filter('folder.active_count_mine_folder', null, $this, $folders);
+
+            if (!$mine_folder) {
+                if ($folders) {
+                    $mine_folder = $folders->firstWhere('type', self::TYPE_MINE);
+                } elseif ($this->mailbox_id) {
+                    $mine_folder = $this->mailbox->folders()->where('type', self::TYPE_MINE)->first();
+                }
             }
 
             if ($mine_folder) {
