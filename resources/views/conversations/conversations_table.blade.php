@@ -17,13 +17,17 @@
 
         $conversations = \Eventy::filter('conversations_table.preload_table_data', $conversations);
         $show_assigned = ($folder->type == App\Folder::TYPE_ASSIGNED || $folder->type == App\Folder::TYPE_CLOSED || !array_key_exists($folder->type, App\Folder::$types));
+
+        if (!isset($params)) {
+            $params = [];
+        }
     @endphp
 
     @if (!request()->get('page'))
         @include('/conversations/partials/bulk_actions')
     @endif
 
-    <table class="table-conversations table @if (!empty($params['show_mailbox']))show-mailbox @endif" data-page="{{ (int)request()->get('page', 1) }}" @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif >
+    <table class="table-conversations table @if (!empty($params['show_mailbox']))show-mailbox @endif" data-page="{{ (int)request()->get('page', 1) }}" @foreach ($params as $param_name => $param_value) data-param_{{ $param_name }}="{{ $param_value }}" @endforeach @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif >
         <colgroup>
             {{-- todo: without this column table becomes not 100% wide --}}
             <col class="conv-current">
@@ -97,7 +101,7 @@
                     @endif
                     @if (empty($no_customer))
                         <td class="conv-customer">
-                            <a href="{{ $conversation->url() }}">
+                            <a href="{{ $conversation->url() }}" @if (!empty($params['target_blank'])) target="_blank" @endif>
                                 @if ($conversation->customer_id){{ $conversation->customer->getFullName(true)}}@endif&nbsp;@if ($conversation->threads_count > 1)<span class="conv-counter">{{ $conversation->threads_count }}</span>@endif
                                 @if ($conversation->user_id)
                                     <small class="conv-owner-mobile text-help">
@@ -109,7 +113,7 @@
                     @else
                         {{-- Displayed in customer conversation history --}}
                         <td class="conv-customer conv-owner-mobile">
-                            <a href="{{ $conversation->url() }}" class="help-link">
+                            <a href="{{ $conversation->url() }}" class="help-link" @if (!empty($params['target_blank'])) target="_blank" @endif>
                                 <small class="glyphicon glyphicon-envelope"></small> 
                                 @if ($conversation->user_id)
                                      <small>&nbsp;<i class="glyphicon glyphicon-user"></i> {{ $conversation->user->getFullName() }}</small> 
@@ -127,7 +131,7 @@
                         @endif
                     </td>
                     <td class="conv-subject">
-                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty(request()->x_embed)) target="_blank"@endif>
+                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty(request()->x_embed) || !empty($params['target_blank'])) target="_blank"@endif>
                             <span class="conv-fader"></span>
                             <p>
                                 @if ($conversation->has_attachments)
@@ -148,15 +152,15 @@
                     </td>
                     @if ($show_assigned)
                         <td class="conv-owner">
-                            @if ($conversation->user_id)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}"> {{ $conversation->user->getFullName() }} </a>@else &nbsp;@endif
+                            @if ($conversation->user_id)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty($params['target_blank'])) target="_blank" @endif> {{ $conversation->user->getFullName() }} </a>@else &nbsp;@endif
                         </td>
                     @endif
                     @action('conversations_table.td_before_conv_number', $conversation)
                     <td class="conv-number">
-                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}"><i>#</i>{{ $conversation->number }}</a>
+                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty($params['target_blank'])) target="_blank" @endif><i>#</i>{{ $conversation->number }}</a>
                     </td>
                     <td class="conv-date">
-                        <a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED])) data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conversation->getDateTitle() }}"@else title="{{ __('View conversation') }}" @endif >{{ $conversation->getWaitingSince($folder) }}</a>
+                        <a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED])) data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conversation->getDateTitle() }}"@else title="{{ __('View conversation') }}" @endif @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conversation->getWaitingSince($folder) }}</a>
                     </td>
                 </tr>
             @endforeach
