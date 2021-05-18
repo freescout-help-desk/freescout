@@ -6,7 +6,7 @@
         )
     )
         <li class="@if ($folder_item->id == $folder->id) active @endif" data-folder_id="{{ $folder_item->id }}">
-            <a href="{{ route('mailboxes.view.folder', ['id'=>$mailbox->id, 'folder_id'=>$folder_item->id]) }}" @if (!$folder_item->active_count) class="no-active" @endif><i class="glyphicon glyphicon-{{ $folder_item->getTypeIcon() }}"></i> <span class="folder-name">{{ $folder_item->getTypeName() }}</span>
+            <a href="{{ \Eventy::filter('mailbox.sidebar_folder_url', route('mailboxes.view.folder', ['id'=>$mailbox->id, 'folder_id'=>$folder_item->id]), $mailbox, $folder_item) }}" @if (!$folder_item->active_count) class="no-active" @endif><i class="glyphicon glyphicon-{{ $folder_item->getTypeIcon() }}"></i> <span class="folder-name">{{ $folder_item->getTypeName() }}</span>
                 @php
                     if ($folder_item->type == App\Folder::TYPE_SPAM) {
                         $active_count = $folder_item->total_count;
