@@ -294,6 +294,11 @@ class Mailbox extends Model
      */
     public function getMainFolders()
     {
+        $main_folders = \Eventy::filter('mailbox.main_folders', [], $this);
+        if ($main_folders) {
+            return $main_folders;
+        }
+        
         return $this->folders()
             ->where(function ($query) {
                 $query->whereIn('type', [Folder::TYPE_UNASSIGNED, Folder::TYPE_ASSIGNED, Folder::TYPE_DRAFTS])

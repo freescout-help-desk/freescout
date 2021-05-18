@@ -354,4 +354,9 @@ class Folder extends Model
             return'last_reply_at';
         }
     }
+
+    public function url($mailbox_id)
+    {
+        return \Eventy::filter('folder.url', route('mailboxes.view.folder', ['id'=>$mailbox_id, 'folder_id'=>$this->id]), $mailbox_id, $this);
+    }
 }
