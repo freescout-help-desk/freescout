@@ -189,7 +189,7 @@ class Conversation extends Model
      *
      * @var array
      */
-    public static $starred_conversation_ids = null;
+    public static $starred_conversation_ids = [];
 
     /**
      * Automatically converted into Carbon dates.
@@ -919,14 +919,16 @@ class Conversation extends Model
                 return false;
             }
         }
+        $mailbox_id = $this->mailbox_id;
+
         // Get ids of all the conversations starred by user and cache them
-        if (self::$starred_conversation_ids === null) {
-            $mailbox_id = $this->mailbox_id;
-            self::$starred_conversation_ids = self::getUserStarredConversationIds($mailbox_id, $user_id);
+        if (!isset(self::$starred_conversation_ids[$mailbox_id])) {
+            
+            self::$starred_conversation_ids[$mailbox_id] = self::getUserStarredConversationIds($mailbox_id, $user_id);
         }
 
-        if (self::$starred_conversation_ids) {
-            return in_array($this->id, self::$starred_conversation_ids);
+        if (self::$starred_conversation_ids[$mailbox_id]) {
+            return in_array($this->id, self::$starred_conversation_ids[$mailbox_id]);
         } else {
             return false;
         }
