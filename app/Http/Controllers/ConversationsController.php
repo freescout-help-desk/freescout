@@ -2188,12 +2188,8 @@ class ConversationsController extends Controller
         $folder = null;
         $conversations = [];
 
-        // if (!$mailbox) {
-        //     $response['msg'] = __('Mailbox not found');
-        // }
-
         if (!$response['msg']) {
-            $folder = Folder::find($request->folder_id);
+            $folder = \Eventy::filter('conversations.ajax_pagination_folder', Folder::find($request->folder_id), $request, $response, $user);
             if (!$folder) {
                 $response['msg'] = __('Folder not found');
             }
