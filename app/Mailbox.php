@@ -159,9 +159,38 @@ class Mailbox extends Model
     }
 
     /**
+     * Automatically encrypt password on save.
+     */
+    public function setOutPasswordAttribute($value)
+    {
+        if ($value != '') {
+            $this->attributes['out_password'] = encrypt($value);
+        } else {
+            $this->attributes['out_password'] = '';
+        }
+    }
+
+    /**
      * Automatically decrypt password on read.
      */
     public function getInPasswordAttribute($value)
+    {
+        if (!$value) {
+            return '';
+        }
+
+        try {
+            return decrypt($value);
+        } catch (\Exception $e) {
+            // do nothing if decrypt wasn't succefull
+            return false;
+        }
+    }
+
+    /**
+     * Automatically decrypt password on read.
+     */
+    public function getOutPasswordAttribute($value)
     {
         if (!$value) {
             return '';
