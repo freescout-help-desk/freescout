@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'a59204cd99d2fb2f51d48a648cb0158cd55e205a',
+    'reference' => '96033cbc786652c29f73b600fed0be46e828da59',
     'name' => 'freescout-helpdesk/freescout',
   ),
   'versions' => 
@@ -162,7 +162,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'a59204cd99d2fb2f51d48a648cb0158cd55e205a',
+      'reference' => '96033cbc786652c29f73b600fed0be46e828da59',
     ),
     'guzzlehttp/guzzle' => 
     array (
@@ -587,8 +587,8 @@
     array (
       'provided' => 
       array (
-        0 => '1.0',
-        1 => '1.0.0',
+        0 => '1.0.0',
+        1 => '1.0',
       ),
     ),
     'psr/simple-cache' => 
