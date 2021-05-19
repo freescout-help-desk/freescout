@@ -273,10 +273,14 @@ class Folder extends Model
     {
         $active_count = $this->active_count;
         if ($this->type == self::TYPE_ASSIGNED) {
-            if ($folders) {
-                $mine_folder = $folders->firstWhere('type', self::TYPE_MINE);
-            } else {
-                $mine_folder = $this->mailbox->folders()->where('type', self::TYPE_MINE)->first();
+            $mine_folder = \Eventy::filter('folder.active_count_mine_folder', null, $this, $folders);
+
+            if (!$mine_folder) {
+                if ($folders) {
+                    $mine_folder = $folders->firstWhere('type', self::TYPE_MINE);
+                } elseif ($this->mailbox_id) {
+                    $mine_folder = $this->mailbox->folders()->where('type', self::TYPE_MINE)->first();
+                }
             }
 
             if ($mine_folder) {
@@ -349,5 +353,10 @@ class Folder extends Model
         } else {
             return'last_reply_at';
         }
+    }
+
+    public function url($mailbox_id)
+    {
+        return \Eventy::filter('folder.url', route('mailboxes.view.folder', ['id'=>$mailbox_id, 'folder_id'=>$this->id]), $mailbox_id, $this);
     }
 }

@@ -2245,7 +2245,7 @@ function searchInit()
 {
 	$(document).ready(function() {
 		// Open all links in new window
-		$(".conv-row a").attr('target', '_blank');
+		//$(".conv-row a").attr('target', '_blank');
 		conversationPagination();
 		starConversationInit();
 
@@ -2323,8 +2323,10 @@ function loadConversations(page, table, no_loader)
 	}
 
 	// Params
-	if (table.hasClass('show-mailbox')) {
-		params.show_mailbox = true;
+	for (data_name in datas) {
+		if (/^param_/.test(data_name)) {
+			params[data_name.replace(/^param_/, '')] = datas[data_name];
+		}
 	}
 
 	fsAjax(

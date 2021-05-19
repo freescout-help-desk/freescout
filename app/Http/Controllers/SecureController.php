@@ -36,7 +36,7 @@ class SecureController extends Controller
         }
 
         // Sort by name.
-        $mailboxes = $mailboxes->sortBy('name');
+        $mailboxes = \Eventy::filter('dashboard.mailboxes', $mailboxes->sortBy('name'));
 
         return view('secure/dashboard', ['mailboxes' => $mailboxes]);
     }

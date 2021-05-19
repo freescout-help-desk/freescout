@@ -2184,20 +2184,12 @@ class ConversationsController extends Controller
      */
     public function ajaxConversationsPagination(Request $request, $response, $user)
     {
-        $mailbox = Mailbox::find($request->mailbox_id);
+        //$mailbox = Mailbox::find($request->mailbox_id);
         $folder = null;
         $conversations = [];
 
-        if (!$mailbox) {
-            $response['msg'] = __('Mailbox not found');
-        }
-
-        if (!$response['msg'] && !$user->can('view', $mailbox)) {
-            $response['msg'] = __('Not enough permissions');
-        }
-
         if (!$response['msg']) {
-            $folder = Folder::find($request->folder_id);
+            $folder = \Eventy::filter('conversations.ajax_pagination_folder', Folder::find($request->folder_id), $request, $response, $user);
             if (!$folder) {
                 $response['msg'] = __('Folder not found');
             }
@@ -2206,6 +2198,11 @@ class ConversationsController extends Controller
             $response['msg'] = __('Not enough permissions');
         }
 
+        // We should not use mailbox_id from the request, as it can be changed.
+        if (!$response['msg'] && !$user->can('view', $folder->mailbox)) {
+            $response['msg'] = __('Not enough permissions');
+        }
+        
         if (!$response['msg']) {
             $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
             $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE, ['*'], 'page', $request->page);
