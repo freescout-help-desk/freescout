@@ -4,6 +4,7 @@ namespace App;
 
 use App\Attachment;
 use App\Customer;
+use App\Folder;
 use App\Thread;
 use App\User;
 use App\Events\UserAddedNote;
@@ -1133,6 +1134,18 @@ class Conversation extends Model
     {
         $prev_mailbox = $this->mailbox;
 
+        foreach ($this->folders as $folder) {
+            // Process indirect folders.
+            if (!in_array($folder->type, Folder::$indirect_types)) {
+                continue;
+            }
+            // Remove conversation from the folder.
+            $this->removeFromFolder($folder->type, $folder->user_id);
+            if ($folder->type == Folder::TYPE_STARRED) {
+                self::clearStarredByUserCache($folder->user_id, $this->mailbox_id);
+            }
+        }
+
         // We don't know how to replace $this->mailbox object.
         $this->mailbox_id = $mailbox->id;
         // Check assignee.
@@ -1142,6 +1155,35 @@ class Conversation extends Model
         }
         $this->updateFolder($mailbox);
         $this->save();
+
+        foreach ($this->folders as $folder) {
+            // Process indirect folders.
+            if (!in_array($folder->type, Folder::$indirect_types)) {
+                continue;
+            }
+            // If user has access to the new mailbox,
+            // move conversation to the same folder in the new mailbox.
+            if ($folder->user_id) {
+                if ($folder->user->hasAccessToMailbox($mailbox->id)) {
+                    foreach ($mailbox->folders as $mailbox_folder) {
+                        if ($mailbox_folder->type == $folder->type) {
+                            $this->addToFolder($folder->type, $folder->user_id);
+                            if ($folder->type == Folder::TYPE_STARRED) {
+                                self::clearStarredByUserCache($folder->user_id, $mailbox->id);
+                            }
+                            break;
+                        }
+                    }
+                }
+            } else {
+                foreach ($mailbox->folders as $mailbox_folder) {
+                    if ($mailbox_folder->type == $folder->type) {
+                        $this->addToFolder($folder->type, $folder->user_id);
+                        break;
+                    }
+                }
+            }
+        }
 
         // Add record to the conversation history.
         Thread::create($this, Thread::TYPE_LINEITEM, '', [
@@ -1317,6 +1359,9 @@ class Conversation extends Model
         return true;
     }
 
+    /**
+     * When removing from Starred folder, don't forget to clear cache using clearStarredByUserCache()
+     */
     public function removeFromFolder($folder_type, $user_id = null)
     {
         // Find folder

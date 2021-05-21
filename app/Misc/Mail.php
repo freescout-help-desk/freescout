@@ -159,7 +159,7 @@ class Mail
                 \Config::set('mail.password', null);
             } else {
                 \Config::set('mail.username', Option::get('mail_username'));
-                \Config::set('mail.password', Option::get('mail_password'));
+                \Config::set('mail.password', \Helper::decrypt(Option::get('mail_password')));
             }
             \Config::set('mail.encryption', Option::get('mail_encryption'));
         }
