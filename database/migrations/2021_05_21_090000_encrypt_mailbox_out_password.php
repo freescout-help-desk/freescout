@@ -14,7 +14,13 @@ class EncryptMailboxOutPassword extends Migration
     public function up()
     {
         foreach (\App\Mailbox::whereNotNull('out_password')->get() as $Mailbox) {
-            $Mailbox->out_password = $Mailbox->getOriginal('out_password');
+            $unencrypted_password = $Mailbox->getOriginal('out_password');
+            if ($unencrypted_password) {
+                $Mailbox->out_password = $unencrypted_password;
+                if ($Mailbox->getOriginal('out_password') == $unencrypted_password) {
+                    $Mailbox->out_password = encrypt($unencrypted_password);
+                }
+            }
             $Mailbox->save();
         }
     }
