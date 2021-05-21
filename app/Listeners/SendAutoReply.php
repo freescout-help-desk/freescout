@@ -44,6 +44,10 @@ class SendAutoReply
                 return;
             }
 
+            if (!\Eventy::filter('autoreply.should_send', true, $conversation)) {
+                return;
+            }
+
             // We can not send auto reply to incoming bounce messages, as it will lead to the infinite loop:
             // application will be sending auto replies and mail server will be sending bounce messages to auto replies.
             // Bounce detection can not be 100% reliable.
