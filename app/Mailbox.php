@@ -171,7 +171,7 @@ class Mailbox extends Model
             return decrypt($value);
         } catch (\Exception $e) {
             // do nothing if decrypt wasn't succefull
-            return false;
+            return '';
         }
     }
 
@@ -200,7 +200,7 @@ class Mailbox extends Model
             return decrypt($value);
         } catch (\Exception $e) {
             // do nothing if decrypt wasn't succefull
-            return false;
+            return '';
         }
     }
 

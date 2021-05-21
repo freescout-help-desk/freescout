@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class EncryptMailboxPassword extends Migration
+class EncryptMailboxOutPassword extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,6 @@ class EncryptMailboxPassword extends Migration
      */
     public function up()
     {
-        \DB::statement('ALTER TABLE `mailboxes` MODIFY `out_password` VARCHAR(512) NOT NULL;');
-
         foreach (\App\Mailbox::whereNotNull('out_password')->get() as $Mailbox) {
             $Mailbox->out_password = $Mailbox->getOriginal('out_password');
             $Mailbox->save();
@@ -34,7 +32,5 @@ class EncryptMailboxPassword extends Migration
             $Mailbox->setRawAttributes($attributes);
             $Mailbox->save();
         }
-
-        \DB::statement('ALTER TABLE `mailboxes` MODIFY `out_password` VARCHAR(255) NOT NULL;');
     }
 }
