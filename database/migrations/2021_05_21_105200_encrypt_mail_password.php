@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class EncryptOptionPassword extends Migration
+class EncryptMailPassword extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,10 @@ class EncryptOptionPassword extends Migration
      */
     public function up()
     {
-
-        \App\Option::get('mail_password', \Config::get('mail.password'));
-        $section = 'emails';
-        $settings = [
-            'mail_password' => !is_null($mail_password) ? encrypt($mail_password) : null;
-        ];
-        $Option->processSave($section, $settings);
+        $mail_password = \Option::get('mail_password');
+        if ($mail_password) {
+            \Option::set('mail_password', encrypt($mail_password));
+        }
     }
 
     /**
@@ -29,13 +26,9 @@ class EncryptOptionPassword extends Migration
      */
     public function down()
     {
-
-        \App\Option::get('mail_password', \Config::get('mail.password'));
-        $section = 'emails';
-        $settings = [
-            'mail_password' => !is_null($mail_password) ? decrypt($mail_password) : null;
-        ];
-        $Option->processSave($section, $settings);
-
+        $mail_password = \Option::get('mail_password');
+        if ($mail_password) {
+            \Option::set('mail_password', \Helper::decrypt($mail_password));
+        }
     }
 }

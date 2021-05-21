@@ -100,7 +100,8 @@ class SettingsController extends Controller
                             'env' => 'APP_FETCH_SCHEDULE',
                         ],
                         'mail_password' => [
-                            'safe_password' => true
+                            'safe_password' => true,
+                            'encrypt' => true,
                         ]
                     ],
                 ];
@@ -187,14 +188,13 @@ class SettingsController extends Controller
                 ];
                 break;
             case 'emails':
-                $mail_password = Option::get('mail_password', \Config::get('mail.password'));
                 $settings = [
                     'mail_from'       => \App\Misc\Mail::getSystemMailFrom(),
                     'mail_driver'     => Option::get('mail_driver', \Config::get('mail.driver')),
                     'mail_host'       => Option::get('mail_host', \Config::get('mail.host')),
                     'mail_port'       => Option::get('mail_port', \Config::get('mail.port')),
                     'mail_username'   => Option::get('mail_username', \Config::get('mail.username')),
-                    'mail_password'   => !is_null($mail_password) ? decrypt($mail_password) : null,
+                    'mail_password'   => \Helper::decrypt(Option::get('mail_password', \Config::get('mail.password'))),
                     'mail_encryption' => Option::get('mail_encryption', \Config::get('mail.encryption')),
                     'fetch_schedule'  => config('app.fetch_schedule'),
                 ];
@@ -285,6 +285,10 @@ class SettingsController extends Controller
                     $env_value = json_encode($env_value);
                 }
 
+                if (!empty($settings_params[$option_name]['encrypt'])) {
+                    $env_value = encrypt($env_value);
+                }
+
                 if (!empty($settings_params[$option_name]['env_encode'])) {
                     $env_value = base64_encode($env_value);
                 }
@@ -299,7 +303,11 @@ class SettingsController extends Controller
             // By some reason isset() does not work for empty elements.
             if (array_key_exists($option_name, $request->settings)) {
                 $option_value = $request->settings[$option_name];
-                if ($option_name == "mail_password") $option_value = encrypt($option_value);
+
+                if (!empty($settings_params[$option_name]['encrypt'])) {
+                    $option_value = encrypt($option_value);
+                }
+
                 Option::set($option_name, $option_value);
             } else {
                 // If option does not exist, default will be used,
