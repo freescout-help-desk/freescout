@@ -39,19 +39,6 @@
                         </div>
                     </div>
 
-                    <div class="form-group{{ $errors->has('office_hours') ? ' has-error' : '' }}">
-                        <label for="office_hours" class="col-sm-2 control-label">{{ __('Office Hours') }}</label>
-
-                        <div class="col-sm-6">
-                            <div class="controls">
-                                <label for="auto_reply_enabled" class="control-label text-help">
-                                    {{ __('Not yet activated') }}
-                                </label>
-                            </div>
-                            @include('partials/field_error', ['field'=>'office_hours'])
-                        </div>
-                    </div>
-
                     <div class="form-group{{ $errors->has('auto_reply_subject') ? ' has-error' : '' }}">
                         <label for="auto_reply_subject" class="col-sm-2 control-label">{{ __('Subject') }}</label>
 
