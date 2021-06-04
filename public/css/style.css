@@ -1202,6 +1202,9 @@ a h4 {
     margin: 0;
     padding: 0;
 }
+.customer-contacts li {
+    display: block;
+}
 .customer-contacts li,
 .customer-contacts li a {
     /*overflow: hidden;
@@ -1209,7 +1212,6 @@ a h4 {
     word-wrap: break-word;
     overflow-wrap: break-word;
     /*white-space: nowrap;*/
-    display: block;
     margin-top: 2px;
     color: #93a1af;
     line-height: 16px;
