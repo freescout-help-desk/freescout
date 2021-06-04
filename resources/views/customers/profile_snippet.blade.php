@@ -13,13 +13,25 @@
 			@if (!empty($main_email))
 		    	@foreach ($customer->emails as $email)
 		    		@if ($email->email == $main_email)
-		            	<li class="customer-email"><a href="{{ $mailbox->url() }}/new-ticket?to={{ urlencode($email->email) }}" title="{{ __('Email customer') }}" class="contact-main">{{ $email->email }}</a></li>
+		    		    <li class="customer-email">
+		    		        @if (!empty($mailbox))
+		    		            <a href="{{ $mailbox->url() }}/new-ticket?to={{ urlencode($email->email) }}" class="contact-main">{{ $email->email }}</a>
+		    		        @else
+		    		            {{ $email->email }}
+		           	        @endif
+		           	    </li>
 		           	@endif
 		        @endforeach
 		    @endif
 		    @foreach ($customer->emails as $email)
 		    	@if (empty($main_email) || $email->email != $main_email)
-	            	<li class="customer-email"><a href="{{ $mailbox->url() }}/new-ticket?to={{ urlencode($email->email) }}" title="{{ __('Email customer') }}" class="@if (empty($main_email) && $loop->index == 0) contact-main @endif">{{ $email->email }}</a></li>
+	            	<li class="customer-email">
+	                    @if (!empty($mailbox))
+	                        <a href="{{ $mailbox->url() }}/new-ticket?to={{ urlencode($email->email) }}" class="contact-main">{{ $email->email }}</a>
+	                    @else
+	                        {{ $email->email }}
+	                    @endif
+	                </li>
 	            @endif
 	        @endforeach
 			@foreach ($customer->getPhones() as $phone)
