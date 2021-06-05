@@ -14,11 +14,7 @@
 		    	@foreach ($customer->emails as $email)
 		    		@if ($email->email == $main_email)
 		    		    <li class="customer-email">
-		    		        @if (!empty($mailbox))
-		    		            <a href="{{ $mailbox->url() }}/new-ticket?to={{ urlencode($email->email) }}" class="contact-main">{{ $email->email }}</a>
-		    		        @else
-		    		            {{ $email->email }}
-		           	        @endif
+		    		        <a href="javascript:copyToClipboard('{{ $email->email }}')" class="contact-main" data-toggle="tooltip" title="{{ __('Copy') }}">{{ $email->email }}</a>
 		           	    </li>
 		           	@endif
 		        @endforeach
@@ -26,11 +22,7 @@
 		    @foreach ($customer->emails as $email)
 		    	@if (empty($main_email) || $email->email != $main_email)
 	            	<li class="customer-email">
-	                    @if (!empty($mailbox))
-	                        <a href="{{ $mailbox->url() }}/new-ticket?to={{ urlencode($email->email) }}" class="contact-main">{{ $email->email }}</a>
-	                    @else
-	                        {{ $email->email }}
-	                    @endif
+	                    <a href="javascript:copyToClipboard('{{ $email->email }}')" class="contact-main" data-toggle="tooltip" title="{{ __('Copy') }}">{{ $email->email }}</a>
 	                </li>
 	            @endif
 	        @endforeach
