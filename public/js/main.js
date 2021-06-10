@@ -292,6 +292,12 @@ $(document).ready(function(){
 			dt.next().children().find('.form-control:first').focus();
 		}, 100);
 	});
+
+	// Dirty JS hack because there was no way found to expand outer container when sidebar grows.
+	if ($('#conv-layout-customer').length && $('.conv-sidebar-block').length > 2) {
+		adjustCustomerSidbarHeight();
+		setTimeout(adjustCustomerSidbarHeight, 2000);
+	}
 });
 
 function initMuteMailbox()
@@ -4872,4 +4878,13 @@ function copyToClipboard(text) {
     $temp.val(text).select();
     document.execCommand("copy");
     $temp.remove();
+}
+
+function adjustCustomerSidbarHeight()
+{
+	var sidebar_h = $('#conv-layout-customer')[0].scrollHeight;
+
+	if (sidebar_h > $('#conv-layout').height()) {
+		$('#conv-layout').css('min-height', (sidebar_h+20)+'px');
+	}
 }
