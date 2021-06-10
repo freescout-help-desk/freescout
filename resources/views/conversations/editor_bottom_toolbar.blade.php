@@ -49,6 +49,7 @@
             	<li class="divider"></li>
             	<li><a href="#" data-toggle="modal" data-target="#conv-settings-modal">{{ ucfirst(mb_strtolower(__('Conversation History'))) }}…</a></li>
             @endif
+            @action('conversation.append_send_dropdown', $conversation, $mailbox, $new_converstion ?? false)
         </ul>
     </div>
     <div id="after-send-change-body" class="hidden">
