@@ -1476,8 +1476,11 @@ function convEditorInit()
 	}
 
 	$('#body').summernote(options);
+	$('#editor_bottom_toolbar a[data-modal-applied="1"]').removeAttr('data-modal-applied');
 	var html = $('#editor_bottom_toolbar').html();
 	$('.note-statusbar').addClass('note-statusbar-toolbar form-inline').html(html);
+	// To init new modal links
+	initModals();
 
 	// Track changes to save draft
 	$("#to, #to_email, #cc, #bcc, #subject, #name, #phone").on('keyup keypress', function(event) {
