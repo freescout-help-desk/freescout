@@ -456,6 +456,10 @@ class User extends Authenticatable
             return '';
         }
 
+        if (!$format) {
+            $format = 'M j, Y H:i';
+        }
+
         if ($user && $user !== false) {
             if ($modify_format) {
                 if ($user->time_format == self::TIME_FORMAT_12) {
