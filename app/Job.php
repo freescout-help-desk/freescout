@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Job extends Model
 {
+	const UPDATED_AT = null;
+
     /**
      * Automatically converted into Carbon dates.
      */
