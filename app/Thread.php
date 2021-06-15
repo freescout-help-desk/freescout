@@ -1183,6 +1183,18 @@ class Thread extends Model
     }
 
     /**
+     * Unset thread meta value.
+     */
+    public function unsetMeta($key)
+    {
+        $metas = $this->getMetas();
+        if (isset($metas[$key])) {
+            unset($metas[$key]);
+            $this->setMetas($metas);
+        }
+    }
+
+    /**
      * Get full name of the user who forwarded conversation.
      */
     public function getForwardByFullName($by_user = null)
