@@ -2102,6 +2102,9 @@ button.conv-checkbox-clear {
     /*padding-top: 12px;*/
     /*padding-bottom: 10px;*/
 }
+.thread-body .alert .glyphicon {
+    top: 2px;
+}
 .thread-meta {
     font-size: 12.5px;
     margin: 15px 0 0 0;
@@ -2937,6 +2940,9 @@ ul.sidebar-block-list {
 .alert-narrow {
     padding-top: 5px;
     padding-bottom: 5px;
+}
+.thread-body .alert-narrow {
+    padding-top: 6px;
 }
 .alert-danger.alert-light {
     background-color: #f5e7e9;

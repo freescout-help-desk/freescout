@@ -44,8 +44,10 @@ class SendReplyToCustomer
         // We can not check imported here, as after conversation has been imported via API
         // notifications has to be sent.
         //if (!$conversation->imported) {
+        $delay = \Eventy::filter('conversation.send_reply_to_customer_delay', now()->addSeconds(Conversation::UNDO_TIMOUT), $conversation, $replies);
+
         \App\Jobs\SendReplyToCustomer::dispatch($conversation, $replies, $conversation->customer)
-            ->delay(now()->addSeconds(Conversation::UNDO_TIMOUT))
+            ->delay($delay)
             ->onQueue('emails');
     }
 }

@@ -837,6 +837,7 @@ class ConversationsController extends Controller
                         }
                     }
 
+                    \Eventy::action('thread.before_save_from_request', $thread, $request);
                     $thread->save();
 
                     // Save forwarded thread.

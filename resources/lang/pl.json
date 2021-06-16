@@ -754,5 +754,8 @@
     "Access denied": "Dostęp zabroniony",
     "Users are allowed to manage users": "Użytkownicy mogą zarządzać użytkownikami",
     "New message": "Nowa wiadomość",
-    "Hi :user, an account has been created for you at :app_url": "Witaj, :user. Zostało utworzone dla Ciebie konto na :app_url"
+    "Hi :user, an account has been created for you at :app_url": "Witaj, :user. Zostało utworzone dla Ciebie konto na :app_url",
+    "Remind License Keys": "Przypominaj o kluczach licencyjnych",
+    "Use Deactivate License button to transfer license key from another domain": "Użyj przycisku Dezaktywuj Licencję, w celu przeniesienia klucza licencyjnego z innej domeny",
+    "Published": "Opublikowano"
 }

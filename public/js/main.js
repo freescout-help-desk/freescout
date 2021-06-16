@@ -292,6 +292,12 @@ $(document).ready(function(){
 			dt.next().children().find('.form-control:first').focus();
 		}, 100);
 	});
+
+	// Dirty JS hack because there was no way found to expand outer container when sidebar grows.
+	if ($('#conv-layout-customer').length && $(window).outerWidth() >= 1100 && $('.conv-sidebar-block').length > 2) {
+		adjustCustomerSidebarHeight();
+		setTimeout(adjustCustomerSidebarHeight, 2000);
+	}
 });
 
 function initMuteMailbox()
@@ -1470,8 +1476,11 @@ function convEditorInit()
 	}
 
 	$('#body').summernote(options);
+	$('#editor_bottom_toolbar a[data-modal-applied="1"]').removeAttr('data-modal-applied');
 	var html = $('#editor_bottom_toolbar').html();
 	$('.note-statusbar').addClass('note-statusbar-toolbar form-inline').html(html);
+	// To init new modal links
+	initModals();
 
 	// Track changes to save draft
 	$("#to, #to_email, #cc, #bcc, #subject, #name, #phone").on('keyup keypress', function(event) {
@@ -4864,4 +4873,21 @@ function initUsers()
 	$('#search-users-clear').click(function(e) {
 		$('#search-users').val('').keypress();
 	});
+}
+
+function copyToClipboard(text) {
+    var $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val(text).select();
+    document.execCommand("copy");
+    $temp.remove();
+}
+
+function adjustCustomerSidebarHeight()
+{
+	var sidebar_h = $('#conv-layout-customer')[0].scrollHeight;
+
+	if (sidebar_h > $('#conv-layout').height()) {
+		$('#conv-layout').css('min-height', (sidebar_h+20)+'px');
+	}
 }
