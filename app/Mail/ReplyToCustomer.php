@@ -81,6 +81,7 @@ class ReplyToCustomer extends Mailable
         if (count($this->threads) > 1) {
             $subject = 'Re: '.$subject;
         }
+        $subject = \Eventy::filter('email.reply_to_customer.subject', $subject, $this->conversation);
 
         // from($this->from) Sets only email, name stays empty.
         // So we set from in Mail::setMailDriver
