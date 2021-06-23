@@ -159,7 +159,7 @@
 	</div>
 @endsection
 
-@include('partials/calendar')
+@include('partials/include_datepicker')
 
 @section('javascript')
     @parent

@@ -58,7 +58,7 @@
                             </a>
                         @else
                             <a class="navbar-brand" href="{{ url('/') }}" title="{{ __('Dashboard') }}">
-                                <img src="@filter('layout.header_logo', asset('img/logo-brand.svg'))" height="100%" />
+                                <img src="@filter('layout.header_logo', asset('img/logo-brand.svg'))" height="100%" alt="" />
                                 {{-- config('app.name', 'FreeScout') --}}
                             </a>
                         @endif
