@@ -946,7 +946,13 @@ class Customer extends Model
 
         if ($replace_data) {
             // Replace data.
-            $this->fill($data);
+            $data_prepared = $data;
+            foreach ($data_prepared as $i => $value) {
+                if (is_array($value)) {
+                    unset($data_prepared[$i]);
+                }
+            }
+            $this->fill($data_prepared);
             $result = true;
         } else {
             // Update empty fields.
