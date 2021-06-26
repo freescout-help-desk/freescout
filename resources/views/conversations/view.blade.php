@@ -25,17 +25,17 @@
                 <div class="conv-actions">
                     {{-- There should be no spaced between buttons --}}
                     @if (!$conversation->isPhone())
-                        <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}"></span>
+                        <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}" aria-label="{{ __("Reply") }}" role="button"></span>
                     @endif
-                    <span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}"></span>
+                    <span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" aria-label="{{ __("Note") }}" role="button"></span>
                     @if (Auth::user()->can('delete', $conversation))
                         @if ($conversation->state != App\Conversation::STATE_DELETED)
-                            <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete") }}"></span>
+                            <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete") }}" aria-label="{{ __("Delete") }}" role="button"></span>
                         @else
-                            <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete-forever" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete Forever") }}"></span>
+                            <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete-forever" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete Forever") }}" aria-label="{{ __("Delete Forever") }}" role="button"></span>
                         @endif
                     @endif
-                    @action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>--}}
+                    @action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip" aria-label="{{ __("Run Workflow") }}" role="button"></span>--}}
 
                     <div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
                         <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></span>
