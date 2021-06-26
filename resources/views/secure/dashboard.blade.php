@@ -51,7 +51,7 @@
                                 </div>
                             @endif
                             @if (\Eventy::filter('mailbox.show_buttons', true, $mailbox) && $mailbox->isActive())
-                                <a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("New Conversation") }}"><i class="glyphicon glyphicon-envelope"></i></a>
+                                <a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("New Conversation") }}" aria-label="{{ __("New Conversation") }}" role="button"><i class="glyphicon glyphicon-envelope"></i></a>
                             @endif
                             <a href="{{ $mailbox->url() }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("Open Mailbox") }}"><i class="glyphicon glyphicon-arrow-right"></i></a>
                         </div>

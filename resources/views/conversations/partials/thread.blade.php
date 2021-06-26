@@ -281,21 +281,21 @@
             <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown"><b class="caret"></b></span>
             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                 @if (Auth::user()->can('edit', $thread))
-                    <li><a href="#" title="" class="thread-edit-trigger">{{ __("Edit") }}</a></li>
+                    <li><a href="#" title="" class="thread-edit-trigger" role="button">{{ __("Edit") }}</a></li>
                 @endif
                 {{--<li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>--}}
-                <li><a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}?from_thread_id={{ $thread->id }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv">{{ __("New Conversation") }}</a></li>
+                <li><a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}?from_thread_id={{ $thread->id }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv" role="button">{{ __("New Conversation") }}</a></li>
                 @action('thread.menu', $thread)
                 @if (Auth::user()->isAdmin())
                     <li><a href="{{ route('conversations.ajax_html', ['action' =>
-                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
+                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg" role="button">{{ __("Outgoing Emails") }}</a></li>
                 @endif
                 @if ($thread->isReply())
                     <li><a href="{{ route('conversations.ajax_html', ['action' =>
-                        'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message") }}" data-trigger="modal" data-modal-title="{{ __("Original Message") }}" data-modal-fit="true" data-modal-size="lg">{{ __("Show Original") }}</a></li>
+                        'show_original']) }}?thread_id={{ $thread->id }}" title="{{ __("Show original message") }}" data-trigger="modal" data-modal-title="{{ __("Original Message") }}" data-modal-fit="true" data-modal-size="lg" role="button">{{ __("Show Original") }}</a></li>
                 @endif
                 @if ($thread->isReply() || $thread->isNote())
-                    <li><a href="{{ \Request::getRequestUri() }}&amp;print_thread_id={{ $thread->id }}&amp;print=1" target="_blank">{{ __("Print") }}</a></li>
+                    <li><a href="{{ \Request::getRequestUri() }}&amp;print_thread_id={{ $thread->id }}&amp;print=1" target="_blank" role="button">{{ __("Print") }}</a></li>
                 @endif
             </ul>
         </div>
