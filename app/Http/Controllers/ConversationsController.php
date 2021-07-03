@@ -1337,7 +1337,8 @@ class ConversationsController extends Controller
                 }
                 break;
 
-            // Load attachments from all threads in conversation (when forwarding).
+            // Load attachments from all threads in conversation 
+            // when forwarding or creating a new conversation.
             case 'load_attachments':
                 $conversation = Conversation::find($request->conversation_id);
                 if (!$conversation) {
@@ -1356,7 +1357,11 @@ class ConversationsController extends Controller
                         foreach ($conversation->threads as $thread) {
                             if ($thread->has_attachments) {
                                 foreach ($thread->attachments as $attachment) {
-                                    $attachment_copy = $attachment->duplicate($thread->id);
+                                    if ($request->is_forwarding == 'true') {
+                                        $attachment_copy = $attachment->duplicate($thread->id);
+                                    } else {
+                                        $attachment_copy = $attachment;
+                                    }
 
                                     $attachments[] = [
                                         'id'   => $attachment_copy->id,
