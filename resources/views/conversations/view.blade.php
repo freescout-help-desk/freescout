@@ -25,42 +25,42 @@
                 <div class="conv-actions">
                     {{-- There should be no spaced between buttons --}}
                     @if (!$conversation->isPhone())
-                        <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}"></span>
+                        <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}" aria-label="{{ __("Reply") }}" role="button"></span>
                     @endif
-                    <span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}"></span>
+                    <span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" aria-label="{{ __("Note") }}" role="button"></span>
                     @if (Auth::user()->can('delete', $conversation))
                         @if ($conversation->state != App\Conversation::STATE_DELETED)
-                            <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete") }}"></span>
+                            <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete") }}" aria-label="{{ __("Delete") }}" role="button"></span>
                         @else
-                            <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete-forever" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete Forever") }}"></span>
+                            <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete-forever" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete Forever") }}" aria-label="{{ __("Delete Forever") }}" role="button"></span>
                         @endif
                     @endif
-                    @action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip"></span>--}}
+                    @action('conversation.action_buttons', $conversation, $mailbox){{--<span class="conv-run-workflow conv-action glyphicon glyphicon-flash" data-toggle="tooltip" data-placement="bottom"  title="{{ __("Run Workflow") }}" onclick="alert('todo: implement workflows')" data-toggle="tooltip" aria-label="{{ __("Run Workflow") }}" role="button"></span>--}}
 
                     <div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
-                        <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></span>
+                        <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" aria-label="{{ __("More Actions") }}"></span>
                         <ul class="dropdown-menu dropdown-with-icons">
                             @action('conversation.prepend_action_buttons', $conversation, $mailbox)
                             <li>
-                                <a href="#" class="conv-follow @if ($is_following) hidden @endif" data-follow-action="follow"><i class="glyphicon glyphicon-bell"></i> {{ __("Follow") }}</a>
-                                <a href="#" class="conv-follow @if (!$is_following) hidden @endif" data-follow-action="unfollow"><i class="glyphicon glyphicon-bell"></i> {{ __("Unfollow") }}</a>
+                                <a href="#" class="conv-follow @if ($is_following) hidden @endif" data-follow-action="follow" role="button"><i class="glyphicon glyphicon-bell"></i> {{ __("Follow") }}</a>
+                                <a href="#" class="conv-follow @if (!$is_following) hidden @endif" data-follow-action="unfollow" role="button"><i class="glyphicon glyphicon-bell"></i> {{ __("Unfollow") }}</a>
                             </li>
                             @if (!$conversation->isChat())
-                                <li><a href="#" class="conv-forward"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
+                                <li><a href="#" class="conv-forward" role="button"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
                             @endif
-                            <li><a href="{{ \Request::getRequestUri() }}&amp;print=1" target="_blank"><i class="glyphicon glyphicon-print"></i> {{ __("Print") }}</a></li>
+                            <li><a href="{{ \Request::getRequestUri() }}&amp;print=1" target="_blank" role="button"><i class="glyphicon glyphicon-print"></i> {{ __("Print") }}</a></li>
                             @if (!$conversation->isChat())
                                 <li><a href="{{ route('conversations.ajax_html', ['action' =>
-                                                'merge_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Merge Conversations") }}" data-modal-no-footer="true" data-modal-on-show="initMergeConv"><i class="glyphicon glyphicon-indent-left"></i> {{ __("Merge") }}</a></li>
+                                                'merge_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Merge Conversations") }}" data-modal-no-footer="true" data-modal-on-show="initMergeConv" role="button"><i class="glyphicon glyphicon-indent-left"></i> {{ __("Merge") }}</a></li>
                             @endif
                             @if (Auth::user()->can('move', App\Conversation::class))
                                 <li><a href="{{ route('conversations.ajax_html', ['action' =>
-                                            'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv"><i class="glyphicon glyphicon-log-out"></i> {{ __("Move") }}</a></li>
+                                            'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv" role="button"><i class="glyphicon glyphicon-log-out"></i> {{ __("Move") }}</a></li>
                             @endif
                             @if ($conversation->state != App\Conversation::STATE_DELETED)
-                                <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete") }}</a></li>
+                                <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete" role="button"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete") }}</a></li>
                             @else
-                                <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete-forever"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete Forever") }}</a></li>
+                                <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete-forever" role="button"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete Forever") }}</a></li>
                             @endif
                             @action('conversation.append_action_buttons', $conversation, $mailbox)
                         </ul>
@@ -71,8 +71,8 @@
                     @if ($conversation->state != App\Conversation::STATE_DELETED)
                         <li>
                             <div class="btn-group" id="conv-assignee" data-toggle="tooltip" title="{{ __("Assignee") }}: {{ $conversation->getAssigneeName(true) }}">
-                                <button type="button" class="btn btn-default conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i></button>
-                                <button type="button" class="btn btn-default dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button type="button" class="btn btn-default conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-title="{{ __("Assignee") }}" aria-hidden="true"><i class="glyphicon glyphicon-user"></i></button>
+                                <button type="button" class="btn btn-default dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-title="{{ __("Assignee") }}" aria-label="{{ __("Assignee") }}: {{ $conversation->getAssigneeName(true) }}">
                                     <span>{{ $conversation->getAssigneeName(true) }}</span>
                                     <span class="caret"></span>
                                 </button>
@@ -91,8 +91,8 @@
                     <li>
                         <div class="btn-group" id="conv-status" data-toggle="tooltip" title="{{ __("Status") }}: {{ $conversation->getStatusName() }}">
                             @if ($conversation->state != App\Conversation::STATE_DELETED)
-                                <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
-                                <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __("Status") }}: {{ $conversation->getStatusName() }}"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->status] }}"></i></button>
+                                <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->status] }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __("Status") }}">
                                     <span>{{ $conversation->getStatusName() }}</span> <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu conv-status">
