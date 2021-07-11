@@ -3697,7 +3697,7 @@ function forwardConversation(e)
 	showForwardForm({}, reply_block);
 
 	// Load attachments
-	loadAttachments();
+	loadAttachments(true);
 }
 
 // Follow / unfollow conversation
@@ -3730,15 +3730,21 @@ function followConversation(action)
 	);
 }
 
-// Load attachments for the draft of a new conversation of draft of the forward
-function loadAttachments()
+// Load attachments for the draft of a new conversation or draft of the forward
+function loadAttachments(is_forwarding)
 {
 	var attachments_container = $(".attachments-upload:first");
 	var conversation_id = getGlobalAttr('conversation_id');
+
+	if (typeof(is_forwarding) == "undefined") {
+		is_forwarding = false;
+	}
+
 	if (!attachments_container.hasClass('forward-attachments-loaded') && conversation_id) {
 		fsAjax({
 				action: 'load_attachments',
-				conversation_id: conversation_id
+				conversation_id: conversation_id,
+				is_forwarding: is_forwarding
 			},
 			laroute.route('conversations.ajax'),
 			function(response) {
