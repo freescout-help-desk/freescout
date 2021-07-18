@@ -1752,6 +1752,8 @@ function initRecipientSelector(custom_options, selector)
 
 	var result = initCustomerSelector(selector, options);
 
+	result = fsApplyFilter('conversation.recipient_selector', result, {selector:selector});
+
 	if (options.editable) {
 		result.on('select2:closing', function(e) {
 			var params = e.params;
@@ -1797,6 +1799,8 @@ function initRecipientSelector(custom_options, selector)
 		    });
 		});
 	}
+
+	fsDoAction('conversation.recipient_selector_initialized', {selector:selector});
 
 	return result;
 }
