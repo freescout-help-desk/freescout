@@ -1327,8 +1327,8 @@ class ConversationsController extends Controller
                     $response['data'] = [
                         'thread_id'   => $thread->id,
                         'to'          => $thread->getToFirst(),
-                        'cc'          => $thread->getCcString(),
-                        'bcc'         => $thread->getBccString(),
+                        'cc'          => $thread->getCcArray(),
+                        'bcc'         => $thread->getBccArray(),
                         'body'        => $thread->body,
                         'is_forward'  => (int)$thread->isForward(),
                         'attachments' => $attachments,
