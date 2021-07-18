@@ -983,6 +983,7 @@ class User extends Authenticatable
                     $join->on('mailbox_user.user_id', '=', 'users.id');
                 })
                 ->whereIn('mailbox_user.mailbox_id', $mailbox_ids)
+                ->groupBy('users.id')
                 ->get();
         }
 
