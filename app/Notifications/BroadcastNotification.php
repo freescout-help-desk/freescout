@@ -72,6 +72,9 @@ class BroadcastNotification extends Notification implements ShouldQueue
             return $data;
         }
 
+        // Try to convert to array.
+        $mediums = (array)$payload->mediums;
+
         $thread = Thread::find($payload->thread_id);
 
         if (empty($thread)) {
@@ -82,7 +85,7 @@ class BroadcastNotification extends Notification implements ShouldQueue
         $db_notification = new \Illuminate\Notifications\DatabaseNotification();
 
         // HTML for the menu notification (uses same medium as for email)
-        if (in_array(Subscription::MEDIUM_EMAIL, $payload->mediums)) {
+        if (in_array(Subscription::MEDIUM_EMAIL, $mediums)) {
             $web_notifications_info = [];
 
             // Get last reply or note of the conversation to display it's text
@@ -114,7 +117,7 @@ class BroadcastNotification extends Notification implements ShouldQueue
         }
 
         // Text and url for the browser push notification
-        if (in_array(Subscription::MEDIUM_BROWSER, $payload->mediums)) {
+        if (in_array(Subscription::MEDIUM_BROWSER, $mediums)) {
             $data['browser']['text'] = strip_tags($thread->getActionDescription($thread->conversation->number));
             $data['browser']['url'] = $thread->conversation->url(null, $thread->id, ['mark_as_read' => $db_notification->id]);
         }
