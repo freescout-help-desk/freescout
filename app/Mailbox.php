@@ -370,7 +370,7 @@ class Mailbox extends Model
             ->orderBy('type')
             ->get();
 
-        return \Eventy::filter('mailbox.folders', $folders);
+        return \Eventy::filter('mailbox.folders', $folders, $this);
     }
 
     /**

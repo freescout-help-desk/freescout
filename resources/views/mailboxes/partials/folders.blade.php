@@ -15,10 +15,10 @@
                     }
                 @endphp
                 @if ($active_count)
-                    @if ($folder_item->type == App\Folder::TYPE_UNASSIGNED)
-                        <strong class="active-count has-value pull-right" data-toggle="tooltip" title="{{ __("Active Conversations") }}">{{ $active_count }}</strong>
+                    @if ($folder_item->type == App\Folder::TYPE_UNASSIGNED || $folder_item->type == App\Folder::TYPE_MINE)
+                        <strong class="active-count pull-right" data-toggle="tooltip" title="{{ __("Active Conversations") }}">{{ $active_count }}</strong>
                     @else
-                        @if ($folder_item->type == App\Folder::TYPE_MINE)<strong @else<span @endif class="active-count pull-right" data-toggle="tooltip" title="{{ __("Active Conversations") }}">{{ $active_count }}@if ($folder_item->type == App\Folder::TYPE_MINE)</strong>@else</span>@endif
+                        <span class="active-count pull-right" data-toggle="tooltip" title="{{ __("Active Conversations") }}">{{ $active_count }}</span>
                     @endif
                 @endif
             </a>
