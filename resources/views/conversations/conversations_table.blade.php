@@ -75,15 +75,7 @@
             </th>
             <th class="conv-date">
                 <span>
-                    @if ($folder->type == App\Folder::TYPE_CLOSED)
-                        {{ __("Closed") }}
-                    @elseif ($folder->type == App\Folder::TYPE_DRAFTS)
-                        {{ __("Last Updated") }}
-                    @elseif ($folder->type == App\Folder::TYPE_DELETED)
-                        {{ __("Deleted") }}
-                    @else
-                        {{ __("Waiting Since") }}
-                    @endif
+                    @if ($folder->type == App\Folder::TYPE_CLOSED){{ __("Closed") }}@elseif ($folder->type == App\Folder::TYPE_DRAFTS){{ __("Last Updated") }}@elseif ($folder->type == App\Folder::TYPE_DELETED){{ __("Deleted") }}@else{{ __("Waiting Since") }}@endif<i class="conv-sort">↓</i>
                 </span>
             </th>
           </tr>
