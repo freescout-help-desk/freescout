@@ -912,8 +912,7 @@ a h4 {
 .dash-card-list a:nth-of-type(n+3) strong {
     font-weight: normal;
 }
-.dash-card-list a:nth-of-type(1) strong.has-value,
-#folders .has-value {
+.dash-card-list a:nth-of-type(1) strong.has-value {
     background-color: #85919e;
     color: #fff;
     padding: 0px 7px 0 7px !important;
@@ -921,11 +920,6 @@ a h4 {
     text-align: center;
     height: 20px;
     margin-right: -7px !important;
-}
-#folders .has-value {
-    position: relative;
-    top: -2px;
-    padding-top: 3px !important;
 }
 .dash-card-inactive-content {
     display: none;
