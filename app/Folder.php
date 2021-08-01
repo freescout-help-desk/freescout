@@ -23,12 +23,12 @@ class Folder extends Model
     public static $types = [
         self::TYPE_UNASSIGNED => 'Unassigned',
         self::TYPE_MINE       => 'Mine',
+        self::TYPE_STARRED    => 'Starred',
         self::TYPE_DRAFTS     => 'Drafts',
         self::TYPE_ASSIGNED   => 'Assigned',
         self::TYPE_CLOSED     => 'Closed',
         self::TYPE_SPAM       => 'Spam',
         self::TYPE_DELETED    => 'Deleted',
-        self::TYPE_STARRED    => 'Starred',
     ];
 
     /**
