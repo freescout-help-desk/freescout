@@ -12,9 +12,9 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
@@ -512,6 +512,10 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         ),
         'H' => 
         array (
+            'HTMLPurifier_' => 
+            array (
+                0 => __DIR__ . '/../..' . '/overrides/HTMLPurifier',
+            ),
             'HTMLPurifier' => 
             array (
                 0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
@@ -1317,7 +1321,7 @@ class ComposerStaticInit9382ab4a444ef313492b08539c8c268d
         'HTMLPurifier_AttrDef_URI' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI.php',
         'HTMLPurifier_AttrDef_URI_Email' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Email.php',
         'HTMLPurifier_AttrDef_URI_Email_SimpleCheck' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Email/SimpleCheck.php',
-        'HTMLPurifier_AttrDef_URI_Host' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Host.php',
+        'HTMLPurifier_AttrDef_URI_Host' => __DIR__ . '/../..' . '/overrides/HTMLPurifier/HTMLPurifier/AttrDef/URI/Host.php',
         'HTMLPurifier_AttrDef_URI_IPv4' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/IPv4.php',
         'HTMLPurifier_AttrDef_URI_IPv6' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/IPv6.php',
         'HTMLPurifier_AttrTransform' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform.php',

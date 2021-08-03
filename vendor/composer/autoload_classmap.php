@@ -796,7 +796,7 @@ return array(
     'HTMLPurifier_AttrDef_URI' => $vendorDir . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI.php',
     'HTMLPurifier_AttrDef_URI_Email' => $vendorDir . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Email.php',
     'HTMLPurifier_AttrDef_URI_Email_SimpleCheck' => $vendorDir . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Email/SimpleCheck.php',
-    'HTMLPurifier_AttrDef_URI_Host' => $vendorDir . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Host.php',
+    'HTMLPurifier_AttrDef_URI_Host' => $baseDir . '/overrides/HTMLPurifier/HTMLPurifier/AttrDef/URI/Host.php',
     'HTMLPurifier_AttrDef_URI_IPv4' => $vendorDir . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/IPv4.php',
     'HTMLPurifier_AttrDef_URI_IPv6' => $vendorDir . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/IPv6.php',
     'HTMLPurifier_AttrTransform' => $vendorDir . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform.php',

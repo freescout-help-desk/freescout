@@ -30,7 +30,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'a59204cd99d2fb2f51d48a648cb0158cd55e205a',
+    'reference' => 'b3b5063b50c3b49c453d116c3fa58db1118fcf5d',
     'name' => 'freescout-helpdesk/freescout',
   ),
   'versions' => 
@@ -186,7 +186,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'a59204cd99d2fb2f51d48a648cb0158cd55e205a',
+      'reference' => 'b3b5063b50c3b49c453d116c3fa58db1118fcf5d',
     ),
     'guzzlehttp/guzzle' => 
     array (
@@ -611,8 +611,8 @@ private static $installed = array (
     array (
       'provided' => 
       array (
-        0 => '1.0',
-        1 => '1.0.0',
+        0 => '1.0.0',
+        1 => '1.0',
       ),
     ),
     'psr/simple-cache' => 

@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '96033cbc786652c29f73b600fed0be46e828da59',
+    'reference' => 'b3b5063b50c3b49c453d116c3fa58db1118fcf5d',
     'name' => 'freescout-helpdesk/freescout',
   ),
   'versions' => 
@@ -162,7 +162,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '96033cbc786652c29f73b600fed0be46e828da59',
+      'reference' => 'b3b5063b50c3b49c453d116c3fa58db1118fcf5d',
     ),
     'guzzlehttp/guzzle' => 
     array (
