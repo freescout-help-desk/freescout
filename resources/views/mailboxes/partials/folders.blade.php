@@ -14,8 +14,12 @@
                         $active_count = $folder_item->getCount($folders);
                     }
                 @endphp
-                @if ($active_count)<span class="active-count pull-right" data-toggle="tooltip" title="{{ __("Active Conversations") }}">
-                    {{ $active_count }}</span>
+                @if ($active_count)
+                    @if ($folder_item->type == App\Folder::TYPE_UNASSIGNED || $folder_item->type == App\Folder::TYPE_MINE)
+                        <strong class="active-count pull-right" data-toggle="tooltip" title="{{ __("Active Conversations") }}">{{ $active_count }}</strong>
+                    @else
+                        <span class="active-count pull-right" data-toggle="tooltip" title="{{ __("Active Conversations") }}">{{ $active_count }}</span>
+                    @endif
                 @endif
             </a>
         </li>

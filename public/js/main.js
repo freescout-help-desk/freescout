@@ -1350,9 +1350,11 @@ function showReplyForm(data, scroll_offset)
 			}
 			if (field == 'to_email' || field == 'cc' || field == 'bcc') {
 				if (data && typeof(data.to) != "undefined") {
-					addSelect2Option($("#"+field), {
-						id: data[field], text: data[field]
-					});
+					for (var i in data[field]) {
+						addSelect2Option($("#"+field), {
+							id: data[field][i], text: data[field][i]
+						});
+					}
 				} else {
 					$("#"+field).children('option:first').removeAttr('selected');
 				}

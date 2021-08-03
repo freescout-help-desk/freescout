@@ -1357,6 +1357,11 @@ thead .conv-cb label {
     /*background-color: #deecf9;*/
     background-color: #e5effb;
 }
+.conv-sort {
+    position: relative;
+    left: 1px;
+    top: -1px;
+}
 .table-conversations td.conv-customer a {
     line-height: 1.2em;
     padding-left: 0;
