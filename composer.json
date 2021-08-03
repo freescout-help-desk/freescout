@@ -81,7 +81,8 @@
             "database/factories"
         ],
         "psr-0": {
-            "Swift_": "overrides/Swiftmailer/lib/classes"
+            "Swift_": "overrides/Swiftmailer/lib/classes",
+            "HTMLPurifier_": "overrides/HTMLPurifier"
         },
         "psr-4": {
             "App\\": "app/",
@@ -145,7 +146,8 @@
             "vendor/tormjens/eventy/src/Action.php",
             "vendor/symfony/debug/ExceptionHandler.php",
             "vendor/symfony/http-foundation/ResponseHeaderBag.php",
-            "vendor/chumper/zipper/src/Chumper/Zipper/Repositories/ZipRepository.php"
+            "vendor/chumper/zipper/src/Chumper/Zipper/Repositories/ZipRepository.php",
+            "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Host.php"
         ]
     },
     "autoload-dev": {
