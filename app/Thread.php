@@ -568,9 +568,10 @@ class Thread extends Model
 
     /**
      * Get action text.
+     * $by_user - user who performed the action.
      * $person must be already escaped.
      */
-    public function getActionText($conversation_number = '', $escape = false, $strip_tags = false, $by_user = null, $person = '')
+    public function getActionText($conversation_number = '', $escape = false, $strip_tags = false, $by_user = null, $person = '', $viewed_by_user = null)
     {
         $did_this = '';
 
@@ -639,7 +640,7 @@ class Thread extends Model
             }
         }
 
-        $did_this = \Eventy::filter('thread.action_text', $did_this, $this, $conversation_number, $escape);
+        $did_this = \Eventy::filter('thread.action_text', $did_this, $this, $conversation_number, $escape, $viewed_by_user);
 
         if ($strip_tags) {
             $did_this = strip_tags($did_this);
@@ -659,11 +660,11 @@ class Thread extends Model
     /**
      * Description of what happened.
      */
-    public function getActionDescription($conversation_number, $escape = true)
+    public function getActionDescription($conversation_number, $escape = true, $viewed_by_user = null)
     {
         // Person
         $person = $this->getActionPerson($conversation_number);
-        $did_this = $this->getActionText($conversation_number);
+        $did_this = $this->getActionText($conversation_number, false, false, null, '', $viewed_by_user);
 
         if ($escape) {
             $person = htmlspecialchars($person);

@@ -26,7 +26,7 @@
             </div>
             <div class="web-notification-msg">
                 <div class="web-notification-msg-header">
-                    {!! $web_notification_data['thread']->getActionDescription($web_notification_data['conversation']->number) !!}
+                    {!! $web_notification_data['thread']->getActionDescription($web_notification_data['conversation']->number, true, Auth::user()) !!}
                 </div>
                 <div class="web-notification-msg-preview">
                     {{ App\Misc\Helper::textPreview($web_notification_data['last_thread_body']) }}

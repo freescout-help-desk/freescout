@@ -26,8 +26,8 @@ class Subscription extends Model
     const EVENT_CONVERSATION_ASSIGNED_TO_ME = 2;
     const EVENT_CONVERSATION_ASSIGNED = 6;
     const EVENT_FOLLOWED_CONVERSATION_UPDATED = 13;
-    const EVENT_I_AM_MENTIONED = 14;
-    const EVENT_MY_TEAM_MENTIONED = 15;
+    
+    //const EVENT_MY_TEAM_MENTIONED = 15;
     // Notify me when a customer replies…
     const EVENT_CUSTOMER_REPLIED_TO_UNASSIGNED = 4;
     const EVENT_CUSTOMER_REPLIED_TO_MY = 3;
@@ -52,16 +52,14 @@ class Subscription extends Model
         self::MEDIUM_EMAIL => [
             self::EVENT_CONVERSATION_ASSIGNED_TO_ME,
             self::EVENT_FOLLOWED_CONVERSATION_UPDATED,
-            self::EVENT_I_AM_MENTIONED,
-            self::EVENT_MY_TEAM_MENTIONED,
+            //self::EVENT_MY_TEAM_MENTIONED,
             self::EVENT_CUSTOMER_REPLIED_TO_MY,
             self::EVENT_USER_REPLIED_TO_MY,
         ],
         self::MEDIUM_BROWSER => [
             self::EVENT_CONVERSATION_ASSIGNED_TO_ME,
             self::EVENT_FOLLOWED_CONVERSATION_UPDATED,
-            self::EVENT_I_AM_MENTIONED,
-            self::EVENT_MY_TEAM_MENTIONED,
+            //self::EVENT_MY_TEAM_MENTIONED,
             self::EVENT_CUSTOMER_REPLIED_TO_MY,
             self::EVENT_USER_REPLIED_TO_MY,
         ],
@@ -255,7 +253,8 @@ class Subscription extends Model
             if ($subscription->user->isAdmin()) {
 
                 // Mute notifications for events not related directly to the user.
-                if (!in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_FOLLOWED_CONVERSATION_UPDATED, self::EVENT_I_AM_MENTIONED, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY])
+                if (!in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_FOLLOWED_CONVERSATION_UPDATED, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY])
+                    && !\Eventy::filter('subscription.is_related_to_user', false, $subscription, $thread)
                 ) {
                     $mailbox_settings = $conversation->mailbox->getUserSettings($subscription->user_id);
 

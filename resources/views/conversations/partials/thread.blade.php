@@ -28,7 +28,6 @@
             <div class="thread-header">
                 <div class="thread-title">
                     <div class="thread-person">
-                        {{--{!! $thread->getActionDescription($conversation->number) !!}--}}
                         <strong>@include('conversations/thread_by')</strong>
                         @if ($thread->isForward())
                             {{ __('are forwarding') }}
