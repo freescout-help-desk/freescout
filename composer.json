@@ -86,7 +86,6 @@
         "psr-4": {
             "App\\": "app/",
             "Modules\\": "Modules/",
-            "Axn\\Laroute\\Routes\\": "overrides/Axn/Laroute/Routes/",
             "Webklex\\IMAP\\": "overrides/Webklex/IMAP/",
             "RachidLaasri\\LaravelInstaller\\Helpers\\": "overrides/RachidLaasri/LaravelInstaller/Helpers/",
             "RachidLaasri\\LaravelInstaller\\Middleware\\": "overrides/RachidLaasri/LaravelInstaller/Middleware/",
@@ -105,11 +104,9 @@
             "Lord\\Laroute\\Routes\\": "overrides/Lord/Laroute/Routes/",
             "TorMorten\\Eventy\\": "overrides/TorMorten/Eventy/",
             "Symfony\\Component\\Debug\\": "overrides/Symfony/Component/Debug/",
-            "Symfony\\Component\\HttpFoundation\\": "overrides/Symfony/Component/HttpFoundation/",
-            "Chumper\\Zipper\\Repositories\\": "overrides/Chumper/Zipper/Repositories/"
+            "Symfony\\Component\\HttpFoundation\\": "overrides/Symfony/Component/HttpFoundation/"
         },
         "exclude-from-classmap": [
-            "vendor/axn/laravel-laroute/src/Routes/Collection.php",
             "vendor/webklex/laravel-imap/src/IMAP/Message.php",
             "vendor/webklex/laravel-imap/src/IMAP/Client.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/RequirementsChecker.php",
@@ -145,7 +142,6 @@
             "vendor/tormjens/eventy/src/Action.php",
             "vendor/symfony/debug/ExceptionHandler.php",
             "vendor/symfony/http-foundation/ResponseHeaderBag.php",
-            "vendor/chumper/zipper/src/Chumper/Zipper/Repositories/ZipRepository.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Host.php"
         ]
     },
