@@ -93,7 +93,7 @@ class WebsiteNotification extends Notification implements ShouldQueue
                 ->select(['id', 'conversation_id', 'body', 'created_at'])
                 ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
                 ->distinct('conversation_id')
-                ->orderBy('created_at')
+                ->orderBy('created_at', 'desc')
                 // We can not use groupBy because of "isn't in GROUP BY"
                 //->groupBy('conversation_id')
                 ->get();
