@@ -199,8 +199,10 @@ class Subscription extends Model
                     $events[] = self::EVENT_USER_REPLIED_TO_UNASSIGNED;
                 }
                 break;
-            // todo: EVENT_I_AM_MENTIONED, EVENT_MY_TEAM_MENTIONED
         }
+
+        $events = \Eventy::filter('subscription.events_by_type', $events, $event_type, $thread);
+
         // Check if assigned user changed
         $user_changed = false;
         if ($event_type != self::EVENT_TYPE_ASSIGNED && $event_type != self::EVENT_TYPE_NEW) {
@@ -261,6 +263,10 @@ class Subscription extends Model
                         continue;
                     }
                 }
+            }
+
+            if (\Eventy::filter('subscription.filter_out', false, $subscription, $thread)) {
+                continue;
             }
 
             $users_to_notify[$subscription->medium][] = $subscription->user;
