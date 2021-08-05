@@ -1477,6 +1477,8 @@ function convEditorInit()
 	    };
 	}
 
+	options = fsApplyFilter('editor.options', options);
+
 	$('#body').summernote(options);
 	$('#editor_bottom_toolbar a[data-modal-applied="1"]').removeAttr('data-modal-applied');
 	var html = $('#editor_bottom_toolbar').html();
