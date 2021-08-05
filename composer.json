@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1",
 
         "symfony/debug": "~v3.4.47",
         "devfactory/minify": "~1.0.12",
