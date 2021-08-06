@@ -261,9 +261,10 @@ return [
     /*
     |--------------------------------------------------------------------------
     | File types which should be viewed in the browser instead of downloading.
+    | SVG images are not viewable to avid XSS.
     |-------------------------------------------------------------------------
     */
-    'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'svg', 'tif', 'tiff', 'webp', 'pdf', 'txt', 'mp3', 'wav', 'ogg', 'wma']),
+    'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'tif', 'tiff', 'webp', 'pdf', 'txt', 'mp3', 'wav', 'ogg', 'wma']),
 
     /*
     |--------------------------------------------------------------------------
