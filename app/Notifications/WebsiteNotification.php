@@ -86,18 +86,18 @@ class WebsiteNotification extends Notification implements ShouldQueue
         }
 
         // Get last reply or note of the conversation to display it's text
-        if ($threads) {
-            $last_threads = Thread::whereIn('conversation_id', $threads->pluck('conversation_id')->unique()->toArray())
-                // Select must contain all fields from orderBy() to avoid:
-                // General error: 3065 Expression #1 of ORDER BY clause is not in SELECT
-                ->select(['id', 'conversation_id', 'body', 'created_at'])
-                ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
-                ->distinct('conversation_id')
-                ->orderBy('created_at', 'desc')
-                // We can not use groupBy because of "isn't in GROUP BY"
-                //->groupBy('conversation_id')
-                ->get();
-        }
+        // if ($threads) {
+        //     $last_threads = Thread::whereIn('conversation_id', $threads->pluck('conversation_id')->unique()->toArray())
+        //         // Select must contain all fields from orderBy() to avoid:
+        //         // General error: 3065 Expression #1 of ORDER BY clause is not in SELECT
+        //         ->select(['id', 'conversation_id', 'body', 'created_at'])
+        //         ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
+        //         ->distinct('conversation_id')
+        //         ->orderBy('created_at', 'desc')
+        //         // We can not use groupBy because of "isn't in GROUP BY"
+        //         //->groupBy('conversation_id')
+        //         ->get();
+        // }
 
         // Populate all collected data into array
         foreach ($notifications as $notification) {
@@ -129,14 +129,14 @@ class WebsiteNotification extends Notification implements ShouldQueue
                 continue;
             }
 
-            $last_thread_body = '';
-            $conversation = null;
+            // $last_thread_body = '';
+            // $conversation = null;
 
-            $last_thread = $last_threads->firstWhere('conversation_id', $thread->conversation_id);
-            if ($last_thread) {
-                $last_thread_body = $last_thread->body;
-                $conversation = $last_thread->conversation;
-            }
+            // $last_thread = $last_threads->firstWhere('conversation_id', $thread->conversation_id);
+            // if ($last_thread) {
+            $last_thread_body = $thread->body;
+            $conversation = $thread->conversation;
+            //}
             if (empty($conversation)) {
                 continue;
             }
