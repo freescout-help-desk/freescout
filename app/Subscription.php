@@ -41,6 +41,7 @@ class Subscription extends Model
     const MEDIUM_EMAIL = 1; // This is also website notifications
     const MEDIUM_BROWSER = 2; // Browser push notification
     const MEDIUM_MOBILE = 3;
+    const MEDIUM_MENU = 10; // Notifications menu
 
     public static $mediums = [
         self::MEDIUM_EMAIL,
@@ -272,6 +273,9 @@ class Subscription extends Model
             $users_to_notify[$subscription->medium] = array_unique($users_to_notify[$subscription->medium]);
         }
 
+        // Add menu notifications, for example.
+        $users_to_notify = \Eventy::filter('subscription.users_to_notify', $users_to_notify, $event_type, $events, $thread);
+
         return $users_to_notify;
     }
 
@@ -339,17 +343,20 @@ class Subscription extends Model
             }
         }
 
-        // - Notify by email
-        // - Real-time menu notification (uses same medium as for email)
+        // - Email notification (better to create them first)
         if (!empty($notify[self::MEDIUM_EMAIL])) {
-            // Email notification (better to create them first)
             foreach ($notify[self::MEDIUM_EMAIL] as $conversation_id => $notify_info) {
                 \App\Jobs\SendNotificationToUsers::dispatch($notify_info['users'], $notify_info['conversation'], $notify_info['threads'])
                     ->delay($delay)
                     ->onQueue('emails');
             }
-            // - Menu notification (uses same medium as for email)
-            foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
+        }
+
+        // - Menu notification (uses same medium as for email)
+        if (!empty($notify[self::MEDIUM_EMAIL]) || !empty($notify[self::MEDIUM_MENU])) {
+
+            $notify_menu = ($notify[self::MEDIUM_EMAIL] ?? []) + ($notify[self::MEDIUM_MENU] ?? []);
+            foreach ($notify_menu as $notify_info) {
                 $website_notification = new WebsiteNotification($notify_info['conversation'], self::chooseThread($notify_info['threads']));
                 $website_notification->delay($delay);
                 \Notification::send($notify_info['users'], $website_notification);
