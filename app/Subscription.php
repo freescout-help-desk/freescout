@@ -26,8 +26,8 @@ class Subscription extends Model
     const EVENT_CONVERSATION_ASSIGNED_TO_ME = 2;
     const EVENT_CONVERSATION_ASSIGNED = 6;
     const EVENT_FOLLOWED_CONVERSATION_UPDATED = 13;
-    const EVENT_I_AM_MENTIONED = 14;
-    const EVENT_MY_TEAM_MENTIONED = 15;
+    
+    //const EVENT_MY_TEAM_MENTIONED = 15;
     // Notify me when a customer replies…
     const EVENT_CUSTOMER_REPLIED_TO_UNASSIGNED = 4;
     const EVENT_CUSTOMER_REPLIED_TO_MY = 3;
@@ -41,6 +41,7 @@ class Subscription extends Model
     const MEDIUM_EMAIL = 1; // This is also website notifications
     const MEDIUM_BROWSER = 2; // Browser push notification
     const MEDIUM_MOBILE = 3;
+    const MEDIUM_MENU = 10; // Notifications menu
 
     public static $mediums = [
         self::MEDIUM_EMAIL,
@@ -52,16 +53,14 @@ class Subscription extends Model
         self::MEDIUM_EMAIL => [
             self::EVENT_CONVERSATION_ASSIGNED_TO_ME,
             self::EVENT_FOLLOWED_CONVERSATION_UPDATED,
-            self::EVENT_I_AM_MENTIONED,
-            self::EVENT_MY_TEAM_MENTIONED,
+            //self::EVENT_MY_TEAM_MENTIONED,
             self::EVENT_CUSTOMER_REPLIED_TO_MY,
             self::EVENT_USER_REPLIED_TO_MY,
         ],
         self::MEDIUM_BROWSER => [
             self::EVENT_CONVERSATION_ASSIGNED_TO_ME,
             self::EVENT_FOLLOWED_CONVERSATION_UPDATED,
-            self::EVENT_I_AM_MENTIONED,
-            self::EVENT_MY_TEAM_MENTIONED,
+            //self::EVENT_MY_TEAM_MENTIONED,
             self::EVENT_CUSTOMER_REPLIED_TO_MY,
             self::EVENT_USER_REPLIED_TO_MY,
         ],
@@ -199,8 +198,10 @@ class Subscription extends Model
                     $events[] = self::EVENT_USER_REPLIED_TO_UNASSIGNED;
                 }
                 break;
-            // todo: EVENT_I_AM_MENTIONED, EVENT_MY_TEAM_MENTIONED
         }
+
+        $events = \Eventy::filter('subscription.events_by_type', $events, $event_type, $thread);
+
         // Check if assigned user changed
         $user_changed = false;
         if ($event_type != self::EVENT_TYPE_ASSIGNED && $event_type != self::EVENT_TYPE_NEW) {
@@ -253,7 +254,8 @@ class Subscription extends Model
             if ($subscription->user->isAdmin()) {
 
                 // Mute notifications for events not related directly to the user.
-                if (!in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_FOLLOWED_CONVERSATION_UPDATED, self::EVENT_I_AM_MENTIONED, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY])
+                if (!in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_FOLLOWED_CONVERSATION_UPDATED, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY])
+                    && !\Eventy::filter('subscription.is_related_to_user', false, $subscription, $thread)
                 ) {
                     $mailbox_settings = $conversation->mailbox->getUserSettings($subscription->user_id);
 
@@ -263,9 +265,16 @@ class Subscription extends Model
                 }
             }
 
+            if (\Eventy::filter('subscription.filter_out', false, $subscription, $thread)) {
+                continue;
+            }
+
             $users_to_notify[$subscription->medium][] = $subscription->user;
             $users_to_notify[$subscription->medium] = array_unique($users_to_notify[$subscription->medium]);
         }
+
+        // Add menu notifications, for example.
+        $users_to_notify = \Eventy::filter('subscription.users_to_notify', $users_to_notify, $event_type, $events, $thread);
 
         return $users_to_notify;
     }
@@ -334,17 +343,20 @@ class Subscription extends Model
             }
         }
 
-        // - Notify by email
-        // - Real-time menu notification (uses same medium as for email)
+        // - Email notification (better to create them first)
         if (!empty($notify[self::MEDIUM_EMAIL])) {
-            // Email notification (better to create them first)
             foreach ($notify[self::MEDIUM_EMAIL] as $conversation_id => $notify_info) {
                 \App\Jobs\SendNotificationToUsers::dispatch($notify_info['users'], $notify_info['conversation'], $notify_info['threads'])
                     ->delay($delay)
                     ->onQueue('emails');
             }
-            // - Menu notification (uses same medium as for email)
-            foreach ($notify[self::MEDIUM_EMAIL] as $notify_info) {
+        }
+
+        // - Menu notification (uses same medium as for email)
+        if (!empty($notify[self::MEDIUM_EMAIL]) || !empty($notify[self::MEDIUM_MENU])) {
+
+            $notify_menu = ($notify[self::MEDIUM_EMAIL] ?? []) + ($notify[self::MEDIUM_MENU] ?? []);
+            foreach ($notify_menu as $notify_info) {
                 $website_notification = new WebsiteNotification($notify_info['conversation'], self::chooseThread($notify_info['threads']));
                 $website_notification->delay($delay);
                 \Notification::send($notify_info['users'], $website_notification);

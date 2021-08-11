@@ -1132,14 +1132,19 @@ class Customer extends Model
             ->get()
             ->toArray();
 
-        foreach ($data as $values) {
+        foreach ($list as $email) {
             // Dummy customer.
             $customer = new Customer();
-            $customer->email = $values['email'];
-            $customer->first_name = $values['first_name'];
-            $customer->last_name = $values['last_name'];
+            $customer->email = $email;
 
-            $result[$values['email']] = $customer->getNameAndEmail();
+            foreach ($data as $values) {
+                if (strtolower($values['email']) == strtolower($email)) {
+                    $customer->first_name = $values['first_name'];
+                    $customer->last_name = $values['last_name'];
+                    break;
+                }
+            }
+            $result[$email] = $customer->getNameAndEmail();
         }
 
         return $result;
