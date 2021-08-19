@@ -391,13 +391,8 @@ class FetchEmails extends Command
                     return;
                 }
                 $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
-            } elseif (!$is_bounce && ($user = User::where('email', $from)->first()) && $prev_message_id && ($prev_thread = Thread::where('message_id', $prev_message_id)->first()) && $prev_thread->created_by_user_id == $user->id) {
-                // Reply from customer to his reply to the notification
-                $user_id = $user->id;
-                $message_from_customer = false;
-                $is_reply = true;
             } else {
-                // Message from Customer
+                // Message from Customer or User replied to his reply to notification
                 $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
 
                 if (!$is_bounce) {
@@ -423,6 +418,17 @@ class FetchEmails extends Command
                         } else {
                             // Customer replied to his own message
                             $prev_thread = Thread::where('message_id', $prev_message_id)->first();
+                        }
+
+                        // Reply from user to his reply to the notification
+                        if (!$prev_thread
+                            && ($prev_thread = Thread::where('message_id', $prev_message_id)->first())
+                            && $prev_thread->created_by_user_id
+                            && $prev_thread->created_by_user->hasEmail($from)
+                        ) {
+                            $user_id = $user->id;
+                            $message_from_customer = false;
+                            $is_reply = true;
                         }
                     }
                     if (!empty($prev_thread)) {
@@ -537,7 +543,7 @@ class FetchEmails extends Command
             } else {
                 // Check if From is the same as user's email.
                 // If not we send an email with information to the sender.
-                if (Email::sanitizeEmail($user->email) != Email::sanitizeEmail($from)) {
+                if (!$user->hasEmail($from)) {
                     $this->logError("From address {$from} is not the same as user {$user->id} email: ".$user->email);
                     $message->setFlag(['Seen']);
 
