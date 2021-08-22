@@ -120,4 +120,8 @@ return [
         ],
     ],
 
+    'prefix' => env('TICKETNUMBER_PREFIX', "[#"),
+    'suffix' => env('TICKETNUMBER_SUFFIX', "] "),
+    'trustsubject' => env('TICKETNUMBER_TRUSTSUBJECT', false),
+
 ];

@@ -438,7 +438,7 @@ class Mail
     /**
      * Fetch Message-ID from incoming email body.
      *
-     * @param [type] $message_id [description]
+     * @param [type] $body [description]
      *
      * @return [type] [description]
      */
@@ -452,6 +452,32 @@ class Mail
 
         return '';
     }
+
+    /**
+     * Fetch Ticket Number from incoming email subject.
+     *
+     * @param [type] $subject [description]
+     *
+     * @return [type] [description]
+     */
+    public static function fetchMessageTicketNumberValue($subject)
+    {
+        $prefix = \Config::get('mail.prefix', "[#");
+        $suffix = \Config::get('mail.suffix', "] ");
+        $trustsubject = \Config::get('mail.trustsubject', false);
+
+        if ($trustsubject) {
+            preg_match('/' . preg_quote($prefix) . '([0-9]+)' . preg_quote($suffix) . '/', $subject, $matches);
+            if (!empty($matches[1])) {
+                // Return first found ticket number.
+                return $matches[1];
+            }
+        }
+
+        return NULL;
+    }
+
+
 
     /**
      * Detect autoresponder by headers.

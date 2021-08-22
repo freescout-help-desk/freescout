@@ -309,6 +309,22 @@ class FetchEmails extends Command
                 }
             }
 
+            //Try to get first mesage ID in thread from conversation ID in subject to get some coherence in auto responders that do not send proper headers.
+            if (!$prev_message_id) {
+                $subject = $message->getSubject();
+                $conversation_id = \MailHelper::fetchMessageTicketNumberValue($subject);
+                if (!is_null($conversation_id)) {
+                    $this->line('['.date('Y-m-d H:i:s').'] Using conversation_id ' . $conversation_id . ' matched from subject');
+                    $thread = Thread::where('conversation_id', $conversation_id)->first();
+                    if (is_null($thread)) {
+                        $this->logError('No threads with conversation_id ' . $conversation_id . " found.");
+                    }
+                    else {
+                        $prev_message_id = $thread->message_id;
+                    }
+                }
+            }
+
             // Bounce detection.
             $bounced_message_id = null;
             if ($message->hasAttachments()) {
