@@ -248,7 +248,7 @@ class ConversationsController extends Controller
             }
             // Show replying first.
             usort($viewers, function($a, $b) {
-                return $a['replying'] < $b['replying'];
+                return (int)($a['replying'] < $b['replying']);
             });
         }
 
