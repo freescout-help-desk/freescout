@@ -6,6 +6,7 @@
 
 namespace App;
 
+use App\Email;
 use App\Mail\PasswordChanged;
 use App\Mail\UserInvite;
 use App\Notifications\WebsiteNotification;
@@ -1032,5 +1033,26 @@ class User extends Authenticatable
     public static function getUserPermissionsList()
     {
         return \Eventy::filter('user_permissions.list', self::$user_permissions);
+    }
+
+    /**
+     * Check user main and alternate emails.
+     */
+    public function hasEmail($email)
+    {
+        $email = Email::sanitizeEmail($email);
+
+        if ($this->email == $email) {
+            return true;
+        }
+        $alt_emails = explode(',', $this->emails);
+        
+        foreach ($alt_emails as $alt_email) {
+            if (Email::sanitizeEmail($alt_email) == $email) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
