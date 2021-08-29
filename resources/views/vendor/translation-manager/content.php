@@ -21,7 +21,7 @@
                 <p>Done searching for translations, found <strong class="counter">N</strong> items!</p>
             </div>
             <div class="alert alert-success success-publish" style="display:none;">
-                <p>Done publishing translations for group '<?php echo $group ?>'!</p>
+                <p>Done publishing translations for group '<?php echo htmlspecialchars($group) ?>'!</p>
             </div>
             <?php if(Session::has('successPublish')) : ?>
                 <div class="alert alert-info">
@@ -91,7 +91,7 @@
                 </form>
             <?php endif ?>
             <?php if(isset($group)) : ?>
-                <form class="form-inline form-publish" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?php echo $group ?>? This will overwrite existing language files.">
+                <form class="form-inline form-publish" method="POST" action="<?php echo action('\Barryvdh\TranslationManager\Controller@postPublish', $group) ?>" data-remote="true" role="form" data-confirm="Are you sure you want to publish the translations group '<?php echo htmlspecialchars($group) ?>? This will overwrite existing language files.">
                     <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                     <?php /*<button type="submit" class="btn btn-primary" data-disable-with="Publishing…" >Publish translations</button>*/ ?>
                     <a href="<?= action('\Barryvdh\TranslationManager\Controller@getIndex') ?>" class="btn btn-primary">« Back</a>
