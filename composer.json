@@ -35,7 +35,8 @@
         "doctrine/dbal": "2.12.1",
         "egulias/email-validator": "2.1.10",
         "symfony/console": "v3.4.47",
-        "javoscript/laravel-macroable-models": "1.0.4"
+        "javoscript/laravel-macroable-models": "1.0.4",
+        "ext-imap": "*",
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v3.2.0",
