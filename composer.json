@@ -37,7 +37,7 @@
         "symfony/console": "v3.4.47",
         "javoscript/laravel-macroable-models": "1.0.4",
         "ext-imap": "*",
-        "league/flysystem-aws-s3-v3": "^1.0"
+        "league/flysystem-aws-s3-v3":"~1.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v3.2.0",
