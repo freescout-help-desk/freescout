@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "aws/aws-sdk-php:: "^3.20.0",
+        "aws/aws-sdk-php: "^3.20.0",
         "symfony/debug": "v3.4.18",
         "devfactory/minify": "1.0.7",
         "fideloper/proxy": "3.3.4",
