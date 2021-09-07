@@ -803,10 +803,12 @@ class User extends Authenticatable
             Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
         ob_start();
-        imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
-        $image_contents = ob_get_clean();
+        imagejpeg($resized_image, NULL, self::PHOTO_QUALITY);
+        $image_contents = ob_get_contents();
+        ob_end_clean();
+
         // Storage::put(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name, $image_contents);
-        Storage::put($file_name, $uploaded_file, 'public');
+        Storage::put($file_name, $image_contents, 'public');
         // imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
         // $photo_url = $request->file('photo_url')->storeAs(
         //     User::PHOTO_DIRECTORY, !Hash::make($user->id).'.jpg'
