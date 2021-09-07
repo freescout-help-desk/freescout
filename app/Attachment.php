@@ -19,7 +19,7 @@ class Attachment extends Model
 
     const DIRECTORY = 'attachment';
 
-    CONST DISK = 'private';
+    CONST DISK = 's3';
 
     // https://github.com/Webklex/laravel-imap/blob/master/src/IMAP/Attachment.php
     public static $types = [
