@@ -806,7 +806,7 @@ class User extends Authenticatable
         imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
         $image_contents = ob_get_clean();
         // Storage::put(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name, $image_contents);
-        Storage::put($file_name, $uploaded_file, 'public')
+        Storage::put($file_name, $uploaded_file, 'public');
         // imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
         // $photo_url = $request->file('photo_url')->storeAs(
         //     User::PHOTO_DIRECTORY, !Hash::make($user->id).'.jpg'
