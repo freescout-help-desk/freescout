@@ -803,7 +803,7 @@ class User extends Authenticatable
             Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
         \Log::info($dest_path);
-        Storage::put(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name, $resized_image);
+        Storage::put(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name, $uploaded_file);
 
         // imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
         // $photo_url = $request->file('photo_url')->storeAs(
