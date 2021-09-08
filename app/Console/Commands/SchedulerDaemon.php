@@ -34,7 +34,7 @@ class SchedulerDaemon extends Command
 
           $this->call('schedule:run');
 
-          sleep($this->option('sleep'));
+          sleep(60);
       }
   }
 }
