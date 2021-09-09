@@ -1,2 +1,2 @@
 postdeploy: php artisan migrate --force
-scheduler: php artisan schedule:daemon --timeout=0 
+scheduler: php artisan schedule:daemon
