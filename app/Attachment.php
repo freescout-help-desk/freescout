@@ -210,7 +210,7 @@ class Attachment extends Model
      */
     public function url()
     {
-        return Storage::disk('local')->url($this->getStorageFilePath()).'?id='.$this->id.'&token='.$this->getToken();
+        return Storage::url($this->getStorageFilePath()).'?id='.$this->id.'&token='.$this->getToken();
     }
 
     /**
