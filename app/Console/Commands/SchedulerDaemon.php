@@ -30,13 +30,8 @@ class SchedulerDaemon extends Command
   public function handle()
   {
       while (true) {
-          try {
-            $this->line('<info>[' . Carbon::now()->format('Y-m-d H:i:s') . ']</info> Calling scheduler');
-
-            $this->call('schedule:run');
-          } catch (Exception $e) {
-            $this->line('Exception reçue : ' . $e->getMessage());
-          }
+          $this->line('<info>[' . Carbon::now()->format('Y-m-d H:i:s') . ']</info> Calling scheduler');
+          $this->call('schedule:run');
           sleep($this->option('sleep'));
       }
   }
