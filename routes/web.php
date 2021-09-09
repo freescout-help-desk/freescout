@@ -22,7 +22,6 @@ Route::redirect('/home', '/', 301);
 Route::get('/user-setup/{hash}', 'PublicController@userSetup')->name('user_setup');
 Route::post('/user-setup/{hash}', 'PublicController@userSetupSave');
 Route::get('/storage/attachment/{dir_1}/{dir_2}/{dir_3}/{file_name}', 'PublicController@downloadAttachment')->name('attachment.download');
-Route::get('/storage/users/{dir_1}/{dir_2}/{dir_3}/{file_name}', 'PublicController@downloadAttachment')->name('attachment.download');
 
 // General routes for logged in users
 Route::get('/', 'SecureController@dashboard')->name('dashboard');
