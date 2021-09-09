@@ -66,7 +66,7 @@ return [
             'bucket' => env('AWS_BUCKET'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => true,
-            'root'       => storage_path('app'),
+            // 'root'       => storage_path('app'),
             'url'        => env('APP_URL').'/storage',
         ],
         's3' => [
@@ -78,8 +78,8 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => true,
             'visibility' => 'public',
-            'root'       => storage_path('app/public'),
-            'url'        => env('APP_URL').'/storage',
+            // 'root'       => storage_path('app/public'),
+            // 'url'        => env('APP_URL').'/storage',
         ],
 
     ],
