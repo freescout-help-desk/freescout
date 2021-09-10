@@ -32,10 +32,7 @@ class SchedulerDaemonQueue extends Command
       while (true) {
           $this->line('<info>[' . Carbon::now()->format('Y-m-d H:i:s') . ']</info> Calling scheduler queue');
         //   $this->call('cache:clear');
-          $this->call('queue:work', ['--queue' => 'emails,default',
-          '--once' => True,
-          '--tries' => '1'
-      ]);
+          $this->call('queue:work');
           sleep($this->option('sleep'));
       }
   }
