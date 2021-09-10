@@ -33,6 +33,7 @@ class SchedulerDaemonQueue extends Command
           $this->line('<info>[' . Carbon::now()->format('Y-m-d H:i:s') . ']</info> Calling scheduler queue');
         //   $this->call('cache:clear');
           $this->call('queue:work');
+          $this->call('freescout:fetch-emails >> /dev/null 2>&1');
           sleep($this->option('sleep'));
       }
   }
