@@ -1,2 +1,2 @@
 postdeploy: php artisan migrate --force
-scheduler: php artisan freescout:clear-cache && php artisan schedule:daemon
+scheduler: php artisan freescout:clear-cache && php artisan schedule:daemon && php artisan schedule:daemonqueue
