@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
-class SchedulerDaemon extends Command
+class SchedulerDaemonQueue extends Command
 {
   /**
    * The name and signature of the console command.
