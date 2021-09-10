@@ -50,13 +50,6 @@ return [
             'visibility' => 'public',
         ],
 
-        // 'public' => [
-        //     'driver'     => 'local',
-        //     'root'       => storage_path('app/public'),
-        //     'url'        => env('APP_URL').'/storage',
-        //     'visibility' => 'public',
-        // ],
-
         // To store file in the storage/app folder
         'private' => [
             'driver' => 's3',
@@ -65,8 +58,6 @@ return [
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
             'endpoint' => env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => true,
-            // 'root'       => storage_path('app'),
             'url'        => env('APP_URL').'/storage',
         ],
         's3' => [
@@ -76,9 +67,7 @@ return [
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
             'endpoint' => env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => true,
             'visibility' => 'public',
-            // 'root'       => storage_path('app/public'),
             'url'        => env('APP_URL').'/storage',
         ],
 
