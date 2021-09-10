@@ -147,8 +147,8 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('queue:work', $queue_work_params)
             ->everyMinute()
-            ->withoutOverlapping();
-        //    ->sendOutputTo(storage_path().'/logs/queue-jobs.log');
+            ->withoutOverlapping()
+            ->sendOutputTo(storage_path().'/logs/queue-jobs.log');
     }
 
     /**

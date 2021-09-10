@@ -186,7 +186,11 @@ return [
     | Number of retries is set in each job class.
     |-------------------------------------------------------------------------
     */
-    'queue_work_params' => ['--queue' => 'emails,default', '--sleep' => '5', '--tries' => '1'],
+    'queue_work_params' => ['--queue' => 'emails,default',
+        // '--sleep' => '5',
+        '--once' => '1',
+        '--tries' => '1'
+    ],
 
     /*
     |--------------------------------------------------------------------------
