@@ -31,7 +31,7 @@ class SchedulerDaemonCache extends Command
   {
       while (true) {
           $this->line('<info>[' . Carbon::now()->format('Y-m-d H:i:s') . ']</info> Calling scheduler queue');
-          $this->call('cache:clear');
+          $this->call('freescout:fetch-emails');
           sleep($this->option('sleep'));
       }
   }
