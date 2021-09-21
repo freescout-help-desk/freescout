@@ -544,7 +544,9 @@ class Thread extends Model
         $person = '';
 
         if ($this->type == self::TYPE_CUSTOMER) {
-            $person = $this->customer_cached->getFullName(true);
+            if ($this->customer_cached) {
+                $person = $this->customer_cached->getFullName(true);
+            }
         } elseif ($this->state == self::STATE_DRAFT && !empty($this->edited_by_user_id)) {
             // Draft
             if (auth()->user() && $this->edited_by_user_id == auth()->user()->id) {
