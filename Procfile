@@ -1,2 +1,2 @@
 postdeploy: php artisan migrate --force
-clock: node cron.js
+scheduler: php artisan schedule:daemon
