@@ -145,10 +145,10 @@ class Kernel extends ConsoleKernel
         // Add identifier to avoid conflicts with other FreeScout instances on the same server.
         $queue_work_params['--queue'] .= ','.\Helper::getWorkerIdentifier();
 
-        $schedule->command('queue:work', $queue_work_params)
-            ->everyMinute()
-            ->withoutOverlapping()
-            ->sendOutputTo(storage_path().'/logs/queue-jobs.log');
+        // $schedule->command('queue:work', $queue_work_params)
+        //     ->everyMinute()
+        //     ->withoutOverlapping()
+        //     ->sendOutputTo(storage_path().'/logs/queue-jobs.log');
     }
 
     /**
