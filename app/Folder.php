@@ -209,8 +209,8 @@ class Folder extends Model
         if ($this->type == self::TYPE_MINE && $this->user_id) {
             $this->active_count = Conversation::where('user_id', $this->user_id)
                 ->where('mailbox_id', $this->mailbox_id)
-                ->where('status', Conversation::STATUS_ACTIVE)
                 ->where('state', Conversation::STATE_PUBLISHED)
+                ->where('status', Conversation::STATUS_ACTIVE)
                 ->count();
             $this->total_count = Conversation::where('user_id', $this->user_id)
                 ->where('mailbox_id', $this->mailbox_id)

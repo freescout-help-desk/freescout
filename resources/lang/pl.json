@@ -1,5 +1,4 @@
 {
-    "Email customer": "Wyślij E-mail do klienta",
     "Call customer": "Zadzwoń do klienta",
     "Edit Profile": "Edytuj Profil",
     "No customers found": "Nie znaleziono klientów",
@@ -141,8 +140,6 @@
     "Delete Mailbox": "Usuń Skrzynkę Pocztową",
     "Enable Auto Reply": "Włącz Auto Odpowiedź",
     "When a customer emails this mailbox, application can send an auto reply to the customer immediately.<br\/><br\/>Only one auto reply is sent per new conversation.": "Gdy klient wysyła wiadomość e-mail do tej skrzynki pocztowej, aplikacja może natychmiast wysłać do niego automatyczną odpowiedź.<br\/><br \/>Na każdą nową rozmowę wysyłana jest tylko jedna auto-odpowiedź.",
-    "Office Hours": "Godziny pracy",
-    "Not yet activated": "Jeszcze nie aktywowany",
     "Subject": "Temat",
     "Message": "Wiadomość",
     "Auto replies don't include your mailbox signature, so be sure to add your contact information if necessary.": "Automatyczne odpowiedzi nie zawierają Twojej sygnaturki, więc w razie potrzeby dodaj swoje dane kontaktowe.",
@@ -204,8 +201,6 @@
     "A conversation is assigned to someone else": "Rozmowa została przypisana do kogoś innego",
     "A conversation :person is following is updated": "Rozmowa, którą :person obserwuje, została zaktualizowana ",
     "A conversation I'm following is updated": "Rozmowa, którą obserwuję, została zaktualizowana ",
-    ":person is @mentioned in a conversation": ":person jest @mentioned w rozmowie",
-    "I'm @mentioned in a conversation": "Jestem @mentioned w rozmowie",
     ":person's team is @mentioned in a conversation": "Zespół :person został @mentioned w rozmowie",
     "My team is @mentioned in a conversation": "Mój zespół jest @mentioned w rozmowie",
     "Notify :person when a customer replies…": "Powiadom :person, gdy klient odpowie…",
@@ -590,7 +585,7 @@
     "Assignee already set": "Procesujący jest już ustawiony",
     "Not enough permissions": "Niewystarczające uprawnienia",
     "Assignee updated": "Procesujący zaktualizowany",
-    "View": "Widok",
+    "View": "Podgląd",
     "Status already set": "Status już ustawiony",
     "Incorrect status": "Nieprawidłowy status",
     "Status updated": "Status zaktualizowany",
@@ -757,5 +752,7 @@
     "Hi :user, an account has been created for you at :app_url": "Witaj, :user. Zostało utworzone dla Ciebie konto na :app_url",
     "Remind License Keys": "Przypominaj o kluczach licencyjnych",
     "Use Deactivate License button to transfer license key from another domain": "Użyj przycisku Dezaktywuj Licencję, w celu przeniesienia klucza licencyjnego z innej domeny",
-    "Published": "Opublikowano"
+    "Published": "Opublikowano",
+    "Copy": "Kopiuj",
+    "Comma separated list off email addresses from which user can reply to email notifications in addition to user's main Email": "Lista dodatkowych, poza głównym, adresów email oddzielonych przecinkami, z których użytkownik może odpowiadać na powiadomienia emailowe."
 }

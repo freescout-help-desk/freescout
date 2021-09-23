@@ -439,7 +439,7 @@ class User extends Authenticatable
      *
      * @return string
      */
-    public static function dateFormat($date, $format = 'M j, Y H:i', $user = null, $modify_format = true)
+    public static function dateFormat($date, $format = 'M j, Y H:i', $user = null, $modify_format = true, $use_user_timezone = true)
     {
         if (!$user) {
             $user = auth()->user();
@@ -481,10 +481,11 @@ class User extends Authenticatable
             }
             // todo: formatLocalized has to be used here and below,
             // but it returns $format value instead of formatted date
-            return $date->setTimezone($user->timezone)->format($format);
-        } else {
-            return $date->format($format);
+            if ($use_user_timezone) {
+                $date->setTimezone($user->timezone);
+            }
         }
+        return $date->format($format);
     }
 
     /**

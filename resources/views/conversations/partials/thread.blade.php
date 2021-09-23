@@ -18,6 +18,7 @@
                     @action('thread.menu', $thread)
                     <li><a href="{{ route('conversations.ajax_html', ['action' =>
                         'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
+                    @action('thread.menu.append', $thread)
                 </ul>
             @endif
         </div>
@@ -296,6 +297,7 @@
                 @if ($thread->isReply() || $thread->isNote())
                     <li><a href="{{ \Request::getRequestUri() }}&amp;print_thread_id={{ $thread->id }}&amp;print=1" target="_blank" role="button">{{ __("Print") }}</a></li>
                 @endif
+                @action('thread.menu.append', $thread)
             </ul>
         </div>
     </div>

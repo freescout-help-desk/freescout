@@ -329,7 +329,7 @@ class ModulesController extends Controller
 
                     if ($type == 'success') {
                         // Migrate again, in case migration did not work in the moment the module was activated.
-                        \Artisan::call('migrate');
+                        \Artisan::call('migrate', ['--force' => true]);
                     }
 
                     // \Session::flash does not work after BufferedOutput
