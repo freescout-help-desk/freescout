@@ -1509,4 +1509,9 @@ class Helper
     {
         return $param->getType() && !$param->getType()->isBuiltin() ? method_exists($param->getType(), 'getName') ? $param->getType()->getName() : $param->getClass()->name : null;
     }
+
+    public static function getWebCronHash()
+    {
+        return md5(config('app.key').'web_cron_hash');
+    }
 }
