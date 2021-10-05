@@ -600,6 +600,7 @@ class Mail
             $client = \MailHelper::getMailboxClient($mailbox);
             $client->connect();
         } catch (\Exception $e) {
+            \Helper::logException($e, '('.$mailbox->name.') Could not fetch specific message by Message-ID via IMAP:');
             return null;
         }
 
@@ -631,7 +632,7 @@ class Mail
                 }
 
             } catch (\Exception $e) {
-                // Do nothing.
+                \Helper::logException($e, '('.$mailbox->name.') Could not fetch specific message by Message-ID via IMAP:');
             }
         }
 
