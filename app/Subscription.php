@@ -318,7 +318,7 @@ class Subscription extends Model
 
             $users_to_notify = self::usersToNotify($event['event_type'], $event['conversation'], $threads, $mailbox_user_ids);
 
-            if (!$users_to_notify) {
+            if (!$users_to_notify || !is_array($users_to_notify)) {
                 continue;
             }
 
