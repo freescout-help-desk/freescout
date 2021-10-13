@@ -94,6 +94,9 @@ class SendReplyToCustomer implements ShouldQueue
         $new = false;
         $headers = [];
         $this->last_thread = $this->threads->first();
+        if ($this->last_thread === null) {
+            return;
+        }
         $last_customer_thread = null;
 
         // If thread is draft, it means it has been undone
