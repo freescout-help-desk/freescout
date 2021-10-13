@@ -1046,23 +1046,43 @@ class Thread extends Model
             $conversation->last_reply_at = $now;
             if ($is_customer) {
                 $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
-                // Reply from customer makes conversation active
-                $conversation->status = Conversation::STATUS_ACTIVE;
+
+                // Set specific status
+                if (!empty($data['status'])) {
+                    if ((int)$conversation->status != (int)$data['status']) {
+                        $update_folder = true;
+                    }
+                    $conversation->status = $data['status'];
+                } else {
+                    if ((int)$conversation->status != Conversation::STATUS_ACTIVE) {
+                        $update_folder = true;
+                    }
+                    // Reply from customer makes conversation active
+                    $conversation->status = Conversation::STATUS_ACTIVE;
+                }
             } else {
                 $conversation->last_reply_from = Conversation::PERSON_USER;
                 $conversation->user_updated_at = $now;
-                $conversation->status = Conversation::STATUS_PENDING;
+                
+                if (!empty($data['status'])) {
+                    if ((int)$conversation->status != (int)$data['status']) {
+                        $update_folder = true;
+                    }
+                    $conversation->status = $data['status'];
+                } else {
+                    if ((int)$conversation->status != Conversation::STATUS_PENDING) {
+                        $update_folder = true;
+                    }
+                    // Reply from customer makes conversation active
+                    $conversation->status = Conversation::STATUS_PENDING;
+                }
             }
-        }
-
-        // Set specific status
-        if (!empty($data['status'])) {
-            $conversation->status = $data['status'];
         }
         
         // Reply from customer to deleted conversation should undelete it.
         if ($data['type'] == Thread::TYPE_CUSTOMER && $conversation->state == Conversation::STATE_DELETED) {
             $conversation->state = Conversation::STATE_PUBLISHED;
+            $update_folder = true;
         }
 
         if ($update_conv) {
@@ -1070,6 +1090,10 @@ class Thread extends Model
 
             if ($is_customer) {
                 $conversation->customer_email = $customer->getMainEmail();
+            }
+
+            if ($update_folder) {
+                $conversation->updateFolder();
             }
         }
 
