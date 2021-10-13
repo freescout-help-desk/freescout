@@ -1060,6 +1060,11 @@ class Thread extends Model
             $conversation->status = $data['status'];
         }
         
+        // Reply from customer to deleted conversation should undelete it.
+        if ($data['type'] == Thread::TYPE_CUSTOMER && $conversation->state == Conversation::STATE_DELETED) {
+            $conversation->state = Conversation::STATE_PUBLISHED;
+        }
+
         if ($update_conv) {
             $conversation->customer_id = $customer->id;
 
