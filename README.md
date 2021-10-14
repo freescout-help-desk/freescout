@@ -29,7 +29,7 @@
 
   * No limitations on the number of users, tickets, etc.
   * 100% Mobile-friendly.
-  * Multilingual (English, French, Japanese, Italian, Polish, Portuguese, Russian, Dutch, German, Spanish, Swedish).
+  * Multilingual (English, French, Japanese, Italian, Polish, Portuguese, Russian, Dutch, German, Danish, Spanish, Swedish).
   * Seamless email integration.
   * Web installer & updater.
   * Starred conversations.

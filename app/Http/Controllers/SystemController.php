@@ -364,4 +364,19 @@ class SystemController extends Controller
 
         return \Response::json($response);
     }
+
+    /**
+     * Web Cron.
+     */
+    public function cron(Request $request)
+    {
+        if (empty($request->hash) || $request->hash != \Helper::getWebCronHash()) {
+            abort(404);
+        }
+        $outputLog = new BufferedOutput();
+        \Artisan::call('schedule:run', [], $outputLog);
+        $output = $outputLog->fetch();
+
+        return response($output, 200)->header('Content-Type', 'text/plain');
+    }
 }

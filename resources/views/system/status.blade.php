@@ -183,6 +183,9 @@
     <p>
         {!! __('Make sure that you have the following line in your crontab:') !!}<br/>
         <code>* * * * * php {{ base_path() }}/artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code>
+        <br/>
+        {!! __('Alternatively cron job can be executed by requesting the following URL every minute (this method is not recommended as some features may not work as expected, use it at your own risk)') !!}:<br/>
+        <a href="{{ route('system.cron', ['hash' => \Helper::getWebCronHash()]) }}" target="_blank">{{ route('system.cron', ['hash' => \Helper::getWebCronHash()]) }}</a>
     </p>
     <table class="table table-dark-header table-bordered table-responsive">
         <tbody>
