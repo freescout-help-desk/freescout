@@ -828,7 +828,7 @@ a h4 {
     float: left;
     position: relative;
     border: 1px solid #dedede;
-    border-radius: 0;
+    border-radius: 15px;
     /*border-left: 4px solid #5cb85c;*/
     /*-webkit-box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
     box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);*/
@@ -842,6 +842,8 @@ a h4 {
 .dash-card-content {
     padding-bottom: 60px;
     padding-top: 15px;
+    border-radius: 15px;
+    overflow:hidden;
 }
 .dash-card-content h3 a,
 .dash-card-content h3 a:hover,
@@ -954,6 +956,7 @@ a h4 {
     .card,
     .dash-card {
         width: 100%;
+        margin: 0 0 20px 0;
     }
 }
 
