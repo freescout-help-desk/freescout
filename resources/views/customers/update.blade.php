@@ -7,13 +7,13 @@
 
 @section('sidebar')
     <div class="profile-preview">
-    	@action('customer.profile_preview_prepend', $customer)
+    	@include('customers/profile_menu')
         @include('customers/profile_snippet')
     </div>
 @endsection
 
 @section('content')
-    @include('customers/profile_menu')
+    @include('customers/profile_tabs')
     @include('customers/partials/edit_form')
 @endsection
 

@@ -1132,6 +1132,16 @@ a h4 {
 /**
  * Customer
  */
+.customer-profile-menu {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    z-index: 10;
+    font-size: 16px;
+}
+.customer-profile-menu a {
+    color: #394956;
+}
 .customer-photo-container {
     margin: 8px 0 0 12px;
     /*margin: 0 0 0 12px;*/
