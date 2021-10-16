@@ -917,7 +917,7 @@ class Customer extends Model
             $customer->save();
         }
 
-        if (empty($email_obj->id) || !$email_obj->customer_id) {
+        if (empty($email_obj->id) || !$email_obj->customer_id || $email_obj->customer_id != $customer->id) {
             $email_obj->customer()->associate($customer);
             $email_obj->save();
         }
