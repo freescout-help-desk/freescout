@@ -639,6 +639,10 @@ select[multiple].input-md {
 .btn-group-rounded *:last-child .btn {
     border-radius: 0 14px 14px 0;
 }
+.btn-group-rounded .btn:only-child,
+.btn-group-rounded *:only-child .btn {
+    border-radius: 14px;
+}
 .btn-trans {
     color: #93a1af;
     background-color: transparent;
@@ -884,6 +888,7 @@ a h4 {
     padding-bottom: 7px;
     background-color: #eff1f4;
     border-bottom: 1px solid #d9e1e7;
+    min-height: 30px;
 }
 .dash-card-list-item {
     font-size: 14px;
