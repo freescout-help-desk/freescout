@@ -1514,4 +1514,17 @@ class Helper
     {
         return md5(config('app.key').'web_cron_hash');
     }
+
+    public static function fixProtocol($url)
+    {
+        if (parse_url(config('app.url'), PHP_URL_SCHEME) == 'http' && parse_url($url, PHP_URL_SCHEME) != 'http') {
+            return str_replace('https://', 'http://', $url);
+        }
+
+        if (parse_url(config('app.url'), PHP_URL_SCHEME) == 'https' && parse_url($url, PHP_URL_SCHEME) != 'https') {
+            return str_replace('http://', 'https://', $url);
+        }
+
+        return $url;
+    }
 }

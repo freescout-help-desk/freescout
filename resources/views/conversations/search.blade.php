@@ -147,9 +147,9 @@
 	<div class="search-results">
 		<ul class="nav nav-tabs nav-tabs-main margin-top">
 			@if (Eventy::filter('search.is_tab_visible', true, App\Conversation::SEARCH_MODE_CONV))
-		    	<li @if ($mode == App\Conversation::SEARCH_MODE_CONV)class="active search-tab-conv"@endif><a href="{{ request()->fullUrlWithQuery(['mode' => App\Conversation::SEARCH_MODE_CONV]) }}">{{ __('Conversations') }} <b>({{ $conversations->total() }})</b></a></li>
+		    	<li @if ($mode == App\Conversation::SEARCH_MODE_CONV)class="active search-tab-conv"@endif><a href="{{ \Helper::fixProtocol(request()->fullUrlWithQuery(['mode' => App\Conversation::SEARCH_MODE_CONV])) }}">{{ __('Conversations') }} <b>({{ $conversations->total() }})</b></a></li>
 		    @endif
-		    <li @if ($mode == App\Conversation::SEARCH_MODE_CUSTOMERS)class="active"@endif><a href="{{ request()->fullUrlWithQuery(['mode' => App\Conversation::SEARCH_MODE_CUSTOMERS]) }}">{{ __('Customers') }} <b>({{ $customers->total() }})</b></a></li>
+		    <li @if ($mode == App\Conversation::SEARCH_MODE_CUSTOMERS)class="active"@endif><a href="{{ \Helper::fixProtocol(request()->fullUrlWithQuery(['mode' => App\Conversation::SEARCH_MODE_CUSTOMERS])) }}">{{ __('Customers') }} <b>({{ $customers->total() }})</b></a></li>
 		</ul>
 		@if ($mode == App\Conversation::SEARCH_MODE_CONV)
 	    	@include('conversations/conversations_table', ['params' => ['target_blank' => true, 'show_mailbox' => (count(Auth::user()->mailboxesCanView(true)) > 1)]])
