@@ -1,5 +1,7 @@
 @include('partials/flash_messages')
 
+@action('customer.edit.before_form', $customer)
+
 <div class="container form-container">
     <div class="row">
         <div class="col-xs-12">

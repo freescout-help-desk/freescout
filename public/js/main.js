@@ -4905,3 +4905,8 @@ function adjustCustomerSidebarHeight()
 		$('#conv-layout').css('min-height', (sidebar_h+20)+'px');
 	}
 }
+
+function closeAllModals()
+{
+	$('.modal').modal('hide');
+}

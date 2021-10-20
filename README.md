@@ -19,6 +19,7 @@
    * [Mobile Apps](#mobile-apps)
    * [Requirements](#requirements)
    * [Installation](#installation)
+   * [Cloud Hosted](#cloud-hosted)
    * [Modules](#modules)
    * [Tools & Integrations](#tools--integrations)
    * [News & Updates](#news--updates)
@@ -80,9 +81,14 @@ Images & one-click installs:
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
 * [Ubuntu](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) (bash script)
 
+## Cloud Hosted
+
+[Cloud Hosted FreeScout](https://freescout.net/cloud-hosted/)
+
 ## Modules
 
-[Available modules](https://freescout.net/modules/)
+* [Official Modules](https://freescout.net/modules/)
+* [Community Modules](https://freescout.net/community-modules/)
 
 ## Tools & Integrations
   

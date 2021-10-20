@@ -639,6 +639,10 @@ select[multiple].input-md {
 .btn-group-rounded *:last-child .btn {
     border-radius: 0 14px 14px 0;
 }
+.btn-group-rounded .btn:only-child,
+.btn-group-rounded *:only-child .btn {
+    border-radius: 14px;
+}
 .btn-trans {
     color: #93a1af;
     background-color: transparent;
@@ -828,7 +832,7 @@ a h4 {
     float: left;
     position: relative;
     border: 1px solid #dedede;
-    border-radius: 0;
+    border-radius: 15px;
     /*border-left: 4px solid #5cb85c;*/
     /*-webkit-box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
     box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);*/
@@ -842,6 +846,8 @@ a h4 {
 .dash-card-content {
     padding-bottom: 60px;
     padding-top: 15px;
+    border-radius: 15px;
+    overflow:hidden;
 }
 .dash-card-content h3 a,
 .dash-card-content h3 a:hover,
@@ -882,6 +888,7 @@ a h4 {
     padding-bottom: 7px;
     background-color: #eff1f4;
     border-bottom: 1px solid #d9e1e7;
+    min-height: 30px;
 }
 .dash-card-list-item {
     font-size: 14px;
@@ -954,6 +961,7 @@ a h4 {
     .card,
     .dash-card {
         width: 100%;
+        margin: 0 0 20px 0;
     }
 }
 
@@ -1132,6 +1140,16 @@ a h4 {
 /**
  * Customer
  */
+.customer-profile-menu {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    z-index: 10;
+    font-size: 16px;
+}
+.customer-profile-menu a {
+    color: #394956;
+}
 .customer-photo-container {
     margin: 8px 0 0 12px;
     /*margin: 0 0 0 12px;*/

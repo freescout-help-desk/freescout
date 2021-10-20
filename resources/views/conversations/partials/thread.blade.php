@@ -79,7 +79,7 @@
                             @if ($thread->type == App\Thread::TYPE_CUSTOMER)
                                 @if (\Helper::isPrint())
                                     {{ $thread->customer_cached->getFullName(true) }}
-                                @else
+                                @elseif ($thread->customer_cached)
                                     <a href="{{ $thread->customer_cached->url() }}">{{ $thread->customer_cached->getFullName(true) }}</a>
                                 @endif
                             @else

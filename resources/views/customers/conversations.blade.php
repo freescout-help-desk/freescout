@@ -5,12 +5,13 @@
 
 @section('sidebar')
     <div class="profile-preview">
+    	@include('customers/profile_menu')
         @include('customers/profile_snippet')
     </div>
 @endsection
 
 @section('content')
-    @include('customers/profile_menu')
+    @include('customers/profile_tabs')
     @include('conversations/conversations_table', ['no_checkboxes' => true, 'no_customer' => true, 'conversations_filter' => ['customer_id' => $customer->id] ])
 @endsection
 
