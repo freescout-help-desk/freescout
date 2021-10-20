@@ -36,7 +36,7 @@
                     <i class="card-avatar" data-initial="{{ strtoupper($user->first_name[0]) }}{{ strtoupper($user->last_name[0] ?? '') }}"></i>
                 @endif
                 <h4 class="user-q">{{ $user->first_name }} {{ $user->last_name }}</h4>
-                <p class="text-truncate user-q">{{ $user->email }}</p>
+                <p class="text-truncate user-q">@filter('users.email', $user->email)</p>
                 @if ($user->invite_state == App\User::INVITE_STATE_SENT || $user->invite_state == App\User::INVITE_STATE_NOT_INVITED)
                     <i class="invite-state glyphicon @if ($user->invite_state == App\User::INVITE_STATE_SENT) glyphicon-hourglass invited @else glyphicon-remove not-invited @endif" data-toggle="tooltip" data-placement="bottom" title="{{ $user->getInviteStateName() }}"></i>
                 @endif
