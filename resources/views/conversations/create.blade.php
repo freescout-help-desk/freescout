@@ -45,7 +45,7 @@
             </div>
         </div>
         <div id="conv-layout-customer">
-            @action('conversation.new_conv_layout_side', $conversation, $mailbox)
+            @action('conversation.new.customer_sidebar', $conversation, $mailbox)
         </div>
         <div id="conv-layout-main" class="conv-new-form">
             <div class="conv-block">
