@@ -83,7 +83,7 @@ Images & one-click installs:
 
 ## Cloud Hosted
 
-* [Cloud Hosted FreeScout](https://freescout.net/cloud-hosted/)
+[Cloud Hosted FreeScout](https://freescout.net/cloud-hosted/)
 
 ## Modules
 
