@@ -87,7 +87,8 @@ Images & one-click installs:
 
 ## Modules
 
-[Available modules](https://freescout.net/modules/)
+* [Official Modules](https://freescout.net/modules/)
+* [Community Modules](https://freescout.net/community-modules/)
 
 ## Tools & Integrations
   
