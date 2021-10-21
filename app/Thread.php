@@ -903,7 +903,9 @@ class Thread extends Model
             $customer = $conversation->customer;
         }
 
-        $user_id = $data['user_id'] ?? null;
+        // User which creatd the thread should be passed in created_by_user_id.
+        // user_id is check for backward compatibility.
+        $user_id = $data['created_by_user_id'] ?? $data['user_id'] ?? null;
 
         // Check type.
         if ($data['type'] == Thread::TYPE_CUSTOMER && empty($customer)) {
@@ -952,6 +954,11 @@ class Thread extends Model
         }
         if ($new) {
             $thread->first = true;
+        }
+
+        // Assignee.
+        if (empty($data['user_id'])) {
+            $thread->user_id = $conversation->user_id;
         }
 
         // Process attachments.

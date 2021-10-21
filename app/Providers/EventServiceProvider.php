@@ -68,6 +68,7 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\UserReplied' => [
              'App\Listeners\SendReplyToCustomer',
              'App\Listeners\SendNotificationToUsers',
+             'App\Listeners\RefreshConversations',
         ],
 
         'App\Events\CustomerReplied' => [
@@ -77,6 +78,7 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\UserCreatedConversation' => [
             'App\Listeners\SendReplyToCustomer',
             'App\Listeners\SendNotificationToUsers',
+            'App\Listeners\RefreshConversations',
         ],
 
         'App\Events\CustomerCreatedConversation' => [

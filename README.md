@@ -28,9 +28,9 @@
 
 ## Features
 
-  * No limitations on the number of users, tickets, etc.
+  * No limitations on the number of users, tickets, mailboxes, etc.
   * 100% Mobile-friendly.
-  * Multilingual (English, French, Japanese, Italian, Polish, Portuguese, Russian, Dutch, German, Danish, Spanish, Swedish).
+  * Multilingual (English, Croatian, Danish, Dutch, French, German, Japanese, Italian, Polish, Portuguese, Russian, Spanish, Swedish).
   * Seamless email integration.
   * Web installer & updater.
   * Starred conversations.
@@ -42,7 +42,7 @@
   * Push notifications.
   * Following a conversation.
   * Auto reply.
-  * Notes.
+  * Internal notes.
   * Pasting screenshots from the clipboard into the reply area.
   * Configuring notifications on a per user basis.
   * Open tracking.
