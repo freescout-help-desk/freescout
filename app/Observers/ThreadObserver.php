@@ -58,7 +58,11 @@ class ThreadObserver
         //     \Eventy::action('thread.created', $thread);
         // }
 
-        \App\Events\RealtimeConvNewThread::dispatchSelf($thread);
-        \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id);
+        // Real time for user notifications is sent using events.
+        if ($thread->type = Thread::TYPE_CUSTOMER 
+            || ($thread->type = Thread::TYPE_MESSAGE && $thread->state == Thread::STATE_DRAFT)
+        ) {
+            Conversation::refreshConversations($conversation, $thread);
+        }
     }
 }

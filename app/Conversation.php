@@ -1921,6 +1921,12 @@ class Conversation extends Model
         return \Helper::textPreview($text, self::SUBJECT_LENGTH);
     }
 
+    public static function refreshConversations($conversation, $thread)
+    {
+        \App\Events\RealtimeConvNewThread::dispatchSelf($thread);
+        \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id);
+    }
+
     // /**
     //  * Get conversation meta data as array.
     //  */
