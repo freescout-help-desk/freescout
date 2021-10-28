@@ -128,7 +128,7 @@
     "Keyboard Shortcuts": "Горячие клавиши",
     "Deleting": "Удаление",
     "Delete Photo": "Удалить фото",
-    "Image will be re-sized to 200x200. JPG, GIF, PNG accepted.": "Изображение будет масштабировано до 200x200. Разрешённые форматы: JPG, GIF, PNG .",
+    "Image will be re-sized to :dimensions. JPG, GIF, PNG accepted.": "Изображение будет масштабировано до :dimensions. Разрешённые форматы: JPG, GIF, PNG .",
     "Save Profile": "Сохранить профиль",
     "Resetting password": "Сброс пароля",
     "Resending": "Отправка",

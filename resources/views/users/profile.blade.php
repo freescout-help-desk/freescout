@@ -205,7 +205,7 @@
                                 @endif
 
                                 <input type="file" name="photo_url">
-                                <p class="block-help">{{ __('Image will be re-sized to 200x200. JPG, GIF, PNG accepted.') }}</p>
+                                <p class="block-help">{{ __('Image will be re-sized to :dimensions. JPG, GIF, PNG accepted.', ['dimensions' => '50x50']) }}</p>
                             </div>
                             @include('partials/field_error', ['field'=>'photo_url'])
                         </div>

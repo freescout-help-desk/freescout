@@ -417,7 +417,7 @@
     "Hourly": "毎時",
     "If you are trying to update a conversation, remember you must respond from the same email address that's on your account. To send your update, please try again and send from your account email address (the email you login with).": "会話を更新しようとしている場合は、アカウントに登録されている同じメールアドレスから返信する必要があることを覚えておいてください。更新を送信するには、もう一度試してみて、アカウントのメールアドレス（ログイン時のメール）から送信してください。",
     "If you want to send system emails via webmail providers (Gmail, Yahoo, etc), use only SMTP method and make sure that SMTP username is equal to 'Mail From', otherwise webmail provider won't send emails.": "ウェブメールプロバイダー（Gmail、Yahooなど）を介してシステムメールを送信する場合は、SMTP方式のみを使用し、SMTPユーザー名が「Mail From」と同じであることを確認してください。同じでない場合、ウェブメールプロバイダーはメールを送信しません。",
-    "Image will be re-sized to 200x200. JPG, GIF, PNG accepted.": "画像は200×200にリサイズされます。JPG、GIF、PNGが対応しています。",
+    "Image will be re-sized to :dimensions. JPG, GIF, PNG accepted.": "画像は:dimensionsにリサイズされます。JPG、GIF、PNGが対応しています。",
     "IMAP Folder To Save Outgoing Replies": "IMAPフォルダーに送信返信を保存する",
     "License": "ライセンス",
     "License Key": "ライセンスキー",

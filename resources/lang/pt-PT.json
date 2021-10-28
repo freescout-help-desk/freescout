@@ -248,7 +248,7 @@
     "If you are sure, type :delete and click the red button.": "Se tiver certeza, digite :delete e clique no botão vermelho",
     "If you are trying to update a conversation, remember you must respond from the same email address that's on your account. To send your update, please try again and send from your account email address (the email you login with).": "Se estiver a tentar atualizar uma conversa, lembre-se de que precisa responder com o mesmo endereço de e-mail que está na sua conta. Para enviar a sua atualização, tente novamente e envie a partir do endereço de e-mail da sua conta (o e-mail com o qual você faz login).",
     "If you want to send system emails via webmail providers (Gmail, Yahoo, etc), use only SMTP method and make sure that SMTP username is equal to 'Mail From', otherwise webmail provider won't send emails.": "Se quiser enviar e-mails do sistema através de provedores de webmail (Gmail, Yahoo, etc),use somente o método SMTP e verifique se o nome de utilizador SMTP é igual a 'Mail From', caso contrário, o provedor de webmail não enviará e-mails.",
-    "Image will be re-sized to 200x200. JPG, GIF, PNG accepted.": "A imagem será redimensionada para 200 x 200. JPG, GIF, PNG formatos aceites.",
+    "Image will be re-sized to :dimensions. JPG, GIF, PNG accepted.": "A imagem será redimensionada para :dimensions. JPG, GIF, PNG formatos aceites.",
     "Improve Delivery": "Melhore a entrega",
     "Incorrect recipients": "Destinatários incorretos",
     "Incorrect status": "Estado Incorreto",

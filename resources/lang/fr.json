@@ -453,7 +453,7 @@
     "Time Format": "Format de l'heure",
     "Keyboard Shortcuts": "Raccourcis clavier",
     "Delete Photo": "Supprimer la photo",
-    "Image will be re-sized to 200x200. JPG, GIF, PNG accepted.": "L'image sera redimensionnée à 200x200. JPG, GIF, PNG acceptés.",
+    "Image will be re-sized to :dimensions. JPG, GIF, PNG accepted.": "L'image sera redimensionnée à :dimensions. JPG, GIF, PNG acceptés.",
     "Resetting password": "Réinitialisation du mot de passe",
     "Resending": "Renvoyer",
     "Re-send invite email": "Renvoyer l'e-mail d'invitation",
