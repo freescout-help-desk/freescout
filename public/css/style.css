@@ -3217,7 +3217,7 @@ ul.sidebar-block-list {
     min-width: 270px;
     max-width: 460px;
     min-height: 208px;
-    max-height: 800px;
+    max-height: inherit;
     width: 460px;
     padding: 0;
 }
