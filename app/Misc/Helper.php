@@ -1418,9 +1418,13 @@ class Helper
 
     /**
      * Disable sql_require_primary_key option to avoid errors when migrating.
+     * Only for MySQL.
      */
     public static function disableSqlRequirePrimaryKey()
     {
+        if (!self::isMySql()) {
+            return;
+        }
         try {
             \DB::statement('SET SESSION sql_require_primary_key=0');
         } catch (\Exception $e) {
