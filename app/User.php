@@ -27,7 +27,7 @@ class User extends Authenticatable
     public $rememberCacheDriver = 'array';
 
     const PHOTO_DIRECTORY = 'users';
-    const PHOTO_SIZE = 50; // px
+    const PHOTO_SIZE = 200; // px
     const PHOTO_QUALITY = 77;
 
     const EMAIL_MAX_LENGTH = 100;
