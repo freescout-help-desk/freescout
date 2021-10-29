@@ -2479,6 +2479,7 @@ class ConversationsController extends Controller
         $like = '%'.mb_strtolower($q).'%';
 
         $query_customers = Customer::select(['customers.*', 'emails.email'])
+            ->groupby('customers.id')
             ->leftJoin('emails', function ($join) {
                 $join->on('customers.id', '=', 'emails.customer_id');
             })
