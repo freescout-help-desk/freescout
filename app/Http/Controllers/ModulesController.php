@@ -54,7 +54,6 @@ class ModulesController extends Controller
         \Module::clearCache();
         $modules = \Module::all();
         foreach ($modules as $module) {
-            $img = '';
             $installed_modules[] = [
                 'alias'                        => $module->getAlias(),
                 'name'                         => $module->getName(),
@@ -67,7 +66,7 @@ class ModulesController extends Controller
                 'requiredPhpExtensions'        => $module->get('requiredPhpExtensions'),
                 'requiredPhpExtensionsMissing' => \App\Module::getMissingExtensions($module->get('requiredPhpExtensions')),
                 'requiredModulesMissing'       => \App\Module::getMissingModules($module->get('requiredModules'), $modules),
-                'img'                          => $img,
+                'img'                          => $module->get('img'),
                 'active'                       => $module->active(), //\App\Module::isActive($module->getAlias()),
                 'installed'                    => true,
                 'activated'                    => \App\Module::isLicenseActivated($module->getAlias(), $module->get('authorUrl')),
