@@ -1,0 +1,14 @@
+{
+    ":number commands were running at the same time. Commands have been restarted": ":number naredbi se izvršavalo u isto vrijeme. Naredbe su ponovno pokrenute",
+    ":number commands are running at the same time. Please stop extra commands by executing the following console command:": ":number naredbi se izvršava u isto vrijeme. Zaustavite dodatne naredbe izvršavajući naredbu:",
+    ":host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.": ":host nije dostupan po portu :port. Provjerite je li  :host isprvna adresa i je li izlazni port :port otvoren na VAŠEM serveru.",
+    ":field is required": "Polje :field je obavezno",
+    ":date @ :time": ":date @ :time",
+    ":person added a note to conversation #:conversation_number": ":person je dodao napomenu u razgovor #:conversation_number",
+    ":app_name Test Email": ":app_name Testni E-mail",
+    ":person added a note to conversation": ":person je dodao napomenu u razgovor",
+    ":person added a note": ":person je dodao napomenu",
+    ":number free emails per month from :%a_begin%Amazon EC2:%a_end% server.": ":number besplatnih e-mailova mjesečno s :%a_begin%Amazon EC2:%a_end% servera.",
+    ":number free emails per month.": ":number besplatnih e-mailova mjesečno.",
+    ":first_name has access to the selected mailboxes:": ":first_name ima pristup sljedećim mailbox-ovima:"
+}
