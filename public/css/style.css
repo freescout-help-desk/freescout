@@ -3660,6 +3660,7 @@ body.print {
     font-weight: 400;
     background-color: #deecf9;
     padding: 12px 18px;
+    overflow: hidden;
 }
 .in-heading {
     float: right;
