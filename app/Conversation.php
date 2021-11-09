@@ -1425,6 +1425,10 @@ class Conversation extends Model
         }
         $waiting_since_field = $folder->getWaitingSinceField();
         if ($waiting_since_field) {
+            // For phone conversations.
+            if (empty($this->$waiting_since_field)) {
+                $waiting_since_field = 'updated_at';
+            }
             return \App\User::dateDiffForHumans($this->$waiting_since_field);
         } else {
             return '';
