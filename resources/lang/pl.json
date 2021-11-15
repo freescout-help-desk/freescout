@@ -227,7 +227,7 @@
     "Photo": "Zdjęcie",
     "Deleting": "Usuwanie",
     "Delete Photo": "Usuń Zdjęcie",
-    "Image will be re-sized to 200x200. JPG, GIF, PNG accepted.": "Rozmiar obrazu zostanie zmieniony na 200x200. Rozszerzenia JPG, GIF, PNG.",
+    "Image will be re-sized to :dimensions. JPG, GIF, PNG accepted.": "Rozmiar obrazu zostanie zmieniony na :dimensions. Rozszerzenia JPG, GIF, PNG.",
     "Resetting password": "Resetowanie hasła",
     "Reset password": "Zresetuj hasło",
     "Resending": "Ponowne wysyłanie",

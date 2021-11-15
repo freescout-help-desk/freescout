@@ -709,6 +709,10 @@ class ConversationsController extends Controller
                         $conversation->last_reply_from = Conversation::PERSON_USER;
                         $conversation->user_updated_at = $now;
                     }
+                    if ($conversation->isPhone() && $is_note) {
+                        $conversation->last_reply_at = $now;
+                        $conversation->last_reply_from = Conversation::PERSON_USER;
+                    }
                     $conversation->updateFolder();
                     if ($from_draft) {
                         // Increment number of replies in conversation
@@ -2479,6 +2483,7 @@ class ConversationsController extends Controller
         $like = '%'.mb_strtolower($q).'%';
 
         $query_customers = Customer::select(['customers.*', 'emails.email'])
+            ->groupby('customers.id')
             ->leftJoin('emails', function ($join) {
                 $join->on('customers.id', '=', 'emails.customer_id');
             })

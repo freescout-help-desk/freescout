@@ -249,7 +249,7 @@
     "Keyboard Shortcuts": "Scorciatoie tastiera",
     "Deleting": "Eliminazione in corso",
     "Delete Photo": "Elimina foto",
-    "Image will be re-sized to 200x200. JPG, GIF, PNG accepted.": "Le immagini saranno ridimensionate alla dimensione di 200x200 pixel. Sono accettati i formati JPG, GIF e PNG",
+    "Image will be re-sized to :dimensions. JPG, GIF, PNG accepted.": "Le immagini saranno ridimensionate alla dimensione di :dimensions pixel. Sono accettati i formati JPG, GIF e PNG",
     "Save Profile": "Salva profilo",
     "Resetting password": "Reset della password in corso",
     "Resending": "Reinviare",

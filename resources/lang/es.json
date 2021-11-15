@@ -299,7 +299,7 @@
     "If you are sure, type :delete and click the red button.": "Si estás seguro, escribe :delete y presiona el botón rojo",
     "If you are trying to update a conversation, remember you must respond from the same email address that's on your account. To send your update, please try again and send from your account email address (the email you login with).": "Si está intentando actualizar una conversación, recuerde que debe responder desde la misma dirección de correo electrónico que está en su cuenta. Para enviar su actualización, intente nuevamente y envíe desde la dirección de correo electrónico de su cuenta (el correo electrónico con el que inicia sesión).",
     "If you want to send system emails via webmail providers (Gmail, Yahoo, etc), use only SMTP method and make sure that SMTP username is equal to 'Mail From', otherwise webmail provider won't send emails.": "Si desea enviar correos electrónicos del sistema a través de proveedores de correo web (Gmail, Yahoo, etc.), use solo el método SMTP y asegúrese de que el nombre de usuario SMTP sea igual a 'Correo desde'; de lo contrario, el proveedor de correo web no enviará correos electrónicos.",
-    "Image will be re-sized to 200x200. JPG, GIF, PNG accepted.": "La imagen será redimensionada a 200x200. Se permite JPG, GIF y PNG",
+    "Image will be re-sized to :dimensions. JPG, GIF, PNG accepted.": "La imagen será redimensionada a :dimensions. Se permite JPG, GIF y PNG",
     "IMAP Folders": "Carpetas IMAP",
     "Inactive": "Inactivo",
     "Incorrect recipients": "Receptores incorrectos",

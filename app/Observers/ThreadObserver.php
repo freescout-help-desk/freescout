@@ -24,7 +24,11 @@ class ThreadObserver
         if (!in_array($thread->type, [Thread::TYPE_CUSTOMER])) {
             $conversation->user_updated_at = $now;
         }
-        if (in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE]) && $thread->state == Thread::STATE_PUBLISHED) {
+        \Log::error('type'.$conversation->type);
+        \Log::error('state'.$thread->state);
+        if ((in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE]) || $conversation->isPhone())
+            && $thread->state == Thread::STATE_PUBLISHED
+        ) {
             // $conversation->cc = $thread->cc;
             // $conversation->bcc = $thread->bcc;
             $conversation->last_reply_at = $now;
