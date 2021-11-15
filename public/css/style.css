@@ -625,6 +625,12 @@ select[multiple].input-md {
 .btn-xs, .btn-group-xs > .btn {
     padding: 1px 7px;
 }
+.btn-input-size {
+    padding: 3px 9px;
+    font-size: 12px;
+    line-height: 20px;
+    border-radius: 3px;
+}
 .form-help {
     color: #93a1af;
     display: block;
@@ -3660,7 +3666,11 @@ body.print {
     font-weight: 400;
     background-color: #deecf9;
     padding: 12px 18px;
-    overflow: hidden;
+}
+.main-heading:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 .in-heading {
     float: right;
@@ -3671,6 +3681,9 @@ body.print {
 .in-heading-item {
     display: inline-block;
     margin-right: 15px;
+}
+.in-heading-item .btn {
+    vertical-align: top;
 }
 .in-heading-item .form-control {
     display: inline-block;
