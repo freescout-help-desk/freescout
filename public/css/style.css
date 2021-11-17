@@ -22,6 +22,9 @@ body.user-is-guest {
     margin-top: 20px;
     width: 100%;
 }
+.footer-hide .footer {
+    display: none;
+}
 .content {
     margin-top: 20px;
     /*padding-bottom: 60px;*/
