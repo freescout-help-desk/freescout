@@ -381,9 +381,12 @@ function triggersInit()
 	initModals();
 }
 
-function initModals()
+function initModals(html_tag)
 {
-	$('a[data-trigger="modal"][data-modal-applied!="1"]').attr('data-modal-applied', '1').click(function(e) {
+	if (typeof(html_tag) == "undefined") {
+		html_tag = 'a';
+	}
+	$(html_tag+'[data-trigger="modal"][data-modal-applied!="1"]').attr('data-modal-applied', '1').click(function(e) {
     	triggerModal($(this));
     	e.preventDefault();
 	});
