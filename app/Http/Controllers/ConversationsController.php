@@ -647,6 +647,9 @@ class ConversationsController extends Controller
 
                         $customer_email = $phone_customer_data['customer_email'];
                         $customer = $phone_customer_data['customer'];
+                        if (!$conversation->customer_id) {
+                            $conversation->customer_id = $customer->id;
+                        }
                     } else {
                         // Email.
                         if (!empty($to_array)) {
