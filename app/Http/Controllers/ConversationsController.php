@@ -497,6 +497,7 @@ class ConversationsController extends Controller
                     $is_note = true;
                 }
 
+                // Conversation type.
                 $type = Conversation::TYPE_EMAIL;
                 if (!empty($request->type)) {
                     $type = (int)$request->type;
@@ -624,6 +625,9 @@ class ConversationsController extends Controller
                         if ((int) $request->status != (int) $conversation->status) {
                             $status_changed = true;
                         }
+                        // When switching from regular message to phone and message sent
+                        // without saving a draft type need to be saved here.
+                        $conversation->type = $type;
                     }
 
                     if ($attachments_info['has_attachments']) {
