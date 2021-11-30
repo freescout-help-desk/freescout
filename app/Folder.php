@@ -359,4 +359,34 @@ class Folder extends Model
     {
         return \Eventy::filter('folder.url', route('mailboxes.view.folder', ['id'=>$mailbox_id, 'folder_id'=>$this->id]), $mailbox_id, $this);
     }
+
+    public static function create($data, $unique_per_user = true, $save = true)
+    {
+        if (!isset($data['mailbox_id']) || !isset($data['type'])) {
+            return null;
+        }
+        $folder = new Folder ();
+        $folder->mailbox_id = $data['mailbox_id'];
+        $folder->type = $data['type'];
+
+        if (!empty($data['user_id'])) {
+            if ($unique_per_user) {
+                $user_folder = Folder::where('mailbox_id', $data['mailbox_id'])
+                    ->where('user_id', $data['user_id'])
+                    ->where('type', $data['type'])
+                    ->first();
+                // User folder already exists.
+                if ($user_folder) {
+                    return $user_folder;
+                }
+            }
+            $folder->user_id = $data['user_id'];
+        }
+
+        if ($save) {
+            $folder->save();
+        }
+
+        return $folder;
+    }
 }

@@ -282,11 +282,11 @@ class Mailbox extends Model
                 continue;
             }
             foreach ($folder_types as $type) {
-                $folder = new Folder();
-                $folder->mailbox_id = $mailbox_id;
-                $folder->user_id = $user_id;
-                $folder->type = $type;
-                $folder->save();
+                Folder::create([
+                    'mailbox_id' => $mailbox_id,
+                    'user_id' => $user_id,
+                    'type' => $type,
+                ]);
             }
         }
     }

@@ -422,11 +422,11 @@ class User extends Authenticatable
                 continue;
             }
             foreach (Folder::$personal_types as $type) {
-                $folder = new Folder();
-                $folder->mailbox_id = $mailbox_id;
-                $folder->user_id = $this->id;
-                $folder->type = $type;
-                $folder->save();
+                Folder::create([
+                    'mailbox_id' => $mailbox_id,
+                    'user_id' => $this->id,
+                    'type' => $type,
+                ]);
             }
         }
     }
