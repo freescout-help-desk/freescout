@@ -398,10 +398,14 @@ class Conversation extends Model
      *
      * @return [type] [description]
      */
-    public function getLastReply()
+    public function getLastReply($include_phone_replies = false)
     {
+        $types = [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE];
+        if ($include_phone_replies && $this->isPhone()) {
+            $types[] = Thread::TYPE_NOTE;
+        }
         return $this->threads()
-            ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE])
+            ->whereIn('type', $types)
             ->where('state', Thread::STATE_PUBLISHED)
             ->orderBy('created_at', 'desc')
             ->first();
