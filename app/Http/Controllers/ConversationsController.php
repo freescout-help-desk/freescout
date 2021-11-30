@@ -625,6 +625,9 @@ class ConversationsController extends Controller
                         if ((int) $request->status != (int) $conversation->status) {
                             $status_changed = true;
                         }
+                        if (!empty($request->subject)) {
+                            $conversation->subject = $request->subject;
+                        }
                         // When switching from regular message to phone and message sent
                         // without saving a draft type need to be saved here.
                         $conversation->type = $type;
