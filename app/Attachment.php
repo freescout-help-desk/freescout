@@ -66,6 +66,19 @@ class Attachment extends Model
         // Gmail can not load image if it contains spaces.
         $file_name = preg_replace('/[ #]/', '-', $file_name);
 
+        if (!$file_name) {
+            if (!$orig_extension) {
+                preg_match("/.*\/([^\/]+)$/", $mime_type, $m);
+                if (!empty($m[1])) {
+                    $orig_extension = $m[1];
+                }
+            }
+            $file_name = uniqid();
+            if ($orig_extension) {
+                $file_name .= '.'.$orig_extension;
+            }
+        }
+
         if (strlen($file_name) > 255) {
             $without_ext = pathinfo($file_name, PATHINFO_FILENAME);
             $extension = pathinfo($file_name, PATHINFO_EXTENSION);
