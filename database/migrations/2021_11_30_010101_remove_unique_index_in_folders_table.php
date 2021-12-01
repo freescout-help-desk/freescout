@@ -27,6 +27,7 @@ class RemoveUniqueIndexInFoldersTable extends Migration
     public function down()
     {
         Schema::table('folders', function (Blueprint $table) {
+            $table->dropIndex(['mailbox_id', 'user_id', 'type']);
             $table->unique(['mailbox_id', 'user_id', 'type']);
         });
     }
