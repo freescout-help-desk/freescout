@@ -81,6 +81,11 @@ class SendNotificationToUsers implements ShouldQueue
 
         foreach ($this->users as $user) {
 
+            // User cam ne deleted.
+            if (!isset($user->id)) {
+                continue;
+            }
+
             // If for one user sending fails the job is marked as failed and retried after some time.
             // So we have to check if notification email has already been successfully sent to this user.
             if ($this->attempts() > 1) {

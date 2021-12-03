@@ -4,6 +4,7 @@ namespace App;
 
 use App\Attachment;
 use App\Customer;
+use App\Mailbox;
 use App\Folder;
 use App\Thread;
 use App\User;
@@ -1316,6 +1317,35 @@ class Conversation extends Model
         }
     }
 
+    /**
+     * Load mailboxes.
+     */
+    public static function loadMailboxes($conversations)
+    {
+        $ids = $conversations->pluck('mailbox_id')->unique()->toArray();
+        if (!$ids) {
+            return;
+        }
+
+        $mailboxes = Mailbox::whereIn('id', $ids)->get();
+        if (!$mailboxes) {
+            return;
+        }
+
+        foreach ($conversations as $conversation) {
+            if (empty($conversation->mailbox_id)) {
+                continue;
+            }
+            foreach ($mailboxes as $mailbox) {
+                if ($mailbox->id == $conversation->mailbox_id) {
+                    $conversation->mailbox = $mailbox;
+
+                    continue 2;
+                }
+            }
+        }
+    }
+
     public function getSubject()
     {
         if ($this->subject) {
@@ -1562,6 +1592,10 @@ class Conversation extends Model
 
     public function changeStatus($new_status, $user, $create_thread = true)
     {
+        if (!array_key_exists($new_status, self::$statuses)) {
+            return;
+        }
+        
         $prev_status = $this->status;
 
         $this->setStatus($new_status, $user);

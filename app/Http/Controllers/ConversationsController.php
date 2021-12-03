@@ -630,7 +630,9 @@ class ConversationsController extends Controller
                         }
                         // When switching from regular message to phone and message sent
                         // without saving a draft type need to be saved here.
-                        $conversation->type = $type;
+                        if ($conversation->type == Conversation::TYPE_EMAIL && $type == Conversation::TYPE_PHONE) {
+                            $conversation->type = $type;
+                        }
                     }
 
                     if ($attachments_info['has_attachments']) {

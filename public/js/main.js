@@ -4913,3 +4913,7 @@ function closeAllModals()
 {
 	$('.modal').modal('hide');
 }
+
+function replaceAll(text, search, replacement) {
+    return text.split(search).join(replacement);
+}

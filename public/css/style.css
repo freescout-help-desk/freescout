@@ -3526,6 +3526,9 @@ ul.sidebar-block-list {
     font-size: 9px;
     top: -1px;
 }
+.panel-sortable-input .handle {
+    padding-top: 9px;
+}
 .panel.panel-sortable > .panel-heading {
     margin-left: 35px;
 }
