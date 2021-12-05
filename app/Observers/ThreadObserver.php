@@ -62,8 +62,8 @@ class ThreadObserver
         // }
 
         // Real time for user notifications is sent using events.
-        if ($thread->type = Thread::TYPE_CUSTOMER 
-            || ($thread->type = Thread::TYPE_MESSAGE && $thread->state == Thread::STATE_DRAFT)
+        if ($thread->type == Thread::TYPE_CUSTOMER 
+            || ($thread->type == Thread::TYPE_MESSAGE && $thread->state == Thread::STATE_DRAFT)
         ) {
             Conversation::refreshConversations($conversation, $thread);
         }
