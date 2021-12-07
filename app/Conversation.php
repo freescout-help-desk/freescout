@@ -1895,6 +1895,11 @@ class Conversation extends Model
         $conversation->closed_at = $data['closed_at'] ?? null;
         $conversation->channel = $data['channel'] ?? null;
 
+        // Phone conversation is always pending.
+        if ($conversation->isPhone()) {
+            $conversation->status = Conversation::STATUS_PENDING;
+        }
+
         // Set assignee
         $conversation->user_id = null;
         if (!empty($data['user_id'])) {
