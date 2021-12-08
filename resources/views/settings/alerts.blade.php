@@ -78,6 +78,25 @@
         </div>
     </div>
 
+	<h3 class="subheader">
+		{{ __('Default subscriptions for new users') }}
+	</h3>
+
+	<div class="descr-block">
+	    {{ __("Configure default subscriptions that apply to newly created users.") }}
+	</div>
+
+	<div class="form-group">
+		<label for="alert_logs" class="col-sm-2 control-label">{{ __('Default Subscriptions') }}</label>
+		<div class="col-sm-10 col-lg-8">
+			<?php $subscriptions_formname = 'settings[default_subscriptions]'; ?>
+			<div class="user-subscriptions form-control" style="height: auto">
+				<div style="margin-top: -12px"></div>
+				@include('users/subscriptions-table')
+			</div>
+		</div>
+	</div>
+
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">
@@ -86,3 +105,8 @@
         </div>
     </div>
 </form>
+
+@section('javascript')
+    @parent
+    notificationsInit();
+@endsection

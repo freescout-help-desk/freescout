@@ -129,9 +129,19 @@ class SettingsController extends Controller
                 ];
                 break;
             case 'alerts':
+            	$subscriptions_defaults = \Config::get('subscriptions.defaults');
+            	$subscriptions = array();
+            	foreach ($subscriptions_defaults as $medium => $subscriptions_for_medium) {
+            		foreach ($subscriptions_defaults[$medium] as $subscription) {
+            		    array_push($subscriptions, (object) array("medium" => $medium, "event" => $subscription));
+            		}
+            	}
                 $params = [
                     'template_vars' => [
                         'logs' => \App\ActivityLog::getAvailableLogs(),
+                        'person' => null,
+                        'subscriptions' => $subscriptions,
+                        'mobile_available' => \Eventy::filter('notifications.mobile_available', false),
                     ],
                     'settings' => [
                         'alert_logs' => [
