@@ -4120,6 +4120,7 @@ a.disabled:focus {
     -webkit-box-shadow:0 0 10px rgba(0,0,0,.2);
     box-shadow:0 0 10px rgba(0,0,0,.2);
 }
+.dropdown-menu.with-icons .glyphicon,
 .dash-card-footer .dropdown-menu .glyphicon,
 .sidebar-buttons .dropdown-menu .glyphicon {
     position: relative;
