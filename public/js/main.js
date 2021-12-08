@@ -2112,11 +2112,11 @@ function triggerModal(a, params)
     }
 
     var html = [
-    '<div class="modal '+(params.no_fade == 'true' ? '' : 'fade')+'" tabindex="-1" role="dialog" aria-labelledby="jsmodal-label" aria-hidden="true">',
+    '<div class="modal '+(params.no_fade == 'true' ? '' : 'fade')+'" tabindex="-1" role="dialog" aria-labelledby="jsmodal-label" aria-modal="true">',
         '<div class="modal-dialog '+modal_class+'">',
             '<div class="modal-content">',
                 '<div class="modal-header '+(params.no_header == 'true' ? 'hidden' : '')+'">',
-                    '<button type="button" class="close" data-dismiss="modal" aria-label="'+Lang.get("messages.close")+'"><span aria-hidden="true">&times;</span></button>',
+                    '<button type="button" class="close" data-dismiss="modal" aria-label="'+Lang.get("messages.close")+'"><span>&times;</span></button>',
                     '<h3 class="modal-title" id="jsmodal-label">'+title+'</h3>',
                 '</div>',
                 '<div class="modal-body '+(fit == 'true' ? 'modal-body-fit' : '')+'"><div class="text-center modal-loader"><img src="'+Vars.public_url+'/img/loader-grey.gif" width="31" height="31"/></div></div>',
