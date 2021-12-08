@@ -1,5 +1,5 @@
 <?php
-	if (!isset($subscriptions_formname)) $subscriptions_formname = "subscriptions";
+    if (!isset($subscriptions_formname)) $subscriptions_formname = "subscriptions";
 ?>
 <table class="table" style="margin-bottom: 0;">
     <tr class="table-header">

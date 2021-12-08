@@ -21,14 +21,14 @@
     <div class="row-container">
         <div class="row">
             <div class="col-md-11 col-lg-9">
-            	<form method="POST" action="" class="user-subscriptions">
-                	{{ csrf_field() }}
-                	@include('users/subscriptions-table')
-                	<div class="form-group margin-top">    
-                	    <button type="submit" class="btn btn-primary">
-                	        {{ __('Save Notifications') }}
-                	    </button>
-                	</div>
+                <form method="POST" action="" class="user-subscriptions">
+                    {{ csrf_field() }}
+                    @include('users/subscriptions-table')
+                    <div class="form-group margin-top">    
+                        <button type="submit" class="btn btn-primary">
+                            {{ __('Save Notifications') }}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

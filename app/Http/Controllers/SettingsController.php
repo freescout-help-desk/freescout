@@ -129,13 +129,13 @@ class SettingsController extends Controller
                 ];
                 break;
             case 'alerts':
-            	$subscriptions_defaults = Option::get('alert_subscription_defaults', \Config::get('subscriptions.defaults'));
-            	$subscriptions = array();
-            	foreach ($subscriptions_defaults as $medium => $subscriptions_for_medium) {
-            		foreach ($subscriptions_defaults[$medium] as $subscription) {
-            		    array_push($subscriptions, (object) array("medium" => $medium, "event" => $subscription));
-            		}
-            	}
+                $subscriptions_defaults = Option::get('alert_subscription_defaults', \Config::get('subscriptions.defaults'));
+                $subscriptions = array();
+                foreach ($subscriptions_defaults as $medium => $subscriptions_for_medium) {
+                    foreach ($subscriptions_defaults[$medium] as $subscription) {
+                        array_push($subscriptions, (object) array("medium" => $medium, "event" => $subscription));
+                    }
+                }
                 $params = [
                     'template_vars' => [
                         'logs' => \App\ActivityLog::getAvailableLogs(),
