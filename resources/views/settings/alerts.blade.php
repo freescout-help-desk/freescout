@@ -89,7 +89,7 @@
 	<div class="form-group">
 		<label for="alert_logs" class="col-sm-2 control-label">{{ __('Default Subscriptions') }}</label>
 		<div class="col-sm-10 col-lg-8">
-			<?php $subscriptions_formname = 'settings[default_subscriptions]'; ?>
+			<?php $subscriptions_formname = 'settings[alert_subscription_defaults]'; ?>
 			<div class="user-subscriptions form-control" style="height: auto">
 				<div style="margin-top: -12px"></div>
 				@include('users/subscriptions-table')

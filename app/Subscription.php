@@ -78,7 +78,7 @@ class Subscription extends Model
      */
     public static function addDefaultSubscriptions($user_id)
     {
-        self::saveFromArray(\Config::get('subscriptions.defaults'), $user_id);
+        self::saveFromArray(Option::get('alert_subscription_defaults', \Config::get('subscriptions.defaults')), $user_id);
     }
 
     /**
