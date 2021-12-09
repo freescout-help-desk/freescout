@@ -34,7 +34,7 @@
     "A new version is available": "Je k dispozícii nová verzia",
     "Updating": "Aktualizujem",
     "Update Now": "Aktualizovať",
-    "Send email alerts to the administrators.": "Posielať e-mailové upozornenia administrátorom.",
+    "Email Alerts For Administrators": "Posielať e-mailové upozornenia administrátorom",
     "Fetching Problems": "Problém so sťahovaním mailov",
     "Send alert if application could not fetch emails for a period of time.": "Odoslať upozornenie, keď aplikácia nemohla načítať e-maily po určitú dobu.",
     "Check Interval (minutes)": "Interval kontroly (v minútach)",

@@ -385,7 +385,7 @@
     "Send a copy of all outgoing replies to specific external addresses.": "特定の外部アドレスに送信されたすべての返信のコピーを送信します。",
     "Send alert if application could not fetch emails for a period of time.": "アプリケーションが一定期間メールを取得できなかった場合は、アラートを送信します。",
     "Send an invite email": "招待メールを送信する",
-    "Send email alerts to the administrators.": "管理者にメールアラートを送信します。",
+    "Email Alerts For Administrators": "管理者にメールアラートを送信します。",
     "Send emails separately to each recipient": "メールを受信者ごとに分けて送信する",
     "Sending emails need to be configured for the mailbox in order to send emails to customers and support agents": "顧客やサポート担当者にメールを送信するためには、メールボックスの設定が必要です。",
     "Someone on your team created an account for you.": "あなたのチームの誰かがあなたのためにアカウントを作成しました。",

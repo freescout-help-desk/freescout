@@ -147,7 +147,7 @@
     "Selected Users have access to this mailbox:": "Wybrani Użytkownicy mają dostęp do tej skrzynki pocztowej:",
     "Administrators have access to all mailboxes and are not listed here.": "Administratorzy mają dostęp do wszystkich skrzynek pocztowych i nie zostali tu wyszczególnieni.",
     "Hide from Assign list": "Ukryj z listy Przypisane",
-    "Send email alerts to the administrators.": "Wysyłaj powiadomienia e-mail do administratorów.",
+    "Email Alerts For Administrators": "Wysyłaj powiadomienia e-mail do administratorów",
     "Fetching Problems": "Problemy Z Pobieraniem",
     "Send alert if application could not fetch emails for a period of time.": "Wyślij ostrzeżenie, jeśli aplikacja nie mogła pobrać wiadomości e-mail przez pewien czas.",
     "Check Interval (minutes)": "Interwał Sprawdzania (minuty)",

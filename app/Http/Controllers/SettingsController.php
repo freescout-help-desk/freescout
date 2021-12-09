@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Conversation;
 use App\Option;
+use App\Subscription;
 use App\User;
 use Illuminate\Http\Request;
 use Validator;
@@ -129,11 +130,11 @@ class SettingsController extends Controller
                 ];
                 break;
             case 'alerts':
-                $subscriptions_defaults = Option::get('alert_subscription_defaults', \Config::get('subscriptions.defaults'));
+                $subscriptions_defaults = Subscription::getDefaultSubscriptions();
                 $subscriptions = array();
                 foreach ($subscriptions_defaults as $medium => $subscriptions_for_medium) {
                     foreach ($subscriptions_defaults[$medium] as $subscription) {
-                        array_push($subscriptions, (object) array("medium" => $medium, "event" => $subscription));
+                        $subscriptions[] = (object) array("medium" => $medium, "event" => $subscription);
                     }
                 }
                 $params = [
@@ -217,7 +218,7 @@ class SettingsController extends Controller
                     'alert_logs',
                     'alert_logs_names',
                     'alert_logs_period',
-                    'alert_subscription_defaults',
+                    'subscription_defaults',
                 ], [
                     'alert_logs_names'  => [],
                     'alert_logs'        => config('app.alert_logs'),

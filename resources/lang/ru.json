@@ -400,7 +400,7 @@
     "Open this conversation in :app_name": "Открыть этот тикет в :app_name",
     "Congratulations! Your application can send emails!": "Поздравляем! Ваше приложение может отправлять электронные письма!",
     "This is a test system mail sent by :app_name. It means that mail settings are fine.": "Это тестовое системное письмо, отправленное хелпдеском :app_name. Оно означает, что настройки системной почты в порядке.",
-    "Send email alerts to the administrators.": "Отправлять по электронной почте оповещения администраторам.",
+    "Email Alerts For Administrators": "Оповещения по электронной почте для администраторов",
     "Fetching Problems": "Ошибки при получении писем",
     "Send alert if application could not fetch emails for a period of time.": "Отправлять уведомление, если приложение не могло получить письма в течение определённого периода времени.",
     "Logs Monitoring": "Мониторинг логов",

@@ -1,9 +1,9 @@
 <form class="form-horizontal margin-top" method="POST" action="">
     {{ csrf_field() }}
 
-    <div class="descr-block">
-        {{ __("Send email alerts to the administrators.") }}
-    </div>
+    <h3 class="subheader">
+        {{ __('Email Alerts For Administrators') }}
+    </h3>
 
     <div class="form-group{{ $errors->has('settings[alert_fetch]') ? ' has-error' : '' }}">
         <label for="alert_fetch" class="col-sm-2 control-label">{{ __('Fetching Problems') }}</label>
@@ -79,20 +79,14 @@
     </div>
 
     <h3 class="subheader">
-        {{ __('Default subscriptions for new users') }}
+        {{ __('Default Subscriptions For New Users') }}
     </h3>
 
-    <div class="descr-block">
-        {{ __("Configure default notification subscriptions that apply to newly created users.") }}
-    </div>
-
     <div class="form-group">
-        <label class="col-sm-2 control-label">{{ __('Default Subscriptions') }}</label>
-        <div class="col-sm-10 col-lg-8">
-            <?php $subscriptions_formname = 'settings[alert_subscription_defaults]'; ?>
-            <div class="user-subscriptions form-control" style="height: auto">
+        <div class="col-sm-offset-2 col-sm-9">
+            <div class="user-subscriptions">
                 <div style="margin-top: -12px"></div>
-                @include('users/subscriptions-table')
+                @include('users/subscriptions-table', ['subscriptions_formname' => 'settings[subscription_defaults]'])
             </div>
         </div>
     </div>

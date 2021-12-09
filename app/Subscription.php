@@ -49,6 +49,23 @@ class Subscription extends Model
         self::MEDIUM_MOBILE,
     ];
 
+    public static $default_subscriptions = [
+        self::MEDIUM_EMAIL => [
+            self::EVENT_CONVERSATION_ASSIGNED_TO_ME,
+            self::EVENT_FOLLOWED_CONVERSATION_UPDATED,
+            //self::EVENT_MY_TEAM_MENTIONED,
+            self::EVENT_CUSTOMER_REPLIED_TO_MY,
+            self::EVENT_USER_REPLIED_TO_MY,
+        ],
+        self::MEDIUM_BROWSER => [
+            self::EVENT_CONVERSATION_ASSIGNED_TO_ME,
+            self::EVENT_FOLLOWED_CONVERSATION_UPDATED,
+            //self::EVENT_MY_TEAM_MENTIONED,
+            self::EVENT_CUSTOMER_REPLIED_TO_MY,
+            self::EVENT_USER_REPLIED_TO_MY,
+        ],
+    ];
+
     /**
      * List of events that occured.
      */
@@ -78,7 +95,12 @@ class Subscription extends Model
      */
     public static function addDefaultSubscriptions($user_id)
     {
-        self::saveFromArray(Option::get('alert_subscription_defaults', \Config::get('subscriptions.defaults')), $user_id);
+        self::saveFromArray(self::getDefaultSubscriptions(), $user_id);
+    }
+
+    public static function getDefaultSubscriptions()
+    {
+        return Option::get('subscription_defaults', self::$default_subscriptions);
     }
 
     /**
