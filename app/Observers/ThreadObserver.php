@@ -25,7 +25,8 @@ class ThreadObserver
             $conversation->user_updated_at = $now;
         }
         
-        if ((in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE]) || $conversation->isPhone())
+        if ((in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE]) 
+            || ($conversation->isPhone() && in_array($thread->type, [Thread::TYPE_NOTE])))
             && $thread->state == Thread::STATE_PUBLISHED
         ) {
             // $conversation->cc = $thread->cc;
