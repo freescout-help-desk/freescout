@@ -1600,6 +1600,13 @@ class ConversationsController extends Controller
                     $response['body'] = $thread->getCleanBody();
 
                     if (strip_tags($response['body'])) {
+
+                        // Update the preview for the conversation if needed.
+                        $last_thread = $thread->conversation->getLastThread([Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE]);
+                        if ($last_thread && $last_thread->id == $thread->id) {
+                            $thread->conversation->setPreview($thread->body);
+                            $thread->conversation->save();
+                        }
                         $thread->save();
 
                         $response['status'] = 'success';

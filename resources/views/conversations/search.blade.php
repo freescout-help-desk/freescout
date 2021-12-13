@@ -33,6 +33,14 @@
 	<div class="section-heading section-search">
 		<form action="{{ route('conversations.search') }}">
 
+			@if (request()->x_embed)
+				<input type="hidden" name="x_embed" value="{{ request()->x_embed }}" />
+			@endif
+
+			@if (!empty($filters['custom']))
+				<input type="hidden" name="f[custom]" value="{{ $filters['custom'] }}" />
+			@endif
+
 			@if ($mode != App\Conversation::SEARCH_MODE_CONV)
 				<input type="hidden" name="mode" value="{{ $mode }}" />
 			@endif

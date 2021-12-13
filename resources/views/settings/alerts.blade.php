@@ -1,9 +1,9 @@
 <form class="form-horizontal margin-top" method="POST" action="">
     {{ csrf_field() }}
 
-    <div class="descr-block">
-        {{ __("Send email alerts to the administrators.") }}
-    </div>
+    <h3 class="subheader">
+        {{ __('Email Alerts For Administrators') }}
+    </h3>
 
     <div class="form-group{{ $errors->has('settings[alert_fetch]') ? ' has-error' : '' }}">
         <label for="alert_fetch" class="col-sm-2 control-label">{{ __('Fetching Problems') }}</label>
@@ -78,6 +78,19 @@
         </div>
     </div>
 
+    <h3 class="subheader">
+        {{ __('Default Subscriptions For New Users') }}
+    </h3>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+            <div class="user-subscriptions">
+                <div style="margin-top: -12px"></div>
+                @include('users/subscriptions-table', ['subscriptions_formname' => 'settings[subscription_defaults]'])
+            </div>
+        </div>
+    </div>
+
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">
@@ -86,3 +99,8 @@
         </div>
     </div>
 </form>
+
+@section('javascript')
+    @parent
+    notificationsInit();
+@endsection

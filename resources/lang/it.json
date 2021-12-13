@@ -317,7 +317,7 @@
     "Add \"Powered by :app_name\" footer text to the outgoing emails to invite more developers to the project and make application better.": "Aggiungi \"Powered by :app_name\" nel footer delle email in uscita",
     "Notification Emails to Users": "Email di notifica agli utenti",
     "Save": "Salva",
-    "Send email alerts to the administrators.": "Invia avvisi email agli amministratori",
+    "Email Alerts For Administrators": "Invia avvisi email agli amministratori",
     "Fetching Problems": "Problemi di recupero",
     "Send alert if application could not fetch emails for a period of time.": "Invia un avviso se l'applicazione non è riuscita a recuperare le email per un periodo di tempo",
     "Check Interval (minutes)": "Intervallo di controllo (in minuti)",

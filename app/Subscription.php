@@ -95,7 +95,12 @@ class Subscription extends Model
      */
     public static function addDefaultSubscriptions($user_id)
     {
-        self::saveFromArray(self::$default_subscriptions, $user_id);
+        self::saveFromArray(self::getDefaultSubscriptions(), $user_id);
+    }
+
+    public static function getDefaultSubscriptions()
+    {
+        return Option::get('subscription_defaults', self::$default_subscriptions);
     }
 
     /**

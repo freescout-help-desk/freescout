@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Conversation;
 use App\Option;
+use App\Subscription;
 use App\User;
 use Illuminate\Http\Request;
 use Validator;
@@ -129,9 +130,19 @@ class SettingsController extends Controller
                 ];
                 break;
             case 'alerts':
+                $subscriptions_defaults = Subscription::getDefaultSubscriptions();
+                $subscriptions = array();
+                foreach ($subscriptions_defaults as $medium => $subscriptions_for_medium) {
+                    foreach ($subscriptions_defaults[$medium] as $subscription) {
+                        $subscriptions[] = (object) array("medium" => $medium, "event" => $subscription);
+                    }
+                }
                 $params = [
                     'template_vars' => [
                         'logs' => \App\ActivityLog::getAvailableLogs(),
+                        'person' => null,
+                        'subscriptions' => $subscriptions,
+                        'mobile_available' => \Eventy::filter('notifications.mobile_available', false),
                     ],
                     'settings' => [
                         'alert_logs' => [
@@ -207,6 +218,7 @@ class SettingsController extends Controller
                     'alert_logs',
                     'alert_logs_names',
                     'alert_logs_period',
+                    'subscription_defaults',
                 ], [
                     'alert_logs_names'  => [],
                     'alert_logs'        => config('app.alert_logs'),

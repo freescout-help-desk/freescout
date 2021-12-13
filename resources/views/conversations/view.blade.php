@@ -48,7 +48,6 @@
                             @if (!$conversation->isChat())
                                 <li><a href="#" class="conv-forward" role="button"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
                             @endif
-                            <li><a href="{{ \Request::getRequestUri() }}&amp;print=1" target="_blank" role="button"><i class="glyphicon glyphicon-print"></i> {{ __("Print") }}</a></li>
                             @if (!$conversation->isChat())
                                 <li><a href="{{ route('conversations.ajax_html', ['action' =>
                                                 'merge_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Merge Conversations") }}" data-modal-no-footer="true" data-modal-on-show="initMergeConv" role="button"><i class="glyphicon glyphicon-indent-left"></i> {{ __("Merge") }}</a></li>
@@ -62,6 +61,7 @@
                             @else
                                 <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete-forever" role="button"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete Forever") }}</a></li>
                             @endif
+                            <li><a href="{{ \Request::getRequestUri() }}&amp;print=1" target="_blank" role="button"><i class="glyphicon glyphicon-print"></i> {{ __("Print") }}</a></li>
                             @action('conversation.append_action_buttons', $conversation, $mailbox)
                         </ul>
                     </div>
