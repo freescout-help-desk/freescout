@@ -96,7 +96,7 @@ class ActivityLog extends Activity
             case self::NAME_APP_LOGS:
                 return __('App Logs');
             default:
-                return ucfirst($log_name);
+                return ucwords(str_replace('_', ' ', $log_name));
         }
     }
 
