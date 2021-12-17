@@ -622,6 +622,27 @@ function mailboxConnectionInit(out_method_smtp)
 function mailboxConnectionIncomingInit()
 {
 	$(document).ready(function(){
+        let changeProtocol = function() {
+            let in_protocol = $('[name="in_protocol"]').val();
+
+            // Only show default connection settings for IMAP/POP3.
+            $('[data-in-protocol]').hide();
+
+            let specific = $('[data-in-protocol="' + in_protocol + '"]');
+
+            if (specific.length >= 1) {
+                specific.show();
+            } else {
+                $('[data-in-protocol="default"]').show();
+            }
+        };
+
+        $('[name="in_protocol"]').on('change', function(event) {
+            changeProtocol();
+        });
+
+        changeProtocol();
+
 	    $('#check-connection').click(function(event) {
 	    	var button = $(this);
 	    	button.button('loading');

@@ -628,6 +628,8 @@ class MailboxesController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
+                $response = \Eventy::filter('mailbox.fetch_test', $response, $mailbox);
+
                 // Check if outgoing port is open.
                 if (!$response['msg']) {
                     $test_result = \Helper::checkPort($mailbox->in_server, $mailbox->in_port);

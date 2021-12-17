@@ -406,6 +406,12 @@ class Mailbox extends Model
      */
     public function isInActive()
     {
+        $in_active = \Eventy::filter('mailbox.in_active', null, $this);
+
+        if (is_bool($in_active)) {
+            return $in_active;
+        }
+
         if ($this->in_protocol && $this->in_server && $this->in_port && $this->in_username && $this->in_password) {
             return true;
         } else {
@@ -595,7 +601,32 @@ class Mailbox extends Model
      */
     public function getInProtocolName()
     {
-        return self::$in_protocols[$this->in_protocol] ?? '';
+        return $this->getInProtocols()[$this->in_protocol] ?? '';
+    }
+
+    /**
+     * Get incoming protocol display name for the UI.
+     *
+     * @return array
+     */
+    public static function getInProtocolDisplayNames()
+    {
+        $display_names = self::$in_protocols;
+
+        $display_names[self::IN_PROTOCOL_IMAP] = 'IMAP';
+        $display_names[self::IN_PROTOCOL_POP3] = 'POP3';
+
+        return \Eventy::filter('mailbox.in_protocols.display_names', $display_names);
+    }
+
+    /**
+     * Get available incoming protocols.
+     *
+     * @return array
+     */
+    public static function getInProtocols()
+    {
+        return \Eventy::filter('mailbox.in_protocols', self::$in_protocols);
     }
 
     /**
