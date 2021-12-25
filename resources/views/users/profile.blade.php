@@ -102,7 +102,7 @@
 
                         <div class="col-sm-6">
                             <div class="flexy">
-                                <input id="emails" type="text" class="form-control input-sized" name="emails" value="{{ old('emails', $user->emails) }}" placeholder="{{ __('(optional)') }}" maxlength="100">
+                                <input id="emails" type="text" class="form-control input-sized" name="emails" value="{{ old('emails', $user->emails) }}" placeholder="{{ __('(optional)') }}">
 
                                 <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left" data-title="{{ __('Alternate Emails') }}" data-content="{{ __("Comma separated list off email addresses from which user can reply to email notifications in addition to user's main Email") }}"></i>
                             </div>
