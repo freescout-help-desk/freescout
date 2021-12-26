@@ -155,7 +155,7 @@ class UsersController extends Controller
             'first_name'  => 'required|string|max:20',
             'last_name'   => 'required|string|max:30',
             'email'       => 'required|string|email|max:100|unique:users,email,'.$id,
-            'emails'      => 'max:100',
+            //'emails'      => 'max:100',
             'job_title'   => 'max:100',
             'phone'       => 'max:60',
             'timezone'    => 'required|string|max:255',

@@ -835,6 +835,13 @@ class Helper
         }
     }
 
+    public static function setLocale($locale)
+    {
+        if (in_array($locale, config('app.locales'))) {
+            app()->setLocale($locale);
+        }
+    }
+
     /**
      * Get locale's data.
      *

@@ -974,12 +974,22 @@ class ConversationsController extends Controller
                             $conversation_copy->threads_count = 0;
                             $conversation_copy->customer_id = $customer_tmp->id;
                             $conversation_copy->customer_email = $customer_email;
+                            $conversation_copy->has_attachments = $conversation->has_attachments;
                             $conversation_copy->push();
 
                             $thread_copy->conversation_id = $conversation_copy->id;
                             $thread_copy->customer_id = $customer_tmp->id;
+                            $thread_copy->has_attachments = $conversation->has_attachments;
                             $thread_copy->setTo($customer_email);
                             $thread_copy->push();
+
+                            // Copy attachments.
+                            if (!empty($attachments_info['attachments'])) {
+                                $attachments = Attachment::whereIn('id', $attachments_info['attachments'])->get();
+                                foreach ($attachments as $attachment) {
+                                    $attachment->duplicate($thread_copy->id);
+                                }
+                            }
 
                             // Events.
                             // todo: allow to undo all emails
