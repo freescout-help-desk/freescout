@@ -68,7 +68,7 @@
                         </div>
                     </div>
 
-                    <div data-in-protocol="default" style="display: none;">
+                    <div data-in-protocol="default">
                         <div class="form-group{{ $errors->has('in_server') ? ' has-error' : '' }}">
                             <label for="in_server" class="col-sm-2 control-label">{{ __('Server') }}</label>
 
