@@ -173,16 +173,7 @@
                         </div>
                     </div>
 
-                    @foreach($mailbox->getInProtocols() as $key => $name)
-                        {{-- Skip the default protocols --}}
-                        @if(isset(\App\Mailbox::$in_protocols[$key]))
-                            @continue
-                        @endif
-
-                        <div data-in-protocol="{{$key}}" style="display: none;">
-                            @include(\Eventy::filter('mailbox.connection_incoming.settings', null, $key, $name))
-                        </div>
-                    @endforeach
+                    @action('mailbox.connection_incoming.after_default_settings', $mailbox)
 
                     <div class="form-group margin-top-2">
                         <div class="col-sm-6 col-sm-offset-2">
