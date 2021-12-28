@@ -1015,6 +1015,13 @@ class Customer extends Model
                 $this->setSocialProfiles($value);
                 $result = true;
             }
+            if ($key == 'country') {
+                if (array_search($this->country, Customer::$countries)) {
+                    $this->country = array_search($this->country, Customer::$countries);
+                }
+                $this->country = strtoupper(mb_substr($this->country, 0, 2));
+                $result = true;
+            }
         }
 
         // Maybe Todo: check phone uniqueness.
