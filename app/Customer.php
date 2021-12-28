@@ -975,20 +975,6 @@ class Customer extends Model
             if (!in_array($key, $this->json_fields) && $key != 'emails') {
                 continue;
             }
-            if ($key == 'emails') {
-                foreach ($value as $email_data) {
-                    if (!empty($email_data['value'])) {
-                        if (!$this->id) {
-                            $this->save();
-                        }
-                        $email_created = Email::create($email_data['value'], $this->id, $email_data['type']);
-
-                        if ($email_created) {
-                            $result = true;
-                        }
-                    }
-                }
-            }
             if ($key == 'phones') {
                 if (isset($value['value'])) {
                     $this->addPhone($value);
@@ -1024,6 +1010,33 @@ class Customer extends Model
             }
         }
 
+        // Emails must be processed the last as they need to save object.
+        foreach ($data as $key => $value) {
+            if ($key == 'emails') {
+                foreach ($value as $email_data) {
+                    if (is_string($email_data)) {
+                        if (!$this->id) {
+                            $this->save();
+                        }
+                        $email_created = Email::create($email_data, $this->id, Email::TYPE_WORK);
+
+                        if ($email_created) {
+                            $result = true;
+                        }
+                    } elseif (!empty($email_data['value'])) {
+                        if (!$this->id) {
+                            $this->save();
+                        }
+                        $email_created = Email::create($email_data['value'], $this->id, $email_data['type']);
+
+                        if ($email_created) {
+                            $result = true;
+                        }
+                    }
+                }
+                break;
+            }
+        }
         // Maybe Todo: check phone uniqueness.
         // Same phone can be written in many ways, so it's almost useless to chek uniqueness.
 
