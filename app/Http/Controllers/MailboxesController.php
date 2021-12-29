@@ -628,15 +628,19 @@ class MailboxesController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
+                $response = \Eventy::filter('mailbox.fetch_test', $response, $mailbox);
+
+                $tested = (isset($response['tested']) && $response['tested'] === true);
+
                 // Check if outgoing port is open.
-                if (!$response['msg']) {
+                if (!$response['msg'] && !$tested) {
                     $test_result = \Helper::checkPort($mailbox->in_server, $mailbox->in_port);
                     if (!$test_result) {
                         $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->in_server.'</strong>', 'port' => '<strong>'.$mailbox->in_port.'</strong>']);
                     }
                 }
 
-                if (!$response['msg']) {
+                if (!$response['msg'] && !$tested) {
                     $test_result = false;
 
                     try {
@@ -650,7 +654,7 @@ class MailboxesController extends Controller
                     }
                 }
 
-                if (!$response['msg']) {
+                if (!$response['msg'] && !$tested) {
                     $response['status'] = 'success';
                 }
                 break;
