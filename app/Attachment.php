@@ -345,6 +345,35 @@ class Attachment extends Model
     }
 
     /**
+     * Delete attachments and update Thread & Conversation.
+     */
+    public static function deleteAttachments($attachments)
+    {
+        if (!$attachments instanceof \Illuminate\Support\Collection) { 
+            $attachments = collect($attachments);
+        }
+
+        foreach ($attachments as $attachment) {
+            if ($attachment->thread_id && $attachment->thread
+                && count($attachment->thread->attachments) <= 1
+            ) {
+                $attachment->thread->has_attachments = false;
+                $attachment->thread->save();
+                // Update conversation.
+                $conversation = $attachment->thread->conversation;
+                foreach ($conversation->threads as $thread) {
+                    if ($thread->has_attachments) {
+                        break 2;
+                    }
+                }
+                $conversation->has_attachments = false;
+                $conversation->save();
+            }
+        }
+        Attachment::deleteForever($attachments);
+    }
+
+    /**
      * Create a copy of the attachment and it's file.
      */
     public function duplicate($thread_id)
