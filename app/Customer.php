@@ -918,8 +918,24 @@ class Customer extends Model
         }
 
         if (empty($email_obj->id) || !$email_obj->customer_id || $email_obj->customer_id != $customer->id) {
-            $email_obj->customer()->associate($customer);
-            $email_obj->save();
+            // Email may have been set in setData().
+            $save_email = true;
+            if (!empty($data['emails']) && is_array($data['emails'])) {
+                foreach ($data['emails'] as $data_email) {
+                    if (is_string($data_email) && $data_email == $email) {
+                        $save_email = false;
+                        break;
+                    }
+                    if (is_array($data_email) && !empty($data_email['value']) && $data_email['value'] == $email) {
+                        $save_email = false;
+                        break;
+                    }
+                }
+            }
+            if ($save_email) {
+                $email_obj->customer()->associate($customer);
+                $email_obj->save();
+            }
         }
 
         // Todo: check phone uniqueness.
@@ -975,20 +991,6 @@ class Customer extends Model
             if (!in_array($key, $this->json_fields) && $key != 'emails') {
                 continue;
             }
-            if ($key == 'emails') {
-                foreach ($value as $email_data) {
-                    if (!empty($email_data['value'])) {
-                        if (!$this->id) {
-                            $this->save();
-                        }
-                        $email_created = Email::create($email_data['value'], $this->id, $email_data['type']);
-
-                        if ($email_created) {
-                            $result = true;
-                        }
-                    }
-                }
-            }
             if ($key == 'phones') {
                 if (isset($value['value'])) {
                     $this->addPhone($value);
@@ -1015,8 +1017,42 @@ class Customer extends Model
                 $this->setSocialProfiles($value);
                 $result = true;
             }
+            if ($key == 'country') {
+                if (array_search($this->country, Customer::$countries)) {
+                    $this->country = array_search($this->country, Customer::$countries);
+                }
+                $this->country = strtoupper(mb_substr($this->country, 0, 2));
+                $result = true;
+            }
         }
 
+        // Emails must be processed the last as they need to save object.
+        foreach ($data as $key => $value) {
+            if ($key == 'emails') {
+                foreach ($value as $email_data) {
+                    if (is_string($email_data)) {
+                        if (!$this->id) {
+                            $this->save();
+                        }
+                        $email_created = Email::create($email_data, $this->id, Email::TYPE_WORK);
+
+                        if ($email_created) {
+                            $result = true;
+                        }
+                    } elseif (!empty($email_data['value'])) {
+                        if (!$this->id) {
+                            $this->save();
+                        }
+                        $email_created = Email::create($email_data['value'], $this->id, $email_data['type']);
+
+                        if ($email_created) {
+                            $result = true;
+                        }
+                    }
+                }
+                break;
+            }
+        }
         // Maybe Todo: check phone uniqueness.
         // Same phone can be written in many ways, so it's almost useless to chek uniqueness.
 

@@ -189,7 +189,7 @@
                     </div>
                 </div>
 
-                <div id="address-collapse" class="hidden">
+                <div id="address-collapse" @if (empty(old('state', $customer->state)) && empty(old('city', $customer->city)) && empty(old('address', $customer->address)) && empty(old('zip', $customer->zip)))class="hidden" @endif>
 
                     <div class="form-group{{ $errors->has('state') ? ' has-error' : '' }}">
                         <label for="state" class="col-sm-2 control-label">{{ __('State') }}</label>
