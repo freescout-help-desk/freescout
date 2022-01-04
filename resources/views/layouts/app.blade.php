@@ -69,9 +69,10 @@
                         <ul class="nav navbar-nav">
                             @php
                                 $mailboxes = Auth::user()->mailboxesCanView(true);
+                                $mailboxes = \Eventy::filter('menu.mailboxes', $mailboxes);
                             @endphp
                             @if (count($mailboxes) == 1)
-                                <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}"><a href="{{ route('mailboxes.view', ['id'=>$mailboxes[0]->id]) }}">{{ __('Mailbox') }}</a></li>
+                                <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}"><a href="{{ \Eventy::filter('mailbox.url', route('mailboxes.view', ['id'=>$mailboxes[0]->id]), $mailboxes[0]) }}">{{ __('Mailbox') }}</a></li>
                             @elseif (count($mailboxes) > 1) 
                                 <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
@@ -79,7 +80,7 @@
                                     </a>
                                     <ul class="dropdown-menu dm-scrollable">
                                         @foreach ($mailboxes as $mailbox_item)
-                                            <li @if ($mailbox_item->id == app('request')->id)class="active"@endif><a href="{{ route('mailboxes.view', ['id' => $mailbox_item->id]) }}">{{ $mailbox_item->name }}</a></li>
+                                            <li @if ($mailbox_item->id == app('request')->id)class="active"@endif><a href="{{ \Eventy::filter('mailbox.url', route('mailboxes.view', ['id' => $mailbox_item->id]), $mailbox_item) }}">{{ $mailbox_item->name }}</a></li>
                                         @endforeach
                                     </ul>
                                 </li>
