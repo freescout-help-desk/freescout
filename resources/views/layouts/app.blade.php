@@ -68,11 +68,7 @@
                         <!-- Left Side Of Navbar -->
                         <ul class="nav navbar-nav">
                             @php
-                                $cache_mailboxes = false;
-                                if (\Helper::isRoute('conversations.view') || \Helper::isRoute('mailboxes.view.folder') || \Helper::isRoute('conversations.search')) {
-                                    $cache_mailboxes = true;
-                                }
-                                $mailboxes = Auth::user()->mailboxesCanView($cache_mailboxes);
+                                $mailboxes = Auth::user()->mailboxesCanView(true);
                             @endphp
                             @if (count($mailboxes) == 1)
                                 <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}"><a href="{{ route('mailboxes.view', ['id'=>$mailboxes[0]->id]) }}">{{ __('Mailbox') }}</a></li>
