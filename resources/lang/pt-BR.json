@@ -650,7 +650,7 @@
     "anyone": "qualquer um",
     ":person marked as :status_name conversation #:conversation_number": ":person marcou como :status_name a conversa #:conversation_number",
     ":person marked as :status_name": ":person marcou como :status_name",
-    ":person assigned :assignee convsersation #:conversation_number": ":person atribuiu :assignee à conversa #:conversation_number",
+    ":person assigned :assignee conversation #:conversation_number": ":person atribuiu :assignee à conversa #:conversation_number",
     ":person assigned to :assignee": ":person atribuída a :assignee",
     ":person changed the customer to :customer in conversation #:conversation_number": ":person alterou o cliente para :customer na conversa #:conversation_number",
     ":person changed the customer to :customer": ":person alterou o cliente para :customer",
