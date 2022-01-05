@@ -496,7 +496,7 @@
     "Info": "情報",
     ":number free emails per month from :%a_begin%Amazon EC2:%a_end% server.": ":%a_begin%Amazon EC2:%a_end% サーバーからの月間無料メールの :number。",
     ":person added a note to conversation #:conversation_number": ":person が会話にメモを追加しました  #:conversation_number",
-    ":person assigned :assignee convsersation #:conversation_number": ":assignee された :person との会話 #:conversation_number",
+    ":person assigned :assignee conversation #:conversation_number": ":assignee された :person との会話 #:conversation_number",
     ":person changed the customer to :customer": ":person は顧客を :customer に変更しました",
     ":person assigned to :assignee": ":person は :assignee に割り当てられました",
     ":person changed the customer to :customer in conversation #:conversation_number": "会話の中で :person が顧客を :customer に変更しました #:conversation_number",
