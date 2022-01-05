@@ -523,7 +523,7 @@
     "yourself": "siebie",
     ":person marked as :status_name conversation #:conversation_number": ":person oznaczył(a) jako :status_name w rozmowie #:conversation_number ",
     ":person marked as :status_name": ":person oznaczył(a) jako :status_name",
-    ":person assigned :assignee convsersation #:conversation_number": ":person przypisał(a) :assignee do rozmowy #:conversation_number",
+    ":person assigned :assignee conversation #:conversation_number": ":person przypisał(a) :assignee do rozmowy #:conversation_number",
     ":person assigned to :assignee": ":person przypisał(a) do :assignee",
     ":person changed the customer to :customer in conversation #:conversation_number": ":person zmienił(a) klienta na :customer w rozmowie #:conversation_number",
     ":person changed the customer to :customer": ":person zmienił(a) klienta na :customer",
