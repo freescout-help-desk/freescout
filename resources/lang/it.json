@@ -31,7 +31,7 @@
     "you": "tu",
     ":person marked as :status_name conversation #:conversation_number": ":person ha contrassegnato come :status_name il ticket #:conversation_number",
     ":person marked as :status_name": ":person contrassegnato come :status_name",
-    ":person assigned :assignee convsersation #:conversation_number": ":person ha assegnato a :assignee il ticket #:conversation_number",
+    ":person assigned :assignee conversation #:conversation_number": ":person ha assegnato a :assignee il ticket #:conversation_number",
     ":person assigned to :assignee": ":person assegnato a :assignee",
     ":person changed the customer to :customer in conversation #:conversation_number": ":person ha cambiato il cliente con :customer nel ticket #:conversation_number",
     ":person changed the customer to :customer": ":person ha cambiato il cliente con :customer",
