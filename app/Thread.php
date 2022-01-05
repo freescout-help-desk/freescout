@@ -592,7 +592,7 @@ class Thread extends Model
                     $assignee = htmlspecialchars($assignee);
                 }
                 if ($conversation_number) {
-                    $did_this = __(':person assigned :assignee convsersation #:conversation_number', ['assignee' => $assignee, 'conversation_number' => $conversation_number]);
+                    $did_this = __(':person assigned :assignee conversation #:conversation_number', ['assignee' => $assignee, 'conversation_number' => $conversation_number]);
                 } else {
                     $did_this = __(":person assigned to :assignee", ['assignee' => $assignee]);
                 }
