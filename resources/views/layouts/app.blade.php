@@ -37,7 +37,7 @@
 <body class="@if (!Auth::user()) user-is-guest @endif @if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class')" @yield('body_attrs') @if (Auth::user()) data-auth_user_id="{{ Auth::user()->id }}" @endif>
     <div id="app">
 
-        @if (Auth::user() && empty(app('request')->x_embed))
+        @if (Auth::user() && empty(app('request')->x_embed) && empty($__env->yieldContent('guest_mode')))
 
             <nav class="navbar navbar-default navbar-static-top">
                 <div class="container">
@@ -57,7 +57,7 @@
                                 <i class="glyphicon glyphicon-arrow-left"></i>
                             </a>
                         @else
-                            <a class="navbar-brand" href="{{ url('/') }}" title="{{ __('Dashboard') }}">
+                            <a class="navbar-brand" href="{{ route('dashboard') }}" title="{{ __('Dashboard') }}">
                                 <img src="@filter('layout.header_logo', asset('img/logo-brand.svg'))" height="100%" alt="" />
                                 {{-- config('app.name', 'FreeScout') --}}
                             </a>
@@ -68,14 +68,11 @@
                         <!-- Left Side Of Navbar -->
                         <ul class="nav navbar-nav">
                             @php
-                                $cache_mailboxes = false;
-                                if (\Helper::isRoute('conversations.view') || \Helper::isRoute('mailboxes.view.folder') || \Helper::isRoute('conversations.search')) {
-                                    $cache_mailboxes = true;
-                                }
-                                $mailboxes = Auth::user()->mailboxesCanView($cache_mailboxes);
+                                $mailboxes = Auth::user()->mailboxesCanView(true);
+                                $mailboxes = \Eventy::filter('menu.mailboxes', $mailboxes);
                             @endphp
                             @if (count($mailboxes) == 1)
-                                <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}"><a href="{{ route('mailboxes.view', ['id'=>$mailboxes[0]->id]) }}">{{ __('Mailbox') }}</a></li>
+                                <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}"><a href="{{ \Eventy::filter('mailbox.url', route('mailboxes.view', ['id'=>$mailboxes[0]->id]), $mailboxes[0]) }}">{{ __('Mailbox') }}</a></li>
                             @elseif (count($mailboxes) > 1) 
                                 <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
@@ -83,7 +80,7 @@
                                     </a>
                                     <ul class="dropdown-menu dm-scrollable">
                                         @foreach ($mailboxes as $mailbox_item)
-                                            <li @if ($mailbox_item->id == app('request')->id)class="active"@endif><a href="{{ route('mailboxes.view', ['id' => $mailbox_item->id]) }}">{{ $mailbox_item->name }}</a></li>
+                                            <li @if ($mailbox_item->id == app('request')->id)class="active"@endif><a href="{{ \Eventy::filter('mailbox.url', route('mailboxes.view', ['id' => $mailbox_item->id]), $mailbox_item) }}">{{ $mailbox_item->name }}</a></li>
                                         @endforeach
                                     </ul>
                                 </li>
@@ -251,7 +248,8 @@
             </div>
         @endif
 
-        @if (!in_array(Route::currentRouteName(), array('mailboxes.view')) && empty(app('request')->x_embed))
+        @if (!in_array(Route::currentRouteName(), array('mailboxes.view')) 
+            && empty(app('request')->x_embed) && empty($__env->yieldContent('no_footer')))
             <div class="footer">
                 @if (!\Eventy::filter('footer.text', ''))
                     &copy; 2018-{{ date('Y') }} <a href="{{ config('app.freescout_url') }}" target="blank">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk & shared mailbox') }}

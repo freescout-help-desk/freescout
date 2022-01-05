@@ -15,8 +15,8 @@
 
 Auth::routes();
 
-// Redirects
-Route::redirect('/home', '/', 301);
+// Authentication redirects to /home
+Route::redirect('/home', '/'.config('app.dashboard_path'), 301);
 
 // Public routes
 Route::get('/user-setup/{hash}', 'PublicController@userSetup')->name('user_setup');
@@ -24,7 +24,10 @@ Route::post('/user-setup/{hash}', 'PublicController@userSetupSave');
 Route::get('/storage/attachment/{dir_1}/{dir_2}/{dir_3}/{file_name}', 'PublicController@downloadAttachment')->name('attachment.download');
 
 // General routes for logged in users
-Route::get('/', 'SecureController@dashboard')->name('dashboard');
+if (config('app.dashboard_path')) {
+	Route::get('/', config('app.home_controller'));
+}
+Route::get('/'.config('app.dashboard_path'), 'SecureController@dashboard')->name('dashboard');
 Route::get('/app-logs/app', ['uses' => '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs.app');
 Route::get('/app-logs/{name?}', ['uses' => 'SecureController@logs', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs');
 Route::post('/app-logs/{name?}', ['uses' => 'SecureController@logsSubmit', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs.action');
