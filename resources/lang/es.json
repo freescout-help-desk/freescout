@@ -12,7 +12,7 @@
     ":person added a note": ":person agregó una nota",
     ":person added a note to conversation": ":person agregó una nota a la conversación",
     ":person added a note to conversation #:conversation_number": ":person agregó una nota a la conversación #:conversation_number",
-    ":person assigned :assignee convsersation #:conversation_number": ":person asignado a :assignee conversación #:conversation_number",
+    ":person assigned :assignee conversation #:conversation_number": ":person asignado a :assignee conversación #:conversation_number",
     ":person assigned to :assignee": ":person asignada a :assignee",
     ":person changed the customer to :customer": ":person cambió el cliente a :customer",
     ":person changed the customer to :customer in conversation #:conversation_number": ":person cambio el cliente a :customer en la conversación #:conversation_number",
