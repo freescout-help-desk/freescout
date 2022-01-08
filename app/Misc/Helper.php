@@ -979,7 +979,7 @@ class Helper
      *
      * @param [type] $text [description]
      */
-    public static function htmlToText($text, $embed_images = false)
+    public static function htmlToText($text, $embed_images = false, $options = array())
     {
         // Process blockquotes.
         $text = str_ireplace('<blockquote>', '<div>', $text);
@@ -989,7 +989,7 @@ class Helper
             // Replace embedded images with their urls.
             $text = preg_replace( '/<img\b[^>]*src=\"([^>"]+)\"[^>]*>/i', "<div>$1</div>", $text);
         }
-        return (new \Html2Text\Html2Text($text))->getText();
+        return (new \Html2Text\Html2Text($text, $options))->getText();
     }
 
     /**

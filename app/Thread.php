@@ -293,9 +293,9 @@ class Thread extends Model
     /**
      * Convert body to plain text.
      */
-    public function getBodyAsText()
+    public function getBodyAsText($options = array())
     {
-        return \Helper::htmlToText($this->body, true);
+        return \Helper::htmlToText($this->body, true, $options);
     }
 
     public function getBodyWithFormatedLinks(string $body = '') :string
