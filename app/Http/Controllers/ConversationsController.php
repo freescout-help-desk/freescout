@@ -2244,6 +2244,21 @@ class ConversationsController extends Controller
         
         if (!$response['msg']) {
             $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
+            if (
+                !empty($request->sortBy) && !empty($request->order) &&
+                in_array($request->sortBy, ['subject', 'number', 'created_at']) &&
+                in_array($request->order, ['asc', 'desc'])
+            )
+            {
+                $sort_by = $request->sortBy;
+                $order = $request->order;
+                $query_conversations = $query_conversations->orderBy($request->sortBy, $request->order);
+            }
+            else {
+                $sort_by = 'created_at';
+                $order = 'asc';
+            }
+
             $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE, ['*'], 'page', $request->page);
         }
 
@@ -2252,6 +2267,8 @@ class ConversationsController extends Controller
         $response['html'] = view('conversations/conversations_table', [
             'folder'        => $folder,
             'conversations' => $conversations,
+            'sort_by'       => $sort_by,
+            'order'         => $order
         ])->render();
 
         return $response;

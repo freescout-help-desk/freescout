@@ -449,6 +449,21 @@ class MailboxesController extends Controller
         $this->authorize('view', $folder);
 
         $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
+        if (
+            !empty($_GET['sort_by']) && !empty($_GET['order']) &&
+            in_array($_GET['sort_by'], ['subject', 'number', 'created_at']) &&
+            in_array($_GET['order'], ['asc', 'desc'])
+        )
+        {
+            $sort_by = $_GET['sort_by'];
+            $order = $_GET['order'];
+            $query_conversations = $query_conversations->orderBy($_GET['sort_by'], $_GET['order']);
+        }
+        else {
+            $sort_by = 'created_at';
+            $order = 'asc';
+        }
+ 
         $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE);
 
         return view('mailboxes/view', [
@@ -456,6 +471,8 @@ class MailboxesController extends Controller
             'folders'       => $folders,
             'folder'        => $folder,
             'conversations' => $conversations,
+            'sort_by'       => $sort_by,
+            'order'         => $order
         ]);
     }
 

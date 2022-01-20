@@ -2377,7 +2377,9 @@ function loadConversations(page, table, no_loader)
 			folder_id: getGlobalAttr('folder_id'),
 			filter: filter,
 			params: params,
-			page: page
+			page: page,
+			sortBy: getGlobalAttr('sort_by'),
+			order: getGlobalAttr('order')
 		},
 		laroute.route('conversations.ajax'),
 		function(response) {
