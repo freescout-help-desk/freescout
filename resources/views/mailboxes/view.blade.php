@@ -2,6 +2,8 @@
 
 @section('body_attrs')@parent data-mailbox_id="{{ $mailbox->id }}"@endsection
 @section('body_attrs')@parent data-folder_id="{{ $folder->id }}"@endsection
+@section('body_attrs')@parent data-sort_by="{{ $sort_by }}"@endsection
+@section('body_attrs')@parent data-order="{{ $order }}"@endsection
 
 @if ($folder->active_count)
     @section('title', '('.(int)$folder->getCount().') '.$folder->getTypeName().' - '.$mailbox->name)
