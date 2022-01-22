@@ -1394,6 +1394,11 @@ class Helper
         return \DB::connection()->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql';
     }
 
+    public static function isPgSql()
+    {
+        return \DB::connection()->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'pgsql';
+    }
+
     public static function humanFileSize($size, $unit="")
     {
         if ((!$unit && $size >= 1<<30) || $unit == "GB") {
