@@ -54,13 +54,11 @@
             @endif
             <th class="conv-attachment">&nbsp;</th>
             <th class="conv-subject" colspan="2">
-                 <span>
-                        <a style="cursor: pointer" href="?sort_by=subject&order={{ $order == 'desc' ? 'asc' : 'desc' }}">
-                            {{ __("Conversation") }} 
-                             @if ($sort_by == 'subject' && $order =='desc')↑@endif
-                             @if ($sort_by == 'subject' && $order =='asc')↓@endif
-                        </a>
-                    </span>
+                <span class="conv-col-sort" data-sort-by="subject" data-order="@if ($sort_by == 'subject'){{ $order }}@else{{ 'asc' }}@endif">
+                    {{ __("Conversation") }} 
+                     @if ($sort_by == 'subject' && $order =='desc')↑@endif
+                     @if ($sort_by == 'subject' && $order =='asc')↓@endif
+                </span>
             </th>
             @if ($show_assigned)
                 <th class="conv-owner">
@@ -77,18 +75,16 @@
             @endif
             @action('conversations_table.th_before_conv_number')
             <th class="conv-number">
-                 <span>
-                        <a style="cursor: pointer" href="?sort_by=number&order={{ $order == 'desc' ? 'asc' : 'desc' }}">
-                            {{ __("Number") }} 
-                             @if ($sort_by == 'number' && $order =='desc')↑@endif
-                             @if ($sort_by == 'number' && $order =='asc')↓@endif
-                        </a>
-                    </span>
+                <span class="conv-col-sort" data-sort-by="number" data-order="@if ($sort_by == 'number'){{ $order }}@else{{ 'asc' }}@endif">
+                    {{ __("Number") }} 
+                     @if ($sort_by == 'number' && $order =='desc')↑@endif
+                     @if ($sort_by == 'number' && $order =='asc')↓@endif
+                </span>
             </th>
             <th class="conv-date">
                 <span>
-                    <a href="?sort_by=&created_at={{ $order == 'desc' ? 'asc' : 'desc' }}" style="cursor: pointer; display: inline">
-                        @if ($folder->type == App\Folder::TYPE_CLOSED){{ __("Closed") }}@elseif ($folder->type == App\Folder::TYPE_DRAFTS){{ __("Last Updated") }}@elseif ($folder->type == App\Folder::TYPE_DELETED){{ __("Deleted") }}@else{{ \Eventy::filter('conversations_table.column_title_date', __("Waiting Since"), $folder) }}@endif @if ($sort_by == 'created_at' && $order =='desc')↑@elseif ($sort_by == 'created_at' && $order =='asc')↓@elseif ($sort_by == '' && $order =='')↓@endif
+                    <span class="conv-col-sort" data-sort-by="date" data-order="@if ($sort_by == 'date'){{ $order }}@else{{ 'asc' }}@endif">
+                        @if ($folder->type == App\Folder::TYPE_CLOSED){{ __("Closed") }}@elseif ($folder->type == App\Folder::TYPE_DRAFTS){{ __("Last Updated") }}@elseif ($folder->type == App\Folder::TYPE_DELETED){{ __("Deleted") }}@else{{ \Eventy::filter('conversations_table.column_title_date', __("Waiting Since"), $folder) }}@endif @if ($sort_by == 'date' && $order =='desc')↑@elseif ($sort_by == 'date' && $order =='asc')↓@elseif ($sort_by == '' && $order =='')↓@endif
                     </a>
                 </span>
             </th>

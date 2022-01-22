@@ -1974,6 +1974,29 @@ class Conversation extends Model
         \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id);
     }
 
+    public static function getConvTableSorting($request = null)
+    {
+        if (!$request) {
+            $request = request();
+        }
+
+        $result = [
+            'sort_by' => 'date',
+            'order' => 'desc',
+        ];
+
+        if (
+            !empty($request->sort_by) && !empty($request->order) &&
+            in_array($request->sort_by, ['subject', 'number', 'date']) &&
+            in_array($request->order, ['asc', 'desc'])
+        ) {
+            $result['sort_by'] = $request->sort_by;
+            $result['order'] = $request->order;
+        }
+
+        return $result;
+    }
+
     // /**
     //  * Get conversation meta data as array.
     //  */

@@ -1345,6 +1345,9 @@ thead .conv-cb label {
     display: block;
     font-weight: bold;
 }
+.table-conversations th .conv-col-sort {
+    cursor: pointer;
+}
 .table.table-conversations tbody td {
     line-height: 1em;
     padding: 0;
