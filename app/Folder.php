@@ -152,7 +152,6 @@ class Folder extends Model
             case self::TYPE_STARRED:
                 $order_by[] = ['status' => 'asc'];
                 $order_by[] = ['last_reply_at' => 'desc'];
-                //$order_by = [['conversation_folder.id' => 'desc']];
                 break;
 
             case self::TYPE_DRAFTS:
@@ -173,6 +172,26 @@ class Folder extends Model
             default:
                 $order_by = \Eventy::filter('folder.conversations_order_by', $order_by, $this->type);
                 break;
+        }
+
+        // Process columns sorting.
+        $sorting = Conversation::getConvTableSorting();
+        if ($sorting['sort_by'] == 'date') {
+            if ($sorting['order'] != 'desc') {
+                 foreach ($order_by as $block_i => $block) {
+                    foreach ($block as $field => $order) {
+                        if ($field == 'status') {
+                            unset($order_by[$block_i][$field]);
+                        } else {
+                            if ($order == 'desc') {
+                                $order_by[$block_i][$field] = 'asc';
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            $order_by = [[$sorting['sort_by'] => $sorting['order']]];
         }
 
         return $order_by;

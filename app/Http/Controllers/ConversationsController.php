@@ -2242,6 +2242,8 @@ class ConversationsController extends Controller
             $response['msg'] = __('Not enough permissions');
         }
         
+        $sorting = Conversation::getConvTableSorting($request);
+
         if (!$response['msg']) {
             $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
             $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE, ['*'], 'page', $request->page);
@@ -2252,6 +2254,8 @@ class ConversationsController extends Controller
         $response['html'] = view('conversations/conversations_table', [
             'folder'        => $folder,
             'conversations' => $conversations,
+            'sort_by'       => $sorting['sort_by'],
+            'order'         => $sorting['order']
         ])->render();
 
         return $response;

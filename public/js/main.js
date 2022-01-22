@@ -386,7 +386,7 @@ function initModals(html_tag)
 	if (typeof(html_tag) == "undefined") {
 		html_tag = 'a';
 	}
-	$(html_tag+'[data-trigger="modal"][data-modal-applied!="1"]').attr('data-modal-applied', '1').click(function(e) {
+	$(html_tag+'[data-trigger="modal"][data-modal-applied!="1"],.fs-trigger-modal[data-modal-applied!="1"]').attr('data-modal-applied', '1').click(function(e) {
     	triggerModal($(this));
     	e.preventDefault();
 	});
@@ -1451,6 +1451,11 @@ function getGlobalAttr(attr)
 	return $("body:first").attr('data-'+attr);
 }
 
+function setGlobalAttr(attr, value)
+{
+	return $("body:first").attr('data-'+attr, value);
+}
+
 // Initialize conversation body editor
 function convEditorInit()
 {
@@ -2377,7 +2382,9 @@ function loadConversations(page, table, no_loader)
 			folder_id: getGlobalAttr('folder_id'),
 			filter: filter,
 			params: params,
-			page: page
+			page: page,
+			sort_by: getGlobalAttr('sort_by'),
+			order: getGlobalAttr('order')
 		},
 		laroute.route('conversations.ajax'),
 		function(response) {
@@ -2387,6 +2394,7 @@ function loadConversations(page, table, no_loader)
 					conversationPagination();
 					starConversationInit();
 					converstationBulkActionsInit();
+					convListSortingInit();
 					triggersInit();
 				}
 			} else {
@@ -4055,6 +4063,22 @@ function setSummernoteText(jtextarea, text)
 	jtextarea.summernote("code", text);
 }
 
+function convListSortingInit()
+{
+	$('.conv-col-sort').click(function(event) {
+		setGlobalAttr('sort_by', $(this).attr('data-sort-by'));
+		var order = $(this).attr('data-order');
+		if (order == 'asc') {
+			order = 'desc';
+		} else {
+			order = 'asc';
+		}
+		setGlobalAttr('order', order);
+
+		loadConversations('', '', true);
+	});
+}
+
 // Star/unstar processing from the list or conversation
 function starConversationInit()
 {
@@ -4106,6 +4130,7 @@ function starConversationInit()
 function conversationsTableInit()
 {
 	converstationBulkActionsInit();
+	convListSortingInit();
 
 	if ("ontouchstart" in window)
 	{

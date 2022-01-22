@@ -254,7 +254,7 @@
     "you": "Moi",
     ":person marked as :status_name conversation #:conversation_number": ":person a changé le statut de la conversation #:conversation_number en :status_name",
     ":person marked as :status_name": ":person a changé le statut en :status_name",
-    ":person assigned :assignee convsersation #:conversation_number": ":person a assigné :assignee à la conversation #:conversation_number",
+    ":person assigned :assignee conversation #:conversation_number": ":person a assigné :assignee à la conversation #:conversation_number",
     ":person assigned to :assignee": ":person a assigné :assignee",
     ":person changed the customer to :customer in conversation #:conversation_number": ":person a changé le client en :customer dans la conversation #:conversation_number",
     ":person changed the customer to :customer": ":person a changé le client en :customer",

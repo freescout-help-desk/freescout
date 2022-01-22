@@ -19,7 +19,7 @@
     ":person added a note": ":person heeft een notitie toegevoegd",
     ":person added a note to conversation": ":person heeft een notitie aan het gesprek toegevoegd",
     ":person added a note to conversation #:conversation_number": ":person heeft een notitie toegevoegd aan gesprek #:conversation_number",
-    ":person assigned :assignee convsersation #:conversation_number": ":person heeft :assignee toegewezen aan gesprek #:conversation_number",
+    ":person assigned :assignee conversation #:conversation_number": ":person heeft :assignee toegewezen aan gesprek #:conversation_number",
     ":person assigned to :assignee": ":person heeft toegewezen aan :assignee",
     ":person changed the customer to :customer": ":person heeft de klant gewijzigd naar :customer",
     ":person changed the customer to :customer in conversation #:conversation_number": ":person heeft de klant gewijzigd naar :customer in gesprek #:conversation_number",

@@ -675,7 +675,7 @@
     "Your domain is deactivated": "Ihre Domain ist deaktiviert",
     ":number free emails per month from :%a_begin%Amazon EC2:%a_end% server.": ":number kostenlose E-Mails pro Monat von :%a_begin%Amazon EC2:%a_end% Servern.",
     ":person added a note to conversation #:conversation_number": ":person hat eine Notiz zu Gespräch #:conversation_number hinzugefügt",
-    ":person assigned :assignee convsersation #:conversation_number": ":person hat :assignee Gespräch #:conversation_number zugewiesen",
+    ":person assigned :assignee conversation #:conversation_number": ":person hat :assignee Gespräch #:conversation_number zugewiesen",
     ":person assigned to :assignee": "von :person an :assignee zugewiesen",
     ":person changed the customer to :customer": ":person änderte den Kunden zu :customer",
     ":person changed the customer to :customer in conversation #:conversation_number": ":person änderte den Kunden zu :customer im Gespräch #:conversation_number",

@@ -94,7 +94,8 @@ Images & one-click installs:
   
   * [API](https://api-docs.freescout.net/)
   * [Migrate to FreeScout](http://freescout.net/migrate/) (from any help desk)
-  * [Zapier Integration](https://freescout.net/zapier/)
+  * [Zapier](https://freescout.net/zapier/)
+  * [Integromat](https://freescout.net/integromat/)
 
 ## News & Updates
 
