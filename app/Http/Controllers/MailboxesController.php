@@ -448,8 +448,6 @@ class MailboxesController extends Controller
 
         $this->authorize('view', $folder);
 
-        $sorting = Conversation::getConvTableSorting();
-
         $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
         $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE);
 
@@ -458,8 +456,6 @@ class MailboxesController extends Controller
             'folders'       => $folders,
             'folder'        => $folder,
             'conversations' => $conversations,
-            'sort_by'       => $sorting['sort_by'],
-            'order'         => $sorting['order']
         ]);
     }
 

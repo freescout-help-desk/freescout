@@ -2346,6 +2346,7 @@ function loadConversations(page, table, no_loader)
 {
 	var filter = null;
 	var params = {};
+	var sorting = {};
 
 	if ($('body:first').hasClass('body-search')) {
 		filter = {
@@ -2377,6 +2378,13 @@ function loadConversations(page, table, no_loader)
 		}
 	}
 
+	// Sorting
+	for (data_name in datas) {
+		if (/^sorting_/.test(data_name)) {
+			sorting[data_name.replace(/^sorting_/, '')] = datas[data_name];
+		}
+	}
+
 	fsAjax(
 		{
 			action: 'conversations_pagination',
@@ -2385,8 +2393,7 @@ function loadConversations(page, table, no_loader)
 			filter: filter,
 			params: params,
 			page: page,
-			sort_by: getGlobalAttr('sort_by'),
-			order: getGlobalAttr('order')
+			sorting: sorting
 		},
 		laroute.route('conversations.ajax'),
 		function(response) {
@@ -4068,14 +4075,15 @@ function setSummernoteText(jtextarea, text)
 function convListSortingInit()
 {
 	$('.conv-col-sort').click(function(event) {
-		setGlobalAttr('sort_by', $(this).attr('data-sort-by'));
+		var table = $(this).parents('.table-conversations:first');
+		table.attr('data-sorting_sort_by', $(this).attr('data-sort-by'));
 		var order = $(this).attr('data-order');
 		if (order == 'asc') {
 			order = 'desc';
 		} else {
 			order = 'asc';
 		}
-		setGlobalAttr('order', order);
+		table.attr('data-sorting_order', order);
 
 		loadConversations('', '', true);
 	});
