@@ -1986,12 +1986,12 @@ class Conversation extends Model
         ];
 
         if (
-            !empty($request->sort_by) && !empty($request->order) &&
-            in_array($request->sort_by, ['subject', 'number', 'date']) &&
-            in_array($request->order, ['asc', 'desc'])
+            !empty($request->sorting['sort_by']) && !empty($request->sorting['order']) &&
+            in_array($request->sorting['sort_by'], ['subject', 'number', 'date']) &&
+            in_array($request->sorting['order'], ['asc', 'desc'])
         ) {
-            $result['sort_by'] = $request->sort_by;
-            $result['order'] = $request->order;
+            $result['sort_by'] = $request->sorting['sort_by'];
+            $result['order'] = $request->sorting['order'];
         }
 
         return $result;

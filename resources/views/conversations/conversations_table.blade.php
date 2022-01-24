@@ -21,13 +21,16 @@
         if (!isset($params)) {
             $params = [];
         }
+
+        // Sorting.
+        $sorting = App\Conversation::getConvTableSorting();
     @endphp
 
     @if (!request()->get('page'))
         @include('/conversations/partials/bulk_actions')
     @endif
 
-    <table class="table-conversations table @if (!empty($params['show_mailbox']))show-mailbox @endif" data-page="{{ (int)request()->get('page', 1) }}" @foreach ($params as $param_name => $param_value) data-param_{{ $param_name }}="{{ $param_value }}" @endforeach @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif >
+    <table class="table-conversations table @if (!empty($params['show_mailbox']))show-mailbox @endif" data-page="{{ (int)request()->get('page', 1) }}" @foreach ($params as $param_name => $param_value) data-param_{{ $param_name }}="{{ $param_value }}" @endforeach @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif @foreach ($sorting as $sorting_name => $sorting_value) data-param_{{ $sorting_name }}="{{ $sorting_value }}" @endforeach >
         <colgroup>
             {{-- todo: without this column table becomes not 100% wide --}}
             <col class="conv-current">
@@ -54,10 +57,10 @@
             @endif
             <th class="conv-attachment">&nbsp;</th>
             <th class="conv-subject" colspan="2">
-                <span class="conv-col-sort" data-sort-by="subject" data-order="@if ($sort_by == 'subject'){{ $order }}@else{{ 'asc' }}@endif">
+                <span class="conv-col-sort" data-sort-by="subject" data-order="@if ($sorting['sort_by'] == 'subject'){{ $sorting['order'] }}@else{{ 'asc' }}@endif">
                     {{ __("Conversation") }} 
-                     @if ($sort_by == 'subject' && $order =='desc')↑@endif
-                     @if ($sort_by == 'subject' && $order =='asc')↓@endif
+                     @if ($sorting['sort_by'] == 'subject' && $sorting['order'] =='desc')↑@endif
+                     @if ($sorting['sort_by'] == 'subject' && $sorting['order'] =='asc')↓@endif
                 </span>
             </th>
             @if ($show_assigned)
@@ -75,16 +78,16 @@
             @endif
             @action('conversations_table.th_before_conv_number')
             <th class="conv-number">
-                <span class="conv-col-sort" data-sort-by="number" data-order="@if ($sort_by == 'number'){{ $order }}@else{{ 'asc' }}@endif">
+                <span class="conv-col-sort" data-sort-by="number" data-order="@if ($sorting['sort_by'] == 'number'){{ $sorting['order'] }}@else{{ 'asc' }}@endif">
                     {{ __("Number") }} 
-                     @if ($sort_by == 'number' && $order =='desc')↑@endif
-                     @if ($sort_by == 'number' && $order =='asc')↓@endif
+                     @if ($sorting['sort_by'] == 'number' && $sorting['order'] =='desc')↑@endif
+                     @if ($sorting['sort_by'] == 'number' && $sorting['order'] =='asc')↓@endif
                 </span>
             </th>
             <th class="conv-date">
                 <span>
-                    <span class="conv-col-sort" data-sort-by="date" data-order="@if ($sort_by == 'date'){{ $order }}@else{{ 'asc' }}@endif">
-                        @if ($folder->type == App\Folder::TYPE_CLOSED){{ __("Closed") }}@elseif ($folder->type == App\Folder::TYPE_DRAFTS){{ __("Last Updated") }}@elseif ($folder->type == App\Folder::TYPE_DELETED){{ __("Deleted") }}@else{{ \Eventy::filter('conversations_table.column_title_date', __("Waiting Since"), $folder) }}@endif @if ($sort_by == 'date' && $order =='desc')↑@elseif ($sort_by == 'date' && $order =='asc')↓@elseif ($sort_by == '' && $order =='')↓@endif
+                    <span class="conv-col-sort" data-sort-by="date" data-order="@if ($sorting['sort_by'] == 'date'){{ $sorting['order'] }}@else{{ 'asc' }}@endif">
+                        @if ($folder->type == App\Folder::TYPE_CLOSED){{ __("Closed") }}@elseif ($folder->type == App\Folder::TYPE_DRAFTS){{ __("Last Updated") }}@elseif ($folder->type == App\Folder::TYPE_DELETED){{ __("Deleted") }}@else{{ \Eventy::filter('conversations_table.column_title_date', __("Waiting Since"), $folder) }}@endif @if ($sorting['sort_by'] == 'date' && $sorting['order'] =='desc')↑@elseif ($sorting['sort_by'] == 'date' && $sorting['order'] =='asc')↓@elseif ($sorting['sort_by'] == '' && $sorting['order'] =='')↓@endif
                     </a>
                 </span>
             </th>

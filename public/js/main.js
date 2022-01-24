@@ -3,6 +3,7 @@ var fs_loader_timeout;
 var fs_processing_send_reply = false;
 var fs_processing_save_draft = false;
 var fs_send_reply_after_draft = false;
+var fs_autosave_note = true;
 var fs_connection_errors = 0;
 var fs_editor_change_timeout = -1;
 // For how long to remember conversation note drafts
@@ -1926,6 +1927,7 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 				if (typeof(response.status) != "undefined" && response.status == 'success') {
 					// Forget note
 					if (isNote()) {
+						fs_autosave_note = false;
 						forgetNote(getGlobalAttr('conversation_id'));
 					}
 					if (typeof(response.redirect_url) != "undefined") {
@@ -2344,6 +2346,7 @@ function loadConversations(page, table, no_loader)
 {
 	var filter = null;
 	var params = {};
+	var sorting = {};
 
 	if ($('body:first').hasClass('body-search')) {
 		filter = {
@@ -2375,6 +2378,13 @@ function loadConversations(page, table, no_loader)
 		}
 	}
 
+	// Sorting
+	for (data_name in datas) {
+		if (/^sorting_/.test(data_name)) {
+			sorting[data_name.replace(/^sorting_/, '')] = datas[data_name];
+		}
+	}
+
 	fsAjax(
 		{
 			action: 'conversations_pagination',
@@ -2383,8 +2393,7 @@ function loadConversations(page, table, no_loader)
 			filter: filter,
 			params: params,
 			page: page,
-			sort_by: getGlobalAttr('sort_by'),
-			order: getGlobalAttr('order')
+			sorting: sorting
 		},
 		laroute.route('conversations.ajax'),
 		function(response) {
@@ -4066,14 +4075,15 @@ function setSummernoteText(jtextarea, text)
 function convListSortingInit()
 {
 	$('.conv-col-sort').click(function(event) {
-		setGlobalAttr('sort_by', $(this).attr('data-sort-by'));
+		var table = $(this).parents('.table-conversations:first');
+		table.attr('data-sorting_sort_by', $(this).attr('data-sort-by'));
 		var order = $(this).attr('data-order');
 		if (order == 'asc') {
 			order = 'desc';
 		} else {
 			order = 'asc';
 		}
-		setGlobalAttr('order', order);
+		table.attr('data-sorting_order', order);
 
 		loadConversations('', '', true);
 	});
@@ -4304,6 +4314,10 @@ function switchToNote()
 
 function rememberNote()
 {
+	if (!fs_autosave_note) {
+		return;
+	}
+	
 	var conversation_id = getGlobalAttr('conversation_id');
 	if (!conversation_id) {
 		return;
