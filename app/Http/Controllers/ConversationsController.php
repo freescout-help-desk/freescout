@@ -2511,7 +2511,8 @@ class ConversationsController extends Controller
         // Like is case insensitive.
         $like = '%'.mb_strtolower($q).'%';
 
-        $query_customers = Customer::select(['customers.*', 'emails.email'])
+        // We need to use aggregate function for email to avoid "Grouping error" error in PostgreSQL.
+        $query_customers = Customer::select(['customers.*', \DB::raw('MAX(emails.email)')])
             ->groupby('customers.id')
             ->leftJoin('emails', function ($join) {
                 $join->on('customers.id', '=', 'emails.customer_id');
