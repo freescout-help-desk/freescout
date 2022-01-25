@@ -979,7 +979,7 @@ class Helper
      *
      * @param [type] $text [description]
      */
-    public static function htmlToText($text, $embed_images = false, $options = array())
+    public static function htmlToText($text, $embed_images = false, $options = ['width' => 0])
     {
         // Process blockquotes.
         $text = str_ireplace('<blockquote>', '<div>', $text);
