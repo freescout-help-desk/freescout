@@ -1883,10 +1883,21 @@ class Conversation extends Model
      */
     public static function create($data, $threads, $customer)
     {
+        // Detect source_via.
+        $source_via = $data['source_via'] ?? 0;
+        if (!$source_via && !empty($threads[0])) {
+            if (!empty($threads[0]['type']) && $threads[0]['type'] == Thread::TYPE_CUSTOMER) {
+                $source_via = self::PERSON_CUSTOMER;
+            } else {
+                $source_via = self::PERSON_USER;
+            }
+        }
+
         $conversation = new Conversation();
         $conversation->type = $data['type'];
         $conversation->subject = $data['subject'];
         $conversation->mailbox_id = $data['mailbox_id'];
+        $conversation->source_via = $source_via;
         $conversation->source_type = $data['source_type'];
         $conversation->customer_id = $customer->id;
         $conversation->customer_email = $customer->getMainEmail().'';
@@ -1894,6 +1905,7 @@ class Conversation extends Model
         $conversation->imported = (int)($data['imported'] ?? false);
         $conversation->closed_at = $data['closed_at'] ?? null;
         $conversation->channel = $data['channel'] ?? null;
+        $conversation->preview = '';
 
         // Phone conversation is always pending.
         if ($conversation->isPhone()) {
