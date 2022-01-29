@@ -482,6 +482,11 @@ class Conversation extends Model
         return $this->status == self::STATUS_ACTIVE;
     }
 
+    public function isSpam()
+    {
+        return $this->status == self::STATUS_SPAM;
+    }
+
     /**
      * Get status name.
      *

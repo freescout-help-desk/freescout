@@ -1425,6 +1425,9 @@ table.table-conversations td.conv-attachment {
     color: #2a3b47;
     font-size: 13.4px;
 }
+.table-conversations .conv-spam td p {
+    color: #93a1af;
+}
 .table-conversations td .conv-preview {
     color: #93a1af;
     font-weight: normal;
@@ -1442,6 +1445,9 @@ table.table-conversations td.conv-attachment {
 }
 .table-conversations .conv-customer {
     width: 150px;
+}
+.table-conversations .conv-spam .conv-customer a {
+    color: #93a1af;
 }
 .table-conversations .conv-attachment {
     width: 20px;
