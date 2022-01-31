@@ -2036,10 +2036,7 @@ class Conversation extends Model
         }
         // https://github.com/laravel/framework/issues/21242
         // https://github.com/laravel/framework/pull/27675
-        $query_conversations->groupby('conversations.id')
-            ->join('threads', function ($join) {
-                $join->on('conversations.id', '=', 'threads.conversation_id');
-            });
+        $query_conversations->groupby('conversations.id');
 
         if ($mailbox_ids) {
             $query_conversations->whereIn('conversations.mailbox_id', $mailbox_ids);
@@ -2125,6 +2122,13 @@ class Conversation extends Model
         }
 
         $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);
+
+        // Join threads if needed
+        if (strstr($query_conversations->toSql(), 'threads.')) {
+            $query_conversations->join('threads', function ($join) {
+                $join->on('conversations.id', '=', 'threads.conversation_id');
+            });
+        }
 
         $query_conversations->orderBy('conversations.last_reply_at', 'DESC');
 
