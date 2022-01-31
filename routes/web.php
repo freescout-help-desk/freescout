@@ -19,7 +19,12 @@ Route::get(config('app.login_path'), 'Auth\LoginController@showLoginForm')->name
 Route::post(config('app.login_path'), 'Auth\LoginController@login');
 
 // Authentication redirects to /home
-Route::redirect('/home', '/'.config('app.dashboard_path'), 301);
+// if APP_DASHBOARD_PATH is empty APP_URL will be used
+if (config('app.dashboard_path')) {
+	Route::redirect('/home', '/'.config('app.dashboard_path'), 301);
+}else{
+	Route::redirect('/home', config('app.url'), 301);
+}
 
 // Public routes
 Route::get('/user-setup/{hash}', 'PublicController@userSetup')->name('user_setup');
