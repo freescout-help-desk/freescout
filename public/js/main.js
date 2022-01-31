@@ -2367,6 +2367,9 @@ function loadConversations(page, table, no_loader)
 	var datas = table.data();
 	for (data_name in datas) {
 		if (/^filter_/.test(data_name)) {
+			if (filter == null) {
+				filter = {};
+			}
 			filter[data_name.replace(/^filter_/, '')] = datas[data_name];
 		}
 	}
