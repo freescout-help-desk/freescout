@@ -2005,6 +2005,8 @@ function notificationsInit()
 }
 
 function getQueryParam(name, qs) {
+	var arrays_without_indexes = {};
+
 	if (typeof(qs) == "undefined") {
 		qs = document.location.search;
 	}
@@ -2015,12 +2017,27 @@ function getQueryParam(name, qs) {
         re = /[?&]?([^=]+)=([^&]*)/g;
 
     while (tokens = re.exec(qs)) {
-        params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+    	key = decodeURIComponent(tokens[1]);
+
+        // Arrays without indexes - []
+        if (/\[\]$/.test(key)) {
+        	if (typeof(arrays_without_indexes[key]) == "undefined") {
+        		arrays_without_indexes[key] = 0;
+        	} else {
+        		arrays_without_indexes[key]++;
+        	}
+        	parsed_key = /(.*)\[\]$/.exec(key);
+        	if (typeof(parsed_key[1]) != "undefined") {
+        		key = parsed_key[1]+'['+arrays_without_indexes[key]+']';
+        	}
+        }
+        params[key] = decodeURIComponent(tokens[2]);
     }
 
     // Process arrays
     for (var param in params) {
     	
+    	// Two dimentional
     	var m = param.match(/^([^\[]+)\[([^\[]+)\]$/i);
 
     	if (m && m.length) {
@@ -2029,6 +2046,21 @@ function getQueryParam(name, qs) {
     		}
     		if (typeof(params[m[1]]) == "object") {
     			params[m[1]][m[2]] = params[param];
+    		}
+    	}
+
+    	// Three dimentional
+    	var m = param.match(/^([^\[]+)\[([^\[]+)\]\[([^\[]+)\]$/i);
+
+    	if (m && m.length) {
+    		if (typeof(params[m[1]]) == "undefined") {
+    			params[m[1]] = {};
+    		}
+    		if (typeof(params[m[1]]) == "object") {
+    			if (typeof(params[m[1]][m[2]]) == "undefined") {
+    				params[m[1]][m[2]] = {};
+    			}
+    			params[m[1]][m[2]][m[3]] = params[param];
     		}
     	}
     }
