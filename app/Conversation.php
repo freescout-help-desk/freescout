@@ -2124,7 +2124,7 @@ class Conversation extends Model
         $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);
 
         // Join threads if needed
-        if (strstr($query_conversations->toSql(), 'threads.')) {
+        if (!strstr($query_conversations->toSql(), '`threads`.`conversation_id`')) {
             $query_conversations->join('threads', function ($join) {
                 $join->on('conversations.id', '=', 'threads.conversation_id');
             });
