@@ -21,9 +21,9 @@ Route::post(config('app.login_path'), 'Auth\LoginController@login');
 // Authentication redirects to /home
 // if APP_DASHBOARD_PATH is empty APP_URL will be used
 if (config('app.dashboard_path')) {
-	Route::redirect('/home', '/'.config('app.dashboard_path'), 301);
-}else{
-	Route::redirect('/home', config('app.url'), 301);
+	Route::redirect('/home', config('app.url').'/'.config('app.dashboard_path'), 302);
+} else {
+	Route::redirect('/home', config('app.url'), 302);
 }
 
 // Public routes
