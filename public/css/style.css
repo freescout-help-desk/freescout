@@ -2874,6 +2874,7 @@ ul.sidebar-block-list {
  */
 .subscriptions-email,
 .subscriptions-browser,
+.subscriptions-telegram,
 .subscriptions-mobile {
     text-align: center;
 }

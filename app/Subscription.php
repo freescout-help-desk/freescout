@@ -40,6 +40,7 @@ class Subscription extends Model
     // Mediums
     const MEDIUM_EMAIL = 1; // This is also website notifications
     const MEDIUM_BROWSER = 2; // Browser push notification
+    const MEDIUM_TELEGRAM = 5; // Telegram bot notification
     const MEDIUM_MOBILE = 3;
     const MEDIUM_MENU = 10; // Notifications menu
 
