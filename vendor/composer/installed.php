@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'b0469ed5bc4e00423592447eeec2a2071b847f7c',
+    'reference' => '44390a6280b25a91156592545e622a452f352d02',
     'name' => 'freescout-helpdesk/freescout',
   ),
   'versions' => 
@@ -162,7 +162,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'b0469ed5bc4e00423592447eeec2a2071b847f7c',
+      'reference' => '44390a6280b25a91156592545e622a452f352d02',
     ),
     'guzzlehttp/guzzle' => 
     array (
@@ -422,15 +422,6 @@
       array (
       ),
       'reference' => '2ade1984f33362c0a304da6352f95c407d5c761f',
-    ),
-    'kitetail/zttp' => 
-    array (
-      'pretty_version' => 'v0.4.0',
-      'version' => '0.4.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '3875188916c746ff1a3f2b1095564aca72d973b8',
     ),
     'laravel/framework' => 
     array (
