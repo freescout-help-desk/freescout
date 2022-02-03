@@ -29,7 +29,6 @@
         "barryvdh/laravel-translation-manager": "v0.5.0",
         "chumper/zipper": "v1.0.2",
         "rachidlaasri/laravel-installer": "4.0.2",
-        "kitetail/zttp": "v0.4.0",
         "rap2hpoutre/laravel-log-viewer": "v2.0.0",
         "codedge/laravel-selfupdater": "1.4.3",
         "doctrine/dbal": "2.12.1",
@@ -133,7 +132,9 @@
             "Symfony\\Component\\HttpKernel\\Exception\\": "compat/symfony/http-kernel/Exception/",
             "Spatie\\String\\": "compat/spatie/string/src/",
             "GuzzleHttp\\": "compat/guzzlehttp/guzzle/src/",
-            "Ramsey\\Uuid\\": "compat/ramsey/uuid/src/"
+            "GuzzleHttp\\Cookie\\": "compat/guzzlehttp/guzzle/src/Cookie/",
+            "Ramsey\\Uuid\\": "compat/ramsey/uuid/src/",
+            "Rap2hpoutre\\LaravelLogViewer\\": "compat/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/"
         },
         "exclude-from-classmap": [
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
@@ -198,6 +199,7 @@
             "vendor/laravel/framework/src/Illuminate/Support/ViewErrorBag.php",
             "vendor/laravel/framework/src/Illuminate/Support/MessageBag.php",
             "vendor/laravel/framework/src/Illuminate/Support/Optional.php",
+            "vendor/laravel/framework/src/Illuminate/Support/Fluent.php",
             "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Factory.php",
             "vendor/symfony/finder/Finder.php",
             "vendor/symfony/finder/Iterator/FilterIterator.php",
@@ -224,8 +226,10 @@
             "vendor/barryvdh/laravel-debugbar/src/JavascriptRenderer.php",
             "vendor/spatie/string/src/Str.php",
             "vendor/guzzlehttp/guzzle/src/Client.php",
+            "vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php",
             "vendor/ramsey/uuid/src/Uuid.php",
-            "vendor/laravel/framework/src/Illuminate/Routing/Router.php"
+            "vendor/laravel/framework/src/Illuminate/Routing/Router.php",
+            "vendor/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/LaravelLogViewer.php"
         ]
     },
     "autoload-dev": {

@@ -331,7 +331,7 @@ class Str
         $position = strpos($subject, $search);
 
         if ($position !== false) {
-            return substr_replace($subject, $replace, $position, strlen($search));
+            return substr_replace($subject, $replace ?: '', $position, strlen($search));
         }
 
         return $subject;
@@ -350,7 +350,7 @@ class Str
         $position = strrpos($subject, $search);
 
         if ($position !== false) {
-            return substr_replace($subject, $replace, $position, strlen($search));
+            return substr_replace($subject, $replace ?: '', $position, strlen($search));
         }
 
         return $subject;

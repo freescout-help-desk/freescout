@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d0f34a0d685ba60fc1b738585ddbe16e",
+    "content-hash": "acd6130bf0c770ca9bd1a08b59b85fcd",
     "packages": [
         {
             "name": "anahkiasen/underscore-php",
@@ -1423,56 +1423,6 @@
                 "source": "https://github.com/javoscript/laravel-macroable-models/tree/1.0.4"
             },
             "time": "2020-03-10T01:19:26+00:00"
-        },
-        {
-            "name": "kitetail/zttp",
-            "version": "v0.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/kitetail/zttp.git",
-                "reference": "3875188916c746ff1a3f2b1095564aca72d973b8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/kitetail/zttp/zipball/3875188916c746ff1a3f2b1095564aca72d973b8",
-                "reference": "3875188916c746ff1a3f2b1095564aca72d973b8",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "^6.0",
-                "php": ">=7.0",
-                "tightenco/collect": "^5.4"
-            },
-            "require-dev": {
-                "laravel/lumen-framework": "5.5.*",
-                "phpunit/phpunit": "^6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "src/Zttp.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Adam Wathan",
-                    "email": "adam.wathan@gmail.com"
-                }
-            ],
-            "description": "A developer-experience focused HTTP client, optimized for most common use cases.",
-            "keywords": [
-                "Guzzle",
-                "http"
-            ],
-            "support": {
-                "issues": "https://github.com/kitetail/zttp/issues",
-                "source": "https://github.com/kitetail/zttp/tree/master"
-            },
-            "time": "2018-03-11T19:39:08+00:00"
         },
         {
             "name": "laravel/framework",
