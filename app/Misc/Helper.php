@@ -493,7 +493,7 @@ class Helper
     {
         // Remove all kinds of spaces after tags.
         // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
-        $text = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $text);
+        $text = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $text ?: '');
 
         // Remove <script> and <style> blocks.
         $text = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $text);
@@ -639,10 +639,11 @@ class Helper
         // Resize and crop
         imagecopyresampled($thumb,
                            $src,
-                           0 - ($new_width - $thumb_width) / 2, // Center the image horizontally
-                           0 - ($new_height - $thumb_height) / 2, // Center the image vertically
+                           ceil(0 - ($new_width - $thumb_width) / 2), // Center the image horizontally
+                           ceil(0 - ($new_height - $thumb_height) / 2), // Center the image vertically
                            0, 0,
-                           $new_width, $new_height,
+                           ceil($new_width),
+                           ceil($new_height),
                            $width, $height);
         imagedestroy($src);
 
@@ -1065,6 +1066,10 @@ class Helper
             }
         }
 
+        if ($subdirectory === null) {
+            $subdirectory = '';
+        }
+
         $subdirectory = str_replace('public/index.php', '', $subdirectory);
         $subdirectory = str_replace('index.php', '', $subdirectory);
 
@@ -1315,7 +1320,7 @@ class Helper
      */
     public static function getWorkerIdentifier()
     {
-        return md5(config('app.key'));
+        return md5(config('app.key') ?: '');
     }
 
     public static function uploadFile($file, $allowed_exts = [], $allowed_mimes = [], $sanitize_file_name = true)

@@ -629,7 +629,7 @@ class Customer extends Model
      */
     public function getPhones($dummy_if_empty = false)
     {
-        $phones = json_decode($this->phones, true);
+        $phones = json_decode($this->phones ?: '', true);
 
         if (is_array($phones) && count($phones)) {
             return $phones;
@@ -732,7 +732,7 @@ class Customer extends Model
      */
     public function getSocialProfiles($dummy_if_empty = false)
     {
-        $social_profiles = json_decode($this->social_profiles, true);
+        $social_profiles = json_decode($this->social_profiles ?: '', true);
 
         if (is_array($social_profiles) && count($social_profiles)) {
             return json_decode($this->social_profiles, true);
@@ -753,7 +753,7 @@ class Customer extends Model
      */
     public function getWebsites($dummy_if_empty = false)
     {
-        $websites = json_decode($this->websites, true);
+        $websites = json_decode($this->websites ?: '', true);
         if (is_array($websites) && count($websites)) {
             return $websites;
         } elseif ($dummy_if_empty) {

@@ -18,6 +18,25 @@ if (preg_match("#^/public\/(.*)#", $_SERVER['REQUEST_URI'], $m) && !empty($m[1])
  */
 define('LARAVEL_START', microtime(true));
 
+// PHP 8.1 fix.
+if (! function_exists('e')) {
+    /**
+     * Escape HTML special characters in a string.
+     *
+     * @param  \Illuminate\Contracts\Support\Htmlable|string  $value
+     * @param  bool  $doubleEncode
+     * @return string
+     */
+    function e($value, $doubleEncode = false)
+    {
+        if ($value instanceof \Illuminate\Contracts\Support\Htmlable) {
+            return $value->toHtml();
+        }
+
+        return htmlspecialchars($value ?: '', ENT_QUOTES, 'UTF-8', $doubleEncode);
+    }
+}
+
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader
