@@ -35,7 +35,9 @@
         "doctrine/dbal": "2.12.1",
         "egulias/email-validator": "2.1.10",
         "symfony/console": "v3.4.47",
-        "javoscript/laravel-macroable-models": "1.0.4"
+        "javoscript/laravel-macroable-models": "1.0.4",
+        "ramsey/uuid": "3.9.6",
+        "symfony/polyfill-mbstring": "v1.24.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v3.2.0",
@@ -47,7 +49,6 @@
         "symfony/polyfill-ctype": "v1.10.*",
         "vlucas/phpdotenv": "v2.5.1",
         "symfony/css-selector": "v3.4.18",
-        "symfony/polyfill-mbstring": "v1.24.0",
         "symfony/var-dumper": "v3.4.18",
         "symfony/routing": "v3.4.18",
         "symfony/process": "v3.4.18",
@@ -223,7 +224,8 @@
             "vendor/barryvdh/laravel-debugbar/src/JavascriptRenderer.php",
             "vendor/spatie/string/src/Str.php",
             "vendor/guzzlehttp/guzzle/src/Client.php",
-            "vendor/ramsey/uuid/src/Uuid.php"
+            "vendor/ramsey/uuid/src/Uuid.php",
+            "vendor/laravel/framework/src/Illuminate/Routing/Router.php"
         ]
     },
     "autoload-dev": {
