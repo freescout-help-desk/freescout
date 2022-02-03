@@ -30,7 +30,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'a72f6b964fdb3aaca4e6ff5329df7798a10d2719',
+    'reference' => 'b0469ed5bc4e00423592447eeec2a2071b847f7c',
     'name' => 'freescout-helpdesk/freescout',
   ),
   'versions' => 
@@ -186,7 +186,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'a72f6b964fdb3aaca4e6ff5329df7798a10d2719',
+      'reference' => 'b0469ed5bc4e00423592447eeec2a2071b847f7c',
     ),
     'guzzlehttp/guzzle' => 
     array (
@@ -199,12 +199,12 @@ private static $installed = array (
     ),
     'guzzlehttp/promises' => 
     array (
-      'pretty_version' => '1.4.1',
-      'version' => '1.4.1.0',
+      'pretty_version' => '1.5.1',
+      'version' => '1.5.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '8e7d04f1f6450fef59366c399cfad4b9383aa30d',
+      'reference' => 'fe752aedc9fd8fcca3fe7ad05d419d32998a06da',
     ),
     'guzzlehttp/psr7' => 
     array (
@@ -611,8 +611,8 @@ private static $installed = array (
     array (
       'provided' => 
       array (
-        0 => '1.0',
-        1 => '1.0.0',
+        0 => '1.0.0',
+        1 => '1.0',
       ),
     ),
     'psr/simple-cache' => 
@@ -644,27 +644,27 @@ private static $installed = array (
     ),
     'ramsey/uuid' => 
     array (
-      'pretty_version' => '3.9.4',
-      'version' => '3.9.4.0',
+      'pretty_version' => '3.9.6',
+      'version' => '3.9.6.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'be2451bef8147b7352a28fb4cddb08adc497ada3',
+      'reference' => 'ffa80ab953edd85d5b6c004f96181a538aad35a3',
     ),
     'rap2hpoutre/laravel-log-viewer' => 
     array (
-      'pretty_version' => 'v0.22.1',
-      'version' => '0.22.1.0',
+      'pretty_version' => 'v2.0.0',
+      'version' => '2.0.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'fd0821b073771f3e7256664417055a8bbb091059',
+      'reference' => '4fa9b45738095fc5febeed6e44f1516e93a8de8c',
     ),
     'rhumsaa/uuid' => 
     array (
       'replaced' => 
       array (
-        0 => '3.9.4',
+        0 => '3.9.6',
       ),
     ),
     'spatie/laravel-activitylog' => 
@@ -768,12 +768,12 @@ private static $installed = array (
     ),
     'symfony/polyfill-mbstring' => 
     array (
-      'pretty_version' => 'v1.10.0',
-      'version' => '1.10.0.0',
+      'pretty_version' => 'v1.24.0',
+      'version' => '1.24.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'c79c051f5b3a46be09205c73b80b346e4153e494',
+      'reference' => '0abb51d2f102e00a4eefcf46ba7fec406d245825',
     ),
     'symfony/polyfill-php70' => 
     array (
@@ -838,12 +838,12 @@ private static $installed = array (
     ),
     'tijsverkoyen/css-to-inline-styles' => 
     array (
-      'pretty_version' => '2.2.3',
-      'version' => '2.2.3.0',
+      'pretty_version' => '2.2.4',
+      'version' => '2.2.4.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'b43b05cf43c1b6d849478965062b6ef73e223bb5',
+      'reference' => 'da444caae6aca7a19c0c140f68c6182e337d5b1c',
     ),
     'tormjens/eventy' => 
     array (

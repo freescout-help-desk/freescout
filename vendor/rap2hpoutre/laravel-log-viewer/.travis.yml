@@ -3,12 +3,14 @@ language: php
 php:
  - 7.1
  - 7.2
+ - 7.3
+ - 7.4
 
 install:
   - travis_retry composer install --no-interaction --prefer-source
 
 script:
-  - vendor/bin/phpunit
+  - XDEBUG_MODE=coverage vendor/bin/phpunit
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
