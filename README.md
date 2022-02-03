@@ -39,6 +39,7 @@
   * Moving conversations between mailboxes.
   * Phone conversations.
   * Sending new conversations to multiple recipients at once.
+  * Collision detection – notice is shown when two agents open the same conversation.
   * Push notifications.
   * Following a conversation.
   * Auto reply.

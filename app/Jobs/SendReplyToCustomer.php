@@ -61,6 +61,11 @@ class SendReplyToCustomer implements ShouldQueue
 
         $mailbox = $this->conversation->mailbox;
 
+        // Mailbox may be deleted.
+        if (!$mailbox) {
+            return;
+        }
+
         // Add forwarded conversation replies.
         if ($this->conversation->threads_count == 1 && count($this->threads) == 1) {
             $forward_child_thread = $this->threads[0];

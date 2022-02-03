@@ -621,7 +621,11 @@ class Thread extends Model
                     if ($merge_conversation) {
                         $merge_conversation_number = $merge_conversation->number;
                     }
-                    $did_this = __(":person merged into conversation #:conversation_number", ['conversation_number' => $merge_conversation_number]);
+                    if ($merge_conversation) {
+                        $did_this = __(":person merged into conversation #:conversation_number", ['conversation_number' => '<a href="'.$merge_conversation->url().'" class="link-black">'.$merge_conversation_number.'</a>']);
+                    } else {
+                        $did_this = __(":person merged into conversation #:conversation_number", ['conversation_number' => $merge_conversation_number]);
+                    }
                 }
             }
         } elseif ($this->state == self::STATE_DRAFT) {
