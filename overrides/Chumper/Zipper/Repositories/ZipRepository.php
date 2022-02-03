@@ -28,7 +28,7 @@ class ZipRepository implements RepositoryInterface
         }
         $this->archive = $archive ? $archive : new ZipArchive();
 
-        $res = $this->archive->open($filePath, ($create ? ZipArchive::CREATE : null));
+        $res = $this->archive->open($filePath, ($create ? ZipArchive::CREATE : 0));
         if ($res !== true) {
             throw new Exception("Error: Failed to open $filePath! Error: ".$this->getErrorMessage($res));
         }

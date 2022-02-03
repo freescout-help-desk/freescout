@@ -1400,8 +1400,8 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
             $results[$key] = $callback($value, $key);
         }
 
-        $descending ? arsort($results, $options)
-            : asort($results, $options);
+        $descending ? arsort($results, $options ?: SORT_REGULAR)
+            : asort($results, $options ?: SORT_REGULAR);
 
         // Once we have sorted all of the keys in the array, we will loop through them
         // and grab the corresponding model so we can set the underlying items list
