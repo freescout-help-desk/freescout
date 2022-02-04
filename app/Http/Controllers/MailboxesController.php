@@ -101,7 +101,7 @@ class MailboxesController extends Controller
             $accessible_route = '';
 
             $mailbox_settings = $user->mailboxSettings($mailbox->id);
-            $access_permissions = json_decode($mailbox_settings->access ?: '');
+            $access_permissions = json_decode($mailbox_settings->access ?? '');
 
             if ($access_permissions && is_array($access_permissions)) {
                 foreach ($access_permissions as $perm) {

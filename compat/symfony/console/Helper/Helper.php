@@ -47,11 +47,11 @@ abstract class Helper implements HelperInterface
      */
     public static function strlen($string)
     {
-        if (false === $encoding = mb_detect_encoding($string ?: '', null, true)) {
+        if (false === $encoding = mb_detect_encoding($string ?? '', null, true)) {
             return \strlen($string);
         }
 
-        return mb_strwidth($string ?: '', $encoding);
+        return mb_strwidth($string ?? '', $encoding);
     }
 
     /**
@@ -65,7 +65,7 @@ abstract class Helper implements HelperInterface
      */
     public static function substr($string, $from, $length = null)
     {
-        if (false === $encoding = mb_detect_encoding($string ?: '', null, true)) {
+        if (false === $encoding = mb_detect_encoding($string ?? '', null, true)) {
             return substr($string, $from, $length);
         }
 

@@ -253,7 +253,7 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
      */
     protected function getAuthenticatorsForAgent()
     {
-        if (!$mode = strtolower($this->auth_mode ?: '')) {
+        if (!$mode = strtolower($this->auth_mode ?? '')) {
             return $this->authenticators;
         }
 

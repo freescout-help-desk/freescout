@@ -794,7 +794,7 @@ class Conversation extends Model
         // Create customers if needed: Test <test1@example.com>
         if (is_array($emails)) {
             foreach ($emails as $i => $email) {
-                preg_match("/^(.+)\s+([^\s]+)$/", $email ?: '', $m);
+                preg_match("/^(.+)\s+([^\s]+)$/", $email ?? '', $m);
                 if (count($m) == 3) {
                     $customer_name = trim($m[1]);
                     $email_address = trim($m[2]);
