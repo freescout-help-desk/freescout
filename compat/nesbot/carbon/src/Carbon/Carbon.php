@@ -545,7 +545,7 @@ class Carbon extends DateTime implements JsonSerializable
             $locale = setlocale(LC_NUMERIC, '0');
             setlocale(LC_NUMERIC, 'C');
         }
-        parent::__construct($time ?: '', $timezone);
+        parent::__construct($time ?? '', $timezone);
         if (isset($locale)) {
             setlocale(LC_NUMERIC, $locale);
         }

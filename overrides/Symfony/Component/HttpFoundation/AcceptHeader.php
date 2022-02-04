@@ -58,7 +58,7 @@ class AcceptHeader
 
             return $item;
         }, preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/', 
-            $headerValue ?: '', 
+            $headerValue ?? '', 
             0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)));
     }
 

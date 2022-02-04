@@ -134,7 +134,8 @@
             "GuzzleHttp\\": "compat/guzzlehttp/guzzle/src/",
             "GuzzleHttp\\Cookie\\": "compat/guzzlehttp/guzzle/src/Cookie/",
             "Ramsey\\Uuid\\": "compat/ramsey/uuid/src/",
-            "Rap2hpoutre\\LaravelLogViewer\\": "compat/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/"
+            "Rap2hpoutre\\LaravelLogViewer\\": "compat/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/",
+            "Symfony\\Component\\Console\\Descriptor\\": "compat/symfony/console/Descriptor"
         },
         "exclude-from-classmap": [
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
@@ -229,7 +230,10 @@
             "vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php",
             "vendor/ramsey/uuid/src/Uuid.php",
             "vendor/laravel/framework/src/Illuminate/Routing/Router.php",
-            "vendor/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/LaravelLogViewer.php"
+            "vendor/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/LaravelLogViewer.php",
+            "vendor/symfony/console/Descriptor/TextDescriptor.php",
+            "vendor/symfony/console/Helper/Helper.php",
+            "vendor/symfony/finder/Iterator/SortableIterator.php"
         ]
     },
     "autoload-dev": {

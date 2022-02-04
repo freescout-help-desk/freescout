@@ -339,7 +339,7 @@ class User extends Authenticatable
         } else {
             //$mailbox = $this->mailboxesCanViewWithSettings(true)->where('id', $mailbox_id)->first();
             $mailbox = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
-            if ($mailbox && !empty(json_decode($mailbox->access ?: ''))) {
+            if ($mailbox && !empty(json_decode($mailbox->access ?? ''))) {
                 return true;
             }
         }

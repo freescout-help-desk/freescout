@@ -493,7 +493,7 @@ class Helper
     {
         // Remove all kinds of spaces after tags.
         // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
-        $text = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $text ?: '');
+        $text = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $text ?? '');
 
         // Remove <script> and <style> blocks.
         $text = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $text);
@@ -1320,7 +1320,7 @@ class Helper
      */
     public static function getWorkerIdentifier()
     {
-        return md5(config('app.key') ?: '');
+        return md5(config('app.key') ?? '');
     }
 
     public static function uploadFile($file, $allowed_exts = [], $allowed_mimes = [], $sanitize_file_name = true)

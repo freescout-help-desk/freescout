@@ -100,7 +100,7 @@ class Str
     public static function contains($haystack, $needles)
     {
         foreach ((array) $needles as $needle) {
-            if ($needle !== '' && mb_strpos($haystack ?: '', $needle) !== false) {
+            if ($needle !== '' && mb_strpos($haystack ?? '', $needle) !== false) {
                 return true;
             }
         }
@@ -331,7 +331,7 @@ class Str
         $position = strpos($subject, $search);
 
         if ($position !== false) {
-            return substr_replace($subject, $replace ?: '', $position, strlen($search));
+            return substr_replace($subject, $replace ?? '', $position, strlen($search));
         }
 
         return $subject;
@@ -350,7 +350,7 @@ class Str
         $position = strrpos($subject, $search);
 
         if ($position !== false) {
-            return substr_replace($subject, $replace ?: '', $position, strlen($search));
+            return substr_replace($subject, $replace ?? '', $position, strlen($search));
         }
 
         return $subject;
