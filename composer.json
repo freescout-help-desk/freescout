@@ -255,7 +255,6 @@
             "@php artisan key:generate"
         ],
         "post-autoload-dump": [
-            "@php -r \"!error_reporting(0) || array_map('unlink', json_decode(file_get_contents('composer.json'), true)['autoload']['exclude-from-classmap']);\"",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover"
         ]
