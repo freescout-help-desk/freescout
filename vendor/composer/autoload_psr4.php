@@ -29,6 +29,7 @@ return array(
     'Symfony\\Component\\Debug\\' => array($baseDir . '/overrides/Symfony/Component/Debug', $vendorDir . '/symfony/debug'),
     'Symfony\\Component\\CssSelector\\' => array($vendorDir . '/symfony/css-selector'),
     'Symfony\\Component\\Console\\Helper\\' => array($baseDir . '/compat/symfony/console/Helper'),
+    'Symfony\\Component\\Console\\Descriptor\\' => array($baseDir . '/compat/symfony/console/Descriptor'),
     'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
     'Spatie\\String\\' => array($baseDir . '/compat/spatie/string/src', $vendorDir . '/spatie/string/src'),
     'Spatie\\Activitylog\\' => array($vendorDir . '/spatie/laravel-activitylog/src'),
