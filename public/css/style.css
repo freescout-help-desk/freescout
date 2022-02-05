@@ -2410,6 +2410,12 @@ button.conv-checkbox-clear {
     margin-top: -7px;
     margin-bottom: 12px;
 }
+.conv-reply.glyphicon {
+     transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+}
 .conv-reply-block .form-group {
     margin-bottom: 5px;
 }
