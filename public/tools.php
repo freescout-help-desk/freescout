@@ -26,7 +26,7 @@ foreach ($vendor_files as $vendor_file) {
     if (file_exists($root_dir.'vendor/'.$vendor_file)) {
         require_once $root_dir.'vendor/'.$vendor_file;
     } else {
-        require_once $root_dir.'compat/'.$vendor_file;
+        require_once $root_dir.'overrides/'.$vendor_file;
     }
 }
 
