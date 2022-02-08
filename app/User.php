@@ -1056,4 +1056,19 @@ class User extends Authenticatable
 
         return false;
     }
+
+    /**
+     * Check if there is a mailbox with specified email.
+     */
+    public static function mailboxEmailExists($email)
+    {
+        $email = Email::sanitizeEmail($email);
+        $mailbox = Mailbox::where('email', $email)->first();
+
+        if ($mailbox) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
