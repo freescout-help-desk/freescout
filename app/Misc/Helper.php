@@ -1243,6 +1243,10 @@ class Helper
 
     public static function purifyHtml($html)
     {
+        if (!$html) {
+            return $html;
+        }
+        
         $html = \Purifier::clean($html);
 
         // Remove all kinds of spaces after tags
