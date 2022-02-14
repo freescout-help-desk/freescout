@@ -1552,4 +1552,41 @@ class Helper
 
         return $url;
     }
+
+    /**
+     * Fix and parse date to Carbon.
+     */
+    public static function parseDateToCarbon($date)
+    {
+        if (preg_match('/\+0580/', $date)) {
+            $date = str_replace('+0580', '+0530', $date);
+        }
+        $date = trim(rtrim($date));
+        $date = preg_replace('/[<>]/', '', $date);
+        try {
+            return Carbon::parse($date);
+        } catch (\Exception $e) {
+            switch (true) {
+                case preg_match('/([0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ UT)+$/i', $date) > 0:
+                case preg_match('/([A-Z]{2,3}\,\ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ UT)+$/i', $date) > 0:
+                    $date .= 'C';
+                    break;
+                case preg_match('/([A-Z]{2,3}[\,|\ \,]\ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}.*)+$/i', $date) > 0:
+                case preg_match('/([A-Z]{2,3}\,\ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ [\-|\+][0-9]{4}\ \(.*)\)+$/i', $date) > 0:
+                case preg_match('/([A-Z]{2,3}\, \ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ [\-|\+][0-9]{4}\ \(.*)\)+$/i', $date) > 0:
+                case preg_match('/([0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{2,4}\ [0-9]{2}\:[0-9]{2}\:[0-9]{2}\ [A-Z]{2}\ \-[0-9]{2}\:[0-9]{2}\ \([A-Z]{2,3}\ \-[0-9]{2}:[0-9]{2}\))+$/i', $date) > 0:
+                    $array = explode('(', $date);
+                    $array = array_reverse($array);
+                    $date = trim(array_pop($array));
+                    break;
+            }
+            try {
+                return Carbon::parse($date);
+            } catch (\Exception $_e) {
+                return Carbon::now();
+            }
+        }
+
+        return null;
+    }
 }
