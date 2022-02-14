@@ -49,6 +49,8 @@ abstract class Repository implements RepositoryInterface, Countable
      */
     protected $cache;
 
+    public static $active_cache = [];
+
     /**
      * The constructor.
      *
@@ -415,14 +417,21 @@ abstract class Repository implements RepositoryInterface, Countable
      *
      * @return bool [description]
      */
-    public function isActive($alias)
+    public function isActive($alias, $use_cache = true)
     {
+        if ($use_cache && isset(self::$active_cache[$alias])) {
+            return self::$active_cache[$alias];
+        }
         $module = $this->findByAlias($alias);
         if ($module && $module->active()) {
-            return true;
+            $is_active = true;
         } else {
-            return false;
+            $is_active = false;
         }
+
+        self::$active_cache[$alias] = $is_active;
+
+        return $is_active;
     }
 
     /**
