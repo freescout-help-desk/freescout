@@ -969,6 +969,8 @@ S2.define('select2/results',[
       option.title = data.title;
     }
 
+    attrs['aria-label'] = data.text;
+
     if (data.children) {
       attrs.role = 'group';
       attrs['aria-label'] = data.text;

@@ -63,6 +63,8 @@ class MailboxesController extends Controller
      */
     public function createSave(Request $request)
     {
+        $invalid = false;
+
         $this->authorize('create', 'App\Mailbox');
 
         $validator = Validator::make($request->all(), [
@@ -72,7 +74,12 @@ class MailboxesController extends Controller
 
         // //event(new Registered($user = $this->create($request->all())));
 
-        if ($validator->fails()) {
+        if (Mailbox::userEmailExists($request->email)) {
+            $invalid = true;
+            $validator->errors()->add('email', __('There is a user with such email. Users and mailboxes can not have the same email addresses.'));
+        }
+
+        if ($invalid || $validator->fails()) {
             return redirect()->route('mailboxes.create')
                         ->withErrors($validator)
                         ->withInput();
@@ -142,6 +149,7 @@ class MailboxesController extends Controller
      */
     public function updateSave($id, Request $request)
     {
+        $invalid = false;
         $mailbox = Mailbox::findOrFail($id);
 
         $user = auth()->user();
@@ -172,8 +180,12 @@ class MailboxesController extends Controller
             ]);
 
             //event(new Registered($user = $this->create($request->all())));
+            if (Mailbox::userEmailExists($request->email)) {
+                $invalid = true;
+                $validator->errors()->add('email', __('There is a user with such email. Users and mailboxes can not have the same email addresses.'));
+            }
 
-            if ($validator->fails()) {
+            if ($invalid || $validator->fails()) {
                 return redirect()->route('mailboxes.update', ['id' => $id])
                             ->withErrors($validator)
                             ->withInput();

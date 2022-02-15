@@ -2,6 +2,7 @@ var fs_sidebar_menu_applied = false;
 var fs_loader_timeout;
 var fs_processing_send_reply = false;
 var fs_processing_save_draft = false;
+var fs_send_reply_allowed = true;
 var fs_send_reply_after_draft = false;
 var fs_autosave_note = true;
 var fs_connection_errors = 0;
@@ -1889,6 +1890,7 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 
 		// Send reply, new conversation or note
 	    $(".btn-reply-submit").click(function(e) {
+	
 	    	// This is extra protection from double click on Send button
 	    	// DOM operation are slow sometimes
 	    	if (fs_processing_send_reply) {
@@ -1907,51 +1909,57 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 	    		return;
 	    	}
 
-	    	if (!fsApplyFilter('conversation.can_submit', true)) {
-	    		fs_processing_send_reply = false;
-	    		return;
-	    	}
-
-	    	button.button('loading');
-
 	    	// If draft is being sent, we need to wait and send reply after draft has been saved.
 	    	if (fs_processing_save_draft) {
 	    		fs_send_reply_after_draft = true;
 	    		return;
 	    	}
 
-	    	data = form.serialize();
+	    	if (!fsApplyFilter('conversation.can_submit', true, {trigger: button, form: form})) {
+	    		fs_processing_send_reply = false;
+	    		return;
+	    	}
+
+	    	// For previous filter
+	    	if (!fs_send_reply_allowed) {
+	    		fs_processing_send_reply = false;
+	    		return;
+	    	}
+
+			data = form.serialize();
 	    	data += '&action=send_reply';
 
+	    	button.button('loading');
+
 			fsAjax(data, laroute.route('conversations.ajax'), function(response) {
-				if (typeof(response.status) != "undefined" && response.status == 'success') {
-					// Forget note
-					if (isNote()) {
-						fs_autosave_note = false;
-						forgetNote(getGlobalAttr('conversation_id'));
-					}
-					if (typeof(response.redirect_url) != "undefined") {
-						window.location.href = response.redirect_url;
+					if (typeof(response.status) != "undefined" && response.status == 'success') {
+						// Forget note
+						if (isNote()) {
+							fs_autosave_note = false;
+							forgetNote(getGlobalAttr('conversation_id'));
+						}
+						if (typeof(response.redirect_url) != "undefined") {
+							window.location.href = response.redirect_url;
+						} else {
+							window.location.href = '';
+						}
 					} else {
-						window.location.href = '';
+						showAjaxError(response);
+						button.button('reset');
 					}
-				} else {
-					showAjaxError(response);
+					loaderHide();
+					fs_processing_send_reply = false;
+				},
+				true,
+				function() {
+					showFloatingAlert('error', Lang.get("messages.ajax_error"));
+					loaderHide();
 					button.button('reset');
-				}
-				loaderHide();
-				fs_processing_send_reply = false;
-			},
-			true,
-			function() {
-				showFloatingAlert('error', Lang.get("messages.ajax_error"));
-				loaderHide();
-				button.button('reset');
-				fs_processing_send_reply = false;
-			});
+					fs_processing_send_reply = false;
+				});
 
 			e.preventDefault();
-		});
+		})
 	});
 }
 
