@@ -1563,6 +1563,7 @@ class Helper
         }
         $date = trim(rtrim($date));
         $date = preg_replace('/[<>]/', '', $date);
+        $date = str_replace('_', ' ', $date);
         try {
             return Carbon::parse($date);
         } catch (\Exception $e) {

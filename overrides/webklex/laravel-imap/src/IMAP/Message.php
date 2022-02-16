@@ -377,6 +377,7 @@ class Message
             }
             $date = trim(rtrim($date));
             $date = preg_replace('/[<>]/', '', $date);
+            $date = str_replace('_', ' ', $date);
             try {
                 $this->date = Carbon::parse($date);
             } catch (\Exception $e) {
