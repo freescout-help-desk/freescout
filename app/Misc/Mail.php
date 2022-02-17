@@ -200,7 +200,7 @@ class Mail
             $vars['{%user.photoUrl%}'] = $data['user']->getPhotoUrl();
         }
 
-        $vars = \Eventy::filter( 'mail_helper.replace_mail_vars', $vars );
+        $vars = \Eventy::filter('mail_vars.replace', $vars, $data);
 
         if ($escape) {
             foreach ($vars as $i => $var) {
