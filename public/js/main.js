@@ -290,7 +290,7 @@ $(document).ready(function(){
 	// Search button
 	$('#search-dt').click(function() {
 		var dt = $(this);
-		setTimeout(function() { 
+		setTimeout(function() {
 			dt.next().children().find('.form-control:first').focus();
 		}, 100);
 	});
@@ -326,7 +326,7 @@ function initMuteMailbox()
 			function(response) {
 				button.button('reset');
 				if (isAjaxSuccess(response)) {
-					setTimeout(function(){ 
+					setTimeout(function(){
 						button.children('span').addClass('hidden');
 						var new_mute;
 						if (mute == 1) {
@@ -366,7 +366,7 @@ function triggersInit()
 {
 	// Tooltips
     initTooltips();
-    
+
     var handler = function() {
 	  return $('body [data-toggle="tooltip"]').tooltip('hide');
 	};
@@ -442,6 +442,8 @@ function mailboxUpdateInit(from_name_custom)
 				}
 			}
 		});
+
+        fsDoAction('mailbox_update_init');
 	});
 }
 
@@ -1529,6 +1531,7 @@ function convEditorInit()
 		onReplyBlur();
 	});
 
+    fsDoAction('conv_editor_init');
 
 	// Autosave draft periodically
 	autosaveDraft();
@@ -1890,7 +1893,7 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 
 		// Send reply, new conversation or note
 	    $(".btn-reply-submit").click(function(e) {
-	
+
 	    	// This is extra protection from double click on Send button
 	    	// DOM operation are slow sometimes
 	    	if (fs_processing_send_reply) {
@@ -2044,7 +2047,7 @@ function getQueryParam(name, qs) {
 
     // Process arrays
     for (var param in params) {
-    	
+
     	// Two dimentional
     	var m = param.match(/^([^\[]+)\[([^\[]+)\]$/i);
 
@@ -2609,7 +2612,7 @@ function changeCustomerInit()
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
 						conversationChangeCustomer(response.email);
 					}
-					
+
 					ajaxFinish();
 				}
 			);
@@ -3307,7 +3310,7 @@ function polycastInit()
 		    }
 
 		    // Update assignee if needed
-		    if (typeof(data.conversation_user_id) != "undefined" && data.conversation_user_id 
+		    if (typeof(data.conversation_user_id) != "undefined" && data.conversation_user_id
 		    	&& parseInt(data.conversation_user_id) != convGetUserId()
 		    ) {
 		    	$('#conv-assignee .conv-user li.active').removeClass('active');
@@ -3318,7 +3321,7 @@ function polycastInit()
 		    }
 
 		    // Update status if needed
-		    if (typeof(data.conversation_status) != "undefined" && data.conversation_status 
+		    if (typeof(data.conversation_status) != "undefined" && data.conversation_status
 		    	&& parseInt(data.conversation_status) != convGetStatus()
 		    ) {
 		    	$('#conv-status .conv-status li.active').removeClass('active');
@@ -3328,14 +3331,14 @@ function polycastInit()
 		    	// Update class
 		    	if (data.conversation_status_class) {
 					$.each($('#conv-status .btn'), function(index, btn) {
-						var classes = $(btn).attr('class').split(/\s+/); 
+						var classes = $(btn).attr('class').split(/\s+/);
 						$.each(classes, function(index, item_class) {
 							if (item_class.indexOf('btn-') != -1 && item_class != 'btn-light') {
 								$(btn).removeClass(item_class);
 							}
-						});   
+						});
 					});
-		    	
+
 		    		$('#conv-status .btn').addClass('btn-'+data.conversation_status_class);
 		    	}
 		    	// Update icon
@@ -4360,7 +4363,7 @@ function rememberNote()
 	if (!fs_autosave_note) {
 		return;
 	}
-	
+
 	var conversation_id = getGlobalAttr('conversation_id');
 	if (!conversation_id) {
 		return;
@@ -4807,7 +4810,7 @@ function setCookie(name, value, props)
         d.setTime(d.getTime() + exp*1000);
         exp = props.expires = d;
     }
-    if (exp && exp.toUTCString) { 
+    if (exp && exp.toUTCString) {
     	props.expires = exp.toUTCString();
     }
 

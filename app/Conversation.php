@@ -934,7 +934,7 @@ class Conversation extends Model
 
         // Get ids of all the conversations starred by user and cache them
         if (!isset(self::$starred_conversation_ids[$mailbox_id])) {
-            
+
             self::$starred_conversation_ids[$mailbox_id] = self::getUserStarredConversationIds($mailbox_id, $user_id);
         }
 
@@ -1058,7 +1058,9 @@ class Conversation extends Model
      */
     public function getSignatureProcessed($data = [], $escape = false)
     {
-        return $this->replaceTextVars($this->mailbox->signature, $data, $escape);
+        $replacedText = $this->replaceTextVars( $this->mailbox->signature, $data, $escape );
+
+        return \Eventy::filter( 'conversation.signature_processed', $replacedText, $this, $data, $escape );
     }
 
     /**
@@ -1394,7 +1396,7 @@ class Conversation extends Model
         //     'conversation_id' => $this->id,
         // ];
         // ConversationFolder::updateOrCreate($values, $values);
-        
+
         return true;
     }
 
@@ -1406,7 +1408,7 @@ class Conversation extends Model
         // Find folder
         $folder_query = Folder::where('mailbox_id', $this->mailbox_id)
                     ->where('type', $folder_type);
-        
+
         if ($user_id) {
             $folder_query->where('user_id', $user_id);
         }
@@ -1600,7 +1602,7 @@ class Conversation extends Model
         if (!array_key_exists($new_status, self::$statuses)) {
             return;
         }
-        
+
         $prev_status = $this->status;
 
         $this->setStatus($new_status, $user);
@@ -1805,7 +1807,7 @@ class Conversation extends Model
 
             $has_attachments = false;
             foreach ($replies as $reply_thread) {
-                
+
                 $thread_has_attachments = false;
                 foreach ($reply_thread->attachments as $attachment) {
                     $new_attachment = $attachment->replicate();

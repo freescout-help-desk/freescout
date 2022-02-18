@@ -153,7 +153,7 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
 
         $user = auth()->user();
-        
+
         if (!$user->can('updateSettings', $mailbox) && !$user->can('updateEmailSignature', $mailbox)) {
             \Helper::denyAccess();
         }
@@ -203,6 +203,8 @@ class MailboxesController extends Controller
                     ->withInput();
             }
         }
+
+        \Eventy::action( 'mailboxes.on_save_settings', $id, $request );
 
         $mailbox->fill($request->all());
 
