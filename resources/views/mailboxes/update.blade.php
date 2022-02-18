@@ -169,6 +169,8 @@
                         </div>
                     @endif
 
+                    @action('mailboxes.view_after_settings_on_update', $mailbox)
+
                     @if (Auth::user()->can('updateSettings', $mailbox) || Auth::user()->can('updateEmailSignature', $mailbox))
                         <div class="form-group{{ $errors->has('signature') ? ' has-error' : '' }}">
                             <label for="signature" class="col-sm-2 control-label">{{ __('Email Signature') }}</label>

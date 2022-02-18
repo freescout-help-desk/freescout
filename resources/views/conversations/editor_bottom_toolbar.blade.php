@@ -6,6 +6,7 @@
             {!! $conversation->getSignatureProcessed([], true) !!}
         @endif
     </div>
+    @action('conv_editor.before_status_field', $mailbox)
 	<span class="editor-btm-text">{{ __('Status') }}:</span> 
     {{-- Note keeps status--}}
 	<select name="status" class="form-control parsley-exclude" data-reply-status="{{ $mailbox->ticket_status }}" data-note-status="{{ $conversation->status }}">

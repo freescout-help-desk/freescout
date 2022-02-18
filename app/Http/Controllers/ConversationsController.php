@@ -740,6 +740,8 @@ class ConversationsController extends Controller
                     }
 
                     // Fire events
+                    \Eventy::action('conversation.save_send_reply', $conversation, $request);
+                    
                     if (!$new) {
                         if ($status_changed) {
                             event(new ConversationStatusChanged($conversation));
