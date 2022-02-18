@@ -200,6 +200,8 @@ class Mail
             $vars['{%user.photoUrl%}'] = $data['user']->getPhotoUrl();
         }
 
+        $vars = \Eventy::filter('mail_vars.replace', $vars, $data);
+
         if ($escape) {
             foreach ($vars as $i => $var) {
                 $vars[$i] = htmlspecialchars($var ?? '');
