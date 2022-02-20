@@ -443,7 +443,7 @@ function mailboxUpdateInit(from_name_custom)
 			}
 		});
 
-		fsDoAction('mailbox_update_init');
+		fsDoAction('mailbox.update_init');
 	});
 }
 
