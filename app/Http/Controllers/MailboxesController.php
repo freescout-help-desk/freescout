@@ -204,7 +204,7 @@ class MailboxesController extends Controller
             }
         }
 
-        \Eventy::action( 'mailboxes.on_save_settings', $id, $request );
+        \Eventy::action( 'mailboxes.settings_before_save', $id, $request );
 
         $mailbox->fill($request->all());
 
