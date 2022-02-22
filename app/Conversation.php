@@ -1058,7 +1058,9 @@ class Conversation extends Model
      */
     public function getSignatureProcessed($data = [], $escape = false)
     {
-        return $this->replaceTextVars($this->mailbox->signature, $data, $escape);
+        $replaced_text = $this->replaceTextVars( $this->mailbox->signature, $data, $escape );
+
+        return \Eventy::filter( 'conversation.signature_processed', $replaced_text, $this, $data, $escape );
     }
 
     /**
