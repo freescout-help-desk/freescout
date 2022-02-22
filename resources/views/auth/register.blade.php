@@ -18,7 +18,7 @@
                             <label for="first_name" class="col-md-4 control-label">{{ __('First name') }}</label>
 
                             <div class="col-md-6">
-                                <input id="first_name" type="text" class="form-control" name="first_name" value="{{ old('first_name') }}" required autofocus>
+                                <input id="first_name" type="text" class="form-control" name="first_name" autocomplete="given-name" value="{{ old('first_name') }}" required autofocus>
 
                                 @if ($errors->has('first_name'))
                                     <span class="help-block">
@@ -32,7 +32,7 @@
                             <label for="last_name" class="col-md-4 control-label">{{ __('Last name') }}</label>
 
                             <div class="col-md-6">
-                                <input id="last_name" type="text" class="form-control" name="last_name" value="{{ old('last_name') }}" required autofocus>
+                                <input id="last_name" type="text" class="form-control" name="last_name" autocomplete="family-name" value="{{ old('last_name') }}" required autofocus>
 
                                 @if ($errors->has('last_name'))
                                     <span class="help-block">
@@ -46,7 +46,7 @@
                             <label for="email" class="col-md-4 control-label">{{ __('E-mail address') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required>
+                                <input id="email" type="email" class="form-control" name="email" autocomplete="email" value="{{ old('email') }}" required>
 
                                 @if ($errors->has('email'))
                                     <span class="help-block">
@@ -60,7 +60,7 @@
                             <label for="password" class="col-md-4 control-label">{{ __('Password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control" name="password" required>
+                                <input id="password" type="password" class="form-control" name="password" autocomplete="new-password" required>
 
                                 @if ($errors->has('password'))
                                     <span class="help-block">
@@ -74,7 +74,7 @@
                             <label for="password-confirm" class="col-md-4 control-label">{{ __('Confirm password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" autocomplete="new-password" required>
                             </div>
                         </div>
 

@@ -43,38 +43,60 @@ class ModuleCheckLicenses extends Command
 
         $this->info('Active modules found: '.count($modules));
 
+        $params = [
+            'url'          => \App\Module::getAppUrl(),
+            'data'          => [],
+        ];
+
         foreach ($modules as $module) {
             $license = $module->getLicense();
-
+        
             if (!$module->isOfficial() || !$license) {
                 continue;
             }
-            $params = [
-                'license'      => $license,
-                'module_alias' => $module->getAlias(),
-                'url'          => \App\Module::getAppUrl(),
-            ];
-            $result = WpApi::checkLicense($params);
-            if (!empty($result['status']) && $result['status'] != 'valid') {
-                $msg = 'Module '.$module->getName().' has been deactivated due to invalid license: '.json_encode($result);
 
-                $this->error($module->getName().': '.$msg);
+            $data['license'] = $license;
+            $data['module_alias'] = $module->getAlias();
 
-                // Deactive module
-                \App\Module::deactiveModule($module->getAlias(), true);
+            $params['data'][] = $data;
+        }
 
-                // Inform admin
-                \Log::error($msg);
-                activity()
-                    ->withProperties([
-                        'error'    => $msg,
-                     ])
-                    ->useLog(\App\ActivityLog::NAME_SYSTEM)
-                    ->log(\App\ActivityLog::DESCRIPTION_SYSTEM_ERROR);
-            } else {
-                $this->info($module->getName().': OK');
+        $result = WpApi::checkLicenses($params);
+
+        if (!empty($result['statuses'])) {
+            foreach ($modules as $module) {
+                $module_alias = $module->getAlias();
+
+                foreach ($result['statuses'] as $result_module_alias => $status) {
+                    if ($result_module_alias != $module_alias) {
+                        continue;
+                    }
+                    if (!empty($status) && $status != 'valid') {
+                        $msg = 'Module '.$module->getName().' has been deactivated due to invalid license: '.$status;
+
+                        $this->error($module->getName().': '.$msg);
+
+                        // Deactive module
+                        \App\Module::deactiveModule($module->getAlias(), true);
+
+                        // Inform admin
+                        \Log::error($msg);
+                        activity()
+                            ->withProperties([
+                                'error'    => $msg,
+                             ])
+                            ->useLog(\App\ActivityLog::NAME_SYSTEM)
+                            ->log(\App\ActivityLog::DESCRIPTION_SYSTEM_ERROR);
+                    } else {
+                        $this->info($module->getName().': OK');
+                    }
+                    continue 2;
+                }
+
+                $this->info($module->getName().': Unknown status');
             }
         }
+
         $this->info('Checking licenses finished');
     }
 }

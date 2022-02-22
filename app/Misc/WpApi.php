@@ -10,6 +10,7 @@ class WpApi
     const METHOD_POST = 'POST';
 
     const ACTION_CHECK_LICENSE = 'check_license';
+    const ACTION_CHECK_LICENSES = 'check_licenses';
     const ACTION_ACTIVATE_LICENSE = 'activate_license';
     const ACTION_DEACTIVATE_LICENSE = 'deactivate_license';
     const ACTION_GET_VERSION = 'get_version';
@@ -103,6 +104,18 @@ class WpApi
         if (!empty($params['module_alias'])) {
             $endpoint .= '/'.$params['module_alias'];
         }
+
+        return self::request(self::METHOD_POST, $endpoint, $params);
+    }
+
+    /**
+     * Check module license.
+     */
+    public static function checkLicenses($params)
+    {
+        $params['action'] = self::ACTION_CHECK_LICENSES;
+
+        $endpoint = self::ENDPOINT_MODULES;
 
         return self::request(self::METHOD_POST, $endpoint, $params);
     }
