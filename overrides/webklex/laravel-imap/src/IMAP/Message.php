@@ -329,6 +329,12 @@ class Message
         if (property_exists($header, 'subject')) {
             $this->subject = \imap_utf8($header->subject);
             if (\Str::startsWith(mb_strtolower($this->subject), '=?utf-8?')) {
+
+                // https://bugs.php.net/bug.php?id=68821
+                $header->subject = preg_replace_callback('/(=\?[^\?]+\?Q\?)([^\?]+)(\?=)/i', function($matches) {
+                    return $matches[1] . str_replace('_', '=20', $matches[2]) . $matches[3];
+                }, $header->subject);
+
                 $this->subject = mb_decode_mimeheader($header->subject);
             }
         }
