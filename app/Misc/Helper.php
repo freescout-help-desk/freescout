@@ -1597,4 +1597,20 @@ class Helper
         $url = rtrim($url, "/");
         return $url.'/home';
     }
+
+    /**
+     * Request::url() may return URL with incorrect protocol.
+     * Use \Request::getRequestUri() instead.
+     */
+    /*public static function currentUrl()
+    {
+        $url = \Request::urlFull();
+        if (\Str::startsWith(config('app.url'), 'http://') && !\Str::startsWith($url, 'http://')) {
+            $url = str_replace('https://', 'http://', $url);
+        }
+        if (\Str::startsWith(config('app.url'), 'https://') && !\Str::startsWith($url, 'https://')) {
+            $url = str_replace('http://', 'https://', $url);
+        }
+        return $url;
+    }*/
 }
