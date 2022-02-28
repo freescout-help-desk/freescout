@@ -406,7 +406,7 @@ class MailboxesController extends Controller
         ]);
 
         // Do not save dummy password.
-        if (preg_match("/^\*+$/", $request->in_password)) {
+        if (preg_match("/^\*+$/", $request->in_password ?? '')) {
             $params = $request->except(['in_password']);
         } else {
             $params = $request->all();
