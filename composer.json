@@ -36,7 +36,8 @@
         "symfony/console": "v3.4.47",
         "javoscript/laravel-macroable-models": "1.0.4",
         "ramsey/uuid": "3.9.6",
-        "symfony/polyfill-mbstring": "v1.24.0"
+        "symfony/polyfill-mbstring": "v1.24.0",
+        "webklex/php-imap": "2.7.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v3.2.0",

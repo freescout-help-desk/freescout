@@ -839,11 +839,28 @@ class Mailbox extends Model
         return $route;
     }
 
-    public function setMetaParam($param, $value)
+    public function setMetaParam($param, $value, $save = false)
     {
         $meta = $this->meta;
         $meta[$param] = $value;
         $this->meta = $meta;
+
+        if ($save) {
+            $this->save();
+        }
+    }
+
+    public function removeMetaParam($param, $save = false)
+    {
+        $meta = $this->meta;
+        if (isset($meta[$param])) {
+            unset($meta[$param]);
+        }
+        $this->meta = $meta;
+
+        if ($save) {
+            $this->save();
+        }
     }
 
     /**
@@ -859,5 +876,15 @@ class Mailbox extends Model
         } else {
             return false;
         }
+    }
+
+    public function oauthEnabled()
+    {
+        return !empty($this->meta['oauth']['provider']);
+    }
+
+    public function oauthGetParam($param)
+    {
+        return $this->meta['oauth'][$param] ?? '';
     }
 }
