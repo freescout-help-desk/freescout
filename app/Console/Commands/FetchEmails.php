@@ -538,7 +538,7 @@ class FetchEmails extends Command
 
                 if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
                     // SendAutoReply listener will check bounce flag and will not send an auto reply if this is an auto responder.
-                    $new_thread = $this->saveCustomerThread($mailbox->id, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data['attachments'], $data['message']->getHeader());
+                    $new_thread = $this->saveCustomerThread($mailbox, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data['attachments'], $data['message']->getHeader());
                 } else {
                     $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
                     $message->setFlag(['Seen']);
@@ -654,7 +654,7 @@ class FetchEmails extends Command
     /**
      * Save email from customer as thread.
      */
-    public function saveCustomerThread($mailbox_id, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers)
+    public function saveCustomerThread($mailbox, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers)
     {
         // Find conversation
         $new = false;
@@ -690,7 +690,7 @@ class FetchEmails extends Command
             $conversation->state = Conversation::STATE_PUBLISHED;
             $conversation->subject = $subject;
             $conversation->setPreview($body);
-            $conversation->mailbox_id = $mailbox_id;
+            $conversation->mailbox_id = $mailbox->id;
             $conversation->customer_id = $customer->id;
             $conversation->created_by_customer_id = $customer->id;
             $conversation->source_via = Conversation::PERSON_CUSTOMER;
@@ -703,8 +703,8 @@ class FetchEmails extends Command
             $conversation->has_attachments = true;
         }
 
-        // Save extra recipients to CC
-        $conversation->setCc(array_merge($conv_cc, $to));
+        // Save extra recipients to CC, but do not add the mailbox itself as a CC.
+        $conversation->setCc(array_merge($conv_cc, array_diff($to, $mailbox->getEmails())));
         // BCC should keep BCC of the first email,
         // so we change BCC only if it contains emails.
         if ($bcc) {

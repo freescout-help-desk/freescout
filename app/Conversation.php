@@ -2123,14 +2123,14 @@ class Conversation extends Model
             $query_conversations->where('conversations.created_at', '<=', date('Y-m-d 23:59:59', strtotime($filters['before'])));
         }
 
-        $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);
-
         // Join threads if needed
         if (!strstr($query_conversations->toSql(), '`threads`.`conversation_id`')) {
             $query_conversations->join('threads', function ($join) {
                 $join->on('conversations.id', '=', 'threads.conversation_id');
             });
         }
+
+        $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);
 
         $query_conversations->orderBy('conversations.last_reply_at', 'DESC');
 

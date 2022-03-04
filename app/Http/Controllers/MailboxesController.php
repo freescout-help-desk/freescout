@@ -363,10 +363,10 @@ class MailboxesController extends Controller
         $this->authorize('admin', $mailbox);
 
         $fields = [
-            'in_server'   => $mailbox->in_server,
-            'in_port'     => $mailbox->in_port,
-            'in_username' => $mailbox->in_username,
-            'in_password' => $mailbox->in_password,
+            'in_server'   => $mailbox->in_server ?? '',
+            'in_port'     => $mailbox->in_port ?? '',
+            'in_username' => $mailbox->in_username ?? '',
+            'in_password' => $mailbox->in_password ?? '',
         ];
 
         $validator = Validator::make($fields, [
@@ -406,7 +406,7 @@ class MailboxesController extends Controller
         ]);
 
         // Do not save dummy password.
-        if (preg_match("/^\*+$/", $request->in_password)) {
+        if (preg_match("/^\*+$/", $request->in_password ?? '')) {
             $params = $request->except(['in_password']);
         } else {
             $params = $request->all();

@@ -62,7 +62,7 @@
 							</tr>
 							<tr>
 								<td align="center" style="color: #8c93a0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px; line-height: 22px; mso-table-lspace: 0pt; mso-table-rspace: 0pt; text-align: center; vertical-align: top" valign="top">
-                  @if (!$__env->yieldContent('footer'))
+                  @if (!$__env->yieldContent('footer') && \App\Option::get('email_branding'))
 								    &copy; {{ date('Y') }} <a href="{{ \Config::get('app.freescout_url') }}" style="border: 0; color: #8c93a0; text-decoration: underline">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk & shared mailbox') }}
                   @else
                     @yield('footer')
