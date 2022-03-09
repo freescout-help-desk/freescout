@@ -166,16 +166,23 @@ class FetchEmails extends Command
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
 
             // Get unseen messages for a period
-            $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
-            if ($unseen) {
-                $messages->unseen();
-            }
-            if ($no_charset) {
-                $messages->setCharset(null);
-            }
-            $messages = $messages->get();
+            $last_error = '';
+            try {    
+                $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
+                if ($unseen) {
+                    $messages->unseen();
+                }
+                if ($no_charset) {
+                    $messages->setCharset(null);
+                }
+                $messages = $messages->get();
 
-            $last_error = $client->getLastError();
+                if (method_exists($client, 'getLastError')) {
+                    $last_error = $client->getLastError();
+                }
+            } catch (\Exception $e) {
+                $last_error = $e->getMessage();
+            }
 
             if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
                 $errors_count = count($client->getErrors());
@@ -342,9 +349,11 @@ class FetchEmails extends Command
                     }
                 }
             }
+            $message_header = $this->headerToStr($message->getHeader());
+
             // Check Content-Type header.
-            if (!$is_bounce && $message->getHeader()) {
-                if (\MailHelper::detectBounceByHeaders($message->getHeader())) {
+            if (!$is_bounce && $message_header) {
+                if (\MailHelper::detectBounceByHeaders($message_header)) {
                     $is_bounce = true;
                 }
             }
@@ -360,7 +369,7 @@ class FetchEmails extends Command
                 }
             }
             // Check Return-Path header
-            if (!$is_bounce && preg_match("/^Return\-Path: <>/i", $message->getHeader())) {
+            if (!$is_bounce && preg_match("/^Return\-Path: <>/i", $message_header)) {
                 $this->line('['.date('Y-m-d H:i:s').'] Bounce detected by Return-Path header.');
                 $is_bounce = true;
             }
@@ -485,7 +494,13 @@ class FetchEmails extends Command
             //$bcc = $mailbox->removeMailboxEmailsFromList($bcc);
 
             // Create customers
-            $emails = array_merge($message->getFrom(), $message->getReplyTo(), $message->getTo(), $message->getCc(), $message->getBcc());
+            $emails = array_merge(
+                $this->attrToArray($message->getFrom()), 
+                $this->attrToArray($message->getReplyTo()),
+                $this->attrToArray($message->getTo()),
+                $this->attrToArray($message->getCc()),
+                $this->attrToArray($message->getBcc())
+            );
             $this->createCustomers($emails, $mailbox->getEmails());
 
             $data = \Eventy::filter('fetch_emails.data_to_save', [
@@ -511,7 +526,11 @@ class FetchEmails extends Command
                 if (!$data['prev_thread']) {
                     // Maybe this email need to be imported also into other mailbox.
 
-                    $recipient_emails = array_unique($this->formatEmailList(array_merge($message->getTo(), $message->getCc(), $message->getBcc())));
+                    $recipient_emails = array_unique($this->formatEmailList(array_merge(
+                        $this->attrToArray($message->getTo()), 
+                        $this->attrToArray($message->getCc()), 
+                        $this->attrToArray($message->getBcc())
+                    )));
                     
                     if (count($mailboxes) && count($recipient_emails) > 1) {
                         foreach ($mailboxes as $check_mailbox) {
@@ -731,7 +750,7 @@ class FetchEmails extends Command
         $thread->status = $conversation->status;
         $thread->state = Thread::STATE_PUBLISHED;
         $thread->message_id = $message_id;
-        $thread->headers = $headers;
+        $thread->headers = $this->headerToStr($headers);
         $thread->body = $body;
         $thread->from = $from;
         $thread->setTo($to);
@@ -999,6 +1018,13 @@ class FetchEmails extends Command
     public function formatEmailList($obj_list)
     {
         $plain_list = [];
+
+        if (!$obj_list) {
+            return $plain_list;
+        }
+
+        $obj_list = $this->attrToArray($obj_list);
+
         foreach ($obj_list as $item) {
             $item->mail = Email::sanitizeEmail($item->mail);
             if ($item->mail) {
@@ -1007,6 +1033,27 @@ class FetchEmails extends Command
         }
 
         return $plain_list;
+    }
+
+    public function attrToArray($attr)
+    {
+        if (!$attr) {
+            return [];
+        }
+
+        if (is_object($attr) && get_class($attr) == 'Webklex\PHPIMAP\Attribute') {
+            $attr = $attr->get();
+        }
+
+        return $attr;
+    }
+
+    public function headerToStr($header)
+    {
+        if (!is_string($header)) {
+            $header = $header->raw;
+        }
+        return $header;
     }
 
     /**
@@ -1019,8 +1066,13 @@ class FetchEmails extends Command
     public function sortMessage($messages)
     {
         $messages = $messages->sortBy(function ($message, $key) {
-            if ($message->getDate()) {
-                return $message->getDate()->timestamp;
+            $date = $message->getDate();
+            if ($date) {
+                if (isset($message->getDate()->timestamp)) {
+                    return $message->getDate()->timestamp;
+                } else {
+                    return (string)$message->getDate();
+                }
             } else {
                 return 0;
             }
