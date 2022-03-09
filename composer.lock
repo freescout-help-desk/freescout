@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "55d104a390e5af1650f9362ec3323cf3",
+    "content-hash": "e9814a0db64f1ed4577f6da1da7fd740",
     "packages": [
         {
             "name": "anahkiasen/underscore-php",
@@ -4363,16 +4363,16 @@
         },
         {
             "name": "webklex/php-imap",
-            "version": "2.7.2",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Webklex/php-imap.git",
-                "reference": "e22be3ed3760a939cd68b2907969c4b2478e8588"
+                "reference": "354c2773381b8eb68096ac394a0e5670ab9801f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Webklex/php-imap/zipball/e22be3ed3760a939cd68b2907969c4b2478e8588",
-                "reference": "e22be3ed3760a939cd68b2907969c4b2478e8588",
+                "url": "https://api.github.com/repos/Webklex/php-imap/zipball/354c2773381b8eb68096ac394a0e5670ab9801f8",
+                "reference": "354c2773381b8eb68096ac394a0e5670ab9801f8",
                 "shasum": ""
             },
             "require": {
@@ -4422,9 +4422,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Webklex/php-imap/issues",
-                "source": "https://github.com/Webklex/php-imap/tree/2.7.2"
+                "source": "https://github.com/Webklex/php-imap/tree/3.2.0"
             },
-            "time": "2021-09-27T04:16:22+00:00"
+            "time": "2022-03-07T17:21:13+00:00"
         }
     ],
     "packages-dev": [

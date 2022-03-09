@@ -587,7 +587,11 @@ class Mail
                 'protocol'      => $mailbox->getInProtocolName(),
                 'authentication' => 'oauth',
             ]);
-            \Config::set('imap.options.debug', config('app.debug'));
+            // To enable debug: /vendor/webklex/php-imap/src/Connection/Protocols
+            // Debug in console
+            if (app()->runningInConsole()) {
+                \Config::set('imap.options.debug', config('app.debug'));
+            }
 
             $cm = new \Webklex\PHPIMAP\ClientManager(config('imap'));
 
@@ -676,7 +680,7 @@ class Mail
                     'redirect_uri' => route('mailboxes.oauth_callback'),
                 ];
                 $args = array_merge($args, $params);
-                $url = 'https://login.windows.net/common/oauth2/authorize?'.http_build_query($args);
+                $url = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?'.http_build_query($args);
                 break;
         }
 
@@ -699,7 +703,7 @@ class Mail
                
                 // $postUrl = "/common/oauth2/token";
                 // $hostname = "login.microsoftonline.com";
-                $full_url = "https://login.windows.net/common/oauth2/token";
+                $full_url = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
 
                 // $headers = array(
                 //     // "POST " . $postUrl . " HTTP/1.1",
@@ -718,7 +722,6 @@ class Mail
 
                 $response = curl_exec($curl);
 
-
                 if ($response) {
                     $result = json_decode($response, true);
 
@@ -735,9 +738,9 @@ class Mail
                     if (!empty($result['access_token'])) {
                         $token_data['provider'] = self::OAUTH_PROVIDER_MICROSOFT;
                         $token_data['a_token'] = $result['access_token'];
-                        $token_data['r_token'] = $result['refresh_token'];
-                        $token_data['id_token'] = $result['refresh_token'];
-                        $token_data['expires_on'] = $result['expires_on'];
+                        //$token_data['r_token'] = $result['refresh_token'];
+                        //$token_data['id_token'] = $result['id_token'];
+                        $token_data['expires_in'] = $result['expires_in'];
                     }
                 }
                 break;
@@ -750,7 +753,7 @@ class Mail
     {
         switch ($provider_code) {
             case self::OAUTH_PROVIDER_MICROSOFT:
-                return redirect()->away('https://login.windows.net/common/oauth2/logout?post_logout_redirect_uri='.urlencode($redirect_uri));
+                return redirect()->away('https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri='.urlencode($redirect_uri));
             break;
         }
     }
@@ -767,8 +770,8 @@ class Mail
     //                 'clientSecret'              => $params['client_secret'],
     //                 'redirectUri'               => route('mailboxes.oauth_callback'),
     //                 //https://login.microsoftonline.com/common/oauth2/authorize';
-    //                 'urlAuthorize'              => 'https://login.windows.net/common/oauth2/authorize',
-    //                 'urlAccessToken'            => 'https://login.windows.net/common/oauth2/token',
+    //                 'urlAuthorize'              => 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+    //                 'urlAccessToken'            => 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
     //                 'urlResourceOwnerDetails'   => 'https://outlook.office.com/api/v1.0/me'
     //             ]);
     //             break;

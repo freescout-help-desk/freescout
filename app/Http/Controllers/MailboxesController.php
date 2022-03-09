@@ -808,6 +808,11 @@ class MailboxesController extends Controller
             }
         }
 
+        // MS Exchange.
+        if (!empty($request->error) && $request->error == 'invalid_request' && !empty($request->error_description)) {
+            return htmlspecialchars($request->error_description);
+        }
+
         if (empty($provider)) {
             return 'Invalid oAuth Provider';
         }
