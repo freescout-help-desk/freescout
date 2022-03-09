@@ -301,15 +301,7 @@ class Mail
      */
     public static function fetchTest($mailbox)
     {
-        $client = new Client([
-            'host'          => $mailbox->in_server,
-            'port'          => $mailbox->in_port,
-            'encryption'    => $mailbox->getInEncryptionName(),
-            'validate_cert' => $mailbox->in_validate_cert,
-            'username'      => $mailbox->in_username,
-            'password'      => $mailbox->in_password,
-            'protocol'      => $mailbox->getInProtocolName(),
-        ]);
+        $client = \MailHelper::getMailboxClient($mailbox);
 
         // Connect to the Server
         $client->connect();
@@ -323,7 +315,11 @@ class Mail
         // Get unseen messages for a period
         $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
 
-        $last_error = $client->getLastError();
+        $last_error = '';
+        if (method_exists($client, 'getLastError')) {
+            $last_error = $client->getLastError();
+        }
+        
         if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
             // Solution for MS mailboxes.
             // https://github.com/freescout-helpdesk/freescout/issues/176
@@ -667,7 +663,10 @@ class Mail
 
                 $messages = $query->get();
 
-                $last_error = $client->getLastError();
+                $last_error = '';
+                if (method_exists($client, 'getLastError')) {
+                    $last_error = $client->getLastError();
+                }
 
                 if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
                     // Solution for MS mailboxes.
