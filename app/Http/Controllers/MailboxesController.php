@@ -874,6 +874,8 @@ class MailboxesController extends Controller
 
             if (!empty($token_data['a_token'])) {
                 $mailbox->setMetaParam('oauth', $token_data, true);
+            } elseif (!empty($token_data['error'])) {
+                return __('Error occurred').': '.htmlspecialchars($token_data['error']);
             }
 
             return redirect()->route('mailboxes.connection.incoming', ['id' => $mailbox_id]);

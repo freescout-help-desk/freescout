@@ -595,6 +595,28 @@ class Mail
 
             $cm = new \Webklex\PHPIMAP\ClientManager(config('imap'));
 
+            // Refresh Access Token.
+            if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
+                // Try to get an access token (using the authorization code grant)
+                $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
+                    'client_id' => $mailbox->in_username,
+                    'client_secret' => $mailbox->in_password,
+                    'refresh_token' => $mailbox->oauthGetParam('r_token'),
+                ]);
+
+                if (!empty($token_data['a_token'])) {
+                    $mailbox->setMetaParam('oauth', $token_data, true);
+                } elseif (!empty($token_data['error'])) {
+                    $error_message = 'Error occurred refreshing oAuth Access Token: '.$token_data['error'];
+                    \Helper::log(\App\ActivityLog::NAME_EMAILS_FETCHING, 
+                        \App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR, [
+                        'error'   => $error_message,
+                        'mailbox' => $mailbox->name,
+                    ]);
+                    throw new \Exception($error_message, 1);
+                }
+            }
+
             return $cm->account('default');
         }
     }
@@ -674,7 +696,7 @@ class Mail
             case self::OAUTH_PROVIDER_MICROSOFT:
                 // https://docs.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth
                 $args = [
-                    'scope' => 'https://outlook.office.com/IMAP.AccessAsUser.All',
+                    'scope' => 'offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/SMTP.Send',
                     'response_type' => 'code',
                     'approval_prompt' => 'auto',
                     'redirect_uri' => route('mailboxes.oauth_callback'),
@@ -695,12 +717,18 @@ class Mail
         switch ($provider_code) {
             case self::OAUTH_PROVIDER_MICROSOFT:
                 $post_params = [
-                    'scope' => 'https://outlook.office.com/IMAP.AccessAsUser.All',
+                    'scope' => 'offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/SMTP.Send',
                     "grant_type" => "authorization_code",
                     'redirect_uri' => route('mailboxes.oauth_callback'),
                 ];
+
                 $post_params = array_merge($post_params, $params);
-               
+
+                // Refreshing Access Token.
+                if (!empty($post_params['refresh_token'])) {
+                    $post_params['grant_type'] = 'refresh_token';
+                }
+                
                 // $postUrl = "/common/oauth2/token";
                 // $hostname = "login.microsoftonline.com";
                 $full_url = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
@@ -738,11 +766,18 @@ class Mail
                     if (!empty($result['access_token'])) {
                         $token_data['provider'] = self::OAUTH_PROVIDER_MICROSOFT;
                         $token_data['a_token'] = $result['access_token'];
-                        //$token_data['r_token'] = $result['refresh_token'];
+                        $token_data['r_token'] = $result['refresh_token'];
                         //$token_data['id_token'] = $result['id_token'];
+                        $token_data['issued_on'] = now()->toDateTimeString();
                         $token_data['expires_in'] = $result['expires_in'];
+                    } elseif ($response) {
+                        $token_data['error'] = $response;
+                    } else {
+                        $token_data['error'] = 'Response code: '.curl_getinfo($curl, CURLINFO_HTTP_CODE);
                     }
                 }
+                curl_close($curl);
+
                 break;
         }
 
