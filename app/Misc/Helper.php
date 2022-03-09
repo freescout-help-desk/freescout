@@ -1593,9 +1593,9 @@ class Helper
 
     public static function urlHome()
     {
-        $url = \Config::get('app.url');
-        $url = rtrim($url, "/");
-        return $url.'/home';
+        return \Config::get('app.url');
+        // $url = rtrim($url, "/");
+        // return $url.'/home';
     }
 
     /**
