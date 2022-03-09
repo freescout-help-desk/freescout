@@ -114,7 +114,7 @@
                                     @elseif ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT)
                                          – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT]) }}">{{ __('Disconnect') }}</a>
                                     @endif
-                                    <small>(<a href="">{{ __('Help') }}</a>)</small>
+                                    <small>(<a href="https://github.com/freescout-helpdesk/freescout/wiki/Connect-FreeScout-to-Microsoft-365-Exchange-via-oAuth" target="_blank">{{ __('Help') }}</a>)</small>
                                 </p>
                                 {{--@include('partials/field_error', ['field'=>'in_password'])--}}
                             </div>
