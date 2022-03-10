@@ -1261,7 +1261,7 @@ class Helper
      */
     public static function safePassword($password)
     {
-        return str_repeat("*", mb_strlen($password));
+        return str_repeat("*", mb_strlen($password ?? ''));
     }
 
     /**
