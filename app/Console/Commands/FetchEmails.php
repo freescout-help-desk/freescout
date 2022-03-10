@@ -1000,7 +1000,33 @@ class FetchEmails extends Command
     public function replaceCidsWithAttachmentUrls($body, $attachments)
     {
         foreach ($attachments as $attachment) {
-            if ($attachment['imap_attachment']->id && isset($attachment['imap_attachment']->img_src)) {
+            // webklex:
+            // [type] => image
+            // [content_type] => image/png
+            // [id] => ii_l0krlfiu0
+            // [name] => 2.png
+            // [disposition] => inline
+            // [img_src] => ...
+            // 
+            // php-imap:
+            // [content] => ...
+            // [type] => text
+            // [part_number] => 3
+            // [content_type] => image/png
+            // [id] => ii_l0krolw00
+            // [name] => 2.png
+            // [disposition] => Webklex\PHPIMAP\Attribute Object
+            //     (
+            //         [name:protected] => content_disposition
+            //         [values:protected] => Array
+            //             (
+            //                 [0] => inline
+            //             )
+
+            //     )
+            // [img_src] =>
+            // [size] => 2326
+            if ($attachment['imap_attachment']->id && (isset($attachment['imap_attachment']->img_src) || strlen($attachment['imap_attachment']->content ?? ''))) {
                 $body = str_replace('cid:'.$attachment['imap_attachment']->id, $attachment['attachment']->url(), $body);
             }
         }

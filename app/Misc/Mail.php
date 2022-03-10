@@ -613,6 +613,9 @@ class Mail
                 }
             }
 
+            // This makes it authenticate two times.
+            //$cm->setTimeout(60);
+
             return $cm->account('default');
         }
     }
