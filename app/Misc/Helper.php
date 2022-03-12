@@ -1616,6 +1616,6 @@ class Helper
 
     public static function isLocaleRtl(): bool
     {
-        return in_array(app()->getLocale(), config("app.rtl_locales"));
+        return in_array(app()->getLocale(), config("app.locales_rtl"));
     }
 }
