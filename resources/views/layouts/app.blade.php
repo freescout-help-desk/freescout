@@ -23,8 +23,13 @@
     {{-- style.css must be the last to able to redefine styles --}}
     @php
         try {
+            $styles= array('/css/fonts.css', '/css/bootstrap.css', '/css/select2/select2.min.css', '/js/featherlight/featherlight.min.css', '/js/featherlight/featherlight.gallery.min.css', '/css/magic-check.css', '/css/style.css' );
+            if (Helper::isLocaleRtl()) {
+                $styles[] = '/css/bootstrap-rtl.css';
+                $styles[] = '/css/style-rtl.css';
+            }
     @endphp
-    {!! Minify::stylesheet(\Eventy::filter('stylesheets', array('/css/fonts.css', '/css/bootstrap.css', '/css/select2/select2.min.css', '/js/featherlight/featherlight.min.css', '/js/featherlight/featherlight.gallery.min.css', '/css/magic-check.css', '/css/style.css'))) !!}
+    {!! Minify::stylesheet(\Eventy::filter('stylesheets', $styles)) !!}
     @php
         } catch (\Exception $e) {
             // Try...catch is needed to catch errors when activating a module and public symlink not created for module.
