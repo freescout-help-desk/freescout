@@ -70,7 +70,7 @@ class SystemController extends Controller
         $non_writable_cache_file = '';
         if (function_exists('shell_exec')) {
             $non_writable_cache_file = shell_exec('find '.base_path('storage/framework/cache/data/').' -type f | xargs -I {} sh -c \'[ ! -w "{}" ] && echo {}\' 2>&1 | head -n 1');
-            $non_writable_cache_file = trim($non_writable_cache_file);
+            $non_writable_cache_file = trim($non_writable_cache_file ?? '');
             if (!strstr($non_writable_cache_file, base_path('storage/framework/cache/data/'))) {
                 $non_writable_cache_file = '';
             }

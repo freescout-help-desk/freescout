@@ -52,7 +52,7 @@ class Email extends Model
         // Email validation is not recommended:
         // http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address/201378#201378
         // So we just check for @
-        if (!preg_match('/@/', $email)) {
+        if (!preg_match('/@/', $email ?? '')) {
             return false;
         }
         $email = filter_var($email, FILTER_SANITIZE_EMAIL);

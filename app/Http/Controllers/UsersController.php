@@ -57,6 +57,7 @@ class UsersController extends Controller
      */
     public function createSave(Request $request)
     {
+        $invalid = false;
         $this->authorize('create', 'App\User');
         $auth_user = auth()->user();
 
@@ -74,7 +75,12 @@ class UsersController extends Controller
         }
         $validator = Validator::make($request->all(), $rules);
 
-        if ($validator->fails()) {
+        if (User::mailboxEmailExists($request->email)) {
+            $invalid = true;
+            $validator->errors()->add('email', __('There is a mailbox with such email. Users and mailboxes can not have the same email addresses.'));
+        }
+
+        if ($invalid || $validator->fails()) {
             return redirect()->route('users.create')
                         ->withErrors($validator)
                         ->withInput();
@@ -147,6 +153,8 @@ class UsersController extends Controller
      */
     public function profileSave($id, Request $request)
     {
+        $invalid = false;
+
         $user = User::findOrFail($id);
         $this->authorize('update', $user);
 
@@ -175,6 +183,7 @@ class UsersController extends Controller
                 if ($path_url) {
                     $user->photo_url = $path_url;
                 } else {
+                    $invalid = true;
                     $validator->errors()->add('photo_url', __('Error occured processing the image. Make sure that PHP GD extension is enabled.'));
                 }
             }
@@ -183,12 +192,18 @@ class UsersController extends Controller
             if ($user->isAdmin() && isset($request->role) && $request->role != User::ROLE_ADMIN) {
                 $admins_count = User::where('role', User::ROLE_ADMIN)->count();
                 if ($admins_count < 2) {
+                    $invalid = true;
                     $validator->errors()->add('role', __('Role of the only one administrator can not be changed.'));
                 }
             }
         });
 
-        if ($validator->fails()) {
+        if (User::mailboxEmailExists($request->email)) {
+            $invalid = true;
+            $validator->errors()->add('email', __('There is a mailbox with such email. Users and mailboxes can not have the same email addresses.'));
+        }
+
+        if ($invalid || $validator->fails()) {
             return redirect()->route('users.profile', ['id' => $id])
                         ->withErrors($validator)
                         ->withInput();

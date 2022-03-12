@@ -482,6 +482,11 @@ class Conversation extends Model
         return $this->status == self::STATUS_ACTIVE;
     }
 
+    public function isSpam()
+    {
+        return $this->status == self::STATUS_SPAM;
+    }
+
     /**
      * Get status name.
      *
@@ -789,7 +794,7 @@ class Conversation extends Model
         // Create customers if needed: Test <test1@example.com>
         if (is_array($emails)) {
             foreach ($emails as $i => $email) {
-                preg_match("/^(.+)\s+([^\s]+)$/", $email, $m);
+                preg_match("/^(.+)\s+([^\s]+)$/", $email ?? '', $m);
                 if (count($m) == 3) {
                     $customer_name = trim($m[1]);
                     $email_address = trim($m[2]);
@@ -1053,7 +1058,9 @@ class Conversation extends Model
      */
     public function getSignatureProcessed($data = [], $escape = false)
     {
-        return $this->replaceTextVars($this->mailbox->signature, $data, $escape);
+        $replaced_text = $this->replaceTextVars( $this->mailbox->signature, $data, $escape );
+
+        return \Eventy::filter( 'conversation.signature_processed', $replaced_text, $this, $data, $escape );
     }
 
     /**
@@ -1883,10 +1890,21 @@ class Conversation extends Model
      */
     public static function create($data, $threads, $customer)
     {
+        // Detect source_via.
+        $source_via = $data['source_via'] ?? 0;
+        if (!$source_via && !empty($threads[0])) {
+            if (!empty($threads[0]['type']) && $threads[0]['type'] == Thread::TYPE_CUSTOMER) {
+                $source_via = self::PERSON_CUSTOMER;
+            } else {
+                $source_via = self::PERSON_USER;
+            }
+        }
+
         $conversation = new Conversation();
         $conversation->type = $data['type'];
         $conversation->subject = $data['subject'];
         $conversation->mailbox_id = $data['mailbox_id'];
+        $conversation->source_via = $source_via;
         $conversation->source_type = $data['source_type'];
         $conversation->customer_id = $customer->id;
         $conversation->customer_email = $customer->getMainEmail().'';
@@ -1894,6 +1912,7 @@ class Conversation extends Model
         $conversation->imported = (int)($data['imported'] ?? false);
         $conversation->closed_at = $data['closed_at'] ?? null;
         $conversation->channel = $data['channel'] ?? null;
+        $conversation->preview = '';
 
         // Phone conversation is always pending.
         if ($conversation->isPhone()) {
@@ -1960,7 +1979,12 @@ class Conversation extends Model
 
     public function getChannelName()
     {
-        return \Eventy::filter('channel.name', '', $this->channel);
+        return self::channelCodeToName($this->channel);
+    }
+
+    public static function channelCodeToName($channel)
+    {
+        return \Eventy::filter('channel.name', '', $channel);
     }
 
     public static function subjectFromText($text)
@@ -1972,6 +1996,145 @@ class Conversation extends Model
     {
         \App\Events\RealtimeConvNewThread::dispatchSelf($thread);
         \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id);
+    }
+
+    public static function getConvTableSorting($request = null)
+    {
+        if (!$request) {
+            $request = request();
+        }
+
+        $result = [
+            'sort_by' => 'date',
+            'order' => 'desc',
+        ];
+
+        if (
+            !empty($request->sorting['sort_by']) && !empty($request->sorting['order']) &&
+            in_array($request->sorting['sort_by'], ['subject', 'number', 'date']) &&
+            in_array($request->sorting['order'], ['asc', 'desc'])
+        ) {
+            $result['sort_by'] = $request->sorting['sort_by'];
+            $result['order'] = $request->sorting['order'];
+        }
+
+        return $result;
+    }
+
+    public static function search($q, $filters, $user = null, $query_conversations = null)
+    {
+        $mailbox_ids = [];
+
+        // Get IDs of mailboxes to which user has access
+        if (empty($filters['mailbox'])) {
+            $mailbox_ids = $user->mailboxesIdsCanView();
+        }
+
+        // Like is case insensitive.
+        $like = '%'.mb_strtolower($q).'%';
+
+        if (!$query_conversations) {
+            $query_conversations = Conversation::select('conversations.*');
+        }
+        // https://github.com/laravel/framework/issues/21242
+        // https://github.com/laravel/framework/pull/27675
+        $query_conversations->groupby('conversations.id');
+
+        if ($mailbox_ids) {
+            $query_conversations->whereIn('conversations.mailbox_id', $mailbox_ids);
+        }
+        if ($q) {
+            $query_conversations->where(function ($query) use ($like, $filters, $q) {
+                $query->where('conversations.subject', 'like', $like)
+                    ->orWhere('conversations.customer_email', 'like', $like)
+                    ->orWhere('conversations.number', (int)$q)
+                    ->orWhere('conversations.id', (int)$q)
+                    ->orWhere('threads.body', 'like', $like)
+                    ->orWhere('threads.from', 'like', $like)
+                    ->orWhere('threads.to', 'like', $like)
+                    ->orWhere('threads.cc', 'like', $like)
+                    ->orWhere('threads.bcc', 'like', $like);
+
+                $query = \Eventy::filter('search.conversations.or_where', $query, $filters, $q);
+            });
+        }
+
+        // Apply search filters.
+        if (!empty($filters['assigned'])) {
+            $query_conversations->where('conversations.user_id', $filters['assigned']);
+        }
+        if (!empty($filters['customer'])) {
+            $customer_id = $filters['customer'];
+            $query_conversations->where(function ($query) use ($customer_id) {
+                $query->where('conversations.customer_id', '=', $customer_id)
+                    ->orWhere('threads.created_by_customer_id', '=', $customer_id);
+            });
+        }
+        if (!empty($filters['mailbox'])) {
+            $query_conversations->where('conversations.mailbox_id', '=', $filters['mailbox']);
+        }
+        if (!empty($filters['status'])) {
+            if (count($filters['status']) == 1) {
+                // = is faster than IN.
+                $query_conversations->where('conversations.status', '=', $filters['status'][0]);
+            } else {
+                $query_conversations->whereIn('conversations.status', $filters['status']);
+            }
+        }
+        if (!empty($filters['state'])) {
+            if (count($filters['state']) == 1) {
+                // = is faster than IN.
+                $query_conversations->where('conversations.state', '=', $filters['state'][0]);
+            } else {
+                $query_conversations->whereIn('conversations.state', $filters['state']);
+            }
+        }
+        if (!empty($filters['subject'])) {
+            $query_conversations->where('conversations.subject', 'like', '%'.mb_strtolower($filters['subject']).'%');
+        }
+        if (!empty($filters['attachments'])) {
+            $has_attachments = ($filters['attachments'] == 'yes' ? true : false);
+            $query_conversations->where('conversations.has_attachments', '=', $has_attachments);
+        }
+        if (!empty($filters['type'])) {
+            $query_conversations->where('conversations.has_attachments', '=', $filters['type']);
+        }
+        if (!empty($filters['body'])) {
+            $query_conversations->where('threads.body', 'like', '%'.mb_strtolower($filters['body']).'%');
+        }
+        if (!empty($filters['number'])) {
+            $query_conversations->where('conversations.number', '=', $filters['number']);
+        }
+        if (!empty($filters['following'])) {
+            if ($filters['following'] == 'yes') {
+                $query_conversations->join('followers', function ($join) {
+                    $join->on('followers.conversation_id', '=', 'conversations.id');
+                    $join->where('followers.user_id', auth()->user()->id);
+                });
+            }
+        }
+        if (!empty($filters['id'])) {
+            $query_conversations->where('conversations.id', '=', $filters['id']);
+        }
+        if (!empty($filters['after'])) {
+            $query_conversations->where('conversations.created_at', '>=', date('Y-m-d 00:00:00', strtotime($filters['after'])));
+        }
+        if (!empty($filters['before'])) {
+            $query_conversations->where('conversations.created_at', '<=', date('Y-m-d 23:59:59', strtotime($filters['before'])));
+        }
+
+        // Join threads if needed
+        if (!strstr($query_conversations->toSql(), '`threads`.`conversation_id`')) {
+            $query_conversations->join('threads', function ($join) {
+                $join->on('conversations.id', '=', 'threads.conversation_id');
+            });
+        }
+
+        $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);
+
+        $query_conversations->orderBy('conversations.last_reply_at', 'DESC');
+
+        return $query_conversations;
     }
 
     // /**

@@ -200,9 +200,11 @@ class Mail
             $vars['{%user.photoUrl%}'] = $data['user']->getPhotoUrl();
         }
 
+        $vars = \Eventy::filter('mail_vars.replace', $vars, $data);
+
         if ($escape) {
             foreach ($vars as $i => $var) {
-                $vars[$i] = htmlspecialchars($var);
+                $vars[$i] = htmlspecialchars($var ?? '');
             }
         }
 
@@ -350,7 +352,7 @@ class Mail
         if (is_array($emails)) {
             $emails_array = $emails;
         } else {
-            $emails_array = explode(',', $emails);
+            $emails_array = explode(',', $emails ?? '');
         }
 
         foreach ($emails_array as $i => $email) {
@@ -469,7 +471,7 @@ class Mail
             'precedence' => ['auto_reply', 'bulk', 'junk'],
             'x-precedence' => ['auto_reply', 'bulk', 'junk'],
         ];
-        $headers = explode("\n", $headers_str);
+        $headers = explode("\n", $headers_str ?? '');
 
         foreach ($autoresponder_headers as $auto_header => $auto_header_value) {
             foreach ($headers as $header) {

@@ -21,7 +21,7 @@
                 <p>Done searching for translations, found <strong class="counter">N</strong> items!</p>
             </div>
             <div class="alert alert-success success-publish" style="display:none;">
-                <p>Done publishing translations for group '<?php echo htmlspecialchars($group) ?>'!</p>
+                <p>Done publishing translations for group '<?php echo htmlspecialchars($group ?? '') ?>'!</p>
             </div>
             <?php if(Session::has('successPublish')) : ?>
                 <div class="alert alert-info">

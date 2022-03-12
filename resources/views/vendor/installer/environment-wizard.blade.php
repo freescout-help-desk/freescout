@@ -100,7 +100,7 @@
                         <option value="mysql" @if (old('database_connection', env('DB_CONNECTION', 'mysql')) == 'mysql') selected @endif>MySQL</option>
                         <option value="pgsql" @if (old('database_connection', env('DB_CONNECTION')) == 'pgsql') selected @endif>PostgreSQL</option>
                         <option value="sqlite" @if (old('database_connection', env('DB_CONNECTION')) == 'sqlite') selected @endif>SQLite</option>
-                        <option value="sqlsrv" @if (old('database_connection', env('DB_CONNECTION')) == 'sqlsrv') selected @endif>SQL Server</option>
+                        {{--<option value="sqlsrv" @if (old('database_connection', env('DB_CONNECTION')) == 'sqlsrv') selected @endif>SQL Server</option>--}}
                     </select>
                     @if ($errors->has('database_connection'))
                         <span class="error-block">

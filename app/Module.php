@@ -181,7 +181,7 @@ class Module extends Model
     {
         $missing = [];
 
-        $list = explode(',', $required_extensions);
+        $list = explode(',', $required_extensions ?? '');
         if (!is_array($list) || !count($list)) {
             return [];
         }

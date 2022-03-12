@@ -24,7 +24,7 @@ return [
 
     'stubs' => [
         'enabled' => true,
-        'path'    => base_path().'/overrides/Nwidart/Modules/Commands/stubs',
+        'path'    => base_path().'/overrides/nwidart/laravel-modules/src/Commands/stubs',
         'files'   => [
             'start'           => 'start.php',
             'routes'          => 'Http/routes.php',

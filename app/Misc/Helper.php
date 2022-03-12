@@ -493,7 +493,7 @@ class Helper
     {
         // Remove all kinds of spaces after tags.
         // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
-        $text = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $text);
+        $text = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $text ?? '');
 
         // Remove <script> and <style> blocks.
         $text = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $text);
@@ -639,10 +639,11 @@ class Helper
         // Resize and crop
         imagecopyresampled($thumb,
                            $src,
-                           0 - ($new_width - $thumb_width) / 2, // Center the image horizontally
-                           0 - ($new_height - $thumb_height) / 2, // Center the image vertically
+                           ceil(0 - ($new_width - $thumb_width) / 2), // Center the image horizontally
+                           ceil(0 - ($new_height - $thumb_height) / 2), // Center the image vertically
                            0, 0,
-                           $new_width, $new_height,
+                           ceil($new_width),
+                           ceil($new_height),
                            $width, $height);
         imagedestroy($src);
 
@@ -979,7 +980,7 @@ class Helper
      *
      * @param [type] $text [description]
      */
-    public static function htmlToText($text, $embed_images = false, $options = array())
+    public static function htmlToText($text, $embed_images = false, $options = ['width' => 0])
     {
         // Process blockquotes.
         $text = str_ireplace('<blockquote>', '<div>', $text);
@@ -1063,6 +1064,10 @@ class Helper
                     ++$index;
                 } while ($last > $index && (false !== $pos = strpos($path, $subdirectory)) && 0 != $pos);
             }
+        }
+
+        if ($subdirectory === null) {
+            $subdirectory = '';
         }
 
         $subdirectory = str_replace('public/index.php', '', $subdirectory);
@@ -1238,6 +1243,10 @@ class Helper
 
     public static function purifyHtml($html)
     {
+        if (!$html) {
+            return $html;
+        }
+
         $html = \Purifier::clean($html);
 
         // Remove all kinds of spaces after tags
@@ -1252,7 +1261,7 @@ class Helper
      */
     public static function safePassword($password)
     {
-        return str_repeat("*", mb_strlen($password));
+        return str_repeat("*", mb_strlen($password ?? ''));
     }
 
     /**
@@ -1315,7 +1324,7 @@ class Helper
      */
     public static function getWorkerIdentifier()
     {
-        return md5(config('app.key'));
+        return md5(config('app.key') ?? '');
     }
 
     public static function uploadFile($file, $allowed_exts = [], $allowed_mimes = [], $sanitize_file_name = true)
@@ -1392,6 +1401,11 @@ class Helper
     public static function isMySql()
     {
         return \DB::connection()->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql';
+    }
+
+    public static function isPgSql()
+    {
+        return \DB::connection()->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'pgsql';
     }
 
     public static function humanFileSize($size, $unit="")
@@ -1538,6 +1552,67 @@ class Helper
 
         return $url;
     }
+
+    /**
+     * Fix and parse date to Carbon.
+     */
+    public static function parseDateToCarbon($date)
+    {
+        if (preg_match('/\+0580/', $date)) {
+            $date = str_replace('+0580', '+0530', $date);
+        }
+        $date = trim(rtrim($date));
+        $date = preg_replace('/[<>]/', '', $date);
+        $date = str_replace('_', ' ', $date);
+        try {
+            return Carbon::parse($date);
+        } catch (\Exception $e) {
+            switch (true) {
+                case preg_match('/([0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ UT)+$/i', $date) > 0:
+                case preg_match('/([A-Z]{2,3}\,\ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ UT)+$/i', $date) > 0:
+                    $date .= 'C';
+                    break;
+                case preg_match('/([A-Z]{2,3}[\,|\ \,]\ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}.*)+$/i', $date) > 0:
+                case preg_match('/([A-Z]{2,3}\,\ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ [\-|\+][0-9]{4}\ \(.*)\)+$/i', $date) > 0:
+                case preg_match('/([A-Z]{2,3}\, \ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ [\-|\+][0-9]{4}\ \(.*)\)+$/i', $date) > 0:
+                case preg_match('/([0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{2,4}\ [0-9]{2}\:[0-9]{2}\:[0-9]{2}\ [A-Z]{2}\ \-[0-9]{2}\:[0-9]{2}\ \([A-Z]{2,3}\ \-[0-9]{2}:[0-9]{2}\))+$/i', $date) > 0:
+                    $array = explode('(', $date);
+                    $array = array_reverse($array);
+                    $date = trim(array_pop($array));
+                    break;
+            }
+            try {
+                return Carbon::parse($date);
+            } catch (\Exception $_e) {
+                return Carbon::now();
+            }
+        }
+
+        return null;
+    }
+
+    public static function urlHome()
+    {
+        return \Config::get('app.url');
+        // $url = rtrim($url, "/");
+        // return $url.'/home';
+    }
+
+    /**
+     * Request::url() may return URL with incorrect protocol.
+     * Use \Request::getRequestUri() instead.
+     */
+    /*public static function currentUrl()
+    {
+        $url = \Request::urlFull();
+        if (\Str::startsWith(config('app.url'), 'http://') && !\Str::startsWith($url, 'http://')) {
+            $url = str_replace('https://', 'http://', $url);
+        }
+        if (\Str::startsWith(config('app.url'), 'https://') && !\Str::startsWith($url, 'https://')) {
+            $url = str_replace('http://', 'https://', $url);
+        }
+        return $url;
+    }*/
 
     public static function isLocaleRtl(): bool
     {

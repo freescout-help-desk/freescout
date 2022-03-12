@@ -12,14 +12,24 @@ if (preg_match("#^/public\/(.*)#", $_SERVER['REQUEST_URI'], $m) && !empty($m[1])
 $root_dir = realpath(__DIR__.'/..').'/';
 
 // Dotenv library for reading .env files
-require_once $root_dir.'vendor/vlucas/phpdotenv/src/Dotenv.php';
-require_once $root_dir.'vendor/vlucas/phpdotenv/src/Loader.php';
-require_once $root_dir.'vendor/vlucas/phpdotenv/src/Validator.php';
-require_once $root_dir.'vendor/vlucas/phpdotenv/src/Exception/ExceptionInterface.php';
-require_once $root_dir.'vendor/vlucas/phpdotenv/src/Exception/InvalidCallbackException.php';
-require_once $root_dir.'vendor/vlucas/phpdotenv/src/Exception/InvalidFileException.php';
-require_once $root_dir.'vendor/vlucas/phpdotenv/src/Exception/InvalidPathException.php';
-require_once $root_dir.'vendor/vlucas/phpdotenv/src/Exception/ValidationException.php';
+$vendor_files = [
+    'vlucas/phpdotenv/src/Dotenv.php',
+    'vlucas/phpdotenv/src/Loader.php',
+    'vlucas/phpdotenv/src/Validator.php',
+    'vlucas/phpdotenv/src/Exception/ExceptionInterface.php',
+    'vlucas/phpdotenv/src/Exception/InvalidCallbackException.php',
+    'vlucas/phpdotenv/src/Exception/InvalidFileException.php',
+    'vlucas/phpdotenv/src/Exception/InvalidPathException.php',
+    'vlucas/phpdotenv/src/Exception/ValidationException.php',
+];
+foreach ($vendor_files as $vendor_file) {
+    if (file_exists($root_dir.'vendor/'.$vendor_file)) {
+        require_once $root_dir.'vendor/'.$vendor_file;
+    } else {
+        require_once $root_dir.'overrides/'.$vendor_file;
+    }
+}
+
 // Symfony proces
 //require_once($root_dir.'vendor/symfony/process/Process.php');
 

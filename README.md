@@ -39,6 +39,7 @@
   * Moving conversations between mailboxes.
   * Phone conversations.
   * Sending new conversations to multiple recipients at once.
+  * Collision detection – notice is shown when two agents open the same conversation.
   * Push notifications.
   * Following a conversation.
   * Auto reply.
@@ -66,7 +67,7 @@ Mobile apps support the same functionality and modules as the web version of you
 FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a shared hosting.
 
   * Nginx / Apache / IIS
-  * PHP 7.1 - 8.x
+  * PHP 7.1 - 8.1
   * MySQL 5.0+ / MariaDB 5.0+ / PostgreSQL
 
 ## Installation
@@ -94,7 +95,8 @@ Images & one-click installs:
   
   * [API](https://api-docs.freescout.net/)
   * [Migrate to FreeScout](http://freescout.net/migrate/) (from any help desk)
-  * [Zapier Integration](https://freescout.net/zapier/)
+  * [Zapier](https://freescout.net/zapier/)
+  * [Integromat](https://freescout.net/integromat/)
 
 ## News & Updates
 

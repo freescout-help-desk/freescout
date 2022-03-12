@@ -86,7 +86,7 @@
                                 <input id="out_server" type="text" class="form-control input-sized" name="out_server" value="{{ old('out_server', $mailbox->out_server) }}" maxlength="255"  @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus data-smtp-required="true">
 
 
-                                @if (strstr($mailbox->out_server, '.gmail.'))
+                                @if (strstr($mailbox->out_server ?? '', '.gmail.'))
                                     <div class="form-help">
                                         {!! __("Make sure to :%link_start%enable less secure apps:%link_end% in your Google account to send emails from Gmail.", ['%link_start%' => '<a href="https://myaccount.google.com/lesssecureapps?pli=1" target="_blank">', '%link_end%' => '</a>']) !!}
                                     </div>

@@ -339,7 +339,7 @@ class User extends Authenticatable
         } else {
             //$mailbox = $this->mailboxesCanViewWithSettings(true)->where('id', $mailbox_id)->first();
             $mailbox = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
-            if ($mailbox && !empty(json_decode($mailbox->access))) {
+            if ($mailbox && !empty(json_decode($mailbox->access ?? ''))) {
                 return true;
             }
         }
@@ -1055,5 +1055,20 @@ class User extends Authenticatable
         }
 
         return false;
+    }
+
+    /**
+     * Check if there is a mailbox with specified email.
+     */
+    public static function mailboxEmailExists($email)
+    {
+        $email = Email::sanitizeEmail($email);
+        $mailbox = Mailbox::where('email', $email)->first();
+
+        if ($mailbox) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

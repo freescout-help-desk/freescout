@@ -63,6 +63,8 @@ class MailboxesController extends Controller
      */
     public function createSave(Request $request)
     {
+        $invalid = false;
+
         $this->authorize('create', 'App\Mailbox');
 
         $validator = Validator::make($request->all(), [
@@ -72,7 +74,12 @@ class MailboxesController extends Controller
 
         // //event(new Registered($user = $this->create($request->all())));
 
-        if ($validator->fails()) {
+        if (Mailbox::userEmailExists($request->email)) {
+            $invalid = true;
+            $validator->errors()->add('email', __('There is a user with such email. Users and mailboxes can not have the same email addresses.'));
+        }
+
+        if ($invalid || $validator->fails()) {
             return redirect()->route('mailboxes.create')
                         ->withErrors($validator)
                         ->withInput();
@@ -101,7 +108,7 @@ class MailboxesController extends Controller
             $accessible_route = '';
 
             $mailbox_settings = $user->mailboxSettings($mailbox->id);
-            $access_permissions = json_decode($mailbox_settings->access);
+            $access_permissions = json_decode($mailbox_settings->access ?? '');
 
             if ($access_permissions && is_array($access_permissions)) {
                 foreach ($access_permissions as $perm) {
@@ -142,6 +149,7 @@ class MailboxesController extends Controller
      */
     public function updateSave($id, Request $request)
     {
+        $invalid = false;
         $mailbox = Mailbox::findOrFail($id);
 
         $user = auth()->user();
@@ -172,8 +180,12 @@ class MailboxesController extends Controller
             ]);
 
             //event(new Registered($user = $this->create($request->all())));
+            if (Mailbox::userEmailExists($request->email)) {
+                $invalid = true;
+                $validator->errors()->add('email', __('There is a user with such email. Users and mailboxes can not have the same email addresses.'));
+            }
 
-            if ($validator->fails()) {
+            if ($invalid || $validator->fails()) {
                 return redirect()->route('mailboxes.update', ['id' => $id])
                             ->withErrors($validator)
                             ->withInput();
@@ -191,6 +203,8 @@ class MailboxesController extends Controller
                     ->withInput();
             }
         }
+
+        \Eventy::action( 'mailboxes.settings_before_save', $id, $request );
 
         $mailbox->fill($request->all());
 
@@ -349,10 +363,10 @@ class MailboxesController extends Controller
         $this->authorize('admin', $mailbox);
 
         $fields = [
-            'in_server'   => $mailbox->in_server,
-            'in_port'     => $mailbox->in_port,
-            'in_username' => $mailbox->in_username,
-            'in_password' => $mailbox->in_password,
+            'in_server'   => $mailbox->in_server ?? '',
+            'in_port'     => $mailbox->in_port ?? '',
+            'in_username' => $mailbox->in_username ?? '',
+            'in_password' => $mailbox->in_password ?? '',
         ];
 
         $validator = Validator::make($fields, [
@@ -392,7 +406,7 @@ class MailboxesController extends Controller
         ]);
 
         // Do not save dummy password.
-        if (preg_match("/^\*+$/", $request->in_password)) {
+        if (preg_match("/^\*+$/", $request->in_password ?? '')) {
             $params = $request->except(['in_password']);
         } else {
             $params = $request->all();

@@ -1345,6 +1345,9 @@ thead .conv-cb label {
     display: block;
     font-weight: bold;
 }
+.table-conversations th .conv-col-sort {
+    cursor: pointer;
+}
 .table.table-conversations tbody td {
     line-height: 1em;
     padding: 0;
@@ -1422,6 +1425,9 @@ table.table-conversations td.conv-attachment {
     color: #2a3b47;
     font-size: 13.4px;
 }
+.table-conversations .conv-spam td p {
+    color: #93a1af;
+}
 .table-conversations td .conv-preview {
     color: #93a1af;
     font-weight: normal;
@@ -1439,6 +1445,9 @@ table.table-conversations td.conv-attachment {
 }
 .table-conversations .conv-customer {
     width: 150px;
+}
+.table-conversations .conv-spam .conv-customer a {
+    color: #93a1af;
 }
 .table-conversations .conv-attachment {
     width: 20px;
@@ -2400,6 +2409,12 @@ button.conv-checkbox-clear {
 .conv-block.conv-reply-block {
     margin-top: -7px;
     margin-bottom: 12px;
+}
+.conv-reply.glyphicon {
+     transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
 }
 .conv-reply-block .form-group {
     margin-bottom: 5px;
