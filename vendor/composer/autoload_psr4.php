@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'XdgBaseDir\\' => array($vendorDir . '/dnoegel/php-xdg-base-dir/src'),
+    'Webklex\\PHPIMAP\\' => array($vendorDir . '/webklex/php-imap/src'),
     'Webklex\\IMAP\\' => array($baseDir . '/overrides/webklex/laravel-imap/src/IMAP', $vendorDir . '/webklex/laravel-imap/src/IMAP'),
     'Watson\\Rememberable\\' => array($vendorDir . '/watson/rememberable/src'),
     'Underscore\\' => array($vendorDir . '/anahkiasen/underscore-php/src', $vendorDir . '/anahkiasen/underscore-php/tests'),
