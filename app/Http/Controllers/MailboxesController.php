@@ -357,7 +357,7 @@ class MailboxesController extends Controller
     /**
      * Mailbox incoming settings.
      */
-    public function connectionIncoming($id)
+    public function connectionIncoming($id, Request $request)
     {
         $mailbox = Mailbox::findOrFail($id);
         $this->authorize('admin', $mailbox);
@@ -792,4 +792,106 @@ class MailboxesController extends Controller
         return \Response::json($response);
     }
 
+    public function oauth(Request $request)
+    {
+        $mailbox_id = $request->id ?? '';
+        $provider = $request->provider ?? '';
+        
+        $state_data = [];
+        if (!empty($request->state)) {
+            $state_data = json_decode($request->state, true);
+            if (!empty($state_data['mailbox_id'])) {
+                $mailbox_id = $state_data['mailbox_id'];
+            }
+            if (!empty($state_data['provider'])) {
+                $provider = $state_data['provider'];
+            }
+        }
+
+        // MS Exchange.
+        if (!empty($request->error) && $request->error == 'invalid_request' && !empty($request->error_description)) {
+            return htmlspecialchars($request->error_description);
+        }
+
+        if (empty($provider)) {
+            return 'Invalid oAuth Provider';
+        }
+
+        $mailbox = Mailbox::findOrFail($mailbox_id);
+        $this->authorize('admin', $mailbox);
+
+        if (empty($mailbox)) {
+            return __('Mailbox not found').': '.$mailbox_id;
+        }
+        if (empty($mailbox->in_username)) {
+            return 'Enter oAuth Client ID as Username and save mailbox settings';
+        }
+        if (empty($mailbox->in_password)) {
+            return 'Enter oAuth Client Secret as Password and save mailbox settings';
+        }
+
+        $session_data = [];
+        if (\Session::get('mailbox_oauth_'.$provider.'_'.$mailbox_id)) {
+            $session_data = \Session::get('mailbox_oauth_'.$provider.'_'.$mailbox_id);
+        }
+
+        if (empty($request->code)) {
+            $state = [
+                'provider' => $provider,
+                'mailbox_id' => $mailbox_id,
+                'state' => crc32($mailbox->in_username.$mailbox->in_password),
+            ];
+            $url = \MailHelper::oauthGetAuthorizationUrl(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
+                'state' => json_encode($state),
+                'client_id' => $mailbox->in_username,
+            ]);
+            if ($url) {
+                \Session::put('mailbox_oauth_'.$provider.'_'.$mailbox_id, $state);
+                //     [
+                //     'provider' => $request->provider,
+                //     'mailbox_id' => $request->mailbox_id,
+                //     'state' => $provider->getState(),
+                // ]);
+                return redirect()->away($url);
+            } else {
+                return 'Could not generate authorization URL: check Client ID (Username) and Client Secret (Password)';
+            }
+
+        // Check given state against previously stored one to mitigate CSRF attack
+        } elseif (empty($request->state) || ($state_data['state'] ?? '') !== ($session_data['state'] ?? '')) {
+            
+            \Session::forget('mailbox_oauth_'.$provider.'_'.$mailbox_id);
+            return 'Invalid oAuth state';
+
+        } else {
+
+            // Try to get an access token (using the authorization code grant)
+            $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
+                'client_id' => $mailbox->in_username,
+                'client_secret' => $mailbox->in_password,
+                'code' => $request->code,
+            ]);
+
+            if (!empty($token_data['a_token'])) {
+                $mailbox->setMetaParam('oauth', $token_data, true);
+            } elseif (!empty($token_data['error'])) {
+                return __('Error occurred').': '.htmlspecialchars($token_data['error']);
+            }
+
+            return redirect()->route('mailboxes.connection.incoming', ['id' => $mailbox_id]);
+        }
+    }
+
+    public function oauthDisconnect(Request $request)
+    {
+        $mailbox_id = $request->id ?? '';
+        $provider = $request->provider ?? '';
+
+        $mailbox = Mailbox::findOrFail($mailbox_id);
+        $this->authorize('admin', $mailbox);
+        
+        // oAuth Disconnect.
+        $mailbox->removeMetaParam('oauth', true);
+        return \MailHelper::oauthDisconnect($provider, route('mailboxes.connection.incoming', ['id' => $mailbox_id]));
+    }
 }

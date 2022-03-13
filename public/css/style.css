@@ -473,6 +473,9 @@ a.navbar-brand:hover img {
 /**
  * Forms
  */
+input.disabled {
+    background-color: #eee;
+}
 .input-group-addon {
     line-height: 11px;
     background-color: transparent;
