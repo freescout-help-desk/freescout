@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e9814a0db64f1ed4577f6da1da7fd740",
+    "content-hash": "d13bb191a035398ef3ad38b2962a604c",
     "packages": [
         {
             "name": "anahkiasen/underscore-php",
@@ -4363,16 +4363,16 @@
         },
         {
             "name": "webklex/php-imap",
-            "version": "3.2.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Webklex/php-imap.git",
-                "reference": "354c2773381b8eb68096ac394a0e5670ab9801f8"
+                "reference": "f565c3b2510238191981dec92840bfcf3cc8b7e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Webklex/php-imap/zipball/354c2773381b8eb68096ac394a0e5670ab9801f8",
-                "reference": "354c2773381b8eb68096ac394a0e5670ab9801f8",
+                "url": "https://api.github.com/repos/Webklex/php-imap/zipball/f565c3b2510238191981dec92840bfcf3cc8b7e8",
+                "reference": "f565c3b2510238191981dec92840bfcf3cc8b7e8",
                 "shasum": ""
             },
             "require": {
@@ -4383,12 +4383,13 @@
                 "ext-openssl": "*",
                 "illuminate/pagination": ">=5.0.0",
                 "nesbot/carbon": ">=1.0",
-                "php": ">=5.5.9",
+                "php": ">=7.0.0",
                 "symfony/http-foundation": ">=2.8.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "~4.0"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -4422,9 +4423,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Webklex/php-imap/issues",
-                "source": "https://github.com/Webklex/php-imap/tree/3.2.0"
+                "source": "https://github.com/Webklex/php-imap/tree/master"
             },
-            "time": "2022-03-07T17:21:13+00:00"
+            "time": "2022-03-10T22:38:04+00:00"
         }
     ],
     "packages-dev": [
@@ -6562,7 +6563,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "webklex/php-imap": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
