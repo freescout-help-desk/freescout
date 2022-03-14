@@ -975,6 +975,8 @@ class ConversationsController extends Controller
                             // Save conversation.
                             $conversation_copy->threads_count = 0;
                             $conversation_copy->customer_id = $customer_tmp->id;
+                            // Reload customer, otherwise all recipients will have the same name.
+                            $conversation_copy->load('customer');
                             $conversation_copy->customer_email = $customer_email;
                             $conversation_copy->has_attachments = $conversation->has_attachments;
                             $conversation_copy->push();
