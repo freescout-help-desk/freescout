@@ -93,8 +93,8 @@ return [
 
     'locale'          => env('APP_LOCALE', 'en'),
     'locales'         => ['en', 'hr', 'da', 'nl', 'fr', 'de', 'ja', 'it', 'pl', 'pt-PT', 'pt-BR', 'ru', 'es', 'sk', 'sv','fa'],
+    'locales_rtl'     => ['fa'],
     'default_locale'  => 'en',
-    'locales_rtl' => ['fa'],
 
     /*
     | app()->setLocale() in Localize middleware also changes config('app.locale'),
