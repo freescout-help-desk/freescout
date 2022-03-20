@@ -8,11 +8,11 @@ DATE_TIME=`date +%Y-%m-%d_%H:%M:%S`
 echo -e "Starting upgrading: \e[32m${DATE_TIME}\e[0m";
 
 # Check PHP version
-php_v=`php -v | grep 'PHP 7' | wc -l`
+php_v=`php -v | grep 'PHP [78]' | wc -l`
 if [ $php_v != 1 ]; then
 	echo -e "\e[32mChecking PHP version...\e[0m";
 	php -v
-	echo -e "\e[31mInvalid PHP version (PHP 7.x is required)\e[0m";
+	echo -e "\e[31mInvalid PHP version (PHP 7/8 is required)\e[0m";
 	exit;
 fi
 
