@@ -3768,7 +3768,12 @@ function finishSaveDraft()
 function setUrl(url)
 {
 	if (window.history && typeof(window.history.replaceState) != "undefined") {
-        window.history.replaceState({isMine:true}, 'title',  url);
+		try {
+			// Catch an error if by some reason current protocol and protocol in url are different
+        	window.history.replaceState({isMine:true}, 'title', url);
+        } catch (e) {
+        	// Do nothing
+        }
     }
 }
 
