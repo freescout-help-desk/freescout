@@ -847,7 +847,7 @@ class FetchEmails extends Command
         $thread->status = $conversation->status;
         $thread->state = Thread::STATE_PUBLISHED;
         $thread->message_id = $message_id;
-        $thread->headers = $headers;
+        $thread->headers = $this->headerToStr($headers);
         $thread->body = $body;
         $thread->from = $from;
         // To must be customer's email
