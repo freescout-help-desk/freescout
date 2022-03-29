@@ -8,7 +8,7 @@
                 <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{{ __("Assignee") }}">
                     <span class="glyphicon glyphicon-user"></span><span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu conv-user">
+                <ul class="dropdown-menu conv-user dm-scrollable">
                     <li><a href="#" data-user_id="-1">{{ __("Anyone") }}</a></li>
                     <li><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
                     @foreach ($mailbox->usersAssignable() as $user)
