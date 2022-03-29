@@ -2487,6 +2487,7 @@ return array(
     'Spatie\\String\\Integrations\\Underscore' => $vendorDir . '/spatie/string/src/Integrations/Underscore.php',
     'Spatie\\String\\Str' => $baseDir . '/overrides/spatie/string/src/Str.php',
     'Swift_MailTransport' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/MailTransport.php',
+    'Swift_Mime_ContentEncoder_Base64ContentEncoder' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Mime/ContentEncoder/Base64ContentEncoder.php',
     'Swift_Transport_EsmtpTransport' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/EsmtpTransport.php',
     'Swift_Transport_Esmtp_AuthHandler' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/Esmtp/AuthHandler.php',
     'Swift_Transport_MailInvoker' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/MailInvoker.php',
