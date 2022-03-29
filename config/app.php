@@ -12,7 +12,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.9',
+    'version' => '1.8.10',
 
     /*
     |--------------------------------------------------------------------------
@@ -92,7 +92,8 @@ return [
     */
 
     'locale'          => env('APP_LOCALE', 'en'),
-    'locales'         => ['en', 'hr', 'da', 'nl', 'fr', 'de', 'ja', 'it', 'pl', 'pt-PT', 'pt-BR', 'ru', 'es', 'sk', 'sv'],
+    'locales'         => ['en', 'hr', 'da', 'nl', 'fr', 'de', 'ja', 'it', 'fa', 'pl', 'pt-PT', 'pt-BR', 'ru', 'es', 'sk', 'sv'],
+    'locales_rtl'     => ['fa'],
     'default_locale'  => 'en',
 
     /*
@@ -268,7 +269,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Case insensitive regular expression, containing a list of 
+    | Case insensitive regular expression, containing a list of
     | mail server error responses, returned when a mail server can not deliver an email
     | to one or more recipients. If FreeScout receives one of the listed
     | error responses from the mail server, it does not try to resend the email

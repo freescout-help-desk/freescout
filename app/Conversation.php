@@ -1110,6 +1110,10 @@ class Conversation extends Model
             }
         }
 
+        if (!$customer_email) {
+            $customer_email = $customer->getMainEmail();
+        }
+
         $prev_customer_id = $this->customer_id;
         $prev_customer_email = $this->customer_email;
 

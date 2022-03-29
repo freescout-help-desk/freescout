@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
+<html lang="{{ app()->getLocale() }}" @if (Helper::isLocaleRtl()) dir="rtl" @endif>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,7 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@if ($__env->yieldContent('title_full'))@yield('title_full') @elseif ($__env->yieldContent('title'))@yield('title') - {{ config('app.name', 'FreeScout') }} @else{{ config('app.name', 'FreeScout') }}@endif</title>
-    
+
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     {{--<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">--}}
@@ -23,19 +23,24 @@
     {{-- style.css must be the last to able to redefine styles --}}
     @php
         try {
+            $styles= array('/css/fonts.css', '/css/bootstrap.css', '/css/select2/select2.min.css', '/js/featherlight/featherlight.min.css', '/js/featherlight/featherlight.gallery.min.css', '/css/magic-check.css', '/css/style.css' );
+            if (Helper::isLocaleRtl()) {
+                $styles[] = '/css/bootstrap-rtl.css';
+                $styles[] = '/css/style-rtl.css';
+            }
     @endphp
-    {!! Minify::stylesheet(\Eventy::filter('stylesheets', array('/css/fonts.css', '/css/bootstrap.css', '/css/select2/select2.min.css', '/js/featherlight/featherlight.min.css', '/js/featherlight/featherlight.gallery.min.css', '/css/magic-check.css', '/css/style.css'))) !!}
+    {!! Minify::stylesheet(\Eventy::filter('stylesheets', $styles)) !!}
     @php
         } catch (\Exception $e) {
             // Try...catch is needed to catch errors when activating a module and public symlink not created for module.
             \Helper::logException($e);
         }
     @endphp
-    
+
     @yield('stylesheets')
 </head>
-<body class="@if (!Auth::user()) user-is-guest @endif @if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class')" @yield('body_attrs') @if (Auth::user()) data-auth_user_id="{{ Auth::user()->id }}" @endif>
-    <div id="app">
+<body class="locale-{{ app()->getLocale() }} @if (Helper::isLocaleRtl()) rtl @endif @if (!Auth::user()) user-is-guest @endif @if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class')" @yield('body_attrs') @if (Auth::user()) data-auth_user_id="{{ Auth::user()->id }}" @endif>
+<div id="app">
 
         @if (Auth::user() && empty(app('request')->x_embed) && empty($__env->yieldContent('guest_mode')))
 
@@ -73,7 +78,7 @@
                             @endphp
                             @if (count($mailboxes) == 1)
                                 <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}"><a href="{{ \Eventy::filter('mailbox.url', route('mailboxes.view', ['id'=>$mailboxes[0]->id]), $mailboxes[0]) }}">{{ __('Mailbox') }}</a></li>
-                            @elseif (count($mailboxes) > 1) 
+                            @elseif (count($mailboxes) > 1)
                                 <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
                                         {{ __('Mailbox') }} <span class="caret"></span>
@@ -85,9 +90,9 @@
                                     </ul>
                                 </li>
                             @endif
-                            @if (Auth::user()->isAdmin() 
-                                || Auth::user()->hasPermission(App\User::PERM_EDIT_USERS) 
-                                || Auth::user()->can('viewMailboxMenu', Auth::user()) 
+                            @if (Auth::user()->isAdmin()
+                                || Auth::user()->hasPermission(App\User::PERM_EDIT_USERS)
+                                || Auth::user()->can('viewMailboxMenu', Auth::user())
                                 || Eventy::filter('menu.manage.can_view', false)
                             )
                                 <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('manage') }}">
@@ -170,10 +175,10 @@
                                                 @endif
                                             </ul>
                                         </li>
-                                        
+
                                     </ul>
                                 </li>
-                                                                
+
 
                                 <li class="dropdown">
 
@@ -248,7 +253,7 @@
             </div>
         @endif
 
-        @if (!in_array(Route::currentRouteName(), array('mailboxes.view')) 
+        @if (!in_array(Route::currentRouteName(), array('mailboxes.view'))
             && empty(app('request')->x_embed) && empty($__env->yieldContent('no_footer')))
             <div class="footer">
                 @if (!\Eventy::filter('footer.text', ''))
@@ -292,7 +297,7 @@
     @endphp
     @yield('javascripts')
     <script type="text/javascript">
-        @if (\Helper::isInApp()) 
+        @if (\Helper::isInApp())
             @if (Auth::user())
                 fs_in_app_data['token'] = '{{ Auth::user()->getAuthToken() }}';
             @else

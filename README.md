@@ -30,7 +30,7 @@
 
   * No limitations on the number of users, tickets, mailboxes, etc.
   * 100% Mobile-friendly.
-  * Multilingual (English, Croatian, Danish, Dutch, French, German, Japanese, Italian, Polish, Portuguese, Russian, Spanish, Slovak, Swedish).
+  * Multilingual (English, Croatian, Danish, Dutch, French, German, Japanese, Italian, Persian, Polish, Portuguese, Russian, Spanish, Slovak, Swedish).
   * Seamless email integration.
   * Web installer & updater.
   * Starred conversations.

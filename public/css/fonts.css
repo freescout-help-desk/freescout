@@ -47,3 +47,18 @@
     font-weight: 400;
     font-style: normal;
 }
+@font-face {
+    font-family: 'Yekan';
+    src: url('../../fonts/yekan/Yekan.eot');
+    /* IE9 Compat Modes */
+    src: url('../../fonts/yekan/Yekan.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('../../fonts/yekan/Yekan.woff2') format('woff2'), /* Modern Browsers */
+    url('../../fonts/yekan/Yekan.woff') format('woff'), /* Modern Browsers */
+    url('../../fonts/yekan/Yekan.otf') format('opentype'), /* Open Type Font */
+    url('../../fonts/yekan/Yekan.ttf') format('truetype');
+    /* Safari, Android, iOS */
+    font-weight: normal;
+    font-style: normal;
+    text-rendering: optimizeLegibility;
+    font-display: auto;
+}

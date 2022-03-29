@@ -322,7 +322,7 @@ class User extends Authenticatable
             //$mailboxes = $this->mailboxesCanViewWithSettings(true);
             $mailboxes = $this->mailboxesSettings();
             foreach ($mailboxes as $mailbox) {
-                if (!empty(json_decode($mailbox->access))) {
+                if (!empty($mailbox->access) && !empty(json_decode($mailbox->access))) {
                     return true;
                 }
             };
