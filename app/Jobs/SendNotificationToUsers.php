@@ -47,7 +47,7 @@ class SendNotificationToUsers implements ShouldQueue
         $mailbox = $this->conversation->mailbox;
 
         // Configure mail driver according to Mailbox settings
-        \App\Misc\Mail::setMailDriver($mailbox);
+        \App\Misc\Mail::setMailDriver($mailbox, null, $this->conversation);
 
         // Threads has to be sorted here, if sorted before, they come here in wrong order
         $this->threads = $this->threads->sortByDesc(function ($item, $key) {

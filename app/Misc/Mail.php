@@ -83,13 +83,15 @@ class Mail
      * Configure mail sending parameters.
      *
      * @param App\Mailbox $mailbox
+     * @param App\User $user_from
+     * @param App\Conversation $conversation
      */
-    public static function setMailDriver($mailbox = null, $user_from = null)
+    public static function setMailDriver($mailbox = null, $user_from = null, $conversation = null)
     {
         if ($mailbox) {
             // Configure mail driver according to Mailbox settings
             \Config::set('mail.driver', $mailbox->getMailDriverName());
-            \Config::set('mail.from', $mailbox->getMailFrom($user_from));
+            \Config::set('mail.from', $mailbox->getMailFrom($user_from, $conversation));
 
             // SMTP
             if ($mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
