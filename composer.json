@@ -187,6 +187,7 @@
             "vendor/symfony/http-foundation/Response.php",
             "vendor/symfony/http-foundation/AcceptHeader.php",
             "vendor/symfony/http-foundation/FileBag.php",
+            "vendor/symfony/http-foundation/Request.php",
             "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php",
             "vendor/laravel/framework/src/Illuminate/Pagination/AbstractPaginator.php",
             "vendor/laravel/framework/src/Illuminate/Pagination/Paginator.php",
