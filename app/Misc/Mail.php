@@ -446,7 +446,7 @@ class Mail
      */
     public static function fetchMessageMarkerValue($body)
     {
-        preg_match('/{#FS:([^#]+)#}/', $body, $matches);
+        preg_match('/{#FS:([^#]+)#}/', $body ?? '', $matches);
         if (!empty($matches[1]) && base64_decode($matches[1])) {
             // Return first found marker.
             return base64_decode($matches[1]);
