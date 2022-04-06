@@ -13,7 +13,10 @@
                     <li><a href="#" data-user_id="{{ Auth::user()->id }}">{{ __("Me") }}</a></li>
                     @foreach ($mailbox->usersAssignable() as $user)
                         @if ($user->id != Auth::user()->id)
-                            <li><a href="#" data-user_id="{{ $user->id }}">{{ $user->getFullName() }}</a></li>
+                            @php
+                                $a_class = \Eventy::filter('assignee_list.a_class', '', $user);
+                            @endphp
+                            <li><a href="#" data-user_id="{{ $user->id }}"  @if ($a_class) class="{{ $a_class }}"@endif>{{ $user->getFullName() }}@action('assignee_list.item_append', $user)</a></li>
                         @endif
                     @endforeach
                 </ul>

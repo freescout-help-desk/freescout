@@ -941,7 +941,7 @@ function initConversation()
 
 		// Change conversation assignee
 	    jQuery(".conv-user li > a").click(function(e){
-			if (!$(this).hasClass('active')) {
+			if (!$(this).hasClass('active') && !$(this).hasClass('disabled')) {
 				if (fsApplyFilter('conversation.can_change_user', true, {trigger: $(this)})) {
 					$(this).trigger('fs-conv-user-change');
 				}
@@ -4267,6 +4267,10 @@ function converstationBulkActionsInit()
 
 		// Change conversation assignee
 		$(".conv-user li > a", bulk_buttons).click(function(e) {
+			if ($(this).hasClass('disabled')) {
+				return;
+			}
+
 			var user_id = $(this).data('user_id');
 
 			var conv_ids = getSelectedConversations(checkboxes);

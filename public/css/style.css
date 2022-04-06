@@ -429,6 +429,11 @@ a.navbar-brand:hover img {
 	padding-top: 7px;
 	padding-bottom: 7px;
 }
+.dropdown-menu a.disabled,
+.dropdown-menu a.disabled:hover {
+    color: #a5b2bd;
+    background-color: transparent;
+}
 .nav-user {
 	font-size: 14px;
 }
