@@ -127,6 +127,7 @@ class SendNotificationToUsers implements ShouldQueue
             app()->setLocale($user->getLocale());
 
             $headers['X-FreeScout-Mail-Type'] = 'user.notification';
+            $headers = \Eventy::filter('jobs.send_reply_to_customer.headers', $headers, $user, $mailbox, $this->conversation, $this->threads, $from);
 
             $exception = null;
 
