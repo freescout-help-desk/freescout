@@ -2698,7 +2698,7 @@ return array(
     'Symfony\\Component\\HttpFoundation\\JsonResponse' => $vendorDir . '/symfony/http-foundation/JsonResponse.php',
     'Symfony\\Component\\HttpFoundation\\ParameterBag' => $baseDir . '/overrides/symfony/http-foundation/ParameterBag.php',
     'Symfony\\Component\\HttpFoundation\\RedirectResponse' => $vendorDir . '/symfony/http-foundation/RedirectResponse.php',
-    'Symfony\\Component\\HttpFoundation\\Request' => $vendorDir . '/symfony/http-foundation/Request.php',
+    'Symfony\\Component\\HttpFoundation\\Request' => $baseDir . '/overrides/symfony/http-foundation/Request.php',
     'Symfony\\Component\\HttpFoundation\\RequestMatcher' => $vendorDir . '/symfony/http-foundation/RequestMatcher.php',
     'Symfony\\Component\\HttpFoundation\\RequestMatcherInterface' => $vendorDir . '/symfony/http-foundation/RequestMatcherInterface.php',
     'Symfony\\Component\\HttpFoundation\\RequestStack' => $vendorDir . '/symfony/http-foundation/RequestStack.php',
