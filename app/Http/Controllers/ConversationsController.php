@@ -1010,34 +1010,32 @@ class ConversationsController extends Controller
                         $show_view_link = false;
                     }
 
+                    $flash_vars = ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.undo', ['thread_id' => $thread->id]).'" class="text-danger">'];
+
                     if ($is_phone) {
                         $flash_type = 'warning';
                         if ($show_view_link) {
-                            $flash_text = ':%tag_start%Conversation created:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%';
+                            $flash_text = __(':%tag_start%Conversation created:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%', $flash_vars);
                         } else {
                             $flash_text = '<strong>'.__('Conversation created').'</strong>';
                         }
                     } elseif ($is_note) {
                         $flash_type = 'warning';
                         if ($show_view_link) {
-                            $flash_text = ':%tag_start%Note added:%tag_end% :%view_start%View:%a_end%';
+                            $flash_text = __(':%tag_start%Note added:%tag_end% :%view_start%View:%a_end%', $flash_vars);
                         } else {
                             $flash_text = '<strong>'.__('Note added').'</strong>';
                         }
                     } else {
                         $flash_type = 'success';
                         if ($show_view_link) {
-                            $flash_text = ':%tag_start%Email Sent:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%';
+                            $flash_text = __(':%tag_start%Email Sent:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%', $flash_vars);
                         } else {
-                            $flash_text = ':%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%';
+                            $flash_text = __(':%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%', $flash_vars);
                         }
                     }
-                    $flash_message = __(
-                        $flash_text,
-                        ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.undo', ['thread_id' => $thread->id]).'" class="text-danger">']
-                    );
 
-                    \Session::flash('flash_'.$flash_type.'_floating', $flash_message);
+                    \Session::flash('flash_'.$flash_type.'_floating', $flash_text);
                 }
                 break;
 

@@ -162,7 +162,7 @@ class SendReplyToCustomer implements ShouldQueue
         }
 
         // Configure mail driver according to Mailbox settings
-        \App\Misc\Mail::setMailDriver($mailbox, $this->last_thread->created_by_user);
+        \App\Misc\Mail::setMailDriver($mailbox, $this->last_thread->created_by_user, $this->conversation);
 
         // Get penultimate email Message-Id if reply
         if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
@@ -273,7 +273,7 @@ class SendReplyToCustomer implements ShouldQueue
                 $client = \MailHelper::getMailboxClient($mailbox);
                 $client->connect();
 
-                $envelope['from'] = $mailbox->getMailFrom()['address'];
+                $envelope['from'] = $mailbox->getMailFrom(null, $this->conversation)['address'];
                 $envelope['to'] = $this->customer_email;
                 $envelope['subject'] = 'Re: ' . $this->conversation->subject;
 

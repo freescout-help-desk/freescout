@@ -533,10 +533,11 @@ class Mailbox extends Model
      * Get From array for the Mail function.
      *
      * @param App\User $from_user
+     * @param App\Conversation $conversation
      *
      * @return array
      */
-    public function getMailFrom($from_user = null)
+    public function getMailFrom($from_user = null, $conversation = null)
     {
         // Mailbox name by default
         $name = $this->name;
@@ -547,7 +548,7 @@ class Mailbox extends Model
             $name = $from_user->getFullName();
         }
 
-        return ['address' => $this->email, 'name' => $name];
+        return [ 'address' => \Eventy::filter( 'mailbox.get_mail_from_address', $this->email, $from_user, $conversation ), 'name' => $name ];
     }
 
     /**
