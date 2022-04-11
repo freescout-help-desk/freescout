@@ -92,8 +92,8 @@
 
     <div class="col-sm-10">
         <select name="visibility" class="form-control">
-            <option value="{{ \KbCategory::VISIBILITY_PUBLIC }}" @if ($category->visibility == \KbCategory::VISIBILITY_PUBLIC) selected @endif>{{ __('Visible to all') }}</option>
             <option value="{{ \KbCategory::VISIBILITY_PRIVATE }}" @if ($category->visibility == \KbCategory::VISIBILITY_PRIVATE) selected @endif>{{ __('Visible to support agents only') }}</option>
+            <option value="{{ \KbCategory::VISIBILITY_PUBLIC }}" @if ($category->visibility == \KbCategory::VISIBILITY_PUBLIC) selected @endif>{{ __('Visible to all') }}</option>
         </select>
     </div>
 </div>
