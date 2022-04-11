@@ -1,0 +1,25 @@
+{
+    "name": "Custom Folders",
+    "alias": "customfolders",
+    "description": "Create custom folders and organize conversations!",
+    "version": "1.0.5",
+    "detailsUrl": "https://freescout.net/module/custom-folders/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.5.10",
+    "requiredModules": {"tags": "1.0.5"},
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\CustomFolders\\Providers\\CustomFoldersServiceProvider"
+    ],
+    "aliases": {
+        "CustomFolder": "Modules\\CustomFolders\\Providers\\CustomFoldersServiceProvider"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

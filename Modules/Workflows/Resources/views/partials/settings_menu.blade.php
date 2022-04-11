@@ -1,0 +1,1 @@
+<li @if (Route::is('mailboxes.workflows') || Route::is('mailboxes.workflows.create') || Route::is('mailboxes.workflows.update'))class="active"@endif><a href="{{ route('mailboxes.workflows', ['mailbox_id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-random"></i> {{ __('Workflows') }}</a></li>

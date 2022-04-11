@@ -1,0 +1,13 @@
+{
+    "Auto replies will be sent outside of the specified office hours.": "Автоматические ответы будут отправлены в нерабочее время.",
+    "Office hours are based on your :%a_begin%company timezone:%a_end%.": "Время рассчитывается на основе :%a_begin%часового пояса хелпдеска:%a_end%.",
+    "Monday": "Понедельник",
+    "Tuesday": "Вторник",
+    "Wednesday": "Среда",
+    "Thursday": "Четверг",
+    "Friday": "Пятница",
+    "Saturday": "Суббота",
+    "Sunday": "Воскресенье",
+    "Day off": "Выходной",
+    "Office Hours": "Рабочее время"
+}

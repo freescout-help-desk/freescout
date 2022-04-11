@@ -1,0 +1,61 @@
+{
+    "name": "darkghosthunter/laraguard",
+    "description": "Two-Factor authentication using TOTP the easy way!",
+    "keywords": [
+        "darkghosthunter",
+        "laraguard",
+        "laravel",
+        "authentication",
+        "2fa"
+    ],
+    "homepage": "https://github.com/darkghosthunter/laraguard",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Italo Israel Baeza Cabrera",
+            "email": "darkghosthunter@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2.15",
+        "ext-json": "*",
+        "bacon/bacon-qr-code": "^2.0",
+        "paragonie/constant_time_encoding": "^2.0",
+        "illuminate/support": "^6.15||^7.0",
+        "illuminate/auth": "^6.15||^7.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0||^5.0",
+        "orchestra/canvas": "^4.0||^5.0",
+        "phpunit/phpunit": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "DarkGhostHunter\\Laraguard\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "DarkGhostHunter\\Laraguard\\LaraguardServiceProvider"
+            ]
+        }
+    }
+}

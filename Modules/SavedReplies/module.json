@@ -1,0 +1,24 @@
+{
+    "name": "Saved Replies",
+    "alias": "savedreplies",
+    "description": "Saved Replies (also called 'canned responses') are used to quickly answer common questions. Save time with saved replies!",
+    "version": "1.0.8",
+    "detailsUrl": "https://freescout.net/module/saved-replies/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.3.13",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\SavedReplies\\Providers\\SavedRepliesServiceProvider"
+    ],
+    "aliases": {
+        "SavedReply": "Modules\\SavedReplies\\Entities\\SavedReply"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

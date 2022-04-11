@@ -1,0 +1,22 @@
+{
+    "name": "Customization & Rebranding",
+    "alias": "customization",
+    "description": "Rebrand FreeScout by setting custom logo, favicon and footer!",
+    "version": "1.0.5",
+    "detailsUrl": "https://freescout.net/module/customization/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.6.9",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\Customization\\Providers\\CustomizationServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

@@ -1,0 +1,25 @@
+{
+    "name": "freescout/keyboardshortcuts",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\KeyboardShortcuts\\Providers\\KeyboardShortcutsServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\KeyboardShortcuts\\": ""
+        }
+    }
+}

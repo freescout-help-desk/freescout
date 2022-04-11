@@ -1,0 +1,25 @@
+{
+    "name": "freescout/timetracking",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\TimeTracking\\Providers\\TimeTrackingServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\TimeTracking\\": ""
+        }
+    }
+}

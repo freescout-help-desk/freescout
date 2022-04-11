@@ -1,0 +1,25 @@
+{
+    "name": "freescout/savedreplies",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\SavedReplies\\Providers\\SavedRepliesServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\SavedReplies\\": ""
+        }
+    }
+}

@@ -1,0 +1,42 @@
+[
+    {
+        "name": "dejurin/php-google-translate-for-free",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/dejurin/php-google-translate-for-free.git",
+            "reference": "db5e3d0ac66e711dc41ed59618595aa3e3a7e475"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/dejurin/php-google-translate-for-free/zipball/db5e3d0ac66e711dc41ed59618595aa3e3a7e475",
+            "reference": "db5e3d0ac66e711dc41ed59618595aa3e3a7e475",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4"
+        },
+        "time": "2018-03-02T19:36:37+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Dejurin\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-3.0+"
+        ],
+        "description": "Library for free use Google Translator. With attempts connecting on failure and array support.",
+        "homepage": "https://github.com/dejurin/php-google-translate-for-free",
+        "keywords": [
+            "api",
+            "free",
+            "google",
+            "translate",
+            "translator"
+        ]
+    }
+]

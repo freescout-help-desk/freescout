@@ -1,0 +1,1 @@
+<li @if (Route::currentRouteName() == 'twofactorauth.user_auth_settings' || Route::currentRouteName() == 'twofactorauth.user_auth_settings_confirm')class="active"@endif><a href="{{ route('twofactorauth.user_auth_settings', ['id'=>$user->id]) }}"><i class="glyphicon glyphicon-lock"></i> {{ __('Authentication') }}</a></li>

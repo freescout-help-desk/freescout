@@ -1,0 +1,23 @@
+{
+    "name": "Two-Factor Authentication",
+    "alias": "twofactorauth",
+    "description": "Add an extra layer of security to user accounts!",
+    "version": "1.0.3",
+    "detailsUrl": "https://freescout.net/module/two-factor-authentication/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.5.12",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\TwoFactorAuth\\Providers\\TwoFactorAuthServiceProvider",
+        "\\DarkGhostHunter\\Laraguard\\LaraguardServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

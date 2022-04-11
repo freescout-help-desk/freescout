@@ -1,0 +1,22 @@
+{
+    "name": "Ticket Translator",
+    "alias": "tickettranslator",
+    "description": "Translate messages from customers into your own language. Communicate with anyone in any language!",
+    "version": "1.0.4",
+    "detailsUrl": "https://freescout.net/module/ticket-translator/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.3.2",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\TicketTranslator\\Providers\\TicketTranslatorServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

@@ -1,0 +1,189 @@
+#chatw-header {
+	padding: 8px 14px;
+    color: #ffffff;
+    font-size: 16px;
+    background-color: #0068bd;
+    text-align: center;
+    font-weight: bold;
+    line-height: 28px;
+    position: fixed;
+    top: 0;
+    z-index: 1;
+	width: 100%;
+}
+
+#chatw-minimize {
+	cursor: pointer;
+	float: right;
+	width: 28px;
+	height: 28px;
+	text-align: center;
+	padding-top: 2px;
+}
+
+#chatw-minimize:hover {
+	opacity: 0.7;
+}
+
+#chatw-form-wrapper {
+	padding: 10px 15px 0 15px;
+}
+
+#chatw-content {
+	margin-top: 44px;
+}
+
+.input-md {
+    height: 38px;
+    padding: 10px 16px;
+    /*font-size: 18px;*/
+    line-height: 18px;
+    border-radius: 3px;
+}
+
+.form-control {
+	border: 1px solid #dae0e5;
+}
+
+#chatw-powered {
+	text-align: center;
+	color: #93a1af;
+	position: relative;
+	top: -5px;
+	font-size: 12px;
+	margin-bottom: 0;
+	font-family: system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,Arial,sans-serif;
+}
+#chatw-powered a {
+	color: #93a1af !important;
+	font-weight: bold;
+}
+#chat-ticket-form textarea {
+	height: 67px;
+}
+#chat-submit-form-bottom {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	background-color: #ffffff;
+	margin-left: -15px;
+	margin-right: -15px;
+	padding: 12px 15px 0;
+	/*box-shadow: rgba(0, 0, 0, 0.08) 0px -0.071428rem 0.85714rem;*/
+}
+#chat-threads {
+	margin-bottom: 90px;
+	overflow-y: auto;
+	height: calc(100vh - 183px);
+	margin-right: -15px;
+	padding-right: 15px;
+}
+#chat-submit-form-bottom .form-group {
+	margin-bottom: 12px;
+}
+.chat-att-dropzone.chat-dragover {
+    background-color: #f8f9f9;
+}
+#chat-toolbar {
+	font-size: 15px;
+}
+#chat-toolbar i {
+	cursor: pointer;
+	margin-right: 2px;
+}
+.chat-thread {
+	margin-bottom: 5px;
+	overflow: hidden;
+	font-family: system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,Arial,sans-serif;
+	font-size: 14px;
+	position: relative;
+}
+.chat-thread-text {
+	word-break: break-word;
+	border-radius: 12px;
+	padding: 9px 13px;
+	max-width: 80%;
+}
+.chat-thread-text img {
+	max-width: 100%;
+}
+.chat-thread-customer .chat-thread-text {
+	display: inline-block;
+	float: right;
+	clear: both;
+	color: #fff;
+	background-color: #1f73b7;
+}
+.chat-thread-customer.chat-thread-attachment .chat-thread-text {
+	color: inherit;
+	background-color: #e9ebed;
+}
+.chat-thread-status {
+	clear: both;
+	max-width: 80%;
+}
+.chat-thread-customer .chat-thread-status {
+	float: right;
+}
+.chat-thread-status-error {
+	color: #d9534f;
+}
+.chat-thread-user .chat-thread-text {
+	display: inline-block;
+	background-color: #e9ebed;
+	margin-left: 40px;
+}
+.chat-thread-user-name {
+	color: #93a1af;
+	margin-left: 43px;
+	font-size: 13.5px;
+	padding-bottom: 3px;
+}
+.chat-thread-photo {
+	position: absolute;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	margin-top: 2px;
+}
+.chat-info-trigger {
+	margin-top: 5px;
+	margin-bottom: 6px;
+	text-align: center;
+}
+.chat-info-trigger a {
+	text-decoration: underline!important;
+}
+.chat-attachment .glyphicon {
+	font-size: 12px;
+}
+.chat-attachment small {
+	color: #525f68;
+}
+.chat-attachment img {
+	width: 14px;
+    height: 14px;
+    position: relative;
+    top: -1px;
+}
+
+/**
+ * From main style.css
+ */
+.attachments-upload .glyphicon-remove {
+    display: none;
+}
+.attachment-loaded img,
+.attachment-loaded .ellipsis {
+    display: none;
+}
+.attachment-loaded .glyphicon-remove {
+    display: inline-block;
+    color: #999;
+    cursor: pointer;
+    position: relative;
+    top: 2px;
+}
+.attachment-loaded .glyphicon-remove:hover {
+    color: #333;
+}

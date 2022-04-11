@@ -1,0 +1,68 @@
+{
+    "name": "botman/botman",
+    "license": "MIT",
+    "description": "Create messaging bots in PHP with ease.",
+    "keywords": [
+        "Bot",
+        "BotMan",
+        "Chatbot"
+    ],
+    "homepage": "http://github.com/botman/botman",
+    "authors": [
+        {
+            "name": "Marcel Pociot",
+            "email": "m.pociot@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "symfony/http-foundation": "^2.8 || ^3.0 || ^4.0 || ^5.0",
+        "tightenco/collect": "^5.0 || ^6.0 || ^7.0 || ^8.0",
+        "opis/closure": "^2.3 || ^3.0",
+        "mpociot/pipeline": "^1.0.2",
+        "react/socket": "~1.0",
+        "spatie/macroable": "^1.0",
+        "psr/container": "^1.0"
+    },
+    "require-dev": {
+        "codeigniter/framework": "~3.0",
+        "orchestra/testbench": "^3.4 || ^4.0 || ^5.0 || ^6.0",
+        "phpunit/phpunit": "^6.0 || ^7.0 || ^8.0",
+        "mockery/mockery": "^1.1",
+        "doctrine/cache": "^1.6",
+        "symfony/cache": "^3.4.35 || ^4.3.7 || ^5.0",
+        "ext-curl": "*"
+    },
+    "suggest": {
+        "doctrine/cache": "Use any Doctrine cache driver for cache",
+        "symfony/cache": "Use any Symfony cache driver for cache"
+    },
+    "autoload": {
+        "psr-4": {
+            "BotMan\\BotMan\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BotMan\\BotMan\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.1-dev"
+        },
+        "laravel": {
+            "providers": [
+                "BotMan\\BotMan\\BotManServiceProvider"
+            ],
+            "aliases": {
+                "BotMan": "BotMan\\BotMan\\Facades\\BotMan"
+            }
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
+}

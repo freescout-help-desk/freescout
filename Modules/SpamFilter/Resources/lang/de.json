@@ -1,0 +1,11 @@
+{
+    "Blacklist Customer": "Kunden zur Blacklist hinzufügen",
+    "Blacklisted": "In der Blacklist",
+    ":person marked as :status_name": "markiert als :status_name",
+    ":person marked as :status_name conversation #:conversation_number": "markiert als :status_name Gespräch #:conversation_number",
+    "Spam Filter": "Spam Filter",
+    "UnBlacklist": "Von der Blacklist nehmen",
+    "UnWhitelist": "Von der Whitelist nehmen",
+    "Whitelist Customer": "Kunde zur Whitelist hinzufügen",
+    "Whitelisted": "In der Whitelist"
+}

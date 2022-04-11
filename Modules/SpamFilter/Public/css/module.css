@@ -1,0 +1,10 @@
+.spam-status .glyphicon {
+    vertical-align: middle;
+}
+a.sf-help .glyphicon {
+    color: #93a1af;
+}
+#stat-memory {
+	height: 81px;
+	overflow-x: auto;
+}

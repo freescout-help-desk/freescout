@@ -1,0 +1,1 @@
+<li @if (\App\Misc\Helper::isMenuSelected('facebook'))class="active"@endif><a href="{{ route('mailboxes.facebook.settings', ['mailbox_id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-erase"></i> {{ __('Facebook') }}</a></li>

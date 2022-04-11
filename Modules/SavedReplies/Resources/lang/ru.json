@@ -1,0 +1,16 @@
+{
+    "Saved reply name is required": "Необходимо ввести имя шаблонного ответа",
+    "Saved reply text is required": "Необходимо ввести текст шаблонного ответа",
+    "Created new Saved Reply": "Создан новый шаблонный ответ",
+    "Saved reply not found": "Шаблонный ответ не найден",
+    "Updated Saved Reply": "Шаблонный ответ обновлён",
+    "Deleted Saved Reply": "Шаблонный ответ удалён",
+    "Create a New Saved Reply": "Создать новый шаблонный ответ",
+    "New Saved Reply": "Новый шаблонный ответ",
+    "Save Reply": "Шаблонный ответ",
+    "Save time with saved replies!": "Экономьте время с шаблонными ответами!",
+    "A saved reply is a snippet of text that can be quickly added to the editor when replying to a customer.": "Шаблонный ответ — это фрагмент текста, который можно быстро добавить в редактор при ответе клиенту.",
+    "Save This Reply": "Сохранить этот ответ",
+    "Delete this Saved Reply?": "Удалить этот шаблонный ответ?",
+    "A Saved Reply with this name already exists for this mailbox.": "Шаблонный ответ с таким именем для этого ящика уже существует."
+}

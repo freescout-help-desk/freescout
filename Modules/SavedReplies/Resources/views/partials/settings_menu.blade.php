@@ -1,0 +1,1 @@
+<li @if (Route::currentRouteName() == 'mailboxes.saved_replies')class="active"@endif><a href="{{ route('mailboxes.saved_replies', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-comment"></i> {{ __('Saved Replies') }}</a></li>

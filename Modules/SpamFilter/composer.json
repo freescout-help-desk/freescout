@@ -1,0 +1,28 @@
+{
+    "name": "freescout/spamfilter",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\SpamFilter\\Providers\\SpamFilterServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "require": {
+        "bgruszka/phpantispam": "v0.2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\SpamFilter\\": ""
+        }
+    }
+}

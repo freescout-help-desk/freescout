@@ -1,0 +1,21 @@
+{
+    "Allow to Reset Timer": "Erlaube das Zurücksetzen der Stoppuhr",
+    "Allow users to reset the current time spent on a ticket.": "Erlaube Benutzer das Zurücksetzen der aktuell an einem Ticket aufgewendeten Zeit.",
+    "Time": "Zeit",
+    "Time Tracking": "Zeitnachverfolgung",
+    "Timelogs": "Zeit-Log",
+    "Total time": "Zeit insgesamt",
+    "Tracking Mode": "Nachverfolgungsmodus",
+    "Users can manually pause or resume the timer.": "Die Benutzer können die Stoppuhr manuell pausieren und weiterlaufen lassen.",
+    "Users can review and edit their time before the timelog is saved (when the conversation is closed or assigned to another user).": "Die Benutzer können ihre Zeitangabe prüfen und ändern bevor sie im Zeit-Log gespeichert werden (wenn das Gespräch geschlossen oder jemanden anders zugeordnet wird).",
+    "Conversation is assigned to another user": "Gespräch ist einem anderen Benutzer zugeordnet",
+    "Display Timelogs to Users": "Time-Log den Benutzern anzeigen",
+    "Display Timer Controls": "Stoppuhr Funktionen anzeigen",
+    "Reset Time": "Stoppuhr zurücksetzen",
+    "Show Review Time Dialog": "Zeigen den Dialog zum Überprüfen der Zeit",
+    "Submit Time": "Zeit absenden",
+    "Allow users to view timelogs in conversations. Admin always can see timelogs.": "Erlaube Benutzer das Anzeigen von Zeit-Logs in Gesprächen.",
+    "The timer starts when the conversation is assigned to the user.": "Die Stoppuhr startet sobald das Gespräch einem Benutzer zugeordnet wurde.",
+    "The timer starts when the user views the conversation, the timer pauses when the user navigates away from the conversation.": "Die Stoppuhr startet wenn der Benutzer das Gespräch geöffnet hat und pausiert wenn der Benutzer die Seite\/das Gespräch verlässt.",
+    "This is the amount of time you spent on this ticket. Edit the time, if needed, and then click Submit Time. Click Cancel if you don't want to save the time spent.": "Dies ist die Zeit die am Ticket verbracht wurde. Wenn nötig die Zeit bearbeiten und dann absenden klicken. Abbrechen klicken, wenn die Zeitangabe nicht gespeichert werden soll."
+}

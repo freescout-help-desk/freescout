@@ -1,0 +1,36 @@
+{
+    "name": "freescout/slack",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Slack\\Providers\\SlackServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "require": {
+        "frlnc/php-slack": "1.0.3"
+    },
+    "replace": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Slack\\": "",
+            "Frlnc\\Slack\\Core\\": "Overrides/Frlnc/Slack/Core/",
+            "Frlnc\\Slack\\Http\\": "Overrides/Frlnc/Slack/Http/"
+        },
+        "exclude-from-classmap": [
+            "vendor/frlnc/php-slack/src/Core/Commander.php",
+            "vendor/frlnc/php-slack/src/Http/CurlInteractor.php"
+        ]
+    }
+}

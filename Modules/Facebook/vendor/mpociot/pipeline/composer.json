@@ -1,0 +1,32 @@
+{
+    "name": "mpociot/pipeline",
+    "license": "MIT",
+    "description": "Simple PHP middleware pipeline",
+    "keywords": [
+        "Pipeline",
+        "Middleware"
+    ],
+    "homepage": "http://github.com/mpociot/pipeline",
+    "authors": [
+        {
+            "name": "Marcel Pociot",
+            "email": "m.pociot@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mpociot\\Pipeline\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mpociot\\Pipeline\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "name": "Widgets White-Labeling",
+    "alias": "whitelabel",
+    "description": "Remove 'Powered by FreeScout' notice from FreeScout widgets!",
+    "version": "1.0.0",
+    "detailsUrl": "https://freescout.net/module/white-label/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.0.2",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\WhiteLabel\\Providers\\WhiteLabelServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

@@ -1,0 +1,24 @@
+{
+    "name": "Time Tracking",
+    "alias": "timetracking",
+    "description": "Keep track of time spend on tickets!",
+    "version": "1.0.8",
+    "detailsUrl": "https://freescout.net/module/time-tracking/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.8.5",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\TimeTracking\\Providers\\TimeTrackingServiceProvider"
+    ],
+    "aliases": {
+        "TimeTracking": "Modules\\TimeTracking\\Providers\\TimeTrackingServiceProvider"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

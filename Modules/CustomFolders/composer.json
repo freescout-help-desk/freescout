@@ -1,0 +1,25 @@
+{
+    "name": "freescout/customfolders",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\CustomFolders\\Providers\\CustomFoldersServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\CustomFolders\\": ""
+        }
+    }
+}

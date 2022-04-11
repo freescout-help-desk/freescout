@@ -1,0 +1,11 @@
+{
+    "Blacklisted": "В чёрном списке",
+    "Whitelisted": "В белом списке",
+    "Spam Filter": "Спам-фильтр",
+    "Blacklist Customer": "Внести клиента в чёрный список",
+    "UnBlacklist": "Убрать из чёрного списка",
+    "Whitelist Customer": "Внести клиента в белый список",
+    "UnWhitelist": "Убрать из белого списка",
+    ":person marked as :status_name conversation #:conversation_number": "отметил(а) как :status_name тикет #:conversation_number",
+    ":person marked as :status_name": "отметил(а) как :status_name"
+}

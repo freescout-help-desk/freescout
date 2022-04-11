@@ -1,0 +1,30 @@
+{
+    "name": "dejurin/php-google-translate-for-free",
+    "description": "Library for free use Google Translator. With attempts connecting on failure and array support.",
+    "version": "1.0.0",
+    "keywords": [
+        "google",
+        "translator",
+        "translate",
+        "api",
+        "free"
+    ],
+    "homepage": "https://github.com/dejurin/php-google-translate-for-free",
+    "license": "GPL-3.0+",
+    "support":
+    {
+        "issues": "https://github.com/dejurin/php-google-translate-for-free/issues",
+        "source": "https://github.com/dejurin/php-google-translate-for-free/releases"
+    },
+    "require":
+    {
+        "php": ">=5.4"
+    },
+    "autoload":
+    {
+        "psr-4":
+        {
+            "Dejurin\\": "src/"
+        }
+    }
+}

@@ -1,0 +1,1 @@
+@if ($tag)<span class="tag tag-c-{{ $tag->getColor() }}">{{ $tag->name }}</span>@endif

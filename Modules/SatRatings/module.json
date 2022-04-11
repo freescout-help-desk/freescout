@@ -1,0 +1,24 @@
+{
+    "name": "Satisfaction Ratings",
+    "alias": "satratings",
+    "description": "Let your customers rate your replies via satisfaction ratings and get instant customer's feedback!",
+    "version": "1.0.6",
+    "detailsUrl": "https://freescout.net/module/satisfaction-ratings/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.0.4",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\SatRatings\\Providers\\SatRatingsServiceProvider"
+    ],
+    "aliases": {
+        "SatRatingsHelper": "Modules\\SatRatings\\Providers\\SatRatingsServiceProvider"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

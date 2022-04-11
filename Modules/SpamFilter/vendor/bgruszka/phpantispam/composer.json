@@ -1,0 +1,20 @@
+{
+  "name": "bgruszka/phpantispam",
+  "description": "Bayesian spam recognition library",
+  "type": "library",
+  "keywords": ["spam", "antispam", "bayes", "bayesian", "statistical analysis"],
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Blazej Gruszka",
+      "email": "github@gruszka.info"
+    }
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "4.6.*"
+  },
+  "autoload": {
+    "psr-4": {"PHPAntiSpam\\": "src/"}
+  }
+}

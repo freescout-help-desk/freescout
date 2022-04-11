@@ -1,0 +1,49 @@
+{
+    "name": "freescout/twofactorauth",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "require": {
+        "darkghosthunter/laraguard": "v2.0.2"
+    },
+    "replace": {
+        "symfony/polyfill-mbstring": "*",
+        "symfony/translation": "*",
+        "illuminate/support": "*",
+        "illuminate/auth": "*",
+        "illuminate/http": "*"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\TwoFactorAuth\\Providers\\TwoFactorAuthServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\TwoFactorAuth\\": "",
+            "DarkGhostHunter\\Laraguard\\": "Overrides/DarkGhostHunter/Laraguard/",
+            "DarkGhostHunter\\Laraguard\\Eloquent\\": "Overrides/DarkGhostHunter/Laraguard/Eloquent/",
+            "DarkGhostHunter\\Laraguard\\Listeners\\": "Overrides/DarkGhostHunter/Laraguard/Listeners/",
+            "DarkGhostHunter\\Laraguard\\Listeners\\": "Overrides/DarkGhostHunter/Laraguard/Rules/"
+        },
+        "exclude-from-classmap": [
+            "vendor/darkghosthunter/laraguard/src/Eloquent/HandlesCodes.php",
+            "vendor/darkghosthunter/laraguard/src/Eloquent/TwoFactorAuthentication.php",
+            "vendor/darkghosthunter/laraguard/src/Eloquent/SerializesSharedSecret.php",
+            "vendor/darkghosthunter/laraguard/src/Eloquent/HandlesRecoveryCodes.php",
+            "vendor/darkghosthunter/laraguard/src/Listeners/ChecksTwoFactorCode.php",
+            "vendor/darkghosthunter/laraguard/src/Listeners/EnforceTwoFactorAuth.php",
+            "vendor/darkghosthunter/laraguard/src/Rules/TotpCodeRule.php",
+            "vendor/darkghosthunter/laraguard/src/LaraguardServiceProvider.php"
+        ]
+    }
+}

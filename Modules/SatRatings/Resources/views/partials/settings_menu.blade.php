@@ -1,0 +1,1 @@
+<li @if (Route::is('mailboxes.sat_ratings') || Route::is('mailboxes.sat_ratings_trans'))class="active"@endif><a href="{{ route('mailboxes.sat_ratings', ['id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-thumbs-up"></i> {{ __('Sat. Ratings') }}</a></li>

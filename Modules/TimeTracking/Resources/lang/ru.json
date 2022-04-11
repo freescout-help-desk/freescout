@@ -1,0 +1,21 @@
+{
+    "Conversation is assigned to another user": "Тикет назначен другому пользователю",
+    "Time Tracking": "Отслеживание времени",
+    "Reset Time": "Обнулить время",
+    "Total time": "Затраченное время",
+    "Timelogs": "Логи времени",
+    "Time": "Время",
+    "Tracking Mode": "Режим отслеживания",
+    "The timer starts when the conversation is assigned to the user.": "Таймер запускается, когда тикет назначается агенту.",
+    "The timer starts when the user views the conversation, the timer pauses when the user navigates away from the conversation.": "Таймер запускается, когда агент просматривает тикет, таймер останавливается, когда агент закрывает окно тикета.",
+    "Show Review Time Dialog": "Показать диалог проверки времени",
+    "Users can review and edit their time before the timelog is saved (when the conversation is closed or assigned to another user).": "Пользователи могут просматривать и редактировать своё время перед сохранением лога времени (когда тикет закрывается или назначается другому пользователю).",
+    "Display Timer Controls": "Показывать кнопки управления таймером",
+    "Users can manually pause or resume the timer.": "Пользователи могут вручную приостановить или возобновить таймер.",
+    "Allow to Reset Timer": "Разрешить сброс таймера",
+    "Allow users to reset the current time spent on a ticket.": "Разрешить агентам сбрасывать текущее время, потраченное на тикет.",
+    "Display Timelogs to Users": "Показывать логи времени агентам",
+    "Allow users to view timelogs in conversations. Admin always can see timelogs.": "Разрешить агентам просматривать логи времени в тикетах. Админ всегда может видеть логи времени.",
+    "This is the amount of time you spent on this ticket. Edit the time, if needed, and then click Submit Time. Click Cancel if you don't want to save the time spent.": "Это количество времени, которое вы потратили на этот тикет. Измените время, если это необходимо, а затем нажмите «Сохранить время». Нажмите «Отмена», если вы не хотите сохранять время.",
+    "Submit Time": "Сохранить время"
+}

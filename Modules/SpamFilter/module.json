@@ -1,0 +1,24 @@
+{
+    "name": "Spam Filter",
+    "alias": "spamfilter",
+    "description": "Spam filter that learns from your actions. Say Goodbye to spam messages!",
+    "version": "1.0.8",
+    "detailsUrl": "https://freescout.net/module/spam-filter/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.5.11",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\SpamFilter\\Providers\\SpamFilterServiceProvider"
+    ],
+    "aliases": {
+        "SpamFilterHelper": "Modules\\SpamFilter\\Providers\\SpamFilterServiceProvider"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

@@ -1,0 +1,38 @@
+{
+    "name": "freescout/facebook",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\Facebook\\Providers\\FacebookServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "require": {
+        "botman/botman": "2.6.1",
+        "botman/driver-facebook": "1.11.0"
+    },
+    "replace": {
+        "psr/container": "*",
+        "symfony/http-foundation": "*",
+        "doctrine/cache": "*",
+        "mockery/mockery": "*",
+        "phpunit/phpunit": "*",
+        "symfony/polyfill-mbstring": "*",
+        "symfony/var-dumper": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Facebook\\": ""
+        }
+    }
+}

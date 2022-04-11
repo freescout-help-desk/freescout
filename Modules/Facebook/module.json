@@ -1,0 +1,24 @@
+{
+    "name": "Facebook Integration",
+    "alias": "facebook",
+    "description": "Convert private messages sent to your Facebook Page into FreeScout conversations!",
+    "version": "1.0.8",
+    "detailsUrl": "https://freescout.net/module/facebook/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.6.17",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\Facebook\\Providers\\FacebookServiceProvider"
+    ],
+    "aliases": {
+        "Facebook": "Modules\\Facebook\\Providers\\FacebookServiceProvider"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

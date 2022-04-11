@@ -1,0 +1,28 @@
+{
+    "name": "freescout/tickettranslator",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "require": {
+        "dejurin/php-google-translate-for-free": "1.0.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\TicketTranslator\\Providers\\TicketTranslatorServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\TicketTranslator\\": ""
+        }
+    }
+}

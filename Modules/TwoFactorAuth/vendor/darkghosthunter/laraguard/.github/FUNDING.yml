@@ -1,0 +1,4 @@
+# Help me support this package
+
+ko_fi: DarkGhostHunter
+custom: ['https://paypal.me/darkghosthunter']

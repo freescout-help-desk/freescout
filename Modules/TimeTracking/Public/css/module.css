@@ -1,0 +1,58 @@
+#time-tracking.interactive {
+    line-height: 30px;
+}
+#time-tracking .btn.disabled {
+    background-color: #dee1e3;
+}
+#timetr-start.btn.disabled {
+    background-color: #6AC27B;
+    color: #fff;
+}
+#timetr-pause.btn.disabled {
+    background-color: #d9534f;
+    border-color: #d43f3a;
+    color: #fff;
+}
+.tt-buttons {
+    padding: 0 10px;
+}
+#timelogs-trigger {
+    float: right;
+}
+#timelogs table {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+#timelogs button {
+    cursor: default;
+    line-height: 14px;
+    border: none;
+}
+#timelogs .btn .glyphicon {
+    top: 1px;
+    font-size: 10px;
+}
+.timetr-edit-time {
+    text-align: center;
+    margin: 18px 0 3px;
+    font-weight: bold;
+    font-size: 17px;
+}
+.timetr-edit-time input {
+    width: 81px;
+    font-weight: bold;
+    text-align: center;
+}
+.timetr-hhmmss {
+    margin-top: 5px;
+    font-size: 14px;
+    font-weight: normal;
+}
+/**
+ * Only main content is visible
+ */
+@media (max-width:550px) {
+    #timelogs-trigger > span {
+        display: none;
+    }
+}
