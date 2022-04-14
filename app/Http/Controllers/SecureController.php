@@ -170,7 +170,7 @@ class SecureController extends Controller
 
         $name = '';
         if (!empty($request->name)) {
-            $activities = ActivityLog::inLog($request->name)->orderBy('created_at', 'desc')->get();
+            //$activities = ActivityLog::inLog($request->name)->orderBy('created_at', 'desc')->get();
             $name = $request->name;
         } elseif (count($names = ActivityLog::select('log_name')->distinct()->get()->pluck('log_name'))) {
             $name = ActivityLog::NAME_OUT_EMAILS;
