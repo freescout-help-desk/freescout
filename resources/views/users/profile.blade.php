@@ -67,6 +67,8 @@
                         </div>
                     @endif
 
+                    @action('user.edit.before_first_name', $user)
+
                     <div class="form-group{{ $errors->has('first_name') ? ' has-error' : '' }}">
                         <label for="first_name" class="col-sm-2 control-label">{{ __('First Name') }}</label>
 

@@ -235,6 +235,8 @@ class UsersController extends Controller
             $user->enable_kb_shortcuts = false;
         }
 
+        $user = \Eventy::filter('user.save_profile', $user, $request);
+
         $user->save();
 
         \Session::flash('flash_success_floating', __('Profile saved successfully'));

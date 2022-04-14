@@ -548,7 +548,7 @@ class Mailbox extends Model
             $name = $from_user->getFullName();
         }
 
-        return [ 'address' => \Eventy::filter( 'mailbox.get_mail_from_address', $this->email, $from_user, $conversation ), 'name' => $name ];
+        return [ 'address' => \Eventy::filter( 'mailbox.get_mail_from_address', $this->email, $from_user, $conversation ), 'name' => \Eventy::filter( 'mailbox.get_mail_from_name', $name, $from_user, $conversation ) ];
     }
 
     /**
