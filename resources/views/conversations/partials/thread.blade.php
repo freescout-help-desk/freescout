@@ -77,10 +77,12 @@
                     <div class="thread-person">
                         <strong>
                             @if ($thread->type == App\Thread::TYPE_CUSTOMER)
-                                @if (\Helper::isPrint())
-                                    {{ $thread->customer_cached->getFullName(true) }}
-                                @elseif ($thread->customer_cached)
-                                    <a href="{{ $thread->customer_cached->url() }}">{{ $thread->customer_cached->getFullName(true) }}</a>
+                                @if ($thread->customer_cached)
+                                    @if (\Helper::isPrint())
+                                        {{ $thread->customer_cached->getFullName(true) }}
+                                    @else
+                                        <a href="{{ $thread->customer_cached->url() }}">{{ $thread->customer_cached->getFullName(true) }}</a>
+                                    @endif
                                 @endif
                             @else
                                 @if (\Helper::isPrint())
