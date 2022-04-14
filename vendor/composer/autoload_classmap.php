@@ -2613,7 +2613,7 @@ return array(
     'Symfony\\Component\\CssSelector\\XPath\\Extension\\ExtensionInterface' => $vendorDir . '/symfony/css-selector/XPath/Extension/ExtensionInterface.php',
     'Symfony\\Component\\CssSelector\\XPath\\Extension\\FunctionExtension' => $vendorDir . '/symfony/css-selector/XPath/Extension/FunctionExtension.php',
     'Symfony\\Component\\CssSelector\\XPath\\Extension\\HtmlExtension' => $vendorDir . '/symfony/css-selector/XPath/Extension/HtmlExtension.php',
-    'Symfony\\Component\\CssSelector\\XPath\\Extension\\NodeExtension' => $vendorDir . '/symfony/css-selector/XPath/Extension/NodeExtension.php',
+    'Symfony\\Component\\CssSelector\\XPath\\Extension\\NodeExtension' => $baseDir . '/overrides/symfony/css-selector/XPath/Extension/NodeExtension.php',
     'Symfony\\Component\\CssSelector\\XPath\\Extension\\PseudoClassExtension' => $vendorDir . '/symfony/css-selector/XPath/Extension/PseudoClassExtension.php',
     'Symfony\\Component\\CssSelector\\XPath\\Translator' => $vendorDir . '/symfony/css-selector/XPath/Translator.php',
     'Symfony\\Component\\CssSelector\\XPath\\TranslatorInterface' => $vendorDir . '/symfony/css-selector/XPath/TranslatorInterface.php',

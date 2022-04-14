@@ -64,6 +64,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Symfony\\Component\\Finder\\' => 25,
             'Symfony\\Component\\EventDispatcher\\' => 34,
             'Symfony\\Component\\Debug\\' => 24,
+            'Symfony\\Component\\CssSelector\\XPath\\Extension\\' => 46,
             'Symfony\\Component\\CssSelector\\' => 30,
             'Symfony\\Component\\Console\\Helper\\' => 33,
             'Symfony\\Component\\Console\\Descriptor\\' => 37,
@@ -283,6 +284,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         array (
             0 => __DIR__ . '/../..' . '/overrides/symfony/debug',
             1 => __DIR__ . '/..' . '/symfony/debug',
+        ),
+        'Symfony\\Component\\CssSelector\\XPath\\Extension\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/symfony/css-selector/XPath/Extension',
         ),
         'Symfony\\Component\\CssSelector\\' => 
         array (
@@ -3254,7 +3259,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Component\\CssSelector\\XPath\\Extension\\ExtensionInterface' => __DIR__ . '/..' . '/symfony/css-selector/XPath/Extension/ExtensionInterface.php',
         'Symfony\\Component\\CssSelector\\XPath\\Extension\\FunctionExtension' => __DIR__ . '/..' . '/symfony/css-selector/XPath/Extension/FunctionExtension.php',
         'Symfony\\Component\\CssSelector\\XPath\\Extension\\HtmlExtension' => __DIR__ . '/..' . '/symfony/css-selector/XPath/Extension/HtmlExtension.php',
-        'Symfony\\Component\\CssSelector\\XPath\\Extension\\NodeExtension' => __DIR__ . '/..' . '/symfony/css-selector/XPath/Extension/NodeExtension.php',
+        'Symfony\\Component\\CssSelector\\XPath\\Extension\\NodeExtension' => __DIR__ . '/../..' . '/overrides/symfony/css-selector/XPath/Extension/NodeExtension.php',
         'Symfony\\Component\\CssSelector\\XPath\\Extension\\PseudoClassExtension' => __DIR__ . '/..' . '/symfony/css-selector/XPath/Extension/PseudoClassExtension.php',
         'Symfony\\Component\\CssSelector\\XPath\\Translator' => __DIR__ . '/..' . '/symfony/css-selector/XPath/Translator.php',
         'Symfony\\Component\\CssSelector\\XPath\\TranslatorInterface' => __DIR__ . '/..' . '/symfony/css-selector/XPath/TranslatorInterface.php',
