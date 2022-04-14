@@ -138,7 +138,8 @@
             "GuzzleHttp\\Cookie\\": "overrides/guzzlehttp/guzzle/src/Cookie/",
             "Ramsey\\Uuid\\": "overrides/ramsey/uuid/src/",
             "Rap2hpoutre\\LaravelLogViewer\\": "overrides/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/",
-            "Symfony\\Component\\Console\\Descriptor\\": "overrides/symfony/console/Descriptor"
+            "Symfony\\Component\\Console\\Descriptor\\": "overrides/symfony/console/Descriptor",
+            "Symfony\\Component\\CssSelector\\XPath\\Extension\\": "overrides/symfony/css-selector/XPath/Extension/"
         },
         "exclude-from-classmap": [
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
@@ -238,7 +239,8 @@
             "vendor/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/LaravelLogViewer.php",
             "vendor/symfony/console/Descriptor/TextDescriptor.php",
             "vendor/symfony/console/Helper/Helper.php",
-            "vendor/symfony/finder/Iterator/SortableIterator.php"
+            "vendor/symfony/finder/Iterator/SortableIterator.php",
+            "vendor/symfony/css-selector/XPath/Extension/NodeExtension.php"
         ]
     },
     "autoload-dev": {
