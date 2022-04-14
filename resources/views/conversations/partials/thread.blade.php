@@ -101,6 +101,7 @@
                     </div>
                     @if ($thread->type != App\Thread::TYPE_NOTE || $thread->isForward())
                         <div class="thread-recipients">
+                            @action('thread.before_recipients', $thread, $loop, $threads, $conversation, $mailbox)
                             @if (($thread->isForward()
                                 || $loop->last
                                 || ($thread->type == App\Thread::TYPE_CUSTOMER && count($thread->getToArray($mailbox->getEmails())))
@@ -132,6 +133,7 @@
                                     {{ implode(', ', $thread->getBccArray()) }}
                                 </div>
                             @endif
+                            @action('thread.after_recipients', $thread, $loop, $threads, $conversation, $mailbox)
                         </div>
                     @endif
                 </div>
