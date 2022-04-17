@@ -88,6 +88,8 @@
                             @include('partials/field_error', ['field'=>'last_name'])
                         </div>
                     </div>
+                    
+                    @action('user.edit.before_email', $user)
 
                     <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                         <label for="email" class="col-sm-2 control-label">{{ __('Email') }}</label>
