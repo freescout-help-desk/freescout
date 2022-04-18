@@ -64,6 +64,8 @@
                                 </div>
                             </div>
 
+                            @action('user.setup.before_job_title', $user)
+
                             <div class="form-group{{ $errors->has('job_title') ? ' has-error' : '' }}">
                                 <label for="job_title" class="col-sm-4 control-label">{{ __('Job Title') }}</label>
 
