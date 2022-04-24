@@ -556,7 +556,7 @@
     "Unsupported file type": "Nieobsługiwany typ pliku",
     "Just now": "Właśnie teraz",
     ":date @ :time": ":date @ :time",
-    "Users are allowed to delete notes\/conversations": "Użytkownicy mogą usuwać notki\/rozmowy",
+    "Users are allowed to delete conversations": "Użytkownicy mogą usuwać rozmowy",
     "Users are allowed to edit notes\/replies": "Użytkownicy mogą edytować notki\/odpowiedzi ",
     "Users are allowed to edit\/delete saved replies": "Użytkownicy mogą edytować\/usuwać zapisane odpowiedzi ",
     "Users are allowed to manage tags": "Użytkownicy mogą zarządzać tagami",

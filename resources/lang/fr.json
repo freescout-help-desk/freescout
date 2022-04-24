@@ -102,7 +102,7 @@
     "Alert email": "Alerte email",
     "Just now": "Il y a quelques secondes",
     ":date @ :time": ":date @ :time",
-    "Users are allowed to delete notes\/conversations": "Les utilisateurs sont autorisés à supprimer des notes \/ conversations",
+    "Users are allowed to delete conversations": "Les utilisateurs sont autorisés à supprimer des conversations",
     "Users are allowed to edit notes\/replies": "Les utilisateurs sont autorisés à modifier les notes \/ réponses",
     "Users are allowed to edit\/delete saved replies": "Les utilisateurs sont autorisés à modifier \/ supprimer les réponses enregistrées",
     "Users are allowed to manage tags": "Les utilisateurs sont autorisés à gérer les balises",

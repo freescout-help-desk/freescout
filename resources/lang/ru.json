@@ -34,7 +34,7 @@
     "Spam": "Спам",
     "Delivery error": "Ошибка доставки",
     "Recipient clicked a link in the message": "Получитель перешёл по ссылке в письме",
-    "Users are allowed to delete notes\/conversations": "Агенты могут удалять примечания и тикеты",
+    "Users are allowed to delete conversations": "Агенты могут удалять тикеты",
     "Error occured sending email to :email. Please check logs for more details.": "Произошла ошибка при отправке электронного письма на :email. Пожалуйста, проверьте логи.",
     "Email Address": "Адрес эл. почты",
     "Send Password Reset Link": "Отправить ссылку на сброс пароля",

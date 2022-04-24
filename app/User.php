@@ -553,7 +553,7 @@ class User extends Authenticatable
     public static function getUserPermissionName($user_permission)
     {
         $user_permission_names = [
-            self::PERM_DELETE_CONVERSATIONS => __('Users are allowed to delete notes/conversations'),
+            self::PERM_DELETE_CONVERSATIONS => __('Users are allowed to delete conversations'),
             self::PERM_EDIT_CONVERSATIONS   => __('Users are allowed to edit notes/replies'),
             self::PERM_EDIT_SAVED_REPLIES   => __('Users are allowed to edit/delete saved replies'),
             self::PERM_EDIT_TAGS            => __('Users are allowed to manage tags'),
