@@ -98,6 +98,7 @@ class UsersController extends Controller
             // Set some random password before sending invite
             $user->password = Hash::make($user->generateRandomPassword());
         }
+        $user = \Eventy::filter('user.create_save', $user, $request);
         $user->save();
 
         $user->mailboxes()->sync($request->mailboxes);
