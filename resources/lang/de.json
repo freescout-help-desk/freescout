@@ -251,7 +251,7 @@
     "This number is not visible to customers. It is only used to track conversations within :app_name": "Diese Nummer ist nicht sichtbar für Kunden. Sie wird nur benutzt um Gespräche innerhalb :app_name zu nachzuverfolgen.",
     "This password is incorrect.": "Das Passwort ist falsch.",
     "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "Diese Antwort geht an den Kunden. :%switch_start%Wechsel zu Notizen:switch_end wenn an :user_name geantwortet werden soll.",
-    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, etc.).": "Diese Einstellung ändert welche Seite geladen wird nachdem eine Aktion ausgeführt wurde (eine Antwort gesendet, eine Notiz hinzugefügt usw.).",
+    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "Diese Einstellung ändert welche Seite geladen wird nachdem eine Aktion ausgeführt wurde (eine Antwort gesendet, eine Notiz hinzugefügt usw.).",
     "Thread is not in a draft state": "Unterhaltung ist kein Entwurf",
     "Thread not found": "Unterhaltung nicht gefunden",
     "Time Format": "Zeitformat",

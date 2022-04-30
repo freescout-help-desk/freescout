@@ -612,7 +612,7 @@
     "This number is not visible to customers. It is only used to track conversations within :app_name": "El numero no es visible a los clientes. Sólo es usado para seguir conversaciones con :app_name",
     "This password is incorrect.": "La clave es incorrecta.",
     "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "Ésta respuesta irá al cliente. :%switch_start%Cambiar a nota:switch_end si estás respondiendo a :user_name.",
-    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, etc.).": "Estas configuraciones te dan control sobre que páginas cargar después de realizar alguna acción (enviar una respuesta, agregar una nota, etc).",
+    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "Estas configuraciones te dan control sobre que páginas cargar después de realizar alguna acción (enviar una respuesta, agregar una nota, etc).",
     "This text will be added to the beginning of each email reply sent to a customer.": "Éste texto será agregado al inicio de cada mensaje de respuesta enviado al cliente.",
     "Thread is not in a draft state": "El hilo no es un borrador",
     "Thread not found": "No se encontró el hilo",

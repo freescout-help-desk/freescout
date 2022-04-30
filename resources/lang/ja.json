@@ -22,7 +22,7 @@
     "You are not authorized to access this resource.": "このリソースにアクセスする権限がありません。",
     "You are not logged in": "ログインしていません",
     "You can edit this later": "後から編集することができます",
-    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, etc.).": "この設定では、アクション（返信の送信、メモの追加など）を実行した後にどのページが読み込まれるかを制御できます。",
+    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "この設定では、アクション（返信の送信、メモの追加など）を実行した後にどのページが読み込まれるかを制御できます。",
     "This text will be added to the beginning of each email reply sent to a customer.": "このテキストは、お客様に送信された各メールの返信の冒頭に追加されます。",
     "Thread is not in a draft state": "スレッドは下書き状態ではありません",
     "Thread not found": "スレッドが見つかりません",

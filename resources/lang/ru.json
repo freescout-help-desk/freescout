@@ -308,7 +308,7 @@
     "Stay on the same page": "Остаться на странице",
     "Next active conversation": "Следующий активный тикет",
     "Back to folder": "Назад к папке",
-    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, etc.).": "Этот параметр определяет, какая страница открывается после выполнения действия (отправка ответа, добавление примечания и т.д.).",
+    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "Этот параметр определяет, какая страница открывается после выполнения действия (отправка ответа, добавление примечания, изменение статуса тикета или исполнителя).",
     "Conversation": "Тикет",
     "Assigned To": "Назначено",
     "Number": "Номер",

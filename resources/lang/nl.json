@@ -623,7 +623,7 @@
     "This number is not visible to customers. It is only used to track conversations within :app_name": "Dit nummer is niet zichtbaar voor klanten. Het wordt alleen gebruikt om gesprekken bij te houden in :app_name",
     "This password is incorrect.": "Dit wachtwoord is incorrect.",
     "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "Dit antwoord gaat naar de klant. :%switch_start%Schakel over naar een notitie:switch_end als u antwoordt op :user_name.",
-    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, etc.).": "Met deze instelling kunt u bepalen welke pagina wordt geladen nadat u een actie hebt uitgevoerd (een antwoord verzenden, een notitie toevoegen, enzovoort).",
+    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "Met deze instelling kunt u bepalen welke pagina wordt geladen nadat u een actie hebt uitgevoerd (een antwoord verzenden, een notitie toevoegen, enzovoort).",
     "This text will be added to the beginning of each email reply sent to a customer.": "Deze tekst zal worden toegevoegd aan het begin van elke antwoord dat naar een klant gestuurd wordt.",
     "Thread is not in a draft state": "Gesprek bevindt zich niet in een conceptstatus",
     "Thread not found": "Gesprek niet gevonden",

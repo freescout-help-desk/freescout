@@ -2272,9 +2272,14 @@ function saveAfterSend(el)
 	button.button('loading');
 
 	var value = $(el).parents('.modal-body:first').children().find('[name="after_send_default"]:first').val();
+
+	var mailbox_id = getGlobalAttr('mailbox_id');
+	if (!mailbox_id) {
+		mailbox_id = $(el).parents('.modal-body:first').children().find('[name="default_redirect_mailbox_id"]:first').val()
+	}
 	data = {
 		value: value,
-		mailbox_id: getGlobalAttr('mailbox_id'),
+		mailbox_id: mailbox_id,
 		action: 'save_after_send'
 	};
 

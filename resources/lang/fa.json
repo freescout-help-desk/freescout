@@ -251,7 +251,7 @@
     "This number is not visible to customers. It is only used to track conversations within :app_name": "این شماره برای مشتریان قابل مشاهده نیست. فقط برای ردیابی مکالمات در :app_name استفاده می شود",
     "This password is incorrect.": "این رمز عبور نادرست است.",
     "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "این پاسخ به مشتری ارسال می شود. :%switch_start%اگر به :user_name پاسخ می دهید، به note:switch_end بروید.",
-    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, etc.).": "این تنظیم به شما امکان می دهد پس از انجام یک عمل (ارسال پاسخ، اضافه کردن یادداشت و غیره) روی صفحه بارگیری کنید.",
+    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "این تنظیم به شما امکان می دهد پس از انجام یک عمل (ارسال پاسخ، اضافه کردن یادداشت و غیره) روی صفحه بارگیری کنید.",
     "Thread is not in a draft state": "موضوع در حالت پیش نویس نیست",
     "Thread not found": "موضوع پیدا نشد",
     "Time Format": "فرمت زمان",

@@ -183,19 +183,6 @@
                         </div>
                     </div>
 
-                    <div class="form-group{{ $errors->has('enable_kb_shortcuts') ? ' has-error' : '' }} hidden">
-                        <label for="enable_kb_shortcuts" class="col-sm-2 control-label">{{ __('Keyboard Shortcuts') }} (todo)</label>
-
-                        <div class="col-sm-6">
-                            <div class="controls">
-                                <label class="control-label">
-                                    <input type="checkbox" name="enable_kb_shortcuts" @if (old('enable_kb_shortcuts', $user->enable_kb_shortcuts))checked="checked"@endif value="1">
-                                </label>
-                            </div>
-                            @include('partials/field_error', ['field'=>'enable_kb_shortcuts'])
-                        </div>
-                    </div>
-
                     <div class="form-group{{ $errors->has('photo_url') ? ' has-error' : '' }}">
                         <label for="photo_url" class="col-sm-2 control-label">{{ __('Photo') }}</label>
 

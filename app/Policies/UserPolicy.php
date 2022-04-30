@@ -105,15 +105,17 @@ class UserPolicy
      */
     public function viewMailboxMenu(User $user)
     {
-        if ($user->isAdmin() || \Eventy::filter('user.can_view_mailbox_menu', false, $user)) {
-            return true;
-        // hasManageMailboxAccess creates an extra query on each page,
-        // to avoid this we don't show Manage menu to users,
-        // user can manage mailboxes from dashboard.
-        } else if ($user->hasManageMailboxAccess()) {
-            return true;
-        } else {
-            return false;
-        }
+        return true;
+        
+        // if ($user->isAdmin() || \Eventy::filter('user.can_view_mailbox_menu', false, $user)) {
+        //     return true;
+        //     // hasManageMailboxAccess creates an extra query on each page,
+        //     // to avoid this we don't show Manage menu to users,
+        //     // user can manage mailboxes from dashboard.
+        // } else if ($user->hasManageMailboxAccess()) {
+        //     return true;
+        // } else {
+        //     return false;
+        // }
     }
 }

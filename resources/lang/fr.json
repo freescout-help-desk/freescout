@@ -365,7 +365,7 @@
     "After Sending": "Après l'envoi",
     "Stay on the same page": "Restez sur la même page",
     "Back to folder": "Retour au dossier",
-    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, etc.).": "Ce paramètre vous permet de contrôler la page qui se charge après avoir effectué une action (envoyer une réponse, ajouter une note, etc.).",
+    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "Ce paramètre vous permet de contrôler la page qui se charge après avoir effectué une action (envoyer une réponse, ajouter une note, etc.).",
     "Cancel": "Annuler",
     "Filters": "Filtres",
     "Remove filter": "Supprimer Filtre",

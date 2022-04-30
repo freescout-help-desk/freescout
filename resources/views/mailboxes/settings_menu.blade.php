@@ -13,6 +13,10 @@
     @endif
 @endif
 @action('mailboxes.settings.menu', $mailbox)
+@if (!empty($is_dropdown))
+    <li class="divider"></li>
+    <li><a href="{{ route('conversations.ajax_html', ['action' => 'default_redirect']) }}?mailbox_id={{ $mailbox->id }}" data-trigger="modal" data-modal-title="{{ __("Default Redirect") }}" data-modal-no-footer="true" data-modal-on-show="initDefaultRedirect" role="button"><i class="glyphicon glyphicon-share-alt"></i> {{ __('Default Redirect') }}…</span></a></li>
+@endif
 @if (!empty($is_dropdown) && Auth::user()->isAdmin())
 	<li class="divider"></li>
 	<li><a href="#" class="mailbox-mute-trigger" @if ($mailbox->mute) data-mute="0" @else data-mute="1" @endif data-mailbox-id="{{ $mailbox->id }}" data-loading-text="{{ __('Processing') }}…"><i class="glyphicon glyphicon-volume-off"></i> <span class="mute-text-1 @if ($mailbox->mute) hidden @endif">{{ __('Mute Notifications') }}</span><span class="mute-text-0 @if (!$mailbox->mute) hidden @endif">{{ __('Unmute Notifications') }}</span></a></li>
