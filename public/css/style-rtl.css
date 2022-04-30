@@ -2,6 +2,57 @@ body.locale-fa {
     font-family: yekan;
 }
 
+.conv-next-prev {
+    vertical-align: middle;
+    margin-left: 0!important;
+    margin-right: 4px !important;
+    margin-top: -4px!important;
+}
+
+.conv-next-prev a {
+    float: left;
+}
+
+.conv-info .btn-group button.conv-info-val {
+    padding-right: 8px;
+    padding-left: 22px;
+}
+
+.conv-info .btn-group button.conv-info-val .caret {
+    right: auto;
+    left: 8px;
+}
+
+#conv-layout-customer .customer-photo-container {
+    float: left;
+}
+
+.customer-extra {
+    position: relative;
+}
+
+.customer-social-profiles {
+    right: 92px;
+    left: auto;
+}
+
+.accordion .panel-title > a .caret {
+    float: left;
+}
+
+ul.sidebar-block-list {
+    padding-right: 0;
+}
+
+.sidebar-block-list .glyphicon {
+    margin-left: 4px;
+    margin-right: 0;
+}
+
+.thread-photo {
+    left: 0;
+}
+
 .sidebar-menu>li>a {
     padding: 11px 50px 9px 20px;
     border-radius: 17px 0 0 17px;
