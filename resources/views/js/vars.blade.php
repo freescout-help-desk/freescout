@@ -48,6 +48,7 @@ var LangMessages = {
             "first_name": "{{ __("First Name") }}",
             "last_name": "{{ __("Last Name") }}",
             "email_addr": "{{ __("Email Address") }}",
+            "company": "{{ __("Company") }}",
             "job_title": "{{ __("Job Title") }}",
             "phone": "{{ __("Phone Number") }}",
             "photo_url": "{{ __("Profile Photo (URL)") }}",

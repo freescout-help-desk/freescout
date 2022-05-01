@@ -88,6 +88,8 @@
                             @include('partials/field_error', ['field'=>'last_name'])
                         </div>
                     </div>
+                    
+                    @action('user.edit.before_email', $user)
 
                     <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                         <label for="email" class="col-sm-2 control-label">{{ __('Email') }}</label>
@@ -178,19 +180,6 @@
                                 <label for="24hour" class="radio inline"><input type="radio" name="time_format" value="{{ App\User::TIME_FORMAT_24 }}" id="24hour" @if (old('time_format', $user->time_format) == App\User::TIME_FORMAT_24 || !$user->time_format)checked="checked"@endif> {{ __('24-hour clock (e.g. 14:13)') }}</label>
                             </div>
                             @include('partials/field_error', ['field'=>'time_format'])
-                        </div>
-                    </div>
-
-                    <div class="form-group{{ $errors->has('enable_kb_shortcuts') ? ' has-error' : '' }} hidden">
-                        <label for="enable_kb_shortcuts" class="col-sm-2 control-label">{{ __('Keyboard Shortcuts') }} (todo)</label>
-
-                        <div class="col-sm-6">
-                            <div class="controls">
-                                <label class="control-label">
-                                    <input type="checkbox" name="enable_kb_shortcuts" @if (old('enable_kb_shortcuts', $user->enable_kb_shortcuts))checked="checked"@endif value="1">
-                                </label>
-                            </div>
-                            @include('partials/field_error', ['field'=>'enable_kb_shortcuts'])
                         </div>
                     </div>
 

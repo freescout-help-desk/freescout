@@ -1955,6 +1955,8 @@ class ConversationsController extends Controller
                 return $this->ajaxHtmlMoveConv();
             case 'merge_conv':
                 return $this->ajaxHtmlMergeConv();
+            case 'default_redirect':
+                return $this->ajaxHtmlDefaultRedirect();
         }
 
         abort(404);
@@ -2126,6 +2128,33 @@ class ConversationsController extends Controller
             'conversation' => $conversation,
             'prev_conversations' => $prev_conversations,
 
+        ]);
+    }
+
+    /**
+     * Change default redirect for the mailbox.
+     */
+    public function ajaxHtmlDefaultRedirect()
+    {
+        $mailbox_id = Input::get('mailbox_id');
+        if (!$mailbox_id) {
+            abort(404);
+        }
+
+        $mailbox = Mailbox::find($mailbox_id);
+        if (!$mailbox) {
+            abort(404);
+        }
+
+        $user = auth()->user();
+
+        if (!$user->can('view', $mailbox)) {
+            abort(403);
+        }
+
+        return view('conversations/ajax_html/default_redirect', [
+            'after_send' => $user->mailboxSettings($mailbox_id)->after_send,
+            'mailbox_id' => $mailbox_id,
         ]);
     }
 

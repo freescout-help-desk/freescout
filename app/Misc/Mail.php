@@ -193,6 +193,7 @@ class Mail
             $vars['{%customer.fullName%}'] = $data['customer']->getFullName(true);
             $vars['{%customer.firstName%}'] = $data['customer']->getFirstName(true);
             $vars['{%customer.lastName%}'] = $data['customer']->last_name;
+            $vars['{%customer.company%}'] = $data['customer']->company;
         }
         if (!empty($data['user'])) {
             $vars['{%user.fullName%}'] = $data['user']->getFullName();

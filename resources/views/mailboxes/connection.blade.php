@@ -88,7 +88,7 @@
 
                                 @if (strstr($mailbox->out_server ?? '', '.gmail.'))
                                     <div class="form-help">
-                                        {!! __("Make sure to :%link_start%enable less secure apps:%link_end% in your Google account to send emails from Gmail.", ['%link_start%' => '<a href="https://myaccount.google.com/lesssecureapps?pli=1" target="_blank">', '%link_end%' => '</a>']) !!}
+                                        {!! __("How to :%link_start%connect Gmail:%link_end% to FreeScout.", ['%link_start%' => '<a href="https://github.com/freescout-helpdesk/freescout/wiki/Connect-Gmail-to-FreeScout" target="_blank">', '%link_end%' => '</a>']) !!}
                                     </div>
                                 @endif
 

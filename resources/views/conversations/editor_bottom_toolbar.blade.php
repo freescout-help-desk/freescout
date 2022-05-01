@@ -68,7 +68,7 @@
                             </select>
 
                             <p class="block-help">
-                                {{ __('This setting gives you control over what page loads after you perform an action (send a reply, add a note, etc.).') }}
+                                {{ __('This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).') }}
                             </p>
                         </div>
                     </div>
