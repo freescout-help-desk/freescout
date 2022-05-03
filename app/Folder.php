@@ -160,6 +160,7 @@ class Folder extends Model
 
             case self::TYPE_CLOSED:
                 $order_by = [['closed_at' => 'desc']];
+                break;
 
             case self::TYPE_SPAM:
                 $order_by = [['last_reply_at' => 'desc']];
