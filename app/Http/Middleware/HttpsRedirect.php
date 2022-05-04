@@ -38,6 +38,14 @@ class HttpsRedirect {
                 return redirect()->secure($request->getRequestUri());
             }
         }
+
+        // Correct protocol in $_SERVER
+        if (parse_url(config('app.url'), PHP_URL_SCHEME) == 'https' 
+            && !$request->secure() 
+            && strtolower($_SERVER['HTTPS'] ?? '') != 'on'
+        ) {
+            $_SERVER['HTTPS'] = 'on';
+        }
         return $next($request);
     }
 }
