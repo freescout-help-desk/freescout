@@ -398,7 +398,7 @@ class ModulesController extends Controller
                     } else {
                         if (!empty($result['status']) && $result['status'] == 'success') {
                             $db_module = \App\Module::getByAlias($alias);
-                            if ($db_module && trim($db_module->license) == trim($license)) {
+                            if ($db_module && trim($db_module->license ?? '') == trim($license ?? '')) {
                                 // Remove remembered license key and deactivate license in DB
                                 \App\Module::deactivateLicense($alias, '');
 
