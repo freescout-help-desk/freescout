@@ -281,6 +281,22 @@ class ModulesController extends Controller
                                     $response['msg'] = __('Your domain is deactivated');
                                     break;
                             }
+                        } elseif (!empty($license_result['status']) && $license_result['status'] == 'inactive') {
+                            // Activate the license.
+                            $result = WpApi::activateLicense($params);
+                            if (WpApi::$lastError) {
+                                $response['msg'] = WpApi::$lastError['message'];
+                            } elseif (!empty($result['code']) && !empty($result['message'])) {
+                                $response['msg'] = $result['message'];
+                            } else {
+                                if (!empty($result['status']) && $result['status'] == 'valid') {
+                                    // Success.
+                                } elseif (!empty($result['error'])) {
+                                    $response['msg'] = $this->getErrorMessage($result['error'], $result);
+                                } else {
+                                    // Some unknown error. Do nothing.
+                                }
+                            }
                         }
                     }
                 }
