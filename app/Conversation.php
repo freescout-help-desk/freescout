@@ -2103,7 +2103,7 @@ class Conversation extends Model
             $query_conversations->where('conversations.has_attachments', '=', $has_attachments);
         }
         if (!empty($filters['type'])) {
-            $query_conversations->where('conversations.has_attachments', '=', $filters['type']);
+            $query_conversations->where('conversations.type', '=', $filters['type']);
         }
         if (!empty($filters['body'])) {
             $query_conversations->where('threads.body', 'like', '%'.mb_strtolower($filters['body']).'%');
