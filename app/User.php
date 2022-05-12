@@ -885,10 +885,7 @@ class User extends Authenticatable
             return null;
         }
 
-        $user->fill($data);
-
-        $user->password = \Hash::make($data['password']);
-        $user->email = Email::sanitizeEmail($data['email']);
+        $user->setData($data);
 
         try {
             $user->save();
@@ -897,6 +894,36 @@ class User extends Authenticatable
         }
 
         return $user;
+    }
+
+    /**
+     * Set fields.
+     */
+    public function setData($data, $replace_data = true, $save = false)
+    {
+        if (isset($data['email'])) {
+            $data['email'] = Email::sanitizeEmail($data['email']);
+        }
+        if (isset($data['password'])) {
+            $data['password'] = \Hash::make($data['password']);
+        }
+
+        if ($replace_data) {
+            $this->fill($data);
+        } else {
+            // Update empty fields.
+            foreach ($data as $key => $value) {
+                if (in_array($key, $this->fillable) && empty($this->$key)) {
+                    $this->$key = $value;
+                }
+            }
+        }
+
+        \Eventy::action('user.set_data', $this, $data, $replace_data);
+
+        if ($save) {
+            $this->save();
+        }
     }
 
     /**
