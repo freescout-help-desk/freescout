@@ -183,6 +183,8 @@
                         </div>
                     </div>
 
+                    @action('user.edit.before_photo', $user)
+
                     <div class="form-group{{ $errors->has('photo_url') ? ' has-error' : '' }}">
                         <label for="photo_url" class="col-sm-2 control-label">{{ __('Photo') }}</label>
 

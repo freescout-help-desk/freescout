@@ -569,7 +569,7 @@ class FetchEmails extends Command
                 // Check if From is the same as user's email.
                 // If not we send an email with information to the sender.
                 if (!$user->hasEmail($from)) {
-                    $this->logError("From address {$from} is not the same as user {$user->id} email: ".$user->email);
+                    $this->logError("Sender address {$from} does not match ".$user->getFullName()." user email: ".$user->email.". Add ".$user->email." to user's Alternate Emails in the users's profile to allow the user reply from this address.");
                     $message->setFlag(['Seen']);
 
                     // Send "Unable to process your update email" to user

@@ -54,7 +54,7 @@ if [ $git_inited != 1 ]; then
 
 	# Initizalize Git and install latest version of the app
 	
-	printf "\nGit repository is not initizalized yet. Would you like to install the latest verion of the application via Git (this will replace existing files)? (Y/n) [n]:"
+	printf "\nGit repository is not initizalized yet. Would you like to install the latest version of the application via Git (this will replace existing files)? (Y/n) [n]:"
 	read confirm_gitinit;
 	if [ $confirm_gitinit != "Y" ]; then
 	    exit;

@@ -230,7 +230,7 @@ class UsersController extends Controller
                 $request_data['status'] = User::STATUS_ACTIVE;
             }
         }
-        $user->fill($request_data);
+        $user->setData($request_data);
 
         if (empty($request->input('enable_kb_shortcuts'))) {
             $user->enable_kb_shortcuts = false;

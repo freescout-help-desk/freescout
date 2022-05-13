@@ -164,35 +164,47 @@ var EditorDiscardButton = function (context) {
 var EditorInsertVarButton = function (context) {
 	var ui = $.summernote.ui;
 
-	// todo: fallback=
-	var contents =
-		'<select class="form-control summernote-inservar" tabindex="-1">'+
-		    '<option value="">'+Lang.get("messages.insert_var")+' ...</option>'+
-		    '<optgroup label="'+Lang.get("messages.mailbox")+'">'+
-		        '<option value="{%mailbox.email%}">'+Lang.get("messages.email")+'</option>'+
-		        '<option value="{%mailbox.name%}">'+Lang.get("messages.name")+'</option>'+
-		        '<option value="{%mailbox.fromName%}">'+Lang.get("messages.from_name")+'</option>'+
-		    '</optgroup>'+
-		    '<optgroup label="'+Lang.get("messages.conversation")+'">'+
-		        '<option value="{%conversation.number%}">'+Lang.get("messages.number")+'</option>'+
-		    '</optgroup>'+
-		    '<optgroup label="'+Lang.get("messages.customer")+'">'+
-		        '<option value="{%customer.fullName%}">'+Lang.get("messages.full_name")+'</option>'+
-		        '<option value="{%customer.firstName%}">'+Lang.get("messages.first_name")+'</option>'+
-		        '<option value="{%customer.lastName%}">'+Lang.get("messages.last_name")+'</option>'+
-		        '<option value="{%customer.email%}">'+Lang.get("messages.email_addr")+'</option>'+
-		        '<option value="{%customer.company%}">'+Lang.get("messages.company")+'</option>'+
-		    '</optgroup>'+
-		    '<optgroup label="'+Lang.get("messages.user")+'">'+
-		        '<option value="{%user.fullName%}">'+Lang.get("messages.full_name")+'</option>'+
-		        '<option value="{%user.firstName%}">'+Lang.get("messages.first_name")+'</option>'+
-		        '<option value="{%user.lastName%}">'+Lang.get("messages.last_name")+'</option>'+
-		        '<option value="{%user.jobTitle%}">'+Lang.get("messages.job_title")+'</option>'+
-		        '<option value="{%user.phone%}">'+Lang.get("messages.phone")+'</option>'+
-		        '<option value="{%user.email%}">'+Lang.get("messages.email_addr")+'</option>'+
-		        '<option value="{%user.photoUrl%}">'+Lang.get("messages.photo_url")+'</option>'+
-		    '</optgroup>'+
-	    '</select>';
+	var vars = {
+		mailbox: {
+			'mailbox.email': Lang.get("messages.email"),
+			'mailbox.name': Lang.get("messages.name"),
+			'mailbox.fromName': Lang.get("messages.from_name")
+		},
+		conversation: {
+			'conversation.number': Lang.get("messages.number")
+		},
+		customer: {
+			'customer.fullName': Lang.get("messages.full_name"),
+			'customer.firstName': Lang.get("messages.first_name"),
+			'customer.lastName': Lang.get("messages.last_name"),
+			'customer.email': Lang.get("messages.email_addr"),
+			'customer.company': Lang.get("messages.company"),
+		},
+		user: {
+			'user.fullName': Lang.get("messages.full_name"),
+			'user.firstName': Lang.get("messages.first_name"),
+			'user.lastName': Lang.get("messages.last_name"),
+			'user.jobTitle': Lang.get("messages.job_title"),
+			'user.phone': Lang.get("messages.phone"),
+			'user.email': Lang.get("messages.email_addr"),
+			'user.photoUrl': Lang.get("messages.photo_url"),
+
+		},
+	};
+
+	vars = fsApplyFilter('editor.vars', vars);
+
+	var contents = '<select class="form-control summernote-inservar" tabindex="-1">'+
+		    '<option value="">'+Lang.get("messages.insert_var")+' ...</option>';
+    for (var entity_name in vars) {
+    	contents += '<optgroup label="'+Lang.get("messages."+entity_name)+'">';
+		for (var var_name in vars[entity_name]) {
+			contents += '<option value="{%'+var_name+'%}">'+vars[entity_name][var_name]+'</option>';
+		}
+    	contents += '</optgroup>';
+    }
+
+	contents += '</select>';
 
 	// create button
 	var button = ui.button({

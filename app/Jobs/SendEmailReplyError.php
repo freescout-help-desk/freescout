@@ -44,7 +44,7 @@ class SendEmailReplyError implements ShouldQueue
     public function handle()
     {
         // Configure mail driver according to Mailbox settings
-        \App\Misc\Mail::setMailDriver($this->mailbox, null, $this->conversation);
+        \App\Misc\Mail::setMailDriver($this->mailbox);
 
         $exception = null;
 
