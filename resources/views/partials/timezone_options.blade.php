@@ -16,7 +16,7 @@
 <option value="America/Caracas" @if ($current_timezone == 'America/Caracas')selected="selected"@endif>(GMT-04:30) Caracas, La Paz</option>
 <option value="America/Manaus" @if ($current_timezone == 'America/Manaus')selected="selected"@endif>(GMT-04:00) Atlantic Time</option>
 <option value="America/Puerto_Rico" @if ($current_timezone == 'America/Puerto_Rico')selected="selected"@endif>(GMT-04:00) Atlantic Time (Puerto Rico)</option>
-<option value="Canada/Newfoundlan" @if ($current_timezone == 'Canada/Newfoundlan')selected="selected"@endif>(GMT-03:30) Newfoundland</option>
+<option value="Canada/Newfoundland" @if ($current_timezone == 'Canada/Newfoundland')selected="selected"@endif>(GMT-03:30) Newfoundland</option>
 <option value="America/Thule" @if ($current_timezone == 'America/Thule')selected="selected"@endif>(GMT-03:00) Western Greenland Time</option>
 <option value="America/Sao_Paulo" @if ($current_timezone == 'America/Sao_Paulo')selected="selected"@endif>(GMT-03:00) Eastern Brazil</option>
 <option value="America/St_Johns" @if ($current_timezone == 'America/St_Johns')selected="selected"@endif>(GMT-02:30) Newfoundland Time</option>
