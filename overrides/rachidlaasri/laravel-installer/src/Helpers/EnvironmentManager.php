@@ -120,7 +120,7 @@ class EnvironmentManager
         'DB_PORT='.$request->database_port."\n".
         'DB_DATABASE='.$request->database_name."\n".
         'DB_USERNAME='.$request->database_username."\n".
-        'DB_PASSWORD='.$request->database_password."\n".
+        'DB_PASSWORD="'.str_replace('"', '\"\"', $request->database_password)."\"\n".
         (!empty($request->database_charset) ? 'DB_CHARSET='.$request->database_charset."\n" : '').
         (!empty($request->database_collation) ? 'DB_COLLATION='.$request->database_collation."\n" : '').
         "\n".
