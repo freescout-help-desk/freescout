@@ -209,7 +209,7 @@ class FetchEmails extends Command
                 } else {
                     $this->error('['.date('Y-m-d H:i:s').'] '.$last_error);
                     $this->logError('Folder: '.$folder->name.'; Error: '.$last_error);
-                    $messages = [];
+                    $messages = collect([]);
                 }
             }
 
