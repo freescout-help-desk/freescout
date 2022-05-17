@@ -54,7 +54,7 @@ class ModulesController extends Controller
         \Module::clearCache();
         $modules = \Module::all();
         foreach ($modules as $module) {
-            $installed_modules[] = [
+            $module_data = [
                 'alias'                        => $module->getAlias(),
                 'name'                         => $module->getName(),
                 'description'                  => $module->getDescription(),
@@ -74,6 +74,8 @@ class ModulesController extends Controller
                 // Determined later
                 'new_version'        => '',
             ];
+            $module_data = \App\Module::formatModuleData($module_data);
+            $installed_modules[] = $module_data;
         }
 
         // No need, as we update modules list on each page load
@@ -85,6 +87,9 @@ class ModulesController extends Controller
         // Prepare directory modules
         if (is_array($modules_directory)) {
             foreach ($modules_directory as $i_dir => $dir_module) {
+
+                $modules_directory[$i_dir] = \App\Module::formatModuleData($dir_module);
+
                 // Remove modules without aliases
                 if (empty($dir_module['alias'])) {
                     unset($modules_directory[$i_dir]);

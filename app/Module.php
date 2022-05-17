@@ -233,4 +233,13 @@ class Module extends Model
     {
         return preg_replace("/ Module$/", '', $name);
     }
+
+    public static function formatModuleData($module_data)
+    {
+        // Add (Third-Party).
+        if (\App\Module::isOfficial($module_data['authorUrl']) && $module_data['author'] != 'FreeScout') {
+            $module_data['name'] = $module_data['name'].' ['.__('Third-Party').']';
+        }
+        return $module_data;
+    }
 }
