@@ -2,6 +2,7 @@
     @php
         $menu_mailboxes = auth()->user()->mailboxesCanView();
     @endphp
+    @action('mailbox.before_name', $mailbox)
     <span class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
         {{ $mailbox->name }} @if (count($menu_mailboxes))<span class="caret"></span>@endif
     </span>
