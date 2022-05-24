@@ -21,6 +21,8 @@
             <div class="col-xs-12">
                 <form class="form-horizontal margin-top" method="POST" action="">
                     {{ csrf_field() }}
+                    
+	                @action('mailbox.update_before_name', $mailbox)
 
                     <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                         <label for="name" class="col-sm-2 control-label">{{ __('Mailbox Name') }}</label>
