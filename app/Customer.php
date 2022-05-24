@@ -1224,7 +1224,7 @@ class Customer extends Model
                 return '';
             }
         } else {
-            return \Eventy::filter('customer.default_avatar', '/img/default-avatar.png', $this->getMainEmail());
+            return \Eventy::filter('customer.default_avatar', '/img/default-avatar.png', $this);
         }
     }
 
