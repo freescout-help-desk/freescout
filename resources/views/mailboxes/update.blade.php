@@ -19,7 +19,7 @@
     <div class="row-container form-container">
         <div class="row">
             <div class="col-xs-12">
-                <form class="form-horizontal margin-top" method="POST" action="">
+                <form class="form-horizontal margin-top" method="POST" action="" enctype="multipart/form-data">
                     {{ csrf_field() }}
                     
 	                @action('mailbox.update_before_name', $mailbox)
