@@ -167,15 +167,17 @@ class FetchEmails extends Command
 
             // Get unseen messages for a period
             $last_error = '';
+            $messages = collect([]);
+
             try {    
-                $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
+                $messages_query = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
                 if ($unseen) {
-                    $messages->unseen();
+                    $messages_query->unseen();
                 }
                 if ($no_charset) {
-                    $messages->setCharset(null);
+                    $messages_query->setCharset(null);
                 }
-                $messages = $messages->get();
+                $messages = $messages_query->get();
 
                 if (method_exists($client, 'getLastError')) {
                     $last_error = $client->getLastError();
@@ -188,11 +190,11 @@ class FetchEmails extends Command
                 $errors_count = count($client->getErrors());
                 // Solution for MS mailboxes.
                 // https://github.com/freescout-helpdesk/freescout/issues/176
-                $messages = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null);
+                $messages_query = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null);
                 if ($unseen) {
-                    $messages->unseen();
+                    $messages_query->unseen();
                 }
-                $messages = $messages->get();
+                $messages = $messages_query->get();
 
                 $no_charset = true;
                 if (count($client->getErrors()) > $errors_count) {
@@ -209,7 +211,6 @@ class FetchEmails extends Command
                 } else {
                     $this->error('['.date('Y-m-d H:i:s').'] '.$last_error);
                     $this->logError('Folder: '.$folder->name.'; Error: '.$last_error);
-                    $messages = collect([]);
                 }
             }
 

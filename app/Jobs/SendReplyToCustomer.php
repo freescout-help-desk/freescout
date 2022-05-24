@@ -290,8 +290,13 @@ class SendReplyToCustomer implements ShouldQueue
                 $part1['contents.data'] = $reply_mail->render();
 
                 try {
+                    // getFolder does not work if sent folder has spaces.
                     $folder = $client->getFolder($imap_sent_folder);
-                    $folder->appendMessage(imap_mail_compose($envelope, [$part1]), '\Seen', now()->format('d-M-Y H:i:s O'));
+                    if ($folder) {
+                        $folder->appendMessage(imap_mail_compose($envelope, [$part1]), '\Seen', now()->format('d-M-Y H:i:s O'));
+                    } else {
+                        \Log::error('Could not save outgoing reply to the IMAP folder (make sure IMAP folder does not have spaces - folders with spaces do not work): '.$imap_sent_folder);
+                    }
                 } catch (\Exception $e) {
                     // Just log error and continue.
                     \Helper::logException($e, 'Could not save outgoing reply to the IMAP folder, IMAP folder not found: '.$imap_sent_folder.' - ');
