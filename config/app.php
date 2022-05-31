@@ -1,5 +1,11 @@
 <?php
 
+$key = env('APP_KEY', null);
+$key_file = env("APP_KEY_FILE", null);
+if (empty($key) && !empty($key_file)) {
+  $key = trim(file_get_contents($key_file));
+}
+
 return [
 
     /*
@@ -126,7 +132,7 @@ return [
     |
     */
 
-    'key' => env('APP_KEY'),
+    'key' => $key,
 
     'cipher' => 'AES-256-CBC',
 
