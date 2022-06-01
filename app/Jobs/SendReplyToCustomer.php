@@ -271,6 +271,7 @@ class SendReplyToCustomer implements ShouldQueue
         if ($imap_sent_folder) {
             try {
                 $client = \MailHelper::getMailboxClient($mailbox);
+                
                 $client->connect();
 
                 $envelope['from'] = $mailbox->getMailFrom(null, $this->conversation)['address'];
@@ -293,7 +294,11 @@ class SendReplyToCustomer implements ShouldQueue
                     // getFolder does not work if sent folder has spaces.
                     $folder = $client->getFolder($imap_sent_folder);
                     if ($folder) {
-                        $folder->appendMessage(imap_mail_compose($envelope, [$part1]), '\Seen', now()->format('d-M-Y H:i:s O'));
+                        if (get_class($client) == 'Webklex\PHPIMAP\Client') {
+                            $folder->appendMessage(imap_mail_compose($envelope, [$part1]), ['Seen'], now()->format('d-M-Y H:i:s O'));
+                        } else {
+                            $folder->appendMessage(imap_mail_compose($envelope, [$part1]), '\Seen', now()->format('d-M-Y H:i:s O'));
+                        }
                     } else {
                         \Log::error('Could not save outgoing reply to the IMAP folder (make sure IMAP folder does not have spaces - folders with spaces do not work): '.$imap_sent_folder);
                     }
