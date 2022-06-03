@@ -28,6 +28,7 @@ class ModulesController extends Controller
     {
         $installed_modules = [];
         $modules_directory = [];
+        $third_party_modules = [];
         $all_modules = [];
         $flashes = [];
         $updates_available = false;
@@ -122,6 +123,12 @@ class ModulesController extends Controller
                 }
                 $modules_directory[$i_dir]['active'] = \App\Module::isActive($dir_module['alias']);
                 $modules_directory[$i_dir]['activated'] = false;
+
+                // Do not show third-party modules in Modules Derectory.
+                if (\App\Module::isThirdParty($dir_module)) {
+                    $third_party_modules[] = $modules_directory[$i_dir];
+                    unset($modules_directory[$i_dir]);
+                }
             }
         } else {
             $modules_directory = [];
@@ -130,6 +137,7 @@ class ModulesController extends Controller
         return view('modules/modules', [
             'installed_modules' => $installed_modules,
             'modules_directory' => $modules_directory,
+            'third_party_modules' => $third_party_modules,
             'flashes'           => $flashes,
             'updates_available' => $updates_available,
             'all_modules'       => $all_modules,

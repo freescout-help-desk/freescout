@@ -59,7 +59,26 @@
             @include('modules/partials/module_card')
         @endforeach
     </div>
+
     <div class="clearfix margin-bottom"></div>
+
+    @if (count($third_party_modules))
+        <div class="section-heading" id="third-party">
+            {{ __('Third-Party Modules') }} <small>({{ count($third_party_modules) }})</small>
+        </div>
+
+        <div class="row-container margin-top">
+            <a href="javascript:$('#third-party-container').toggleClass('hidden');void(0);" class="btn btn-default">{{ __('Show') }} »</a>
+        </div>
+
+        <div class="row-container margin-top hidden" id="third-party-container">
+            @foreach ($third_party_modules as $module)
+                @include('modules/partials/module_card')
+            @endforeach
+        </div>
+    @endif
+
+    <div class="clearfix margin-bottom-30"></div>
 
     <div id="deactivate_license_modal" class="hidden">
 
