@@ -115,7 +115,7 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
         if ($this->loggedOut) {
             return;
         }
-
+        
         // If we've already retrieved the user for the current request we can just
         // return it back immediately. We do not want to fetch the user data on
         // every call to this method because that would be tremendously slow.
@@ -378,7 +378,7 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
     protected function hasValidCredentials($user, $credentials)
     {
         // https://github.com/laravel/framework/pull/31357
-        $validated = ! is_null($user) && $this->provider->validateCredentials($user, $credentials);
+        $validated = ! is_null($user) && \Eventy::filter('session_guard.validate_credentials', $this->provider->validateCredentials($user, $credentials), $user, $credentials);
 
         if ($validated) {
             $this->fireValidatedEvent($user);
