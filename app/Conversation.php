@@ -1525,7 +1525,7 @@ class Conversation extends Model
             $mailbox = $this->mailbox;
         }
         $customer_emails = [$this->customer_email];
-        if (strstr($this->customer_email, ',')) {
+        if (strstr($this->customer_email ?? '', ',')) {
             // customer_email contains mutiple addresses (when new conversation for multiple recipients created)
             $customer_emails = explode(',', $this->customer_email);
         }
