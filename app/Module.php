@@ -245,4 +245,15 @@ class Module extends Model
         }
         return $module_data;
     }
+
+    public static function isThirdParty($module_data)
+    {
+        if (\App\Module::isOfficial($module_data['authorUrl']) 
+            && $module_data['author'] != 'FreeScout'
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

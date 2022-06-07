@@ -23,11 +23,11 @@
 @endif
 @endforeach
 
-{{ __('Conversation URL') }}: {{ $conversation->url() }}
+{{ __('Conversation URL') }}: {{ \Eventy::filter('email_notification.conv_url', $conversation->url(), $user) }}
 
 {{ \Eventy::action('email_notification_text.footer_links', $mailbox, $conversation, $threads) }}
 
 -----------------------------------------------------------
 
 {{ $mailbox->name }}:
-{{ $mailbox->url() }}
+{{ \Eventy::filter('email_notification.mailbox_url', $mailbox->url(), $user) }}

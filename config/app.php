@@ -1,5 +1,11 @@
 <?php
 
+$key = env('APP_KEY', null);
+$key_file = env("APP_KEY_FILE", null);
+if (empty($key) && !empty($key_file)) {
+    $key = trim(file_get_contents($key_file));
+}
+
 return [
 
     /*
@@ -12,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.16',
+    'version' => '1.8.17',
 
     /*
     |--------------------------------------------------------------------------
@@ -92,7 +98,7 @@ return [
     */
 
     'locale'          => env('APP_LOCALE', 'en'),
-    'locales'         => ['en', 'hr', 'da', 'nl', 'fr', 'de', 'ja', 'it', 'fa', 'pl', 'pt-PT', 'pt-BR', 'ru', 'es', 'sk', 'sv'],
+    'locales'         => ['en', 'hr', 'cs', 'da', 'nl', 'fr', 'de', 'it', 'ja', 'ko', 'fa', 'pl', 'pt-PT', 'pt-BR', 'ru', 'es', 'sk', 'sv'],
     'locales_rtl'     => ['fa'],
     'default_locale'  => 'en',
 
@@ -126,7 +132,7 @@ return [
     |
     */
 
-    'key' => env('APP_KEY'),
+    'key' => $key,
 
     'cipher' => 'AES-256-CBC',
 

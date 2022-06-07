@@ -223,7 +223,6 @@
     "Change your password": "Zmień swoje hasło",
     "Phone Number": "Numer Telefonu",
     "Language": "Język",
-    "Keyboard Shortcuts": "Skróty Klawiszowe",
     "Photo": "Zdjęcie",
     "Deleting": "Usuwanie",
     "Delete Photo": "Usuń Zdjęcie",
@@ -754,5 +753,19 @@
     "Use Deactivate License button to transfer license key from another domain": "Użyj przycisku Dezaktywuj Licencję, w celu przeniesienia klucza licencyjnego z innej domeny",
     "Published": "Opublikowano",
     "Copy": "Kopiuj",
-    "Comma separated list off email addresses from which user can reply to email notifications in addition to user's main Email": "Lista dodatkowych, poza głównym, adresów email oddzielonych przecinkami, z których użytkownik może odpowiadać na powiadomienia emailowe."
+    "Comma separated list off email addresses from which user can reply to email notifications in addition to user's main Email": "Lista dodatkowych, poza głównym, adresów email oddzielonych przecinkami, z których użytkownik może odpowiadać na powiadomienia emailowe.",
+    "There is a user with such email. Users and mailboxes can not have the same email addresses.": "Istnieje już uzytkownik z takim adresem email. Użytkownicy i skrzynki pocztowe nie mogą mieć takich samych adresów email.",
+    "Error occurred": "Wystąpił Błąd",
+    "There is a mailbox with such email. Users and mailboxes can not have the same email addresses.": "Istnieje już skrzynka pocztowa z takim adresem email. Użytkownicy i skrzynki pocztowe nie mogą mieć takich samych adresów email.",
+    ":%tag_start%Conversation created:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%": ":%tag_start%Rozmowa utworzona:%tag_end% :%view_start%Podgląd:%a_end% or :%undo_start%Cofnij:%a_end%",
+    ":%tag_start%Note added:%tag_end% :%view_start%View:%a_end%": ":%tag_start%Notka dodana:%tag_end% :%view_start%Podgląd:%a_end%",
+    ":%tag_start%Email Sent:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%": ":%tag_start%Email Wysłany:%tag_end% :%view_start%Podgląd:%a_end% or :%undo_start%Cofnij:%a_end%",
+    ":%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%": ":%tag_start%Email Wysłany:%tag_end% :%undo_start%Cofnij:%a_end%",
+    "Third-Party": "Trzecia Strona",
+    "Default Subscriptions For New Users": "Domyślne Subskrybcje Dla Nowych Użytkowników",
+    "How to :%link_start%connect Gmail:%link_end% to FreeScout.": "Jak :%link_start%podłączyć Gmail:%link_end% do FreeScouta.",
+    "Connect": "Połącz",
+    "Disconnect": "Rozłącz",
+    "Help": "Pomoc",
+    "Alternatively cron job can be executed by requesting the following URL every minute (this method is not recommended as some features may not work as expected, use it at your own risk)": "Alternatywnie zadanie w cron może być wykonane przez wysyłanie zaptyań co minutę do URL (ta metoda nie jest rekomendowana bo niektóre funkcje mogą nie działać, używaj na własne ryzyko)"
 }

@@ -1073,7 +1073,7 @@ class User extends Authenticatable
         if ($this->email == $email) {
             return true;
         }
-        $alt_emails = explode(',', $this->emails);
+        $alt_emails = explode(',', $this->emails ?? '');
         
         foreach ($alt_emails as $alt_email) {
             if (Email::sanitizeEmail($alt_email) == $email) {
