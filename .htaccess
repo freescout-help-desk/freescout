@@ -5,5 +5,6 @@
 	# On some hostings it does not work as "public/$1", but works as "/public/$1".
 	# But we can't write it as "/public/$1" because in this case it does not work
 	# when application is installed in subdirectory.
+	RewriteCond %{REQUEST_URI} !/\.well\-known/?.*
 	RewriteRule (.*) public/$1 [L]
 </IfModule>
