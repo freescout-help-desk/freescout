@@ -74,6 +74,7 @@ return array(
     'Illuminate\\Cache\\Console\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Cache/Console'),
     'Illuminate\\Cache\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Cache'),
     'Illuminate\\Broadcasting\\Broadcasters\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Broadcasting/Broadcasters'),
+    'Illuminate\\Auth\\Middleware\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Auth/Middleware'),
     'Illuminate\\Auth\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Auth'),
     'Illuminate\\' => array($vendorDir . '/laravel/framework/src/Illuminate'),
     'Html2Text\\' => array($vendorDir . '/html2text/html2text/src', $vendorDir . '/html2text/html2text/test'),

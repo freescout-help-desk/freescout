@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '29b36472c942b505a7d726929a865de0101a2e0b',
+        'reference' => '4f65bbc7236fb51ae7a29244f590dc59862d16f0',
         'name' => 'freescout-helpdesk/freescout',
         'dev' => false,
     ),
@@ -160,7 +160,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '29b36472c942b505a7d726929a865de0101a2e0b',
+            'reference' => '4f65bbc7236fb51ae7a29244f590dc59862d16f0',
             'dev_requirement' => false,
         ),
         'guzzlehttp/guzzle' => array(

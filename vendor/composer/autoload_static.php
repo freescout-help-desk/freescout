@@ -131,6 +131,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Illuminate\\Cache\\Console\\' => 25,
             'Illuminate\\Cache\\' => 17,
             'Illuminate\\Broadcasting\\Broadcasters\\' => 37,
+            'Illuminate\\Auth\\Middleware\\' => 27,
             'Illuminate\\Auth\\' => 16,
             'Illuminate\\' => 11,
         ),
@@ -471,6 +472,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Illuminate\\Broadcasting\\Broadcasters\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Broadcasting/Broadcasters',
+        ),
+        'Illuminate\\Auth\\Middleware\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Auth/Middleware',
         ),
         'Illuminate\\Auth\\' => 
         array (
@@ -1658,7 +1663,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Illuminate\\Auth\\Events\\Validated' => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Auth/Events/Validated.php',
         'Illuminate\\Auth\\GenericUser' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/GenericUser.php',
         'Illuminate\\Auth\\GuardHelpers' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/GuardHelpers.php',
-        'Illuminate\\Auth\\Middleware\\Authenticate' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php',
+        'Illuminate\\Auth\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php',
         'Illuminate\\Auth\\Middleware\\AuthenticateWithBasicAuth' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Middleware/AuthenticateWithBasicAuth.php',
         'Illuminate\\Auth\\Middleware\\Authorize' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Middleware/Authorize.php',
         'Illuminate\\Auth\\Notifications\\ResetPassword' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Auth/Notifications/ResetPassword.php',
@@ -2474,9 +2479,6 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Mews\\Purifier\\Facades\\Purifier' => __DIR__ . '/..' . '/mews/purifier/src/Facades/Purifier.php',
         'Mews\\Purifier\\Purifier' => __DIR__ . '/..' . '/mews/purifier/src/Purifier.php',
         'Mews\\Purifier\\PurifierServiceProvider' => __DIR__ . '/..' . '/mews/purifier/src/PurifierServiceProvider.php',
-        'Modules\\SampleModule\\Database\\Seeders\\SampleModuleDatabaseSeeder' => __DIR__ . '/../..' . '/Modules/SampleModule/Database/Seeders/SampleModuleDatabaseSeeder.php',
-        'Modules\\SampleModule\\Http\\Controllers\\SampleModuleController' => __DIR__ . '/../..' . '/Modules/SampleModule/Http/Controllers/SampleModuleController.php',
-        'Modules\\SampleModule\\Providers\\SampleModuleServiceProvider' => __DIR__ . '/../..' . '/Modules/SampleModule/Providers/SampleModuleServiceProvider.php',
         'Monolog\\ErrorHandler' => __DIR__ . '/..' . '/monolog/monolog/src/Monolog/ErrorHandler.php',
         'Monolog\\Formatter\\ChromePHPFormatter' => __DIR__ . '/..' . '/monolog/monolog/src/Monolog/Formatter/ChromePHPFormatter.php',
         'Monolog\\Formatter\\ElasticaFormatter' => __DIR__ . '/..' . '/monolog/monolog/src/Monolog/Formatter/ElasticaFormatter.php',
