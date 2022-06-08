@@ -27,7 +27,8 @@
 	            @endif
 	        @endforeach
 			@foreach ($customer->getPhones() as $phone)
-	            <li class="customer-phone"><a href="tel:{{ $phone['value'] }}" title="{{ __('Call customer') }}">{{ $phone['value'] }}</a></li>
+	            <li class="customer-phone"><a href="tel:{{ $phone['value'] }}" title="{{ __('Call customer') }}">{{ $phone['value'] }}
+                        <small class="text-muted">({{ __(ucfirst(\App\Customer::$phone_types[$phone['type']])) }})</small></a></li>
 	        @endforeach
 		</ul>
 		<div class="customer-extra">

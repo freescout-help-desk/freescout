@@ -766,5 +766,11 @@
     "Disconnect": "Se déconnecter",
     "Help": "Aide",
     "Alternatively cron job can be executed by requesting the following URL every minute (this method is not recommended as some features may not work as expected, use it at your own risk)": "Il est également possible d'exécuter une tâche cron en demandant l'URL suivante toutes les minutes (cette méthode n'est pas recommandée car certaines fonctions peuvent ne pas fonctionner comme prévu, utilisez-la à vos propres risques).",
-    "Selected conversation will be merged into the current conversation behind the popup.": "La conversation sélectionnée sera fusionnée avec la conversation en cours derrière le popup."
+    "Selected conversation will be merged into the current conversation behind the popup.": "La conversation sélectionnée sera fusionnée avec la conversation en cours derrière le popup.",
+    "Work": "Professionel",
+    "Home": "Maison",
+    "Other": "Autre",
+    "Mobile": "Mobile",
+    "Fax": "Fax",
+    "Pager": "Pager"
 }

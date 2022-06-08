@@ -59,9 +59,14 @@
                                 @if (!empty($phone['type']) && isset($phone['value']))
                                     <div class="multi-item">
                                         <div>
-                                            {{-- We are keeping it simple and don't show phone type --}}
-                                            <input type="hidden" class="form-control input-sized-lg" name="phones[{{ $i }}][type]" value="{{ $phone['type'] }}">
-                                            <input type="text" class="form-control input-sized-lg" name="phones[{{ $i }}][value]" value="{{ $phone['value'] }}">
+                                            <div class="input-group input-group-flex input-sized-lg">
+                                                <select class="form-control" name="phones[{{ $i }}][type]">
+                                                    @foreach(\App\Customer::$phone_types as $phone_type => $name)
+                                                        <option value="{{$phone_type}}" {{ $phone_type == $phone['type'] ? 'selected="selected' : '' }}>{{ __(ucfirst($name))  }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <input type="tel" class="form-control " name="phones[{{ $i }}][value]" value="{{ $phone['value'] }}">
+                                            </div>
                                             <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                         </div>
                                     </div>
