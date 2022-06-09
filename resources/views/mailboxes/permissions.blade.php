@@ -49,9 +49,10 @@
 
                 </div>
 
+                @action('mailbox.permissions.before_access_settings', $mailbox, $mailbox_users, $managers)
 
                 <div class="col-xs-12 margin-top">
-                    <h3> {{ __('Access Settings') }}:</h3>
+                    <h3> {{ __('Access Settings') }}</h3>
                 </div>
                 <div class="col-md-11 col-lg-9" style="overflow-x: auto;">
 

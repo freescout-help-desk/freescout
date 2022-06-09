@@ -764,6 +764,18 @@ a h4 {
     line-height: 50px;
     font-size: 18px;
 }
+.card-icon {
+    background-color: #c1cbd4;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    color: #fff;
+    float: left;
+    text-align: center;
+    width: 50px;
+    height: 50px;
+    line-height: 49px;
+    font-size: 18px;
+}
 .person-photo-auto {
     float: left;
     line-height: 11px;
