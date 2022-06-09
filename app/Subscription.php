@@ -239,11 +239,14 @@ class Subscription extends Model
             ->whereIn('event', $events)
             ->get();
 
+        $subscriptions = \Eventy::filter('subscription.subscriptions', $subscriptions, $conversation, $events);
+
         // Filter subscribers
         $users_to_notify = [];
         foreach ($subscriptions as $i => $subscription) {
             // Actions on conversation where user is assignee
-            if (in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY]) && $conversation->user_id != $subscription->user_id
+            if (in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY]) 
+                && ($conversation->user_id != $subscription->user_id && !\Eventy::filter('subscription.is_user_assignee', false, $subscription, $conversation))
             ) {
                 continue;
             }
