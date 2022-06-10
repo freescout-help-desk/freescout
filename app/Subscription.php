@@ -239,7 +239,7 @@ class Subscription extends Model
             ->whereIn('event', $events)
             ->get();
 
-        $subscriptions = \Eventy::filter('subscription.subscriptions', $subscriptions, $conversation, $events);
+        $subscriptions = \Eventy::filter('subscription.subscriptions', $subscriptions, $conversation, $events, $thread);
 
         // Filter subscribers
         $users_to_notify = [];

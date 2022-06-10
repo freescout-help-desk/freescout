@@ -458,6 +458,8 @@ class Mailbox extends Model
             $users = User::sortUsers($users);
         }
 
+        $users = \Eventy::filter('mailbox.users_having_access', $users, $this, $cache, $fields, $sort);
+
         return $users;
     }
 
