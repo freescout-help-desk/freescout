@@ -32,6 +32,8 @@ class User extends Authenticatable
 
     const EMAIL_MAX_LENGTH = 100;
 
+    const EMAIL_DELETED_SUFFIX = '_deleted';
+
     /**
      * Roles.
      */
