@@ -85,8 +85,12 @@ class SendNotificationToUsers implements ShouldQueue
 
         foreach ($this->users as $user) {
 
-            // User cam ne deleted.
+            // User can ne deleted from DB.
             if (!isset($user->id)) {
+                continue;
+            }
+
+            if ($user->isDeleted()) {
                 continue;
             }
 
