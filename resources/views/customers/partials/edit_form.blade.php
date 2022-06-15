@@ -36,7 +36,7 @@
                             @foreach (old('emails', $emails) as $i => $email)
                                 <div class="multi-item {{ $errors->has('emails.'.$i) ? ' has-error' : '' }}">
                                     <div>
-                                        <input type="text" class="form-control input-sized-lg" name="emails[]" value="{{ $email }}" maxlength="191">
+                                        <input type="email" class="form-control input-sized-lg" name="emails[]" value="{{ $email }}" maxlength="191">
                                         <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                     </div>
 
@@ -50,7 +50,7 @@
                     </div>
                 </div>
 
-                <div class="form-group{{ $errors->has('websites') ? ' has-error' : '' }} margin-bottom-0">
+                <div class="form-group{{ $errors->has('phones') ? ' has-error' : '' }} margin-bottom-0">
                     <label for="phones" class="col-sm-2 control-label">{{ __('Phone') }}</label>
 
                     <div class="col-sm-6">
@@ -59,9 +59,14 @@
                                 @if (!empty($phone['type']) && isset($phone['value']))
                                     <div class="multi-item">
                                         <div>
-                                            {{-- We are keeping it simple and don't show phone type --}}
-                                            <input type="hidden" class="form-control input-sized-lg" name="phones[{{ $i }}][type]" value="{{ $phone['type'] }}">
-                                            <input type="text" class="form-control input-sized-lg" name="phones[{{ $i }}][value]" value="{{ $phone['value'] }}">
+                                            <div class="input-group input-group-flex input-sized-lg">
+                                                <select class="form-control" name="phones[{{ $i }}][type]">
+                                                    @foreach(\App\Customer::$phone_types as $phone_type => $name)
+                                                        <option value="{{$phone_type}}" {{ $phone_type == $phone['type'] ? 'selected="selected' : '' }}>{{ \App\Customer::getPhoneTypeName($phone_type) }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <input type="tel" class="form-control " name="phones[{{ $i }}][value]" value="{{ $phone['value'] }}">
+                                            </div>
                                             <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                         </div>
                                     </div>
@@ -102,7 +107,7 @@
                             @foreach ($customer->getWebsites(true) as $website)
                                 <div class="multi-item">
                                     <div>
-                                        <input type="text" class="form-control input-sized-lg" name="websites[]" value="{{ $website }}" maxlength="100">
+                                        <input type="url" class="form-control input-sized-lg" name="websites[]" value="{{ $website }}" maxlength="100">
                                         <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                     </div>
                                 </div>
@@ -231,7 +236,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="form-group{{ $errors->has('photo_url') ? ' has-error' : '' }} margin-bottom-0">
                     <label for="photo_url" class="col-sm-2 control-label">{{ __('Photo') }}</label>
 

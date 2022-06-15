@@ -558,7 +558,7 @@ class UsersController extends Controller
 
                     $user->status = \App\User::STATUS_DELETED;
                     // Update email.
-                    $email_suffix = '_deleted'.date('YmdHis');
+                    $email_suffix = User::EMAIL_DELETED_SUFFIX.date('YmdHis');
                     // We have to truncate email to avoid "Data too long" error.
                     $user->email = mb_substr($user->email, 0, User::EMAIL_MAX_LENGTH - mb_strlen($email_suffix)).$email_suffix;
 

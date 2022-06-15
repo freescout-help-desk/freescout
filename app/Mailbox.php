@@ -458,6 +458,8 @@ class Mailbox extends Model
             $users = User::sortUsers($users);
         }
 
+        $users = \Eventy::filter('mailbox.users_having_access', $users, $this, $cache, $fields, $sort);
+
         return $users;
     }
 
@@ -492,6 +494,8 @@ class Mailbox extends Model
         // Sort by full name
         $users = User::sortUsers($users);
 
+        $users = \Eventy::filter('mailbox.users_assignable', $users, $this, $cache);
+
         return $users;
     }
 
@@ -522,7 +526,10 @@ class Mailbox extends Model
                 $user = User::find($user_id);
             }
         }
-        if ($user && $user->isAdmin()) {
+        $filter = \Eventy::filter('mailbox.user_has_access', -1, $this, $user);
+        if ($filter != -1) {
+            return (bool)$filter;
+        } elseif ($user && $user->isAdmin()) {
             return true;
         } else {
             return (bool) $this->users()->where('users.id', $user_id)->count();

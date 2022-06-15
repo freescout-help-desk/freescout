@@ -51,20 +51,6 @@
         <td class="subscriptions-mobile"><input type="checkbox" @include('users/is_subscribed', ['medium' => App\Subscription::MEDIUM_MOBILE, 'event' => App\Subscription::EVENT_FOLLOWED_CONVERSATION_UPDATED]) name="{{ $subscriptions_formname }}[{{ App\Subscription::MEDIUM_MOBILE }}][]" @if (!$mobile_available) disabled="disabled" @endif value="{{ App\Subscription::EVENT_FOLLOWED_CONVERSATION_UPDATED }}"></td>
     </tr>
     @action('notifications_table.general.append', ['person' => $person, 'subscriptions' => $subscriptions, 'mobile_available' => $mobile_available])
-    {{--<tr>
-    <tr>
-        <td>
-            @if ($person)
-                {{ __(":person's team is @mentioned in a conversation", ['person' => $person]) }}
-            @else
-                {{ __('My team is @mentioned in a conversation') }}
-            @endif 
-            (todo)
-        </td>
-        <td class="subscriptions-email"><input type="checkbox" @include('users/is_subscribed', ['medium' => App\Subscription::MEDIUM_EMAIL, 'event' => App\Subscription::EVENT_MY_TEAM_MENTIONED]) name="{{ $subscriptions_formname }}[{{ App\Subscription::MEDIUM_EMAIL }}][]" value="{{ App\Subscription::EVENT_MY_TEAM_MENTIONED }}"></td>
-        <td class="subscriptions-browser"><input type="checkbox" @include('users/is_subscribed', ['medium' => App\Subscription::MEDIUM_BROWSER, 'event' => App\Subscription::EVENT_MY_TEAM_MENTIONED]) name="{{ $subscriptions_formname }}[{{ App\Subscription::MEDIUM_BROWSER }}][]" value="{{ App\Subscription::EVENT_MY_TEAM_MENTIONED }}"></td>
-        <td class="subscriptions-mobile"><input type="checkbox" @include('users/is_subscribed', ['medium' => App\Subscription::MEDIUM_MOBILE, 'event' => App\Subscription::EVENT_MY_TEAM_MENTIONED]) name="{{ $subscriptions_formname }}[{{ App\Subscription::MEDIUM_MOBILE }}][]" @if (!$mobile_available) disabled="disabled" @endif value="{{ App\Subscription::EVENT_MY_TEAM_MENTIONED }}"></td>
-    </tr>--}}
     <tr class="table-header">
         <th>
             @if ($person)

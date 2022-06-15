@@ -27,7 +27,8 @@
 	            @endif
 	        @endforeach
 			@foreach ($customer->getPhones() as $phone)
-	            <li class="customer-phone"><a href="tel:{{ $phone['value'] }}" title="{{ __('Call customer') }}">{{ $phone['value'] }}</a></li>
+	            <li class="customer-phone"><a href="tel:{{ $phone['value'] }}" title="{{ __('Click to Call') }}">{{ $phone['value'] }}
+                        @if (!\App\Customer::isDefaultPhoneType($phone['type']) || $customer->getPhones() > 1)<small class="text-muted">({{ \App\Customer::getPhoneTypeName($phone['type']) }})</small>@endif</a></li>
 	        @endforeach
 		</ul>
 		<div class="customer-extra">

@@ -50,10 +50,10 @@ class Customer extends Model
     public static $phone_types = [
         self::PHONE_TYPE_WORK   => 'work',
         self::PHONE_TYPE_HOME   => 'home',
-        self::PHONE_TYPE_OTHER  => 'other',
         self::PHONE_TYPE_MOBILE => 'mobile',
         self::PHONE_TYPE_FAX    => 'fax',
         self::PHONE_TYPE_PAGER  => 'pager',
+        self::PHONE_TYPE_OTHER  => 'other',
     ];
 
     /**
@@ -1383,5 +1383,24 @@ class Customer extends Model
         $meta = $this->meta;
         $meta[$key] = $value;
         $this->meta = $meta;
+    }
+
+    public static function getPhoneTypeName($code)
+    {
+        $phone_types = [
+            self::PHONE_TYPE_WORK   => __('Work'),
+            self::PHONE_TYPE_HOME   => __('Home'),
+            self::PHONE_TYPE_OTHER  => __('Other'),
+            self::PHONE_TYPE_MOBILE => __('Mobile'),
+            self::PHONE_TYPE_FAX    => __('Fax'),
+            self::PHONE_TYPE_PAGER  => __('Pager'),
+        ];
+
+        return $phone_types[$code] ?? '';
+    }
+
+    public static function isDefaultPhoneType($code)
+    {
+        return (self::PHONE_TYPE_WORK == $code);
     }
 }

@@ -23,7 +23,7 @@
             <div class="col-md-11 col-lg-9">
                 <form method="POST" action="" class="user-subscriptions">
                     {{ csrf_field() }}
-                    @include('users/subscriptions-table')
+                    @include('users/subscriptions_table')
                     <div class="form-group margin-top">    
                         <button type="submit" class="btn btn-primary">
                             {{ __('Save Notifications') }}

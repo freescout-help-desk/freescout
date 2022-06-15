@@ -86,7 +86,7 @@
         <div class="col-sm-offset-2 col-sm-9">
             <div class="user-subscriptions">
                 <div style="margin-top: -12px"></div>
-                @include('users/subscriptions-table', ['subscriptions_formname' => 'settings[subscription_defaults]'])
+                @include('users/subscriptions_table', ['subscriptions_formname' => 'settings[subscription_defaults]'])
             </div>
         </div>
     </div>

@@ -32,6 +32,8 @@ class User extends Authenticatable
 
     const EMAIL_MAX_LENGTH = 100;
 
+    const EMAIL_DELETED_SUFFIX = '_deleted';
+
     /**
      * Roles.
      */
@@ -209,7 +211,7 @@ class User extends Authenticatable
      */
     public function getFullName()
     {
-        return $this->first_name.' '.$this->last_name;
+        return \Eventy::filter('user.full_name', $this->first_name.' '.$this->last_name, $this);
     }
 
     /**

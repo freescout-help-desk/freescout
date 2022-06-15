@@ -2340,7 +2340,7 @@ class ConversationsController extends Controller
             return $user->mailboxesCanView();
         });
         $users = \Cache::remember('search_filter_users_'.$user->id, 5, function () use ($user, $mailboxes) {
-            return $user->whichUsersCanView($mailboxes);
+            return \Eventy::filter('search.assignees', $user->whichUsersCanView($mailboxes), $user, $mailboxes);
         });
 
         return view('conversations/search', [
