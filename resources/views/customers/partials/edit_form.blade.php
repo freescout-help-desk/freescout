@@ -62,7 +62,7 @@
                                             <div class="input-group input-group-flex input-sized-lg">
                                                 <select class="form-control" name="phones[{{ $i }}][type]">
                                                     @foreach(\App\Customer::$phone_types as $phone_type => $name)
-                                                        <option value="{{$phone_type}}" {{ $phone_type == $phone['type'] ? 'selected="selected' : '' }}>{{ __(ucfirst($name))  }}</option>
+                                                        <option value="{{$phone_type}}" {{ $phone_type == $phone['type'] ? 'selected="selected' : '' }}>{{ \App\Customer::getPhoneTypeName($phone_type) }}</option>
                                                     @endforeach
                                                 </select>
                                                 <input type="tel" class="form-control " name="phones[{{ $i }}][value]" value="{{ $phone['value'] }}">
