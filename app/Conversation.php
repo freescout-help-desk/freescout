@@ -910,7 +910,7 @@ class Conversation extends Model
             }
         } else {
             // todo: check ConversationFolder here
-            return \Eventy::filter('conversation.is_in_folder_allowed', false, $folder);
+            return \Eventy::filter('conversation.is_in_folder_allowed', false, $folder, $this);
         }
 
         return false;
