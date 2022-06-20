@@ -203,4 +203,12 @@ class PublicController extends Controller
 
         return $response;
     }
+
+    /**
+     * Needed for the mobile app.
+     */
+    public function mobilePing()
+    {
+        echo file_get_contents(public_path('installer/css/fontawesome.css'));
+    }
 }

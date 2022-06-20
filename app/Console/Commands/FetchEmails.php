@@ -243,7 +243,7 @@ class FetchEmails extends Command
 
             if (!$from) {
                 $this->logError('From is empty');
-                $message->setFlag(['Seen']);
+                $this->setSeen($message, $mailbox);
                 return;
             } else {
                 $from = $this->formatEmailList($from);
@@ -268,7 +268,7 @@ class FetchEmails extends Command
             // Check if message already fetched.
             if (Thread::where('message_id', $message_id)->first()) {
                 $this->line('['.date('Y-m-d H:i:s').'] Message with such Message-ID has been fetched before: '.$message_id);
-                $message->setFlag(['Seen']);
+                $this->setSeen($message, $mailbox);
                 return;
             }
 
@@ -403,7 +403,7 @@ class FetchEmails extends Command
 
                 if (!$user) {
                     $this->logError('User not found: '.$user_id);
-                    $message->setFlag(['Seen']);
+                    $this->setSeen($message, $mailbox);
                     return;
                 }
                 $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
@@ -476,7 +476,7 @@ class FetchEmails extends Command
             // We have to fetch absolutely all emails, even with empty body.
             // if (!$body) {
             //     $this->logError('Message body is empty');
-            //     $message->setFlag(['Seen']);
+            //     $this->setSeen($message, $mailbox);
             //     continue;
             // }
 
@@ -563,7 +563,7 @@ class FetchEmails extends Command
                     $new_thread = $this->saveCustomerThread($mailbox, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data['attachments'], $data['message']->getHeader());
                 } else {
                     $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
-                    $message->setFlag(['Seen']);
+                    $this->setSeen($message, $mailbox);
                     return;
                 }
             } else {
@@ -571,7 +571,7 @@ class FetchEmails extends Command
                 // If not we send an email with information to the sender.
                 if (!$user->hasEmail($from)) {
                     $this->logError("Sender address {$from} does not match ".$user->getFullName()." user email: ".$user->email.". Add ".$user->email." to user's Alternate Emails in the users's profile to allow the user reply from this address.");
-                    $message->setFlag(['Seen']);
+                    $this->setSeen($message, $mailbox);
 
                     // Send "Unable to process your update email" to user
                     \App\Jobs\SendEmailReplyError::dispatch($from, $user, $mailbox)->onQueue('emails');
@@ -583,13 +583,13 @@ class FetchEmails extends Command
                     $new_thread = $this->saveUserThread($data['mailbox'], $data['message_id'], $data['prev_thread'], $data['user'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['body'], $data['attachments'], $data['message']->getHeader());
                 } else {
                     $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
-                    $message->setFlag(['Seen']);
+                    $this->setSeen($message, $mailbox);
                     return;
                 }
             }
 
             if ($new_thread) {
-                $message->setFlag(['Seen']);
+                $this->setSeen($message, $mailbox);
                 $this->line('['.date('Y-m-d H:i:s').'] Thread successfully created: '.$new_thread->id);
 
                 // If it was a bounce message, save bounce data.
@@ -600,7 +600,7 @@ class FetchEmails extends Command
                 $this->logError('Error occured processing message');
             }
         } catch (\Exception $e) {
-            $message->setFlag(['Seen']);
+            $this->setSeen($message, $mailbox);
             $this->logError(\Helper::formatException($e));
         }
     }
@@ -1132,5 +1132,11 @@ class FetchEmails extends Command
             }
             Customer::create($item->mail, $data);
         }
+    }
+
+    public function setSeen($message, $mailbox)
+    {
+        $message->setFlag(['Seen']);
+        \Eventy::action('fetch_emails.after_set_seen', $message, $mailbox, $this);
     }
 }
