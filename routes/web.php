@@ -26,6 +26,14 @@ if (config('app.dashboard_path')) {
 	Route::redirect('/home', config('app.url'), 302);
 }
 
+// This is needed for the mobile app.
+if (config('app.dashboard_path')) {
+	Route::get(rtrim(config('app.dashboard_path'), "/").'/installer/css/fontawesome.css', 'PublicController@mobilePing');
+}
+if (config('app.login_path')) {
+	Route::get(rtrim(config('app.login_path'), "/").'/installer/css/fontawesome.css', 'PublicController@mobilePing');
+}
+
 // Public routes
 Route::get('/user-setup/{hash}', 'PublicController@userSetup')->name('user_setup');
 Route::post('/user-setup/{hash}', 'PublicController@userSetupSave');
