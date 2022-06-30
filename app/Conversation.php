@@ -1713,6 +1713,7 @@ class Conversation extends Model
         Thread::whereIn('conversation_id', $conversation_ids)->delete();
         // Delete conversations.
         Conversation::whereIn('id', $conversation_ids)->delete();
+        ConversationFolder::whereIn('conversation_id', $conversation_ids)->delete();
     }
 
     /**
