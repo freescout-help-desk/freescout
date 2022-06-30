@@ -1760,7 +1760,12 @@ class ConversationsController extends Controller
                 if (!$response['msg']) {
                     $conversation_ids = Conversation::where('folder_id', $folder->id)->pluck('id')->toArray();
                     Conversation::deleteConversationsForever($conversation_ids);
-                    $folder->updateCounters();
+                    if ($folder->mailbox) {
+                        Conversation::clearStarredByUserCache($user->id, $folder->mailbox_id);
+                        $folder->mailbox->updateFoldersCounters();
+                    } else {
+                        $folder->updateCounters();
+                    }
                 }
 
                 $response['status'] = 'success';
