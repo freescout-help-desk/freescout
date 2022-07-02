@@ -9,7 +9,7 @@
     @if (count($mailboxes))
         <div class="dash-cards margin-top">
             @foreach ($mailboxes as $mailbox)
-                <div class="dash-card @if (!$mailbox->isActive()) dash-card-inactive @endif">
+                <div class="dash-card @if (!$mailbox->isActive()) dash-card-inactive @endif" data-mailbox-id="{{ $mailbox->id }}">
                     <div class="dash-card-content">
                         @action('mailbox.before_name', $mailbox)
                         <h3 class="text-wrap-break "><a href="{{ $mailbox->url() }}" class="mailbox-name">@include('mailboxes/partials/mute_icon', ['mailbox' => $mailbox]){{ $mailbox->name }}</a></h3>
