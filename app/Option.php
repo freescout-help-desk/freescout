@@ -71,14 +71,14 @@ class Option extends Model
      *
      * @return string
      */
-    public static function get($name, $default = false, $decode = true)
+    public static function get($name, $default = false, $decode = true, $use_cache = true)
     {
         // If not passed, get default value from config
         if (func_num_args() == 1) {
             $default = self::getDefault($name, $default);
         }
 
-        if (isset(self::$cache[$name])) {
+        if ($use_cache && isset(self::$cache[$name])) {
             if (self::$cache[$name] == self::CACHE_DEFAULT_VALUE) {
                 return $default;
             } else {
