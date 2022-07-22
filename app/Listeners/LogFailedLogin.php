@@ -25,7 +25,7 @@ class LogFailedLogin
      */
     public function handle(Failed $event)
     {
-        \Eventy::action('listeners.LogFailedLogin', $event);
+        \Eventy::action('listeners.failed_login', $event);
 
         activity()
            //->causedBy($event->user)
