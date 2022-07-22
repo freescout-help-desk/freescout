@@ -25,6 +25,8 @@ class LogFailedLogin
      */
     public function handle(Failed $event)
     {
+        \Eventy::action('listeners.LogFailedLogin', $event);
+
         activity()
            //->causedBy($event->user)
            ->withProperties(['ip' => app('request')->ip(), 'email' => request()->email])
