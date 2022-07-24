@@ -162,6 +162,12 @@ class FetchEmails extends Command
             $this->line('['.date('Y-m-d H:i:s').'] Fetching: '.($unseen ? 'UNREAD' : 'ALL'));
         }
 
+        if(0 == count($folders)) {
+            // Set default box INBOX (usefull for pop3)
+            $folder = $client->getFolder('INBOX');
+            $folders[] = $folder;
+        }
+
         foreach ($folders as $folder) {
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
 
