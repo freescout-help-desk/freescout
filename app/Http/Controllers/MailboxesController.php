@@ -741,9 +741,14 @@ class MailboxesController extends Controller
 
                 if (!$response['msg']) {
 
-                    // Remove threads and conversations
-                    Thread::whereIn('conversation_id', $mailbox->conversations()->pluck('id')->toArray())
-                        ->delete();
+                    // Remove threads and conversations.
+                    $conversation_ids = $mailbox->conversations()->pluck('id')->toArray();
+                    
+                    for ($i=0; $i < ceil(count($conversation_ids) / \Helper::IN_LIMIT); $i++) { 
+                        $slice_ids = array_slice($conversation_ids, $i*\Helper::IN_LIMIT, \Helper::IN_LIMIT);
+                        Thread::whereIn('conversation_id', $slice_ids)->delete();
+                    }
+
                     $mailbox->conversations()->delete();
                     $mailbox->users()->sync([]);
                     $mailbox->folders()->delete();
