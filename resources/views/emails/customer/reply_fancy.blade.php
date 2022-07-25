@@ -67,7 +67,7 @@
 		@endif
 		<div style="height:0; font-size:0px; line-height:0px; color:#ffffff;">	                    	
 			@if (\App\Option::get('open_tracking'))
-				<img src="{{ route('open_tracking.set_read', ['conversation_id' => $threads->first()->conversation_id, 'thread_id' => $threads->first()->id]) }}/" alt="" />
+				<img src="{{ route('open_tracking.set_read', ['conversation_id' => $threads->first()->conversation_id, 'thread_id' => $threads->first()->id]) }}" alt="" />
 			@endif
 			{{-- Addition to Message-ID header to detect relies --}}
 			<span style="font-size: 0px; line-height: 0px; color:#ffffff !important;">{{ \MailHelper::getMessageMarker($headers['Message-ID']) }}</span>
