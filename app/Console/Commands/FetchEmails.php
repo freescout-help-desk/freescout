@@ -1136,7 +1136,8 @@ class FetchEmails extends Command
 
     public function setSeen($message, $mailbox)
     {
-        $message->setFlag(['Seen']);
+        $flag = \Eventy::filter('fetch_emails.seen_flag', 'Seen', $mmessage, $mailbox);
+        $message->setFlag([$flag]);
         \Eventy::action('fetch_emails.after_set_seen', $message, $mailbox, $this);
     }
 }
