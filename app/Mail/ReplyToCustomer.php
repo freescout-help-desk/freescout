@@ -39,16 +39,22 @@ class ReplyToCustomer extends Mailable
     public $mailbox;
 
     /**
+     * Number of threads.
+     */
+    public $threads_count;
+
+    /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($conversation, $threads, $headers, $mailbox)
+    public function __construct($conversation, $threads, $headers, $mailbox, $threads_count = 1)
     {
         $this->conversation = $conversation;
         $this->threads = $threads;
         $this->headers = $headers;
         $this->mailbox = $mailbox;
+        $this->threads_count = $threads_count;
     }
 
     /**
@@ -78,7 +84,7 @@ class ReplyToCustomer extends Mailable
         }
 
         $subject = $this->conversation->subject;
-        if (count($this->threads) > 1) {
+        if ($this->threads_count > 1) {
             $subject = 'Re: '.$subject;
         }
         $subject = \Eventy::filter('email.reply_to_customer.subject', $subject, $this->conversation);
