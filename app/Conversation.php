@@ -194,6 +194,11 @@ class Conversation extends Model
     public static $starred_conversation_ids = [];
 
     /**
+     * Cache of the app.custom_number option.
+     */
+    public static $custom_number_cache = null;
+
+    /**
      * Automatically converted into Carbon dates.
      */
     protected $dates = ['created_at', 'updated_at', 'last_reply_at', 'closed_at', 'user_updated_at'];
@@ -2146,6 +2151,18 @@ class Conversation extends Model
         $query_conversations->orderBy('conversations.last_reply_at', 'DESC');
 
         return $query_conversations;
+    }
+
+    public function getNumberAttribute($value)
+    {
+        if (self::$custom_number_cache === null) {
+            self::$custom_number_cache = config('app.custom_number');
+        }
+        if (self::$custom_number_cache) {
+            return $value;
+        } else {
+            return $this->id;
+        }
     }
 
     // /**

@@ -11,7 +11,20 @@
         </div>
     </div>
 
-    <div class="form-group{{ $errors->has('settings[next_ticket]') ? ' has-error' : '' }}">
+    <div class="form-group{{ $errors->has('settings[custom_number]') ? ' has-error' : '' }}">
+        <label for="custom_number" class="col-sm-2 control-label">{{ __('Conversation Number') }}</label>
+
+        <div class="col-sm-6">
+
+            <div class="controls">
+                <label for="custom_number_0" class="radio inline plain"><input type="radio" name="settings[custom_number]" value="false" id="custom_number_0" @if (!$settings['custom_number'])checked="checked"@endif> {{ __('Equal to conversation ID') }}</label>
+                <label for="custom_number_1" class="radio inline"><input type="radio" name="settings[custom_number]" value="true" id="custom_number_1" @if ($settings['custom_number'])checked="checked"@endif> {{ __('Custom') }}…</label>
+            </div>
+            @include('partials/field_error', ['field'=>'settings.custom_number'])
+        </div>
+    </div>
+
+    <div class="form-group @if (!$settings['custom_number']) hidden @endif{{ $errors->has('settings[next_ticket]') ? ' has-error' : '' }}">
         <label for="next_ticket" class="col-sm-2 control-label">{{ __('Next Conversation #') }}</label>
 
         <div class="col-sm-6">
