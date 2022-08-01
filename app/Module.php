@@ -74,7 +74,7 @@ class Module extends Model
 
     public static function isOfficial($author_url)
     {
-        return parse_url($author_url, PHP_URL_HOST) == parse_url(\Config::get('app.freescout_url'), PHP_URL_HOST);
+        return parse_url($author_url ?? '', PHP_URL_HOST) == parse_url(\Config::get('app.freescout_url') ?? '', PHP_URL_HOST);
     }
 
     /**

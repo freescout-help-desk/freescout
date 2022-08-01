@@ -134,28 +134,27 @@ class FetchEmails extends Command
         $folders = [];
 
         // Fetch emails from custom IMAP folders.
-        if ($mailbox->in_protocol == Mailbox::IN_PROTOCOL_IMAP) {
-            $imap_folders = $mailbox->getInImapFolders();
+        //if ($mailbox->in_protocol == Mailbox::IN_PROTOCOL_IMAP) {
+        $imap_folders = $mailbox->getInImapFolders();
 
-            foreach ($imap_folders as $folder_name) {
-                $folder = null;
-                try {
-                    $folder = $client->getFolder($folder_name);
-                } catch (\Exception $e) {
-                    // Just log error and continue.
-                    $this->error('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$folder_name);
-                }
-
-                if ($folder) {
-                    $folders[] = $folder;
-                }
+        foreach ($imap_folders as $folder_name) {
+            $folder = null;
+            try {
+                $folder = $client->getFolder($folder_name);
+            } catch (\Exception $e) {
+                // Just log error and continue.
+                $this->error('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$folder_name);
             }
-            // try {
-            //     //$folders = $client->getFolders();
-            // } catch (\Exception $e) {
-            //     // Do nothing
-            // }
+
+            if ($folder) {
+                $folders[] = $folder;
+            }
         }
+        // try {
+        //     //$folders = $client->getFolders();
+        // } catch (\Exception $e) {
+        //     // Do nothing
+        // }
 
         $unseen = \Eventy::filter('fetch_emails.unseen', $this->option('unseen'), $mailbox);
         if ($unseen != $this->option('unseen')) {

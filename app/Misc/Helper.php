@@ -26,6 +26,11 @@ class Helper
     const QUEUE_DEFAULT = 'default';
 
     /**
+     * Limit for IN queries.
+     */
+    const IN_LIMIT = 1000;
+
+    /**
      * Stores list of global entities (for caching).
      */
     public static $global_entities = [];

@@ -126,6 +126,8 @@ class SendReplyToCustomer implements ShouldQueue
         // Conversation history.
         $email_conv_history = config('app.email_conv_history');
 
+        $threads_count = count($this->threads);
+
         $meta_conv_history = $this->last_thread->getMeta(Thread::META_CONVERSATION_HISTORY);
         if (!empty($meta_conv_history)) {
             $email_conv_history = $meta_conv_history;
@@ -213,7 +215,7 @@ class SendReplyToCustomer implements ShouldQueue
 
         $headers['X-FreeScout-Mail-Type'] = 'customer.message';
 
-        $reply_mail = new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox);
+        $reply_mail = new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox, $threads_count);
 
         try {
             Mail::to($to)

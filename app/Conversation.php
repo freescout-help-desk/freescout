@@ -1704,16 +1704,20 @@ class Conversation extends Model
         \Eventy::action('conversations.before_delete_forever', $conversation_ids);
 
         //$conversation_ids = $conversations->pluck('id')->toArray();
+        for ($i=0; $i < ceil(count($conversation_ids) / \Helper::IN_LIMIT); $i++) { 
 
-        // Delete attachments.
-        $thread_ids = Thread::whereIn('conversation_id', $conversation_ids)->pluck('id')->toArray();
-        Attachment::deleteByThreadIds($thread_ids);
+            $ids = array_slice($conversation_ids, $i*\Helper::IN_LIMIT, \Helper::IN_LIMIT);
 
-        // Delete threads.
-        Thread::whereIn('conversation_id', $conversation_ids)->delete();
-        // Delete conversations.
-        Conversation::whereIn('id', $conversation_ids)->delete();
-        ConversationFolder::whereIn('conversation_id', $conversation_ids)->delete();
+            // Delete attachments.
+            $thread_ids = Thread::whereIn('conversation_id', $ids)->pluck('id')->toArray();
+            Attachment::deleteByThreadIds($thread_ids);
+
+            // Delete threads.
+            Thread::whereIn('conversation_id', $ids)->delete();
+            // Delete conversations.
+            Conversation::whereIn('id', $ids)->delete();
+            ConversationFolder::whereIn('conversation_id', $ids)->delete();
+        }
     }
 
     /**
