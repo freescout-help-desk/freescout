@@ -2168,6 +2168,7 @@ class ConversationsController extends Controller
      */
     public function getRedirectUrl($request, $conversation, $user)
     {
+
         // If conversation is a draft, we always display Drafts folder
         if ($conversation->state == Conversation::STATE_DRAFT) {
             return route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
@@ -2201,7 +2202,32 @@ class ConversationsController extends Controller
             $redirect_url = $conversation->url();
         }
 
+        $referrer_args = array();
+        $referrer_args_string = parse_url( request()->server('HTTP_REFERER'),PHP_URL_QUERY);
+
+        if ($referrer_args_string) {
+            parse_str($referrer_args_string, $referrer_args);
+        }
+
+        if ( isset($referrer_args['x_embed'])) {
+            if (is_string($redirect_url)) {
+                $redirect_url = self::addQueryArgs( array('x_embed'=>1), $redirect_url);
+            } else if (isset($redirect_url->redirect_url)) {
+                $redirect_url->redirect_url = self::addQueryArgs( array('x_embed'=>1), $redirect_url->redirect_url);
+            } 
+        }
+
         return $redirect_url;
+    }
+
+    private static function addQueryArgs(array $params, string $url)
+    {
+        $q = array();
+        $url_parts = parse_url($url);
+        parse_str($url_parts['query'], $q);
+        foreach ( $params as $k => $v ) $q[$k] = $v;
+        $new_url = $url_parts['path'] . '?' . http_build_query($q);
+        return $new_url;
     }
 
     /**
