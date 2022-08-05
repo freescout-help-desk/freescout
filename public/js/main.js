@@ -848,11 +848,34 @@ function fsAjax(data, url, success_callback, no_loader, error_callback, custom_o
 	}
 
 	// If this is conversation ajax request, add folder_id to the URL
-	if (url.indexOf('/conversation/') != -1) {
+	if (url.indexOf('/conversation/') !== -1) {
 		var folder_id = getQueryParam('folder_id');
 		if (folder_id) {
-			url += '?folder_id='+folder_id;
+			var urlObject = new URL(url);
+			urlObject.searchParams.append('folder_id', folder_id);
+			url = urlObject.toString();
 		}
+	}
+
+	if (url.indexOf('x_embed=1' !== -1)) {
+		var urlObject = new URL(url);
+		urlObject.searchParams.append('x_embed', 1);
+		url = urlObject.toString();
+	}
+
+	var override_success_callback = function(response) {
+
+		if (typeof(response.redirect_url) != "undefined") {
+
+			if (url.indexOf('x_embed=1') !== -1 && response.redirect_url===-1) {
+				var urlObject = new URL(response.redirect_url);
+				urlObject.searchParams.append('x_embed', 1);
+				response.redirect_url = urlObject.toString();
+			}
+
+		}
+
+		return success_callback(reponse);
 	}
 
 	var options = {
@@ -2221,6 +2244,10 @@ function triggerModal(a, params)
 
     modal.on('hidden.bs.modal', function () {
 	    $(this).remove();
+
+	    if (typeof knShow == 'function') {
+	    	knShow();
+	    }
 	});
 
     if (body) {

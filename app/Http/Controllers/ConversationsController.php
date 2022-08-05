@@ -390,7 +390,7 @@ class ConversationsController extends Controller
                     // Determine redirect
                     // Must be done before updating current conversation's status or assignee.
                     $redirect_same_page = false;
-                    if ($new_user_id == $user->id) {
+                    if ($new_user_id == $user->id || $request->x_embed==1) {
                         // If user assigned conversation to himself, stay on the current page
                         $response['redirect_url'] = $conversation->url();
                         $redirect_same_page = true;
@@ -449,7 +449,7 @@ class ConversationsController extends Controller
                     // Determine redirect
                     // Must be done before updating current conversation's status or assignee.
                     $redirect_same_page = false;
-                    if ($request->status == 'not_spam') {
+                    if ($request->status == 'not_spam' || $request->x_embed==1) {
                         // Stay on the current page
                         $response['redirect_url'] = $conversation->url();
                         $redirect_same_page = true;
