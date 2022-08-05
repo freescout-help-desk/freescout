@@ -220,8 +220,8 @@
                 @if ($thread->isSendStatusError())
                         <div class="alert alert-danger alert-light">
                             <div>
-                                <strong>{{ __('Message not sent to customer') }}</strong> (<a href="{{ route('conversations.ajax_html', array_merge(['action' =>
-                        'send_log'], \Request::all(), ['thread_id' => $thread->id]) ) }}"" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __('View log') }}</a>)
+                                <strong>{{ __('Message not sent to customer') }}</strong> (<a href="{{ route('conversations.ajax_html', ['action' =>
+                        'send_log']) }}?thread_id={{ $thread->id }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __('View log') }}</a>)
                             </div>
 
                             @if (!empty($send_status_data['bounced_by_thread']) && !empty($send_status_data['bounced_by_conversation']))
@@ -288,11 +288,11 @@
                     <li><a href="#" title="" class="thread-edit-trigger" role="button">{{ __("Edit") }}</a></li>
                 @endif
                 {{--<li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>--}}
-                <li><a href=" {{ route('conversations.ajax_html', array_merge( \Request::all(), ['mailbox_id' => $mailbox->id, 'from_thread_id' => $thread->id]) ) }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv" role="button">{{ __("New Conversation") }}</a></li>
+                <li><a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}?from_thread_id={{ $thread->id }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv" role="button">{{ __("New Conversation") }}</a></li>
                 @action('thread.menu', $thread)
                 @if (Auth::user()->isAdmin())
-                    <li><a href="{{ route('conversations.ajax_html', array_merge(['action' =>
-                        'send_log'], \Request::all(), ['thread_id' => $thread->id]) ) }}"" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg" role="button">{{ __("Outgoing Emails") }}</a></li>
+                    <li><a href="{{ route('conversations.ajax_html', ['action' =>
+                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg" role="button">{{ __("Outgoing Emails") }}</a></li>
                 @endif
                 @if ($thread->isReply())
                     <li><a href="{{ route('conversations.ajax_html', ['action' =>
