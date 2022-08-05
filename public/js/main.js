@@ -832,7 +832,7 @@ function fsAjax(data, url, success_callback, no_loader, error_callback, custom_o
     }
 
     // If this is conversation ajax request, add folder_id to the URL
-    if (url.indexOf('/conversation/') !== -1) {
+    if (url.indexOf('/conversation/') != -1) {
         var folder_id = getQueryParam('folder_id');
         if (folder_id) {
             var urlObject = new URL(url);
@@ -843,16 +843,17 @@ function fsAjax(data, url, success_callback, no_loader, error_callback, custom_o
 
     var thisPageUrl = window.location.href;
 
-    if (thisPageUrl.indexOf('x_embed=1' !== -1)) {
+    //console.log( thisPageUrl.indexOf('x_embed=1' != -1));
+
+    if (window.location.href.indexOf('x_embed=1') != -1) {
         var urlObject = new URL(url);
+        
         if (!InIframe() && 0) {
             urlObject.searchParams.delete('x_embed');
         } else {
             urlObject.searchParams.append('x_embed', 1);
         }
         url = urlObject.toString();
-
-        console.log(url); console.log(thisPageUrl);
 
     	}
 
