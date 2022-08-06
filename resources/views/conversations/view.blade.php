@@ -49,12 +49,12 @@
                                 <li><a href="#" class="conv-forward" role="button"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
                             @endif
                             @if (!$conversation->isChat())
-                                <li><a href="{{ route('conversations.ajax_html', ['action' =>
-                                                'merge_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Merge Conversations") }}" data-modal-no-footer="true" data-modal-on-show="initMergeConv" role="button"><i class="glyphicon glyphicon-indent-left"></i> {{ __("Merge") }}</a></li>
+                                <li><a href="{{ route('conversations.ajax_html', array_merge(['action' =>
+                        'merge_conv'], \Request::all(), ['conversation_id' => $conversation->id]) ) }}" data-trigger="modal" data-modal-title="{{ __("Merge Conversations") }}" data-modal-no-footer="true" data-modal-on-show="initMergeConv" role="button"><i class="glyphicon glyphicon-indent-left"></i> {{ __("Merge") }}</a></li>
                             @endif
                             @if (Auth::user()->can('move', App\Conversation::class))
-                                <li><a href="{{ route('conversations.ajax_html', ['action' =>
-                                            'move_conv']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv" role="button"><i class="glyphicon glyphicon-log-out"></i> {{ __("Move") }}</a></li>
+                                <li><a href="{{ route('conversations.ajax_html', array_merge(['action' =>
+                        'move_conv'], \Request::all(), ['conversation_id' => $conversation->id]) ) }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv" role="button"><i class="glyphicon glyphicon-log-out"></i> {{ __("Move") }}</a></li>
                             @endif
                             @if ($conversation->state != App\Conversation::STATE_DELETED)
                                 <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete" role="button"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete") }}</a></li>
@@ -262,8 +262,8 @@
                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
                             <li role="presentation"><a href="{{ route('customers.update', ['id' => $customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
                             @if (!$conversation->isChat())
-                                <li role="presentation"><a href="{{ route('conversations.ajax_html', ['action' =>
-                                            'change_customer']) }}?conversation_id={{ $conversation->id }}" data-trigger="modal" data-modal-title="{{ __("Change Customer") }}" data-modal-no-footer="true" data-modal-on-show="changeCustomerInit" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
+                                <li role="presentation"><a href="{{ route('conversations.ajax_html', array_merge(['action' =>
+                        'change_customer'], \Request::all(), ['conversation_id' => $conversation->id]) ) }}" data-trigger="modal" data-modal-title="{{ __("Change Customer") }}" data-modal-no-footer="true" data-modal-on-show="changeCustomerInit" tabindex="-1" role="menuitem">{{ __("Change Customer") }}</a></li>
                             @endif
                             @if (count($prev_conversations))
                                 <li role="presentation" class="col3-hidden"><a data-toggle="collapse" href=".collapse-conv-prev" tabindex="-1" role="menuitem">{{ __("Previous Conversations") }}</a></li>
