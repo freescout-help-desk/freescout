@@ -841,14 +841,14 @@ function fsAjax(data, url, success_callback, no_loader, error_callback, custom_o
         }
     }
 
-    //console.log( thisPageUrl.indexOf('x_embed=1' != -1));
-
+    var preserve_xembed = false;
     if (window.location.href.indexOf('x_embed=1') != -1) {
         var urlObject = new URL(url);
         
         urlObject.searchParams.append('x_embed', 1);
 
         url = urlObject.toString();
+        preserve_xembed = true;
 
     	}
 
@@ -856,14 +856,13 @@ function fsAjax(data, url, success_callback, no_loader, error_callback, custom_o
 
             if (typeof(response.redirect_url) != "undefined") {
 
-                if (url.indexOf('x_embed=1') !== -1 && response.redirect_url.indexOf('x_embed=1') == -1) {
+                if (preserve_xembed && response.redirect_url.indexOf('x_embed=1') == -1) {
                     var urlObject = new URL(response.redirect_url);
                     urlObject.searchParams.append('x_embed', 1);
                     response.redirect_url = urlObject.toString();
                 }
 
             }
-            console.log(response.redirect_url);
 
             return success_callback(response);
         }
@@ -2203,10 +2202,6 @@ function fsAjax(data, url, success_callback, no_loader, error_callback, custom_o
 
         modal.on('hidden.bs.modal', function() {
             $(this).remove();
-
-            if (typeof knShow == 'function') {
-                knShow();
-            }
         });
 
         if (body) {
