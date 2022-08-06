@@ -841,18 +841,13 @@ function fsAjax(data, url, success_callback, no_loader, error_callback, custom_o
         }
     }
 
-    var thisPageUrl = window.location.href;
-
     //console.log( thisPageUrl.indexOf('x_embed=1' != -1));
 
     if (window.location.href.indexOf('x_embed=1') != -1) {
         var urlObject = new URL(url);
         
-        if (!InIframe() && 0) {
-            urlObject.searchParams.delete('x_embed');
-        } else {
-            urlObject.searchParams.append('x_embed', 1);
-        }
+        urlObject.searchParams.append('x_embed', 1);
+
         url = urlObject.toString();
 
     	}
