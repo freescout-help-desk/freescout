@@ -16,8 +16,8 @@
             @if (Auth::user()->isAdmin())
                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                     @action('thread.menu', $thread)
-                    <li><a href="{{ route('conversations.ajax_html', ['action' =>
-                        'send_log']) }}?thread_id={{ $thread->id }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
+                    <li><a href="{{ route('conversations.ajax_html', array_merge(['action' =>
+                        'send_log'], \Request::all(), ['thread_id' => $thread->id]) ) }}" title="{{ __("View outgoing emails") }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __("Outgoing Emails") }}</a></li>
                     @action('thread.menu.append', $thread)
                 </ul>
             @endif
