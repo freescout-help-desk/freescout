@@ -208,6 +208,13 @@ class Conversation extends Model
      */
     protected $guarded = ['id', 'folder_id'];
 
+    /**
+     * Default values.
+     */
+    protected $attributes = [
+        'preview' => '',
+    ];
+
     protected static function boot()
     {
         parent::boot();
