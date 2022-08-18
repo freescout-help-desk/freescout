@@ -851,37 +851,33 @@ function fsAjax(data, url, success_callback, no_loader, error_callback, custom_o
     if (url.indexOf('/conversation/') != -1) {
         var folder_id = getQueryParam('folder_id');
         if (folder_id) {
-        	url = addQueryParam('folder_id',folder_id,url);
+        	url = addQueryParam('folder_id', folder_id, url);
         }
     }
 
     var preserve_xembed = false;
     if (window.location.href.indexOf('x_embed=1') != -1) {
-    	url = addQueryParam('x_embed',1,url);
+    	url = addQueryParam('x_embed', 1, url);
         preserve_xembed = true;
-    	}
+	}
 
-        var override_success_callback = function(response) {
-
-            if (typeof(response.redirect_url) != "undefined") {
-
-                if (preserve_xembed && response.redirect_url.indexOf('x_embed=1') == -1) {
-                	response.redirect_url = addQueryParam('x_embed',1,response.redirect_url);
-                }
-
+    var override_success_callback = function(response) {
+        if (typeof(response.redirect_url) != "undefined") {
+            if (preserve_xembed && response.redirect_url.indexOf('x_embed=1') == -1) {
+            	response.redirect_url = addQueryParam('x_embed', 1, response.redirect_url);
             }
+        }
+        return success_callback(response);
+    };
 
-            return success_callback(response);
-        };
-
-        var options = {
-            url: url,
-            method: 'post',
-            dataType: 'json',
-            data: data,
-            success: override_success_callback,
-            error: error_callback
-        };
+    var options = {
+        url: url,
+        method: 'post',
+        dataType: 'json',
+        data: data,
+        success: override_success_callback,
+        error: error_callback
+    };
 
     if (typeof(custom_options) == "object") {
     	options = {...options, ...custom_options};
@@ -2115,14 +2111,13 @@ function getQueryParam(name, qs) {
     }
 }
 
-function addQueryParam(name,value,url)
+function addQueryParam(name, value, url)
 {
-	var search = url.substring(url.indexOf('?')+1);
+	var search = url.substring(url.indexOf('?') + 1);
 	if (search != url) {
-		return url + '&'+encodeURIComponent(name)+'='+encodeURIComponent(value);
-	}
-	else {
-		return url + '?'+encodeURIComponent(name)+'='+encodeURIComponent(value);
+		return url + '&' + encodeURIComponent(name)+'=' + encodeURIComponent(value);
+	} else {
+		return url + '?' + encodeURIComponent(name) + '=' + encodeURIComponent(value);
 	}
 }
 
