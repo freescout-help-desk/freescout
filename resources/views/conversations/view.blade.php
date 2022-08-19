@@ -277,6 +277,7 @@
                         <div class="glyphicon glyphicon-list-alt" data-toggle="tooltip" title="{{ __("Previous Conversations") }}"></div>
                     </div>--}}
                 </div>
+                @action('conversation.before_prev_convs', $customer, $conversation, $mailbox)
                 @if (count($prev_conversations))
                     @include('conversations/partials/prev_convs_short')
                 @endif
