@@ -817,7 +817,7 @@ class FetchEmails extends Command
         $conversation = $prev_thread->conversation;
         // Determine assignee
         // maybe we need to check mailbox->ticket_assignee here, maybe not
-        if (!$conversation->user_id) {
+        if (!$conversation->user_id && $mailbox->ticket_assignee!==App\Mailbox::TICKET_ASSIGNEE_KEEP_CURRENT) {
             $conversation->user_id = $user_id;
         }
 
@@ -827,7 +827,7 @@ class FetchEmails extends Command
 
         // Respect mailbox settings for "Status After Replying
         $prev_status = $conversation->status;
-        $conversation->status = $mailbox->ticket_status;
+        $conversation->status = ($mailbox->ticket_status==App\Mailbox::TICKET_STATUS_KEEP_CURRENT?$conversation->status:$mailbox->ticket_status);
         if ($conversation->status != $mailbox->ticket_status) {
             \Eventy::action('conversation.status_changed', $conversation, $user, true, $prev_status);
         }
