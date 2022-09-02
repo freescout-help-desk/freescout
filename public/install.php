@@ -9,6 +9,15 @@ if (preg_match("#^/public\/(.*)#", $_SERVER['REQUEST_URI'], $m) && !empty($m[1])
     exit();
 }
 
+$required_functions = ['putenv', 'symlink'];
+
+foreach ($required_functions as $required_function) {
+    if (!function_exists($required_function)) {
+        echo $required_function.'() function is required - make sure to enabled it in your PHP.';
+        exit();
+    }
+}
+
 $root_dir = realpath(__DIR__.'/..').'/';
 
 // Dotenv library for reading .env files
