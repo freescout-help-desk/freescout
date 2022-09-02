@@ -807,7 +807,7 @@ class Message
             case self::ENC_8BIT:
                 return quoted_printable_decode(imap_8bit($string));
             case self::ENC_BINARY:
-                return imap_binary($string);
+                return imap_base64(imap_binary($string));
             case self::ENC_BASE64:
                 return imap_base64($string);
             case self::ENC_QUOTED_PRINTABLE:
