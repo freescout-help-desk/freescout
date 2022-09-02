@@ -49,6 +49,7 @@ class SystemController extends Controller
         $functions = [
             'shell_exec (PHP)' => function_exists('shell_exec'),
             'proc_open (PHP)' => function_exists('proc_open'),
+            'fpassthru (PHP)' => function_exists('fpassthru'),
             'ps (shell)' => function_exists('shell_exec') ? shell_exec('ps') : false,
         ];
 
