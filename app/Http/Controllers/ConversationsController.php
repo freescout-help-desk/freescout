@@ -695,6 +695,10 @@ class ConversationsController extends Controller
                     // List of emails.
                     $to_list = [];
                     if ($is_forward) {
+                        if (empty($request->to_email[0])) {
+                            $response['msg'] = __('Please specify a recipient.');
+                            break;
+                        }
                         $to = $request->to_email[0];
                     } else {
                         if (!empty($request->to)) {
