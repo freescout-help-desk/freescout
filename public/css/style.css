@@ -1834,6 +1834,12 @@ button.conv-checkbox-clear {
 .conv-subj-block {
     padding: 16px 9px 18px 20px;
 }
+.conv-following .conv-subjtext > span:before {
+    content: "🔔 ";
+    font-size: 17px;
+    position: relative;
+    top: -2px;
+}
 .conv-top-block {
     border-top: 1px solid #e3e8eb;
     padding: 10px 20px;
