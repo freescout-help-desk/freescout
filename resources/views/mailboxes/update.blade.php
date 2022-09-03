@@ -111,6 +111,7 @@
 
                             <div class="col-sm-6">
                                 <select id="ticket_status" class="form-control input-sized" name="ticket_status" required autofocus>
+                                    <option value="{{ App\Mailbox::TICKET_STATUS_KEEP_CURRENT }}" @if (old('ticket_status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_KEEP_CURRENT)selected="selected"@endif>{{ __('Keep Current') }}</option>
                                     <option value="{{ App\Mailbox::TICKET_STATUS_ACTIVE }}" @if (old('ticket_status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_ACTIVE)selected="selected"@endif>{{ __('Active') }}</option>
                                     <option value="{{ App\Mailbox::TICKET_STATUS_PENDING }}" @if (old('ticket_status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_PENDING)selected="selected"@endif>{{ __('Pending') }}</option>
                                     <option value="{{ App\Mailbox::TICKET_STATUS_CLOSED }}" @if (old('ticket_status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_CLOSED)selected="selected"@endif>{{ __('Closed') }}</option>
@@ -142,6 +143,7 @@
 
                             <div class="col-sm-6">
                                 <select id="ticket_assignee" class="form-control input-sized" name="ticket_assignee" required autofocus>
+                                    <option value="{{ App\Mailbox::TICKET_ASSIGNEE_KEEP_CURRENT }}" @if (old('ticket_assignee', $mailbox->ticket_assignee) == App\Mailbox::TICKET_ASSIGNEE_KEEP_CURRENT)selected="selected"@endif>{{ __('Keep Current') }}</option>
                                     <option value="{{ App\Mailbox::TICKET_ASSIGNEE_ANYONE }}" @if (old('ticket_assignee', $mailbox->ticket_assignee) == App\Mailbox::TICKET_ASSIGNEE_ANYONE)selected="selected"@endif>{{ __('Anyone') }}</option>
                                     <option value="{{ App\Mailbox::TICKET_ASSIGNEE_REPLYING_UNASSIGNED }}" @if (old('ticket_assignee', $mailbox->ticket_assignee) == App\Mailbox::TICKET_ASSIGNEE_REPLYING_UNASSIGNED)selected="selected"@endif>{{ __('Person Replying (if Unassigned)') }}</option>
                                     <option value="{{ App\Mailbox::TICKET_ASSIGNEE_REPLYING }}" @if (old('ticket_assignee', $mailbox->ticket_assignee) == App\Mailbox::TICKET_ASSIGNEE_REPLYING)selected="selected"@endif>{{ __('Person Replying') }}</option>

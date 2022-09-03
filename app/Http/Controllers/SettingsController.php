@@ -110,6 +110,9 @@ class SettingsController extends Controller
             case 'general':
                 $params = [
                     'settings' => [
+                        'custom_number' => [
+                            'env' => 'APP_CUSTOM_NUMBER',
+                        ],
                         'email_conv_history' => [
                             'env' => 'APP_EMAIL_CONV_HISTORY',
                         ],
@@ -187,6 +190,7 @@ class SettingsController extends Controller
                 $settings = [
                     'company_name'         => Option::get('company_name', \Config::get('app.name')),
                     'next_ticket'          => (Option::get('next_ticket') >= Conversation::max('number') + 1) ? Option::get('next_ticket') : Conversation::max('number') + 1,
+                    'custom_number'        => (int)config('app.custom_number'),
                     'user_permissions'     => User::getGlobalUserPermissions(),
                     'email_branding'       => Option::get('email_branding'),
                     'open_tracking'        => Option::get('open_tracking'),

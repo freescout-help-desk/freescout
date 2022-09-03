@@ -26,8 +26,8 @@ class LogLockout
     public function handle(Lockout $event)
     {
         activity()
-           ->causedBy($event->user)
-           ->withProperties(['ip' => app('request')->ip()])
+           //->causedBy($event->user)
+           ->withProperties(['ip' => app('request')->ip(), 'email' => $event->request->email])
            ->useLog(\App\ActivityLog::NAME_USER)
            ->log(\App\ActivityLog::DESCRIPTION_USER_LOCKED);
     }

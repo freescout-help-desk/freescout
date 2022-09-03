@@ -975,7 +975,7 @@ class User extends Authenticatable
      */
     public static function nonDeleted()
     {
-        return self::where('status', '!=', self::STATUS_DELETED);
+        return \Eventy::filter('user.non_deleted_condition', self::where('status', '!=', self::STATUS_DELETED));
     }
 
     public function isActive()

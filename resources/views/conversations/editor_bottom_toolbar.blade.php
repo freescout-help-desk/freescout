@@ -9,23 +9,24 @@
     @action('conv_editor.editor_toolbar_prepend', $mailbox, $conversation)
 	<span class="editor-btm-text">{{ __('Status') }}:</span> 
     {{-- Note keeps status--}}
-	<select name="status" class="form-control parsley-exclude" data-reply-status="{{ $mailbox->ticket_status }}" data-note-status="{{ $conversation->status }}">
-        <option value="{{ App\Mailbox::TICKET_STATUS_ACTIVE }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_ACTIVE)selected="selected"@endif>{{ __('Active') }}</option>
-        <option value="{{ App\Mailbox::TICKET_STATUS_PENDING }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_PENDING)selected="selected"@endif>{{ __('Pending') }}</option>
-        <option value="{{ App\Mailbox::TICKET_STATUS_CLOSED }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_CLOSED)selected="selected"@endif>{{ __('Closed') }}</option>
+	<select name="status" class="form-control parsley-exclude" data-reply-status="@if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_KEEP_CURRENT){{ $conversation->status }}@else{{ $mailbox->ticket_status }}@endif" data-note-status="{{ $conversation->status }}">
+        <option value="{{ App\Mailbox::TICKET_STATUS_ACTIVE }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_ACTIVE || ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_KEEP_CURRENT && $conversation->status == App\Mailbox::TICKET_STATUS_ACTIVE))selected="selected"@endif>{{ __('Active') }}</option>
+        <option value="{{ App\Mailbox::TICKET_STATUS_PENDING }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_PENDING || ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_KEEP_CURRENT && $conversation->status == App\Mailbox::TICKET_STATUS_PENDING))selected="selected"@endif>{{ __('Pending') }}</option>
+        <option value="{{ App\Mailbox::TICKET_STATUS_CLOSED }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_CLOSED || ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_KEEP_CURRENT && $conversation->status == App\Mailbox::TICKET_STATUS_CLOSED))selected="selected"@endif>{{ __('Closed') }}</option>
     </select> 
     <small class="note-bottom-div"></small> 
     <span class="editor-btm-text">{{ __('Assign to') }}:</span> 
     {{-- Note never changes Assignee --}}
     <select name="user_id" class="form-control parsley-exclude">
-        <option value="-1" @if ($mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_ANYONE)data-default="true" selected="selected"@endif>{{ __('Anyone') }}</option>
+        <option value="-1" @if ($mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_ANYONE || ($mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_KEEP_CURRENT && $conversation->assignee == App\Mailbox::TICKET_ASSIGNEE_ANYONE))data-default="true" selected="selected"@endif>{{ __('Anyone') }}</option>
     	<option value="{{ Auth::user()->id }}" @if (
             ($conversation->user_id == Auth::user()->id && $mailbox->ticket_assignee != App\Mailbox::TICKET_ASSIGNEE_ANYONE) 
             || (!$conversation->user_id && $mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_REPLYING_UNASSIGNED) 
-            || $mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_REPLYING)data-default="true" selected="selected"@endif>{{ __('Me') }}</option>
+            || $mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_REPLYING
+            || ($mailbox->ticket_assignee == App\Mailbox::TICKET_ASSIGNEE_KEEP_CURRENT && $conversation->user_id == Auth::user()->id))data-default="true" selected="selected"@endif>{{ __('Me') }}</option>
         @foreach ($mailbox->usersAssignable() as $user)
             @if ($user->id != Auth::user()->id)
-            	<option value="{{ $user->id }}" @if ($conversation->user_id == $user->id && !in_array($mailbox->ticket_assignee, [ App\Mailbox::TICKET_ASSIGNEE_REPLYING, App\Mailbox::TICKET_ASSIGNEE_ANYONE]))data-default="true" selected="selected"@endif @action('assignee_list.option_attrs', $user)>{{ $user->getFullName() }}@action('assignee_list.item_append', $user)</option>
+            	<option value="{{ $user->id }}" @if ($conversation->user_id == $user->id && !in_array($mailbox->ticket_assignee, [App\Mailbox::TICKET_ASSIGNEE_REPLYING, App\Mailbox::TICKET_ASSIGNEE_ANYONE]))data-default="true" selected="selected"@endif @action('assignee_list.option_attrs', $user)>{{ $user->getFullName() }}@action('assignee_list.item_append', $user)</option>
             @endif
         @endforeach
     </select> 

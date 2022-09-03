@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.21',
+    'version' => '1.8.22',
 
     /*
     |--------------------------------------------------------------------------
@@ -349,6 +349,13 @@ return [
     |--------------------------------------------------------------------------
     */
     'disable_updating'    => env('APP_DISABLE_UPDATING', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Use custom conversation numbers instead of conversation ID.
+    |--------------------------------------------------------------------------
+    */
+    'custom_number' => env('APP_CUSTOM_NUMBER', false),
 
     /*
     |--------------------------------------------------------------------------
