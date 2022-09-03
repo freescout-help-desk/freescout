@@ -919,6 +919,13 @@ class ConversationsController extends Controller
                         }
                     }
 
+                    // Follow conversation if it's assigned to someone else.
+                    if (!$is_create && !$new && !$is_forward && !$is_note
+                        && $conversation->user_id != $user->id
+                    ) {
+                        $user->followConversation($conversation->id);
+                    }
+
                     // When user creates a new conversation it may be saved as draft first.
                     if ($is_create) {
                         // New conversation.
@@ -1867,14 +1874,7 @@ class ConversationsController extends Controller
                 }
 
                 if ($request->action == 'follow') {
-                    try {
-                        $follower = new Follower();
-                        $follower->conversation_id = $request->conversation_id;
-                        $follower->user_id = $user->id;
-                        $follower->save();
-                    } catch (\Exception $e) {
-                        // Already exists
-                    }
+                    $user->followConversation($request->conversation_id);
                 } else {
                     $follower = Follower::where('conversation_id', $request->conversation_id)
                         ->where('user_id', $user->id)
