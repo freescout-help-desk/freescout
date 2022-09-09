@@ -1507,6 +1507,7 @@ function convEditorInit()
 		followingToolbar: false,
 		toolbar: fsApplyFilter('conversation.editor_toolbar', fs_conv_editor_toolbar),
 		buttons: fs_conv_editor_buttons,
+        hint: [],
 		callbacks: {
 	 		onImageUpload: function(files) {
 	 			if (!files) {
