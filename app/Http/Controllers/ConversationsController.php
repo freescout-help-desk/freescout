@@ -1918,7 +1918,7 @@ class ConversationsController extends Controller
                 break;
 
             case 'merge_search':
-                $conversation = Conversation::where('number', $request->number)->first();
+                $conversation = Conversation::where(Conversation::numberFieldName(), $request->number)->first();
 
                 if (!$conversation) {
                     $response['msg'] = __('Conversation not found');
