@@ -3858,8 +3858,10 @@ function followConversation(action)
 				var opposite = '';
 				if (action == 'follow') {
 					opposite = 'unfollow';
+					$('#conv-layout').addClass('conv-following');
 				} else {
 					opposite = 'follow';
+					$('#conv-layout').removeClass('conv-following');
 				}
 				$('.conv-follow[data-follow-action="'+action+'"]').addClass('hidden');
 				$('.conv-follow[data-follow-action="'+opposite+'"]').removeClass('hidden');

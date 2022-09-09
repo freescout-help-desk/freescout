@@ -40,6 +40,7 @@
         <button type="button" class="btn btn-primary btn-reply-submit btn-create-conv" data-loading-text="{{ __('Creating') }}…">{{ __('Create') }}</button>
         <button type="button" class="btn btn-primary btn-send-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><small class="glyphicon glyphicon-chevron-down"></small></button>
         <ul class="dropdown-menu dropdown-menu-right dropdown-after-send">
+            @action('conversation.prepend_send_dropdown', $conversation, $mailbox, $new_converstion ?? false)
             <li @if ($after_send == App\MailboxUser::AFTER_SEND_STAY) class="active" @endif><a href="javascript:void(0)" data-after-send="{{ App\MailboxUser::AFTER_SEND_STAY }}">{{ __('Send and stay on page') }}</a></li>
             <li @if ($after_send == App\MailboxUser::AFTER_SEND_NEXT) class="active" @endif><a href="#" data-after-send="{{ App\MailboxUser::AFTER_SEND_NEXT }}">{{ __('Send and next active') }}</a></li>
             <li @if ($after_send == App\MailboxUser::AFTER_SEND_FOLDER) class="active" @endif><a href="#" data-after-send="{{ App\MailboxUser::AFTER_SEND_FOLDER }}">{{ __('Send and back to folder') }}</a></li>

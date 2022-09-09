@@ -2070,7 +2070,7 @@ class Conversation extends Model
             $query_conversations->where(function ($query) use ($like, $filters, $q) {
                 $query->where('conversations.subject', 'like', $like)
                     ->orWhere('conversations.customer_email', 'like', $like)
-                    ->orWhere('conversations.number', (int)$q)
+                    ->orWhere('conversations.'.self::numberFieldName(), (int)$q)
                     ->orWhere('conversations.id', (int)$q)
                     ->orWhere('threads.body', 'like', $like)
                     ->orWhere('threads.from', 'like', $like)
@@ -2126,7 +2126,7 @@ class Conversation extends Model
             $query_conversations->where('threads.body', 'like', '%'.mb_strtolower($filters['body']).'%');
         }
         if (!empty($filters['number'])) {
-            $query_conversations->where('conversations.number', '=', $filters['number']);
+            $query_conversations->where('conversations.'.self::numberFieldName(), '=', $filters['number']);
         }
         if (!empty($filters['following'])) {
             if ($filters['following'] == 'yes') {
@@ -2169,6 +2169,18 @@ class Conversation extends Model
             return $value;
         } else {
             return $this->id;
+        }
+    }
+
+    public static function numberFieldName()
+    {
+        if (self::$custom_number_cache === null) {
+            self::$custom_number_cache = config('app.custom_number');
+        }
+        if (self::$custom_number_cache) {
+            return 'number';
+        } else {
+            return 'id';
         }
     }
 

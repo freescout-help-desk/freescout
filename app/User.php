@@ -7,6 +7,7 @@
 namespace App;
 
 use App\Email;
+use App\Follower;
 use App\Mail\PasswordChanged;
 use App\Mail\UserInvite;
 use App\Notifications\WebsiteNotification;
@@ -1098,6 +1099,18 @@ class User extends Authenticatable
             return true;
         } else {
             return false;
+        }
+    }
+
+    public function followConversation($conversation_id)
+    {
+        try {
+            $follower = new Follower();
+            $follower->conversation_id = $conversation_id;
+            $follower->user_id = $this->id;
+            $follower->save();
+        } catch (\Exception $e) {
+            // Already exists
         }
     }
 }
