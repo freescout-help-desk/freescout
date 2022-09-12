@@ -187,7 +187,7 @@
                         <strong>{{ $conversations->firstItem() }}</strong>-<strong>{{ $conversations->lastItem() }}</strong>
                     @endif
                 </td>
-                <td colspan="3" class="conv-nav">
+                <td colspan="1" class="conv-nav">
                     <div class="table-pager">
                         @if ($conversations)
                             {{ $conversations->links('conversations/conversations_pagination') }}
