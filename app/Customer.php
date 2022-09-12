@@ -1403,4 +1403,13 @@ class Customer extends Model
     {
         return (self::PHONE_TYPE_WORK == $code);
     }
+
+    // Method does not check if the customer
+    // has conversations.
+    public function deleteCustomer()
+    {
+        // Delete emails.
+        Email::where('customer_id', $this->id)->delete();
+        $this->delete();
+    }
 }
