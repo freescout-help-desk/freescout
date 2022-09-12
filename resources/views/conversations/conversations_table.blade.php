@@ -24,6 +24,8 @@
 
         // Sorting.
         $sorting = App\Conversation::getConvTableSorting();
+
+        $col_counter = 6;
     @endphp
 
     @if (!request()->get('page'))
@@ -34,13 +36,13 @@
         <colgroup>
             {{-- todo: without this column table becomes not 100% wide --}}
             <col class="conv-current">
-            @if (empty($no_checkboxes))<col class="conv-cb">@endif
-            @if (empty($no_customer))<col class="conv-customer">@endif
+            @if (empty($no_checkboxes))<col class="conv-cb">@php $col_counter++ ; @endphp@endif
+            @if (empty($no_customer))<col class="conv-customer">@php $col_counter++ ; @endphp@endif
             <col class="conv-attachment">
             <col class="conv-subject">
             <col class="conv-thread-count">
             @if ($show_assigned)
-                <col class="conv-owner">
+                <col class="conv-owner">@php $col_counter++ ; @endphp
             @endif
             @action('conversations_table.col_before_conv_number')
             <col class="conv-number">
@@ -172,11 +174,7 @@
         </tbody>
         <tfoot>
             <tr>
-                @if ($show_assigned)
-                    <td class="conv-totals" colspan="6">
-                @else
-                    <td class="conv-totals" colspan="5">
-                @endif
+                <td class="conv-totals" colspan="{{ $col_counter-3 }}">
                     @if ($conversations->total())
                         <strong>{{ $conversations->total() }}</strong> {{ __('total conversations') }}&nbsp;|&nbsp; 
                     @endif
@@ -187,7 +185,7 @@
                         <strong>{{ $conversations->firstItem() }}</strong>-<strong>{{ $conversations->lastItem() }}</strong>
                     @endif
                 </td>
-                <td colspan="1" class="conv-nav">
+                <td colspan="3" class="conv-nav">
                     <div class="table-pager">
                         @if ($conversations)
                             {{ $conversations->links('conversations/conversations_pagination') }}
