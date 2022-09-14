@@ -4318,6 +4318,9 @@ a.disabled:focus {
     line-height: 14px;
     margin: 0 4px 0 0;
 }
+.fs-tag a {
+    color: #fff!important;
+}
 .fs-tag-name,
 .fs-tag-name:hover,
 .fs-tag-name:focus {
