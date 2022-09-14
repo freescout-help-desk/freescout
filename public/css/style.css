@@ -2752,7 +2752,7 @@ ul.sidebar-block-list {
         width: 100%;
         padding-right: 0;
         position: static;
-        background-color: #fff;
+        /*background-color: #fff;*/
         height: auto;
     }
     #conv-layout-customer {
