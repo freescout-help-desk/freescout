@@ -51,6 +51,11 @@ class FetchEmails extends Command
     public $extra_import = [];
 
     /**
+     * Page size when requesting emails from mail server.
+     */
+    const PAGE_SIZE = 300;
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -164,67 +169,75 @@ class FetchEmails extends Command
         foreach ($folders as $folder) {
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
 
-            // Get unseen messages for a period
-            $last_error = '';
-            $messages = collect([]);
+            // Requesting emails by bunches allows to fetch large amounts of emails
+            // without problems with memory.
+            $page = 0;
+            do {
+                // Get messages.
+                $last_error = '';
+                $messages = collect([]);
 
-            try {    
-                $messages_query = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
-                if ($unseen) {
-                    $messages_query->unseen();
+                try {    
+                    $messages_query = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
+                    if ($unseen) {
+                        $messages_query->unseen();
+                    }
+                    if ($no_charset) {
+                        $messages_query->setCharset(null);
+                    }
+                    $messages_query->limit(self::PAGE_SIZE, $page);
+
+                    $messages = $messages_query->get();
+
+                    if (method_exists($client, 'getLastError')) {
+                        $last_error = $client->getLastError();
+                    }
+                } catch (\Exception $e) {
+                    $last_error = $e->getMessage();
                 }
-                if ($no_charset) {
-                    $messages_query->setCharset(null);
+
+                if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
+                    $errors_count = count($client->getErrors());
+                    // Solution for MS mailboxes.
+                    // https://github.com/freescout-helpdesk/freescout/issues/176
+                    $messages_query = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null);
+                    if ($unseen) {
+                        $messages_query->unseen();
+                    }
+                    $messages = $messages_query->get();
+
+                    $no_charset = true;
+                    if (count($client->getErrors()) > $errors_count) {
+                        $last_error = $client->getLastError();
+                    } else {
+                        $last_error = null;
+                    }
                 }
-                $messages = $messages_query->get();
 
-                if (method_exists($client, 'getLastError')) {
-                    $last_error = $client->getLastError();
+                if ($last_error && !\Str::startsWith($last_error, 'Mailbox is empty')) {
+                    // Throw exception for INBOX only
+                    if ($folder->name == 'INBOX' && !$messages) {
+                        throw new \Exception($last_error, 1);
+                    } else {
+                        $this->error('['.date('Y-m-d H:i:s').'] '.$last_error);
+                        $this->logError('Folder: '.$folder->name.'; Error: '.$last_error);
+                    }
                 }
-            } catch (\Exception $e) {
-                $last_error = $e->getMessage();
-            }
 
-            if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
-                $errors_count = count($client->getErrors());
-                // Solution for MS mailboxes.
-                // https://github.com/freescout-helpdesk/freescout/issues/176
-                $messages_query = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null);
-                if ($unseen) {
-                    $messages_query->unseen();
+                $this->line('['.date('Y-m-d H:i:s').'] Fetched: '.count($messages));
+
+                $message_index = 1;
+
+                // We have to sort messages manually, as they can be in non-chronological order
+                $messages = $this->sortMessage($messages);
+                foreach ($messages as $message_id => $message) {
+                    $this->line('['.date('Y-m-d H:i:s').'] '.$message_index.') '.$message->getSubject());
+                    $message_index++;
+
+                    $this->processMessage($message, $message_id, $mailbox, $this->mailboxes);
                 }
-                $messages = $messages_query->get();
-
-                $no_charset = true;
-                if (count($client->getErrors()) > $errors_count) {
-                    $last_error = $client->getLastError();
-                } else {
-                    $last_error = null;
-                }
-            }
-
-            if ($last_error && !\Str::startsWith($last_error, 'Mailbox is empty')) {
-                // Throw exception for INBOX only
-                if ($folder->name == 'INBOX' && !$messages) {
-                    throw new \Exception($last_error, 1);
-                } else {
-                    $this->error('['.date('Y-m-d H:i:s').'] '.$last_error);
-                    $this->logError('Folder: '.$folder->name.'; Error: '.$last_error);
-                }
-            }
-
-            $this->line('['.date('Y-m-d H:i:s').'] Fetched: '.count($messages));
-
-            $message_index = 1;
-
-            // We have to sort messages manually, as they can be in non-chronological order
-            $messages = $this->sortMessage($messages);
-            foreach ($messages as $message_id => $message) {
-                $this->line('['.date('Y-m-d H:i:s').'] '.$message_index.') '.$message->getSubject());
-                $message_index++;
-
-                $this->processMessage($message, $message_id, $mailbox, $this->mailboxes);
-            }
+                $page++;
+            } while (count($messages) == self::PAGE_SIZE);
         }
 
         $client->disconnect();

@@ -4889,6 +4889,11 @@ function getCookie(name)
     return matches ? decodeURIComponent(matches[1]) : undefined
 }
 
+function deleteCookie(name)
+{
+    document.cookie = name+'=;path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
 function fsAddAction(action, callback, priority)
 {
 	if (typeof(priority) == "undefined") {
