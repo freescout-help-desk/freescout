@@ -139,6 +139,8 @@ class Mail
         // We have to update Mailer facade manually, as it does not happen automatically
         // and previous instance of app('mailer') is used.
         \Mail::swap(app('mailer'));
+
+        \Eventy::action('mail.reapply_mail_config');
     }
 
     /**
