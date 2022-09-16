@@ -36,6 +36,7 @@ return [
             'GD',
             'fileinfo',
             'ZIP',
+            'iconv',
             //'cURL',
         ],
         // 'apache' => [
