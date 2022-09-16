@@ -573,6 +573,15 @@ class Conversation extends Model
         }
     }
 
+    public function getStatus()
+    {
+        if (array_key_exists($this->status, self::$statuses)) {
+            return $this->status;
+        } else {
+            return self::STATUS_ACTIVE;
+        }
+    }
+
     /**
      * Set conersation status and all related fields.
      *
