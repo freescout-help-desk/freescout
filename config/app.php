@@ -359,6 +359,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Enter your proxy address in .env file if freescout.net is not available from your server
+    | (access to freescout.net is required to obtain official modules)
+    |--------------------------------------------------------------------------
+    */
+    'proxy' => env('APP_PROXY', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |

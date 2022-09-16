@@ -40,12 +40,14 @@ class WpApi
             return $client->request('POST', $url, [
                 'connect_timeout' => 10,
                 'form_params' => $params,
+                'proxy' => config('app.proxy'),
             ]);
         } else {
             $params['v'] = config('app.version');
             return $client->request('GET', $url, [
                 'connect_timeout' => 10,
                 'query' => $params,
+                'proxy' => config('app.proxy'),
             ]);
         }
     }
