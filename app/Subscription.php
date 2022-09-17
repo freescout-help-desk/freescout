@@ -259,19 +259,19 @@ class Subscription extends Model
             }
 
             // Skip if user muted notifications for this mailbox
-            if ($subscription->user->isAdmin()) {
+            //if ($subscription->user->isAdmin()) {
 
-                // Mute notifications for events not related directly to the user.
-                if (!in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_FOLLOWED_CONVERSATION_UPDATED, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY])
-                    && !\Eventy::filter('subscription.is_related_to_user', false, $subscription, $thread)
-                ) {
-                    $mailbox_settings = $conversation->mailbox->getUserSettings($subscription->user_id);
+            // Mute notifications for events not related directly to the user.
+            if (!in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_FOLLOWED_CONVERSATION_UPDATED, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY])
+                && !\Eventy::filter('subscription.is_related_to_user', false, $subscription, $thread)
+            ) {
+                $mailbox_settings = $conversation->mailbox->getUserSettings($subscription->user_id);
 
-                    if (!empty($mailbox_settings->mute)) {
-                        continue;
-                    }
+                if (!empty($mailbox_settings->mute)) {
+                    continue;
                 }
             }
+            //}
 
             if (\Eventy::filter('subscription.filter_out', false, $subscription, $thread)) {
                 continue;
