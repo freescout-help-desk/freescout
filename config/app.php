@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.24',
+    'version' => '1.8.25',
 
     /*
     |--------------------------------------------------------------------------
@@ -200,7 +200,7 @@ return [
     | PHP extensions required by the app
     |-------------------------------------------------------------------------
     */
-    'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/ 'json', 'gd', 'fileinfo', 'openssl', 'zip', 'tokenizer', 'curl'/*, 'dom', 'xmlwriter', 'libxml', 'phar'*/],
+    'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/ 'json', 'gd', 'fileinfo', 'openssl', 'zip', 'tokenizer', 'curl', 'iconv'/*, 'dom', 'xmlwriter', 'libxml', 'phar'*/],
 
     /*
     |--------------------------------------------------------------------------
@@ -252,6 +252,7 @@ return [
         'alert_fetch_period' => ['default' => 15], // min
         'email_branding'     => ['default' => true],
         'open_tracking'      => ['default' => true],
+        'subscription_defaults' => ['default' => []],
     ],
 
     /*
@@ -356,6 +357,14 @@ return [
     |--------------------------------------------------------------------------
     */
     'custom_number' => env('APP_CUSTOM_NUMBER', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enter your proxy address in .env file if freescout.net is not available from your server
+    | (access to freescout.net is required to obtain official modules)
+    |--------------------------------------------------------------------------
+    */
+    'proxy' => env('APP_PROXY', ''),
 
     /*
     |--------------------------------------------------------------------------

@@ -573,6 +573,15 @@ class Conversation extends Model
         }
     }
 
+    public function getStatus()
+    {
+        if (array_key_exists($this->status, self::$statuses)) {
+            return $this->status;
+        } else {
+            return self::STATUS_ACTIVE;
+        }
+    }
+
     /**
      * Set conersation status and all related fields.
      *
@@ -1613,6 +1622,20 @@ class Conversation extends Model
         return $viewers;
     }
 
+    public function changeState($new_state, $user = null)
+    {
+        if (!array_key_exists($new_state, self::$states)) {
+            return;
+        }
+        
+        $prev_state = $this->state;
+
+        $this->state = $new_state;
+        $this->save();
+
+        \Eventy::action('conversation.state_changed', $this, $user, $prev_state);
+    }
+
     public function changeStatus($new_status, $user, $create_thread = true)
     {
         if (!array_key_exists($new_status, self::$statuses)) {
@@ -1677,6 +1700,7 @@ class Conversation extends Model
     {
         $folder_id = $this->getCurrentFolder();
 
+        $prev_state = $this->state;
         $this->state = Conversation::STATE_DELETED;
         $this->user_updated_at = date('Y-m-d H:i:s');
         $this->updateFolder();
@@ -1704,6 +1728,7 @@ class Conversation extends Model
         $this->mailbox->updateFoldersCounters();
 
         \Eventy::action('conversation.deleted', $this, $user);
+        \Eventy::action('conversation.state_changed', $this, $user, $prev_state);
     }
 
     public function deleteForever()
