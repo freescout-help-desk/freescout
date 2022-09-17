@@ -676,8 +676,10 @@ class ConversationsController extends Controller
                         $conversation->closed_at = date('Y-m-d H:i:s');
                     }
 
-                    // We need to set state, as it may have been a draft
+                    // We need to set state, as it may have been a draft.
+                    $prev_state = $conversation->state;
                     $conversation->state = Conversation::STATE_PUBLISHED;
+
                     // Set assignee
                     $prev_user_id = $conversation->user_id;
                     if ((int) $request->user_id != -1) {
@@ -755,6 +757,10 @@ class ConversationsController extends Controller
                             event(new ConversationUserChanged($conversation, $user));
                             \Eventy::action('conversation.user_changed', $conversation, $user, $prev_user_id);
                         }
+                    }
+
+                    if ($conversation->state != $prev_state) {
+                        \Eventy::action('conversation.state_changed', $conversation, $user, $prev_state);
                     }
 
                     // Create thread
@@ -1556,6 +1562,7 @@ class ConversationsController extends Controller
 
                 if (!$response['msg']) {
                     $folder_id = $conversation->folder_id;
+                    $prev_state = $conversation->state;
                     $conversation->state = Conversation::STATE_PUBLISHED;
                     $conversation->user_updated_at = date('Y-m-d H:i:s');
                     $conversation->updateFolder();
@@ -1578,6 +1585,10 @@ class ConversationsController extends Controller
 
                     // Recalculate only old and new folders
                     $conversation->mailbox->updateFoldersCounters();
+
+                    if ($prev_state != $conversation->state) {
+                        \Eventy::action('conversation.state_changed', $conversation, $user, $prev_state);
+                    }
 
                     $response['status'] = 'success';
 
