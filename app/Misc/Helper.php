@@ -1561,7 +1561,7 @@ class Helper
     /**
      * Fix and parse date to Carbon.
      */
-    public static function parseDateToCarbon($date)
+    public static function parseDateToCarbon($date, $current_if_invalid = true)
     {
         if (preg_match('/\+0580/', $date)) {
             $date = str_replace('+0580', '+0530', $date);
@@ -1589,7 +1589,11 @@ class Helper
             try {
                 return Carbon::parse($date);
             } catch (\Exception $_e) {
-                return Carbon::now();
+                if ($current_if_invalid) {
+                    return Carbon::now();
+                } else {
+                    return null;
+                }
             }
         }
 
