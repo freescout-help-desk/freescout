@@ -768,8 +768,6 @@ class MailboxesController extends Controller
 
                 if (!$mailbox) {
                     $response['msg'] = __('Mailbox not found');
-                } elseif (!$user->isAdmin()) {
-                    $response['msg'] = __('Not enough permissions');
                 }
 
                 if (!$response['msg']) {

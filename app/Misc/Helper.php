@@ -1464,7 +1464,7 @@ class Helper
         try {
             $headers = get_headers($uri);
 
-            if (!preg_match("/200/", $headers[0])) {
+            if (!preg_match("/(200|301|302)/", $headers[0])) {
                 return false;
             }
 
