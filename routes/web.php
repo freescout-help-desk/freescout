@@ -26,18 +26,10 @@ if (config('app.dashboard_path')) {
 	Route::redirect('/home', config('app.url'), 302);
 }
 
-// This is needed for the mobile app.
-if (config('app.dashboard_path')) {
-	Route::get(rtrim(config('app.dashboard_path'), "/").'/installer/css/fontawesome.css', 'PublicController@mobilePing');
-}
-if (config('app.login_path')) {
-	Route::get(rtrim(config('app.login_path'), "/").'/installer/css/fontawesome.css', 'PublicController@mobilePing');
-}
-
-// Public routes
-Route::get('/user-setup/{hash}', 'PublicController@userSetup')->name('user_setup');
-Route::post('/user-setup/{hash}', 'PublicController@userSetupSave');
-Route::get('/storage/attachment/{dir_1}/{dir_2}/{dir_3}/{file_name}', 'PublicController@downloadAttachment')->name('attachment.download');
+// Open routes
+Route::get('/user-setup/{hash}', 'OpenController@userSetup')->name('user_setup');
+Route::post('/user-setup/{hash}', 'OpenController@userSetupSave');
+Route::get('/storage/attachment/{dir_1}/{dir_2}/{dir_3}/{file_name}', 'OpenController@downloadAttachment')->name('attachment.download');
 
 // General routes for logged in users
 if (config('app.dashboard_path')) {
@@ -125,7 +117,7 @@ Route::post('/system/action', ['uses' => 'SystemController@action', 'middleware'
 Route::get('/system/cron/{hash}', ['uses' => 'SystemController@cron'])->name('system.cron');
 
 // Open tracking
-Route::get('/thread/read/{conversation_id}/{thread_id}', 'PublicController@setThreadAsRead')->name('open_tracking.set_read');
+Route::get('/thread/read/{conversation_id}/{thread_id}', 'OpenController@setThreadAsRead')->name('open_tracking.set_read');
 
 // Uploads
 Route::post('/uploads/upload', ['uses' => 'SecureController@upload', 'laroute' => true])->name('uploads.upload');
