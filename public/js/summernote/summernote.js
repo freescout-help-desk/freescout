@@ -4233,6 +4233,9 @@ var Editor = /** @class */ (function () {
                 }
                 $image.css('width', Math.min(_this.$editable.width(), $image.width()));
             }
+            var alt = src.substring(src.lastIndexOf('/')+1);
+            alt = alt.substring(0, alt.lastIndexOf('?'));
+            $image.attr('alt', alt);
             $image.show();
             range.create(_this.editable).insertNode($image[0]);
             range.createFromNodeAfter($image[0]).select();
