@@ -142,6 +142,8 @@
                         <div class="col-sm-6">
                             <input id="phone" type="text" class="form-control input-sized" name="phone" value="{{ old('phone', $user->phone) }}" placeholder="{{ __('(optional)') }}" maxlength="60">
 
+                            @action('user.edit.phone_append', $user)
+
                             @include('partials/field_error', ['field'=>'phone'])
                         </div>
                     </div>

@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 
-class PublicController extends Controller
+class OpenController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -38,7 +38,7 @@ class PublicController extends Controller
             \Helper::setLocale($user->locale);
         }
 
-        return view('public/user_setup', ['user' => $user]);
+        return view('open/user_setup', ['user' => $user]);
     }
 
     /**
@@ -207,8 +207,8 @@ class PublicController extends Controller
     /**
      * Needed for the mobile app.
      */
-    public function mobilePing()
-    {
-        echo file_get_contents(public_path('installer/css/fontawesome.css'));
-    }
+    // public function mobilePing()
+    // {
+    //     echo file_get_contents(public_path('installer/css/fontawesome.css'));
+    // }
 }

@@ -279,6 +279,8 @@ class SendReplyToCustomer implements ShouldQueue
                 $envelope['from'] = $mailbox->getMailFrom(null, $this->conversation)['address'];
                 $envelope['to'] = $this->customer_email;
                 $envelope['subject'] = 'Re: ' . $this->conversation->subject;
+                $envelope['date'] = now()->toRfc2822String();
+                $envelope['message_id'] = $this->message_id;
 
                 // Get penultimate email Message-Id if reply
                 if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
@@ -291,6 +293,7 @@ class SendReplyToCustomer implements ShouldQueue
                 $part1['type'] = TYPETEXT;
                 $part1['subtype'] = 'html';
                 $part1['contents.data'] = $reply_mail->render();
+                $part1['charset'] = 'utf-8';
 
                 try {
                     // getFolder does not work if sent folder has spaces.
