@@ -24,6 +24,9 @@
 @endif
 
 {{-- Floating flash messages are displayed in layout --}}
+@php
+    $flashes = \Eventy::filter('flash_messages.flashes', $flashes ?? []);
+@endphp
 
 @if (!empty($flashes) && is_array($flashes))
     @foreach ($flashes as $flash)
