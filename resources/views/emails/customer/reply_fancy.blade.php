@@ -11,7 +11,9 @@
 </head>
 <body style="-webkit-text-size-adjust:none;">
 	<div id="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" class="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" style="width:100%!important; margin:0; padding:0">
-	            
+	    @php
+	    	$is_forwarded = $threads[0]->isForwarded();
+	    @endphp
 		@foreach ($threads as $thread)
 			@if ($loop->index == 1)<!-- originalMessage --><div class="gmail_quote" style="height:0; font-size:0px; line-height:0px; color:#ffffff;"></div>@endif
 	        <div style="width:100%; margin:0;">
@@ -21,7 +23,7 @@
 			                <td style="padding:8px 0 10px 0;">
 			                	
 			                    <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#727272; font-size:15px; line-height:21px; margin:0; font-weight:normal;">
-			                    	<strong style="color:#000000;">{{ $thread->getFromName($mailbox) }}</strong>
+			                    	<strong style="color:#000000;">{{ $thread->getFromName($mailbox) }}@if ($is_forwarded && $thread->from) &lt;{{ $thread->from }}&gt; @endif</strong>
 			                    	{{--if ($loop->last){!! __(':person sent a message', ['person' => '<strong style="color:#000000;">'.htmlspecialchars($thread->getFromName($mailbox)).'</strong>']) !!}@else {!! __(':person replied', ['person' => '<strong style="color:#000000;">'.htmlspecialchars($thread->getFromName($mailbox)).'</strong>']) !!}@endif--}}
 			                	</h3>
 
