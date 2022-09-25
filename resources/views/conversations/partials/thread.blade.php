@@ -247,7 +247,7 @@
                     <div class="alert alert-info">
                         {{ __('This is a forwarded conversation.') }}
                         {!! __('Original conversation: :forward_parent_conversation_number', [
-                        'forward_parent_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMeta('forward_parent_conversation_id')]).'#thread-'.$thread->getMeta('forward_parent_thread_id').'">#'.$thread->getMeta('forward_parent_conversation_number').'</a>'
+                        'forward_parent_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMetaFw(App\Thread::META_FORWARD_PARENT_CONVERSATION_ID)]).'#thread-'.$thread->getMetaFw(App\Thread::META_FORWARD_PARENT_THREAD_ID).'">#'.$thread->getMetaFw(App\Thread::META_FORWARD_PARENT_CONVERSATION_NUMBER).'</a>'
                         ]) !!}
                     </div>
                 @endif
@@ -255,7 +255,7 @@
                     <div class="alert alert-note">
                         {!! __(':person forwarded this conversation. Forwarded conversation: :forward_child_conversation_number', [
                         'person' => ucfirst($thread->getForwardByFullName()),
-                        'forward_child_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMeta('forward_child_conversation_id')]).'">#'.$thread->getMeta('forward_child_conversation_number').'</a>'
+                        'forward_child_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMetaFw(App\Thread::META_FORWARD_CHILD_CONVERSATION_ID)]).'">#'.$thread->getMetaFw(App\Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER).'</a>'
                         ]) !!}
                     </div>
                 @endif

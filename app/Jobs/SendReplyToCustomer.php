@@ -76,7 +76,7 @@ class SendReplyToCustomer implements ShouldQueue
                 $forwarded_replies = $forwarded_replies->sortByDesc(function ($item, $key) {
                     return $item->created_at;
                 });
-                $forward_parent_thread = Thread::find($forward_child_thread->getMeta('forward_parent_thread_id'));
+                $forward_parent_thread = Thread::find($forward_child_thread->getMetaFw(Thread::META_FORWARD_PARENT_THREAD_ID));
 
                 if ($forward_parent_thread) {
                     // Remove threads created after forwarding.
