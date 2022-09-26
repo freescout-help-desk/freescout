@@ -134,7 +134,7 @@
                 </div>
             </div>
             <p class="form-help">
-                {{ __('Add "Powered by :app_name" footer text to the outgoing emails to invite more developers to the project and make application better.', ['app_name' => \Config::get('app.name')]) }}
+                {{ __('Add "Powered by :app_name" footer text to the outgoing emails to invite more developers to the project and make the application better.', ['app_name' => \Config::get('app.name')]) }}
             </p>
             @include('partials/field_error', ['field'=>'settings.email_branding'])
         </div>
