@@ -45,9 +45,7 @@
                                 <a href="#" class="conv-follow @if ($is_following) hidden @endif" data-follow-action="follow" role="button"><i class="glyphicon glyphicon-bell"></i> {{ __("Follow") }}</a>
                                 <a href="#" class="conv-follow @if (!$is_following) hidden @endif" data-follow-action="unfollow" role="button"><i class="glyphicon glyphicon-bell"></i> {{ __("Unfollow") }}</a>
                             </li>
-                            @if (!$conversation->isChat())
-                                <li><a href="#" class="conv-forward" role="button"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
-                            @endif
+                            <li><a href="#" class="conv-forward" role="button"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
                             @if (!$conversation->isChat())
                                 <li><a href="{{ route('conversations.ajax_html', array_merge(['action' =>
                         'merge_conv'], \Request::all(), ['conversation_id' => $conversation->id]) ) }}" data-trigger="modal" data-modal-title="{{ __("Merge Conversations") }}" data-modal-no-footer="true" data-modal-on-show="initMergeConv" role="button"><i class="glyphicon glyphicon-indent-left"></i> {{ __("Merge") }}</a></li>
