@@ -2,7 +2,7 @@
 #
 # FreeScout upgrade script.
 # 
-# If you need you can create /tools/pre_upgrade.sh script which will be launched in the beginning.
+# If you need you can create /tools/pre_update.sh script which will be launched in the beginning.
 
 DATE_TIME=`date +%Y-%m-%d_%H:%M:%S`
 echo -e "Starting upgrading: \e[32m${DATE_TIME}\e[0m";
@@ -30,9 +30,9 @@ cd $PROJECT_ROOT;
 PROJECT_ROOT=`pwd`;
 echo -e "Application root: \e[32m${PROJECT_ROOT}\e[0m"
 
-if [ -f "${TOOLS_DIR}/pre_upgrade.sh" ]; then
-	echo "Including pre_upgrade.sh"
-	source "${TOOLS_DIR}/pre_upgrade.sh";
+if [ -f "${TOOLS_DIR}/pre_update.sh" ]; then
+	echo "Including pre_update.sh"
+	source "${TOOLS_DIR}/pre_update.sh";
 fi
 
 #if [ -f "${PROJECT_ROOT}/.gitcommit" ]; then
@@ -160,3 +160,8 @@ php artisan migrate
 
 
 php artisan queue:restart
+
+if [ -f "${TOOLS_DIR}/post_update.sh" ]; then
+	echo "Including post_update.sh"
+	source "${TOOLS_DIR}/post_update.sh";
+fi
