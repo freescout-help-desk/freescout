@@ -746,7 +746,9 @@ class FetchEmails extends Command
         }
         $conversation->customer_email = $from;
         // Reply from customer makes conversation active
-        $conversation->status = Conversation::STATUS_ACTIVE;
+        if ($conversation->status != Conversation::STATUS_ACTIVE) {
+            $conversation->status = \Eventy::filter('conversation.status_changing', Conversation::STATUS_ACTIVE, $conversation);
+        }
         $conversation->last_reply_at = $now;
         $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
         // Reply from customer to deleted conversation should undelete it.

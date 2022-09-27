@@ -848,8 +848,8 @@ class ConversationsController extends Controller
                         // Set forwarding meta data.
                         // todo: store array of numbers and IDs.
                         $thread->subtype = Thread::SUBTYPE_FORWARD;
-                        $thread->setMeta('forward_child_conversation_number', $forwarded_conversation->number);
-                        $thread->setMeta('forward_child_conversation_id', $forwarded_conversation->id);
+                        $thread->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER, $forwarded_conversation->number);
+                        $thread->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_ID, $forwarded_conversation->id);
                     }
 
                     // Conversation history.
@@ -879,9 +879,9 @@ class ConversationsController extends Controller
                             if ($attachments_info['has_attachments']) {
                                 $forwarded_thread->has_attachments = true;
                             }
-                            $forwarded_thread->setMeta('forward_parent_conversation_number', $conversation->number);
-                            $forwarded_thread->setMeta('forward_parent_conversation_id', $conversation->id);
-                            $forwarded_thread->setMeta('forward_parent_thread_id', $thread->id);
+                            $forwarded_thread->setMeta(Thread::META_FORWARD_PARENT_CONVERSATION_NUMBER, $conversation->number);
+                            $forwarded_thread->setMeta(Thread::META_FORWARD_PARENT_CONVERSATION_ID, $conversation->id);
+                            $forwarded_thread->setMeta(Thread::META_FORWARD_PARENT_THREAD_ID, $thread->id);
                             $forwarded_thread->save();
                         }
                     }

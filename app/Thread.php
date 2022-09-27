@@ -158,6 +158,20 @@ class Thread extends Model
     const META_PREV_CONVERSATION = 'pc';
     const META_MERGED_WITH_CONV = 'mwc';
     const META_MERGED_INTO_CONV = 'mic';
+    const META_FORWARD_PARENT_CONVERSATION_NUMBER = 'fw_pcn';
+    const META_FORWARD_PARENT_CONVERSATION_ID = 'fw_pci';
+    const META_FORWARD_PARENT_THREAD_ID = 'fw_pti';
+    const META_FORWARD_CHILD_CONVERSATION_NUMBER = 'fw_ccn';
+    const META_FORWARD_CHILD_CONVERSATION_ID = 'fw_cci';
+
+    // At some stage metas have been renamed.
+    public static $meta_fw_backward_compat = [
+        self::META_FORWARD_PARENT_CONVERSATION_NUMBER => 'forward_parent_conversation_number',
+        self::META_FORWARD_PARENT_CONVERSATION_ID => 'forward_parent_conversation_id',
+        self::META_FORWARD_PARENT_THREAD_ID => 'forward_parent_thread_id',
+        self::META_FORWARD_CHILD_CONVERSATION_NUMBER => 'forward_child_conversation_number',
+        self::META_FORWARD_CHILD_CONVERSATION_ID => 'forward_child_conversation_id',
+    ];
 
     protected $dates = [
         'opened_at',
@@ -636,7 +650,7 @@ class Thread extends Model
             }
         } else {
             if ($this->isForwarded()) {
-                $did_this = __(':person forwarded a conversation #:forward_parent_conversation_number', ['forward_parent_conversation_number' => $this->getMeta('forward_parent_conversation_number')]);
+                $did_this = __(':person forwarded a conversation #:forward_parent_conversation_number', ['forward_parent_conversation_number' => $this->getMetaFw(self::META_FORWARD_PARENT_CONVERSATION_NUMBER)]);
             } elseif ($this->first) {
                 $did_this = __(':person started a new conversation #:conversation_number', ['conversation_number' => $conversation_number]);
             } elseif ($this->type == self::TYPE_NOTE) {
@@ -1227,6 +1241,15 @@ class Thread extends Model
         $this->setMetas($metas);
     }
 
+    public function getMetaFw($key, $default = null)
+    {
+        $meta = $this->getMeta($key, $default);
+        if (!$meta) {
+            $meta = $this->getMeta(self::$meta_fw_backward_compat[$key], $default);
+        }
+        return $meta;
+    }
+
     /**
      * Unset thread meta value.
      */
@@ -1269,7 +1292,7 @@ class Thread extends Model
      */
     public function isForwarded()
     {
-        if ($this->getMeta('forward_parent_conversation_id')) {
+        if ($this->getMetaFw(self::META_FORWARD_PARENT_CONVERSATION_ID)) {
             return true;
         } else {
             return false;
@@ -1289,7 +1312,7 @@ class Thread extends Model
      */
     public function getForwardParentConversation()
     {
-        return Conversation::where('id', $this->getMeta('forward_parent_conversation_id'))
+        return Conversation::where('id', $this->getMetaFw(self::META_FORWARD_PARENT_CONVERSATION_ID))
             ->rememberForever()
             ->first();
     }
@@ -1299,7 +1322,7 @@ class Thread extends Model
      */
     public function getForwardChildConversation()
     {
-        return Conversation::where('id', $this->getMeta('forward_child_conversation_id'))
+        return Conversation::where('id', $this->getMetaFw(self::META_FORWARD_CHILD_CONVERSATION_ID))
             ->first();
     }
 

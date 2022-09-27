@@ -2910,9 +2910,7 @@ ul.sidebar-block-list {
 /**
  * Subscriptions
  */
-.subscriptions-email,
-.subscriptions-browser,
-.subscriptions-mobile {
+.subs-cb {
     text-align: center;
 }
 .user-subscriptions {

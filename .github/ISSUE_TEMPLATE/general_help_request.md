@@ -9,5 +9,6 @@ about: Create a general help request
 * Feature requests for modules should be posted here: https://freescout.net/request-feature/
 * Docker questions should go here: https://github.com/tiredofit/docker-freescout/issues
 * Questions on issues with payments for modules should be sent by email: https://freescout.net/contact-us/
+* Mentioning how much you've spent on modules is the way to being banned.
 
 Still here? Well clean this out and go ahead :)
