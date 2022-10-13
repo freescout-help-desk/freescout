@@ -72,6 +72,7 @@ class Mail
         '<!-- originalMessage -->',
         '‐‐‐‐‐‐‐ Original Message ‐‐‐‐‐‐‐',
         '--------------- Original Message ---------------',
+        '-------- Αρχικό μήνυμα --------', // Greek
     ];
 
     /**
