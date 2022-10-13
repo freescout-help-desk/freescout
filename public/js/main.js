@@ -407,6 +407,14 @@ function initModals(html_tag)
 	});
 }
 
+function editorProcessInsertVar(editor)
+{
+	editor.parent().children().find('.summernote-inservar:first').on('change', function(event) {
+		editor.summernote('insertText', $(this).val());
+		$(this).val('');
+	});
+}
+
 function mailboxUpdateInit(from_name_custom)
 {
 	var selector = '#signature';
@@ -419,10 +427,7 @@ function mailboxUpdateInit(from_name_custom)
 			callbacks: {
 				onInit: function() {
 					$(selector).parent().children().find('.note-statusbar').remove();
-					$(selector).parent().children().find('.summernote-inservar:first').on('change', function(event) {
-						$(selector).summernote('insertText', $(this).val());
-						$(this).val('');
-					});
+					editorProcessInsertVar($(selector));
 				},
 				onImageUpload: function(files) {
 					if (!files) {
