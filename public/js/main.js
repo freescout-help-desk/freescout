@@ -2135,6 +2135,10 @@ function triggerModal(a, params)
     	params = {};
     }
 
+    if (typeof(params.options) == "undefined") {
+    	params.options = {};
+    }
+
     if (typeof(a) == "undefined" || !a) {
     	// Create dummy link
     	a = $(document.createElement('a'));
@@ -2242,7 +2246,7 @@ function triggerModal(a, params)
     //     modal.on('shown.bs.modal', onshow);
     // }
 
-    modal.modal();
+    modal.modal(params.options);
 
     modal.on('hidden.bs.modal', function () {
 	    $(this).remove();
