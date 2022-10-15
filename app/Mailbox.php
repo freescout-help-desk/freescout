@@ -478,7 +478,11 @@ class Mailbox extends Model
             ->remember(\Helper::cacheTime($cache))
             ->get();
 
-        $users = $this->users()->select('users.*')->remember(\Helper::cacheTime($cache))->get()->merge($admins)->unique();
+        $users = $this->users()->select(['users.*', 'mailbox_user.hide'])
+            ->remember(\Helper::cacheTime($cache))
+            ->get()
+            ->merge($admins)
+            ->unique();
 
         foreach ($users as $i => $user) {
             if (!empty($user->hide)) {
