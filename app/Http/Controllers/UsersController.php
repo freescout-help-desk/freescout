@@ -98,6 +98,8 @@ class UsersController extends Controller
             // Set some random password before sending invite
             $user->password = Hash::make($user->generateRandomPassword());
         }
+        // Set system timezone.
+        $user->timezone = config('app.timezone') ?: User::DEFAULT_TIMEZONE;
         $user = \Eventy::filter('user.create_save', $user, $request);
         $user->save();
 
