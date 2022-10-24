@@ -224,7 +224,7 @@ class Mail
      */
     public static function hasVars($text)
     {
-        return preg_match('/({%|%})/', $text);
+        return preg_match('/({%|%})/', $text ?? '');
     }
 
     /**
