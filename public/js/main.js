@@ -2887,7 +2887,8 @@ function initCustomerSelector(input, custom_options)
 			createTag: function (params) {
 				// Don't allow to create a tag if there is no @ symbol
 				if (typeof(custom_options.allow_non_emails) == "undefined") {
-				    if (params.term.indexOf('@') === -1) {
+				    //if (params.term.indexOf('@') === -1) {
+				    if (!/^.+@.+$/.test(params.term)) {
 						// Return null to disable tag creation
 						return null;
 				    }
