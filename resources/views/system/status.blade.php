@@ -266,7 +266,7 @@
 
                                 <select name="failed_queue" class="">
                                     @foreach ($failed_queues as $queue)
-                                        <option value="{{ $queue }}">{{ $queue }}</option>
+                                        <option value="{{ $queue }}">{{ __('Queue') }}: {{ $queue }}</option>
                                     @endforeach
                                 </select>
 
@@ -280,7 +280,7 @@
                             <table class="table">
                                 <tbody>
                                     <tr>
-                                        <th colspan="2">{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}</th>
+                                        <th colspan="2">{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }} – <small><a href="{{ route('system.ajax_html', ['action' => 'job_details', 'param' => $job->id]) }}" data-trigger="modal" data-modal-title="{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}" data-modal-no-footer="true">{{ __('View Details') }}</a></small></th>
                                     </tr>
                                     <tr>
                                         <td>{{ __('Queue') }}</td>
