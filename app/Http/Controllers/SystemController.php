@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Option;
 use App\User;
+use App\FailedJob;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -381,5 +382,32 @@ class SystemController extends Controller
         $output = $outputLog->fetch();
 
         return response($output, 200)->header('Content-Type', 'text/plain');
+    }
+
+    /**
+     * Ajax HTML.
+     */
+    public function ajaxHtml(Request $request)
+    {
+        switch ($request->action) {
+            case 'job_details':
+                $job = \App\FailedJob::find($request->param);
+                if (!$job) {
+                    abort(404);
+                }
+
+                $html = '';
+                $payload = json_decode($job->payload, true);
+
+                if (!empty($payload['data']['command'])) {
+                    $html .= '<pre>'.print_r(unserialize($payload['data']['command']), 1).'</pre>';
+                }
+                
+                $html .= '<pre>'.$job->exception.'</pre>';
+
+                return response($html);
+        }
+
+        abort(404);
     }
 }

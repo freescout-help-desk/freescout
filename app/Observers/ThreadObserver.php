@@ -17,6 +17,10 @@ class ThreadObserver
         // Update data in conversation
         $conversation = $thread->conversation;
 
+        if (!$conversation) {
+            return;
+        }
+
         $now = date('Y-m-d H:i:s');
         if (!in_array($thread->type, [Thread::TYPE_LINEITEM, Thread::TYPE_NOTE]) && $thread->state == Thread::STATE_PUBLISHED) {
             $conversation->threads_count++;

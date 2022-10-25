@@ -35,6 +35,8 @@ class User extends Authenticatable
 
     const EMAIL_DELETED_SUFFIX = '_deleted';
 
+    const DEFAULT_TIMEZONE = 'UTC';
+
     /**
      * Roles.
      */

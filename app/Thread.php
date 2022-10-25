@@ -307,7 +307,7 @@ class Thread extends Model
     /**
      * Convert body to plain text.
      */
-    public function getBodyAsText($options = array())
+    public function getBodyAsText($options = ['width' => 0])
     {
         return \Helper::htmlToText($this->body, true, $options);
     }

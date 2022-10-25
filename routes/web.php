@@ -115,6 +115,7 @@ Route::post('/system/tools', ['uses' => 'SystemController@toolsExecute', 'middle
 Route::post('/system/ajax', ['uses' => 'SystemController@ajax', 'laroute' => true, 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system.ajax');
 Route::post('/system/action', ['uses' => 'SystemController@action', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system.action');
 Route::get('/system/cron/{hash}', ['uses' => 'SystemController@cron'])->name('system.cron');
+Route::get('/system/ajax-html/{action}/{param?}', ['uses' => 'SystemController@ajaxHtml', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system.ajax_html');
 
 // Open tracking
 Route::get('/thread/read/{conversation_id}/{thread_id}', 'OpenController@setThreadAsRead')->name('open_tracking.set_read');
