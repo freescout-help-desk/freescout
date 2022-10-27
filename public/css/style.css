@@ -1374,6 +1374,9 @@ thead .conv-cb label {
     vertical-align: middle;
     border-bottom: 1px solid #e3e8eb;
 }
+.table.table-conversations tbody .conv-row-extended td {
+    border-bottom: 0!important;
+}
 .table-conversations td a {
     color: #2a3b47;
     display: block;

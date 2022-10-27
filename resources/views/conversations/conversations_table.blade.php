@@ -25,6 +25,23 @@
         // Sorting.
         $sorting = App\Conversation::getConvTableSorting();
 
+        // Build columns list
+        $columns = ['current'];
+        if (empty($no_checkboxes)) {
+            $columns[] = 'cb';
+        }
+        if (empty($no_customer)) {
+            $columns[] = 'customer';
+        }
+        $columns[] = 'attachment';
+        $columns[] = 'subject';
+        $columns[] = 'count';
+        if ($show_assigned) {
+            $columns[] = 'assignee';
+        }
+        $columns[] = 'number';
+        $columns[] = 'date';
+
         $col_counter = 6;
     @endphp
 
@@ -97,7 +114,7 @@
         </thead>
         <tbody>
             @foreach ($conversations as $conversation)
-                <tr class="conv-row @if ($conversation->isActive()) conv-active @endif @if ($conversation->isSpam()) conv-spam @endif" data-conversation_id="{{ $conversation->id }}">
+                <tr class="conv-row @action('conversations_table.row_class', $conversation) @if ($conversation->isActive()) conv-active @endif @if ($conversation->isSpam()) conv-spam @endif" data-conversation_id="{{ $conversation->id }}">
                     @if (empty($no_checkboxes))<td class="conv-current">@if (!empty($viewers[$conversation->id]))
                                 <div class="viewer-badge @if (!empty($viewers[$conversation->id]['replying'])) viewer-replying @endif" data-toggle="tooltip" title="@if (!empty($viewers[$conversation->id]['replying'])){{ __(':user is replying', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@else{{ __(':user is viewing', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@endif"><div>
                             @endif</td>@else<td class="conv-current"></td>@endif
@@ -170,6 +187,7 @@
                         <a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED])) data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conversation->getDateTitle() }}"@else title="{{ __('View conversation') }}" @endif @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conversation->getWaitingSince($folder) }}</a>
                     </td>
                 </tr>
+                @action('conversations_table.after_row', $conversation, $columns, $col_counter)
             @endforeach
         </tbody>
         <tfoot>
