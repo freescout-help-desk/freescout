@@ -141,7 +141,7 @@
     "License successfully DEactivated!": "Licence désactivée avec succès!",
     "\":name\" module successfully updated!": "Le module \":name\" a été mis à jour avec succès !",
     "License key does not exist": "La clé de licence n'existe pas",
-    "You have to activate each bundle's module separately": "Vous devez activer le module de chaque paquet séparément",
+    "You have to activate each bundle's module separately": "Vous devez activer le module de chaque \paquet séparément",
     "No activations left for this license key": "Il ne reste aucune activation pour cette clé de licence",
     "License key belongs to another module": "La clé de licence appartient à un autre module",
     "Running": "Fonctionnement",
