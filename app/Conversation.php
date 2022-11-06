@@ -2109,6 +2109,9 @@ class Conversation extends Model
 
         // Apply search filters.
         if (!empty($filters['assigned'])) {
+            if ($filters['assigned'] == self::USER_UNASSIGNED) {
+                $filters['assigned'] = null;
+            }
             $query_conversations->where('conversations.user_id', $filters['assigned']);
         }
         if (!empty($filters['customer'])) {
