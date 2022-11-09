@@ -2109,6 +2109,9 @@ class Conversation extends Model
 
         // Apply search filters.
         if (!empty($filters['assigned'])) {
+            if ($filters['assigned'] == self::USER_UNASSIGNED) {
+                $filters['assigned'] = null;
+            }
             $query_conversations->where('conversations.user_id', $filters['assigned']);
         }
         if (!empty($filters['customer'])) {
@@ -2119,7 +2122,12 @@ class Conversation extends Model
             });
         }
         if (!empty($filters['mailbox'])) {
-            $query_conversations->where('conversations.mailbox_id', '=', $filters['mailbox']);
+            if ($user->hasAccessToMailbox($filters['mailbox'])) {
+                // Check if the user has access to the mailbox.
+                $query_conversations->where('conversations.mailbox_id', '=', $filters['mailbox']);
+            } else {
+                unset($filters['mailbox']);
+            }
         }
         if (!empty($filters['status'])) {
             if (count($filters['status']) == 1) {
