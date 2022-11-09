@@ -2122,7 +2122,12 @@ class Conversation extends Model
             });
         }
         if (!empty($filters['mailbox'])) {
-            $query_conversations->where('conversations.mailbox_id', '=', $filters['mailbox']);
+            if ($user->hasAccessToMailbox($filters['mailbox'])) {
+                // Check if the user has access to the mailbox.
+                $query_conversations->where('conversations.mailbox_id', '=', $filters['mailbox']);
+            } else {
+                unset($filters['mailbox']);
+            }
         }
         if (!empty($filters['status'])) {
             if (count($filters['status']) == 1) {

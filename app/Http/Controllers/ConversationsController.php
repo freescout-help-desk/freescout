@@ -2482,7 +2482,7 @@ class ConversationsController extends Controller
                     ->orWhere('emails.email', 'like', $like);
             });
 
-        if (!empty($filters['mailbox'])) {
+        if (!empty($filters['mailbox']) && in_array($filters['mailbox'], $mailbox_ids)) {
             $query_customers->join('conversations', function ($join) use ($filters) {
                 $join->on('conversations.customer_id', '=', 'customers.id');
                 //$join->on('conversations.mailbox_id', '=', $filters['mailbox']);
