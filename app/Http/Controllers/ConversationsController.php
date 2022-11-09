@@ -321,10 +321,12 @@ class ConversationsController extends Controller
 
         $to = [];
 
+        // Prefill some values.
         $prefill_to = \App\Email::sanitizeEmail($request->get('to'));
         if ($prefill_to) {
             $to = [$prefill_to => $prefill_to];
         }
+        $conversation->subject = trim($request->get('subject') ?? '');
 
         return view('conversations/create', [
             'conversation' => $conversation,
