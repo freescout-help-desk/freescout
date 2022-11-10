@@ -289,6 +289,10 @@ class SendReplyToCustomer implements ShouldQueue
                         'References: <'.$last_customer_thread->message_id.'>'
                     ];
                 }
+                // Remove new lines to avoid "imap_mail_compose(): header injection attempt in subject".
+                foreach ($envelope as $i => $envelope_value) {
+                    $envelope[$i] = preg_replace("/[\r\n]/", '', $envelope_value);
+                }
 
                 $part1['type'] = TYPETEXT;
                 $part1['subtype'] = 'html';
