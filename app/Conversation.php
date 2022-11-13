@@ -2073,11 +2073,6 @@ class Conversation extends Model
     {
         $mailbox_ids = [];
 
-        // Get IDs of mailboxes to which user has access
-        if (empty($filters['mailbox'])) {
-            $mailbox_ids = $user->mailboxesIdsCanView();
-        }
-
         // Like is case insensitive.
         $like = '%'.mb_strtolower($q).'%';
 
@@ -2087,6 +2082,19 @@ class Conversation extends Model
         // https://github.com/laravel/framework/issues/21242
         // https://github.com/laravel/framework/pull/27675
         $query_conversations->groupby('conversations.id');
+
+        if (!empty($filters['mailbox'])) {
+            if ($user->hasAccessToMailbox($filters['mailbox'])) {
+                // Check if the user has access to the mailbox.
+                $query_conversations->where('conversations.mailbox_id', '=', $filters['mailbox']);
+            } else {
+                unset($filters['mailbox']);
+                $mailbox_ids = $user->mailboxesIdsCanView();
+            }
+        } else {
+            // Get IDs of mailboxes to which user has access
+            $mailbox_ids = $user->mailboxesIdsCanView();
+        }
 
         if ($mailbox_ids) {
             $query_conversations->whereIn('conversations.mailbox_id', $mailbox_ids);
@@ -2120,14 +2128,6 @@ class Conversation extends Model
                 $query->where('conversations.customer_id', '=', $customer_id)
                     ->orWhere('threads.created_by_customer_id', '=', $customer_id);
             });
-        }
-        if (!empty($filters['mailbox'])) {
-            if ($user->hasAccessToMailbox($filters['mailbox'])) {
-                // Check if the user has access to the mailbox.
-                $query_conversations->where('conversations.mailbox_id', '=', $filters['mailbox']);
-            } else {
-                unset($filters['mailbox']);
-            }
         }
         if (!empty($filters['status'])) {
             if (count($filters['status']) == 1) {
