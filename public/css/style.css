@@ -4389,6 +4389,11 @@ a.disabled:focus {
         display: none;
     }
 }
+@media (min-width:992px) {
+    .sidebar-2col {
+        overflow-y: auto;
+    }
+}
 /**
  * Left sidebar and main content are visible
  */
