@@ -119,7 +119,7 @@ class Attachment {
      * @return mixed
      * @throws MethodNotFoundException
      */
-    public function __call($method, $arguments) {
+    public function __call(string $method, array $arguments) {
         if(strtolower(substr($method, 0, 3)) === 'get') {
             $name = Str::snake(substr($method, 3));
 
@@ -242,8 +242,8 @@ class Attachment {
      *
      * @return boolean
      */
-    public function save($path, $filename = null) {
-        $filename = $filename ? $filename : $this->getName();
+    public function save(string $path, $filename = null): bool {
+        $filename = $filename ?: $this->getName();
 
         return file_put_contents($path.$filename, $this->getContent()) !== false;
     }
@@ -278,13 +278,20 @@ class Attachment {
      * @return string|null
      */
     public function getExtension(){
+        $guesser = "\Symfony\Component\Mime\MimeTypes";
+        if (class_exists($guesser) !== false) {
+            /** @var Symfony\Component\Mime\MimeTypes $guesser */
+            $extensions = $guesser::getDefault()->getExtensions($this->getMimeType());
+            return $extensions[0] ?? null;
+        }
+
         $deprecated_guesser = "\Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser";
         if (class_exists($deprecated_guesser) !== false){
+            /** @var \Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser $deprecated_guesser */
             return $deprecated_guesser::getInstance()->guess($this->getMimeType());
         }
-        $guesser = "\Symfony\Component\Mime\MimeTypes";
-        $extensions = $guesser::getDefault()->getExtensions($this->getMimeType());
-        return isset($extensions[0]) ? $extensions[0] : null;
+
+        return null;
     }
 
     /**
@@ -292,14 +299,14 @@ class Attachment {
      *
      * @return array
      */
-    public function getAttributes(){
+    public function getAttributes(): array {
         return $this->attributes;
     }
 
     /**
      * @return Message
      */
-    public function getMessage(){
+    public function getMessage(): Message {
         return $this->oMessage;
     }
 
@@ -309,7 +316,7 @@ class Attachment {
      *
      * @return $this
      */
-    public function setMask($mask){
+    public function setMask($mask): Attachment {
         if(class_exists($mask)){
             $this->mask = $mask;
         }
@@ -322,7 +329,7 @@ class Attachment {
      *
      * @return string
      */
-    public function getMask(){
+    public function getMask(): string {
         return $this->mask;
     }
 

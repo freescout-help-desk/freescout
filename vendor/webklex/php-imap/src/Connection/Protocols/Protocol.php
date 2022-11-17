@@ -38,7 +38,7 @@ abstract class Protocol implements ProtocolInterface {
     protected $enable_uid_cache = true;
 
     /**
-     * @var false|resource
+     * @var false|\IMAP\Connection|resource
      */
     public $stream = false;
 

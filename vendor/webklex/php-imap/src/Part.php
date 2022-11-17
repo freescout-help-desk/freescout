@@ -142,12 +142,12 @@ class Part {
     /**
      * Part constructor.
      * @param $raw_part
-     * @param Header $header
+     * @param Header|null $header
      * @param integer $part_number
      *
      * @throws InvalidMessageDateException
      */
-    public function __construct($raw_part, $header = null, $part_number = 0) {
+    public function __construct($raw_part, Header $header = null, int $part_number = 0) {
         $this->raw = $raw_part;
         $this->header = $header;
         $this->part_number = $part_number;
@@ -202,12 +202,12 @@ class Part {
     }
 
     /**
-     * Find all available headers and return the left over body segment
+     * Find all available headers and return the leftover body segment
      *
      * @return string
      * @throws InvalidMessageDateException
      */
-    private function findHeaders(){
+    private function findHeaders(): string {
         $body = $this->raw;
         while (($pos = strpos($body, "\r\n")) > 0) {
             $body = substr($body, $pos + 2);
@@ -217,7 +217,7 @@ class Part {
 
         $this->header = new Header($headers);
 
-        return (string) $body;
+        return $body;
     }
 
     /**
@@ -298,7 +298,7 @@ class Part {
      *
      * @return bool
      */
-    public function isAttachment(){
+    public function isAttachment(): bool {
         $valid_disposition = in_array(strtolower($this->disposition ?? ''), ClientManager::get('options.dispositions'));
 
         if ($this->type == IMAP::MESSAGE_TYPE_TEXT && ($this->ifdisposition == 0 || empty($this->disposition) || !$valid_disposition)) {

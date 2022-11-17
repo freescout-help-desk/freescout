@@ -39,7 +39,7 @@ class ImapProtocol extends Protocol {
      * @param bool $cert_validation set to false to skip SSL certificate validation
      * @param mixed $encryption Connection encryption method
      */
-    public function __construct($cert_validation = true, $encryption = false) {
+    public function __construct(bool $cert_validation = true, $encryption = false) {
         $this->setCertValidation($cert_validation);
         $this->encryption = $encryption;
     }
@@ -58,7 +58,7 @@ class ImapProtocol extends Protocol {
      *
      * @throws ConnectionFailedException
      */
-    public function connect($host, $port = null) {
+    public function connect(string $host, $port = null) {
         $transport = 'tcp';
         $encryption = '';
 
@@ -103,14 +103,16 @@ class ImapProtocol extends Protocol {
      * @return string next line
      * @throws RuntimeException
      */
-    public function nextLine() {
-        $line = fgets($this->stream);
-
-        if ($line === false) {
-            throw new RuntimeException('failed to read - connection closed?');
+    public function nextLine(): string {
+        $line = "";
+        while (($next_char = fread($this->stream, 1)) !== false && $next_char !== "\n") {
+            $line .= $next_char;
         }
-
-        return $line;
+        if ($line === "" && $next_char === false) {
+            throw new RuntimeException('empty response');
+        }
+        if ($this->debug) echo "<< ".$line."\n";
+        return $line . "\n";
     }
 
     /**
@@ -120,23 +122,35 @@ class ImapProtocol extends Protocol {
      * @return bool
      * @throws RuntimeException
      */
-    protected function assumedNextLine($start) {
-        $line = $this->nextLine();
-        return strpos($line, $start) === 0;
+    protected function assumedNextLine(string $start): bool {
+        return strpos($this->nextLine(), $start) === 0;
     }
 
     /**
      * Get the next line and split the tag
-     * @param string $tag reference tag
+     * @param string|null $tag reference tag
      *
      * @return string next line
      * @throws RuntimeException
      */
-    protected function nextTaggedLine(&$tag) {
+    protected function nextTaggedLine(&$tag): string {
         $line = $this->nextLine();
         list($tag, $line) = explode(' ', $line, 2);
 
         return $line;
+    }
+
+    /**
+     * Get the next line and check if it contains a given string and split the tag
+     * @param string $start
+     * @param $tag
+     *
+     * @return bool
+     * @throws RuntimeException
+     */
+    protected function assumedNextTaggedLine(string $start, &$tag): bool {
+        $line = $this->nextTaggedLine($tag);
+        return strpos($line, $start) !== false;
     }
 
     /**
@@ -146,7 +160,7 @@ class ImapProtocol extends Protocol {
      * @return array
      * @throws RuntimeException
      */
-    protected function decodeLine($line) {
+    protected function decodeLine(string $line): array {
         $tokens = [];
         $stack = [];
 
@@ -155,10 +169,11 @@ class ImapProtocol extends Protocol {
         while (($pos = strpos($line, ' ')) !== false) {
             $token = substr($line, 0, $pos);
             if (!strlen($token)) {
+                $line = substr($line, $pos + 1);
                 continue;
             }
             while ($token[0] == '(') {
-                array_push($stack, $tokens);
+                $stack[] = $tokens;
                 $tokens = [];
                 $token = substr($token, 1);
             }
@@ -231,14 +246,13 @@ class ImapProtocol extends Protocol {
      * @return bool
      * @throws RuntimeException
      */
-    public function readLine(&$tokens = [], $wantedTag = '*', $dontParse = false) {
+    public function readLine(&$tokens = [], string $wantedTag = '*', bool $dontParse = false): bool {
         $line = $this->nextTaggedLine($tag); // get next tag
         if (!$dontParse) {
             $tokens = $this->decodeLine($line);
         } else {
             $tokens = $line;
         }
-        if ($this->debug) echo "<< ".$line."\n";
 
         // if tag is wanted tag we might be at the end of a multiline response
         return $tag == $wantedTag;
@@ -249,10 +263,10 @@ class ImapProtocol extends Protocol {
      * @param string $tag request tag
      * @param bool $dontParse if true every line is returned unparsed instead of the decoded tokens
      *
-     * @return void|null|bool|array tokens if success, false if error, null if bad request
+     * @return array|bool|null tokens if success, false if error, null if bad request
      * @throws RuntimeException
      */
-    public function readResponse($tag, $dontParse = false) {
+    public function readResponse(string $tag, bool $dontParse = false) {
         $lines = [];
         $tokens = null; // define $tokens variable before first use
         do {
@@ -272,18 +286,18 @@ class ImapProtocol extends Protocol {
             return false;
         }
 
-        return;
+        return null;
     }
 
     /**
      * Send a new request
      * @param string $command
      * @param array $tokens additional parameters to command, use escapeString() to prepare
-     * @param string $tag provide a tag otherwise an autogenerated is returned
+     * @param string|null $tag provide a tag otherwise an autogenerated is returned
      *
      * @throws RuntimeException
      */
-    public function sendRequest($command, $tokens = [], &$tag = null) {
+    public function sendRequest(string $command, array $tokens = [], string &$tag = null) {
         if (!$tag) {
             $this->noun++;
             $tag = 'TAG' . $this->noun;
@@ -293,9 +307,7 @@ class ImapProtocol extends Protocol {
 
         foreach ($tokens as $token) {
             if (is_array($token)) {
-                if (fwrite($this->stream, $line . ' ' . $token[0] . "\r\n") === false) {
-                    throw new RuntimeException('failed to write - connection closed?');
-                }
+                $this->write($line . ' ' . $token[0]);
                 if (!$this->assumedNextLine('+ ')) {
                     throw new RuntimeException('failed to send literal string');
                 }
@@ -304,9 +316,19 @@ class ImapProtocol extends Protocol {
                 $line .= ' ' . $token;
             }
         }
-        if ($this->debug) echo ">> ".$line."\n";
+        $this->write($line);
+    }
 
-        if (fwrite($this->stream, $line . "\r\n") === false) {
+    /**
+     * Write data to the current stream
+     * @param string $data
+     * @return void
+     * @throws RuntimeException
+     */
+    public function write(string $data) {
+        if ($this->debug) echo ">> ".$data ."\n";
+
+        if (fwrite($this->stream, $data . "\r\n") === false) {
             throw new RuntimeException('failed to write - connection closed?');
         }
     }
@@ -317,10 +339,10 @@ class ImapProtocol extends Protocol {
      * @param array $tokens parameters as in sendRequest()
      * @param bool $dontParse if true unparsed lines are returned instead of tokens
      *
-     * @return void|null|bool|array response as in readResponse()
+     * @return array|bool|null response as in readResponse()
      * @throws RuntimeException
      */
-    public function requestAndResponse($command, $tokens = [], $dontParse = false) {
+    public function requestAndResponse(string $command, array $tokens = [], bool $dontParse = false) {
         $this->sendRequest($command, $tokens, $tag);
 
         return $this->readResponse($tag, $dontParse);
@@ -354,7 +376,7 @@ class ImapProtocol extends Protocol {
      *
      * @return string escaped list for imap
      */
-    public function escapeList($list) {
+    public function escapeList(array $list): string {
         $result = [];
         foreach ($list as $v) {
             if (!is_array($v)) {
@@ -374,9 +396,10 @@ class ImapProtocol extends Protocol {
      * @return bool|mixed
      * @throws AuthFailedException
      */
-    public function login($user, $password) {
+    public function login(string $user, string $password): bool {
         try {
-            return $this->requestAndResponse('LOGIN', $this->escapeString($user, $password), true);
+            $response = $this->requestAndResponse('LOGIN', $this->escapeString($user, $password), true);
+            return $response !== null && $response !== false;
         } catch (RuntimeException $e) {
             throw new AuthFailedException("failed to authenticate", 0, $e);
         }
@@ -390,7 +413,7 @@ class ImapProtocol extends Protocol {
      * @return bool
      * @throws AuthFailedException
      */
-    public function authenticate($user, $token) {
+    public function authenticate(string $user, string $token): bool {
         try {
             $authenticateParams = ['XOAUTH2', base64_encode("user=$user\1auth=Bearer $token\1\1")];
             $this->sendRequest('AUTHENTICATE', $authenticateParams);
@@ -416,7 +439,6 @@ class ImapProtocol extends Protocol {
         } catch (RuntimeException $e) {
             throw new AuthFailedException("failed to authenticate", 0, $e);
         }
-        return false;
     }
 
     /**
@@ -424,7 +446,7 @@ class ImapProtocol extends Protocol {
      *
      * @return bool success
      */
-    public function logout() {
+    public function logout(): bool {
         $result = false;
         if ($this->stream) {
             try {
@@ -435,7 +457,7 @@ class ImapProtocol extends Protocol {
             $this->uid_cache = null;
         }
 
-        return $result;
+        return $result !== false;
     }
 
     /**
@@ -443,7 +465,7 @@ class ImapProtocol extends Protocol {
      *
      * @return bool
      */
-    public function connected(){
+    public function connected(): bool {
         return (boolean) $this->stream;
     }
 
@@ -453,7 +475,7 @@ class ImapProtocol extends Protocol {
      * @return array list of capabilities
      * @throws RuntimeException
      */
-    public function getCapabilities() {
+    public function getCapabilities(): array {
         $response = $this->requestAndResponse('CAPABILITY');
 
         if (!$response) return [];
@@ -473,7 +495,7 @@ class ImapProtocol extends Protocol {
      * @return bool|array
      * @throws RuntimeException
      */
-    public function examineOrSelect($command = 'EXAMINE', $folder = 'INBOX') {
+    public function examineOrSelect(string $command = 'EXAMINE', string $folder = 'INBOX') {
         $this->sendRequest($command, [$this->escapeString($folder)], $tag);
 
         $result = [];
@@ -487,7 +509,7 @@ class ImapProtocol extends Protocol {
             switch ($tokens[1]) {
                 case 'EXISTS':
                 case 'RECENT':
-                    $result[strtolower($tokens[1])] = $tokens[0];
+                    $result[strtolower($tokens[1])] = (int)$tokens[0];
                     break;
                 case '[UIDVALIDITY':
                     $result['uidvalidity'] = (int)$tokens[2];
@@ -495,6 +517,11 @@ class ImapProtocol extends Protocol {
                 case '[UIDNEXT':
                     $result['uidnext'] = (int)$tokens[2];
                     break;
+                case '[UNSEEN':
+                    $result['unseen'] = (int)$tokens[2];
+                    break;
+                case '[NONEXISTENT]':
+                    throw new RuntimeException("folder doesn't exist");
                 default:
                     // ignore
                     break;
@@ -514,7 +541,7 @@ class ImapProtocol extends Protocol {
      * @return bool|array see examineOrselect()
      * @throws RuntimeException
      */
-    public function selectFolder($folder = 'INBOX') {
+    public function selectFolder(string $folder = 'INBOX') {
         $this->uid_cache = null;
 
         return $this->examineOrSelect('SELECT', $folder);
@@ -527,7 +554,7 @@ class ImapProtocol extends Protocol {
      * @return bool|array see examineOrselect()
      * @throws RuntimeException
      */
-    public function examineFolder($folder = 'INBOX') {
+    public function examineFolder(string $folder = 'INBOX') {
         return $this->examineOrSelect('EXAMINE', $folder);
     }
 
@@ -542,7 +569,7 @@ class ImapProtocol extends Protocol {
      *
      * @return string|array if only one item of one message is fetched it's returned as string
      *                      if items of one message are fetched it's returned as (name => value)
-     *                      if one items of messages are fetched it's returned as (msgno => value)
+     *                      if one item of messages are fetched it's returned as (msgno => value)
      *                      if items of messages are fetched it's returned as (msgno => (name => value))
      * @throws RuntimeException
      */
@@ -577,7 +604,12 @@ class ImapProtocol extends Protocol {
                 } else if ($tokens[2][0] == 'UID') {
                     $uidKey = 1;
                 } else {
-                    $uidKey = array_search('UID', $tokens[2]) + 1;
+                    $found = array_search('UID', $tokens[2]);
+                    if ($found === false || $found === -1) {
+                        continue;
+                    }
+
+                    $uidKey = $found + 1;
                 }
             }
 
@@ -593,6 +625,7 @@ class ImapProtocol extends Protocol {
                 } elseif ($uid && $tokens[2][2] == $items[0]) {
                     $data = $tokens[2][3];
                 } else {
+                    $expectedResponse = 0;
                     // maybe the server send an other field we didn't wanted
                     $count = count($tokens[2]);
                     // we start with 2, because 0 was already checked
@@ -601,7 +634,11 @@ class ImapProtocol extends Protocol {
                             continue;
                         }
                         $data = $tokens[2][$i + 1];
+                        $expectedResponse = 1;
                         break;
+                    }
+                    if (!$expectedResponse) {
+                        continue;
                     }
                 }
             } else {
@@ -643,8 +680,9 @@ class ImapProtocol extends Protocol {
      * @return array
      * @throws RuntimeException
      */
-    public function content($uids, $rfc = "RFC822", $uid = IMAP::ST_UID) {
-        return $this->fetch(["$rfc.TEXT"], $uids, null, $uid);
+    public function content($uids, string $rfc = "RFC822", $uid = IMAP::ST_UID): array {
+        $result = $this->fetch(["$rfc.TEXT"], $uids, null, $uid);
+        return is_array($result) ? $result : [];
     }
 
     /**
@@ -657,8 +695,9 @@ class ImapProtocol extends Protocol {
      * @return array
      * @throws RuntimeException
      */
-    public function headers($uids, $rfc = "RFC822", $uid = IMAP::ST_UID){
-        return $this->fetch(["$rfc.HEADER"], $uids, null, $uid);
+    public function headers($uids, string $rfc = "RFC822", $uid = IMAP::ST_UID): array{
+        $result = $this->fetch(["$rfc.HEADER"], $uids, null, $uid);
+        return $result === "" ? [] : $result;
     }
 
     /**
@@ -670,8 +709,9 @@ class ImapProtocol extends Protocol {
      * @return array
      * @throws RuntimeException
      */
-    public function flags($uids, $uid = IMAP::ST_UID){
-        return $this->fetch(["FLAGS"], $uids, null, $uid);
+    public function flags($uids, $uid = IMAP::ST_UID): array {
+        $result = $this->fetch(["FLAGS"], $uids, null, $uid);
+        return is_array($result) ? $result : [];
     }
 
     /**
@@ -682,15 +722,12 @@ class ImapProtocol extends Protocol {
      * @throws MessageNotFoundException
      */
     public function getUid($id = null) {
-
-        if ($this->enable_uid_cache && $this->uid_cache) {
-            $uids = $this->uid_cache;
-        } else {
+        if (!$this->enable_uid_cache || $this->uid_cache === null || ($this->uid_cache && count($this->uid_cache) <= 0)) {
             try {
-                $uids = $this->fetch('UID', 1, INF);
-                $this->setUidCache($uids); // set cache for this folder
+                $this->setUidCache($this->fetch('UID', 1, INF)); // set cache for this folder
             } catch (RuntimeException $e) {}
         }
+        $uids = $this->uid_cache;
 
         if ($id == null) {
             return $uids;
@@ -718,11 +755,11 @@ class ImapProtocol extends Protocol {
      * @return int message number
      * @throws MessageNotFoundException
      */
-    public function getMessageNumber($id) {
+    public function getMessageNumber(string $id): int {
         $ids = $this->getUid();
         foreach ($ids as $k => $v) {
             if ($v == $id) {
-                return $k;
+                return (int)$k;
             }
         }
 
@@ -737,7 +774,7 @@ class ImapProtocol extends Protocol {
      * @return array folders that matched $folder as array(name => array('delimiter' => .., 'flags' => ..))
      * @throws RuntimeException
      */
-    public function folders($reference = '', $folder = '*') {
+    public function folders(string $reference = '', string $folder = '*'): array {
         $result = [];
         $list = $this->requestAndResponse('LIST', $this->escapeString($reference, $folder));
         if (!$list || $list === true) {
@@ -769,7 +806,7 @@ class ImapProtocol extends Protocol {
      * @return bool|array new flags if $silent is false, else true or false depending on success
      * @throws RuntimeException
      */
-    public function store(array $flags, $from, $to = null, $mode = null, $silent = true, $uid = IMAP::ST_UID, $item = null) {
+    public function store(array $flags, int $from, $to = null, $mode = null, bool $silent = true, $uid = IMAP::ST_UID, $item = null) {
         $flags = $this->escapeList($flags);
         $set = $this->buildSet($from, $to);
 
@@ -797,13 +834,13 @@ class ImapProtocol extends Protocol {
      * Append a new message to given folder
      * @param string $folder name of target folder
      * @param string $message full message content
-     * @param array $flags flags for new message
+     * @param array|null $flags flags for new message
      * @param string $date date for new message
      *
      * @return bool success
      * @throws RuntimeException
      */
-    public function appendMessage($folder, $message, $flags = null, $date = null) {
+    public function appendMessage(string $folder, string $message, $flags = null, $date = null): bool {
         $tokens = [];
         $tokens[] = $this->escapeString($folder);
         if ($flags !== null) {
@@ -814,7 +851,7 @@ class ImapProtocol extends Protocol {
         }
         $tokens[] = $this->escapeString($message);
 
-        return $this->requestAndResponse('APPEND', $tokens, true);
+        return (bool) $this->requestAndResponse('APPEND', $tokens, true);
     }
 
     /**
@@ -829,16 +866,16 @@ class ImapProtocol extends Protocol {
      * @return bool success
      * @throws RuntimeException
      */
-    public function copyMessage($folder, $from, $to = null, $uid = IMAP::ST_UID) {
+    public function copyMessage(string $folder, $from, $to = null, $uid = IMAP::ST_UID): bool {
         $set = $this->buildSet($from, $to);
         $command = $this->buildUIDCommand("COPY", $uid);
-        return $this->requestAndResponse($command, [$set, $this->escapeString($folder)], true);
+        return (bool)$this->requestAndResponse($command, [$set, $this->escapeString($folder)], true);
     }
 
     /**
      * Copy multiple messages to the target folder
      *
-     * @param array<string> $messages List of message identifiers
+     * @param array $messages List of message identifiers
      * @param string $folder Destination folder
      * @param int|string $uid set to IMAP::ST_UID or any string representing the UID - set to IMAP::ST_MSGN to use
      * message numbers instead.
@@ -846,7 +883,7 @@ class ImapProtocol extends Protocol {
      *
      * @throws RuntimeException
      */
-    public function copyManyMessages($messages, $folder, $uid = IMAP::ST_UID) {
+    public function copyManyMessages(array $messages, string $folder, $uid = IMAP::ST_UID) {
         $command = $this->buildUIDCommand("COPY", $uid);
 
         $set = implode(',', $messages);
@@ -867,16 +904,16 @@ class ImapProtocol extends Protocol {
      * @return bool success
      * @throws RuntimeException
      */
-    public function moveMessage($folder, $from, $to = null, $uid = IMAP::ST_UID) {
+    public function moveMessage(string $folder, $from, $to = null, $uid = IMAP::ST_UID): bool {
         $set = $this->buildSet($from, $to);
         $command = $this->buildUIDCommand("MOVE", $uid);
 
-        return $this->requestAndResponse($command, [$set, $this->escapeString($folder)], true);
+        return (bool)$this->requestAndResponse($command, [$set, $this->escapeString($folder)], true);
     }
 
     /**
      * Move multiple messages to the target folder
-     * @param array<string> $messages List of message identifiers
+     * @param array $messages List of message identifiers
      * @param string $folder Destination folder
      * @param int|string $uid set to IMAP::ST_UID or any string representing the UID - set to IMAP::ST_MSGN to use
      * message numbers instead.
@@ -884,7 +921,7 @@ class ImapProtocol extends Protocol {
      * @return array|bool Tokens if operation successful, false if an error occurred
      * @throws RuntimeException
      */
-    public function moveManyMessages($messages, $folder, $uid = IMAP::ST_UID) {
+    public function moveManyMessages(array $messages, string $folder, $uid = IMAP::ST_UID) {
         $command = $this->buildUIDCommand("MOVE", $uid);
 
         $set = implode(',', $messages);
@@ -922,8 +959,8 @@ class ImapProtocol extends Protocol {
      * @return bool success
      * @throws RuntimeException
      */
-    public function createFolder($folder) {
-        return $this->requestAndResponse('CREATE', [$this->escapeString($folder)], true);
+    public function createFolder(string $folder): bool {
+        return (bool)$this->requestAndResponse('CREATE', [$this->escapeString($folder)], true);
     }
 
     /**
@@ -934,8 +971,8 @@ class ImapProtocol extends Protocol {
      * @return bool success
      * @throws RuntimeException
      */
-    public function renameFolder($old, $new) {
-        return $this->requestAndResponse('RENAME', $this->escapeString($old, $new), true);
+    public function renameFolder(string $old, string $new): bool {
+        return (bool)$this->requestAndResponse('RENAME', $this->escapeString($old, $new), true);
     }
 
     /**
@@ -945,8 +982,8 @@ class ImapProtocol extends Protocol {
      * @return bool success
      * @throws RuntimeException
      */
-    public function deleteFolder($folder) {
-        return $this->requestAndResponse('DELETE', [$this->escapeString($folder)], true);
+    public function deleteFolder(string $folder): bool {
+        return (bool)$this->requestAndResponse('DELETE', [$this->escapeString($folder)], true);
     }
 
     /**
@@ -956,8 +993,8 @@ class ImapProtocol extends Protocol {
      * @return bool success
      * @throws RuntimeException
      */
-    public function subscribeFolder($folder) {
-        return $this->requestAndResponse('SUBSCRIBE', [$this->escapeString($folder)], true);
+    public function subscribeFolder(string $folder): bool {
+        return (bool)$this->requestAndResponse('SUBSCRIBE', [$this->escapeString($folder)], true);
     }
 
     /**
@@ -967,8 +1004,8 @@ class ImapProtocol extends Protocol {
      * @return bool success
      * @throws RuntimeException
      */
-    public function unsubscribeFolder($folder) {
-        return $this->requestAndResponse('UNSUBSCRIBE', [$this->escapeString($folder)], true);
+    public function unsubscribeFolder(string $folder): bool {
+        return (bool)$this->requestAndResponse('UNSUBSCRIBE', [$this->escapeString($folder)], true);
     }
 
     /**
@@ -977,8 +1014,8 @@ class ImapProtocol extends Protocol {
      * @return bool success
      * @throws RuntimeException
      */
-    public function expunge() {
-        return $this->requestAndResponse('EXPUNGE');
+    public function expunge(): bool {
+        return (bool)$this->requestAndResponse('EXPUNGE');
     }
 
     /**
@@ -987,8 +1024,8 @@ class ImapProtocol extends Protocol {
      * @return bool success
      * @throws RuntimeException
      */
-    public function noop() {
-        return $this->requestAndResponse('NOOP');
+    public function noop(): bool {
+        return (bool)$this->requestAndResponse('NOOP');
     }
 
     /**
@@ -998,8 +1035,9 @@ class ImapProtocol extends Protocol {
      * @return array
      * @throws RuntimeException
      */
-    public function getQuota($username) {
-        return $this->requestAndResponse("GETQUOTA", ['"#user/'.$username.'"']);
+    public function getQuota($username): array {
+        $result = $this->requestAndResponse("GETQUOTA", ['"#user/'.$username.'"']);
+        return is_array($result) ? $result : [];
     }
 
     /**
@@ -1009,8 +1047,9 @@ class ImapProtocol extends Protocol {
      * @return array
      * @throws RuntimeException
      */
-    public function getQuotaRoot($quota_root = 'INBOX') {
-        return $this->requestAndResponse("QUOTA", [$quota_root]);
+    public function getQuotaRoot(string $quota_root = 'INBOX'): array {
+        $result = $this->requestAndResponse("QUOTA", [$quota_root]);
+        return is_array($result) ? $result : [];
     }
 
     /**
@@ -1029,9 +1068,10 @@ class ImapProtocol extends Protocol {
      * Send done command
      * @throws RuntimeException
      */
-    public function done() {
-        if (fwrite($this->stream, "DONE\r\n") === false) {
-            throw new RuntimeException('failed to write - connection closed?');
+    public function done(): bool {
+        $this->write("DONE");
+        if (!$this->assumedNextTaggedLine('OK', $tags)) {
+            throw new RuntimeException('done failed');
         }
         return true;
     }
@@ -1045,12 +1085,10 @@ class ImapProtocol extends Protocol {
      * @return array message ids
      * @throws RuntimeException
      */
-    public function search(array $params, $uid = IMAP::ST_UID) {
+    public function search(array $params, $uid = IMAP::ST_UID): array {
         $command = $this->buildUIDCommand("SEARCH", $uid);
         $response = $this->requestAndResponse($command, $params);
-        if (!$response) {
-            return $response;
-        }
+        if (!$response) return [];
 
         foreach ($response as $ids) {
             if ($ids[0] == 'SEARCH') {
@@ -1072,7 +1110,7 @@ class ImapProtocol extends Protocol {
      * @throws MessageNotFoundException
      * @throws InvalidMessageDateException
      */
-    public function overview($sequence, $uid = IMAP::ST_UID) {
+    public function overview(string $sequence, $uid = IMAP::ST_UID): array {
         $result = [];
         list($from, $to) = explode(":", $sequence);
 

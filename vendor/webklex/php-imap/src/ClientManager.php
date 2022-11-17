@@ -43,13 +43,13 @@ class ClientManager {
 
     /**
      * Dynamically pass calls to the default account.
-     * @param  string  $method
-     * @param  array   $parameters
+     * @param string $method
+     * @param array $parameters
      *
      * @return mixed
      * @throws Exceptions\MaskNotFoundException
      */
-    public function __call($method, $parameters) {
+    public function __call(string $method, array $parameters) {
         $callable = [$this->account(), $method];
 
         return call_user_func_array($callable, $parameters);
@@ -62,7 +62,7 @@ class ClientManager {
      * @return Client
      * @throws Exceptions\MaskNotFoundException
      */
-    public function make($config) {
+    public function make(array $config): Client {
         return new Client($config);
     }
 
@@ -73,7 +73,7 @@ class ClientManager {
      *
      * @return mixed|null
      */
-    public static function get($key, $default = null) {
+    public static function get(string $key, $default = null) {
         $parts = explode('.', $key);
         $value = null;
         foreach($parts as $part) {
@@ -97,16 +97,16 @@ class ClientManager {
 
     /**
      * Resolve a account instance.
-     * @param  string  $name
+     * @param string|null $name
      *
      * @return Client
      * @throws Exceptions\MaskNotFoundException
      */
-    public function account($name = null) {
+    public function account(string $name = null): Client {
         $name = $name ?: $this->getDefaultAccount();
 
-        // If the connection has not been resolved yet we will resolve it now as all
-        // of the connections are resolved when they are actually needed so we do
+        // If the connection has not been resolved we will resolve it now as all
+        // the connections are resolved when they are actually needed, so we do
         // not make any unnecessary connection to the various queue end-points.
         if (!isset($this->accounts[$name])) {
             $this->accounts[$name] = $this->resolve($name);
@@ -116,14 +116,13 @@ class ClientManager {
     }
 
     /**
-     * Resolve a account.
-     *
-     * @param  string  $name
+     * Resolve an account.
+     * @param string $name
      *
      * @return Client
      * @throws Exceptions\MaskNotFoundException
      */
-    protected function resolve($name) {
+    protected function resolve(string $name): Client {
         $config = $this->getClientConfig($name);
 
         return new Client($config);
@@ -131,16 +130,16 @@ class ClientManager {
 
     /**
      * Get the account configuration.
-     * @param  string  $name
+     * @param string|null $name
      *
      * @return array
      */
-    protected function getClientConfig($name) {
+    protected function getClientConfig($name): array {
         if ($name === null || $name === 'null') {
             return ['driver' => 'null'];
         }
 
-        return self::$config["accounts"][$name];
+        return is_array(self::$config["accounts"][$name]) ? self::$config["accounts"][$name] : [];
     }
 
     /**
@@ -148,17 +147,17 @@ class ClientManager {
      *
      * @return string
      */
-    public function getDefaultAccount() {
+    public function getDefaultAccount(): string {
         return self::$config['default'];
     }
 
     /**
      * Set the name of the default account.
-     * @param  string  $name
+     * @param string $name
      *
      * @return void
      */
-    public function setDefaultAccount($name) {
+    public function setDefaultAccount(string $name) {
         self::$config['default'] = $name;
     }
 
@@ -174,7 +173,7 @@ class ClientManager {
      *
      * @return $this
      */
-    public function setConfig($config) {
+    public function setConfig($config): ClientManager {
 
         if(is_array($config) === false) {
             $config = require $config;
@@ -188,7 +187,7 @@ class ClientManager {
 
         if(is_array($config)){
             if(isset($config['default'])){
-                if(isset($config['accounts']) && $config['default'] != false){
+                if(isset($config['accounts']) && $config['default']){
 
                     $default_config = $vendor_config['accounts']['default'];
                     if(isset($config['accounts'][$config['default']])){
@@ -219,9 +218,6 @@ class ClientManager {
      * Numeric entries are appended, not replaced, but only if they are
      * unique
      *
-     * @param  array $array1 Initial array to merge.
-     * @param  array ...     Variable list of arrays to recursively merge.
-     *
      * @return array|mixed
      *
      * @link   http://www.php.net/manual/en/function.array-merge-recursive.php#96201
@@ -247,7 +243,7 @@ class ClientManager {
             foreach($append as $key => $value) {
 
                 if(!array_key_exists($key, $base) and !is_numeric($key)) {
-                    $base[$key] = $append[$key];
+                    $base[$key] = $value;
                     continue;
                 }
 
@@ -264,7 +260,7 @@ class ClientManager {
                     // If the arrays are not associates we don't want to array_merge_recursive_distinct
                     // else merging $baseConfig['dispositions'] = ['attachment', 'inline'] with $customConfig['dispositions'] = ['attachment']
                     // results in $resultConfig['dispositions'] = ['attachment', 'inline']
-                    $base[$key] = $this->array_merge_recursive_distinct($base[$key], $append[$key]);
+                    $base[$key] = $this->array_merge_recursive_distinct($base[$key], $value);
                 } else if(is_numeric($key)) {
                     if(!in_array($value, $base)) $base[] = $value;
                 } else {

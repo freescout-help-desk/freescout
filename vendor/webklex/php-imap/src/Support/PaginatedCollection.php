@@ -32,19 +32,19 @@ class PaginatedCollection extends Collection {
 
     /**
      * Paginate the current collection.
-     * @param int      $per_page
+     * @param int $per_page
      * @param int|null $page
-     * @param string   $page_name
-     * @param boolean  $prepaginated
+     * @param string $page_name
+     * @param boolean $prepaginated
      *
      * @return LengthAwarePaginator
      */
-    public function paginate($per_page = 15, $page = null, $page_name = 'page', $prepaginated = false) {
+    public function paginate(int $per_page = 15, $page = null, string $page_name = 'page', bool $prepaginated = false): LengthAwarePaginator {
         $page = $page ?: Paginator::resolveCurrentPage($page_name);
 
-        $total = $this->total ? $this->total : $this->count();
+        $total = $this->total ?: $this->count();
 
-        $results = !$prepaginated && $total ? $this->forPage($page, $per_page) : $this->all();
+        $results = !$prepaginated && $total ? $this->forPage($page, $per_page)->toArray() : $this->all();
 
         return $this->paginator($results, $total, $per_page, $page, [
             'path'      => Paginator::resolveCurrentPath(),
@@ -54,15 +54,15 @@ class PaginatedCollection extends Collection {
 
     /**
      * Create a new length-aware paginator instance.
-     * @param  array    $items
-     * @param  int      $total
-     * @param  int      $per_page
+     * @param array $items
+     * @param int $total
+     * @param int $per_page
      * @param  int|null $current_page
      * @param  array    $options
      *
      * @return LengthAwarePaginator
      */
-    protected function paginator($items, $total, $per_page, $current_page, array $options) {
+    protected function paginator(array $items, int $total, int $per_page, $current_page, array $options): LengthAwarePaginator {
         return new LengthAwarePaginator($items, $total, $per_page, $current_page, $options);
     }
 

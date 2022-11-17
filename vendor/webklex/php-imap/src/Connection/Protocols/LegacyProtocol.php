@@ -35,7 +35,7 @@ class LegacyProtocol extends Protocol {
      * @param bool $cert_validation set to false to skip SSL certificate validation
      * @param mixed $encryption Connection encryption method
      */
-    public function __construct($cert_validation = true, $encryption = false) {
+    public function __construct(bool $cert_validation = true, $encryption = false) {
         $this->setCertValidation($cert_validation);
         $this->encryption = $encryption;
     }
@@ -52,7 +52,7 @@ class LegacyProtocol extends Protocol {
      * @param string $host
      * @param null $port
      */
-    public function connect($host, $port = null) {
+    public function connect(string $host, $port = null) {
         if ($this->encryption) {
             $encryption = strtolower($this->encryption);
             if ($encryption == "ssl") {
@@ -73,7 +73,7 @@ class LegacyProtocol extends Protocol {
      * @throws AuthFailedException
      * @throws RuntimeException
      */
-    public function login($user, $password) {
+    public function login(string $user, string $password): bool {
         try {
             $this->stream = \imap_open(
                 $this->getAddress(),
@@ -104,7 +104,7 @@ class LegacyProtocol extends Protocol {
             }
         }
 
-        return $this->stream;
+        return $this->stream !== false;
     }
 
     /**
@@ -115,7 +115,7 @@ class LegacyProtocol extends Protocol {
      * @return bool|resource
      * @throws AuthFailedException|RuntimeException
      */
-    public function authenticate($user, $token) {
+    public function authenticate(string $user, string $token): bool {
         return $this->login($user, $token);
     }
 
@@ -124,7 +124,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return string
      */
-    protected function getAddress() {
+    protected function getAddress(): string {
         $address = "{".$this->host.":".$this->port."/".$this->protocol;
         if (!$this->cert_validation) {
             $address .= '/novalidate-cert';
@@ -145,7 +145,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return bool success
      */
-    public function logout() {
+    public function logout(): bool {
         if ($this->stream) {
             $result = \imap_close($this->stream, IMAP::CL_EXPUNGE);
             $this->stream = false;
@@ -160,7 +160,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return bool
      */
-    public function connected(){
+    public function connected(): bool {
         return boolval($this->stream);
     }
 
@@ -169,7 +169,7 @@ class LegacyProtocol extends Protocol {
      *
      * @throws MethodNotSupportedException
      */
-    public function getCapabilities() {
+    public function getCapabilities(): array {
         throw new MethodNotSupportedException();
     }
 
@@ -180,8 +180,16 @@ class LegacyProtocol extends Protocol {
      * @return bool|array see examineOrselect()
      * @throws RuntimeException
      */
-    public function selectFolder($folder = 'INBOX') {
-        \imap_reopen($this->stream, $folder, IMAP::OP_READONLY, 3);
+    public function selectFolder(string $folder = 'INBOX') {
+        $flags = IMAP::OP_READONLY;
+        if (in_array($this->protocol, ["pop3", "nntp"])) {
+            $flags = IMAP::NIL;
+        }
+        if ($this->stream === false) {
+            throw new RuntimeException("failed to reopen stream.");
+        }
+
+        \imap_reopen($this->stream, $this->getAddress().$folder, $flags, 3);
         $this->uid_cache = null;
         return $this->examineFolder($folder);
     }
@@ -193,7 +201,7 @@ class LegacyProtocol extends Protocol {
      * @return bool|array
      * @throws RuntimeException
      */
-    public function examineFolder($folder = 'INBOX') {
+    public function examineFolder(string $folder = 'INBOX') {
         if (strpos($folder, ".") === 0) {
             throw new RuntimeException("Segmentation fault prevented. Folders starts with an illegal char '.'.");
         }
@@ -216,7 +224,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return array
      */
-    public function content($uids, $rfc = "RFC822", $uid = IMAP::ST_UID) {
+    public function content($uids, string $rfc = "RFC822", $uid = IMAP::ST_UID): array {
         $result = [];
         $uids = is_array($uids) ? $uids : [$uids];
         foreach ($uids as $id) {
@@ -233,7 +241,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return array
      */
-    public function headers($uids, $rfc = "RFC822", $uid = IMAP::ST_UID){
+    public function headers($uids, string $rfc = "RFC822", $uid = IMAP::ST_UID): array {
         $result = [];
         $uids = is_array($uids) ? $uids : [$uids];
         foreach ($uids as $id) {
@@ -249,7 +257,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return array
      */
-    public function flags($uids, $uid = IMAP::ST_UID){
+    public function flags($uids, $uid = IMAP::ST_UID): array {
         $result = [];
         $uids = is_array($uids) ? $uids : [$uids];
         foreach ($uids as $id) {
@@ -300,7 +308,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return int message number
      */
-    public function getMessageNumber($id) {
+    public function getMessageNumber(string $id): int {
         return \imap_msgno($this->stream, $id);
     }
 
@@ -311,7 +319,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return array
      */
-    public function overview($sequence, $uid = IMAP::ST_UID) {
+    public function overview(string $sequence, $uid = IMAP::ST_UID): array {
         return \imap_fetch_overview($this->stream, $sequence,$uid ? IMAP::ST_UID : IMAP::NIL);
     }
 
@@ -323,7 +331,7 @@ class LegacyProtocol extends Protocol {
      * @return array folders that matched $folder as array(name => array('delimiter' => .., 'flags' => ..))
      * @throws RuntimeException
      */
-    public function folders($reference = '', $folder = '*') {
+    public function folders(string $reference = '', string $folder = '*'): array {
         $result = [];
 
         $items = \imap_getmailboxes($this->stream, $this->getAddress(), $reference.$folder);
@@ -348,10 +356,11 @@ class LegacyProtocol extends Protocol {
      * @param string|null $mode '+' to add flags, '-' to remove flags, everything else sets the flags as given
      * @param bool $silent if false the return values are the new flags for the wanted messages
      * @param int $uid set to IMAP::ST_UID if you pass message unique identifiers instead of numbers.
+     * @param null $item unused attribute
      *
      * @return bool|array new flags if $silent is false, else true or false depending on success
      */
-    public function store(array $flags, $from, $to = null, $mode = null, $silent = true, $uid = IMAP::ST_UID) {
+    public function store(array $flags, int $from, $to = null, $mode = null, bool $silent = true, $uid = IMAP::ST_UID, $item = null) {
         $flag = trim(is_array($flags) ? implode(" ", $flags) : $flags);
 
         if ($mode == "+"){
@@ -371,12 +380,12 @@ class LegacyProtocol extends Protocol {
      * Append a new message to given folder
      * @param string $folder name of target folder
      * @param string $message full message content
-     * @param array $flags flags for new message
+     * @param array|null $flags flags for new message
      * @param string $date date for new message
      *
      * @return bool success
      */
-    public function appendMessage($folder, $message, $flags = null, $date = null) {
+    public function appendMessage(string $folder, string $message, $flags = null, $date = null): bool {
         if ($date != null) {
             if ($date instanceof \Carbon\Carbon){
                 $date = $date->format('d-M-Y H:i:s O');
@@ -397,21 +406,21 @@ class LegacyProtocol extends Protocol {
      *
      * @return bool success
      */
-    public function copyMessage($folder, $from, $to = null, $uid = IMAP::ST_UID) {
+    public function copyMessage(string $folder, $from, $to = null, $uid = IMAP::ST_UID): bool {
         return \imap_mail_copy($this->stream, $from, $folder, $uid ? IMAP::ST_UID : IMAP::NIL);
     }
 
     /**
      * Copy multiple messages to the target folder
-     * @param array<string> $messages List of message identifiers
+     * @param array $messages List of message identifiers
      * @param string $folder Destination folder
      * @param int $uid set to IMAP::ST_UID if you pass message unique identifiers instead of numbers.
      *
      * @return array|bool Tokens if operation successful, false if an error occurred
      */
-    public function copyManyMessages($messages, $folder, $uid = IMAP::ST_UID) {
+    public function copyManyMessages(array $messages, string $folder, $uid = IMAP::ST_UID) {
         foreach($messages as $msg) {
-            if ($this->copyMessage($folder, $msg, null, $uid) == false) {
+            if (!$this->copyMessage($folder, $msg, null, $uid)) {
                 return false;
             }
         }
@@ -420,7 +429,7 @@ class LegacyProtocol extends Protocol {
     }
 
     /**
-     * Move a message set from current folder to an other folder
+     * Move a message set from current folder to another folder
      * @param string $folder destination folder
      * @param $from
      * @param int|null $to if null only one message ($from) is fetched, else it's the
@@ -429,21 +438,21 @@ class LegacyProtocol extends Protocol {
      *
      * @return bool success
      */
-    public function moveMessage($folder, $from, $to = null, $uid = IMAP::ST_UID) {
+    public function moveMessage(string $folder, $from, $to = null, $uid = IMAP::ST_UID): bool {
         return \imap_mail_move($this->stream, $from, $folder, $uid ? IMAP::ST_UID : IMAP::NIL);
     }
 
     /**
      * Move multiple messages to the target folder
-     * @param array<string> $messages List of message identifiers
+     * @param array $messages List of message identifiers
      * @param string $folder Destination folder
      * @param int $uid set to IMAP::ST_UID if you pass message unique identifiers instead of numbers.
      *
      * @return array|bool Tokens if operation successful, false if an error occurred
      */
-    public function moveManyMessages($messages, $folder, $uid = IMAP::ST_UID) {
+    public function moveManyMessages(array $messages, string $folder, $uid = IMAP::ST_UID) {
         foreach($messages as $msg) {
-            if ($this->moveMessage($folder, $msg, null, $uid) == false) {
+            if (!$this->moveMessage($folder, $msg, null, $uid)) {
                 return false;
             }
         }
@@ -470,7 +479,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return bool success
      */
-    public function createFolder($folder) {
+    public function createFolder(string $folder): bool {
         return \imap_createmailbox($this->stream, $folder);
     }
 
@@ -481,7 +490,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return bool success
      */
-    public function renameFolder($old, $new) {
+    public function renameFolder(string $old, string $new): bool {
         return \imap_renamemailbox($this->stream, $old, $new);
     }
 
@@ -491,7 +500,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return bool success
      */
-    public function deleteFolder($folder) {
+    public function deleteFolder(string $folder): bool {
         return \imap_deletemailbox($this->stream, $folder);
     }
 
@@ -501,7 +510,7 @@ class LegacyProtocol extends Protocol {
      *
      * @throws MethodNotSupportedException
      */
-    public function subscribeFolder($folder) {
+    public function subscribeFolder(string $folder): bool {
         throw new MethodNotSupportedException();
     }
 
@@ -511,7 +520,7 @@ class LegacyProtocol extends Protocol {
      *
      * @throws MethodNotSupportedException
      */
-    public function unsubscribeFolder($folder) {
+    public function unsubscribeFolder(string $folder): bool {
         throw new MethodNotSupportedException();
     }
 
@@ -520,7 +529,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return bool success
      */
-    public function expunge() {
+    public function expunge(): bool {
         return \imap_expunge($this->stream);
     }
 
@@ -529,7 +538,7 @@ class LegacyProtocol extends Protocol {
      *
      * @throws MethodNotSupportedException
      */
-    public function noop() {
+    public function noop(): bool {
         throw new MethodNotSupportedException();
     }
 
@@ -558,7 +567,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return array message ids
      */
-    public function search(array $params, $uid = IMAP::ST_UID) {
+    public function search(array $params, $uid = IMAP::ST_UID): array {
         $result = \imap_search($this->stream, $params[0], $uid ? IMAP::ST_UID : IMAP::NIL);
         if ($result === false) {
             return [];
@@ -586,7 +595,7 @@ class LegacyProtocol extends Protocol {
      *
      * @param $name
      *
-     * @return mixed|string
+     * @return array|false|string|string[]|null
      */
     protected function decodeFolderName($name) {
         preg_match('#\{(.*)\}(.*)#', $name, $preg);
@@ -596,7 +605,7 @@ class LegacyProtocol extends Protocol {
     /**
      * @return string
      */
-    public function getProtocol() {
+    public function getProtocol(): string {
         return $this->protocol;
     }
 
@@ -606,7 +615,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return array
      */
-    public function getQuota($username) {
+    public function getQuota($username): array {
         return \imap_get_quota($this->stream, 'user.'.$username);
     }
 
@@ -616,7 +625,7 @@ class LegacyProtocol extends Protocol {
      *
      * @return array
      */
-    public function getQuotaRoot($quota_root = 'INBOX') {
+    public function getQuotaRoot(string $quota_root = 'INBOX'): array {
         return \imap_get_quotaroot($this->stream, $quota_root);
     }
 
@@ -624,7 +633,7 @@ class LegacyProtocol extends Protocol {
      * @param string $protocol
      * @return LegacyProtocol
      */
-    public function setProtocol($protocol) {
+    public function setProtocol(string $protocol): LegacyProtocol {
         if (($pos = strpos($protocol, "legacy")) > 0) {
             $protocol = substr($protocol, 0, ($pos + 2) * -1);
         }

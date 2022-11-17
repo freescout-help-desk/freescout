@@ -29,12 +29,6 @@ use Webklex\PHPIMAP\IMAP;
 interface ProtocolInterface {
 
     /**
-     * Protocol constructor.
-     * @param bool $cert_validation set to false to skip SSL certificate validation
-     */
-    public function __construct($cert_validation = true);
-
-    /**
      * Public destructor
      */
     public function __destruct();
@@ -48,7 +42,7 @@ interface ProtocolInterface {
      * @throws ConnectionFailedException
      * @throws RuntimeException
      */
-    public function connect($host, $port = null);
+    public function connect(string $host, $port = null);
 
     /**
      * Login to a new session.
@@ -58,7 +52,7 @@ interface ProtocolInterface {
      * @return bool success
      * @throws AuthFailedException
      */
-    public function login($user, $password);
+    public function login(string $user, string $password): bool;
 
     /**
      * Authenticate your current session.
@@ -68,21 +62,21 @@ interface ProtocolInterface {
      * @return bool|mixed
      * @throws AuthFailedException
      */
-    public function authenticate($user, $token);
+    public function authenticate(string $user, string $token);
 
     /**
      * Logout of the current server session
      *
      * @return bool success
      */
-    public function logout();
+    public function logout(): bool;
 
     /**
      * Check if the current session is connected
      *
      * @return bool
      */
-    public function connected();
+    public function connected(): bool;
 
     /**
      * Get an array of available capabilities
@@ -90,16 +84,16 @@ interface ProtocolInterface {
      * @return array list of capabilities
      * @throws RuntimeException
      */
-    public function getCapabilities();
+    public function getCapabilities(): array;
 
     /**
      * Change the current folder
      *
      * @param string $folder change to this folder
-     * @return bool|array see examineOrselect()
+     * @return bool|array see examineOrSelect()
      * @throws RuntimeException
      */
-    public function selectFolder($folder = 'INBOX');
+    public function selectFolder(string $folder = 'INBOX');
 
     /**
      * Examine a given folder
@@ -108,7 +102,7 @@ interface ProtocolInterface {
      * @return bool|array
      * @throws RuntimeException
      */
-    public function examineFolder($folder = 'INBOX');
+    public function examineFolder(string $folder = 'INBOX');
 
     /**
      * Fetch message headers
@@ -120,7 +114,7 @@ interface ProtocolInterface {
      * @return array
      * @throws RuntimeException
      */
-    public function content($uids, $rfc = "RFC822", $uid = IMAP::ST_UID);
+    public function content($uids, string $rfc = "RFC822", $uid = IMAP::ST_UID): array;
 
     /**
      * Fetch message headers
@@ -132,7 +126,7 @@ interface ProtocolInterface {
      * @return array
      * @throws RuntimeException
      */
-    public function headers($uids, $rfc = "RFC822", $uid = IMAP::ST_UID);
+    public function headers($uids, string $rfc = "RFC822", $uid = IMAP::ST_UID): array;
 
     /**
      * Fetch message flags
@@ -143,7 +137,7 @@ interface ProtocolInterface {
      * @return array
      * @throws RuntimeException
      */
-    public function flags($uids, $uid = IMAP::ST_UID);
+    public function flags($uids, $uid = IMAP::ST_UID): array;
 
     /**
      * Get uid for a given id
@@ -161,7 +155,7 @@ interface ProtocolInterface {
      * @return int message number
      * @throws MessageNotFoundException
      */
-    public function getMessageNumber($id);
+    public function getMessageNumber(string $id): int;
 
     /**
      * Get a list of available folders
@@ -171,7 +165,7 @@ interface ProtocolInterface {
      * @return array mailboxes that matched $folder as array(globalName => array('delim' => .., 'flags' => ..))
      * @throws RuntimeException
      */
-    public function folders($reference = '', $folder = '*');
+    public function folders(string $reference = '', string $folder = '*'): array;
 
     /**
      * Set message flags
@@ -183,23 +177,24 @@ interface ProtocolInterface {
      * @param bool $silent if false the return values are the new flags for the wanted messages
      * @param int|string $uid set to IMAP::ST_UID or any string representing the UID - set to IMAP::ST_MSGN to use
      * message numbers instead.
+     * @param null|string $item command used to store a flag
      *
      * @return bool|array new flags if $silent is false, else true or false depending on success
      * @throws RuntimeException
      */
-    public function store(array $flags, $from, $to = null, $mode = null, $silent = true, $uid = IMAP::ST_UID);
+    public function store(array $flags, int $from, $to = null, $mode = null, bool $silent = true, $uid = IMAP::ST_UID, $item = null);
 
     /**
      * Append a new message to given folder
      * @param string $folder name of target folder
      * @param string $message full message content
-     * @param array $flags flags for new message
-     * @param string $date date for new message
+     * @param array|null $flags flags for new message
+     * @param string|null $date date for new message
      *
      * @return bool success
      * @throws RuntimeException
      */
-    public function appendMessage($folder, $message, $flags = null, $date = null);
+    public function appendMessage(string $folder, string $message, $flags = null, $date = null): bool;
 
     /**
      * Copy message set from current folder to other folder
@@ -214,7 +209,7 @@ interface ProtocolInterface {
      * @return bool success
      * @throws RuntimeException
      */
-    public function copyMessage($folder, $from, $to = null, $uid = IMAP::ST_UID);
+    public function copyMessage(string $folder, $from, $to = null, $uid = IMAP::ST_UID): bool;
 
     /**
      * Copy multiple messages to the target folder
@@ -226,10 +221,10 @@ interface ProtocolInterface {
      * @return array|bool Tokens if operation successful, false if an error occurred
      * @throws RuntimeException
      */
-    public function copyManyMessages($messages, $folder, $uid = IMAP::ST_UID);
+    public function copyManyMessages(array $messages, string $folder, $uid = IMAP::ST_UID);
 
     /**
-     * Move a message set from current folder to an other folder
+     * Move a message set from current folder to another folder
      * @param string $folder destination folder
      * @param $from
      * @param int|null $to if null only one message ($from) is fetched, else it's the
@@ -239,7 +234,7 @@ interface ProtocolInterface {
      *
      * @return bool success
      */
-    public function moveMessage($folder, $from, $to = null, $uid = IMAP::ST_UID);
+    public function moveMessage(string $folder, $from, $to = null, $uid = IMAP::ST_UID): bool;
 
     /**
      * Move multiple messages to the target folder
@@ -252,7 +247,7 @@ interface ProtocolInterface {
      * @return array|bool Tokens if operation successful, false if an error occurred
      * @throws RuntimeException
      */
-    public function moveManyMessages($messages, $folder, $uid = IMAP::ST_UID);
+    public function moveManyMessages(array $messages, string $folder, $uid = IMAP::ST_UID);
 
     /**
      * Exchange identification information
@@ -272,7 +267,7 @@ interface ProtocolInterface {
      * @return bool success
      * @throws RuntimeException
      */
-    public function createFolder($folder);
+    public function createFolder(string $folder): bool;
 
     /**
      * Rename an existing folder
@@ -282,7 +277,7 @@ interface ProtocolInterface {
      * @return bool success
      * @throws RuntimeException
      */
-    public function renameFolder($old, $new);
+    public function renameFolder(string $old, string $new): bool;
 
     /**
      * Delete a folder
@@ -291,7 +286,7 @@ interface ProtocolInterface {
      * @return bool success
      * @throws RuntimeException
      */
-    public function deleteFolder($folder);
+    public function deleteFolder(string $folder): bool;
 
     /**
      * Subscribe to a folder
@@ -300,7 +295,7 @@ interface ProtocolInterface {
      * @return bool success
      * @throws RuntimeException
      */
-    public function subscribeFolder($folder);
+    public function subscribeFolder(string $folder): bool;
 
     /**
      * Unsubscribe from a folder
@@ -309,7 +304,7 @@ interface ProtocolInterface {
      * @return bool success
      * @throws RuntimeException
      */
-    public function unsubscribeFolder($folder);
+    public function unsubscribeFolder(string $folder): bool;
 
     /**
      * Send idle command
@@ -330,7 +325,7 @@ interface ProtocolInterface {
      * @return bool success
      * @throws RuntimeException
      */
-    public function expunge();
+    public function expunge(): bool;
 
     /**
      * Retrieve the quota level settings, and usage statics per mailbox
@@ -339,7 +334,7 @@ interface ProtocolInterface {
      * @return array
      * @throws RuntimeException
      */
-    public function getQuota($username);
+    public function getQuota($username): array;
 
     /**
      * Retrieve the quota settings per user
@@ -349,7 +344,7 @@ interface ProtocolInterface {
      * @return array
      * @throws ConnectionFailedException
      */
-    public function getQuotaRoot($quota_root = 'INBOX');
+    public function getQuotaRoot(string $quota_root = 'INBOX'): array;
 
     /**
      * Send noop command
@@ -357,7 +352,7 @@ interface ProtocolInterface {
      * @return bool success
      * @throws RuntimeException
      */
-    public function noop();
+    public function noop(): bool;
 
     /**
      * Do a search request
@@ -369,7 +364,7 @@ interface ProtocolInterface {
      * @return array message ids
      * @throws RuntimeException
      */
-    public function search(array $params, $uid = IMAP::ST_UID);
+    public function search(array $params, $uid = IMAP::ST_UID): array;
 
     /**
      * Get a message overview
@@ -382,7 +377,7 @@ interface ProtocolInterface {
      * @throws MessageNotFoundException
      * @throws InvalidMessageDateException
      */
-    public function overview($sequence, $uid = IMAP::ST_UID);
+    public function overview(string $sequence, $uid = IMAP::ST_UID): array;
 
     /**
      * Enable the debug mode

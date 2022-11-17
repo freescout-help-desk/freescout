@@ -63,7 +63,7 @@ class Mask {
      * @return mixed
      * @throws MethodNotFoundException
      */
-    public function __call($method, $arguments) {
+    public function __call(string $method, array $arguments) {
         if(strtolower(substr($method, 0, 3)) === 'get') {
             $name = Str::snake(substr($method, 3));
 
@@ -119,7 +119,7 @@ class Mask {
     /**
      * Get the parent instance
      *
-     * @return mixed
+     * @return object
      */
     public function getParent(){
         return $this->parent;
@@ -130,7 +130,7 @@ class Mask {
      *
      * @return array
      */
-    public function getAttributes(){
+    public function getAttributes(): array {
         return $this->attributes;
     }
 
