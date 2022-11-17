@@ -4077,7 +4077,8 @@ var Editor = /** @class */ (function () {
      * @return {WrappedRange}
      */
     Editor.prototype.createRange = function () {
-        this.focus();
+        // https://github.com/summernote/summernote/issues/2141#issuecomment-279188124
+        //this.focus();
         return range.create(this.editable);
     };
     /**
