@@ -3603,8 +3603,9 @@ ul.sidebar-block-list {
         max-height: calc((100vh) - (52px));
         overflow-y: auto;
     }
-    .content-2col:has(#conv-layout) {
-        overflow: hidden;
+    .content-2col:has(#conv-layout)::-webkit-scrollbar {
+        /* overflow: hidden; */
+        display:none;
     }
     .content:not(:has(#kn-board)) {
         max-height: calc((100vh) - (80px));
