@@ -3588,6 +3588,104 @@ ul.sidebar-block-list {
     border-color: #dde2e6;
 }
 
+
+/**
+ * inner scroll.
+ */
+@media (min-height: 600px) and (min-width: 991px) {
+    .footer {
+        display:none;
+    }
+    .content-2col, #conv-layout, #conv-layout-main{
+        min-height: unset !important;
+    }
+    .content-2col {
+        max-height: calc((100vh) - (52px));
+        overflow-y: auto;
+    }
+    .content-2col:has(#conv-layout) {
+        overflow: hidden;
+    }
+    .content:not(:has(#kn-board)) {
+        max-height: calc((100vh) - (80px));
+        overflow-y: auto;
+    }
+    .content #kn-board {
+        height: calc(100vh - 114px);
+        overflow-y: auto;
+    }
+    #conv-layout-main {
+        padding-bottom: 120px;
+    }
+    #conv-layout-main.conv-new-form {
+        max-height: calc((100vh) - (115px));
+    }
+    .sidebar-2col {
+        max-height: calc((100vh) - (52px));
+        overflow-y: auto;
+    }
+    .content-2col #conversations-bulk-actions.affix-top {
+        position: fixed;
+    }
+    .table-conversations thead, #conv-layout-header {
+        z-index: 1;
+    }
+    .section-heading.section-search {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+}
+
+/* with customer menu on the right*/
+@media (min-height: 600px) and (min-width: 1101px) {
+    #conv-layout-main {
+        max-height: calc((100vh) - (160px));
+        overflow-y: auto;
+
+        /* necessary for #conv-layout-main scrollbar to be visible */
+        padding-right: 0; 
+        border-right: 280px solid transparent;
+    }
+    #conv-layout-customer {
+        max-height: calc((100vh) - (52px));
+        overflow-y: auto;
+    }
+    .conv-customer-header {
+        position: sticky;
+        top: 0;
+    }
+    .conv-sidebar-block.conv-customer-block {
+        position: sticky;
+        top: 60px;
+        z-index: 1;
+    }
+    .conv-sidebar-block {
+        position: relative;
+        z-index: 2;
+    }
+    .conv-sidebar-block.conv-customer-block .dropdown-toggle.glyphicon.glyphicon-cog {
+        position: absolute;
+        right: 5px;
+    }
+}
+
+@media (min-height: 600px) and (min-width: 1000px) {
+    .table-conversations thead {
+        position: sticky;
+        top: 0;
+    }
+}
+
+/* with customer menu on top */
+@media (min-height: 600px) and (min-width: 991px) and (max-width: 1101px){
+    #conv-layout-main {
+        max-height: calc((100vh) - (240px));
+        overflow-y: auto;
+    }
+}
+
+
 /**
  * Print version
  */
