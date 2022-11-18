@@ -50,6 +50,7 @@
 		            <label>{{ __('Assigned') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
 		            <select name="f[assigned]" class="form-control" @if (empty($filters['assigned'])) disabled @endif>
 		            	<option value=""></option>
+						<option value="{{ App\Conversation::USER_UNASSIGNED }}" @if (!empty($filters['assigned']) && $filters['assigned'] == App\Conversation::USER_UNASSIGNED)selected="selected"@endif>{{ __('Unassigned') }}</option>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}" @if (!empty($filters['assigned']) && $filters['assigned'] == $user->id)selected="selected"@endif>{{ $user->getFullName() }}</option>
                         @endforeach

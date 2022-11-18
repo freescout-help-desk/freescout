@@ -29,6 +29,16 @@ return [
             'CSS.AllowedProperties'    => 'font-weight,font-style,text-decoration,color,background-color,text-align',
             'AutoFormat.AutoParagraph' => true,
             'AutoFormat.RemoveEmpty'   => true,
+            'URI.AllowedSchemes'   => [
+                'http' => true,
+                'https' => true,
+                'mailto' => true,
+                'ftp' => true,
+                'nntp' => true,
+                'news' => true,
+                'tel' => true,
+                'data' => true,
+            ],
         ],
         'test'    => [
             'Attr.EnableID' => 'true',

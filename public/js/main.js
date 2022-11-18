@@ -1610,6 +1610,8 @@ function onReplyChange()
 // Save reply draft or note on form focus out
 function onReplyBlur()
 {
+	$('#body').summernote('editor.saveRange');
+
 	// If start saving draft immediately, then when Send Reply is clicked
 	// two ajax requests will be sent at the same time.
 	setTimeout(function() {
