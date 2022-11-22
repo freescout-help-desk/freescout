@@ -79,6 +79,12 @@ class Attachment extends Model
             }
         }
 
+        // https://github.com/freescout-helpdesk/freescout/issues/2385
+        // Fix for webklex/php-imap.
+        if ($file_name == 'undefined' && $mime_type == 'message/rfc822') {
+            $file_name = 'RFC822.eml';
+        }
+
         if (strlen($file_name) > 255) {
             $without_ext = pathinfo($file_name, PATHINFO_FILENAME);
             $extension = pathinfo($file_name, PATHINFO_EXTENSION);
