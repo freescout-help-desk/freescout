@@ -169,6 +169,7 @@
             "vendor/laravel/framework/src/Illuminate/Routing/RouteDependencyResolverTrait.php",
             "vendor/laravel/framework/src/Illuminate/Routing/Controller.php",
             "vendor/laravel/framework/src/Illuminate/Validation/Concerns/ValidatesAttributes.php",
+            "vendor/laravel/framework/src/Illuminate/Validation/Concerns/FormatsMessages.php",
             "vendor/laravel/framework/src/Illuminate/Mail/TransportManager.php",
             "vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php",
             "vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php",
