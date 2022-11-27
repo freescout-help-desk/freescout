@@ -152,7 +152,7 @@
                                        data-locale="<?php echo $locale ?>" data-name="<?php echo $locale . "|" . htmlentities($key, ENT_QUOTES, 'UTF-8', false) ?>"
                                        id="username" data-type="textarea" data-pk="<?php echo $t ? $t->id : 0 ?>"
                                        data-url="<?php echo $editUrl ?>"
-                                       data-title="Enter translation"><?php echo $t ? htmlentities($t->value, ENT_QUOTES, 'UTF-8', false) : '' ?></a>
+                                       data-title="Enter translation"><?php echo $t ? htmlentities($t->value ?? '', ENT_QUOTES, 'UTF-8', false) : '' ?></a>
                                 </td>
                             <?php endforeach; ?>
                             <?php /*if ($deleteEnabled): ?>

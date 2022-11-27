@@ -2096,9 +2096,9 @@ class Conversation extends Model
             $mailbox_ids = $user->mailboxesIdsCanView();
         }
 
-        if ($mailbox_ids) {
-            $query_conversations->whereIn('conversations.mailbox_id', $mailbox_ids);
-        }
+        //if ($mailbox_ids) {
+        $query_conversations->whereIn('conversations.mailbox_id', $mailbox_ids);
+        //}
         if ($q) {
             $query_conversations->where(function ($query) use ($like, $filters, $q) {
                 $query->where('conversations.subject', 'like', $like)

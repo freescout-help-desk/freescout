@@ -306,7 +306,7 @@
             @endif
         @endif
         @yield('javascript')
-        @action('javascript')
+        @action('javascript', $__env->yieldContent('javascripts'))
     </script>
 </body>
 </html>
