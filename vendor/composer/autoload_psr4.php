@@ -86,6 +86,7 @@ return array(
     'Egulias\\EmailValidator\\' => array($vendorDir . '/egulias/email-validator/EmailValidator'),
     'Dotenv\\' => array($baseDir . '/overrides/vlucas/phpdotenv/src', $vendorDir . '/vlucas/phpdotenv/src'),
     'Doctrine\\Deprecations\\' => array($vendorDir . '/doctrine/deprecations/lib/Doctrine/Deprecations'),
+    'Doctrine\\DBAL\\Schema\\' => array($baseDir . '/overrides/doctrine/dbal/lib/Doctrine/DBAL/Schema'),
     'Doctrine\\DBAL\\Driver\\' => array($baseDir . '/overrides/doctrine/dbal/lib/Doctrine/DBAL/Driver'),
     'Doctrine\\DBAL\\' => array($vendorDir . '/doctrine/dbal/lib/Doctrine/DBAL'),
     'Doctrine\\Common\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib/Doctrine/Common/Inflector'),

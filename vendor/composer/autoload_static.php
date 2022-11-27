@@ -13,10 +13,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
@@ -158,6 +158,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         array (
             'Dotenv\\' => 7,
             'Doctrine\\Deprecations\\' => 22,
+            'Doctrine\\DBAL\\Schema\\' => 21,
             'Doctrine\\DBAL\\Driver\\' => 21,
             'Doctrine\\DBAL\\' => 14,
             'Doctrine\\Common\\Inflector\\' => 26,
@@ -524,6 +525,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Doctrine\\Deprecations\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations',
+        ),
+        'Doctrine\\DBAL\\Schema\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/doctrine/dbal/lib/Doctrine/DBAL/Schema',
         ),
         'Doctrine\\DBAL\\Driver\\' => 
         array (
@@ -1188,7 +1193,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Doctrine\\DBAL\\Schema\\Index' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/Schema/Index.php',
         'Doctrine\\DBAL\\Schema\\MySqlSchemaManager' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/Schema/MySqlSchemaManager.php',
         'Doctrine\\DBAL\\Schema\\OracleSchemaManager' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/Schema/OracleSchemaManager.php',
-        'Doctrine\\DBAL\\Schema\\PostgreSqlSchemaManager' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/Schema/PostgreSqlSchemaManager.php',
+        'Doctrine\\DBAL\\Schema\\PostgreSqlSchemaManager' => __DIR__ . '/../..' . '/overrides/doctrine/dbal/lib/Doctrine/DBAL/Schema/PostgreSqlSchemaManager.php',
         'Doctrine\\DBAL\\Schema\\SQLAnywhereSchemaManager' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/Schema/SQLAnywhereSchemaManager.php',
         'Doctrine\\DBAL\\Schema\\SQLServerSchemaManager' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/Schema/SQLServerSchemaManager.php',
         'Doctrine\\DBAL\\Schema\\Schema' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/Schema/Schema.php',
@@ -2362,7 +2367,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Illuminate\\Translation\\TranslationServiceProvider' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Translation/TranslationServiceProvider.php',
         'Illuminate\\Translation\\Translator' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Translation/Translator.php',
         'Illuminate\\Validation\\ClosureValidationRule' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Validation/ClosureValidationRule.php',
-        'Illuminate\\Validation\\Concerns\\FormatsMessages' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Validation/Concerns/FormatsMessages.php',
+        'Illuminate\\Validation\\Concerns\\FormatsMessages' => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Validation/Concerns/FormatsMessages.php',
         'Illuminate\\Validation\\Concerns\\ReplacesAttributes' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Validation/Concerns/ReplacesAttributes.php',
         'Illuminate\\Validation\\Concerns\\ValidatesAttributes' => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Validation/Concerns/ValidatesAttributes.php',
         'Illuminate\\Validation\\DatabasePresenceVerifier' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Validation/DatabasePresenceVerifier.php',
