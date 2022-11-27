@@ -643,6 +643,12 @@ class Customer extends Model
         }
     }
 
+    public function getMainPhoneValue()
+    {
+        $phones = $this->getPhones();
+        return $phones[0]['value'] ?? '';
+    }
+
     /**
      * Set phones as JSON.
      *
@@ -761,6 +767,12 @@ class Customer extends Model
         } else {
             return [];
         }
+    }
+
+    public function getMainWebsite()
+    {
+        $websites = $this->getWebsites();
+        return $websites[0] ?? '';
     }
 
     /**
