@@ -747,7 +747,11 @@ class Thread extends Model
     {
         // Created by customer
         if ($this->source_via == self::PERSON_CUSTOMER) {
-            return $this->getCreatedBy()->getFirstName(true);
+            if ($this->getCreatedBy()) {
+                return $this->getCreatedBy()->getFirstName(true);
+            } else {
+                return '';
+            }
         }
 
         // Created by user
