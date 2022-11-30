@@ -1356,4 +1356,9 @@ class Thread extends Model
 
         return self::$action_types[$this->action_type] ?? '';
     }
+
+    public function isCustomerMessage()
+    {
+        return $this->type == self::TYPE_CUSTOMER;
+    }
 }

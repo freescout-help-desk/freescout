@@ -490,7 +490,7 @@ class Customer extends Model
      */
     public function getMainEmail()
     {
-        return optional($this->emails_cached()->first())->email;
+        return optional($this->emails_cached()->first())->email.'';
     }
 
     /**

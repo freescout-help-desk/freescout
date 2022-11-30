@@ -342,31 +342,83 @@ class ConversationsController extends Controller
     /**
      * Clone conversation.
      */
-    public function cloneconversation(Request $request, $mailbox_id)
+    public function cloneConversation(Request $request, $mailbox_id, $from_thread_id)
     {
         $mailbox = Mailbox::findOrFail($mailbox_id);
         $this->authorize('view', $mailbox);
 
-        if (!empty($request->from_thread_id)) {
-            $orig_thread = Thread::find($request->from_thread_id);
+        if (!empty($from_thread_id)) {
+            $orig_thread = Thread::find($from_thread_id);
+            
             if ($orig_thread) {
-                $folder = $orig_thread->conversation->folder;
+                $orign_conv = $orig_thread->conversation;
+                $this->authorize('view', $orign_conv);
 
-        	    $conversation = $orig_thread->conversation->replicate();
-		        $conversation->id = '';
-		        $conversation->status = Thread::STATUS_ACTIVE;
-		        $conversation->save();
 
-		        $thread = $orig_thread->replicate();
-		        $thread->id = '';
-		        $thread->message_id .= "Clone";
-		        $thread->status = Thread::STATUS_ACTIVE;
-		        $thread->conversation_id = $conversation->id;
-		        $thread->save();
+		        // $thread = $orig_thread->replicate();
+		        // $thread->id = '';
+		        // $thread->message_id .= ".clone".crc32(mktime());
+		        // $thread->status = Thread::STATUS_ACTIVE;
+		        // $thread->conversation_id = $conversation->id;
+		        // $thread->save();
+
+
+                $now = date('Y-m-d H:i:s');
+
+                $conversation = new Conversation();
+                $conversation->type = $orign_conv->type;
+                $conversation->subject = $orign_conv->subject;
+                $conversation->mailbox_id = $orign_conv->mailbox_id;
+                $conversation->preview = '';
+                // Preset source_via here to avoid error in PostgreSQL.
+                $conversation->source_via = $orign_conv->source_via;
+                $conversation->source_type = $orign_conv->source_type;
+                $conversation->customer_id = $orign_conv->customer_id;
+                $conversation->customer_email = $orign_conv->customer->getMainEmail();
+                $conversation->status = Conversation::STATUS_ACTIVE;
+                $conversation->state = Conversation::STATE_PUBLISHED;
+                $conversation->cc = $orig_thread->cc;
+                $conversation->bcc = $orig_thread->bcc;
+                // Set assignee
+                $conversation->user_id = $orign_conv->user_id;
+                $conversation->updateFolder();
+                $conversation->save();
+
+                
+                $thread = Thread::createExtended([
+                        'conversation_id' => $orig_thread->conversation_id,
+                        'user_id' => $orig_thread->user_id,
+                        'type' => $orig_thread->type,
+                        'status' => $conversation->status,
+                        'state' => $conversation->state,
+                        'body' => $orig_thread->body,
+                        'headers' => $orig_thread->headers,
+                        'from' => $orig_thread->from,
+                        'to' => $orig_thread->to,
+                        'cc' => $orig_thread->cc,
+                        'bcc' => $orig_thread->bcc,
+                        // todo.
+                        //'attachments' => $attachments,
+                        'has_attachments' => false, //$orig_thread->has_attachments,
+                        'message_id' => "clone".crc32(microtime()).'-'.$orig_thread->message_id,
+                        'source_via' => $orig_thread->source_via,
+                        'source_type' => $orig_thread->source_type,
+                        'customer_id' => $orig_thread->customer_id,
+                        'created_by_customer_id' => $orig_thread->created_by_customer_id,
+                    ],
+                    $conversation
+                );
+                
+                // Update folders counters
+                //$conversation->mailbox->updateFoldersCounters();
+
+                return redirect()->away($conversation->url());
+            } else {
+                return redirect()->away($mailbox->url());
             }
+        } else {
+            return redirect()->away($mailbox->url());
         }
-
-	    return redirect()->away($conversation->url($folder->id));
     }
 
     /**
