@@ -2079,6 +2079,9 @@ class Conversation extends Model
         if (!$query_conversations) {
             $query_conversations = Conversation::select('conversations.*');
         }
+		
+		$query_conversations->leftJoin('customers', 'conversations.customer_id', '=' ,'customers.id');
+		
         // https://github.com/laravel/framework/issues/21242
         // https://github.com/laravel/framework/pull/27675
         $query_conversations->groupby('conversations.id');
@@ -2105,6 +2108,8 @@ class Conversation extends Model
                     ->orWhere('conversations.customer_email', 'like', $like)
                     ->orWhere('conversations.'.self::numberFieldName(), (int)$q)
                     ->orWhere('conversations.id', (int)$q)
+					->orWhere('customers.first_name', 'ilike', $like)
+                    ->orWhere('customers.last_name', 'ilike', $like)
                     ->orWhere('threads.body', 'like', $like)
                     ->orWhere('threads.from', 'like', $like)
                     ->orWhere('threads.to', 'like', $like)
