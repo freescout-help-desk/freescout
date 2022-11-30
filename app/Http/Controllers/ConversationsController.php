@@ -340,6 +340,36 @@ class ConversationsController extends Controller
     }
 
     /**
+     * Clone conversation.
+     */
+    public function cloneconversation(Request $request, $mailbox_id)
+    {
+        $mailbox = Mailbox::findOrFail($mailbox_id);
+        $this->authorize('view', $mailbox);
+
+        if (!empty($request->from_thread_id)) {
+            $orig_thread = Thread::find($request->from_thread_id);
+            if ($orig_thread) {
+                $folder = $orig_thread->conversation->folder;
+
+        	    $conversation = $orig_thread->conversation->replicate();
+		        $conversation->id = '';
+		        $conversation->status = Thread::STATUS_ACTIVE;
+		        $conversation->save();
+
+		        $thread = $orig_thread->replicate();
+		        $thread->id = '';
+		        $thread->message_id .= "Clone";
+		        $thread->status = Thread::STATUS_ACTIVE;
+		        $thread->conversation_id = $conversation->id;
+		        $thread->save();
+            }
+        }
+
+	    return redirect()->away($conversation->url($folder->id));
+    }
+
+    /**
      * Conversation draft.
      */
     // public function draft($id)
@@ -749,7 +779,7 @@ class ConversationsController extends Controller
 
                     // Fire events
                     \Eventy::action('conversation.send_reply_save', $conversation, $request);
-                    
+
                     if (!$new) {
                         if ($status_changed) {
                             event(new ConversationStatusChanged($conversation));
@@ -809,7 +839,7 @@ class ConversationsController extends Controller
                     if (!empty($request->saved_reply_id)) {
                         $thread->saved_reply_id = $request->saved_reply_id;
                     }
-                    
+
                     $forwarded_conversations = [];
                     $forwarded_threads = [];
 
@@ -1384,7 +1414,7 @@ class ConversationsController extends Controller
                 }
                 break;
 
-            // Load attachments from all threads in conversation 
+            // Load attachments from all threads in conversation
             // when forwarding or creating a new conversation.
             case 'load_attachments':
                 $conversation = Conversation::find($request->conversation_id);
@@ -2112,7 +2142,7 @@ class ConversationsController extends Controller
             'mailboxes'    => $user->mailboxesCanView(),
         ]);
     }
-    
+
     /**
      * Merge conversations.
      */
