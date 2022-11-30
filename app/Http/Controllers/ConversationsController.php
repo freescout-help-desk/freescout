@@ -1734,6 +1734,21 @@ class ConversationsController extends Controller
                 }
                 break;
 
+            // Delete thread (note).
+            case 'delete_thread':
+                $thread = Thread::find($request->thread_id);
+                if (!$thread || !$thread->isNote()) {
+                    $response['msg'] = __('Thread not found');
+                } elseif (!$user->can('delete', $thread)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    $thread->deleteThread();
+                    $response['status'] = 'success';
+                }
+                break;
+
             // Change conversations user
             case 'bulk_conversation_change_user':
 
