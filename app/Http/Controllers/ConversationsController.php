@@ -2566,19 +2566,19 @@ class ConversationsController extends Controller
                 $join->on('customers.id', '=', 'emails.customer_id');
             })
             ->where(function ($query) use ($like) {
-                $query->where('customers.first_name', 'like', $like)
-                    ->orWhere('customers.last_name', 'like', $like)
-                    ->orWhere('customers.company', 'like', $like)
-                    ->orWhere('customers.job_title', 'like', $like)
+                $query->where('customers.first_name', 'ilike', $like)
+                    ->orWhere('customers.last_name', 'ilike', $like)
+                    ->orWhere('customers.company', 'ilike', $like)
+                    ->orWhere('customers.job_title', 'ilike', $like)
                     ->orWhere('customers.phones', 'like', $like)
                     ->orWhere('customers.websites', 'like', $like)
-                    ->orWhere('customers.social_profiles', 'like', $like)
-                    ->orWhere('customers.address', 'like', $like)
-                    ->orWhere('customers.city', 'like', $like)
-                    ->orWhere('customers.state', 'like', $like)
+                    ->orWhere('customers.social_profiles', 'ilike', $like)
+                    ->orWhere('customers.address', 'ilike', $like)
+                    ->orWhere('customers.city', 'ilike', $like)
+                    ->orWhere('customers.state', 'ilike', $like)
                     ->orWhere('customers.zip', 'like', $like)
                     ->orWhere('customers.zip', 'like', $like)
-                    ->orWhere('emails.email', 'like', $like);
+                    ->orWhere('emails.email', 'ilike', $like);
             });
 
         if (!empty($filters['mailbox']) && in_array($filters['mailbox'], $mailbox_ids)) {
