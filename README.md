@@ -101,6 +101,8 @@ Images & one-click installs:
 
 ## News & Updates
 
+Don't miss news, updates and new modules!
+
 [Email Newsletter](https://freescout.net/subscribe/) | [Facebook](https://www.facebook.com/profile.php?id=100088012965853) | [Twitter](https://freescout.net/twitter/) | [YouTube](https://freescout.net/youtube/) | [RSS](https://freescout.net/feed/)
 
 ## Contributing
