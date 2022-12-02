@@ -2087,9 +2087,9 @@ class Conversation extends Model
         $query_conversations->groupby('conversations.id');
 
         if (!empty($filters['mailbox'])) {
+            // Check if the user has access to the mailbox.
             if ($user->hasAccessToMailbox($filters['mailbox'])) {
-                // Check if the user has access to the mailbox.
-                $query_conversations->where('conversations.mailbox_id', '=', $filters['mailbox']);
+                $mailbox_ids[] = $filters['mailbox'];
             } else {
                 unset($filters['mailbox']);
                 $mailbox_ids = $user->mailboxesIdsCanView();
