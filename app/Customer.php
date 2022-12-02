@@ -645,6 +645,11 @@ class Customer extends Model
 
     public function getMainPhoneValue()
     {
+        return $this->getMainPhoneNumber();
+    }
+
+    public function getMainPhoneNumber()
+    {
         $phones = $this->getPhones();
         return $phones[0]['value'] ?? '';
     }

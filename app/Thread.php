@@ -1365,4 +1365,9 @@ class Thread extends Model
     {
         return $this->type == self::TYPE_CUSTOMER;
     }
+
+    public function isUserMessage()
+    {
+        return $this->type == self::TYPE_MESSAGE;
+    }
 }
