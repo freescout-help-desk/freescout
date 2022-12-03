@@ -2099,22 +2099,26 @@ class Conversation extends Model
             $mailbox_ids = $user->mailboxesIdsCanView();
         }
 
-        //if ($mailbox_ids) {
         $query_conversations->whereIn('conversations.mailbox_id', $mailbox_ids);
-        //}
+        
+        $like_op = 'like';
+        if (\Helper::isPgSql()) {
+            $like_op = 'ilike';
+        }
+
         if ($q) {
-            $query_conversations->where(function ($query) use ($like, $filters, $q) {
-                $query->where('conversations.subject', 'like', $like)
-                    ->orWhere('conversations.customer_email', 'like', $like)
+            $query_conversations->where(function ($query) use ($like, $filters, $q, $like_op) {
+                $query->where('conversations.subject', $like_op, $like)
+                    ->orWhere('conversations.customer_email', $like_op, $like)
                     ->orWhere('conversations.'.self::numberFieldName(), (int)$q)
                     ->orWhere('conversations.id', (int)$q)
-					->orWhere('customers.first_name', 'like', $like)
-                    ->orWhere('customers.last_name', 'like', $like)
-                    ->orWhere('threads.body', 'like', $like)
-                    ->orWhere('threads.from', 'like', $like)
-                    ->orWhere('threads.to', 'like', $like)
-                    ->orWhere('threads.cc', 'like', $like)
-                    ->orWhere('threads.bcc', 'like', $like);
+					->orWhere('customers.first_name', $like_op, $like)
+                    ->orWhere('customers.last_name', $like_op, $like)
+                    ->orWhere('threads.body', $like_op, $like)
+                    ->orWhere('threads.from', $like_op, $like)
+                    ->orWhere('threads.to', $like_op, $like)
+                    ->orWhere('threads.cc', $like_op, $like)
+                    ->orWhere('threads.bcc', $like_op, $like);
 
                 $query = \Eventy::filter('search.conversations.or_where', $query, $filters, $q);
             });
@@ -2151,7 +2155,7 @@ class Conversation extends Model
             }
         }
         if (!empty($filters['subject'])) {
-            $query_conversations->where('conversations.subject', 'like', '%'.mb_strtolower($filters['subject']).'%');
+            $query_conversations->where('conversations.subject', $like_op, '%'.mb_strtolower($filters['subject']).'%');
         }
         if (!empty($filters['attachments'])) {
             $has_attachments = ($filters['attachments'] == 'yes' ? true : false);
@@ -2161,7 +2165,7 @@ class Conversation extends Model
             $query_conversations->where('conversations.type', '=', $filters['type']);
         }
         if (!empty($filters['body'])) {
-            $query_conversations->where('threads.body', 'like', '%'.mb_strtolower($filters['body']).'%');
+            $query_conversations->where('threads.body', $like_op, '%'.mb_strtolower($filters['body']).'%');
         }
         if (!empty($filters['number'])) {
             $query_conversations->where('conversations.'.self::numberFieldName(), '=', $filters['number']);
