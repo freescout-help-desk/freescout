@@ -2082,8 +2082,6 @@ class Conversation extends Model
             $query_conversations = Conversation::select('conversations.*');
         }
 		
-		$query_conversations->leftJoin('customers', 'conversations.customer_id', '=' ,'customers.id');
-		
         // https://github.com/laravel/framework/issues/21242
         // https://github.com/laravel/framework/pull/27675
         $query_conversations->groupby('conversations.id');
@@ -2190,11 +2188,16 @@ class Conversation extends Model
             $query_conversations->where('conversations.created_at', '<=', date('Y-m-d 23:59:59', strtotime($filters['before'])));
         }
 
-        // Join threads if needed
-        if (!strstr($query_conversations->toSql(), '`threads`.`conversation_id`')) {
+        // Join tables if needed
+        $query_sql = $query_conversations->toSql();
+        if (!strstr($query_sql, '`threads`.`conversation_id`')) {
             $query_conversations->join('threads', function ($join) {
                 $join->on('conversations.id', '=', 'threads.conversation_id');
             });
+        }
+
+        if (!strstr($query_sql, '`customers`.`id`')) {
+            $query_conversations->leftJoin('customers', 'conversations.customer_id', '=' ,'customers.id');
         }
 
         $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);
