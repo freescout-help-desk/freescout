@@ -37,5 +37,12 @@ class ConversationObserver
     public function deleting(Conversation $conversation)
     {
         $conversation->threads()->delete();
+
+        \Eventy::action('conversation.deleting', $conversation);
+    }
+
+    public function updated(Conversation $conversation)
+    {
+        \Eventy::action('conversation.updated', $conversation);
     }
 }

@@ -30,4 +30,13 @@ class ThreadPolicy
             return false;
         }
     }
+
+    public function delete(User $user, Thread $thread)
+    {
+        if ($thread->created_by_user_id == $user->id) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

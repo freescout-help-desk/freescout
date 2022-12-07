@@ -1211,6 +1211,12 @@ function initConversation()
 			e.preventDefault();
 		});
 
+		// Delete thread
+		jQuery(".thread-delete-trigger").click(function(e){
+			deleteThread($(this));
+			e.preventDefault();
+		});
+
 		// Show original thread
 		jQuery(".thread-original-show").click(function(e){
 			threadShowOriginal($(this));
@@ -4081,6 +4087,30 @@ function editThread(button)
 				thread_container.children().hide();
 				thread_container.prepend(response.html);
 				summernoteInit(thread_container.find('.thread-editor:first'));
+			} else {
+				showAjaxError(response);
+			}
+		}
+	);
+}
+
+// Delete thread (note)
+function deleteThread(button)
+{
+	var thread_container = button.parents('.thread:first');
+	
+	button.button('loading');
+
+	fsAjax({
+			action: 'delete_thread',
+			thread_id: thread_container.attr('data-thread_id')
+		},
+		laroute.route('conversations.ajax'),
+		function(response) {
+			loaderHide();
+			button.button('reset');
+			if (isAjaxSuccess(response)) {
+				thread_container.remove();
 			} else {
 				showAjaxError(response);
 			}

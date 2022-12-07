@@ -74,5 +74,17 @@ class ThreadObserver
         ) {
             Conversation::refreshConversations($conversation, $thread);
         }
+
+        \Eventy::action('thread.created', $thread);
+    }
+
+    public function deleting(Thread $thread)
+    {
+        \Eventy::action('thread.deleting', $thread);
+    }
+
+    public function updated(Thread $thread)
+    {
+        \Eventy::action('thread.updated', $thread);
     }
 }

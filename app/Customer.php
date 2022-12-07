@@ -490,7 +490,7 @@ class Customer extends Model
      */
     public function getMainEmail()
     {
-        return optional($this->emails_cached()->first())->email;
+        return optional($this->emails_cached()->first())->email.'';
     }
 
     /**
@@ -644,6 +644,11 @@ class Customer extends Model
     }
 
     public function getMainPhoneValue()
+    {
+        return $this->getMainPhoneNumber();
+    }
+
+    public function getMainPhoneNumber()
     {
         $phones = $this->getPhones();
         return $phones[0]['value'] ?? '';

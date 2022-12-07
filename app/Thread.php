@@ -56,6 +56,7 @@ class Thread extends Model
         //self::TYPE_FORWARDPARENT => 'forwardparent',
         // forwardchild is the type set on the first thread of the new forwarded conversation.
         //self::TYPE_FORWARDCHILD => 'forwardchild',
+        // Not used.
         self::TYPE_CHAT         => 'chat',
     ];
 
@@ -747,7 +748,11 @@ class Thread extends Model
     {
         // Created by customer
         if ($this->source_via == self::PERSON_CUSTOMER) {
-            return $this->getCreatedBy()->getFirstName(true);
+            if ($this->getCreatedBy()) {
+                return $this->getCreatedBy()->getFirstName(true);
+            } else {
+                return '';
+            }
         }
 
         // Created by user
@@ -1355,5 +1360,15 @@ class Thread extends Model
         $action_types = \Eventy::filter('thread.action_types', self::$action_types);
 
         return self::$action_types[$this->action_type] ?? '';
+    }
+
+    public function isCustomerMessage()
+    {
+        return $this->type == self::TYPE_CUSTOMER;
+    }
+
+    public function isUserMessage()
+    {
+        return $this->type == self::TYPE_MESSAGE;
     }
 }
