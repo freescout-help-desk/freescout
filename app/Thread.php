@@ -56,6 +56,7 @@ class Thread extends Model
         //self::TYPE_FORWARDPARENT => 'forwardparent',
         // forwardchild is the type set on the first thread of the new forwarded conversation.
         //self::TYPE_FORWARDCHILD => 'forwardchild',
+        // Not used.
         self::TYPE_CHAT         => 'chat',
     ];
 
