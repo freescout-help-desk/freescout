@@ -2199,7 +2199,11 @@ class Conversation extends Model
 
         $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);
 
-        $query_conversations->orderBy('conversations.last_reply_at', 'DESC');
+        $sorting = Conversation::getConvTableSorting();
+        if ($sorting['sort_by'] == 'date') {
+            $sorting['sort_by'] = 'last_reply_at';
+        }
+        $query_conversations->orderBy($sorting['sort_by'], $sorting['order']);
 
         return $query_conversations;
     }
