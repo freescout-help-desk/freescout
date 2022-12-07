@@ -2495,8 +2495,11 @@ class ConversationsController extends Controller
      */
     public function searchQuery($user, $q, $filters)
     {
+        $conversations = \Eventy::filter('search.conversations.perform', '', $q, $filters, $user);
+        if ($conversations !== '') {
+            return $conversations;
+        }
         $query_conversations = Conversation::search($q, $filters, $user);
-
         return $query_conversations->paginate(Conversation::DEFAULT_LIST_SIZE);
     }
 
@@ -2612,10 +2615,10 @@ class ConversationsController extends Controller
     public function ajaxConversationsFilter(Request $request, $response, $user)
     {
         if (array_key_exists('q', $request->filter)) {
-            // Search
+            // Search.
             $conversations = $this->searchQuery($user, $this->getSearchQuery($request), $this->getSearchFilters($request));
         } else {
-            // Filters
+            // Filters in the mailbox or customer profile.
             $conversations = $this->conversationsFilterQuery($request, $user);
         }
 

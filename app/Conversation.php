@@ -1749,6 +1749,8 @@ class Conversation extends Model
             $thread_ids = Thread::whereIn('conversation_id', $ids)->pluck('id')->toArray();
             Attachment::deleteByThreadIds($thread_ids);
 
+            // Observers do not react on this kind of deleting.
+
             // Delete threads.
             Thread::whereIn('conversation_id', $ids)->delete();
             // Delete conversations.
