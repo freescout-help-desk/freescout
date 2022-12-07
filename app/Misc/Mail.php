@@ -472,6 +472,7 @@ class Mail
             'x-autoreply'    => '',
             'x-autorespond'  => '',
             'auto-submitted' => 'auto-replied',
+            'auto-submitted' => 'auto-generated',
             'precedence' => ['auto_reply', 'bulk', 'junk'],
             'x-precedence' => ['auto_reply', 'bulk', 'junk'],
         ];
