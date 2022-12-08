@@ -2443,6 +2443,16 @@ class ConversationsController extends Controller
         if (\Eventy::filter('search.is_needed', true, 'conversations')) {
             $conversations = $this->searchQuery($user, $q, $filters);
         }
+
+        // Jump to the conversation if searching by conversation number.
+        if (count($conversations) == 1 
+            && $conversations[0]->number == $q
+            && empty($filters)
+            && !$request->x_embed
+        ) {
+            return redirect()->away($conversations[0]->url($conversations[0]->folder_id));
+        }
+
         $customers = $this->searchCustomers($request, $user);
 
         // Dummy folder
