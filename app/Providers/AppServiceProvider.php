@@ -27,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
         \App\Conversation::observe(\App\Observers\ConversationObserver::class);
         \App\Thread::observe(\App\Observers\ThreadObserver::class);
         \App\Attachment::observe(\App\Observers\AttachmentObserver::class);
+        \App\Follower::observe(\App\Observers\FollowerObserver::class);
         \Illuminate\Notifications\DatabaseNotification::observe(\App\Observers\DatabaseNotificationObserver::class);
     }
 
