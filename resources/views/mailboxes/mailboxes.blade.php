@@ -18,8 +18,8 @@
 
     <div class="card-list margin-top">
         @foreach ($mailboxes as $mailbox)
-            <a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}" class="card no-img hover-shade @if ($mailbox->isActive()) card-active @else card-inactive @endif">
-                <h4>{{ $mailbox->name }}</h4>
+            <a href="{{ route('mailboxes.update', ['id'=>$mailbox->id]) }}" class="card @if (!Eventy::filter('mailbox.has_img', false, $mailbox)) no-img @endif hover-shade @if ($mailbox->isActive()) card-active @else card-inactive @endif">
+                @action('mailbox_card.before_name', $mailbox)<h4>{{ $mailbox->name }}</h4>
                 <p class="text-truncate">{{ $mailbox->email }}</p>
             </a>
         @endforeach
