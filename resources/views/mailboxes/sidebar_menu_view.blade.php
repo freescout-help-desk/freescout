@@ -1,6 +1,6 @@
 <div class="dropdown sidebar-title sidebar-title-extra">
     <span class="sidebar-title-extra-value active-count">{{ $folder->getTypeName() }} ({{ $folder->active_count }})</span>
-    @action('mailbox.before_name', $mailbox)
+    @action('mailbox.view.before_name', $mailbox)
     <span class="sidebar-title-real mailbox-name">@include('mailboxes/partials/mute_icon', ['mailbox' => $mailbox]){{ $mailbox->name }}</span>
     <span class="sidebar-title-email">{{ $mailbox->email }}</span>
 </div>

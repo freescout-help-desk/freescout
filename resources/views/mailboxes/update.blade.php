@@ -22,7 +22,7 @@
                 <form class="form-horizontal margin-top" method="POST" action="" enctype="multipart/form-data">
                     {{ csrf_field() }}
                     
-	                @action('mailbox.update.before_name', $mailbox)
+	                @action('mailbox.update.before_name', $mailbox, $errors)
 
                     <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                         <label for="name" class="col-sm-2 control-label">{{ __('Mailbox Name') }}</label>

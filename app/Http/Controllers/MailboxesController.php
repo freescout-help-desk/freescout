@@ -185,7 +185,9 @@ class MailboxesController extends Controller
                 $validator->errors()->add('email', __('There is a user with such email. Users and mailboxes can not have the same email addresses.'));
             }
 
-            if ($invalid || $validator->fails()) {
+            $validator = \Eventy::filter('mailbox.settings_validator', $validator, $mailbox, $request);
+
+            if ($invalid || count($validator->errors()) || $validator->fails()) {
                 return redirect()->route('mailboxes.update', ['id' => $id])
                             ->withErrors($validator)
                             ->withInput();
