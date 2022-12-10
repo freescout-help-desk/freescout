@@ -919,8 +919,11 @@ class Carbon extends DateTime implements JsonSerializable
      *
      * @return void
      */
-    private static function setLastErrors(array $lastErrors)
+    private static function setLastErrors($lastErrors)
     {
+        if (!is_array($lastErrors)) {
+            return;
+        }
         static::$lastErrors = $lastErrors;
     }
 
