@@ -3703,6 +3703,9 @@ body.print {
 .padding-left-0 {
     padding-left: 0 !important;
 }
+.padding-right-0 {
+    padding-right: 0 !important;
+}
 .heading {
     color: #253540;
     font-size: 20px;
