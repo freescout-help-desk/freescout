@@ -2335,9 +2335,6 @@ button.conv-checkbox-clear {
     color: #93a1af;
     text-decoration: none;
     cursor: default;
- }
-.thread-attachments span {
-    text-transform: lowercase;
 }
 .thread-editor-container {
     padding: 20px;
