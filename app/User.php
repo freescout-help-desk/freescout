@@ -981,11 +981,7 @@ class User extends Authenticatable
     {
         $condition = self::where('status', '!=', self::STATUS_DELETED);
 
-        if (!$extended) {
-            return $condition;
-        } else {
-            return \Eventy::filter('user.non_deleted_condition', $condition);
-        }
+        return \Eventy::filter('user.non_deleted_condition', $condition, $extended);
     }
 
     public function isActive()
