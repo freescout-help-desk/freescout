@@ -52,6 +52,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Symfony\\Polyfill\\Php70\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
+            'Symfony\\Component\\VarDumper\\Dumper\\' => 35,
             'Symfony\\Component\\VarDumper\\Cloner\\' => 35,
             'Symfony\\Component\\VarDumper\\' => 28,
             'Symfony\\Component\\Translation\\' => 30,
@@ -166,6 +167,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Doctrine\\Common\\' => 16,
             'Devfactory\\Minify\\Providers\\' => 28,
             'Devfactory\\Minify\\' => 18,
+            'DebugBar\\DataFormatter\\' => 23,
             'DebugBar\\' => 9,
         ),
         'C' => 
@@ -234,6 +236,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
+        'Symfony\\Component\\VarDumper\\Dumper\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/symfony/var-dumper/Dumper',
         ),
         'Symfony\\Component\\VarDumper\\Cloner\\' => 
         array (
@@ -494,7 +500,8 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
+            0 => __DIR__ . '/../..' . '/overrides/guzzlehttp/psr7/src',
+            1 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
         'GuzzleHttp\\Promise\\' => 
         array (
@@ -557,6 +564,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Devfactory\\Minify\\' => 
         array (
             0 => __DIR__ . '/..' . '/devfactory/minify/src',
+        ),
+        'DebugBar\\DataFormatter\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/maximebf/debugbar/src/DataFormatter/DataFormatter',
         ),
         'DebugBar\\' => 
         array (
@@ -781,9 +792,11 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'App\\Module' => __DIR__ . '/../..' . '/app/Module.php',
         'App\\Notifications\\BroadcastNotification' => __DIR__ . '/../..' . '/app/Notifications/BroadcastNotification.php',
         'App\\Notifications\\WebsiteNotification' => __DIR__ . '/../..' . '/app/Notifications/WebsiteNotification.php',
+        'App\\Observers\\AttachmentObserver' => __DIR__ . '/../..' . '/app/Observers/AttachmentObserver.php',
         'App\\Observers\\ConversationObserver' => __DIR__ . '/../..' . '/app/Observers/ConversationObserver.php',
         'App\\Observers\\DatabaseNotificationObserver' => __DIR__ . '/../..' . '/app/Observers/DatabaseNotificationObserver.php',
         'App\\Observers\\EmailObserver' => __DIR__ . '/../..' . '/app/Observers/EmailObserver.php',
+        'App\\Observers\\FollowerObserver' => __DIR__ . '/../..' . '/app/Observers/FollowerObserver.php',
         'App\\Observers\\MailboxObserver' => __DIR__ . '/../..' . '/app/Observers/MailboxObserver.php',
         'App\\Observers\\SendLogObserver' => __DIR__ . '/../..' . '/app/Observers/SendLogObserver.php',
         'App\\Observers\\ThreadObserver' => __DIR__ . '/../..' . '/app/Observers/ThreadObserver.php',
@@ -920,6 +933,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'CssWhitesmithsFormatter' => __DIR__ . '/..' . '/natxet/cssmin/src/CssMin.php',
         'CustomersTableSeeder' => __DIR__ . '/../..' . '/database/seeds/CustomersTableSeeder.php',
         'DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeds/DatabaseSeeder.php',
+        'DebugBar\\DataFormatter\\DataFormatter' => __DIR__ . '/../..' . '/overrides/maximebf/debugbar/src/DebugBar/DataFormatter/DataFormatter.php',
         'DebugBar\\DebugBar' => __DIR__ . '/../..' . '/overrides/maximebf/debugbar/src/DebugBar/DebugBar.php',
         'Devfactory\\Minify\\Contracts\\MinifyInterface' => __DIR__ . '/..' . '/devfactory/minify/src/Contracts/MinifyInterface.php',
         'Devfactory\\Minify\\Exceptions\\CannotRemoveFileException' => __DIR__ . '/..' . '/devfactory/minify/src/Exceptions/CannotRemoveFileException.php',
@@ -1399,7 +1413,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'GuzzleHttp\\Psr7\\DroppingStream' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/DroppingStream.php',
         'GuzzleHttp\\Psr7\\FnStream' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/FnStream.php',
         'GuzzleHttp\\Psr7\\InflateStream' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/InflateStream.php',
-        'GuzzleHttp\\Psr7\\LazyOpenStream' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/LazyOpenStream.php',
+        'GuzzleHttp\\Psr7\\LazyOpenStream' => __DIR__ . '/../..' . '/overrides/guzzlehttp/psr7/src/LazyOpenStream.php',
         'GuzzleHttp\\Psr7\\LimitStream' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/LimitStream.php',
         'GuzzleHttp\\Psr7\\MessageTrait' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/MessageTrait.php',
         'GuzzleHttp\\Psr7\\MultipartStream' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/MultipartStream.php',
@@ -1479,7 +1493,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'HTMLPurifier_AttrTransform_Lang' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform/Lang.php',
         'HTMLPurifier_AttrTransform_Length' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform/Length.php',
         'HTMLPurifier_AttrTransform_Name' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform/Name.php',
-        'HTMLPurifier_AttrTransform_NameSync' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform/NameSync.php',
+        'HTMLPurifier_AttrTransform_NameSync' => __DIR__ . '/../..' . '/overrides/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform/NameSync.php',
         'HTMLPurifier_AttrTransform_Nofollow' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform/Nofollow.php',
         'HTMLPurifier_AttrTransform_SafeEmbed' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform/SafeEmbed.php',
         'HTMLPurifier_AttrTransform_SafeObject' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform/SafeObject.php',
@@ -1586,7 +1600,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'HTMLPurifier_Language' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/Language.php',
         'HTMLPurifier_LanguageFactory' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/LanguageFactory.php',
         'HTMLPurifier_Length' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/Length.php',
-        'HTMLPurifier_Lexer' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/Lexer.php',
+        'HTMLPurifier_Lexer' => __DIR__ . '/../..' . '/overrides/ezyang/htmlpurifier/library/HTMLPurifier/Lexer.php',
         'HTMLPurifier_Lexer_DOMLex' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/Lexer/DOMLex.php',
         'HTMLPurifier_Lexer_DirectLex' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/Lexer/DirectLex.php',
         'HTMLPurifier_Lexer_PH5P' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier/Lexer/PH5P.php',
@@ -3704,7 +3718,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Component\\VarDumper\\Dumper\\AbstractDumper' => __DIR__ . '/..' . '/symfony/var-dumper/Dumper/AbstractDumper.php',
         'Symfony\\Component\\VarDumper\\Dumper\\CliDumper' => __DIR__ . '/..' . '/symfony/var-dumper/Dumper/CliDumper.php',
         'Symfony\\Component\\VarDumper\\Dumper\\DataDumperInterface' => __DIR__ . '/..' . '/symfony/var-dumper/Dumper/DataDumperInterface.php',
-        'Symfony\\Component\\VarDumper\\Dumper\\HtmlDumper' => __DIR__ . '/..' . '/symfony/var-dumper/Dumper/HtmlDumper.php',
+        'Symfony\\Component\\VarDumper\\Dumper\\HtmlDumper' => __DIR__ . '/../..' . '/overrides/symfony/var-dumper/Dumper/HtmlDumper.php',
         'Symfony\\Component\\VarDumper\\Exception\\ThrowingCasterException' => __DIR__ . '/..' . '/symfony/var-dumper/Exception/ThrowingCasterException.php',
         'Symfony\\Component\\VarDumper\\Test\\VarDumperTestTrait' => __DIR__ . '/..' . '/symfony/var-dumper/Test/VarDumperTestTrait.php',
         'Symfony\\Component\\VarDumper\\VarDumper' => __DIR__ . '/..' . '/symfony/var-dumper/VarDumper.php',
