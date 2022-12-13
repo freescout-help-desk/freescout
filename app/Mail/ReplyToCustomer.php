@@ -95,9 +95,15 @@ class ReplyToCustomer extends Mailable
                     ->view('emails/customer/reply_fancy')
                     ->text('emails/customer/reply_fancy_text');
 
-        if ($this->threads->first()->has_attachments) {
-            foreach ($this->threads->first()->attachments as $attachment) {
-                $message->attach($attachment->getLocalFilePath());
+        $thread = $this->threads->first();
+
+        if ($thread->has_attachments) {
+            foreach ($thread->attachments as $attachment) {
+                if ($attachment->fileExists()) {
+                    $message->attach($attachment->getLocalFilePath());
+                } else {
+                    \Log::error('[ReplyToCustomer] Thread: '.$thread->id.'. Attachment file not find on disk: '.$attachment->getLocalFilePath());
+                }
             }
         }
 

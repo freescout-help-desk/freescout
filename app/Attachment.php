@@ -297,6 +297,14 @@ class Attachment extends Model
         }
     }
 
+    /**
+     * Check if the attachment file actually exists on the disk.
+     */
+    public function fileExists()
+    {
+        return $this->getDisk()->exists(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
+    }
+
     public static function formatBytes($size, $precision = 0)
     {
         $size = (int) $size;
