@@ -973,12 +973,19 @@ class User extends Authenticatable
 
     /**
      * Get query to fetch non-deleted users.
+     * Some modules may extend this condition, to allow this user $extended parameter.
      *
      * @return [type] [description]
      */
-    public static function nonDeleted()
+    public static function nonDeleted($extended = false)
     {
-        return \Eventy::filter('user.non_deleted_condition', self::where('status', '!=', self::STATUS_DELETED));
+        $condition = self::where('status', '!=', self::STATUS_DELETED);
+
+        if (!$extended) {
+            return $condition;
+        } else {
+            return \Eventy::filter('user.non_deleted_condition', $condition);
+        }
     }
 
     public function isActive()
@@ -1045,9 +1052,9 @@ class User extends Authenticatable
         return md5($this->id.config('app.key'));
     }
 
-    public static function findNonDeleted($id)
+    public static function findNonDeleted($id, $extended = false)
     {
-        return User::nonDeleted()->where('id', $id)->first();
+        return User::nonDeleted($extended)->where('id', $id)->first();
     }
 
     /**
