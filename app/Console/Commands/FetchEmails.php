@@ -428,16 +428,35 @@ class FetchEmails extends Command
                         $prev_thread_id = '';
 
                         // Customer replied to the email from user
-                        preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-/", $prev_message_id, $m);
-                        if (!empty($m[1])) {
-                            $prev_thread_id = $m[1];
+                        preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-([^@]+)@/", $prev_message_id, $m);
+                        // Simply checking thread_id from message_id was causing an issue when 
+                        // customer was sending a message from FreeScout - the message was 
+                        // connected to the wrong conversation.
+                        if (!empty($m[1]) && !empty($m[2])) {
+                            $message_id_hash = $m[2];
+                            if (strlen($message_id_hash) == 16) {
+                                if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
+                                    $prev_thread_id = $m[1];
+                                }
+                            } else {
+                                // Backward compatibility.
+                                $prev_thread_id = $m[1];
+                            }
                         }
 
                         // Customer replied to the auto reply
                         if (!$prev_thread_id) {
-                            preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-/", $prev_message_id, $m);
-                            if (!empty($m[1])) {
-                                $prev_thread_id = $m[1];
+                            preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-([^@]+)@/", $prev_message_id, $m);
+                            if (!empty($m[1]) && !empty($m[2])) {
+                                $message_id_hash = $m[2];
+                                if (strlen($message_id_hash) == 16) {
+                                    if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
+                                        $prev_thread_id = $m[1];
+                                    }
+                                } else {
+                                    // Backward compatibility.
+                                    $prev_thread_id = $m[1];
+                                }
                             }
                         }
 

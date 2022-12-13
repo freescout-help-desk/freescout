@@ -459,6 +459,11 @@ class Mail
         return '';
     }
 
+    public static function getMessageIdHash($thread_id)
+    {
+        return substr(md5($thread_id.config('app.key')), 0, 16);
+    }
+
     /**
      * Detect autoresponder by headers.
      * https://github.com/jpmckinney/multi_mail/wiki/Detecting-autoresponders

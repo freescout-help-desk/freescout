@@ -21,6 +21,10 @@ class ModuleLaroute extends Command
      */
     protected $description = 'Generate a laravel routes JS-file for a module or all modules (if module_alias is empty)';
 
+    public $config;
+    
+    public $generator;
+
     /**
      * Create a new command instance.
      *

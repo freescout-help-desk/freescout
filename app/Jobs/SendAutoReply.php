@@ -51,7 +51,7 @@ class SendAutoReply implements ShouldQueue
         $headers['References'] = '<'.$this->thread->message_id.'>';
 
         // Create Message-ID for the auto reply
-        $message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_AUTO_REPLY.'-'.$this->thread->id.'-'.md5($this->thread->id).'@'.$this->mailbox->getEmailDomain();
+        $message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_AUTO_REPLY.'-'.$this->thread->id.'-'.\MailHelper::getMessageIdHash($this->thread->id).'@'.$this->mailbox->getEmailDomain();
         $headers['Message-ID'] = $message_id;
 
         $customer_email = $this->conversation->customer_email;

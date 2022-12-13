@@ -3,8 +3,8 @@
         <i class="glyphicon glyphicon-paperclip"></i>
         <ul>
             @foreach ($thread->attachments as $attachment)
-                <li data-attachment-id="{{ $attachment->id }}">
-                    <a href="{{ $attachment->url() }}" class="break-words" target="_blank">{{ $attachment->file_name }}</a>
+                <li data-attachment-id="{{ $attachment->id }}" data-mime="{{ $attachment->mime_type }}">
+                    <a href="{{ $attachment->url() }}" class="attachment-link break-words" target="_blank">{{ $attachment->file_name }}</a>
                     <span class="text-help">({{ $attachment->getSizeName() }})</span>
                     <a href="{{ $attachment->url() }}" download><i class="glyphicon glyphicon-download-alt small"></i></a>
                     @action('thread.attachment_append', $attachment, $thread, $conversation, $mailbox)

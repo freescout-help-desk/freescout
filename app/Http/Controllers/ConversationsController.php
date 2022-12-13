@@ -147,6 +147,33 @@ class ConversationsController extends Controller
         if ($customer) {
             $customer_emails = $customer->emails;
         }
+        // This is tricky case - when customer_email is different from the
+        // currently selected customer.
+        // 1. Email has been received from a customer.
+        // 2. Customer has been changed.
+        // 3. Reply has been sent to the original customer email.
+        if ($conversation->customer_email 
+            && count($customer_emails)
+            && !in_array($conversation->customer_email, $customer_emails->pluck('email')->toArray())
+        ) {
+            $extra_customer_added = false;
+            foreach ($to_customers as $to_customer) {
+                if ($to_customer['email'] == $conversation->customer_email) {
+                    $extra_customer_added = true;
+                    break;
+                }
+            }
+            if (!$extra_customer_added) {
+                // Get customer by email.
+                $extra_customer = Customer::getByEmail($conversation->customer_email);
+                if ($extra_customer) {
+                    $to_customers[] = [
+                        'customer' => $extra_customer,
+                        'email'    => $conversation->customer_email,
+                    ];
+                }
+            }
+        }
         if (count($customer_emails) > 1 || count($to_customers)) {
             foreach ($customer_emails as $customer_email) {
                 $to_customers[] = [
