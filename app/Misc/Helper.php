@@ -1631,4 +1631,16 @@ class Helper
     {
         return in_array(app()->getLocale(), config("app.locales_rtl") ?? []);
     }
+
+    /**
+     * https://php.watch/versions/8.2/mbstring-qprint-base64-uuencode-html-entities-deprecated#html
+     */
+    public static function mbConvertEncodingHtmlEntities($str)
+    {
+        //$str = mb_convert_encoding($str, 'UTF-8', 'ISO-8859-1');
+        $str = htmlentities($str);
+        $str = strtr($str, ['&#039;'=>"'", '&quot;'=>'"', '&lt;'=>'<', '&gt;'=>'>', '&amp;'=>'&']);
+
+        return $str;
+    }
 }
