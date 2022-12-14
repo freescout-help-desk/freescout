@@ -144,7 +144,8 @@
             "Ramsey\\Uuid\\": "overrides/ramsey/uuid/src/",
             "Rap2hpoutre\\LaravelLogViewer\\": "overrides/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/",
             "Symfony\\Component\\Console\\Descriptor\\": "overrides/symfony/console/Descriptor",
-            "Symfony\\Component\\CssSelector\\XPath\\Extension\\": "overrides/symfony/css-selector/XPath/Extension/"
+            "Symfony\\Component\\CssSelector\\XPath\\Extension\\": "overrides/symfony/css-selector/XPath/Extension/",
+            "Javoscript\\MacroableModels\\": "overrides/javoscript/laravel-macroable-models/src/"
         },
         "exclude-from-classmap": [
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
@@ -253,7 +254,7 @@
             "vendor/symfony/finder/Iterator/SortableIterator.php",
             "vendor/symfony/css-selector/XPath/Extension/NodeExtension.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform/NameSync.php",
-            "vendor/ezyang/htmlpurifier/library/HTMLPurifier/Lexer.php"
+            "vendor/javoscript/laravel-macroable-models/src/MacroableModels.php"
         ]
     },
     "autoload-dev": {
