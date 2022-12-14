@@ -989,7 +989,8 @@ class FetchEmails extends Command
                 $dom = new \DOMDocument();
                 libxml_use_internal_errors(true);
                 //$dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-                $dom->loadHTML(\Helper::mbConvertEncodingHtmlEntities($html));
+                //$dom->loadHTML(\Helper::mbConvertEncodingHtmlEntities($html));
+                $dom->loadHTML(\Symfony\Polyfill\Mbstring\Mbstring::mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
                 libxml_use_internal_errors(false);
                 $bodies = $dom->getElementsByTagName('body');
                 if ($bodies->length == 1) {
