@@ -424,9 +424,8 @@ class ConversationsController extends Controller
                         'to' => $orig_thread->to,
                         'cc' => $orig_thread->cc,
                         'bcc' => $orig_thread->bcc,
-                        // todo.
                         //'attachments' => $attachments,
-                        'has_attachments' => false, //$orig_thread->has_attachments,
+                        'has_attachments' => $orig_thread->has_attachments,
                         'message_id' => "clone".crc32(microtime()).'-'.$orig_thread->message_id,
                         'source_via' => $orig_thread->source_via,
                         'source_type' => $orig_thread->source_type,
@@ -436,8 +435,11 @@ class ConversationsController extends Controller
                     $conversation
                 );
                 
-                // Update folders counters
-                //$conversation->mailbox->updateFoldersCounters();
+                // Clone attachments.
+                $attachments = Attachment::where('thread_id', $orig_thread->id)->get();
+                foreach ($attachments as $attachment) {
+                    $attachment->duplicate($thread->id);
+                }
 
                 return redirect()->away($conversation->url());
             } else {

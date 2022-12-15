@@ -1051,6 +1051,10 @@ class Thread extends Model
                 $thread->has_attachments = true;
                 $conversation->has_attachments = true;
             }
+        } else {
+            $has_attachments = $data['has_attachments'] ?? false;
+            $thread->has_attachments = $has_attachments;
+            $conversation->has_attachments = $has_attachments;
         }
         
         $thread->save();
