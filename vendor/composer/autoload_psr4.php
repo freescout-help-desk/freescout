@@ -58,7 +58,7 @@ return array(
     'Lord\\Laroute\\' => array($vendorDir . '/lord/laroute/src'),
     'League\\Flysystem\\' => array($vendorDir . '/league/flysystem/src'),
     'Laravel\\Tinker\\' => array($vendorDir . '/laravel/tinker/src'),
-    'Javoscript\\MacroableModels\\' => array($vendorDir . '/javoscript/laravel-macroable-models/src'),
+    'Javoscript\\MacroableModels\\' => array($baseDir . '/overrides/javoscript/laravel-macroable-models/src', $vendorDir . '/javoscript/laravel-macroable-models/src'),
     'JakubOnderka\\PhpConsoleHighlighter\\' => array($vendorDir . '/jakub-onderka/php-console-highlighter/src'),
     'JakubOnderka\\PhpConsoleColor\\' => array($vendorDir . '/jakub-onderka/php-console-color/src'),
     'Illuminate\\View\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/View'),

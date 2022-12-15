@@ -1768,7 +1768,7 @@ return array(
     'JakubOnderka\\PhpConsoleColor\\InvalidStyleException' => $vendorDir . '/jakub-onderka/php-console-color/src/InvalidStyleException.php',
     'JakubOnderka\\PhpConsoleHighlighter\\Highlighter' => $vendorDir . '/jakub-onderka/php-console-highlighter/src/Highlighter.php',
     'Javoscript\\MacroableModels\\Facades\\MacroableModels' => $vendorDir . '/javoscript/laravel-macroable-models/src/Facades/MacroableModels.php',
-    'Javoscript\\MacroableModels\\MacroableModels' => $vendorDir . '/javoscript/laravel-macroable-models/src/MacroableModels.php',
+    'Javoscript\\MacroableModels\\MacroableModels' => $baseDir . '/overrides/javoscript/laravel-macroable-models/src/MacroableModels.php',
     'Javoscript\\MacroableModels\\MacroableModelsServiceProvider' => $vendorDir . '/javoscript/laravel-macroable-models/src/MacroableModelsServiceProvider.php',
     'JsonSerializable' => $vendorDir . '/nesbot/carbon/src/JsonSerializable.php',
     'Laravel\\Tinker\\ClassAliasAutoloader' => $vendorDir . '/laravel/tinker/src/ClassAliasAutoloader.php',

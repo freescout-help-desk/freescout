@@ -415,7 +415,8 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         ),
         'Javoscript\\MacroableModels\\' => 
         array (
-            0 => __DIR__ . '/..' . '/javoscript/laravel-macroable-models/src',
+            0 => __DIR__ . '/../..' . '/overrides/javoscript/laravel-macroable-models/src',
+            1 => __DIR__ . '/..' . '/javoscript/laravel-macroable-models/src',
         ),
         'JakubOnderka\\PhpConsoleHighlighter\\' => 
         array (
@@ -2440,7 +2441,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'JakubOnderka\\PhpConsoleColor\\InvalidStyleException' => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src/InvalidStyleException.php',
         'JakubOnderka\\PhpConsoleHighlighter\\Highlighter' => __DIR__ . '/..' . '/jakub-onderka/php-console-highlighter/src/Highlighter.php',
         'Javoscript\\MacroableModels\\Facades\\MacroableModels' => __DIR__ . '/..' . '/javoscript/laravel-macroable-models/src/Facades/MacroableModels.php',
-        'Javoscript\\MacroableModels\\MacroableModels' => __DIR__ . '/..' . '/javoscript/laravel-macroable-models/src/MacroableModels.php',
+        'Javoscript\\MacroableModels\\MacroableModels' => __DIR__ . '/../..' . '/overrides/javoscript/laravel-macroable-models/src/MacroableModels.php',
         'Javoscript\\MacroableModels\\MacroableModelsServiceProvider' => __DIR__ . '/..' . '/javoscript/laravel-macroable-models/src/MacroableModelsServiceProvider.php',
         'JsonSerializable' => __DIR__ . '/..' . '/nesbot/carbon/src/JsonSerializable.php',
         'Laravel\\Tinker\\ClassAliasAutoloader' => __DIR__ . '/..' . '/laravel/tinker/src/ClassAliasAutoloader.php',
