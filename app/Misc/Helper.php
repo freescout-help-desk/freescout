@@ -1296,6 +1296,8 @@ class Helper
         // Extract existing links and tags
         $value = preg_replace_callback('~(<a .*?>.*?</a>|<.*?>)~i', function ($match) use (&$links) { return '<' . array_push($links, $match[1]) . '>'; }, $value ?? '');
 
+        $value = $value ?? '';
+
         // Extract text links for each protocol
         foreach ((array)$protocols as $protocol) {
             switch ($protocol) {
@@ -1307,7 +1309,7 @@ class Helper
         }
 
         // Insert all link
-        return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { return $links[$match[1] - 1]; }, $value);
+        return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { return $links[$match[1] - 1]; }, $value ?? '');
     }
 
     /**
