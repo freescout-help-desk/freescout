@@ -1093,32 +1093,10 @@ function initConversation()
 	    jQuery(".conv-add-note").click(function(e) {
 	    	var reply_block = $(".conv-reply-block");
 	    	if (reply_block.hasClass('hidden')  /*|| $(this).hasClass('inactive')*/) {
-	    		// Show
-				hideActionBlocks();
-				reply_block.removeClass('hidden')
-					.addClass('conv-note-block')
-					.removeClass('conv-forward-block')
-					.children().find(":input[name='is_note']:first").val(1);
-				$('#conv-subject').addClass('action-visible');
-				reply_block.children().find(":input[name='thread_id']:first").val('');
-				reply_block.children().find(":input[name='subtype']:first").val('');
-				//$(".conv-reply-block").children().find(":input[name='body']:first").val('');
-
-				// Note never changes Assignee by default
-				reply_block.children().find(":input[name='user_id']:first").val(getConvData('user_id'));
-
-	    		// Show default status
-	    		var input_status = reply_block.children().find(":input[name='status']:first");
-	    		input_status.val(input_status.attr('data-note-status'));
-
-	    		$(".attachments-upload:first :input, .attachments-upload:first li").remove();
-
-				$(".conv-action").addClass('inactive');
-				$(this).removeClass('inactive');
-				//$('#body').summernote("code", '');
-				$('#body').summernote('focus');
-
-				maybeScrollToReplyBlock();
+    			// To prevent browser autocomplete, clean body
+				// We have to insert this code to allow proper UL/OL
+				setReplyBody('<div><br></div>');
+				showNoteForm();
 			} /*else {
 				// Hide
 				$(".conv-action-block").addClass('hidden');
@@ -1367,6 +1345,39 @@ function getConvData(field)
 		return $('.conv-user:first li.active a:first').attr('data-user_id');
 	}
 	return null;
+}
+
+function showNoteForm()
+{
+	var reply_block = $(".conv-reply-block");
+	if (reply_block.hasClass('hidden')  /*|| $(this).hasClass('inactive')*/) {
+		// Show
+		hideActionBlocks();
+		reply_block.removeClass('hidden')
+			.addClass('conv-note-block')
+			.removeClass('conv-forward-block')
+			.children().find(":input[name='is_note']:first").val(1);
+		$('#conv-subject').addClass('action-visible');
+		reply_block.children().find(":input[name='thread_id']:first").val('');
+		reply_block.children().find(":input[name='subtype']:first").val('');
+		//$(".conv-reply-block").children().find(":input[name='body']:first").val('');
+
+		// Note never changes Assignee by default
+		reply_block.children().find(":input[name='user_id']:first").val(getConvData('user_id'));
+
+		// Show default status
+		var input_status = reply_block.children().find(":input[name='status']:first");
+		input_status.val(input_status.attr('data-note-status'));
+
+		$(".attachments-upload:first :input, .attachments-upload:first li").remove();
+
+		$(".conv-action").addClass('inactive');
+		$(this).removeClass('inactive');
+		//$('#body').summernote("code", '');
+		$('#body').summernote('focus');
+
+		maybeScrollToReplyBlock();
+	}
 }
 
 // Prepare reply/forward form for display
@@ -4506,7 +4517,7 @@ function maybeShowStoredNote()
 			conversation_notes[conversation_id].note.trim()
 		) {
 			setReplyBody(conversation_notes[conversation_id].note);
-			switchToNote();
+			showNoteForm();
 		}
 	}
 }
