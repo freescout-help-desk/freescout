@@ -317,7 +317,7 @@ class SettingsController extends Controller
             }
 
             // By some reason isset() does not work for empty elements.
-            if (array_key_exists($option_name, $request->settings)) {
+            if (isset($request->settings) && array_key_exists($option_name, $request->settings)) {
                 $option_value = $request->settings[$option_name];
 
                 if (!empty($settings_params[$option_name]['encrypt'])) {
