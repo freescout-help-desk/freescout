@@ -52,7 +52,7 @@ class User extends Authenticatable
      * Types.
      */
     const TYPE_USER = 1;
-    const TYPE_TEAM = 2;
+    const TYPE_ROBOT = 2; // Workflows, teams, etc.
 
     /**
      * Statuses.
@@ -1117,5 +1117,12 @@ class User extends Authenticatable
         } catch (\Exception $e) {
             // Already exists
         }
+    }
+
+    // If there will be some issues, extra "robot" field
+    // may need to be added to Users table.
+    public static function getRobotsCondition()
+    {
+        return User::where('type', User::TYPE_ROBOT);
     }
 }
