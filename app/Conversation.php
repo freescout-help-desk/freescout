@@ -209,6 +209,13 @@ class Conversation extends Model
     protected $guarded = ['id', 'folder_id'];
 
     /**
+     * Convert to array.
+     */
+    protected $casts = [
+        'meta' => 'array',
+    ];
+
+    /**
      * Default values.
      */
     protected $attributes = [
@@ -497,6 +504,11 @@ class Conversation extends Model
     public function isSpam()
     {
         return $this->status == self::STATUS_SPAM;
+    }
+
+    public function isClosed()
+    {
+        return $this->status == self::STATUS_CLOSED;
     }
 
     /**
@@ -2235,55 +2247,29 @@ class Conversation extends Model
         }
     }
 
-    // /**
-    //  * Get conversation meta data as array.
-    //  */
-    // public function getMetas()
-    // {
-    //     return \Helper::jsonToArray($this->meta);
-    // }
+    /**
+     * Get meta value.
+     */
+    public function getMeta($key, $default = null)
+    {
+        if (isset($this->meta[$key])) {
+            return $this->meta[$key];
+        } else {
+            return $default;
+        }
+    }
 
-    // /**
-    //  * Set conversation meta value.
-    //  */
-    // public function setMetas($data)
-    // {
-    //     $this->meta = json_encode($data);
-    // }
+    /**
+     * Set meta value.
+     */
+    public function setMeta($key, $value, $save = false)
+    {
+        $meta = $this->meta;
+        $meta[$key] = $value;
+        $this->meta = $meta;
 
-    // /**
-    //  * Get conversation meta value.
-    //  */
-    // public function getMeta($key, $default = null)
-    // {
-    //     $metas = $this->getMetas();
-    //     if (isset($metas[$key])) {
-    //         return $metas[$key];
-    //     } else {
-    //         return $default;
-    //     }
-    // }
-
-    // /**
-    //  * Set conversation meta value.
-    //  */
-    // public function setMeta($key, $value)
-    // {
-    //     $metas = $this->getMetas();
-    //     $metas[$key] = $value;
-    //     $this->setMetas($metas);
-    // }
-
-    // /**
-    //  * Create new conversation.
-    //  */
-    // public static function create($data = [], $save = true)
-    // {
-    //     $conversation = new Conversation();
-    //     $conversation->fill($data);
-
-    //     if ($save) {
-    //         $conversation->save();
-    //     }
-    // }
+        if ($save) {
+            $this->save();
+        }
+    }
 }

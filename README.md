@@ -9,7 +9,7 @@
 
 </div>
 
-**FreeScout** is the super lightweight free open source help desk and shared inbox written in PHP7+ (Laravel framework) – self hosted clone of HelpScout. Now you can enjoy free Zendesk & Help Scout without giving up privacy or locking yourself into a service you don't control. FreeScout has been developed from scratch and is not using any copyrighted Help Scout or Zendesk materials.
+**FreeScout** is the super lightweight free open source help desk and shared inbox written in PHP (Laravel framework) – self hosted clone of HelpScout. Now you can enjoy free Zendesk & Help Scout without giving up privacy or locking yourself into a service you don't control. FreeScout has been developed from scratch and is not using any copyrighted Help Scout or Zendesk materials.
 
 ![FreeScout](https://freescout-helpdesk.github.io/img/screenshots/screenshot.png)
 
@@ -45,6 +45,7 @@
   * Following a conversation.
   * Auto reply.
   * Internal notes.
+  * Automatic refreshing of the conversations list without the need to reload the page.
   * Pasting screenshots from the clipboard into the reply area.
   * Configuring notifications on a per user basis.
   * Open tracking.

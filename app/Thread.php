@@ -615,11 +615,14 @@ class Thread extends Model
                 if ($conversation_number) {
                     $did_this = __(':person changed the customer to :customer in conversation #:conversation_number', ['customer' => $this->customer->getFullName(true), 'conversation_number' => $conversation_number]);
                 } else {
-                    $customer_name = $this->customer_cached->getFullName(true);
+                    $customer_name = '';
+                    if ($this->customer_cached) {
+                        $customer_name = $this->customer_cached->getFullName(true);
+                    }
                     if ($escape) {
                         $customer_name = htmlspecialchars($customer_name);
                     }
-                    $did_this = __(":person changed the customer to :customer", ['customer' => '<a href="'.$this->customer_cached->url().'" title="'.$this->action_data.'" class="link-black">'.$customer_name.'</a>']);
+                    $did_this = __(":person changed the customer to :customer", ['customer' => '<a href="'.($this->customer_cached ? $this->customer_cached->url() : '').'" title="'.$this->action_data.'" class="link-black">'.$customer_name.'</a>']);
                 }
             } elseif ($this->action_type == self::ACTION_TYPE_DELETED_TICKET) {
                 $did_this = __(":person deleted");
