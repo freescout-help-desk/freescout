@@ -36,11 +36,14 @@ class SendReplyToCustomer
         }
 
         // Remove threads added after this event had fired.
-        foreach ($replies as $i => $reply) {
-            if ($reply->id == $event->thread->id) {
-                break;
-            } else {
-                $replies->forget($i);
+        $thread = $event->last_thread ?? $event->thread ?? null;
+        if ($thread) {
+            foreach ($replies as $i => $reply) {
+                if ($reply->id == $thread->id) {
+                    break;
+                } else {
+                    $replies->forget($i);
+                }
             }
         }
 
