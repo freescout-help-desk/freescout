@@ -2386,7 +2386,7 @@ function initMailboxToolbar()
 {
 	$(document).ready(function() {
 		// Empty trash
-		$(".mailbox-empty-trash").click(function(e) {
+		$(".mailbox-empty-folder").click(function(e) {
 			showModalDialog('#conversations-bulk-actions-delete-modal', {
 				on_show: function(modal) {
 					modal.children().find('.delete-conversation-ok:first').click(function(e) {
@@ -2395,7 +2395,7 @@ function initMailboxToolbar()
 
 						fsAjax(
 							{
-								action: 'empty_trash',
+								action: 'empty_folder',
 								folder_id: getGlobalAttr('folder_id')
 							},
 							laroute.route('conversations.ajax'),

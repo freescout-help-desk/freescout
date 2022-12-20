@@ -16,10 +16,15 @@
 
 @section('content')
     @include('partials/flash_messages')
-    @if ($folder->type == App\Folder::TYPE_DELETED)
+    @if ($folder->type == App\Folder::TYPE_DELETED && $folder->total_count)
         <div class="section-heading mailbox-toolbar">
-	        <a href="#" class="btn btn-primary mailbox-empty-trash">{{ __('Empty Trash') }}</a>
+	        <a href="#" class="btn btn-primary mailbox-empty-folder">{{ __('Empty Trash') }}</a>
 	    </div>
+    @endif
+    @if ($folder->type == App\Folder::TYPE_SPAM && $folder->total_count)
+        <div class="section-heading mailbox-toolbar">
+            <a href="#" class="btn btn-primary mailbox-empty-folder">{{ __('Delete All') }}</a>
+        </div>
     @endif
     @include('conversations/conversations_table')
 @endsection
