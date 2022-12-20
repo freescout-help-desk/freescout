@@ -75,6 +75,12 @@ class Mail
         '-------- Αρχικό μήνυμα --------', // Greek
     ];
 
+    public static $fwd_prefixes = [
+        'F',
+        'FW',
+        'FWD',
+    ];
+
     /**
      * md5 of the last applied mail config.
      */

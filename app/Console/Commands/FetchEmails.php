@@ -518,6 +518,29 @@ class FetchEmails extends Command
                 $subject = iconv_mime_decode($subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, 'UTF-8');
             }
 
+            // If existing user forwarded customer's email to the mailbox
+            // we are creating a new conversation as if it was sent by the customer.
+            if ($in_reply_to
+                && $body
+                && preg_match("/^(".implode('|', \MailHelper::$fwd_prefixes)."):(.*)/i", $subject, $m) 
+                && !empty($m[2])
+            ) {
+                // Try to get "From:" from body.
+                preg_match("/[\"'<:]([^\"'<:]+@[^\"'>:]+)[\"'>:]/", $body, $b);
+
+                $original_sender = Email::sanitizeEmail($b[1] ?? '');
+                if ($original_sender) {
+                    // Check if sender is the existing user.
+                    $sender_is_user = User::nonDeleted()->where('email', $from)->exists();
+                    if ($sender_is_user) {
+                        // Substitute sender.
+                        $from = $original_sender;
+                        $subject = trim($m[2]);
+                        $message_from_customer = true;
+                    }
+                }
+            }
+
             $to = $this->formatEmailList($message->getTo());
             //$to = $mailbox->removeMailboxEmailsFromList($to);
 
