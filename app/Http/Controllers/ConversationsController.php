@@ -2511,6 +2511,8 @@ class ConversationsController extends Controller
                     }
                 }
             }
+        } elseif (count($mailboxes) == 1) {
+            $search_mailbox = $mailboxes[0];
         }
 
         return view('conversations/search', [
