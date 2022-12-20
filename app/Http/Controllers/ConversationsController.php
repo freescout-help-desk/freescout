@@ -1894,7 +1894,7 @@ class ConversationsController extends Controller
                 break;
 
             // Delete converations.
-            case 'empty_trash':
+            case 'empty_folder':
                 // At first, check if this user is able to delete conversations
                 if (!auth()->user()->isAdmin() && !auth()->user()->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS)) {
                     $response['msg'] = __('Not enough permissions');

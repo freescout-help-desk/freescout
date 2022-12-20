@@ -588,6 +588,19 @@ function summernoteInit(selector, new_options)
 	}*/
 
 	$el.summernote(options);
+
+	// To save data when editing the code directly
+	fsFixEditorCodeSaving($el)
+}
+
+// To save data when editing the code directly
+function fsFixEditorCodeSaving($el)
+{
+	$el.next().children().find('.note-codable').on('blur', function() {
+		if ($el.summernote('codeview.isActivated')) {
+			$el.val($el.summernote('code'));
+		}
+	});
 }
 
 function permissionsInit()
@@ -1563,6 +1576,7 @@ function convEditorInit()
 	options = fsApplyFilter('editor.options', options);
 
 	$('#body').summernote(options);
+	fsFixEditorCodeSaving($('#body'));
 	$('#editor_bottom_toolbar a[data-modal-applied="1"]').removeAttr('data-modal-applied');
 	var html = $('#editor_bottom_toolbar').html();
 	$('.note-statusbar').addClass('note-statusbar-toolbar form-inline').html(html);
@@ -2372,7 +2386,7 @@ function initMailboxToolbar()
 {
 	$(document).ready(function() {
 		// Empty trash
-		$(".mailbox-empty-trash").click(function(e) {
+		$(".mailbox-empty-folder").click(function(e) {
 			showModalDialog('#conversations-bulk-actions-delete-modal', {
 				on_show: function(modal) {
 					modal.children().find('.delete-conversation-ok:first').click(function(e) {
@@ -2381,7 +2395,7 @@ function initMailboxToolbar()
 
 						fsAjax(
 							{
-								action: 'empty_trash',
+								action: 'empty_folder',
 								folder_id: getGlobalAttr('folder_id')
 							},
 							laroute.route('conversations.ajax'),
