@@ -16,7 +16,7 @@ class SetUserTypeField extends Migration
     {
         User::where('status', User::STATUS_DELETED)
             ->where('email', 'like', 'fs%@example.org%')
-            ->update(['type' => User::TYPE_ROBOT]);
+            ->update(['type' => 2]); // User::TYPE_ROBOT
     }
 
     /**
@@ -28,6 +28,6 @@ class SetUserTypeField extends Migration
     {
         User::where('status', User::STATUS_DELETED)
             ->where('email', 'like', 'fs%@example.org%')
-            ->update(['type' => User::TYPE_USER]);
+            ->update(['type' => 2]); // User::TYPE_ROBOT
     }
 }
