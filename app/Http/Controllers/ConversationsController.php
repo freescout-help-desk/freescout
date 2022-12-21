@@ -2500,6 +2500,20 @@ class ConversationsController extends Controller
         $users = \Cache::remember('search_filter_users_'.$user->id, 5, function () use ($user, $mailboxes) {
             return \Eventy::filter('search.assignees', $user->whichUsersCanView($mailboxes), $user, $mailboxes);
         });
+        $search_mailbox = null;
+        if (isset($filters['mailbox'])) {
+            $mailbox_id = (int)$filters['mailbox'];
+            if ($mailbox_id && in_array($mailbox_id, $mailboxes->pluck('id')->toArray())) {
+                foreach ($mailboxes as $mailbox_item) {
+                    if ($mailbox_item->id == $mailbox_id) {
+                        $search_mailbox = $mailbox_item;
+                        break;
+                    }
+                }
+            }
+        } elseif (count($mailboxes) == 1) {
+            $search_mailbox = $mailboxes[0];
+        }
 
         return view('conversations/search', [
             'folder'        => $folder,
@@ -2514,6 +2528,7 @@ class ConversationsController extends Controller
             'recent'        => session('recent_search_queries'),
             'users'         => $users,
             'mailboxes'     => $mailboxes,
+            'search_mailbox'  => $search_mailbox,
         ]);
     }
 
