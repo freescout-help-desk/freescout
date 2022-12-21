@@ -389,7 +389,6 @@ class FetchEmails extends Command
                 $is_bounce = true;
             }
 
-
             if ($is_bounce && !$bounced_message_id) {
                 foreach ($attachments as $attachment_msg) {
                     // 7.3.1 The Message/rfc822 (primary) subtype. A Content-Type of "message/rfc822" indicates that the body contains an encapsulated message, with the syntax of an RFC 822 message
@@ -522,20 +521,25 @@ class FetchEmails extends Command
             // we are creating a new conversation as if it was sent by the customer.
             if ($in_reply_to
                 && $body
-                && preg_match("/^(".implode('|', \MailHelper::$fwd_prefixes)."):(.*)/i", $subject, $m) 
-                && !empty($m[2])
+                //&& preg_match("/^(".implode('|', \MailHelper::$fwd_prefixes)."):(.*)/i", $subject, $m) 
+                // F:, FW:, FWD:, WG:, De:
+                && preg_match("/^[[:alpha:]]{1,3}:(.*)/i", $subject, $m) 
+                && !empty($m[1])
+                && !$user_id && !$is_reply && !$prev_thread
             ) {
                 // Try to get "From:" from body.
                 preg_match("/[\"'<:]([^\"'<:]+@[^\"'>:]+)[\"'>:]/", $body, $b);
 
                 $original_sender = Email::sanitizeEmail($b[1] ?? '');
+                
                 if ($original_sender) {
                     // Check if sender is the existing user.
                     $sender_is_user = User::nonDeleted()->where('email', $from)->exists();
+                    
                     if ($sender_is_user) {
                         // Substitute sender.
                         $from = $original_sender;
-                        $subject = trim($m[2]);
+                        $subject = trim($m[1]);
                         $message_from_customer = true;
                     }
                 }
