@@ -79,6 +79,8 @@ class SendNotificationToUsers implements ShouldQueue
         $prev_message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY.'-'.$this->conversation->id.'-'.md5($this->conversation->id).'@'.$mailbox->getEmailDomain();
         $headers['In-Reply-To'] = '<'.$prev_message_id.'>';
         $headers['References'] = '<'.$prev_message_id.'>';
+        // https://github.com/freescout-helpdesk/freescout/issues/2488
+        $headers['X-Auto-Response-Suppress'] = 'All';
 
         // We throw an exception if any of the send attempts throws an exception (connection error, etc)
         $global_exception = null;
