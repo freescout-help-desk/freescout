@@ -2818,21 +2818,21 @@ class ConversationsController extends Controller
 
         // Check to prevent creating empty customers.
         if (trim($request->name ?? '') || trim($request->phone ?? '')) {
-            $request->name = trim($request->name ?? '');
-            $request->phone = trim($request->phone ?? '');
+            $request_name = trim($request->name ?? '');
+            $request_phone = trim($request->phone ?? '');
 
-            $name_parts = explode(' ', $request->name);
+            $name_parts = explode(' ', $request_name);
             $customer_data['first_name'] = $name_parts[0];
             if (!empty($name_parts[1])) {
                 $customer_data['last_name'] = $name_parts[1];
             }
-            $customer_data['phones'] = [$request->phone];
+            $customer_data['phones'] = [$request_phone];
         }
 
         // Check if name field contains ID of the customer.
-        if (!$request->customer_id && is_numeric($request->name)) {
+        if (!$request->customer_id && is_numeric($request_name)) {
             // Try to find customer by ID.
-            $customer = Customer::find($request->name);
+            $customer = Customer::find($request_name);
         }
 
         if (!$customer && $request->to_email) {
@@ -2844,8 +2844,8 @@ class ConversationsController extends Controller
         }
 
         // Try to find customer by phone.
-        if (!$customer && $request->phone) {
-            $customer = Customer::findByPhone($request->phone);
+        if (!$customer && $request_phone) {
+            $customer = Customer::findByPhone($request_phone);
             if ($customer) {
                 $customer_email = $customer->getMainEmail();
             }
