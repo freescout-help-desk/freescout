@@ -27,7 +27,11 @@ class SendAutoReply
     {
         $conversation = $event->conversation;
 
-        if (!$conversation->imported && $conversation->mailbox->auto_reply_enabled) {
+        // no_autoreply meta value is checked in the SendAutoReply job.
+
+        if (!$conversation->imported 
+            && $conversation->mailbox->auto_reply_enabled
+        ) {
             $thread = $conversation->threads()->first();
 
             // Do not send auto reply to auto responders.
