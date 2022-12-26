@@ -43,6 +43,11 @@ class SendAutoReply implements ShouldQueue
      */
     public function handle()
     {
+        // Auto reply disabled.
+        if (!empty($this->conversation->meta['ar_off'])) {
+            return;
+        }
+
         // Configure mail driver according to Mailbox settings
         \App\Misc\Mail::setMailDriver($this->mailbox, null, $this->conversation);
 

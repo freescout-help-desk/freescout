@@ -696,12 +696,14 @@ class Customer extends Model
                     $phones[] = [
                         'value' => (string) $phone['value'],
                         'type'  => (int) $phone['type'],
+                        'n'     => (string)\Helper::phoneToNumeric($phone['value']),
                     ];
                 }
             } else {
                 $phones[] = [
                     'value' => (string) $phone,
-                    'type'  => self::PHONE_TYPE_WORK
+                    'type'  => self::PHONE_TYPE_WORK,
+                    'n'     => (string)\Helper::phoneToNumeric($phone),
                 ];
             }
         }
@@ -732,8 +734,16 @@ class Customer extends Model
      */
     public static function findByPhone($phone)
     {
-        $phone = trim($phone);
-        return Customer::where('phones', 'LIKE', '%"'.$phone.'"%')->first();
+        return Customer::byPhone($phone)->first();
+    }
+
+    /**
+     * Get query.
+     */
+    public static function byPhone($phone)
+    {
+        $phone_numeric = \Helper::phoneToNumeric($phone);
+        return Customer::where('phones', 'LIKE', '%"'.$phone_numeric.'"%');
     }
 
     /**

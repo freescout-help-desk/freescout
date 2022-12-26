@@ -1633,4 +1633,10 @@ class Helper
     {
         return in_array(app()->getLocale(), config("app.locales_rtl") ?? []);
     }
+
+    public static function phoneToNumeric($phone)
+    {
+        $phone = preg_replace("/[^0-9]/", '', $phone);
+        return (string)$phone;
+    }
 }

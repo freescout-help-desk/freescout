@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
         \App\Email::observe(\App\Observers\EmailObserver::class);
         \App\User::observe(\App\Observers\UserObserver::class);
         \App\Conversation::observe(\App\Observers\ConversationObserver::class);
+        \App\Customer::observe(\App\Observers\CustomerObserver::class);
         \App\Thread::observe(\App\Observers\ThreadObserver::class);
         \App\Attachment::observe(\App\Observers\AttachmentObserver::class);
         \App\Follower::observe(\App\Observers\FollowerObserver::class);
