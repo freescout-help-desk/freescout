@@ -2622,7 +2622,7 @@ class ConversationsController extends Controller
             ->leftJoin('emails', function ($join) {
                 $join->on('customers.id', '=', 'emails.customer_id');
             })
-            ->where(function ($query) use ($like) {
+            ->where(function ($query) use ($like, $q) {
                 $like_op = 'like';
                 if (\Helper::isPgSql()) {
                     $like_op = 'ilike';
@@ -2632,7 +2632,7 @@ class ConversationsController extends Controller
                     ->orWhere('customers.last_name', $like_op, $like)
                     ->orWhere('customers.company', $like_op, $like)
                     ->orWhere('customers.job_title', $like_op, $like)
-                    ->orWhere('customers.phones', $like_op, $like)
+                    ->orWhere('customers.phones', $like_op, '%"'.\Helper::phoneToNumeric($q).'"%')
                     ->orWhere('customers.websites', $like_op, $like)
                     ->orWhere('customers.social_profiles', $like_op, $like)
                     ->orWhere('customers.address', $like_op, $like)
