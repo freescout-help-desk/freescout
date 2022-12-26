@@ -734,8 +734,16 @@ class Customer extends Model
      */
     public static function findByPhone($phone)
     {
+        return Customer::byPhone($phone)->first();
+    }
+
+    /**
+     * Get query.
+     */
+    public static function byPhone($phone)
+    {
         $phone_numeric = \Helper::phoneToNumeric($phone);
-        return Customer::where('phones', 'LIKE', '%"'.$phone_numeric.'"%')->first();
+        return Customer::where('phones', 'LIKE', '%"'.$phone_numeric.'"%');
     }
 
     /**
