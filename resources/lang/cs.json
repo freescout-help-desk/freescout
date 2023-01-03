@@ -772,5 +772,21 @@
     "Home": "Domů",
     "Other": "Ostatní",
     "Pager": "Pager",
-    "Work": "Pracovní"
+    "Work": "Pracovní",
+    "User Setup Wizard": "Průvodce nastavením uživatele",
+    "User Setup Problem": "Problém s nastavením uživatele",
+    "No invite was found. Please contact your administrator to have a new invite email sent.": "Pozvánka nebyla nalezena. Kontaktujte prosím svého správce, aby vám zaslal nový e-mail s pozvánkou.",
+    "Welcome to :company_name, :first_name!": "Vítejte v :company_name, :first_name!",
+    "Let's setup your profile.": "Pojďme nastavit Váš profil.",
+    "Your Email": "Váš e-mail",
+    "Your password must be at least 8 characters": "Heslo musí mít alespoň 8 znaků",
+    "Profile Image": "Profilový obrázek",
+    "Only visible in :app_name.": "Viditelné pouze v :app_name.",
+    "Image will be re-sized to 200x200. JPG, GIF, PNG accepted.": "Velikost obrázku bude upravena na 200x200. Lze použít JPG, GIF, PNG.",
+    "Conversation Number": "Číslo konverzace",
+    "Equal to conversation ID": "Rovno ID konverzace",
+    "Custom": "Vlastní",
+    "Keep Current": "Ponechat stávající",
+    "View Details": "Zobrazit podrobnosti",
+    "Please specify a recipient.": "Specifikujte prosím příjemce."
 }

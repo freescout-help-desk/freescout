@@ -520,7 +520,8 @@ class FetchEmails extends Command
             // If existing user forwarded customer's email to the mailbox
             // we are creating a new conversation as if it was sent by the customer.
             if ($in_reply_to
-                && $body
+                // We should re-retrive body, as body may contain changed HTML.
+                && ($fwd_body = $html_body ?: $message->getTextBody())
                 //&& preg_match("/^(".implode('|', \MailHelper::$fwd_prefixes)."):(.*)/i", $subject, $m) 
                 // F:, FW:, FWD:, WG:, De:
                 && preg_match("/^[[:alpha:]]{1,3}:(.*)/i", $subject, $m) 
@@ -528,9 +529,7 @@ class FetchEmails extends Command
                 && !$user_id && !$is_reply && !$prev_thread
             ) {
                 // Try to get "From:" from body.
-                preg_match("/[\"'<:]([^\"'<:]+@[^\"'>:]+)[\"'>:]/", $body, $b);
-
-                $original_sender = Email::sanitizeEmail($b[1] ?? '');
+                $original_sender = $this->getOriginalSenderFromFwd($fwd_body);
                 
                 if ($original_sender) {
                     // Check if sender is the existing user.
@@ -661,6 +660,13 @@ class FetchEmails extends Command
             $this->setSeen($message, $mailbox);
             $this->logError(\Helper::formatException($e));
         }
+    }
+
+    // Try to get "From:" from body.
+    public function getOriginalSenderFromFwd($body)
+    {
+        preg_match("/[\"'<:]([^\"'<:]+@[^\"'>:]+)[\"'>:]/", $body, $b);
+        return Email::sanitizeEmail($b[1] ?? '');
     }
 
     public function saveBounceData($new_thread, $bounced_message_id, $from)

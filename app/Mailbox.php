@@ -465,7 +465,7 @@ class Mailbox extends Model
         return $users;
     }
 
-    public function usersAssignable($cache = true)
+    public function usersAssignable($cache = true, $exclude_hidden = true)
     {
         // Exclude hidden admins.
         $mailbox_id = $this->id;
@@ -484,9 +484,11 @@ class Mailbox extends Model
             ->merge($admins)
             ->unique();
 
-        foreach ($users as $i => $user) {
-            if (!empty($user->hide)) {
-                $users->forget($i);
+        if ($exclude_hidden) {
+            foreach ($users as $i => $user) {
+                if (!empty($user->hide)) {
+                    $users->forget($i);
+                }
             }
         }
 
