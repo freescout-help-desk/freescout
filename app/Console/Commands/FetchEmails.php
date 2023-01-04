@@ -520,8 +520,10 @@ class FetchEmails extends Command
             // If existing user forwarded customer's email to the mailbox
             // we are creating a new conversation as if it was sent by the customer.
             if ($in_reply_to
-                // We should re-retrive body, as body may contain changed HTML.
-                && ($fwd_body = $html_body ?: $message->getTextBody())
+                // We should use body here, as entire HTML may contain
+                // email looking things.
+                //&& ($fwd_body = $html_body ?: $message->getTextBody())
+                && $body
                 //&& preg_match("/^(".implode('|', \MailHelper::$fwd_prefixes)."):(.*)/i", $subject, $m) 
                 // F:, FW:, FWD:, WG:, De:
                 && preg_match("/^[[:alpha:]]{1,3}:(.*)/i", $subject, $m) 
@@ -529,7 +531,7 @@ class FetchEmails extends Command
                 && !$user_id && !$is_reply && !$prev_thread
             ) {
                 // Try to get "From:" from body.
-                $original_sender = $this->getOriginalSenderFromFwd($fwd_body);
+                $original_sender = $this->getOriginalSenderFromFwd($body);
                 
                 if ($original_sender) {
                     // Check if sender is the existing user.
