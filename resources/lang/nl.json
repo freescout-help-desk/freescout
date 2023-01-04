@@ -701,7 +701,7 @@
     "Yes": "Ja",
     "You are not authorized to access this resource.": "U bent niet gemachtigd om deze bron te openen.",
     "You are not logged in": "U bent niet ingelogd",
-    "You can adjust alert settings :%a_begin%here:a_end": "U kunt waarschuwingsinstellingen :%a_begin%hier:a_end aanpassen",
+    "You can adjust alert settings :%a_begin%here:%a_end%": "U kunt waarschuwingsinstellingen :%a_begin%hier:%a_end% aanpassen",
     "You can edit this later": "U kunt dit later bewerken",
     "You can read more about fetching emails :%a_begin%here:%a_end%.": "U kunt :%a_begin%hier:%a_end%.meer lezen over het ontvangen van e-mails.",
     "You can read more about sending emails :%a_begin%here:%a_end%.": "U kunt :%a_begin%hier:%a_end%.meer lezen over het verzenden van e-mails.",

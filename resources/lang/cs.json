@@ -193,7 +193,7 @@
     "You can edit this later": "Toto můžete upravit později",
     "You can read more about fetching emails :%a_begin%here:%a_end%.": "Více informací o získávání e-mailů si můžete přečíst :%a_begin%zde:%a_end%.",
     "You can read more about sending emails :%a_begin%here:%a_end%.": "Více informací o odesílání e-mailů najdete :%a_begin%zde:%a_end%.",
-    "You can adjust alert settings :%a_begin%here:a_end": "Nastavení upozornění můžete upravit :%a_begin%zde:a_end",
+    "You can adjust alert settings :%a_begin%here:%a_end%": "Nastavení upozornění můžete upravit :%a_begin%zde:%a_end%",
     "When a customer emails this mailbox, application can send an auto reply to the customer immediately.<br\/><br\/>Only one auto reply is sent per new conversation.": "Když zákazník pošle e-mail do této schránky, aplikace může zákazníkovi okamžitě odeslat automatickou odpověď.<br\/><br\/>Na jednu novou konverzaci se odešle pouze jedna automatická odpověď.",
     "Created At": "Vytvořeno v",
     "Current Password": "Aktuální heslo",

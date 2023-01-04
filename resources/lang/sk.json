@@ -257,7 +257,7 @@
     "Open Conversation": "Otvoriť Konverzáciu",
     "Open this conversation in :app_name": "Otvorte túto konverzáciu v :app_name",
     "System Alert": "Systémové upozornenie",
-    "You can adjust alert settings :%a_begin%here:a_end": "Nastavenia upozornení môžete upraviť :%a_begin%tu:a_end",
+    "You can adjust alert settings :%a_begin%here:%a_end%": "Nastavenia upozornení môžete upraviť :%a_begin%tu:%a_end%",
     "on :date": "dňa :date",
     "Conversation URL": "URL konverzácie",
     "Congratulations! Your application can send emails!": "Gratulujeme! Vaša aplikácia môže odosielať emaily!",

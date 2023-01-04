@@ -196,7 +196,7 @@
     "You can edit this later": "بعدا می توانید این را ویرایش کنید",
     "You can read more about fetching emails :%a_begin%here:%a_end%.": "می توانید درباره بررسی ایمیل ها بیشتر بخوانید:%a_begin% اینجا:%a_end%.",
     "You can read more about sending emails :%a_begin%here:%a_end%.": "می توانید در مورد ارسال ایمیل بیشتر بخوانید:%a_begin% اینجا:%a_end%. ",
-    "You can adjust alert settings :%a_begin%here:a_end": "می توانید تنظیمات هشدار را تنظیم کنید:%a_begin% اینجا:%a_end%.",
+    "You can adjust alert settings :%a_begin%here:%a_end%": "می توانید تنظیمات هشدار را تنظیم کنید:%a_begin% اینجا:%a_end%.",
     "When a customer emails this mailbox, application can send an auto reply to the customer immediately.<br/><br/>Only one auto reply is sent per new conversation.": "وقتی مشتری به این صندوق پست ایمیل می زند، برنامه می تواند بلافاصله یک پاسخ خودکار برای مشتری ارسال کند.<br/><br/> در هر مکالمه جدید فقط یک پاسخ خودکار ارسال می شود.",
     "Created At": "ایجاد شده در",
     "Current Password": "رمز عبور فعلی",

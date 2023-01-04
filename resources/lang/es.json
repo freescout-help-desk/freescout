@@ -682,7 +682,7 @@
     "you": "tú",
     "You are not authorized to access this resource.": "No estás autorizado a este recurso.",
     "You are not logged in": "No te has identificado",
-    "You can adjust alert settings :%a_begin%here:a_end": "Puede ajustar las alertas :%a_begin%here:a_end",
+    "You can adjust alert settings :%a_begin%here:%a_end%": "Puede ajustar las alertas :%a_begin%here:%a_end%",
     "You can edit this later": "Puede editar esto después",
     "You can read more about fetching emails :%a_begin%here:%a_end%.": "Puede leer más acerca del rescate de correos :%a_begin%here:%a_end%",
     "You can read more about sending emails :%a_begin%here:%a_end%.": "Puede leer más acerca de enviar correos :%a_begin%here:%a_end%",
