@@ -746,6 +746,13 @@ class ConversationsController extends Controller
                         if ($conversation->type == Conversation::TYPE_EMAIL && $type == Conversation::TYPE_PHONE) {
                             $conversation->type = $type;
                         }
+                        // Allow to convert phone conversations into email conversations.
+                        if ($conversation->isPhone() && !$is_note && $conversation->customer
+                            && $customer_email = $conversation->customer->getMainEmail()
+                        ) {
+                            $conversation->type = Conversation::TYPE_EMAIL;
+                            $conversation->customer_email = $customer_email;
+                        }
                     }
 
                     if ($attachments_info['has_attachments']) {
