@@ -23,8 +23,8 @@
             <div id="conv-toolbar">
 
                 <div class="conv-actions">
-                    {{-- There should be no spaced between buttons --}}
-                    @if (!$conversation->isPhone())
+                    {{-- There should be no spaces between buttons --}}
+                    @if (!$conversation->isPhone() || ($customer && $customer->getMainEmail()))
                         <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}" aria-label="{{ __("Reply") }}" role="button"></span>
                     @endif
                     <span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" aria-label="{{ __("Note") }}" role="button"></span>

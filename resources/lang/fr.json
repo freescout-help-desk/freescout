@@ -704,7 +704,7 @@
     "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "Cette réponse ira au client. :%switch_start%Passez à une note:switch_end si vous répondez à :user_name.",
     "Try to :%a_start%clear cache:%a_end% to force command to start.": "Essayez de :%a_start%vider le cache:%a_end% pour forcer le démarrage de la commande.",
     "User invite": "Invitation de l'utilisateur",
-    "You can adjust alert settings :%a_begin%here:a_end": "Vous pouvez ajuster les paramètres d'alerte :%a_begin%ici:a_end",
+    "You can adjust alert settings :%a_begin%here:%a_end%": "Vous pouvez ajuster les paramètres d'alerte :%a_begin%ici:%a_end%",
     "Deleting :name will deactivate workflows they are tied to and assign their conversations to:": "La suppression de cet utilisateur désactivera les workflows auxquels il est lié et assignera ses conversations à:",
     "Add a phone number": "Ajouter un téléphone",
     "Company": "Entreprise",

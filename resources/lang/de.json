@@ -196,7 +196,7 @@
     "You can edit this later": "Dies kann später bearbeitet werden",
     "You can read more about fetching emails :%a_begin%here:%a_end%.": "Sie können :%a_begin%hier:%a_end% mehr über das Empfangen von E-Mails lesen.",
     "You can read more about sending emails :%a_begin%here:%a_end%.": "Sie können %a_begin%hier:%a_end% mehr über das Senden von E-Mails lesen.",
-    "You can adjust alert settings :%a_begin%here:a_end": "Sie können die Benachrichtigungs-Einstellungen :%a_begin%hier:%a_end% anpassen",
+    "You can adjust alert settings :%a_begin%here:%a_end%": "Sie können die Benachrichtigungs-Einstellungen :%a_begin%hier:%a_end% anpassen",
     "When a customer emails this mailbox, application can send an auto reply to the customer immediately.<br\/><br\/>Only one auto reply is sent per new conversation.": "Wenn ein Kunde an dieses Postfach schreibt, kann die Anwendung automatisch antworten.<br\/><br\/>Es wird nur eine automatische Antwort pro neuem Gespräch gesendet.",
     "Created At": "Erstellt am",
     "Current Password": "Aktuelles Passwort",
