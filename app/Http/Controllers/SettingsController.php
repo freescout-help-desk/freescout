@@ -344,6 +344,8 @@ class SettingsController extends Controller
         }
 
         // Clear cache if some options have been saved to .env file.
+        // Clearing the cache also restarts queue:work as it also
+        // needs to get new .env parameters.
         if ($cc_required) {
             \Helper::clearCache(['--doNotGenerateVars' => true]);
         }
