@@ -118,6 +118,12 @@ class Kernel extends ConsoleKernel
         // subprocess does not clear the mutex and it stays in the cache until cache:clear is executed.
         // By default, the lock will expire after 24 hours.
 
+        // $schedule->command('queue:work') command below has withoutOverlapping() option,
+        // which works via special mutex stored in the cache preventing several 'queue:work' to work at the same time.
+        // So when the cache is cleared the mutex indicating that the 'queue:work' is running is removed,
+        // and the second 'queue:work' command is launched by cron. When `artisan schedule:run` is executed it sees 
+        // that there are two 'queue:work' processes running and kills them.
+        // After one minute 'queue:work' is executed by cron via `artisan schedule:run` and works in the background.
         if (function_exists('shell_exec')) {
             $running_commands = $this->getRunningQueueProcesses();
 
