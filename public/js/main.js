@@ -547,7 +547,7 @@ function summernoteInit(selector, new_options)
 		disableDragAndDrop: true,
 		toolbar: [
 		    // [groupName, [list of button]]
-		    ['style', ['bold', 'italic', 'underline', 'color', 'lists', 'removeformat', 'link', 'picture', 'codeview']],
+		    ['style', ['attachment', 'bold', 'italic', 'underline', 'color', 'lists', 'removeformat', 'link', 'picture', 'codeview']],
 		    ['actions-select', ['insertvar']]
 		],
 		buttons: buttons,
@@ -1685,13 +1685,16 @@ function generateDummyId()
 }
 
 // Save file uploaded in editor
-function editorSendFile(file, attach, is_conv, editor_id)
+function editorSendFile(file, attach, is_conv, editor_id, container)
 {
 	if (!file || typeof(file.type) == "undefined") {
 		return false;
 	}
+	if (typeof(container) == "undefined") {
+		container = $(".attachments-upload:first");
+	}
 
-	var attachments_container = $(".attachments-upload:first");
+	var attachments_container = container;
 	var attachment_dummy_id = generateDummyId();
 	var route = '';
 
@@ -1719,7 +1722,7 @@ function editorSendFile(file, attach, is_conv, editor_id)
 	// Show loader
 	if (attach) {
 		var attachment_html = '<li class="atachment-upload-'+attachment_dummy_id+'"><img src="'+Vars.public_url+'/img/loader-tiny.gif" width="16" height="16"/> <a href="javascript:void(0);" class="break-words disabled" target="_blank">'+file.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(file.size)+')</span> <i class="glyphicon glyphicon-remove" onclick="removeAttachment(\''+attachment_dummy_id+'\')"></i></li>';
-		$('.attachments-upload:first ul:first').append(attachment_html);
+		attachments_container.children('ul:first').append(attachment_html);
 		attachments_container.show();
 	} else {
 		loaderShow();
@@ -1799,8 +1802,7 @@ function editorSendFile(file, attach, is_conv, editor_id)
 function removeAttachment(attachment_id)
 {
 	$('.atachment-upload-'+attachment_id).remove();
-	// Remove inputs
-	$(".attachments-upload:first :input[value='"+attachment_id+"']");
+	//attachment.parent().parent().children(":input[value='"+attachment_id+"']");
 }
 
 
