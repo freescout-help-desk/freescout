@@ -1900,7 +1900,7 @@ class ConversationsController extends Controller
                 \Session::flash('flash_success_floating', __('Conversations deleted'));
                 break;
 
-            // Delete converations.
+            // Delete converations in a specific folder.
             case 'empty_folder':
                 // At first, check if this user is able to delete conversations
                 if (!auth()->user()->isAdmin() && !auth()->user()->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS)) {
@@ -1908,20 +1908,27 @@ class ConversationsController extends Controller
                     return \Response::json($response);
                 }
 
-                $folder = Folder::find($request->folder_id ?? '');
+                $response = \Eventy::filter('conversations.empty_folder', $response, 
+                    $request->mailbox_id,
+                    $request->folder_id
+                );
 
-                if (!$folder) {
-                    $response['msg'] = __('Folder not found');
-                }
+                if (empty($response['processed'])) {
+                    $folder = Folder::find($request->folder_id ?? '');
 
-                if (!$response['msg']) {
-                    $conversation_ids = Conversation::where('folder_id', $folder->id)->pluck('id')->toArray();
-                    Conversation::deleteConversationsForever($conversation_ids);
-                    if ($folder->mailbox) {
-                        Conversation::clearStarredByUserCache($user->id, $folder->mailbox_id);
-                        $folder->mailbox->updateFoldersCounters();
-                    } else {
-                        $folder->updateCounters();
+                    if (!$folder) {
+                        $response['msg'] = __('Folder not found');
+                    }
+
+                    if (!$response['msg']) {
+                        $conversation_ids = Conversation::where('folder_id', $folder->id)->pluck('id')->toArray();
+                        Conversation::deleteConversationsForever($conversation_ids);
+                        if ($folder->mailbox) {
+                            Conversation::clearStarredByUserCache($user->id, $folder->mailbox_id);
+                            $folder->mailbox->updateFoldersCounters();
+                        } else {
+                            $folder->updateCounters();
+                        }
                     }
                 }
 

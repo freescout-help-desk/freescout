@@ -2398,7 +2398,8 @@ function initMailboxToolbar()
 						fsAjax(
 							{
 								action: 'empty_folder',
-								folder_id: getGlobalAttr('folder_id')
+								folder_id: getGlobalAttr('folder_id'),
+								mailbox_id: getGlobalAttr('mailbox_id')
 							},
 							laroute.route('conversations.ajax'),
 							function(response) {
