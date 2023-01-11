@@ -497,7 +497,7 @@
     "Congratulations! Your application can send emails!": "Gratulacje! Twoja aplikacja może wysyłać e-maile! ",
     "This is a test system mail sent by :app_name. It means that mail settings are fine.": "To jest testowa wiadomość systemowa wysłana przez :app_name. Oznacza to, że ustawienia poczty są w porządku.",
     "System Alert": "Ostrzeżenie Systemowe",
-    "You can adjust alert settings :%a_begin%here:a_end": "Możesz dostosować ustawienia ostrzeżeń :%a_begin%tutaj:a_end ",
+    "You can adjust alert settings :%a_begin%here:%a_end%": "Możesz dostosować ustawienia ostrzeżeń :%a_begin%tutaj:%a_end%",
     "Create a Password": "Utwórz Hasło",
     "Welcome to the team!": "Witaj w zespole!",
     "Someone on your team created an account for you.": "Ktoś z twojego zespołu utworzył dla Ciebie konto.",

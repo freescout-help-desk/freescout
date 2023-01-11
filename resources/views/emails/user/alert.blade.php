@@ -16,6 +16,6 @@
 	</p>
 
 	<p style="color:#72808e;font:400 12px 'Helvetica Neue',Helvetica,Arial,sans-serif;padding:10px 0 0;">
-		{!! __('You can adjust alert settings :%a_begin%here:a_end', ['%a_begin%' => '<a href="'.route('settings', ['section' => 'alerts']).'">', 'a_end' => '<a/>']) !!}
+		{!! __('You can adjust alert settings :%a_begin%here:%a_end%', ['%a_begin%' => '<a href="'.route('settings', ['section' => 'alerts']).'">', '%a_end%' => '<a/>']) !!}
 	</p>
 @endsection

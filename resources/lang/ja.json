@@ -663,7 +663,7 @@
     "View new messages (:count)": "新規メッセージを表示する（ :count ）",
     "Web Server": "Webサーバー",
     "Website": "Webサイト",
-    "You can adjust alert settings :%a_begin%here:a_end": "アラートの設定を調整することができます :%a_begin%here:a_end",
+    "You can adjust alert settings :%a_begin%here:%a_end%": "アラートの設定を調整することができます :%a_begin%here:%a_end%",
     "You can read more about fetching emails :%a_begin%here:%a_end%.": "メールの取得について詳しくは、 :%a_begin%ここ:%a_end%. を確認してください。",
     "You can read more about sending emails :%a_begin%here:%a_end%.": "メールの送信について詳しくは、 :%a_begin%ここ:%a_end%. をご確認してください。",
     "Open Tracking": "開封確認",

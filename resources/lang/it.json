@@ -750,7 +750,7 @@
     "Congratulations! Your mailbox can send emails!": "Congratulazioni! La casella di posta può inviare mail!",
     "This is a test mail sent by :app_name. It means that outgoing email settings of your :mailbox mailbox are fine.": "Questa è una email di prova inviata da :app_name. Significa che le impostazioni della posta in uscita della tua casella di posta :mailbox vanno bene",
     "System Alert": "Avviso di sistema",
-    "You can adjust alert settings :%a_begin%here:a_end": "Puoi gestire le impostazioni degli avvisi :%a_begin%qui:a_end",
+    "You can adjust alert settings :%a_begin%here:%a_end%": "Puoi gestire le impostazioni degli avvisi :%a_begin%qui:%a_end%",
     "Hi :user, an account has been created for you at :app_url": "Ciao :user, un account è stato creato per te a :app_url",
     "Create a Password": "Crea una password",
     "Welcome to the team!": "Benvenuto nel team!",
