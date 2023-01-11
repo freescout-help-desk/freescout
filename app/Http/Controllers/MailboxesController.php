@@ -737,7 +737,7 @@ class MailboxesController extends Controller
                     $response['msg'] = __('Mailbox not found');
                 } elseif (!$user->can('admin', $mailbox)) {
                     $response['msg'] = __('Not enough permissions');
-                } elseif (!Hash::check($request->password, $user->password)) {
+                } elseif (!$user->isDummyPassword() && !Hash::check($request->password ?? '', $user->password)) {
                     $response['msg'] = __('Please double check your password, and try again');
                 }
 
