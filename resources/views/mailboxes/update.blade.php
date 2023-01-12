@@ -205,12 +205,15 @@
 
     <div id="delete_mailbox_modal" class="hidden">
         <div class="text-large">{{ __('Deleting this mailbox will remove all historical data and deactivate related workflows and reports.') }}</div>
-        <div class="text-large margin-top margin-bottom-5">{{ __('Please confirm your password:') }}</div>
-        <div class="row">
-            <div class="col-xs-7">
-                <input type="password" class="form-control delete-mailbox-pass" />
+
+        @if (!Auth::user()->isDummyPassword())
+            <div class="text-large margin-top margin-bottom-5">{{ __('Please confirm your password:') }}</div>
+            <div class="row">
+                <div class="col-xs-7">
+                    <input type="password" class="form-control delete-mailbox-pass" />
+                </div>
             </div>
-        </div>
+        @endif
         <div class="margin-top margin-bottom-5">
             <button class="btn btn-danger button-delete-mailbox" data-loading-text="{{ __('Processing') }}…">{{ __('Delete Mailbox') }}</button>
             <button class="btn btn-link" data-dismiss="modal">{{ __('Cancel') }}</button>

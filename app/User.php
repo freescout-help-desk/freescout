@@ -377,6 +377,21 @@ class User extends Authenticatable
     }
 
     /**
+     * This password indicates that the user has not set the password by himself.
+     */
+    public static function getDummyPassword()
+    {
+        return encrypt('dummy_'.str_random(8));
+    }
+
+    public function isDummyPassword()
+    {
+        $decrypted_password = \Helper::decrypt($this->password);
+        return preg_match("#^dummy_#", $decrypted_password);
+        //return Hash::check($this->getDummyPassword(), $this->password);
+    }
+
+    /**
      * Get URL for editing user.
      *
      * @return string
@@ -654,9 +669,12 @@ class User extends Authenticatable
     /**
      * Generate and set password.
      */
-    public function setPassword()
+    public function setPassword($password = null)
     {
-        $this->password = Hash::make($this->generateRandomPassword());
+        if ($password === null) {
+            $password = $this->generateRandomPassword();
+        }
+        $this->password = Hash::make($password);
     }
 
     /**
@@ -909,7 +927,7 @@ class User extends Authenticatable
         if (isset($data['email'])) {
             $data['email'] = Email::sanitizeEmail($data['email']);
         }
-        if (isset($data['password'])) {
+        if (isset($data['password']) && empty($data['no_password_hashing'])) {
             $data['password'] = \Hash::make($data['password']);
         }
 

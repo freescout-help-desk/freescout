@@ -108,7 +108,12 @@ class MailboxesController extends Controller
             $accessible_route = '';
 
             $mailbox_settings = $user->mailboxSettings($mailbox->id);
-            $access_permissions = json_decode($mailbox_settings->access ?? '');
+            
+            if (!is_array($mailbox_settings->access)) {
+                $access_permissions = json_decode($mailbox_settings->access ?? '');
+            } else {
+                $access_permissions = $mailbox_settings->access;
+            }
 
             if ($access_permissions && is_array($access_permissions)) {
                 foreach ($access_permissions as $perm) {
@@ -737,7 +742,7 @@ class MailboxesController extends Controller
                     $response['msg'] = __('Mailbox not found');
                 } elseif (!$user->can('admin', $mailbox)) {
                     $response['msg'] = __('Not enough permissions');
-                } elseif (!Hash::check($request->password, $user->password)) {
+                } elseif (!$user->isDummyPassword() && !Hash::check($request->password ?? '', $user->password)) {
                     $response['msg'] = __('Please double check your password, and try again');
                 }
 

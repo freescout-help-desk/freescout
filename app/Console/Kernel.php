@@ -22,6 +22,7 @@ class Kernel extends ConsoleKernel
 
     /**
      * Define the application's command schedule.
+     * If --no-interaction flag is set the script will not run 'queue:work' daemon.
      *
      * @param \Illuminate\Console\Scheduling\Schedule $schedule
      *
@@ -113,6 +114,13 @@ class Kernel extends ConsoleKernel
         }
 
         $schedule = \Eventy::filter('schedule', $schedule);
+
+        // If --no-daemonize flag is passed - do not run 'queue:work' daemon.
+        foreach ($_SERVER['argv'] ?? [] as $arg) {
+            if ($arg == '--no-interaction') {
+                return;
+            }
+        }
 
         // Command runs as subprocess and sets cache mutex. If schedule:run command is killed
         // subprocess does not clear the mutex and it stays in the cache until cache:clear is executed.
