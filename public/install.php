@@ -111,7 +111,7 @@ function showError($msg)
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>FreeScout Installer</title>
+        <title>CaniDesk Installer</title>
         <link href="/css/fonts.css" rel="stylesheet"/>
         <link href="/installer/css/fontawesome.css" rel="stylesheet"/>
         <link href="/installer/css/style.min.css" rel="stylesheet"/>
@@ -120,7 +120,7 @@ function showError($msg)
     	<div class="master">
             <div class="box">
                 <div class="header">
-                    <h1 class="header__title">FreeScout Installer</h1>
+                    <h1 class="header__title">CaniDesk Installer</h1>
                 </div>
                 <div class="main">
                 	$msg
@@ -186,7 +186,7 @@ $app_key = getAppKey($root_dir);
 if (empty($app_key)) {
     // Copy .env.example
     if (!file_exists($root_dir.'.env')) {
-        
+
         // Check if .env.example eixists
         if (!file_exists($root_dir.'.env.example')) {
             showError('File <strong>'.$root_dir.'.env.example</strong> not found. Please make sure to copy this file from the application dist.');

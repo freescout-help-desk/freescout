@@ -149,7 +149,7 @@ if (!empty($_POST)) {
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>FreeScout Tools</title>
+        <title>CaniDesk Tools</title>
         <link href="/css/fonts.css" rel="stylesheet"/>
         <link href="/installer/css/fontawesome.css" rel="stylesheet"/>
         <link href="/installer/css/style.min.css" rel="stylesheet"/>
@@ -158,7 +158,7 @@ if (!empty($_POST)) {
     	<div class="master">
             <div class="box">
                 <div class="header">
-                    <h1 class="header__title">FreeScout Tools</h1>
+                    <h1 class="header__title">CaniDesk Tools</h1>
                 </div>
                 <div class="main">
 
