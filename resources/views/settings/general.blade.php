@@ -156,6 +156,8 @@
         </div>
     </div>
 
+    @action('settings.general.append', $settings, $errors)
+
     <div class="form-group margin-top">
         <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">
