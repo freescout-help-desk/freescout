@@ -40,6 +40,9 @@ class CheckRequirements extends Command
         // PHP extensions.
         $php_extensions = \Helper::checkRequiredExtensions();
 
+        $this->comment("PHP Version");
+        $this->line(' '.str_pad(phpversion(), 30, '.'). ' '.(version_compare(phpversion(), config('installer.core.minPhpVersion'), '>=') ? '<fg=green>OK</>' : '<fg=red>NOT FOUND</>'), false);
+
         $this->comment("PHP Extensions");
         $this->output($php_extensions);
 
