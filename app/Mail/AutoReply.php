@@ -44,6 +44,8 @@ class AutoReply extends Mailable
      */
     public function build()
     {
+        \MailHelper::prepareMailable($this);
+        
         $view_params = [];
 
         // Set headers

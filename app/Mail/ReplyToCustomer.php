@@ -64,6 +64,8 @@ class ReplyToCustomer extends Mailable
      */
     public function build()
     {
+        \MailHelper::prepareMailable($this);
+
         // Set Message-ID
         // Settings via $this->addCustomHeaders does not work
         $new_headers = $this->headers;

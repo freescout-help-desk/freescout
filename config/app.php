@@ -368,6 +368,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Custom headers to add to all outgoing emails.
+    | https://github.com/freescout-helpdesk/freescout/issues/2546#issuecomment-1380414908
+    |--------------------------------------------------------------------------
+    */
+    'custom_mail_headers' => env('APP_CUSTOM_MAIL_HEADERS', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
