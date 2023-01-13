@@ -198,9 +198,10 @@ return [
     /*
     |--------------------------------------------------------------------------
     | PHP extensions required by the app
+    | Replaced with installer.requirements.php
     |-------------------------------------------------------------------------
     */
-    'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/ 'json', 'gd', 'fileinfo', 'openssl', 'zip', 'tokenizer', 'curl', 'iconv'/*, 'dom', 'xmlwriter', 'libxml', 'phar'*/],
+    //'required_extensions' => ['mysql / mysqli', 'mbstring', 'xml', 'imap', /*'mcrypt' mcrypt is deprecated*/ 'json', 'gd', 'fileinfo', 'openssl', 'zip', 'tokenizer', 'curl', 'iconv'/*, 'dom', 'xmlwriter', 'libxml', 'phar'*/],
 
     /*
     |--------------------------------------------------------------------------
