@@ -806,6 +806,32 @@ class Mail
         }
     }
 
+    public static function prepareMailable($mailable)
+    {
+        $custom_headers_str = config('app.custom_mail_headers');
+
+        if (empty($custom_headers_str)) {
+            return;
+        }
+
+        $custom_headers = explode(';', $custom_headers_str);
+
+        $mailable->withSwiftMessage(function ($swiftmessage) use ($custom_headers) {
+            $headers = $swiftmessage->getHeaders();
+
+            foreach ($custom_headers as $custom_header) {
+                $header_parts = explode(':', $custom_header);
+
+                $header_name = trim($header_parts[0] ?? '');
+                $header_value = trim($header_parts[1] ?? '');
+                if ($header_name && $header_value) {
+                    $headers->addTextHeader($header_name, $header_value);
+                }
+            }
+            return $swiftmessage;
+        });
+    }
+
     // public static function oauthGetProvider($provider_code, $params)
     // {
     //     $provider = null;

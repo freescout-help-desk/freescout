@@ -4217,7 +4217,7 @@ function hideActionBlocks()
 	$("#conv-subject").removeClass('action-visible');
 }
 
-function getReplyBody(text)
+function getReplyBody()
 {
 	return $("#body").val();
 }

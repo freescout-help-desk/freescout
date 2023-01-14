@@ -17,8 +17,8 @@ class Folder extends Model
     const TYPE_DRAFTS = 30;
     const TYPE_ASSIGNED = 40;
     const TYPE_CLOSED = 60;
+    const TYPE_DELETED = 70;
     const TYPE_SPAM = 80;
-    const TYPE_DELETED = 110;
 
     public static $types = [
         self::TYPE_UNASSIGNED => 'Unassigned',

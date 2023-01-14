@@ -24,6 +24,7 @@ return [
         'key'     => false,
         'publish' => false,
     ],
+    // It must be equal to app.required_extensions
     'requirements' => [
         'php' => [
             'OpenSSL',
@@ -37,7 +38,7 @@ return [
             'fileinfo',
             'ZIP',
             'iconv',
-            //'cURL',
+            'cURL',
         ],
         // 'apache' => [
         //     'mod_rewrite',
