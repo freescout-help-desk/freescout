@@ -72,6 +72,8 @@ FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on 
   * PHP 7.1 - 8.2
   * MySQL 5.0+ / MariaDB 5.0+ / PostgreSQL
 
+There is no minimum system requirements (CPU / RAM) – FreeScout will run on any system.
+
 ## Installation
 
 [Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
