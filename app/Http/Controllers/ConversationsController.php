@@ -1320,7 +1320,11 @@ class ConversationsController extends Controller
                     $to = '';
                     if (empty($request->to) || !is_array($request->to)) {
                         if (!empty($request->to)) {
+                            // New conversation.
                             $to = $request->to;
+                        } elseif (!empty($request->to_email)) {
+                            // Forwarding.
+                            $to = $request->to_email;
                         } else {
                             $to = $conversation->customer_email;
                         }
