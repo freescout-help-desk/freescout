@@ -74,6 +74,12 @@ class ConversationsController extends Controller
         if (Conversation::getFolderParam()) {
             $folder = $conversation->mailbox->folders()->where('folders.id', Conversation::getFolderParam())->first();
 
+            // Pass some params when redirecting.
+            $params = [];
+            if (!empty($request->show_draft)) {
+                $params['show_draft'] = $request->show_draft;
+            }
+
             if ($folder) {
                 // Check if conversation can be located in the passed folder_id
                 if (!$conversation->isInFolderAllowed($folder)) {
@@ -81,7 +87,7 @@ class ConversationsController extends Controller
                     // Without reflash green flash will not be displayed on assignee change
                     \Session::reflash();
                     //$request->session()->reflash();
-                    return redirect()->away($conversation->url($conversation->folder_id));
+                    return redirect()->away($conversation->url($conversation->folder_id, null, $params));
                 }
                 // If conversation assigned to user, select Mine folder instead of Assigned
                 if ($folder->type == Folder::TYPE_ASSIGNED && $conversation->user_id == $user->id) {
@@ -92,7 +98,7 @@ class ConversationsController extends Controller
 
                     \Session::reflash();
 
-                    return redirect()->away($conversation->url($folder->id));
+                    return redirect()->away($conversation->url($folder->id, null, $params));
                 }
             }
         }
