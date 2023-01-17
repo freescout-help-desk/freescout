@@ -70,7 +70,6 @@
     "Settings": "Nastavenia",
     "System Emails": "Systémové Emaily",
     "These settings are used to send system emails (alerts to admin and invitation emails to users).": "Tieto nastavenia sa používajú na odosielanie systémových e-mailov (upozornenia pre správcu a e-maily s pozvánkami pre používateľov).",
-    "It is recommended to use :%tag_begin%PHP's mail() function:%tag_end%.": "Odporúčame použiť :%tag_begin%PHP mail() funkciu:%tag_end%.",
     "If you want to send system emails via webmail providers (Gmail, Yahoo, etc), use only SMTP method and make sure that SMTP username is equal to 'Mail From', otherwise webmail provider won't send emails.": "Ak chcete posielať systémové e-maily prostredníctvom poskytovateľov webovej pošty (Gmail, Yahoo atď.), použite iba metódu SMTP a uistite sa, že používateľské meno SMTP sa rovná 'Mail From', inak poskytovateľ webovej pošty nebude odosielať e-maily.",
     "Mail From": "Mail Od",
     "Send Method": "Metóda Odoslania",

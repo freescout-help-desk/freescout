@@ -693,7 +693,6 @@
     "Hide from Assign list": "Masquer de la liste Assigné",
     "IMAP Folder To Save Outgoing Replies": "Dossier IMAP pour enregistrer les réponses sortantes",
     "Include the last message": "Inclure le dernier message",
-    "It is recommended to use :%tag_begin%PHP's mail() function:%tag_end%.": "Il est recommandé d'utiliser :%tag_begin%la fonction mail() de PHP:%tag_end%.",
     "Logout Users": "Déconnecter les utilisateurs",
     "Name that will appear in the <strong>From<\/strong> field when a customer views your email.": "Nom qui apparaîtra dans le champ <strong>De<\/strong> lorsqu'un client consulte votre e-mail.",
     "Prevent user from logging in": "Refuser la connexion de l'utilisateur",

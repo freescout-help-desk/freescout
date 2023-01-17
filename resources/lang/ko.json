@@ -696,7 +696,6 @@
     "From name": "이름에서",
     "From Name": "이름에서",
     "Inactive": "비활성",
-    "It is recommended to use :%tag_begin%PHP's mail() function:%tag_end%.": ":%tag_begin%PHP의 메일() 함수:%tag_end%사용을 권장합니다.",
     "License key has not been activated yet": "라이선스 키가 아직 활성되지 않았습니다.",
     "License successfully activated!": "라이선스가 활성되었습니다!",
     "License successfully DEactivated!": "라이선스가 사용 중지 되었습니다!",

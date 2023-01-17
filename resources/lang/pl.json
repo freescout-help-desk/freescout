@@ -162,7 +162,6 @@
     "Comma separated emails of extra recipients.": "Oddzielone przecinkami e-maile dodatkowych odbiorców.",
     "System Emails": "Systemowe Wiadomości E-mail",
     "These settings are used to send system emails (alerts to admin and invitation emails to users).": "Te ustawienia są używane do wysyłania systemowych e-maili (ostrzeżenia dla administratora i e-maile z zaproszeniami do użytkowników).",
-    "It is recommended to use :%tag_begin%PHP's mail() function:%tag_end%.": "Zalecane jest użycie :%tag_begin%funkcji PHP – mail():%tag_end%.",
     "If you want to send system emails via webmail providers (Gmail, Yahoo, etc), use only SMTP method and make sure that SMTP username is equal to 'Mail From', otherwise webmail provider won't send emails.": "Jeśli chcesz wysyłać systemowe wiadomości e-mail za pośrednictwem dostawców poczty internetowej (Gmail, Yahoo itp.), Użyj tylko metody SMTP i upewnij się, że nazwa użytkownika SMTP jest równa „Poczta od”, w przeciwnym razie dostawca poczty internetowej nie wyśle ​​wiadomości e-mail.",
     "Mail From": "Nadawca",
     "Send Method": "Metoda Wysyłania",
