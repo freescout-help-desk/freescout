@@ -62,6 +62,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('freescout:clean-send-log')
             ->monthly();
 
+        $schedule->command('freescout:clean-tmp')
+            ->weekly();
+
         // Logs monitoring.
         $alert_logs_period = config('app.alert_logs_period');
         if (config('app.alert_logs') && $alert_logs_period) {
