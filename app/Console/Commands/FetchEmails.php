@@ -87,10 +87,22 @@ class FetchEmails extends Command
             $this->mailboxes = Mailbox::whereIn('in_protocol', array_keys(Mailbox::$in_protocols))->get();
         }
 
+        // https://github.com/freescout-helpdesk/freescout/issues/2563
+        // Add small delay between connections to avoid blocking by mail servers,
+        // especially when there many mailboxes.
+        // Microseconds: 1 second = 1 000 000 microseconds.
+        $sleep = 20000;
+
         foreach ($this->mailboxes as $mailbox) {
             if (!$mailbox->isInActive()) {
                 continue;
             }
+
+            $sleep += 20000;
+            if ($sleep > 500000) {
+                $sleep = 500000;
+            }
+
             $this->info('['.date('Y-m-d H:i:s').'] Mailbox: '.$mailbox->name);
 
             $this->mailbox = $mailbox;
@@ -101,6 +113,8 @@ class FetchEmails extends Command
                 $successfully = false;
                 $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
             }
+
+            usleep($sleep);
         }
 
         // Import emails sent to several mailboxes at once.

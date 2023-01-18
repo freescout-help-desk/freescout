@@ -13,7 +13,7 @@ class MoveUserPermissionsToEnv extends Migration
      */
     public function up()
     {
-        $permissions = Option::get('user_permissions');
+        $permissions = \Option::get('user_permissions');
 
         if (!empty($permissions)) {
             $permissions_encoded = base64_encode(json_encode($permissions));

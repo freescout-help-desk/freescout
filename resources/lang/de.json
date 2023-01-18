@@ -347,7 +347,6 @@
     "Invite email has been resent": "Einladungsemail wurde erneut gesendet",
     "Invite email has been sent": "Einladungsemail wurde gesendet",
     "Invited": "Eingeladen",
-    "It is recommended to use :%tag_begin%PHP's mail() function:%tag_end%.": "Es wird empfohlen :%tag_begin%PHP's mail() function:%tag_end% zu benutzen.",
     "Job Title": "Aufgabenname",
     "Just now": "Jetzt gerade",
     "Keyboard Shortcuts": "Tastenkürzel",

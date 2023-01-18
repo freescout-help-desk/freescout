@@ -696,7 +696,6 @@
     "From name": "名前から",
     "From Name": "名前から",
     "Inactive": "非アクティブ",
-    "It is recommended to use :%tag_begin%PHP's mail() function:%tag_end%.": ":%tag_begin%PHPのmail()関数:%tag_end%を使用することをお勧めします。",
     "License key has not been activated yet": "ライセンスキーはまだ有効化されていません",
     "License successfully activated!": "ライセンスが正常に有効化されました！",
     "License successfully DEactivated!": "ライセンスが正常に無効化されました！",

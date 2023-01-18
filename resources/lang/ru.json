@@ -418,7 +418,6 @@
     "Default Language": "Язык по умолчанию",
     "System Emails": "Системные письма",
     "These settings are used to send system emails (alerts to admin and invitation emails to users).": "Эти настройки используются для отправки системных писем (оповещений администраторам и приглашений агентам).",
-    "It is recommended to use :%tag_begin%PHP's mail() function:%tag_end%.": "Рекоммендуется использовать функцию :%tag_begin%PHP's mail():%tag_end%.",
     "If you want to send system emails via webmail providers (Gmail, Yahoo, etc), use only SMTP method and make sure that SMTP username is equal to 'Mail From', otherwise webmail provider won't send emails.": "Если вы хотите отправлять системные электронные письма через провайдеров веб-почты (Яндекс, Gmail и т. д.), используйте только SMTP-метод и убедитесь, что имя пользователя SMTP идентично «Адресу отправителя». В противном случае провайдер веб-почты не будет отправлять электронные письма.",
     "Mail From": "Адрес отправителя",
     "Send Method": "Метод отправки",

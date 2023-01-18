@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // Keep in mind that this function is also called on clearing cache.
-        
+
         // Remove failed jobs
         $schedule->command('queue:flush')
             ->weekly();
@@ -62,6 +62,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('freescout:clean-send-log')
             ->monthly();
 
+        $schedule->command('freescout:clean-tmp')
+            ->weekly();
+
         // Logs monitoring.
         $alert_logs_period = config('app.alert_logs_period');
         if (config('app.alert_logs') && $alert_logs_period) {
@@ -89,7 +92,12 @@ class Kernel extends ConsoleKernel
 
         // Fetch emails from mailboxes
         $fetch_command = $schedule->command('freescout:fetch-emails')
-            ->withoutOverlapping()
+            // withoutOverlapping() option creates a mutex in the cache 
+            // which by default expires in 24 hours.
+            // So we are passing an 'expiresAt' parameter to withoutOverlapping() to
+            // prevent fetching from not being executed when fetching command by some reason
+            // does not remove the mutex from the cache. 
+            ->withoutOverlapping($expiresAt = 60 /* minutes */)
             ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
 
         switch (config('app.fetch_schedule')) {
@@ -126,6 +134,10 @@ class Kernel extends ConsoleKernel
         // subprocess does not clear the mutex and it stays in the cache until cache:clear is executed.
         // By default, the lock will expire after 24 hours.
 
+        $queue_work_params = Config('app.queue_work_params');
+        // Add identifier to avoid conflicts with other FreeScout instances on the same server.
+        $queue_work_params['--queue'] .= ','.\Helper::getWorkerIdentifier();
+
         // $schedule->command('queue:work') command below has withoutOverlapping() option,
         // which works via special mutex stored in the cache preventing several 'queue:work' to work at the same time.
         // So when the cache is cleared the mutex indicating that the 'queue:work' is running is removed,
@@ -156,12 +168,24 @@ class Kernel extends ConsoleKernel
                     // }
                     shell_exec('kill '.implode(' | kill ', $worker_pids));
                 }
+            } elseif (count($running_commands) == 0) {
+                // Make sure 'ps' command actually works.
+                $schedule_pids = $this->getRunningQueueProcesses('schedule:run');
+
+                if (count($schedule_pids)) {
+                    // Previous queue:work may have been killed or errored and did not remove the mutex.
+                    // So here we are forcefully removing the mutex.
+                    $mutex_name = $schedule->command('queue:work', $queue_work_params)
+                        ->skip(function () {
+                            return true;
+                        })
+                        ->mutexName();
+                    if (\Cache::get($mutex_name)) {
+                        \Cache::forget($mutex_name);
+                    }
+                }
             }
         }
-
-        $queue_work_params = Config('app.queue_work_params');
-        // Add identifier to avoid conflicts with other FreeScout instances on the same server.
-        $queue_work_params['--queue'] .= ','.\Helper::getWorkerIdentifier();
 
         $schedule->command('queue:work', $queue_work_params)
             ->everyMinute()
@@ -174,12 +198,16 @@ class Kernel extends ConsoleKernel
      * 
      * @return [type] [description]
      */
-    protected function getRunningQueueProcesses()
+    protected function getRunningQueueProcesses($search = '')
     {
+        if (empty($search)) {
+            $search = \Helper::getWorkerIdentifier();
+        }
+
         $pids = [];
 
         try {
-            $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '".\Helper::getWorkerIdentifier()."'"));
+            $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '".$search."'"));
             foreach ($processes as $process) {
                 preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
                 if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {

@@ -1439,14 +1439,21 @@ function showReplyForm(data, scroll_offset)
 				// Display body value in editor
 				$('#body').summernote("code", data[field]);
 			}
+			// Happens when opening draft or after Undo
 			if (field == 'to_email' || field == 'cc' || field == 'bcc') {
 				if (data && typeof(data.to) != "undefined") {
+					// Clean previous values.
+					// Also allows to avoid duplicating emails - for example
+					// when restoring  a draft in a conversation with CC.
+					cleanSelect2($("#"+field));
 					for (var i in data[field]) {
+						var email = data[field][i];
 						addSelect2Option($("#"+field), {
-							id: data[field][i], text: data[field][i]
+							id: email, text: email
 						});
 					}
 				} else {
+					// It's not clear when this is supposed to happen.
 					$("#"+field).children('option:first').removeAttr('selected');
 				}
 			}
@@ -1474,6 +1481,12 @@ function showReplyForm(data, scroll_offset)
 		scroll_offset = 0;
 	}
 	maybeScrollToReplyBlock(scroll_offset);
+}
+
+function cleanSelect2(select)
+{
+	select.children('option').remove();
+	select.val('').trigger('change');
 }
 
 // Add an option to select2

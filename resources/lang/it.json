@@ -334,7 +334,6 @@
     "Settings": "Impostazioni",
     "System Emails": "Email di sistema",
     "These settings are used to send system emails (alerts to admin and invitation emails to users).": "Queste impostazioni vengono utilizzate per inviare email di sistema (avvisi all'amministratore ed email di invito agli utenti).",
-    "It is recommended to use :%tag_begin%PHP's mail() function:%tag_end%.": "L'uso della funzione PHP :%tag_begin%mail():%tag_end% è raccomandato",
     "If you want to send system emails via webmail providers (Gmail, Yahoo, etc), use only SMTP method and make sure that SMTP username is equal to 'Mail From', otherwise webmail provider won't send emails.": "Se desideri inviare email di sistema tramite provider webmail (Gmail, Yahoo, ecc.), utilizza solo il metodo SMTP e assicurati che il nome utente SMTP sia uguale a \"Da\", altrimenti il ​​provider webmail non invierà email",
     "Mail From": "Da",
     "Send Method": "Metodo di invio",

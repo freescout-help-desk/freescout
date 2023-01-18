@@ -79,7 +79,8 @@
     "autoload": {
         "classmap": [
             "database/seeds",
-            "database/factories"
+            "database/factories",
+            "overrides/natxet/cssmin/src/"
         ],
         "psr-0": {
             "Swift_": "overrides/swiftmailer/swiftmailer/lib/classes",
@@ -254,7 +255,8 @@
             "vendor/symfony/finder/Iterator/SortableIterator.php",
             "vendor/symfony/css-selector/XPath/Extension/NodeExtension.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform/NameSync.php",
-            "vendor/javoscript/laravel-macroable-models/src/MacroableModels.php"
+            "vendor/javoscript/laravel-macroable-models/src/MacroableModels.php",
+            "vendor/natxet/cssmin/src/CssMin.php"
         ]
     },
     "autoload-dev": {
