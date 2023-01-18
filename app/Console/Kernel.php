@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // Keep in mind that this function is also called on clearing cache.
-        
+
         // Remove failed jobs
         $schedule->command('queue:flush')
             ->weekly();
@@ -169,16 +169,21 @@ class Kernel extends ConsoleKernel
                     shell_exec('kill '.implode(' | kill ', $worker_pids));
                 }
             } elseif (count($running_commands) == 0) {
-                // Previous queue:work may have been killed or errored and did not remove the mutex.
-                // So here we are forcefully removing the mutex.
-                $mutex_name = $schedule->command('queue:work', $queue_work_params)
-                    ->skip(function () {
-                        return true;
-                    })
-                    ->mutexName();
+                // Make sure 'ps' command actually works.
+                $schedule_pids = $this->getRunningQueueProcesses('schedule:run');
 
-                //echo \Cache::get($mutex_name);
-                \Cache::forget($mutex_name);
+                if (count($schedule_pids)) {
+                    // Previous queue:work may have been killed or errored and did not remove the mutex.
+                    // So here we are forcefully removing the mutex.
+                    $mutex_name = $schedule->command('queue:work', $queue_work_params)
+                        ->skip(function () {
+                            return true;
+                        })
+                        ->mutexName();
+                    if (\Cache::get($mutex_name)) {
+                        \Cache::forget($mutex_name);
+                    }
+                }
             }
         }
 
@@ -193,12 +198,16 @@ class Kernel extends ConsoleKernel
      * 
      * @return [type] [description]
      */
-    protected function getRunningQueueProcesses()
+    protected function getRunningQueueProcesses($search = '')
     {
+        if (empty($search)) {
+            $search = \Helper::getWorkerIdentifier();
+        }
+
         $pids = [];
 
         try {
-            $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '".\Helper::getWorkerIdentifier()."'"));
+            $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '".$search."'"));
             foreach ($processes as $process) {
                 preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
                 if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {
