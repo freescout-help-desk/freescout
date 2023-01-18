@@ -134,6 +134,10 @@ class Kernel extends ConsoleKernel
         // subprocess does not clear the mutex and it stays in the cache until cache:clear is executed.
         // By default, the lock will expire after 24 hours.
 
+        $queue_work_params = Config('app.queue_work_params');
+        // Add identifier to avoid conflicts with other FreeScout instances on the same server.
+        $queue_work_params['--queue'] .= ','.\Helper::getWorkerIdentifier();
+
         // $schedule->command('queue:work') command below has withoutOverlapping() option,
         // which works via special mutex stored in the cache preventing several 'queue:work' to work at the same time.
         // So when the cache is cleared the mutex indicating that the 'queue:work' is running is removed,
@@ -167,12 +171,16 @@ class Kernel extends ConsoleKernel
             } elseif (count($running_commands) == 0) {
                 // Previous queue:work may have been killed or errored and did not remove the mutex.
                 // So here we are forcefully removing the mutex.
+                $mutex_name = $schedule->command('queue:work', $queue_work_params)
+                    ->skip(function () {
+                        return true;
+                    })
+                    ->mutexName();
+
+                //echo \Cache::get($mutex_name);
+                \Cache::forget($mutex_name);
             }
         }
-
-        $queue_work_params = Config('app.queue_work_params');
-        // Add identifier to avoid conflicts with other FreeScout instances on the same server.
-        $queue_work_params['--queue'] .= ','.\Helper::getWorkerIdentifier();
 
         $schedule->command('queue:work', $queue_work_params)
             ->everyMinute()
