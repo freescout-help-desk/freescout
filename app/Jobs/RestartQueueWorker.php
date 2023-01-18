@@ -34,6 +34,8 @@ class RestartQueueWorker implements ShouldQueue
     public function handle()
     {
         $this->delete();
+        // register_shutdown_function() is called on exit(),
+        // so commands mutexes are removed.
         exit();
     }
 }

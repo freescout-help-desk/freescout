@@ -92,7 +92,12 @@ class Kernel extends ConsoleKernel
 
         // Fetch emails from mailboxes
         $fetch_command = $schedule->command('freescout:fetch-emails')
-            ->withoutOverlapping()
+            // withoutOverlapping() option creates a mutex in the cache 
+            // which by default expires in 24 hours.
+            // So we are passing an 'expiresAt' parameter to withoutOverlapping() to
+            // prevent fetching from not being executed when fetching command by some reason
+            // does not remove the mutex from the cache. 
+            ->withoutOverlapping($expiresAt = 60 /* minutes */)
             ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
 
         switch (config('app.fetch_schedule')) {
@@ -159,6 +164,9 @@ class Kernel extends ConsoleKernel
                     // }
                     shell_exec('kill '.implode(' | kill ', $worker_pids));
                 }
+            } elseif (count($running_commands) == 0) {
+                // Previous queue:work may have been killed or errored and did not remove the mutex.
+                // So here we are forcefully removing the mutex.
             }
         }
 
