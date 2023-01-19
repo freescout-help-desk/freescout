@@ -1258,9 +1258,11 @@ class Helper
 
         $html = \Purifier::clean($html);
 
+        // It's not clear why it was needed to remove spaces after tags.
+        // 
         // Remove all kinds of spaces after tags
         // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
-        $html = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $html);
+        //$html = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $html);
 
         return $html;
     }
