@@ -1276,7 +1276,7 @@ class Customer extends Model
 
         $dest_dir = pathinfo($dest_path, PATHINFO_DIRNAME);
         if (!file_exists($dest_dir)) {
-            \File::makeDirectory($dest_dir, 0755);
+            \File::makeDirectory($dest_dir, \Helper::DIR_PERMISSIONS);
         }
 
         // Remove current photo

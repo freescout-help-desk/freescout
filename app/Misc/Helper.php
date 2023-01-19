@@ -31,6 +31,11 @@ class Helper
     const IN_LIMIT = 1000;
 
     /**
+     * Permissions for directories.
+     */
+    const DIR_PERMISSIONS = 0755;
+
+    /**
      * Stores list of global entities (for caching).
      */
     public static $global_entities = [];
