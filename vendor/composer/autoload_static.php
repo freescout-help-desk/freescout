@@ -9,16 +9,16 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '023d27dca8066ef29e6739335ea73bad' => __DIR__ . '/..' . '/symfony/polyfill-php70/bootstrap.php',
-        '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
-        '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
-        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
+        '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
-        'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
-        '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
+        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
+        '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+        'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
+        '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         'e91d0dc994644828154ae2387ede1ca8' => __DIR__ . '/..' . '/spatie/string/src/string_functions.php',
         'cb61d74ad51d00867155534456b38b23' => __DIR__ . '/..' . '/mews/purifier/src/helpers.php',
@@ -80,6 +80,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'RachidLaasri\\LaravelInstaller\\Providers\\' => 40,
             'RachidLaasri\\LaravelInstaller\\Middleware\\' => 41,
             'RachidLaasri\\LaravelInstaller\\Helpers\\' => 38,
+            'RachidLaasri\\LaravelInstaller\\Events\\' => 37,
             'RachidLaasri\\LaravelInstaller\\Controllers\\' => 42,
             'RachidLaasri\\LaravelInstaller\\' => 30,
         ),
@@ -343,6 +344,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'RachidLaasri\\LaravelInstaller\\Helpers\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/rachidlaasri/laravel-installer/src/Helpers',
+        ),
+        'RachidLaasri\\LaravelInstaller\\Events\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/rachidlaasri/laravel-installer/src/Events',
         ),
         'RachidLaasri\\LaravelInstaller\\Controllers\\' => 
         array (
@@ -3084,7 +3089,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'RachidLaasri\\LaravelInstaller\\Controllers\\RequirementsController' => __DIR__ . '/..' . '/rachidlaasri/laravel-installer/src/Controllers/RequirementsController.php',
         'RachidLaasri\\LaravelInstaller\\Controllers\\UpdateController' => __DIR__ . '/..' . '/rachidlaasri/laravel-installer/src/Controllers/UpdateController.php',
         'RachidLaasri\\LaravelInstaller\\Controllers\\WelcomeController' => __DIR__ . '/..' . '/rachidlaasri/laravel-installer/src/Controllers/WelcomeController.php',
-        'RachidLaasri\\LaravelInstaller\\Events\\EnvironmentSaved' => __DIR__ . '/..' . '/rachidlaasri/laravel-installer/src/Events/EnvironmentSaved.php',
+        'RachidLaasri\\LaravelInstaller\\Events\\EnvironmentSaved' => __DIR__ . '/../..' . '/overrides/rachidlaasri/laravel-installer/src/Events/EnvironmentSaved.php',
         'RachidLaasri\\LaravelInstaller\\Events\\LaravelInstallerFinished' => __DIR__ . '/..' . '/rachidlaasri/laravel-installer/src/Events/LaravelInstallerFinished.php',
         'RachidLaasri\\LaravelInstaller\\Helpers\\DatabaseManager' => __DIR__ . '/../..' . '/overrides/rachidlaasri/laravel-installer/src/Helpers/DatabaseManager.php',
         'RachidLaasri\\LaravelInstaller\\Helpers\\EnvironmentManager' => __DIR__ . '/../..' . '/overrides/rachidlaasri/laravel-installer/src/Helpers/EnvironmentManager.php',
