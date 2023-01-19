@@ -246,7 +246,7 @@
             "vendor/spatie/string/src/Str.php",
             "vendor/guzzlehttp/guzzle/src/Client.php",
             "vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php",
-            "vendor/guzzlehttp/guzzle/src/psr7/src/LazyOpenStream.php",
+            "vendor/guzzlehttp/psr7/src/LazyOpenStream.php",
             "vendor/ramsey/uuid/src/Uuid.php",
             "vendor/laravel/framework/src/Illuminate/Routing/Router.php",
             "vendor/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/LaravelLogViewer.php",
