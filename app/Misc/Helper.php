@@ -1481,7 +1481,7 @@ class Helper
                 return false;
             }
 
-            $temp_file = tempnam(sys_get_temp_dir(), 'fs');
+            $temp_file = self::getTempFileName();
 
             \File::put($temp_file, $contents);
 
@@ -1493,6 +1493,21 @@ class Helper
 
             return false;
         }
+    }
+
+    public static function getTempDir()
+    {
+        return sys_get_temp_dir() ?: '/tmp';
+    }
+
+    public static function getTempFileName()
+    {
+        return tempnam(self::getTempDir(), self::getTempFilePrefix());
+    }
+
+    public static function getTempFilePrefix()
+    {
+        return 'fs-'.substr(md5(config('app.key').'temp_prefix'), 0, 8).'_';
     }
 
     public static function downloadRemoteFileAsTmpFile($uri)

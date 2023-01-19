@@ -1371,7 +1371,7 @@ class Customer extends Model
             return false;
         }
 
-        $temp_file = tempnam(sys_get_temp_dir(), 'photo');
+        $temp_file = \Helper::getTempFileName();
 
         \File::put($temp_file, $image_data);
 
