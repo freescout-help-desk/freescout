@@ -20,7 +20,7 @@ class CleanTmp extends Command
      *
      * @var string
      */
-    protected $description = 'Remove from /tmp folder files older than 1 week to avoid "No space left on device"';
+    protected $description = 'Remove from system temp folder FreeScout files older than 1 week to avoid "No space left on device"';
 
     /**
      * Create a new command instance.
@@ -39,7 +39,7 @@ class CleanTmp extends Command
      */
     public function handle()
     {
-        shell_exec('find /tmp -mtime +7 -type f -exec rm -r -f {} \;');
+        shell_exec('find '.\Helper::getTempDir().' -mtime +7 -type f -name '.\Helper::getTempFilePrefix().'* -exec rm -r -f {} \;');
 
         $this->comment("Done");
     }

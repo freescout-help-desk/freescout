@@ -96,6 +96,7 @@
             "RachidLaasri\\LaravelInstaller\\Middleware\\": "overrides/rachidlaasri/laravel-installer/src/Middleware/",
             "RachidLaasri\\LaravelInstaller\\Controllers\\": "overrides/rachidlaasri/laravel-installer/src/Controllers/",
             "RachidLaasri\\LaravelInstaller\\Providers\\": "overrides/rachidlaasri/laravel-installer/src/Providers/",
+            "RachidLaasri\\LaravelInstaller\\Events\\": "overrides/rachidlaasri/laravel-installer/src/Events/",
             "Nwidart\\Modules\\": "overrides/nwidart/laravel-modules/src/",
             "Codedge\\Updater\\SourceRepositoryTypes\\": "overrides/codedge/laravel-selfupdater/src/SourceRepositoryTypes/",
             "Barryvdh\\TranslationManager\\": "overrides/barryvdh/laravel-translation-manager/src/",
@@ -161,6 +162,7 @@
             "vendor/rachidlaasri/laravel-installer/src/Middleware/canInstall.php",
             "vendor/rachidlaasri/laravel-installer/src/Controllers/EnvironmentController.php",
             "vendor/rachidlaasri/laravel-installer/src/Controllers/FinalController.php",
+            "vendor/rachidlaasri/laravel-installer/src/Events/EnvironmentSaved.php",
             "vendor/nwidart/laravel-modules/src/Module.php",
             "vendor/nwidart/laravel-modules/src/Repository.php",
             "vendor/nwidart/laravel-modules/src/Json.php",
@@ -246,7 +248,7 @@
             "vendor/spatie/string/src/Str.php",
             "vendor/guzzlehttp/guzzle/src/Client.php",
             "vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php",
-            "vendor/guzzlehttp/guzzle/src/psr7/src/LazyOpenStream.php",
+            "vendor/guzzlehttp/psr7/src/LazyOpenStream.php",
             "vendor/ramsey/uuid/src/Uuid.php",
             "vendor/laravel/framework/src/Illuminate/Routing/Router.php",
             "vendor/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/LaravelLogViewer.php",
@@ -280,6 +282,7 @@
         "post-autoload-dump": [
             "@php -r \"file_put_contents('vendor/composer/ClassLoader.php', preg_replace('/function includeFile.*/s', base64_decode('DQpmdW5jdGlvbiBpbmNsdWRlRmlsZSgkZmlsZSkNCnsNCiAgICB0cnkgew0KICAgICAgICBpbmNsdWRlICRmaWxlOw0KICAgIH0gY2F0Y2ggKFxFeGNlcHRpb24gJGUpIHsNCiAgICAgICAgJG1zZyA9ICRlLT5nZXRNZXNzYWdlKCk7DQogICAgICAgIGlmIChzdHJzdHIoJG1zZywgJ05vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnknKSkgew0KICAgICAgICAgICAgaWYgKHN0cnN0cigkbXNnLCAnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJykpIHsNCiAgICAgICAgICAgICAgICAkbmV3X2ZpbGUgPSBzdHJfcmVwbGFjZSgnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJywgJy92ZW5kb3IvY29tcG9zZXIvLi4vJywgJGZpbGUpOw0KICAgICAgICAgICAgfSBlbHNlIHsNCiAgICAgICAgICAgICAgICAkbmV3X2ZpbGUgPSBzdHJfcmVwbGFjZSgnL3ZlbmRvci9jb21wb3Nlci8uLi8nLCAnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJywgJGZpbGUpOw0KICAgICAgICAgICAgfQ0KICAgICAgICAgICAgaW5jbHVkZSAkbmV3X2ZpbGU7DQogICAgICAgIH0gZWxzZSB7DQogICAgICAgICAgICB0aHJvdyAkZTsNCiAgICAgICAgfQ0KICAgIH0NCn0='), file_get_contents('vendor/composer/ClassLoader.php')));\"",
             "@php -r \"!error_reporting(0) || array_map('unlink', json_decode(file_get_contents('composer.json'), true)['autoload']['exclude-from-classmap']);\"",
+            "@php -r \"@mkdir('vendor/natxet/cssmin/src', 775);\"",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover"
         ]

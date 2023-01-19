@@ -31,6 +31,11 @@ class Helper
     const IN_LIMIT = 1000;
 
     /**
+     * Permissions for directories.
+     */
+    const DIR_PERMISSIONS = 0755;
+
+    /**
      * Stores list of global entities (for caching).
      */
     public static $global_entities = [];
@@ -949,7 +954,12 @@ class Helper
 
         // User may add an extra translation to the app on Translate page,
         // we should allow user to see his custom translations.
-        $custom_locales = \Helper::getCustomLocales();
+        $custom_locales = [];
+        try {
+            $custom_locales = \Helper::getCustomLocales();
+        } catch (\Exception $e) {
+            // During installation it throws an error as there is no tables yet.
+        }
 
         if (count($custom_locales)) {
             $app_locales = array_unique(array_merge($app_locales, $custom_locales));
@@ -1258,9 +1268,11 @@ class Helper
 
         $html = \Purifier::clean($html);
 
+        // It's not clear why it was needed to remove spaces after tags.
+        // 
         // Remove all kinds of spaces after tags
         // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
-        $html = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $html);
+        //$html = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $html);
 
         return $html;
     }
@@ -1481,7 +1493,7 @@ class Helper
                 return false;
             }
 
-            $temp_file = tempnam(sys_get_temp_dir(), 'fs');
+            $temp_file = self::getTempFileName();
 
             \File::put($temp_file, $contents);
 
@@ -1493,6 +1505,21 @@ class Helper
 
             return false;
         }
+    }
+
+    public static function getTempDir()
+    {
+        return sys_get_temp_dir() ?: '/tmp';
+    }
+
+    public static function getTempFileName()
+    {
+        return tempnam(self::getTempDir(), self::getTempFilePrefix());
+    }
+
+    public static function getTempFilePrefix()
+    {
+        return 'fs-'.substr(md5(config('app.key').'temp_prefix'), 0, 8).'_';
     }
 
     public static function downloadRemoteFileAsTmpFile($uri)
@@ -1669,5 +1696,10 @@ class Helper
             'fpassthru (PHP)' => function_exists('fpassthru'),
             'ps (shell)' => function_exists('shell_exec') ? shell_exec('ps') : false,
         ];
+    }
+
+    public static function isInstalled()
+    {
+        return file_exists(storage_path().DIRECTORY_SEPARATOR.'.installed');
     }
 }

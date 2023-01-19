@@ -54,6 +54,9 @@ class ClearCache extends Command
         if (!$this->option('doNotGenerateVars')) {
             $this->call('freescout:generate-vars');
         }
-        \App\Jobs\RestartQueueWorker::dispatch()->onQueue('default');
+        // This should not be done during installation.
+        if (\Helper::isInstalled()) {
+            \App\Jobs\RestartQueueWorker::dispatch()->onQueue('default');
+        }
     }
 }
