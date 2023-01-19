@@ -3465,7 +3465,17 @@ function polycastInit()
 		    if (typeof(data.folders_html) != "undefined" && data.folders_html) {
 		    	var folder_id = el_folders.children('li.active:first').attr('data-folder_id');
 		    	el_folders.html(data.folders_html);
-		    	el_folders.children('li[data-folder_id="'+folder_id+'"]').addClass('active');
+		    	var active_folder = el_folders.children('li[data-folder_id="'+folder_id+'"]');
+		    	active_folder.addClass('active');
+
+		    	// Update number of active conversations in the page title
+		    	var new_count = parseInt(active_folder.attr('data-active-count'));
+		    	if (!isNaN(new_count)) {
+		    		new_count = '('+new_count+') ';
+		    	} else {
+		    		new_count = '';
+		    	}
+		    	document.title = new_count+document.title.replace(/^\(\d+\) /, "");
 		    }
 
 		    // If there are no conversations selected refresh conversations table
