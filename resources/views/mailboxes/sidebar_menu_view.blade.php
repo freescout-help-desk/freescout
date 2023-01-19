@@ -1,4 +1,4 @@
-<div class="dropdown sidebar-title sidebar-title-extra">
+<div class="dropdown sidebar-title sidebar-title-extra @if (!$mailbox->email) sidebar-no-email @endif">
     <span class="sidebar-title-extra-value active-count">{{ $folder->getTypeName() }} ({{ $folder->active_count }})</span>
     @action('mailbox.view.before_name', $mailbox)
     <span class="sidebar-title-real mailbox-name">@include('mailboxes/partials/mute_icon', ['mailbox' => $mailbox]){{ $mailbox->name }}</span>
