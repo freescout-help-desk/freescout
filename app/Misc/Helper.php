@@ -949,7 +949,12 @@ class Helper
 
         // User may add an extra translation to the app on Translate page,
         // we should allow user to see his custom translations.
-        $custom_locales = \Helper::getCustomLocales();
+        $custom_locales = [];
+        try {
+            $custom_locales = \Helper::getCustomLocales();
+        } catch (\Exception $e) {
+            // During installation it throws an error as there is no tables yet.
+        }
 
         if (count($custom_locales)) {
             $app_locales = array_unique(array_merge($app_locales, $custom_locales));
@@ -1686,5 +1691,10 @@ class Helper
             'fpassthru (PHP)' => function_exists('fpassthru'),
             'ps (shell)' => function_exists('shell_exec') ? shell_exec('ps') : false,
         ];
+    }
+
+    public static function isInstalled()
+    {
+        return file_exists(storage_path().DIRECTORY_SEPARATOR.'.installed');
     }
 }
