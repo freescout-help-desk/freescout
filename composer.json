@@ -282,7 +282,6 @@
         "post-autoload-dump": [
             "@php -r \"file_put_contents('vendor/composer/ClassLoader.php', preg_replace('/function includeFile.*/s', base64_decode('DQpmdW5jdGlvbiBpbmNsdWRlRmlsZSgkZmlsZSkNCnsNCiAgICB0cnkgew0KICAgICAgICBpbmNsdWRlICRmaWxlOw0KICAgIH0gY2F0Y2ggKFxFeGNlcHRpb24gJGUpIHsNCiAgICAgICAgJG1zZyA9ICRlLT5nZXRNZXNzYWdlKCk7DQogICAgICAgIGlmIChzdHJzdHIoJG1zZywgJ05vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnknKSkgew0KICAgICAgICAgICAgaWYgKHN0cnN0cigkbXNnLCAnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJykpIHsNCiAgICAgICAgICAgICAgICAkbmV3X2ZpbGUgPSBzdHJfcmVwbGFjZSgnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJywgJy92ZW5kb3IvY29tcG9zZXIvLi4vJywgJGZpbGUpOw0KICAgICAgICAgICAgfSBlbHNlIHsNCiAgICAgICAgICAgICAgICAkbmV3X2ZpbGUgPSBzdHJfcmVwbGFjZSgnL3ZlbmRvci9jb21wb3Nlci8uLi8nLCAnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJywgJGZpbGUpOw0KICAgICAgICAgICAgfQ0KICAgICAgICAgICAgaW5jbHVkZSAkbmV3X2ZpbGU7DQogICAgICAgIH0gZWxzZSB7DQogICAgICAgICAgICB0aHJvdyAkZTsNCiAgICAgICAgfQ0KICAgIH0NCn0='), file_get_contents('vendor/composer/ClassLoader.php')));\"",
             "@php -r \"!error_reporting(0) || array_map('unlink', json_decode(file_get_contents('composer.json'), true)['autoload']['exclude-from-classmap']);\"",
-            "@php -r \"@mkdir('vendor/natxet/cssmin/src', 775);\"",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover"
         ]
