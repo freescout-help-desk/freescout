@@ -3470,7 +3470,7 @@ function polycastInit()
 
 		    	// Update number of active conversations in the page title
 		    	var new_count = parseInt(active_folder.attr('data-active-count'));
-		    	if (!isNaN(new_count)) {
+		    	if (!isNaN(new_count) && new_count > 0) {
 		    		new_count = '('+new_count+') ';
 		    	} else {
 		    		new_count = '';
