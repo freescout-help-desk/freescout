@@ -302,6 +302,10 @@ class Thread extends Model
             $body = $this->body;
         }
 
+        if ($body === null) {
+            $body = '';
+        }
+
         // Change "background:" to "background-color:".
         // https://github.com/freescout-helpdesk/freescout/issues/2560
         $body = preg_replace("/(<[^<>\r\n]+style=[\"'][^\"']*)background: *([^;() ]+;)/", '$1background-color:$2', $body);
