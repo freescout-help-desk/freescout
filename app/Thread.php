@@ -305,6 +305,9 @@ class Thread extends Model
         // Change "background:" to "background-color:".
         // https://github.com/freescout-helpdesk/freescout/issues/2560
         $body = preg_replace("/(<[^<>\r\n]+style=[\"'][^\"']*)background: *([^;() ]+;)/", '$1background-color:$2', $body);
+
+        // Cut out "collapse" class as it hides elements.
+        $body = preg_replace("/(<[^<>\r\n]+class=([\"'][^\"']* |[\"']))(collapse|hidden)([\"' ])/", '$1$4', $body);
         
         return \Helper::purifyHtml($body);
     }
