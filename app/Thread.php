@@ -1347,7 +1347,7 @@ class Thread extends Model
      */
     public function fetchBody()
     {
-        $message = \MailHelper::fetchMessage($this->conversation->mailbox, $this->message_id);
+        $message = \MailHelper::fetchMessage($this->conversation->mailbox, $this->message_id, $this->getMailDate());
 
         if (!$message) {
             return '';
@@ -1360,6 +1360,22 @@ class Thread extends Model
         }
 
         return $body;
+    }
+
+    public function parseHeaders()
+    {
+        return \MailHelper::parseHeaders($this->headers);
+    }
+
+    public function getMailDate()
+    {
+        $data = $this->parseHeaders();
+
+        if (empty($data->date)) {
+            return $result;
+        }
+
+        return \Helper::parseDateToCarbon($data->date);
     }
 
     public function getActionTypeName()
