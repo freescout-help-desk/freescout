@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.52',
+    'version' => '1.8.53',
 
     /*
     |--------------------------------------------------------------------------
@@ -274,6 +274,8 @@ return [
     |-------------------------------------------------------------------------
     */
     'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'tif', 'tiff', 'webp', 'pdf', 'txt', 'mp3', 'wav', 'ogg', 'wma']),
+    // Regular expremissions (#...#)
+    'viewable_mime_types'    => env('APP_VIEWABLE_MIME_TYPES', ['image/.*', 'application/pdf', 'text/plain', 'audio/.*']),
 
     /*
     |--------------------------------------------------------------------------

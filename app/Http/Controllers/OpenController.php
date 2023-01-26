@@ -178,6 +178,20 @@ class OpenController extends Controller
         if (in_array($file_ext, config('app.viewable_attachments'))) {
             $view_attachment = true;
         }
+        // If HTML file is renamed into .txt for example it will be shown by the browser as HTML.
+        if ($view_attachment && $attachment->mime_type) {
+            $allowed_mime_type = false;
+
+            foreach (config('app.viewable_mime_types') as $mime_type) {
+                if (preg_match('#'.$mime_type.'#', $attachment->mime_type)) {
+                    $allowed_mime_type = true;
+                    break;
+                }
+            }
+            if (!$allowed_mime_type) {
+                $view_attachment = false;
+            }
+        }
 
         if (config('app.download_attachments_via') == 'apache') {
             // Send using Apache mod_xsendfile.

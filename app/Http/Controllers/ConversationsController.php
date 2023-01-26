@@ -1011,6 +1011,7 @@ class ConversationsController extends Controller
                             $forwarded_thread->setMeta(Thread::META_FORWARD_PARENT_CONVERSATION_NUMBER, $conversation->number);
                             $forwarded_thread->setMeta(Thread::META_FORWARD_PARENT_CONVERSATION_ID, $conversation->id);
                             $forwarded_thread->setMeta(Thread::META_FORWARD_PARENT_THREAD_ID, $thread->id);
+                            \Eventy::action('send_reply.before_save_forwarded_thread', $forwarded_thread, $request);
                             $forwarded_thread->save();
                         }
                     }
@@ -2200,16 +2201,20 @@ class ConversationsController extends Controller
             abort(403);
         }
 
-        // Try to fetch original body by imap
+        $fetched = false;
         $body_preview = $thread->body;
+        
+        // Try to fetch original body by imap.
         $body_imap = $thread->fetchBody();
         if ($body_imap) {
+            $fetched = true;
             $body_preview = $body_imap;
         }
 
         return view('conversations/ajax_html/show_original', [
             'thread' => $thread,
             'body_preview' => $body_preview,
+            'fetched' => $fetched,
         ]);
     }
 

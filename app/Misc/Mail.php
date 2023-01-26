@@ -647,7 +647,7 @@ class Mail
     /**
      * Fetch IMAP message by Message-ID.
      */
-    public static function fetchMessage($mailbox, $message_id)
+    public static function fetchMessage($mailbox, $message_id, $message_date = null)
     {
         $no_charset = false;
 
@@ -669,7 +669,16 @@ class Mail
             try {
                 $folder = $client->getFolder($folder_name);
                 // Message-ID: <123@123.com>
-                $query = $folder->query()->text('<'.$message_id.'>')->leaveUnread()->limit(1);
+                $query = $folder->query()
+                    ->text('<'.$message_id.'>')
+                    ->leaveUnread()
+                    ->limit(1);
+
+                // Limit using date to speed up the search.
+                if ($message_date) {
+                   $query->since($message_date->subDays(7));
+                   $query->before($message_date->addDays(7));
+                }
 
                 if ($no_charset) {
                     $query->setCharset(null);
@@ -685,7 +694,12 @@ class Mail
                 if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
                     // Solution for MS mailboxes.
                     // https://github.com/freescout-helpdesk/freescout/issues/176
-                    $messages = $folder->query()->text('<'.$message_id.'>')->leaveUnread()->limit(1)->setCharset(null)->get();
+                    $query = $folder->query()->text('<'.$message_id.'>')->leaveUnread()->limit(1)->setCharset(null);
+                    if ($message_date) {
+                       $query->since($message_date->subDays(7));
+                       $query->before($message_date->addDays(7));
+                    }
+                    $messages = $query->get();
                     $no_charset = true;
                 }
 

@@ -302,6 +302,17 @@ class Thread extends Model
             $body = $this->body;
         }
 
+        if ($body === null) {
+            $body = '';
+        }
+
+        // Change "background:" to "background-color:".
+        // https://github.com/freescout-helpdesk/freescout/issues/2560
+        $body = preg_replace("/(<[^<>\r\n]+style=[\"'][^\"']*)background: *([^;() ]+;)/", '$1background-color:$2', $body);
+
+        // Cut out "collapse" class as it hides elements.
+        $body = preg_replace("/(<[^<>\r\n]+class=([\"'][^\"']* |[\"']))(collapse|hidden)([\"' ])/", '$1$4', $body);
+        
         return \Helper::purifyHtml($body);
     }
 
@@ -1343,7 +1354,7 @@ class Thread extends Model
      */
     public function fetchBody()
     {
-        $message = \MailHelper::fetchMessage($this->conversation->mailbox, $this->message_id);
+        $message = \MailHelper::fetchMessage($this->conversation->mailbox, $this->message_id, $this->getMailDate());
 
         if (!$message) {
             return '';
@@ -1356,6 +1367,22 @@ class Thread extends Model
         }
 
         return $body;
+    }
+
+    public function parseHeaders()
+    {
+        return \MailHelper::parseHeaders($this->headers);
+    }
+
+    public function getMailDate()
+    {
+        $data = $this->parseHeaders();
+
+        if (empty($data->date)) {
+            return $result;
+        }
+
+        return \Helper::parseDateToCarbon($data->date);
     }
 
     public function getActionTypeName()
