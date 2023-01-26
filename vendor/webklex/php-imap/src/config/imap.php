@@ -155,7 +155,7 @@ return [
         'boundary' => '/boundary=(.*?(?=;)|(.*))/i',
         'message_key' => 'list',
         'fetch_order' => 'asc',
-        'dispositions' => ['attachment', 'inline'],
+        'dispositions' => ['attachment'/*, 'inline'*/],
         'common_folders' => [
             "root" => "INBOX",
             "junk" => "INBOX/Junk",
