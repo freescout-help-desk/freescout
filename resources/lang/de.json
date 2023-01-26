@@ -767,5 +767,15 @@
     ":%tag_start%Conversation created:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%": ":%tag_start%Gespräch erstellt:%tag_end% :%view_start%Ansehen:%a_end% oder :%undo_start%Rückgängig:%a_end%",
     ":%tag_start%Note added:%tag_end% :%view_start%View:%a_end%": ":%tag_start%Notiz hinzugefügt:%tag_end% :%view_start%Ansehen:%a_end%",
     ":%tag_start%Email Sent:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%": ":%tag_start%E-Mail gesendet:%tag_end% :%view_start%Ansehen:%a_end% oder :%undo_start%Rückgängig:%a_end%",
-    ":%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%": ":%tag_start%E-Mail gesendet:%tag_end% :%undo_start%Rückgängig:%a_end%"
+    ":%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%": ":%tag_start%E-Mail gesendet:%tag_end% :%undo_start%Rückgängig:%a_end%",
+    "Click to Call": "Klicken um anzurufen",
+    "Clone a conversation from this thread": "Gespräch aus diesem Verlauf klonen",
+    "Clone Conversation": "Gespräch klonen",
+    "Conversation Number": "Gesprächsnummer",
+    "Equal to conversation ID": "ist gleich Gesprächsnummer",
+    "Custom": "individuell",
+    "View Details": "Details ansehen",
+    "Disconnect": "Trennen",
+    "Delete All": "Alle löschen",
+    "Error occurred": "Es ist ein Fehler aufgetreten"
 }
