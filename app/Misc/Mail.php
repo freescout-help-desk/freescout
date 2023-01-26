@@ -572,7 +572,10 @@ class Mail
      */
     public static function getMailboxClient($mailbox)
     {
-        if (!$mailbox->oauthEnabled()) {
+        $oauth = $mailbox->oauthEnabled();
+        $new_library = config('app.new_fetching_library');
+
+        if (!$oauth && !$new_library) {
             return new \Webklex\IMAP\Client([
                 'host'          => $mailbox->in_server,
                 'port'          => $mailbox->in_port,
@@ -584,16 +587,32 @@ class Mail
             ]);
         } else {
 
-            \Config::set('imap.accounts.default', [
-                'host'          => $mailbox->in_server,
-                'port'          => $mailbox->in_port,
-                'encryption'    => $mailbox->getInEncryptionName(),
-                'validate_cert' => $mailbox->in_validate_cert,
-                'username'      => $mailbox->email,
-                'password'      => $mailbox->oauthGetParam('a_token'),
-                'protocol'      => $mailbox->getInProtocolName(),
-                'authentication' => 'oauth',
-            ]);
+            if ($oauth) {
+                \Config::set('imap.accounts.default', [
+                    'host'          => $mailbox->in_server,
+                    'port'          => $mailbox->in_port,
+                    'encryption'    => $mailbox->getInEncryptionName(),
+                    'validate_cert' => $mailbox->in_validate_cert,
+                    'username'      => $mailbox->email,
+                    'password'      => $mailbox->oauthGetParam('a_token'),
+                    'protocol'      => $mailbox->getInProtocolName(),
+                    'authentication' => 'oauth',
+                ]);
+            } else {
+                \Config::set('imap.accounts.default', [
+                    'host'          => $mailbox->in_server,
+                    'port'          => $mailbox->in_port,
+                    'encryption'    => $mailbox->getInEncryptionName(),
+                    'validate_cert' => $mailbox->in_validate_cert,
+                    // 'username'      => $mailbox->email,
+                    // 'password'      => $mailbox->oauthGetParam('a_token'),
+                    // 'protocol'      => $mailbox->getInProtocolName(),
+                    // 'authentication' => 'oauth',
+                    'username'      => $mailbox->in_username,
+                    'password'      => $mailbox->in_password,
+                    'protocol'      => $mailbox->getInProtocolName(),
+                ]);
+            }
             // To enable debug: /vendor/webklex/php-imap/src/Connection/Protocols
             // Debug in console
             if (app()->runningInConsole()) {
@@ -603,24 +622,26 @@ class Mail
             $cm = new \Webklex\PHPIMAP\ClientManager(config('imap'));
 
             // Refresh Access Token.
-            if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
-                // Try to get an access token (using the authorization code grant)
-                $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
-                    'client_id' => $mailbox->in_username,
-                    'client_secret' => $mailbox->in_password,
-                    'refresh_token' => $mailbox->oauthGetParam('r_token'),
-                ]);
-
-                if (!empty($token_data['a_token'])) {
-                    $mailbox->setMetaParam('oauth', $token_data, true);
-                } elseif (!empty($token_data['error'])) {
-                    $error_message = 'Error occurred refreshing oAuth Access Token: '.$token_data['error'];
-                    \Helper::log(\App\ActivityLog::NAME_EMAILS_FETCHING, 
-                        \App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR, [
-                        'error'   => $error_message,
-                        'mailbox' => $mailbox->name,
+            if ($oauth) {
+                if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
+                    // Try to get an access token (using the authorization code grant)
+                    $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
+                        'client_id' => $mailbox->in_username,
+                        'client_secret' => $mailbox->in_password,
+                        'refresh_token' => $mailbox->oauthGetParam('r_token'),
                     ]);
-                    throw new \Exception($error_message, 1);
+
+                    if (!empty($token_data['a_token'])) {
+                        $mailbox->setMetaParam('oauth', $token_data, true);
+                    } elseif (!empty($token_data['error'])) {
+                        $error_message = 'Error occurred refreshing oAuth Access Token: '.$token_data['error'];
+                        \Helper::log(\App\ActivityLog::NAME_EMAILS_FETCHING, 
+                            \App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR, [
+                            'error'   => $error_message,
+                            'mailbox' => $mailbox->name,
+                        ]);
+                        throw new \Exception($error_message, 1);
+                    }
                 }
             }
 

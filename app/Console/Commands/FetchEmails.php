@@ -315,7 +315,7 @@ class FetchEmails extends Command
             // Determine previous Message-ID
             $prev_message_id = '';
             if ($in_reply_to) {
-                $prev_message_id = $in_reply_to;
+                $prev_message_id = trim($in_reply_to, '<>');
             } elseif ($references) {
                 if (!is_array($references)) {
                     $references = array_filter(preg_split('/[, <>]/', $references));

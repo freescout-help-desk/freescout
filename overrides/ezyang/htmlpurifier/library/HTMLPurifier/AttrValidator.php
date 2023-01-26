@@ -101,11 +101,14 @@ class HTMLPurifier_AttrValidator
                         $config,
                         $context
                     );
-                    if ($result) {
-                        if ($attr_key == 'width' || $attr_key == 'height') {
-                            $proportions_change[$attr_key]['original'] = $value;
-                            $proportions_change[$attr_key]['new'] = $result;
-                        }
+                    if ($token->name == 'img' 
+                        && $result
+                        && (int)$value
+                        && (int)$result
+                        && ($attr_key == 'width' || $attr_key == 'height')
+                    ) {
+                        $proportions_change[$attr_key]['original'] = (int)$value;
+                        $proportions_change[$attr_key]['new'] = (int)$result;
                     }
                 }
             } elseif (isset($d_defs[$attr_key])) {
