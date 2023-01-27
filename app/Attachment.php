@@ -141,6 +141,8 @@ class Attachment extends Model
             Storage::disk(self::DISK)->put($file_path, $content);
         }
 
+        \Helper::sanitizeUploadedFile($file_path, \Helper::getPrivateStorage(), $content);
+
         return [
             'file_dir'  => $file_dir,
             'file_path' => $file_path,

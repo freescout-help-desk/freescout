@@ -7,6 +7,7 @@
 namespace App\Misc;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class Helper
 {
@@ -722,6 +723,11 @@ class Helper
         return \Storage::disk('private');
     }
 
+    public static function getPublicStorage()
+    {
+        return \Storage::disk('public');
+    }
+
     public static function formatException($e)
     {
         return 'Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')';
@@ -1374,7 +1380,25 @@ class Helper
 
         $file->storeAs('uploads', $file_name);
 
+        self::sanitizeUploadedFile('uploads'.DIRECTORY_SEPARATOR.$file_name, self::getPublicStorage());
+
         return self::uploadedFilePath($file_name);
+    }
+
+    public static function sanitizeUploadedFile($file_path, $storage, $content = null)
+    {
+        // Remove <script> from SVG files.
+        if (strtolower(pathinfo($file_path, PATHINFO_EXTENSION)) == 'svg'
+            && $storage->exists($file_path)
+        ) {
+            if (!$content) {
+                $content = $storage->get($file_path);
+            }
+            if ($content) {
+                $content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
+                $storage->put($file_path, $content);
+            }
+        }
     }
 
     public static function uploadedFileRemove($name)
