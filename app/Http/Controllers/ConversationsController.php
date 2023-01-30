@@ -2208,14 +2208,18 @@ class ConversationsController extends Controller
             abort(403);
         }
 
-        $fetched = false;
+        $fetched = true;
         $body_preview = $thread->body;
-        
-        // Try to fetch original body by imap.
-        $body_imap = $thread->fetchBody();
-        if ($body_imap) {
-            $fetched = true;
-            $body_preview = $body_imap;
+
+        if ($thread->isCustomerMessage()) {
+            $fetched = false;
+
+            // Try to fetch original body by imap.
+            $body_imap = $thread->fetchBody();
+            if ($body_imap) {
+                $fetched = true;
+                $body_preview = $body_imap;
+            }
         }
 
         return view('conversations/ajax_html/show_original', [
