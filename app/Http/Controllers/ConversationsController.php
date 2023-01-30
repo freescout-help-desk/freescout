@@ -785,6 +785,13 @@ class ConversationsController extends Controller
                         // Email.
                         if (!empty($to_array)) {
                             $customer_email = $to_array[0];
+                        } elseif (!$conversation->customer_email 
+                            && $conversation->customer_id
+                            && $conversation->customer
+                        ) {
+                            // When replying to a phone conversation, we need to
+                            // set 'customer_email' for the conversation.
+                            $customer_email = $conversation->customer->getMainEmail();
                         }
                         if (!$conversation->customer_id) {
                             $customer = Customer::create($customer_email);
