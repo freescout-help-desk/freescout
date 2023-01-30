@@ -7,6 +7,7 @@
 namespace App\Misc;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class Helper
 {
@@ -722,6 +723,11 @@ class Helper
         return \Storage::disk('private');
     }
 
+    public static function getPublicStorage()
+    {
+        return \Storage::disk('public');
+    }
+
     public static function formatException($e)
     {
         return 'Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')';
@@ -1350,7 +1356,7 @@ class Helper
         return md5(config('app.key') ?? '');
     }
 
-    public static function uploadFile($file, $allowed_exts = [], $allowed_mimes = [], $sanitize_file_name = true)
+    public static function uploadFile($file, $allowed_exts = [], $allowed_mimes = [])
     {
         $ext = strtolower($file->getClientOriginalExtension());
 
@@ -1368,13 +1374,29 @@ class Helper
         }
         $file_name = \Str::random(25).'.'.$ext;
 
-        if ($sanitize_file_name) {
-            $file_name = \Helper::sanitizeUploadedFileName($file_name);
-        }
+        $file_name = \Helper::sanitizeUploadedFileName($file_name, $file);
 
         $file->storeAs('uploads', $file_name);
 
+        self::sanitizeUploadedFileData('uploads'.DIRECTORY_SEPARATOR.$file_name, self::getPublicStorage());
+
         return self::uploadedFilePath($file_name);
+    }
+
+    public static function sanitizeUploadedFileData($file_path, $storage, $content = null)
+    {
+        // Remove <script> from SVG files.
+        if (strtolower(pathinfo($file_path, PATHINFO_EXTENSION)) == 'svg'
+            && $storage->exists($file_path)
+        ) {
+            if (!$content) {
+                $content = $storage->get($file_path);
+            }
+            if ($content) {
+                $content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
+                $storage->put($file_path, $content);
+            }
+        }
     }
 
     public static function uploadedFileRemove($name)
@@ -1535,13 +1557,22 @@ class Helper
         }
     }
 
-    public static function sanitizeUploadedFileName($file_name)
+    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null)
     {
         // Check extension.
-        $extension = pathinfo($file_name, PATHINFO_EXTENSION);
-        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', strtolower($extension))) {
+        $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext)) {
             // Add underscore to the extension if file has restricted extension.
             $file_name = $file_name.'_';
+        } elseif ($ext == 'pdf') {
+            // Rename PDF to avoid running embedded JavaScript.
+            if ($uploaded_file && !$contents) {
+                $contents = file_get_contents($uploaded_file->getRealPath());
+            }
+            if ($contents && strstr($contents, '/JavaScript')) {
+                $file_name = $file_name.'_';
+            }
         }
 
         return $file_name;

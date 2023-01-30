@@ -1379,7 +1379,7 @@ class Thread extends Model
         $data = $this->parseHeaders();
 
         if (empty($data->date)) {
-            return $result;
+            return null;
         }
 
         return \Helper::parseDateToCarbon($data->date);

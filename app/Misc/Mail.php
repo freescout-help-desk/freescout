@@ -698,7 +698,8 @@ class Mail
                 // Limit using date to speed up the search.
                 if ($message_date) {
                    $query->since($message_date->subDays(7));
-                   $query->before($message_date->addDays(7));
+                   // Here we should add 14 days, as previous line subtracts 7 days.
+                   $query->before($message_date->addDays(14));
                 }
 
                 if ($no_charset) {
