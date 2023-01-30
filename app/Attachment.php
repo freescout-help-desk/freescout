@@ -60,7 +60,7 @@ class Attachment extends Model
         $orig_extension = pathinfo($file_name, PATHINFO_EXTENSION);
 
         // Add underscore to the extension if file has restricted extension.
-        $file_name = \Helper::sanitizeUploadedFileName($file_name);
+        $file_name = \Helper::sanitizeUploadedFileName($file_name, $uploaded_file, $content);
 
         // Replace some symbols in file name.
         // Gmail can not load image if it contains spaces.
@@ -141,7 +141,7 @@ class Attachment extends Model
             Storage::disk(self::DISK)->put($file_path, $content);
         }
 
-        \Helper::sanitizeUploadedFile($file_path, \Helper::getPrivateStorage(), $content);
+        \Helper::sanitizeUploadedFileData($file_path, \Helper::getPrivateStorage(), $content);
 
         return [
             'file_dir'  => $file_dir,
