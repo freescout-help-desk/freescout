@@ -25,6 +25,14 @@ class SendEmailReplyError implements ShouldQueue
     public $mailbox;
 
     /**
+     * The number of seconds the job can run before timing out.
+     * fwrite() function in /vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php
+     * in some cases may stuck and continue infinitely. This blocks queue:work and no other jobs are processed.
+     * So we need to set the timeout. On timeout the whole queue:work process is being killed by Laravel.
+     */
+    public $timeout = 120;
+
+    /**
      * Create a new job instance.
      *
      * @return void

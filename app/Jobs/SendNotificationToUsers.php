@@ -16,14 +16,22 @@ class SendNotificationToUsers implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    // Max retries + 1
-    public $tries = 168; // One per hour
-
     public $users;
 
     public $conversation;
 
     public $threads;
+
+    // Max retries + 1
+    public $tries = 168; // One per hour
+
+    /**
+     * The number of seconds the job can run before timing out.
+     * fwrite() function in /vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php
+     * in some cases may stuck and continue infinitely. This blocks queue:work and no other jobs are processed.
+     * So we need to set the timeout. On timeout the whole queue:work process is being killed by Laravel.
+     */
+    public $timeout = 120;
 
     /**
      * Create a new job instance.
