@@ -1464,10 +1464,17 @@ class ConversationsController extends Controller
                         $folder_id = $conversation->getCurrentFolder();
                         $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $folder_id]);
 
+                        $mailbox = $conversation->mailbox;
+
                         $conversation->removeFromFolder(Folder::TYPE_DRAFTS);
-                        $conversation->mailbox->updateFoldersCounters(Folder::TYPE_DRAFTS);
+                        $conversation->removeFromFolder(Folder::TYPE_STARRED, $user->id);
+                        $mailbox->updateFoldersCounters(Folder::TYPE_DRAFTS);
                         $conversation->deleteThreads();
                         $conversation->delete();
+
+                        // Draft may be present in Starred folder.
+                        Conversation::clearStarredByUserCache($user->id, $mailbox->id);
+                        $mailbox->updateFoldersCounters(Folder::TYPE_STARRED);
 
                         $flash_message = __('Deleted draft');
                         \Session::flash('flash_success_floating', $flash_message);
