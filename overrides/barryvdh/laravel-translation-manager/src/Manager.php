@@ -576,6 +576,8 @@ class Manager
                 }
 
                 $translations = $groups[$group];
+                // Sort translations alphabetically.
+                ksort($translations);
                 $output = json_encode($translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE);
                 $this->files->put($path, $output);
 
