@@ -1566,6 +1566,14 @@ class Conversation extends Model
     }
 
     /**
+     * Is it an email conversation.
+     */
+    public function isEmail()
+    {
+        return ($this->type == self::TYPE_EMAIL);
+    }
+
+    /**
      * Is it as phone conversation.
      */
     public function isPhone()

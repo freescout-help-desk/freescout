@@ -284,6 +284,26 @@ class FetchEmails extends Command
                 $this->line('['.date('Y-m-d H:i:s').'] Message-ID is empty, generated artificial Message-ID: '.$message_id);
             }
 
+            $duplicate_message_id = Thread::where('message_id', $message_id)->first();
+
+            // Mailbox has been mentioned in Bcc.
+            if ($duplicate_message_id) {
+
+                $recipients = array_merge(
+                    $this->formatEmailList($message->getTo()),
+                    $this->formatEmailList($message->getCc())
+                );
+
+                if (!in_array(Email::sanitizeEmail($mailbox->email), $recipients)
+                    // Make sure that previous email has been imported into other mailbox.
+                    && $duplicate_message_id->conversation
+                    && $duplicate_message_id->conversation->mailbox_id != $mailbox->id
+                ) {
+                    $extra = true;
+                    $duplicate_message_id = null;
+                }
+            }
+
             // Gnerate artificial Message-ID if importing same email into several mailboxes.
             if ($extra) {
                 // Generate artificial Message-ID.
@@ -292,7 +312,7 @@ class FetchEmails extends Command
             }
 
             // Check if message already fetched.
-            if (Thread::where('message_id', $message_id)->first()) {
+            if ($duplicate_message_id) {
                 $this->line('['.date('Y-m-d H:i:s').'] Message with such Message-ID has been fetched before: '.$message_id);
                 $this->setSeen($message, $mailbox);
                 return;
@@ -561,13 +581,11 @@ class FetchEmails extends Command
             }
 
             $to = $this->formatEmailList($message->getTo());
-            //$to = $mailbox->removeMailboxEmailsFromList($to);
 
             $cc = $this->formatEmailList($message->getCc());
-            //$cc = $mailbox->removeMailboxEmailsFromList($cc);
 
+            // It will always return an empty value as it's Bcc.
             $bcc = $this->formatEmailList($message->getBcc());
-            //$bcc = $mailbox->removeMailboxEmailsFromList($bcc);
 
             // Create customers
             $emails = array_merge(
@@ -575,6 +593,7 @@ class FetchEmails extends Command
                 $this->attrToArray($message->getReplyTo()),
                 $this->attrToArray($message->getTo()),
                 $this->attrToArray($message->getCc()),
+                // It will always return an empty value as it's Bcc.
                 $this->attrToArray($message->getBcc())
             );
             $this->createCustomers($emails, $mailbox->getEmails());
@@ -605,6 +624,7 @@ class FetchEmails extends Command
                     $recipient_emails = array_unique($this->formatEmailList(array_merge(
                         $this->attrToArray($message->getTo()), 
                         $this->attrToArray($message->getCc()), 
+                        // It will always return an empty value as it's Bcc.
                         $this->attrToArray($message->getBcc())
                     )));
                     

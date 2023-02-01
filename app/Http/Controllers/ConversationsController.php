@@ -786,6 +786,7 @@ class ConversationsController extends Controller
                         if (!empty($to_array)) {
                             $customer_email = $to_array[0];
                         } elseif (!$conversation->customer_email 
+                            && ($conversation->isEmail() || $conversation->isPhone())
                             && $conversation->customer_id
                             && $conversation->customer
                         ) {

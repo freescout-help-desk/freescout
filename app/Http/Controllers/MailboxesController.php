@@ -354,7 +354,7 @@ class MailboxesController extends Controller
         }
 
         // Sometimes background job continues to use old connection settings.
-        \Helper::queueWorkRestart();
+        \Helper::queueWorkerRestart();
 
         \Session::flash('flash_success_floating', __('Connection settings saved!'));
 

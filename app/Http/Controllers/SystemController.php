@@ -117,7 +117,7 @@ class SystemController extends Controller
                 } elseif ($running_commands > 1) {
                     // queue:work command is stopped by settings a cache key
                     if ($command_name == 'queue:work') {
-                        \Helper::queueWorkRestart();
+                        \Helper::queueWorkerRestart();
                         $commands[] = [
                             'name'        => $command_name,
                             'status'      => 'error',

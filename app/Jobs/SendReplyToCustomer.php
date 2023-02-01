@@ -17,9 +17,6 @@ class SendReplyToCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    // Number of retries + 1
-    public $tries = 168; // one per hour
-
     public $conversation;
 
     public $threads;
@@ -32,6 +29,17 @@ class SendReplyToCustomer implements ShouldQueue
     private $message_id = '';
     private $customer_email = '';
 
+    // Number of retries + 1
+    public $tries = 168; // one per hour
+    
+    /**
+     * The number of seconds the job can run before timing out.
+     * fwrite() function in /vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php
+     * in some cases may stuck and continue infinitely. This blocks queue:work and no other jobs are processed.
+     * So we need to set the timeout. On timeout the whole queue:work process is being killed by Laravel.
+     */
+    public $timeout = 120;
+    
     /**
      * Create a new job instance.
      *

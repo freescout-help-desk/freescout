@@ -56,7 +56,7 @@ class ClearCache extends Command
         }
         // This should not be done during installation.
         if (\Helper::isInstalled()) {
-            \App\Jobs\RestartQueueWorker::dispatch()->onQueue('default');
+            \Helper::queueWorkerRestart();
         }
     }
 }
