@@ -40,7 +40,7 @@ class SendNotificationToUsers implements ShouldQueue
      */
     public function __construct($users, $conversation, $threads)
     {
-        $this->users = \Eventy::filter('jobs.send_notification_to_users.users', $users);
+        $this->users = $users;
         $this->conversation = $conversation;
         $this->threads = $threads;
     }
