@@ -2861,6 +2861,8 @@ class ConversationsController extends Controller
         $customer = null;
 
         // Check to prevent creating empty customers.
+        $request_name = '';
+        $request_phone = '';
         if (trim($request->name ?? '') || trim($request->phone ?? '')) {
             $request_name = trim($request->name ?? '');
             $request_phone = trim($request->phone ?? '');
