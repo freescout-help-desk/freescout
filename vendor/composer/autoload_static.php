@@ -130,6 +130,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Illuminate\\Foundation\\' => 22,
             'Illuminate\\Database\\Eloquent\\' => 29,
             'Illuminate\\Container\\' => 21,
+            'Illuminate\\Config\\' => 18,
             'Illuminate\\Cache\\Console\\' => 25,
             'Illuminate\\Cache\\' => 17,
             'Illuminate\\Broadcasting\\Broadcasters\\' => 37,
@@ -474,6 +475,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Illuminate\\Container\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Container',
+        ),
+        'Illuminate\\Config\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Config',
         ),
         'Illuminate\\Cache\\Console\\' => 
         array (
@@ -1760,7 +1765,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Illuminate\\Cache\\TagSet' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Cache/TagSet.php',
         'Illuminate\\Cache\\TaggableStore' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Cache/TaggableStore.php',
         'Illuminate\\Cache\\TaggedCache' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Cache/TaggedCache.php',
-        'Illuminate\\Config\\Repository' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Config/Repository.php',
+        'Illuminate\\Config\\Repository' => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Config/Repository.php',
         'Illuminate\\Console\\Application' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Console/Application.php',
         'Illuminate\\Console\\Command' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Console/Command.php',
         'Illuminate\\Console\\ConfirmableTrait' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Console/ConfirmableTrait.php',

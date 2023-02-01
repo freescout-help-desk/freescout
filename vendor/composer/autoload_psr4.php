@@ -73,6 +73,7 @@ return array(
     'Illuminate\\Foundation\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation'),
     'Illuminate\\Database\\Eloquent\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Database/Eloquent'),
     'Illuminate\\Container\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Container'),
+    'Illuminate\\Config\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Config'),
     'Illuminate\\Cache\\Console\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Cache/Console'),
     'Illuminate\\Cache\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Cache'),
     'Illuminate\\Broadcasting\\Broadcasters\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Broadcasting/Broadcasters'),

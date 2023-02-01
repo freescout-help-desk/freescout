@@ -1082,7 +1082,7 @@ return array(
     'Illuminate\\Cache\\TagSet' => $vendorDir . '/laravel/framework/src/Illuminate/Cache/TagSet.php',
     'Illuminate\\Cache\\TaggableStore' => $vendorDir . '/laravel/framework/src/Illuminate/Cache/TaggableStore.php',
     'Illuminate\\Cache\\TaggedCache' => $vendorDir . '/laravel/framework/src/Illuminate/Cache/TaggedCache.php',
-    'Illuminate\\Config\\Repository' => $vendorDir . '/laravel/framework/src/Illuminate/Config/Repository.php',
+    'Illuminate\\Config\\Repository' => $baseDir . '/overrides/laravel/framework/src/Illuminate/Config/Repository.php',
     'Illuminate\\Console\\Application' => $vendorDir . '/laravel/framework/src/Illuminate/Console/Application.php',
     'Illuminate\\Console\\Command' => $vendorDir . '/laravel/framework/src/Illuminate/Console/Command.php',
     'Illuminate\\Console\\ConfirmableTrait' => $vendorDir . '/laravel/framework/src/Illuminate/Console/ConfirmableTrait.php',
