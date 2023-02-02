@@ -70,8 +70,8 @@ class Conversation extends Model
     const STATUS_PENDING = 2;
     const STATUS_CLOSED = 3;
     const STATUS_SPAM = 4;
-    // Present in the API, but what does it mean?
-    const STATUS_OPEN = 5;
+    // Not used
+    //const STATUS_OPEN = 5;
 
     public static $statuses = [
         self::STATUS_ACTIVE  => 'active',
@@ -501,6 +501,11 @@ class Conversation extends Model
         return $this->status == self::STATUS_ACTIVE;
     }
 
+    public function isPending()
+    {
+        return $this->status == self::STATUS_PENDING;
+    }
+
     public function isSpam()
     {
         return $this->status == self::STATUS_SPAM;
@@ -509,6 +514,11 @@ class Conversation extends Model
     public function isClosed()
     {
         return $this->status == self::STATUS_CLOSED;
+    }
+
+    public function isPublished()
+    {
+        return $this->state == self::STATE_PUBLISHED;
     }
 
     /**
@@ -547,9 +557,9 @@ class Conversation extends Model
                 return __('Spam');
                 break;
 
-            case self::STATUS_OPEN:
-                return __('Open');
-                break;
+            // case self::STATUS_OPEN:
+            //     return __('Open');
+            //     break;
 
             default:
                 return '';
