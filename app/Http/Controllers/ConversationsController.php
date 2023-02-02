@@ -857,7 +857,11 @@ class ConversationsController extends Controller
                         if ($is_create && !$is_multiple && count($to_array) > 1) {
                             $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), $to_array));
                         } else {
-                            $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                            if (!$is_multiple) {
+                                $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                            } else {
+                                $conversation->setCc(Conversation::sanitizeEmails($request->cc));
+                            }
                         }
                         $conversation->setBcc($request->bcc);
                         $conversation->last_reply_at = $now;
@@ -1140,6 +1144,9 @@ class ConversationsController extends Controller
                             $thread_copy->customer_id = $customer_tmp->id;
                             $thread_copy->has_attachments = $conversation->has_attachments;
                             $thread_copy->setTo($customer_email);
+                            // Reload the conversation, otherwise Thread observer will be 
+                            // increasing threads_count for the first conversation.
+                            $thread_copy->load('conversation');
                             $thread_copy->push();
 
                             // Copy attachments.
