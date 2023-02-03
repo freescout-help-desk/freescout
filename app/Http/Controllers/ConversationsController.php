@@ -319,6 +319,8 @@ class ConversationsController extends Controller
         $mailbox = Mailbox::findOrFail($mailbox_id);
         $this->authorize('view', $mailbox);
 
+        $subject = trim($request->get('subject') ?? '');
+
         $conversation = new Conversation();
         $conversation->body = '';
         $conversation->mailbox = $mailbox;
@@ -333,8 +335,8 @@ class ConversationsController extends Controller
         if (!empty($request->from_thread_id)) {
             $orig_thread = Thread::find($request->from_thread_id);
             if ($orig_thread) {
-                $conversation->subject = $orig_thread->conversation->subject;
-                $conversation->subject = preg_replace('/^Fwd:/i', 'Re: ', $conversation->subject);
+                $subject = $orig_thread->conversation->subject;
+                $subject = preg_replace('/^Fwd:/i', 'Re: ', $subject);
 
                 $thread = new \App\Thread();
                 $thread->body = $orig_thread->body;
@@ -359,7 +361,7 @@ class ConversationsController extends Controller
         if ($prefill_to) {
             $to = [$prefill_to => $prefill_to];
         }
-        $conversation->subject = trim($request->get('subject') ?? '');
+        $conversation->subject = $subject;
 
         return view('conversations/create', [
             'conversation' => $conversation,
@@ -857,7 +859,11 @@ class ConversationsController extends Controller
                         if ($is_create && !$is_multiple && count($to_array) > 1) {
                             $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), $to_array));
                         } else {
-                            $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                            if (!$is_multiple) {
+                                $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                            } else {
+                                $conversation->setCc(Conversation::sanitizeEmails($request->cc));
+                            }
                         }
                         $conversation->setBcc($request->bcc);
                         $conversation->last_reply_at = $now;
@@ -1140,6 +1146,9 @@ class ConversationsController extends Controller
                             $thread_copy->customer_id = $customer_tmp->id;
                             $thread_copy->has_attachments = $conversation->has_attachments;
                             $thread_copy->setTo($customer_email);
+                            // Reload the conversation, otherwise Thread observer will be 
+                            // increasing threads_count for the first conversation.
+                            $thread_copy->load('conversation');
                             $thread_copy->push();
 
                             // Copy attachments.
@@ -1464,10 +1473,17 @@ class ConversationsController extends Controller
                         $folder_id = $conversation->getCurrentFolder();
                         $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $folder_id]);
 
+                        $mailbox = $conversation->mailbox;
+
                         $conversation->removeFromFolder(Folder::TYPE_DRAFTS);
-                        $conversation->mailbox->updateFoldersCounters(Folder::TYPE_DRAFTS);
+                        $conversation->removeFromFolder(Folder::TYPE_STARRED, $user->id);
+                        $mailbox->updateFoldersCounters(Folder::TYPE_DRAFTS);
                         $conversation->deleteThreads();
                         $conversation->delete();
+
+                        // Draft may be present in Starred folder.
+                        Conversation::clearStarredByUserCache($user->id, $mailbox->id);
+                        $mailbox->updateFoldersCounters(Folder::TYPE_STARRED);
 
                         $flash_message = __('Deleted draft');
                         \Session::flash('flash_success_floating', $flash_message);
@@ -2861,6 +2877,8 @@ class ConversationsController extends Controller
         $customer = null;
 
         // Check to prevent creating empty customers.
+        $request_name = '';
+        $request_phone = '';
         if (trim($request->name ?? '') || trim($request->phone ?? '')) {
             $request_name = trim($request->name ?? '');
             $request_phone = trim($request->phone ?? '');

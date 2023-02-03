@@ -284,10 +284,14 @@ class FetchEmails extends Command
                 $this->line('['.date('Y-m-d H:i:s').'] Message-ID is empty, generated artificial Message-ID: '.$message_id);
             }
 
-            $duplicate_message_id = Thread::where('message_id', $message_id)->first();
+            $duplicate_message_id = false;
+
+            if (!$extra) {
+                $duplicate_message_id = Thread::where('message_id', $message_id)->first();
+            }
 
             // Mailbox has been mentioned in Bcc.
-            if ($duplicate_message_id) {
+            if (!$extra && $duplicate_message_id) {
 
                 $recipients = array_merge(
                     $this->formatEmailList($message->getTo()),

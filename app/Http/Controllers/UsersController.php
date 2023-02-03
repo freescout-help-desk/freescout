@@ -498,30 +498,42 @@ class UsersController extends Controller
 
                     $user->conversations->each(function ($conversation) use ($auth_user, $request) {
                         // We don't fire ConversationUserChanged event to avoid sending notifications to users
-                        if (!empty($request->assign_user) && !empty($request->assign_user[$conversation->mailbox_id]) && (int) $request->assign_user[$conversation->mailbox_id] != -1) {
+                        if (!empty($request->assign_user) 
+                            && !empty($request->assign_user[$conversation->mailbox_id]) 
+                            && (int) $request->assign_user[$conversation->mailbox_id] != -1
+                        ) {
                             // Set assignee.
+                            // In this case conversation stays assigned, just assignee changes.
                             $conversation->user_id = $request->assign_user[$conversation->mailbox_id];
-                        // In this case conversation stays assigned, just assignee changes.
+
                         } else {
-                            // Set assignee.
+
+                            // Make convesation Unassigned.
+                            
+                            // Unset assignee.
+                            // Maybe use changeUser() here.
                             $conversation->user_id = null;
 
-                            // Change conversation folder to ANASSIGNED.
-                            $folder_id = null;
-                            if (!empty($mailbox_unassigned_folders[$conversation->mailbox_id])) {
-                                $folder_id = $mailbox_unassigned_folders[$conversation->mailbox_id];
-                            } else {
-                                $folder = $conversation->mailbox->folders()
-                                    ->where('type', Folder::TYPE_UNASSIGNED)
-                                    ->first();
+                            if ($conversation->isPublished()
+                                && ($conversation->isActive() || $conversation->isPending())
+                            ) {
+                                // Change conversation folder to UNASSIGNED.
+                                $folder_id = null;
+                                if (!empty($mailbox_unassigned_folders[$conversation->mailbox_id])) {
+                                    $folder_id = $mailbox_unassigned_folders[$conversation->mailbox_id];
+                                } else {
+                                    $folder = $conversation->mailbox->folders()
+                                        ->where('type', Folder::TYPE_UNASSIGNED)
+                                        ->first();
 
-                                if ($folder) {
-                                    $folder_id = $folder->id;
-                                    $mailbox_unassigned_folders[$conversation->mailbox_id] = $folder_id;
+                                    if ($folder) {
+                                        $folder_id = $folder->id;
+                                        $mailbox_unassigned_folders[$conversation->mailbox_id] = $folder_id;
+                                    }
                                 }
-                            }
-                            if ($folder_id) {
-                                $conversation->folder_id = $folder_id;
+                                if ($folder_id) {
+                                    $conversation->folder_id = $folder_id;
+                                }
                             }
                         }
 
