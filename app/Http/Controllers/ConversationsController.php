@@ -319,6 +319,8 @@ class ConversationsController extends Controller
         $mailbox = Mailbox::findOrFail($mailbox_id);
         $this->authorize('view', $mailbox);
 
+        $subject = trim($request->get('subject') ?? '');
+
         $conversation = new Conversation();
         $conversation->body = '';
         $conversation->mailbox = $mailbox;
@@ -333,8 +335,8 @@ class ConversationsController extends Controller
         if (!empty($request->from_thread_id)) {
             $orig_thread = Thread::find($request->from_thread_id);
             if ($orig_thread) {
-                $conversation->subject = $orig_thread->conversation->subject;
-                $conversation->subject = preg_replace('/^Fwd:/i', 'Re: ', $conversation->subject);
+                $subject = $orig_thread->conversation->subject;
+                $subject = preg_replace('/^Fwd:/i', 'Re: ', $subject);
 
                 $thread = new \App\Thread();
                 $thread->body = $orig_thread->body;
@@ -359,7 +361,7 @@ class ConversationsController extends Controller
         if ($prefill_to) {
             $to = [$prefill_to => $prefill_to];
         }
-        $conversation->subject = trim($request->get('subject') ?? '');
+        $conversation->subject = $subject;
 
         return view('conversations/create', [
             'conversation' => $conversation,
