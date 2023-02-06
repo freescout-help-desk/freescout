@@ -134,7 +134,7 @@ if (!empty($_POST)) {
                 } catch (\Exception $e) {
                     $alerts[] = [
                         'type' => 'danger',
-                        'text' => 'Error occured: '.htmlspecialchars($e->getMessage()),
+                        'text' => 'Error occurred: '.htmlspecialchars($e->getMessage()),
                     ];
                 }
             }
