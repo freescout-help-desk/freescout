@@ -82,7 +82,7 @@ class CustomersController extends Controller
                 if ($path_url) {
                     $customer->photo_url = $path_url;
                 } else {
-                    $validator->errors()->add('photo_url', __('Error occured processing the image. Make sure that PHP GD extension is enabled.'));
+                    $validator->errors()->add('photo_url', __('Error occurred processing the image. Make sure that PHP GD extension is enabled.'));
                 }
             }
         });
@@ -401,7 +401,7 @@ class CustomersController extends Controller
         }
 
         if ($response['status'] == 'error' && empty($response['msg'])) {
-            $response['msg'] = 'Unknown error occured';
+            $response['msg'] = 'Unknown error occurred';
         }
 
         return \Response::json($response);

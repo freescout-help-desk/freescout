@@ -650,7 +650,7 @@ class User extends Authenticatable
             saveToSendLog($this, SendLog::STATUS_SEND_ERROR);
 
             if ($throw_exceptions) {
-                throw new \Exception(__('Error occured sending email to :email. Please check logs for more details.', ['email' => $this->email]), 1);
+                throw new \Exception(__('Error occurred sending email to :email. Please check logs for more details.', ['email' => $this->email]), 1);
             } else {
                 return false;
             }

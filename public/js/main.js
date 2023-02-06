@@ -1014,7 +1014,7 @@ function initConversation()
 						showFloatingAlert('error', response.msg);
 						loaderHide();
 					} else {
-						showFloatingAlert('error', Lang.get("messages.error_occured"));
+						showFloatingAlert('error', Lang.get("messages.error_occurred"));
 						loaderHide();
 					}
 				});
@@ -1055,7 +1055,7 @@ function initConversation()
 					} else if (typeof(response.msg) != "undefined") {
 						showFloatingAlert('error', response.msg);
 					} else {
-						showFloatingAlert('error', Lang.get("messages.error_occured"));
+						showFloatingAlert('error', Lang.get("messages.error_occurred"));
 					}
 					loaderHide();
 				});
@@ -1757,7 +1757,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 		type: 'POST',
 		success: function(response){
 			if (typeof(response.url) == "undefined" || !response.url) {
-				showFloatingAlert('error', Lang.get("messages.error_occured"));
+				showFloatingAlert('error', Lang.get("messages.error_occurred"));
 				loaderHide();
 				removeAttachment(attachment_dummy_id);
 				return;
@@ -1807,7 +1807,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 				loaderHide();
 			}
 			console.log(textStatus+": "+errorThrown);
-			showFloatingAlert('error', Lang.get("messages.error_occured"));
+			showFloatingAlert('error', Lang.get("messages.error_occurred"));
 		}
 	});
 }
@@ -2334,7 +2334,7 @@ function triggerModal(a, params)
 			        }
                 },
                 error: function(data) {
-                    modal.children().find(".modal-body").html('<p class="alert alert-danger">'+Lang.get("messages.error_occured")+'</p>');
+                    modal.children().find(".modal-body").html('<p class="alert alert-danger">'+Lang.get("messages.error_occurred")+'</p>');
                 }
             });
         }, 500);
@@ -2355,7 +2355,7 @@ function showAjaxError(response, no_autohide)
 	if (msg) {
 		showFloatingAlert('error', response.msg, no_autohide);
 	} else {
-		showFloatingAlert('error', Lang.get("messages.error_occured"), no_autohide);
+		showFloatingAlert('error', Lang.get("messages.error_occurred"), no_autohide);
 	}
 }
 
@@ -3692,12 +3692,12 @@ function initSystemStatus()
 								showAjaxError({msg: response.msg}, true);
 								button.button('reset');
 							} else {
-								showAjaxError({msg: htmlDecode(Lang.get("messages.error_occured_updating"))}, true);
+								showAjaxError({msg: htmlDecode(Lang.get("messages.error_occurred_updating"))}, true);
 								button.button('reset');
 							}
 						}, true,
 						function() {
-							showFloatingAlert('error', htmlDecode(Lang.get("messages.error_occured_updating")), true);
+							showFloatingAlert('error', htmlDecode(Lang.get("messages.error_occurred_updating")), true);
 							ajaxFinish();
 						}
 					);
@@ -5094,7 +5094,7 @@ function initConvSettings()
                     if (typeof (response.msg) != "undefined") {
                         showFloatingAlert('error', response.msg);
                     } else {
-                        showFloatingAlert('error', Lang.get("messages.error_occured"));
+                        showFloatingAlert('error', Lang.get("messages.error_occurred"));
                     }
                     loaderHide();
                 }

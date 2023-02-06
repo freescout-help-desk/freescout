@@ -14,7 +14,7 @@ class TerminateHandler
 
     public function terminate($request, $response)
     {
-        // Process events which occured
+        // Process events which occurred
         Subscription::processEvents();
     }
 }

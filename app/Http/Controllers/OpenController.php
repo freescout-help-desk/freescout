@@ -76,7 +76,7 @@ class OpenController extends Controller
                 if ($path_url) {
                     $user->photo_url = $path_url;
                 } else {
-                    $validator->errors()->add('photo_url', __('Error occured processing the image. Make sure that PHP GD extension is enabled.'));
+                    $validator->errors()->add('photo_url', __('Error occurred processing the image. Make sure that PHP GD extension is enabled.'));
                 }
             }
         });

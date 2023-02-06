@@ -208,7 +208,7 @@ class SecureController extends Controller
         }
 
         if (!$request->hasFile('file') || !$request->file('file')->isValid() || !$request->file) {
-            $response['msg'] = __('Error occured uploading file');
+            $response['msg'] = __('Error occurred uploading file');
         }
 
         if (!$response['msg']) {
@@ -220,7 +220,7 @@ class SecureController extends Controller
                 $response['status'] = 'success';
                 $response['url'] = Helper::uploadedFileUrl($filename);
             } else {
-                $response['msg'] = __('Error occured uploading file');
+                $response['msg'] = __('Error occurred uploading file');
             }
         }
 

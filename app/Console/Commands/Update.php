@@ -55,7 +55,7 @@ class Update extends Command
                 \Updater::update();
                 $this->call('freescout:after-app-update');
             } catch (\Exception $e) {
-                $this->error('Error occured: '.$e->getMessage());
+                $this->error('Error occurred: '.$e->getMessage());
             }
         } else {
             $this->info('You have the latest version installed: '.config('app.version'));

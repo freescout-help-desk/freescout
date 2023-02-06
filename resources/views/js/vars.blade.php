@@ -27,9 +27,9 @@ var LangMessages = {
         @endphp
         "{{ $locale }}.messages": {
             {{-- Add here strings which you need to be translated in JS--}}
-            "ajax_error": "{{ __("Error occured. Please check your internet connection and try again.") }}",
-            "error_occured": "{{ __("Error occured. Please try again later.") }}",
-            "error_occured_updating": "{{ __('Error occured. Please try again or try another :%a_start%update method:%a_end%', ['%a_start%' => '<a href="'.config('app.freescout_url').'/docs/update/" target="_blank">', '%a_end%' => '</a>']) }}",
+            "ajax_error": "{{ __("Error occurred. Please check your internet connection and try again.") }}",
+            "error_occurred": "{{ __("Error occurred. Please try again later.") }}",
+            "error_occurred_updating": "{{ __('Error occurred. Please try again or try another :%a_start%update method:%a_end%', ['%a_start%' => '<a href="'.config('app.freescout_url').'/docs/update/" target="_blank">', '%a_end%' => '</a>']) }}",
             "upload_attachments": "{{ __("Upload Attachments") }}",
             "saved_replies": "{{ __("Saved Replies") }}",
             "save_draft": "{{ __("Save Draft") }}",
