@@ -22,7 +22,7 @@
 	
 	@if ($dbMessage && !empty($dbMessage['status']) && $dbMessage['status'] == 'error' && !empty($dbMessage['message']))
 		<h4>Database Migration Error</h4>
-		<p>Error occured migrating database:</p>
+		<p>Error occurred migrating database:</p>
 		<p>
 			<strong class="has-error">{{ $dbMessage['message'] }}</strong>
 		</p>

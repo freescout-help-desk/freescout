@@ -66,7 +66,7 @@ class GenerateVars extends Command
                 }
                 $this->info("Created: ".substr($file_path, strlen(base_path())+1));
             } catch (\Exception $e) {
-                $msg = "Error occured saving /storage/app/public/js/vars.js. ".\Helper::formatException($e);
+                $msg = "Error occurred saving /storage/app/public/js/vars.js. ".\Helper::formatException($e);
                 \Log::error($msg);
                 $this->error($msg);
             }

@@ -694,7 +694,7 @@ class FetchEmails extends Command
                     $this->saveBounceData($new_thread, $bounced_message_id, $from);
                 }
             } else {
-                $this->logError('Error occured processing message');
+                $this->logError('Error occurred processing message');
             }
         } catch (\Exception $e) {
             $this->setSeen($message, $mailbox);

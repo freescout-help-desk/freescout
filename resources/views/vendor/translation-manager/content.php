@@ -231,7 +231,7 @@
                         <p>Translations sent!</p>
                     </div>
                     <div class="alert alert-danger error-send-translations" style="display:none;">
-                        <p id="error-send-general">Error occured sending translations. <a href="<?php echo route('system') ?>#php" target="_blank">Make sure</a> that you have PHP Zip extension enabled and check your <a href="<?php echo route('settings', ['section' => 'emails']) ?>" target="_blank">mail settings</a>.
+                        <p id="error-send-general">Error occurred sending translations. <a href="<?php echo route('system') ?>#php" target="_blank">Make sure</a> that you have PHP Zip extension enabled and check your <a href="<?php echo route('settings', ['section' => 'emails']) ?>" target="_blank">mail settings</a>.
                         </p>
                         <p id="error-send-custom">
                         </p>
@@ -260,7 +260,7 @@
                     <form class="form-inline form-remove-unpublished pull-left" method="POST" action="<?php echo action('TranslateController@postRemoveUnpublished') ?>" data-remote="true" role="form" data-confirm="Are you sure you want to remove all translations which has not been published yet?">
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                         
-                        <button type="submit" class="btn btn-link" style="padding-left:0" data-disable-with="Removing…" title="Remove non-published translations"><span class="text-danger">Remove non-npublished</span></button>
+                        <button type="submit" class="btn btn-link" style="padding-left:0" data-disable-with="Removing…" title="Remove non-published translations"><span class="text-danger">Remove non-published</span></button>
                     </form>
                 </fieldset>
 

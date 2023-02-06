@@ -98,7 +98,7 @@ class ModuleInstall extends Command
         try {
             symlink($to, $from);
         } catch (\Exception $e) {
-            $this->error('Error occured creating ['.$from.'] symlink: '.$e->getMessage());
+            $this->error('Error occurred creating ['.$from.'] symlink: '.$e->getMessage());
         }
 
         $this->info('The ['.$from.'] symlink has been created');

@@ -233,10 +233,10 @@ class ModulesController extends Controller
                                             \Session::flash('flash_error_floating', $response['msg']);
                                         }
 
-                                        \Session::flash('flash_error_unescaped', __('Error occured downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']));
+                                        \Session::flash('flash_error_unescaped', __('Error occurred downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']));
                                     }
                                 } else {
-                                    $response['msg'] = __('Error occured. Please try again later.');
+                                    $response['msg'] = __('Error occurred. Please try again later.');
                                 }
                             } else {
                                 // Just activate license
@@ -248,7 +248,7 @@ class ModulesController extends Controller
                         } elseif (!empty($result['error'])) {
                             $response['msg'] = $this->getErrorMessage($result['error'], $result);
                         } else {
-                            $response['msg'] = __('Error occured. Please try again later.');
+                            $response['msg'] = __('Error occurred. Please try again later.');
                         }
                     }
                 }
@@ -328,7 +328,7 @@ class ModulesController extends Controller
                     }
 
                     $type = 'danger';
-                    $msg = __('Error occured activating ":name" module', ['name' => $name]);
+                    $msg = __('Error occurred activating ":name" module', ['name' => $name]);
                     if (session('flashes_floating') && is_array(session('flashes_floating'))) {
                         // If there was any error, module has been deactivated via modules.register_error filter
                         $msg = '';
@@ -349,7 +349,7 @@ class ModulesController extends Controller
                         $public_folder = public_path().\Module::getPublicPath($alias);
                         if (!file_exists($public_folder)) {
                             $type = 'danger';
-                            $msg = 'Error occured creating a module symlink ('.$public_folder.'). Please check folder permissions.';
+                            $msg = 'Error occurred creating a module symlink ('.$public_folder.'). Please check folder permissions.';
                             \App\Module::setActive($alias, false);
                             \Artisan::call('freescout:clear-cache');
                         }
@@ -388,10 +388,10 @@ class ModulesController extends Controller
                 }
 
                 $type = 'danger';
-                $msg = __('Error occured deactivating :name module', ['name' => $name]);
+                $msg = __('Error occurred deactivating :name module', ['name' => $name]);
                 if (strstr($output, 'Configuration cached successfully')) {
                     $type = 'success';
-                    $msg = __('":name" module successfully DEactivated!', ['name' => $name]);
+                    $msg = __('":name" module successfully Deactivated!', ['name' => $name]);
                 }
 
                 // \Session::flash does not work after BufferedOutput
@@ -438,7 +438,7 @@ class ModulesController extends Controller
 
                             // Flash does not work here.
                             $flash = [
-                                'text'      => '<strong>'.__('License successfully DEactivated!').'</strong>',
+                                'text'      => '<strong>'.__('License successfully Deactivated!').'</strong>',
                                 'unescaped' => true,
                                 'type'      => 'success',
                             ];
@@ -448,7 +448,7 @@ class ModulesController extends Controller
                         } elseif (!empty($result['error'])) {
                             $response['msg'] = $this->getErrorMessage($result['error'], $result);
                         } else {
-                            $response['msg'] = __('Error occured. Please try again later.');
+                            $response['msg'] = __('Error occurred. Please try again later.');
                         }
                     }
                 }
@@ -536,12 +536,12 @@ class ModulesController extends Controller
                                 \Session::flash('flash_error_floating', $response['msg']);
                             }
 
-                            \Session::flash('flash_error_unescaped', __('Error occured downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']));
+                            \Session::flash('flash_error_unescaped', __('Error occurred downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']));
                         }
                     } elseif ($license_details['status'] && $response['msg'] = $this->getErrorMessage($license_details['status'])) {
                         //$response['msg'] = ;
                     } else {
-                        $response['msg'] = __('Error occured. Please try again later.');
+                        $response['msg'] = __('Error occurred. Please try again later.');
                     }
                 }
 
@@ -558,7 +558,7 @@ class ModulesController extends Controller
                     }
 
                     $type = 'danger';
-                    $msg = __('Error occured activating ":name" module', ['name' => $name]);
+                    $msg = __('Error occurred activating ":name" module', ['name' => $name]);
                     if (session('flashes_floating') && is_array(session('flashes_floating'))) {
                         // If there was any error, module has been deactivated via modules.register_error filter
                         $msg = '';
@@ -592,7 +592,7 @@ class ModulesController extends Controller
         }
 
         if ($response['status'] == 'error' && empty($response['msg'])) {
-            $response['msg'] = 'Unknown error occured';
+            $response['msg'] = 'Unknown error occurred';
         }
 
         return \Response::json($response);
