@@ -6031,6 +6031,15 @@ var LinkPopover = /** @class */ (function () {
             },
             'summernote.disable summernote.dialog.shown': function () {
                 _this.hide();
+            },
+            'summernote.blur': (we, event) => {
+                if (event.originalEvent && event.originalEvent.relatedTarget) {
+                    if (!this.$popover[0].contains(event.originalEvent.relatedTarget)) {
+                        this.hide();
+                    }
+                } else {
+                    this.hide();
+                }
             }
         };
     }
@@ -6061,7 +6070,7 @@ var LinkPopover = /** @class */ (function () {
         if (rng.isCollapsed() && rng.isOnAnchor()) {
             var anchor = dom.ancestor(rng.sc, dom.isAnchor);
             var href = $$1(anchor).attr('href');
-            this.$popover.find('a').attr('href', href).html(href);
+            this.$popover.find('a').attr('href', href).text(href);
             var pos = dom.posFromPlaceholder(anchor);
             this.$popover.css({
                 display: 'block',
