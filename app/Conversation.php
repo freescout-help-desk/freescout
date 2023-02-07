@@ -1299,6 +1299,11 @@ class Conversation extends Model
             'meta'        => [Thread::META_MERGED_INTO_CONV => $this->id],
         ]);
 
+        if ($merge_conversation->has_attachments && !$this->has_attachments) {
+            $this->has_attachments = true;
+            $this->save();
+        }
+
         // Delete old conversation.
         $merge_conversation->deleteToFolder($user);
 
