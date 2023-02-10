@@ -11,6 +11,7 @@ about: Create a general help request
 * Docker questions should go here: https://github.com/tiredofit/docker-freescout/issues
 * Create separate issues for different topics - no need to mix all your problems into one issue.
 * Questions on issues with payments for modules should be sent by email: https://freescout.net/contact-us/
-* Mentioning how much you've spent on modules is the way to being banned.
+* Don't forget that you are not the project manager. Try to be humble, polite, friendly and positive. Otherwise your account may be banned.
+* Mentioning how much you've spent on modules is the way to be banned.
 
 Still here? Well clean this out and go ahead :)

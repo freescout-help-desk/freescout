@@ -67,9 +67,9 @@ class Subscription extends Model
     ];
 
     /**
-     * List of events that occured.
+     * List of events that occurred.
      */
-    public static $occured_events = [];
+    public static $occurred_events = [];
 
     public $timestamps = false;
 
@@ -288,7 +288,7 @@ class Subscription extends Model
     }
 
     /**
-     * Process events which occured.
+     * Process events which occurred.
      */
     public static function processEvents()
     {
@@ -297,7 +297,7 @@ class Subscription extends Model
         $delay = now()->addSeconds(Conversation::UNDO_TIMOUT);
 
         // Collect into notify array information about all users who need to be notified
-        foreach (self::$occured_events as $event) {
+        foreach (self::$occurred_events as $event) {
             // Get mailbox users ids
             $mailbox_user_ids = [];
             foreach (self::$mediums as $medium) {
@@ -405,7 +405,7 @@ class Subscription extends Model
         // - Mobile
         \Eventy::action('subscription.process_events', $notify);
 
-        self::$occured_events = [];
+        self::$occurred_events = [];
     }
 
     /**
@@ -432,7 +432,7 @@ class Subscription extends Model
      */
     public static function registerEvent($event_type, $conversation, $caused_by_user_id, $process_now = false)
     {
-        self::$occured_events[] = [
+        self::$occurred_events[] = [
             'event_type'        => $event_type,
             'conversation'      => $conversation,
             'caused_by_user_id' => $caused_by_user_id,
@@ -440,7 +440,7 @@ class Subscription extends Model
 
         // Automatically add EVENT_TYPE_UPDATED
         if (!in_array($event_type, [self::EVENT_TYPE_UPDATED, self::EVENT_TYPE_NEW])) {
-            self::$occured_events[] = [
+            self::$occurred_events[] = [
                 'event_type'        => self::EVENT_TYPE_UPDATED,
                 'conversation'      => $conversation,
                 'caused_by_user_id' => $caused_by_user_id,

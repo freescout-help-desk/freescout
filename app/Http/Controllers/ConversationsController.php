@@ -2133,7 +2133,7 @@ class ConversationsController extends Controller
         }
 
         if ($response['status'] == 'error' && empty($response['msg'])) {
-            $response['msg'] = 'Unknown error occured';
+            $response['msg'] = 'Unknown error occurred';
         }
 
         return \Response::json($response);
@@ -2424,7 +2424,7 @@ class ConversationsController extends Controller
         }
 
         if (!$request->hasFile('file') || !$request->file('file')->isValid() || !$request->file) {
-            $response['msg'] = __('Error occured uploading file');
+            $response['msg'] = __('Error occurred uploading file');
         }
 
         if (!$response['msg']) {
@@ -2450,7 +2450,7 @@ class ConversationsController extends Controller
                 $response['url'] = $attachment->url();
                 $response['attachment_id'] = $attachment->id;
             } else {
-                $response['msg'] = __('Error occured uploading file');
+                $response['msg'] = __('Error occurred uploading file');
             }
         }
 

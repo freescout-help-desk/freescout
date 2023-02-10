@@ -310,7 +310,7 @@ class SystemController extends Controller
 
                     // Artisan::output()
                 } catch (\Exception $e) {
-                    $response['msg'] = __('Error occured. Please try again or try another :%a_start%update method:%a_end%', ['%a_start%' => '<a href="'.config('app.freescout_url').'/docs/update/" target="_blank">', '%a_end%' => '</a>']);
+                    $response['msg'] = __('Error occurred. Please try again or try another :%a_start%update method:%a_end%', ['%a_start%' => '<a href="'.config('app.freescout_url').'/docs/update/" target="_blank">', '%a_end%' => '</a>']);
                     $response['msg'] .= '<br/><br/>'.$e->getMessage();
 
                     \Helper::logException($e);
@@ -328,7 +328,7 @@ class SystemController extends Controller
                         $response['new_version_available'] = \Updater::isNewVersionAvailable(config('app.version'));
                         $response['status'] = 'success';
                     } catch (\Exception $e) {
-                        $response['msg'] = __('Error occured').': '.$e->getMessage();
+                        $response['msg'] = __('Error occurred').': '.$e->getMessage();
                     }
                     if (!$response['msg'] && !$response['new_version_available']) {
                         // Adding session flash is useless as cache is cleated
@@ -345,7 +345,7 @@ class SystemController extends Controller
         }
 
         if ($response['status'] == 'error' && empty($response['msg'])) {
-            $response['msg'] = 'Unknown error occured';
+            $response['msg'] = 'Unknown error occurred';
         }
 
         return \Response::json($response);

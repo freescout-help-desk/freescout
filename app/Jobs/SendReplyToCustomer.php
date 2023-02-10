@@ -302,19 +302,60 @@ class SendReplyToCustomer implements ShouldQueue
                     $envelope[$i] = preg_replace("/[\r\n]/", '', $envelope_value);
                 }
 
+                $parts = [];
+
+                // Multipart flag.
+                if ($this->last_thread->has_attachments) {
+                    $multipart = [];
+                    $multipart["type"] = TYPEMULTIPART;
+                    $multipart["subtype"] = "alternative";
+                    $parts[] = $multipart;
+                }
+
+                // Body.
                 $part1['type'] = TYPETEXT;
                 $part1['subtype'] = 'html';
                 $part1['contents.data'] = $reply_mail->render();
                 $part1['charset'] = 'utf-8';
+
+                $parts[] = $part1;
+
+                // Add attachments.
+                if ($this->last_thread->has_attachments) {
+
+                    foreach ($this->last_thread->attachments as $attachment) {
+
+                        if ($attachment->embedded) {
+                            continue;
+                        }
+
+                        if ($attachment->fileExists()) {
+                            $part = [];
+                            $part["type"] = 'APPLICATION';
+                            $part["encoding"] = ENCBASE64;
+                            $part["subtype"] = "octet-stream";
+                            $part["description"] = $attachment->file_name;
+                            $part['disposition.type'] = 'attachment';
+                            $part['disposition'] = array('filename' => $attachment->file_name);
+                            $part['type.parameters'] = array('name' => $attachment->file_name);
+                            $part["description"] = '';
+                            $part["contents.data"] = base64_encode($attachment->getFileContents());
+                            
+                            $parts[] = $part;
+                        } else {
+                            \Log::error('[IMAP Folder To Save Outgoing Replies] Thread: '.$this->last_thread->id.'. Attachment file not find on disk: '.$attachment->getLocalFilePath());
+                        }
+                    }
+                }
 
                 try {
                     // getFolder does not work if sent folder has spaces.
                     $folder = $client->getFolder($imap_sent_folder);
                     if ($folder) {
                         if (get_class($client) == 'Webklex\PHPIMAP\Client') {
-                            $folder->appendMessage(imap_mail_compose($envelope, [$part1]), ['Seen'], now()->format('d-M-Y H:i:s O'));
+                            $folder->appendMessage(imap_mail_compose($envelope, $parts), ['Seen'], now()->format('d-M-Y H:i:s O'));
                         } else {
-                            $folder->appendMessage(imap_mail_compose($envelope, [$part1]), '\Seen', now()->format('d-M-Y H:i:s O'));
+                            $folder->appendMessage(imap_mail_compose($envelope, $parts), '\Seen', now()->format('d-M-Y H:i:s O'));
                         }
                     } else {
                         \Log::error('Could not save outgoing reply to the IMAP folder (make sure IMAP folder does not have spaces - folders with spaces do not work): '.$imap_sent_folder);

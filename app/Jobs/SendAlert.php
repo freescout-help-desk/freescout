@@ -52,18 +52,13 @@ class SendAlert implements ShouldQueue
         // Configure mail driver according to Mailbox settings
         \MailHelper::setSystemMailDriver();
 
-        $recipients = [];
-
-        $super_admin = User::getSuperAdmin();
-        if ($super_admin) {
-            $recipients[] = $super_admin->email;
-        }
+        $recipients = User::nonDeleted()->where('role', User::ROLE_ADMIN)->pluck('email')->toArray();
 
         $extra = \MailHelper::sanitizeEmails(\Option::get('alert_recipients'));
         if ($extra) {
             $recipients = array_unique(array_merge($recipients, $extra));
         }
-
+      
         foreach ($recipients as $recipient) {
             $exception = null;
 
