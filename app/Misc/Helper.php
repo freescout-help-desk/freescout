@@ -757,10 +757,15 @@ class Helper
     {
         $client = new \GuzzleHttp\Client();
 
-        $client->request('GET', $url, [
-            'sink' => $destinationFilePath,
-            'connect_timeout' => 7,
-        ]);
+        try {
+            $client->request('GET', $url, [
+                'sink' => $destinationFilePath,
+                'timeout' => 300, // seconds
+                'connect_timeout' => 7,
+            ]);
+        } catch (\Exception $e) {
+            self::logException($e);
+        }
     }
 
     /**

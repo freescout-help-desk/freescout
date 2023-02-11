@@ -796,6 +796,7 @@ class Mail
                 //curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $post_params);
                 curl_setopt($curl, CURLOPT_HTTPHEADER, array("application/x-www-form-urlencoded"));
+                curl_setopt($curl, CURLOPT_TIMEOUT, 180);
                 curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 

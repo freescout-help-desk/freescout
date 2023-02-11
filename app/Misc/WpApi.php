@@ -38,6 +38,7 @@ class WpApi
             }
             $url .= 'v='.config('app.version');
             return $client->request('POST', $url, [
+                'timeout' => config('app.curl_timeout'), // seconds
                 'connect_timeout' => 10,
                 'form_params' => $params,
                 'proxy' => config('app.proxy'),
@@ -45,6 +46,7 @@ class WpApi
         } else {
             $params['v'] = config('app.version');
             return $client->request('GET', $url, [
+                'timeout' => config('app.curl_timeout'), // seconds
                 'connect_timeout' => 10,
                 'query' => $params,
                 'proxy' => config('app.proxy'),
