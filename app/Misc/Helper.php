@@ -540,6 +540,11 @@ class Helper
      */
     public static function textPreview($text, $length = self::PREVIEW_MAXLENGTH)
     {
+        $text = strtr($text, [
+            '</div>' => ' </div>',
+            '</p>' => ' </p>'
+        ]);
+
         $text = self::stripTags($text);
 
         $text = mb_substr($text, 0, $length);
