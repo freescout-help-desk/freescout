@@ -665,6 +665,7 @@ class Conversation extends Model
 
         $order_bys = $folder->getOrderByArray();
 
+        // Next.
         if ($mode != 'prev') {
             // Try to get next conversation
             $query_next = $query;
@@ -683,19 +684,12 @@ class Conversation extends Model
             }
             $conversation = $query_next->first();
         }
-        // echo 'folder_id'.$folder->id.'|';
-        // echo 'id'.$this->id.'|';
-        // echo 'status'.self::STATUS_ACTIVE.'|';
-        // echo '$this->status'.$this->status.'|';
-        // echo '$this->last_reply_at'.$this->last_reply_at.'|';
-        // echo $query_next->toSql();
-        // exit();
 
         if ($conversation || $mode == 'next') {
             return $conversation;
         }
 
-        // Try to get previous conversation
+        // Prev.
         $query_prev = $query;
         foreach ($order_bys as $order_by) {
             foreach ($order_by as $field => $sort_order) {
@@ -707,7 +701,7 @@ class Conversation extends Model
                 } else {
                     $query_prev->where($field, '>=', $this->$field);
                 }
-                $query_prev->orderBy($field, $sort_order);
+                $query_prev->orderBy($field, $sort_order == 'asc' ? 'desc' : 'asc');
             }
         }
 
