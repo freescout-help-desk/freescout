@@ -263,6 +263,7 @@
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/ChildDef/List.php",
             "vendor/javoscript/laravel-macroable-models/src/MacroableModels.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/EmbeddedFile.php",
+            "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php",
             "vendor/natxet/cssmin/src/CssMin.php"
         ]
     },
