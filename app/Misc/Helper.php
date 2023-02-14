@@ -540,6 +540,11 @@ class Helper
      */
     public static function textPreview($text, $length = self::PREVIEW_MAXLENGTH)
     {
+        $text = strtr($text, [
+            '</div>' => ' </div>',
+            '</p>' => ' </p>'
+        ]);
+
         $text = self::stripTags($text);
 
         $text = mb_substr($text, 0, $length);
@@ -757,10 +762,15 @@ class Helper
     {
         $client = new \GuzzleHttp\Client();
 
-        $client->request('GET', $url, [
-            'sink' => $destinationFilePath,
-            'connect_timeout' => 7,
-        ]);
+        try {
+            $client->request('GET', $url, [
+                'sink' => $destinationFilePath,
+                'timeout' => 300, // seconds
+                'connect_timeout' => 7,
+            ]);
+        } catch (\Exception $e) {
+            self::logException($e);
+        }
     }
 
     /**

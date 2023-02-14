@@ -705,7 +705,11 @@ class FetchEmails extends Command
     // Try to get "From:" from body.
     public function getOriginalSenderFromFwd($body)
     {
-        preg_match("/[\"'<:]([^\"'<:]+@[^\"'>:]+)[\"'>:]/", $body, $b);
+        // https://github.com/freescout-helpdesk/freescout/issues/2672
+        $body = preg_replace("/[\"']cid:/", '!', $body);
+
+        preg_match("/[\"'<:]([^\"'<:!]+@[^\"'>:]+)[\"'>:]/", $body, $b);
+
         $email = $b[1] ?? '';
         // https://github.com/freescout-helpdesk/freescout/issues/2517
         $email = preg_replace("#.*&lt(.*)&gt.*#", "$1", $email);
