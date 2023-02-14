@@ -540,7 +540,7 @@ class Helper
      */
     public static function textPreview($text, $length = self::PREVIEW_MAXLENGTH)
     {
-        $text = strtr($text, [
+        $text = strtr($text ?? '', [
             '</div>' => ' </div>',
             '</p>' => ' </p>'
         ]);
