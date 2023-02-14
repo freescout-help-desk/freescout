@@ -263,7 +263,7 @@ class MailboxesController extends Controller
 
         $user = auth()->user();
 
-        $mailbox->users()->sync($request->users);
+        $mailbox->users()->sync(\Eventy::filter('mailbox.permission_users', $request->users, $id));
         $mailbox->syncPersonalFolders($request->users);
 
         // Save admins settings.
@@ -285,7 +285,7 @@ class MailboxesController extends Controller
             $access = [];
             $mailbox_with_settings = $mailbox_user->mailboxesWithSettings()->where('mailbox_id', $id)->first();
 
-            foreach (\App\Mailbox::$access_permissions as $perm) {
+            foreach (Mailbox::$access_permissions as $perm) {
                 if (!empty($request->managers[$mailbox_user->id]['access'][$perm])) {
                     $access[] = $request->managers[$mailbox_user->id]['access'][$perm];
                 }
