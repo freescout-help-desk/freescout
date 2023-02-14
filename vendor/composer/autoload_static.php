@@ -3190,6 +3190,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Swift_Transport_MailInvoker' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/MailInvoker.php',
         'Swift_Transport_MailTransport' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/MailTransport.php',
         'Swift_Transport_SimpleMailInvoker' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/SimpleMailInvoker.php',
+        'Swift_Transport_StreamBuffer' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php',
         'Symfony\\Component\\Console\\Application' => __DIR__ . '/..' . '/symfony/console/Application.php',
         'Symfony\\Component\\Console\\CommandLoader\\CommandLoaderInterface' => __DIR__ . '/..' . '/symfony/console/CommandLoader/CommandLoaderInterface.php',
         'Symfony\\Component\\Console\\CommandLoader\\ContainerCommandLoader' => __DIR__ . '/..' . '/symfony/console/CommandLoader/ContainerCommandLoader.php',

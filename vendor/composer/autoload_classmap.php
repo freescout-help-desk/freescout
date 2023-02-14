@@ -2507,6 +2507,7 @@ return array(
     'Swift_Transport_MailInvoker' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/MailInvoker.php',
     'Swift_Transport_MailTransport' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/MailTransport.php',
     'Swift_Transport_SimpleMailInvoker' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/SimpleMailInvoker.php',
+    'Swift_Transport_StreamBuffer' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php',
     'Symfony\\Component\\Console\\Application' => $vendorDir . '/symfony/console/Application.php',
     'Symfony\\Component\\Console\\CommandLoader\\CommandLoaderInterface' => $vendorDir . '/symfony/console/CommandLoader/CommandLoaderInterface.php',
     'Symfony\\Component\\Console\\CommandLoader\\ContainerCommandLoader' => $vendorDir . '/symfony/console/CommandLoader/ContainerCommandLoader.php',
