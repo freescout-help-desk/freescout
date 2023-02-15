@@ -37,6 +37,7 @@ class ConversationObserver
     public function deleting(Conversation $conversation)
     {
         $conversation->threads()->delete();
+        $conversation->followers()->delete();
 
         \Eventy::action('conversation.deleting', $conversation);
     }
