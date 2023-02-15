@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Follower;
 use App\Mailbox;
 use App\Subscription;
 use App\User;
@@ -40,5 +41,6 @@ class UserObserver
     public function deleting(User $user)
     {
         $user->folders()->delete();
+        Follower::whereIn('user_id', $user->id)->delete();
     }
 }
