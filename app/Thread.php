@@ -1034,12 +1034,16 @@ class Thread extends Model
                         }
                     } else {
                         // URL.
-                        $uploaded_file = \Helper::downloadRemoteFileAsTmpFile($attachment['file_url']);
-                        if (!$uploaded_file) {
+                        $file_path = \Helper::downloadRemoteFileAsTmp($attachment['file_url']);
+                        if (!$file_path) {
                             continue;
                         }
+                        $uploaded_file = new \Illuminate\Http\UploadedFile(
+                            $file_path, basename($file_path),
+                            null, null, true
+                        );
                         if (empty($attachment['mime_type'])) {
-                            $attachment['mime_type'] = $uploaded_file->getClientMimeType();
+                            $attachment['mime_type'] = mime_content_type($file_path);
                         }
                     }
                 }
@@ -1051,7 +1055,7 @@ class Thread extends Model
                     $attachment['mime_type'],
                     null,
                     $content,
-                    $uploaded_file = $uploaded_file,
+                    $uploaded_file,
                     $embedded = false,
                     $thread->id,
                     $user_id ?? null

@@ -1562,6 +1562,8 @@ class Helper
         return 'fs-'.substr(md5(config('app.key').'temp_prefix'), 0, 8).'_';
     }
 
+    // Keep in mind that $uploaded_file->getClientMimeType() returns
+    // incorrect mime type for images: application/octet-stream
     public static function downloadRemoteFileAsTmpFile($uri)
     {
         $file_path = self::downloadRemoteFileAsTmp($uri);
