@@ -131,7 +131,7 @@ class CustomersController extends Controller
                     'a_end'           => '</a></strong>',
                 ]).' ';
 
-                $new_emails_change_customer[] = $email->email;
+                $new_emails_change_customer[] = $email;
             }
         }
 
@@ -157,17 +157,22 @@ class CustomersController extends Controller
 
         $customer->syncEmails($request->emails);
 
-        // Update customer_id in all conversations to the current customer
+        // Update customer_id in all conversations added to the current customer.
         foreach ($new_emails_change_customer as $new_email) {
-            $conversations_to_change_customer = Conversation::where('customer_email', $new_email)->get();
+            if ($new_email->customer_id) {
+                $conversations_to_change_customer = Conversation::where('customer_id', $new_email->customer_id)->get();
+            } else {
+                // This does not work for phone conversations.
+                $conversations_to_change_customer = Conversation::where('customer_email', $new_email->email)->get();
+            }
             foreach ($conversations_to_change_customer as $conversation) {
                 // We have to pass user to create line item and let others know that customer has changed.
                 // Conversation may be even in other mailbox where user does not have an access.
-                $conversation->changeCustomer($new_email, $customer, auth()->user());
+                $conversation->changeCustomer($new_email->email, $customer, auth()->user());
             }
         }
 
-        // Update customer in conversations for removed emails
+        // Update customer in conversations for emails removed from current customer.
         foreach ($removed_emails as $removed_email) {
             $email = Email::where('email', $removed_email)->first();
             if ($email) {
