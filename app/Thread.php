@@ -1044,6 +1044,9 @@ class Thread extends Model
                         );
                         if (empty($attachment['mime_type'])) {
                             $attachment['mime_type'] = mime_content_type($file_path);
+                            if (empty($attachment['mime_type'])) {
+                                $attachment['mime_type'] = $uploaded_file->getMimeType();
+                            }
                         }
                     }
                 }
