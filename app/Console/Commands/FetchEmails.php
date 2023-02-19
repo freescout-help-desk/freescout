@@ -948,6 +948,7 @@ class FetchEmails extends Command
         }
 
         // Save extra recipients to CC
+        $conv_cc = $conversation->getCcArray();
         $conversation->setCc(array_merge($cc, $to));
         $conversation->setBcc($bcc);
 
@@ -966,6 +967,11 @@ class FetchEmails extends Command
 
         // Update folders counters
         $conversation->mailbox->updateFoldersCounters();
+
+        // Set CC for the thread to send user reply to CCed emails also.
+        if ($conv_cc) {
+            $cc = array_merge($cc, $conv_cc);
+        }
 
         // Thread
         $thread = new Thread();
