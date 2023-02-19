@@ -195,6 +195,13 @@ class Conversation extends Model
     public static $starred_conversation_ids = [];
 
     /**
+     * Cache of the conversations followed by user.
+     *
+     * @var array
+     */
+    public static $followed_conversation_ids = [];
+
+    /**
      * Cache of the app.custom_number option.
      */
     public static $custom_number_cache = null;
@@ -1027,6 +1034,78 @@ class Conversation extends Model
     }
 
     /**
+     * Check if conversation is followed.
+     * For each user followed conversations are cached.
+     */
+    public function isFollowedByUser($user_id = null)
+    {
+        if (!$user_id) {
+            $user = auth()->user();
+            if ($user) {
+                $user_id = $user->id;
+            } else {
+                return false;
+            }
+        }
+        $mailbox_id = $this->mailbox_id;
+
+        // Get ids of all the conversations followed by user and cache them
+        if (!isset(self::$followed_conversation_ids[$mailbox_id])) {
+            
+            self::$followed_conversation_ids[$mailbox_id] = self::getUserFollowingConversationIds($mailbox_id, $user_id);
+        }
+
+        if (self::$followed_conversation_ids[$mailbox_id]) {
+            return in_array($this->id, self::$followed_conversation_ids[$mailbox_id]);
+        } else {
+            return false;
+        }
+    }
+
+    public static function clearFollowedByUserCache($user_id, $mailbox_id)
+    {
+        if (!$user_id) {
+            $user = auth()->user();
+            if ($user) {
+                $user_id = $user->id;
+            } else {
+                return false;
+            }
+        }
+        \Cache::forget('user_following_conversations_'.$user_id.'_'.$mailbox_id);
+    }
+
+    /**
+     * Get IDs of the conversations followed by user.
+     */
+    public static function getUserFollowingConversationIds($mailbox_id, $user_id = null)
+    {
+        return \Cache::rememberForever('user_following_conversations_'.$user_id.'_'.$mailbox_id, function () use ($mailbox_id, $user_id) {
+            // Get user's folder
+            $folder = Folder::select('id')
+                        ->where('mailbox_id', $mailbox_id)
+                        ->where('user_id', $user_id)
+                        ->where('type', Folder::TYPE_FOLLOWING)
+                        ->first();
+
+            if ($folder) {
+                return Follower::where('user_id', $user_id)
+                    ->pluck('conversation_id')
+                    ->toArray();
+            } else {
+                activity()
+                    ->withProperties([
+                        'error'    => "Folder not found (mailbox_id: $mailbox_id, user_id: $user_id)",
+                     ])
+                    ->useLog(\App\ActivityLog::NAME_SYSTEM)
+                    ->log(\App\ActivityLog::DESCRIPTION_SYSTEM_ERROR);
+
+                return [];
+            }
+        });
+    }
+
+    /**
      * Get text for the assignee.
      *
      * @return string
@@ -1071,6 +1150,9 @@ class Conversation extends Model
         } elseif ($folder->type == Folder::TYPE_STARRED) {
             $starred_conversation_ids = self::getUserStarredConversationIds($folder->mailbox_id, $user_id);
             $query_conversations = self::whereIn('id', $starred_conversation_ids);
+        } elseif ($folder->type == Folder::TYPE_FOLLOWING) {
+            $followed_conversation_ids = self::getUserFollowingConversationIds($folder->mailbox_id, $user_id);
+            $query_conversations = self::whereIn('id', $followed_conversation_ids);
         } elseif ($folder->isIndirect()) {
 
             // Conversations are connected to folder via conversation_folder table.
@@ -1197,6 +1279,8 @@ class Conversation extends Model
             $this->removeFromFolder($folder->type, $folder->user_id);
             if ($folder->type == Folder::TYPE_STARRED) {
                 self::clearStarredByUserCache($folder->user_id, $this->mailbox_id);
+            } elseif ($folder->type == Folder::TYPE_FOLLOWING) {
+                self::clearFollowedByUserCache($folder->user_id, $this->mailbox_id);
             }
         }
 
@@ -1224,6 +1308,8 @@ class Conversation extends Model
                             $this->addToFolder($folder->type, $folder->user_id);
                             if ($folder->type == Folder::TYPE_STARRED) {
                                 self::clearStarredByUserCache($folder->user_id, $mailbox->id);
+                            } elseif ($folder->type == Folder::TYPE_FOLLOWING) {
+                                self::clearFollowedByUserCache($folder->user_id, $mailbox->id);
                             }
                             break;
                         }

@@ -1481,9 +1481,11 @@ class ConversationsController extends Controller
                         $conversation->deleteThreads();
                         $conversation->delete();
 
-                        // Draft may be present in Starred folder.
+                        // Draft may be present in Starred or Following folder.
                         Conversation::clearStarredByUserCache($user->id, $mailbox->id);
+                        Conversation::clearFollowedByUserCache($user->id, $mailbox->id);
                         $mailbox->updateFoldersCounters(Folder::TYPE_STARRED);
+                        $mailbox->updateFoldersCounters(Folder::TYPE_FOLLOWING);
 
                         $flash_message = __('Deleted draft');
                         \Session::flash('flash_success_floating', $flash_message);
@@ -2082,6 +2084,8 @@ class ConversationsController extends Controller
                     } else {
                         $response['msg_success'] = __('Unfollowed');
                     }
+                    Conversation::clearFollowedByUserCache($user->id, $conversation->mailbox_id);
+                    $conversation->mailbox->updateFoldersCounters(Folder::TYPE_FOLLOWING);
                 }
 
                 break;

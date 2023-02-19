@@ -14,6 +14,7 @@ class Folder extends Model
     const TYPE_MINE = 20;
     // User specific
     const TYPE_STARRED = 25;
+    const TYPE_FOLLOWING = 26;
     const TYPE_DRAFTS = 30;
     const TYPE_ASSIGNED = 40;
     const TYPE_CLOSED = 60;
@@ -29,6 +30,7 @@ class Folder extends Model
         self::TYPE_CLOSED     => 'Closed',
         self::TYPE_SPAM       => 'Spam',
         self::TYPE_DELETED    => 'Deleted',
+        self::TYPE_FOLLOWING  => 'Following'
     ];
 
     /**
@@ -43,6 +45,7 @@ class Folder extends Model
         self::TYPE_SPAM       => 'ban-circle',
         self::TYPE_DELETED    => 'trash',
         self::TYPE_STARRED    => 'star',
+        self::TYPE_FOLLOWING  => 'bell'
     ];
 
     // Public non-user specific mailbox types
@@ -60,6 +63,7 @@ class Folder extends Model
     public static $personal_types = [
         self::TYPE_MINE,
         self::TYPE_STARRED,
+        self::TYPE_FOLLOWING
     ];
 
     // Folder types to which conversations are added via conversation_folder table.
@@ -122,6 +126,8 @@ class Folder extends Model
                 return __('Deleted');
             case self::TYPE_STARRED:
                 return __('Starred');
+            case self::TYPE_FOLLOWING:
+                return __('Following');
             default:
                 return __(\Eventy::filter('folder.type_name', self::$types[$this->type] ?? '', $this));
         }
@@ -168,6 +174,10 @@ class Folder extends Model
 
             case self::TYPE_DELETED:
                 $order_by = [['user_updated_at' => 'desc']];
+                break;
+
+            case self::TYPE_FOLLOWING:
+                $order_by = [['updated_at' => 'desc']];
                 break;
 
             default:
@@ -239,6 +249,12 @@ class Folder extends Model
         } elseif ($this->type == self::TYPE_STARRED) {
             $this->active_count = count(Conversation::getUserStarredConversationIds($this->mailbox_id, $this->user_id));
             $this->total_count = $this->active_count;
+        } elseif ($this->type == self::TYPE_FOLLOWING) {
+            $this->active_count = Follower::where('followers.user_id', $this->user_id)
+                ->join('conversations', 'conversations.id', '=', 'followers.conversation_id')
+                ->where('status', Conversation::STATUS_ACTIVE)
+                ->count();
+            $this->total_count = Follower::where('user_id', $this->user_id)->count();
         } elseif ($this->type == self::TYPE_DELETED) {
             $this->active_count = $this->conversations()->where('state', Conversation::STATE_DELETED)
                 ->count();
