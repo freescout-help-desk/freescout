@@ -42,6 +42,9 @@
                                         </p>
 				                        <p style="display:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#444; line-height:22px; font-size:16px; margin:0;">
                                             {{ __('Replying to this notification will email :name', ['name' => $customer->getFirstName(true)]) }} (<a href="mailto:{{ $conversation->customer_email }}" style="color:#3f8abf; text-decoration:none;">{{ $conversation->customer_email }}</a>)
+                                            @if ($conversation->getCcArray())
+                                            	<br/><small>CC: {{ implode($conversation->getCcArray()) }}</small>
+                                            @endif
                                         </p>
 				                    </td>
 				                </tr>
