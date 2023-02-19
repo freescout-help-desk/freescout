@@ -278,7 +278,7 @@
     "Toggle Navigation": "Přepínání navigace",
     "Tools": "Nástroje",
     "Total": "Celkem",
-    "total conversations": "celkový počet konverzací",
+    ":count conversations": ":count celkový počet konverzací",
     "Translate": "Překlad",
     "Type :delete": "Typ :delete",
     "Unable to process your update": "Nelze zpracovat vaši aktualizaci",

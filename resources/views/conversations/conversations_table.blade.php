@@ -194,7 +194,7 @@
             <tr>
                 <td class="conv-totals" colspan="{{ $col_counter-3 }}">
                     @if ($conversations->total())
-                        <strong>{{ $conversations->total() }}</strong> {{ __('total conversations') }}&nbsp;|&nbsp; 
+                        {!! __(':count conversations', ['count' => '<strong>'.$conversations->total().'</strong>']) !!}&nbsp;|&nbsp; 
                     @endif
                     @if (isset($folder->active_count) && !$folder->isIndirect())
                         <strong>{{ $folder->getActiveCount() }}</strong> {{ __('active') }}&nbsp;|&nbsp; 

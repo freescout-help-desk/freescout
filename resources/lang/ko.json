@@ -38,7 +38,7 @@
     "Toggle Navigation": "토글 네비게이션",
     "Tools": "도구",
     "Total": "총계",
-    "total conversations": "대화 총계",
+    ":count conversations": ":count 대화 총계",
     "Translate": "번역",
     "Try to :%a_start%clear cache:%a_end% to force command to start.": ":%a_start%캐시 지우기:%a_end%가 강제로 명령을 시작하도록 시도합니다.",
     "Type": "종류",

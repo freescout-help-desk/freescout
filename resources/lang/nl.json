@@ -735,7 +735,7 @@
     "or Enter Mailbox Email": "of voer e-mail van de mailbox in",
     "status": "status",
     "subject": "onderwerp",
-    "total conversations": "totaal aantal gesprekken",
+    ":count conversations": ":count totaal aantal gesprekken",
     "type": "soort",
     "via": "via",
     "you": "u",

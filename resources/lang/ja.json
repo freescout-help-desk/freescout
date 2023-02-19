@@ -38,7 +38,7 @@
     "Toggle Navigation": "ナビゲーションの切り替え",
     "Tools": "ツール",
     "Total": "Total",
-    "total conversations": "総会話数",
+    ":count conversations": ":count 総会話数",
     "Translate": "翻訳",
     "Try to :%a_start%clear cache:%a_end% to force command to start.": "コマンドを強制的に開始するには、:%a_start%clear cache:%a_end% を試してみてください。",
     "Type": "タイプ",

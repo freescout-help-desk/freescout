@@ -619,7 +619,7 @@
     "Toggle Navigation": "Alternar navegación",
     "Tools": "Herramientas",
     "Total": "Total",
-    "total conversations": "conversaciones totales",
+    ":count conversations": ":count conversaciones totales",
     "Translate": "Traducir",
     "Try to :%a_start%clear cache:%a_end% to force command to start.": "Intente :%a_start%clear cache:%a_end% para forzar el inicio del comando.",
     "Type": "Tipo",

@@ -594,7 +594,7 @@
     "Today": "Hoje",
     "Toggle Navigation": "Alternar a navegação",
     "Tools": "Ferramentas",
-    "total conversations": "total de conversas",
+    ":count conversations": ":count total de conversas",
     "Translate": "Traduzir",
     "Type :delete": "Tipo :delete",
     "Unable to process your update": "Não é possível processar sua atualização",

@@ -504,7 +504,7 @@
     "Conversation": "Ticket",
     "Assigned To": "Assegnato a",
     "Last Updated": "Ultimo aggiornamento",
-    "total conversations": "ticket totali",
+    ":count conversations": ":count ticket totali",
     "active": "attivo",
     "There are no conversations here": "Non ci sono ticket qui",
     "View outgoing emails": "Visualizza email in uscita",

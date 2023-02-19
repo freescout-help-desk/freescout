@@ -313,7 +313,7 @@
     ":user is viewing": ":user просматривает",
     "Unstar Conversation": "Убрать звёздочку с тикета",
     "Star Conversation": "Отметить звёздочкой",
-    "total conversations": "всего тикетов",
+    ":count conversations": ":count тикетов",
     "There are no conversations here": "Нет тикетов",
     "Recent": "Недавнее",
     "more": "ещё",
