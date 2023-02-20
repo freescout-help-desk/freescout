@@ -405,11 +405,14 @@ class Message
                     $this->date = Carbon::parse($date);
                 } catch (\Exception $_e) {
                     $this->date = Carbon::now();
-                    \Helper::logException($_e, '[Webklex\IMAP\Message]');
-                    \Helper::logExceptionToActivityLog($_e, 
-                        \App\ActivityLog::NAME_EMAILS_FETCHING, 
-                        \App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR
-                    );
+                    // No need to write this to log.
+                    // https://github.com/freescout-helpdesk/freescout/issues/2734
+                    // 
+                    // \Helper::logException($_e, '[Webklex\IMAP\Message]');
+                    // \Helper::logExceptionToActivityLog($_e, 
+                    //     \App\ActivityLog::NAME_EMAILS_FETCHING, 
+                    //     \App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR
+                    // );
                     //throw new InvalidMessageDateException("Invalid message date. ID:".$this->getMessageId(), 1000, $e);
                 }
             }

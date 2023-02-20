@@ -511,6 +511,18 @@ class ModulesController extends Controller
                         } else {
                             // Extract
                             try {
+                                // Sometimes by some reason Public folder becomes a symlink leading to itself.
+                                // It causes an error during updating process.
+                                // https://github.com/freescout-helpdesk/freescout/issues/2709
+                                $public_folder = $module->getPath().DIRECTORY_SEPARATOR.'Public';
+                                try {
+                                    if (is_link($public_folder)) {
+                                        unlink($public_folder);
+                                    }
+                                } catch (\Exception $e) {
+                                    // Do nothing.
+                                }
+
                                 \Helper::unzip($module_archive, \Module::getPath());
                             } catch (\Exception $e) {
                                 // We will show this as floating message on page reload

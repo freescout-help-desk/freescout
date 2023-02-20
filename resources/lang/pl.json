@@ -785,7 +785,7 @@
     "on :date": "dnia :date",
     "or Enter Mailbox Email": "lub Wpisz adres e-mail skrzynki pocztowej",
     "read more": "czytaj więcej",
-    "total conversations": "wszystkie rozmowy",
+    ":count conversations": ":count wszystkie rozmowy",
     "via": "przez",
     "you": "Ty",
     "yourself": "siebie"

@@ -667,7 +667,7 @@
     "Suggestions": "Suggestions",
     "Cc": "Cc",
     "Conversation": "Conversation",
-    "total conversations": "conversations au total",
+    ":count conversations": ":count conversations au total",
     "active": "en cours",
     "Type": "Type",
     "Conversations": "Conversations",

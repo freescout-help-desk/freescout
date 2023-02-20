@@ -129,7 +129,7 @@
     "View conversation": "Zobraziť konverzáciu",
     "Spam": "Spam",
     "Drafts": "Návrhy",
-    "total conversations": "konverzácií celkom",
+    ":count conversations": ":count konverzácií celkom",
     "active": "aktívna",
     "There are no conversations here": "Nie sú tu žiadne konverzácie",
     "Status": "Stav",

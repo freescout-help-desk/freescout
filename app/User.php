@@ -488,6 +488,7 @@ class User extends Authenticatable
                         'H'     => 'h',
                         'G'     => 'g',
                         ':i'    => ':ia',
+                        ':i:s'  => ':i:sa',
                         ':ia:s' => ':i:sa',
                     ]);
                 } else {

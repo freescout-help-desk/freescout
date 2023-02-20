@@ -3049,7 +3049,7 @@ function userProfileInit()
 						showFloatingAlert('success', Lang.get("messages.invite_sent"));
 					}
 				} else {
-					showAjaxError(response);
+					showAjaxError(response, true);
 				}
 				button.button('reset');
 			},

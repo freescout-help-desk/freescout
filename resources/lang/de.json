@@ -263,7 +263,7 @@
     "Toggle Navigation": "Schalte Navigation um",
     "Tools": "Werkzeuge",
     "Total": "Insgesamt",
-    "total conversations": "Gespräche insgesamt",
+    ":count conversations": ":count Gespräche insgesamt",
     "Translate": "Übersetzen",
     "Type :delete": "Schreibe :delete",
     "Unable to process your update": "Fehler beim Durchführen der Aktualisierung",

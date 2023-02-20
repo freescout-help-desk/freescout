@@ -6,6 +6,7 @@ use App\Attachment;
 use App\Customer;
 use App\Mailbox;
 use App\Folder;
+use App\Follower;
 use App\Thread;
 use App\User;
 use App\Events\UserAddedNote;
@@ -1782,6 +1783,10 @@ class Conversation extends Model
 
             // Delete threads.
             Thread::whereIn('conversation_id', $ids)->delete();
+
+            // Delete followers.
+            Follower::whereIn('conversation_id', $ids)->delete();
+
             // Delete conversations.
             Conversation::whereIn('id', $ids)->delete();
             ConversationFolder::whereIn('conversation_id', $ids)->delete();

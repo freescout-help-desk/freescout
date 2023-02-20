@@ -265,7 +265,7 @@
     "Toggle Navigation": "ناوبری را تغییر دهید",
     "Tools": "ابزارها",
     "Total": "مجموع",
-    "total conversations": "مجموع مکالمات",
+    ":count conversations": ":count مجموع مکالمات",
     "Translate": "ترجمه کردن",
     "Type :mailbox": "نوع :mailbox",
     "Unable to process your update": "پردازش به روزرسانی شما ممکن نیست",
