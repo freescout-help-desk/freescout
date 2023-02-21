@@ -811,7 +811,10 @@ class ConversationsController extends Controller
                     $prev_status = $conversation->status;
 
                     $conversation->status = $request->status;
-                    if ($prev_status != $conversation->status && $conversation->status == Conversation::STATUS_CLOSED) {
+
+                    if (($prev_status != $conversation->status || $is_create)
+                        && $conversation->status == Conversation::STATUS_CLOSED
+                    ) {
                         $conversation->closed_by_user_id = $user->id;
                         $conversation->closed_at = date('Y-m-d H:i:s');
                     }
