@@ -723,6 +723,7 @@ class ConversationsController extends Controller
 
                     // Determine redirect.
                     // Must be done before updating current conversation's status or assignee.
+                    // Redirect URL for new no saved yet conversation is determined below.
                     if (!$new) {
                         $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
                     }
@@ -884,6 +885,7 @@ class ConversationsController extends Controller
                     }
                     $conversation->save();
 
+                    // Redirect URL for new not saved yet conversation must be determined here.
                     if ($new) {
                         $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
                     }
@@ -2371,10 +2373,12 @@ class ConversationsController extends Controller
      */
     public function getRedirectUrl($request, $conversation, $user)
     {
-        // If conversation is a draft, we always display Drafts folder
-        if ($conversation->state == Conversation::STATE_DRAFT) {
-            return route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
-        }
+        // It's not clear why we needed this - this causes redirect to the Drafts
+        // when creating a new conversation and "Send and stay on the page" is selected.
+        // If conversation is a draft, we always display Drafts folder.
+        // if ($conversation->state == Conversation::STATE_DRAFT) {
+        //     return route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
+        // }
 
         if (!empty($request->after_send)) {
             $after_send = $request->after_send;
