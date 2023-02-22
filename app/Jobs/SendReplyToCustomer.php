@@ -286,7 +286,12 @@ class SendReplyToCustomer implements ShouldQueue
 
                 $envelope['from'] = $mailbox->getMailFrom(null, $this->conversation)['address'];
                 $envelope['to'] = $this->customer_email;
-                $envelope['subject'] = 'Re: ' . $this->conversation->subject;
+                $envelope['subject'] = $this->conversation->subject;
+                // Do not add 'Re:' when forwarding or creating a new conversation.
+                if (!$new && !$is_forward) {
+                    $envelope['subject'] = 'Re: '.$envelope['subject'];
+                }
+                
                 $envelope['date'] = now()->toRfc2822String();
                 $envelope['message_id'] = $this->message_id;
 
