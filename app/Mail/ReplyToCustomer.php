@@ -39,6 +39,11 @@ class ReplyToCustomer extends Mailable
     public $mailbox;
 
     /**
+     * Subject.
+     */
+    public $subject;
+
+    /**
      * Number of threads.
      */
     public $threads_count;
@@ -48,12 +53,13 @@ class ReplyToCustomer extends Mailable
      *
      * @return void
      */
-    public function __construct($conversation, $threads, $headers, $mailbox, $threads_count = 1)
+    public function __construct($conversation, $threads, $headers, $mailbox, $subject, $threads_count = 1)
     {
         $this->conversation = $conversation;
         $this->threads = $threads;
         $this->headers = $headers;
         $this->mailbox = $mailbox;
+        $this->subject = $subject;
         $this->threads_count = $threads_count;
     }
 
@@ -85,15 +91,9 @@ class ReplyToCustomer extends Mailable
             });
         }
 
-        $subject = $this->conversation->subject;
-        if ($this->threads_count > 1) {
-            $subject = 'Re: '.$subject;
-        }
-        $subject = \Eventy::filter('email.reply_to_customer.subject', $subject, $this->conversation);
-
         // from($this->from) Sets only email, name stays empty.
         // So we set from in Mail::setMailDriver
-        $message = $this->subject($subject)
+        $message = $this->subject($this->subject)
                     ->view('emails/customer/reply_fancy')
                     ->text('emails/customer/reply_fancy_text');
 

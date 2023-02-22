@@ -221,9 +221,15 @@ class SendReplyToCustomer implements ShouldQueue
         //     $bcc_array = [];
         // }
 
+        $subject = $this->conversation->subject;
+        if (!$new && !$is_forward) {
+            $subject = 'Re: '.$subject;
+        }
+        $subject = \Eventy::filter('email.reply_to_customer.subject', $subject, $this->conversation);
+
         $headers['X-FreeScout-Mail-Type'] = 'customer.message';
 
-        $reply_mail = new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox, $threads_count);
+        $reply_mail = new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox, $subject, $threads_count);
 
         try {
             Mail::to($to)
@@ -286,12 +292,7 @@ class SendReplyToCustomer implements ShouldQueue
 
                 $envelope['from'] = $mailbox->getMailFrom(null, $this->conversation)['address'];
                 $envelope['to'] = $this->customer_email;
-                $envelope['subject'] = $this->conversation->subject;
-                // Do not add 'Re:' when forwarding or creating a new conversation.
-                if (!$new && !$is_forward) {
-                    $envelope['subject'] = 'Re: '.$envelope['subject'];
-                }
-                
+                $envelope['subject'] = $subject;
                 $envelope['date'] = now()->toRfc2822String();
                 $envelope['message_id'] = $this->message_id;
 
