@@ -767,6 +767,7 @@ class Helper
                 'sink' => $destinationFilePath,
                 'timeout' => 300, // seconds
                 'connect_timeout' => 7,
+                'proxy' => config('app.proxy'),
             ]);
         } catch (\Exception $e) {
             self::logException($e);
