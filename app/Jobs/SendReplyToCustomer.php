@@ -355,8 +355,13 @@ class SendReplyToCustomer implements ShouldQueue
                 }
 
                 try {
-                    // getFolder does not work if sent folder has spaces.
-                    $folder = $client->getFolder($imap_sent_folder);
+                    // https://github.com/Webklex/php-imap/issues/380
+                    if (method_exists($client, 'getFolderByPath')) {
+                        $folder = $client->getFolderByPath($imap_sent_folder);
+                    } else {
+                        $folder = $client->getFolder($imap_sent_folder);
+                    }
+                    // Get folder method does not work if sent folder has spaces.
                     if ($folder) {
                         try {
                             $save_result = $this->saveEmailToFolder($client, $folder, $envelope, $parts);
