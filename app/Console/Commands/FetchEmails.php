@@ -708,7 +708,10 @@ class FetchEmails extends Command
         // https://github.com/freescout-helpdesk/freescout/issues/2672
         $body = preg_replace("/[\"']cid:/", '!', $body);
 
-        preg_match("/[\"'<:]([^\"'<:!]+@[^\"'>:]+)[\"'>:]/", $body, $b);
+        // Looking like email texts may appear in attributes:
+        // https://github.com/freescout-helpdesk/freescout/issues/276
+
+        preg_match("/[\"'<:]([^\"'<:!@]+@[^\"'>:@]+)[\"'>:]/", $body, $b);
 
         $email = $b[1] ?? '';
         // https://github.com/freescout-helpdesk/freescout/issues/2517
