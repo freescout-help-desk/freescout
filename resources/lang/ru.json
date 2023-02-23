@@ -421,7 +421,7 @@
     "If you want to send system emails via webmail providers (Gmail, Yahoo, etc), use only SMTP method and make sure that SMTP username is equal to 'Mail From', otherwise webmail provider won't send emails.": "Если вы хотите отправлять системные электронные письма через провайдеров веб-почты (Яндекс, Gmail и т. д.), используйте только SMTP-метод и убедитесь, что имя пользователя SMTP идентично «Адресу отправителя». В противном случае провайдер веб-почты не будет отправлять электронные письма.",
     "Mail From": "Адрес отправителя",
     "Send Method": "Метод отправки",
-    "Fetch Mail Schedule": "Расписание получения писем",
+    "Fetching Interval": "Расписание получения писем",
     "Every minute": "Каждую минуту",
     "Tools": "Инструменты",
     "System Status": "Статус системы",

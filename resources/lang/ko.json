@@ -690,7 +690,7 @@
     "Error occurred deactivating :name module": ":name 모듈을 비활성하는 동안 오류가 발생했습니다.",
     "Error occurred downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder": "모듈을 다운로드하는 중에 오류가 발생했습니다. :수동으로 모듈을 %a_being%다운로드:%a_end%하여 :folder에 압축을 풉니다.",
     "Error occurred. Please try again or try another :%a_start%update method:%a_end%": "오류가 발생했습니다. 나중에 시도하거나 다른 :%a_start%업데이트 방법:%a_end%을 사용해 보십시오.",
-    "Fetch Mail Schedule": "メール取得のスケジュール",
+    "Fetching Interval": "メール取得のスケジュール",
     "Follow": "팔로우",
     "Following": "팔로우 중",
     "From name": "이름에서",
