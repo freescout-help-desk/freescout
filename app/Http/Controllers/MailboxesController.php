@@ -710,8 +710,13 @@ class MailboxesController extends Controller
                                 // Maybe we need a recursion here.
                                 if (!empty($imap_folder->children)) {
                                     foreach ($imap_folder->children as $child_imap_folder) {
+                                        // Old library.
                                         if (!empty($child_imap_folder->fullName)) {
                                             $response['folders'][] = $child_imap_folder->fullName;
+                                        }
+                                        // New library.
+                                        if (!empty($child_imap_folder->full_name)) {
+                                            $response['folders'][] = $child_imap_folder->full_name;
                                         }
                                     }
                                 }
