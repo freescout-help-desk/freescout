@@ -622,6 +622,8 @@ class ConversationsController extends Controller
                 $type = Conversation::TYPE_EMAIL;
                 if (!empty($request->type)) {
                     $type = (int)$request->type;
+                } elseif ($conversation) {
+                    $type = $conversation->type;
                 }
 
                 $is_phone = false;
@@ -775,7 +777,7 @@ class ConversationsController extends Controller
                     $customer_email = '';
                     $customer = null;
 
-                    if ($is_phone) {
+                    if ($is_phone && $is_create) {
                         // Phone.
                         $phone_customer_data = $this->processPhoneCustomer($request);
 
@@ -785,7 +787,7 @@ class ConversationsController extends Controller
                             $conversation->customer_id = $customer->id;
                         }
                     } else {
-                        // Email.
+                        // Email or reply to a phone conversation.
                         if (!empty($to_array)) {
                             $customer_email = $to_array[0];
                         } elseif (!$conversation->customer_email 
