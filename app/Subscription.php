@@ -319,7 +319,7 @@ class Subscription extends Model
                     $threads = $event['conversation']->getThreads();
                     break;
                 } else {
-                    $users = $notify[$medium][$event['conversation']->id]['users'];
+                    $users[$medium] = $notify[$medium][$event['conversation']->id]['users'];
                     $threads = $notify[$medium][$event['conversation']->id]['threads'];
                 }
             }
@@ -341,8 +341,9 @@ class Subscription extends Model
 
                 if (count($medium_users_to_notify)) {
                     $notify[$medium][$event['conversation']->id] = [
-                        // Users subarray contains all users who need to receive notification for all events
-                        'users'            => array_unique(array_merge($users, $medium_users_to_notify)),
+                        // Users subarray contains all users who need to receive notification
+                        // for all events for the media.
+                        'users'            => array_unique(array_merge($users[$medium] ?? [], $medium_users_to_notify)),
                         'conversation'     => $event['conversation'],
                         'threads'          => $threads,
                         'mailbox_user_ids' => $mailbox_user_ids,
