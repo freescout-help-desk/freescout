@@ -567,6 +567,8 @@ class FetchEmails extends Command
                 && preg_match("/^[[:alpha:]]{1,3}:(.*)/i", $subject, $m) 
                 && !empty($m[1])
                 && !$user_id && !$is_reply && !$prev_thread
+                // Only if the email has been sent to one mailbox.
+                && count($to) == 1 && count($cc) == 0
             ) {
                 // Try to get "From:" from body.
                 $original_sender = $this->getOriginalSenderFromFwd($body);
