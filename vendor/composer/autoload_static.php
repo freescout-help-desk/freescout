@@ -202,7 +202,8 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         ),
         'Webklex\\PHPIMAP\\' => 
         array (
-            0 => __DIR__ . '/..' . '/webklex/php-imap/src',
+            0 => __DIR__ . '/../..' . '/overrides/webklex/php-imap/src',
+            1 => __DIR__ . '/..' . '/webklex/php-imap/src',
         ),
         'Webklex\\IMAP\\' => 
         array (
@@ -3841,7 +3842,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Webklex\\PHPIMAP\\Exceptions\\ProtocolNotSupportedException' => __DIR__ . '/..' . '/webklex/php-imap/src/Exceptions/ProtocolNotSupportedException.php',
         'Webklex\\PHPIMAP\\Exceptions\\RuntimeException' => __DIR__ . '/..' . '/webklex/php-imap/src/Exceptions/RuntimeException.php',
         'Webklex\\PHPIMAP\\Folder' => __DIR__ . '/..' . '/webklex/php-imap/src/Folder.php',
-        'Webklex\\PHPIMAP\\Header' => __DIR__ . '/..' . '/webklex/php-imap/src/Header.php',
+        'Webklex\\PHPIMAP\\Header' => __DIR__ . '/../..' . '/overrides/webklex/php-imap/src/Header.php',
         'Webklex\\PHPIMAP\\IMAP' => __DIR__ . '/..' . '/webklex/php-imap/src/IMAP.php',
         'Webklex\\PHPIMAP\\Message' => __DIR__ . '/..' . '/webklex/php-imap/src/Message.php',
         'Webklex\\PHPIMAP\\Part' => __DIR__ . '/..' . '/webklex/php-imap/src/Part.php',

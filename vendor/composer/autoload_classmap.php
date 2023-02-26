@@ -3158,7 +3158,7 @@ return array(
     'Webklex\\PHPIMAP\\Exceptions\\ProtocolNotSupportedException' => $vendorDir . '/webklex/php-imap/src/Exceptions/ProtocolNotSupportedException.php',
     'Webklex\\PHPIMAP\\Exceptions\\RuntimeException' => $vendorDir . '/webklex/php-imap/src/Exceptions/RuntimeException.php',
     'Webklex\\PHPIMAP\\Folder' => $vendorDir . '/webklex/php-imap/src/Folder.php',
-    'Webklex\\PHPIMAP\\Header' => $vendorDir . '/webklex/php-imap/src/Header.php',
+    'Webklex\\PHPIMAP\\Header' => $baseDir . '/overrides/webklex/php-imap/src/Header.php',
     'Webklex\\PHPIMAP\\IMAP' => $vendorDir . '/webklex/php-imap/src/IMAP.php',
     'Webklex\\PHPIMAP\\Message' => $vendorDir . '/webklex/php-imap/src/Message.php',
     'Webklex\\PHPIMAP\\Part' => $vendorDir . '/webklex/php-imap/src/Part.php',
