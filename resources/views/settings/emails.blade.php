@@ -109,7 +109,7 @@
 
     <h3 class="subheader">{{ __('Fetching Emails') }}</h3>
     <div class="form-group{{ $errors->has('settings.fetch_schedule') ? ' has-error' : '' }}">
-        <label for="fetch_schedule" class="col-sm-2 control-label">{{ __('Fetch Mail Schedule') }}</label>
+        <label for="fetch_schedule" class="col-sm-2 control-label">{{ __('Fetching Interval') }}</label>
 
         <div class="col-sm-6">
             <select id="fetch_schedule" class="form-control input-sized" name="settings[fetch_schedule]">

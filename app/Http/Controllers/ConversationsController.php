@@ -622,6 +622,8 @@ class ConversationsController extends Controller
                 $type = Conversation::TYPE_EMAIL;
                 if (!empty($request->type)) {
                     $type = (int)$request->type;
+                } elseif ($conversation) {
+                    $type = $conversation->type;
                 }
 
                 $is_phone = false;
@@ -723,6 +725,7 @@ class ConversationsController extends Controller
 
                     // Determine redirect.
                     // Must be done before updating current conversation's status or assignee.
+                    // Redirect URL for new no saved yet conversation is determined below.
                     if (!$new) {
                         $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
                     }
@@ -774,7 +777,7 @@ class ConversationsController extends Controller
                     $customer_email = '';
                     $customer = null;
 
-                    if ($is_phone) {
+                    if ($is_phone && $is_create) {
                         // Phone.
                         $phone_customer_data = $this->processPhoneCustomer($request);
 
@@ -784,7 +787,7 @@ class ConversationsController extends Controller
                             $conversation->customer_id = $customer->id;
                         }
                     } else {
-                        // Email.
+                        // Email or reply to a phone conversation.
                         if (!empty($to_array)) {
                             $customer_email = $to_array[0];
                         } elseif (!$conversation->customer_email 
@@ -810,7 +813,10 @@ class ConversationsController extends Controller
                     $prev_status = $conversation->status;
 
                     $conversation->status = $request->status;
-                    if ($prev_status != $conversation->status && $conversation->status == Conversation::STATUS_CLOSED) {
+
+                    if (($prev_status != $conversation->status || $is_create)
+                        && $conversation->status == Conversation::STATUS_CLOSED
+                    ) {
                         $conversation->closed_by_user_id = $user->id;
                         $conversation->closed_at = date('Y-m-d H:i:s');
                     }
@@ -884,6 +890,7 @@ class ConversationsController extends Controller
                     }
                     $conversation->save();
 
+                    // Redirect URL for new not saved yet conversation must be determined here.
                     if ($new) {
                         $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
                     }
@@ -2371,10 +2378,12 @@ class ConversationsController extends Controller
      */
     public function getRedirectUrl($request, $conversation, $user)
     {
-        // If conversation is a draft, we always display Drafts folder
-        if ($conversation->state == Conversation::STATE_DRAFT) {
-            return route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
-        }
+        // It's not clear why we needed this - this causes redirect to the Drafts
+        // when creating a new conversation and "Send and stay on the page" is selected.
+        // If conversation is a draft, we always display Drafts folder.
+        // if ($conversation->state == Conversation::STATE_DRAFT) {
+        //     return route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
+        // }
 
         if (!empty($request->after_send)) {
             $after_send = $request->after_send;

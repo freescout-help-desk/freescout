@@ -3469,13 +3469,15 @@ function polycastInit()
 		    	active_folder.addClass('active');
 
 		    	// Update number of active conversations in the page title
-		    	var new_count = parseInt(active_folder.attr('data-active-count'));
-		    	if (!isNaN(new_count) && new_count > 0) {
-		    		new_count = '('+new_count+') ';
-		    	} else {
-		    		new_count = '';
-		    	}
-		    	document.title = new_count+document.title.replace(/^\(\d+\) /, "");
+		    	if (!getGlobalAttr('conversation_id')) {
+			    	var new_count = parseInt(active_folder.attr('data-active-count'));
+			    	if (!isNaN(new_count) && new_count > 0) {
+			    		new_count = '('+new_count+') ';
+			    	} else {
+			    		new_count = '';
+			    	}
+			    	document.title = new_count+document.title.replace(/^\(\d+\) /, "");
+			    }
 		    }
 
 		    // If there are no conversations selected refresh conversations table

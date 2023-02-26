@@ -690,7 +690,7 @@
     "Error occurred deactivating :name module": ":name モジュールの非アクティブ化中にエラーが発生しました",
     "Error occurred downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder": "モジュールのダウンロード中にエラーが発生しました。 :%a_being%download:%a_end% モジュールを手動で実行し、 :folder に展開してください",
     "Error occurred. Please try again or try another :%a_start%update method:%a_end%": "エラーが発生しました。後ほど試すか、別の :%a_start%update メソッド:%a_end% を試してください",
-    "Fetch Mail Schedule": "メール取得のスケジュール",
+    "Fetching Interval": "メール取得のスケジュール",
     "Follow": "フォロー",
     "Following": "フォロー中",
     "From name": "名前から",

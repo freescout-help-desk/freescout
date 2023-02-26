@@ -566,7 +566,7 @@
     "If you want to send system emails via webmail providers (Gmail, Yahoo, etc), use only SMTP method and make sure that SMTP username is equal to 'Mail From', otherwise webmail provider won't send emails.": "Si vous souhaitez envoyer des e-mails système via des fournisseurs de messagerie Web (Gmail, Yahoo, etc.), utilisez uniquement la méthode SMTP et assurez-vous que le nom d'utilisateur SMTP est égal à `` Mail From '', sinon le fournisseur de messagerie Web n'enverra pas d'e-mails.",
     "Mail From": "Courrier de",
     "Send Method": "Méthode d'envoi",
-    "Fetch Mail Schedule": "Récupérer le calendrier de messagerie",
+    "Fetching Interval": "Récupérer le calendrier de messagerie",
     "Every minute": "Toutes les  minutes",
     "Every 5 minutes": "Toutes les 5 minutes",
     "Every 10 minutes": "Toutes les 10 minutes",

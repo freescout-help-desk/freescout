@@ -348,7 +348,7 @@
     "Send Test": "Invia test",
     "Make sure to save settings before testing.": "Assicurati di salvare le impostazioni prima di eseguire il test",
     "Fetching Emails": "Recupero le email",
-    "Fetch Mail Schedule": "Programma recupero email",
+    "Fetching Interval": "Programma recupero email",
     "Every minute": "Ogni minuto",
     "Every 5 minutes": "Ogni 5 minuti",
     "Every 10 minutes": "Ogni 10 minuti",

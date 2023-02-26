@@ -655,7 +655,7 @@
     ":date @ :time": ":date @ :time",
     "Users are allowed to edit notes\/replies": "Os utilizadores podem editar notas\/respostas",
     "System Emails": "E-mails do sistema",
-    "Fetch Mail Schedule": "Agenda de obter e-mails",
+    "Fetching Interval": "Agenda de obter e-mails",
     "Every minute": "Em cada minuto",
     "Every 5 minutes": "Em cada 5 minutos",
     "Every 10 minutes": "Em cada 10 minutos",
