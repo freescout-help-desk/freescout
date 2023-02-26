@@ -25,9 +25,11 @@ class FetchEmails extends Command
     /**
      * The name and signature of the console command.
      *
+     * --identifier parameter is used to kill fetch-emails command runnign for too long.
+     *
      * @var string
      */
-    protected $signature = 'freescout:fetch-emails {--days=3} {--unseen=1}';
+    protected $signature = 'freescout:fetch-emails {--days=3} {--unseen=1} {--identifier=dummy}';
 
     /**
      * The console command description.
