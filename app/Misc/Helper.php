@@ -1370,9 +1370,37 @@ class Helper
     /**
      * Get identifier for queue:work
      */
-    public static function getWorkerIdentifier()
+    public static function getWorkerIdentifier($salt = '')
     {
-        return md5(config('app.key') ?? '');
+        return md5((config('app.key') ?? '').$salt);
+    }
+
+    /**
+     * Get pids of the specified processes.
+     */
+    public static function getRunningProcesses($search = '')
+    {
+        if (empty($search)) {
+            $search = \Helper::getWorkerIdentifier();
+        }
+
+        $pids = [];
+
+        try {
+            $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '".$search."'"));
+            if ($search == \Helper::getWorkerIdentifier('freescout:fetch-emails')) {
+                \Log::error('ps aux '.json_encode($processes));
+            }
+            foreach ($processes as $process) {
+                preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
+                if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {
+                    $pids[] = $m[1];
+                }
+            }
+        } catch (\Exception $e) {
+            // Do nothing
+        }
+        return $pids;
     }
 
     public static function uploadFile($file, $allowed_exts = [], $allowed_mimes = [])

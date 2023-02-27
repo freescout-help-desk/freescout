@@ -2378,19 +2378,21 @@ class ConversationsController extends Controller
      */
     public function getRedirectUrl($request, $conversation, $user)
     {
-        // It's not clear why we needed this - this causes redirect to the Drafts
-        // when creating a new conversation and "Send and stay on the page" is selected.
-        // If conversation is a draft, we always display Drafts folder.
-        // if ($conversation->state == Conversation::STATE_DRAFT) {
-        //     return route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
-        // }
-
         if (!empty($request->after_send)) {
             $after_send = $request->after_send;
         } else {
             // todo: use $user->mailboxSettings()
             $after_send = $conversation->mailbox->getUserSettings($user->id)->after_send;
         }
+
+        // When creating a new conversation. 
+        if (!empty($request->is_create) && $after_send != MailboxUser::AFTER_SEND_STAY) {
+            return route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
+        }
+        // if ($conversation->state == Conversation::STATE_DRAFT) {
+        //     return route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
+        // }
+
         if (!empty($after_send)) {
             switch ($after_send) {
                 case MailboxUser::AFTER_SEND_STAY:
