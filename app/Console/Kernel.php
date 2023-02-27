@@ -96,33 +96,30 @@ class Kernel extends ConsoleKernel
 
         // Kill fetch commands running for too long.
         // This code is executed every time $schedule->command() in this function is executed.
-        if (in_array('schedule:run', $_SERVER['argv'])) {
+        if ($this->isScheduleRun() && function_exists('shell_exec')) {
+            $fetch_command_pids = \Helper::getRunningProcesses($fetch_command_identifier);
 
-            if (function_exists('shell_exec')) {
-                $fetch_command_pids = \Helper::getRunningProcesses($fetch_command_identifier);
+            $mutex_name = $schedule->command('freescout:fetch-emails')
+                ->skip(function () {
+                    return true;
+                })
+                ->mutexName();
+            
+            // If there is no cache mutext but there are running fetch commands 
+            // it means the mutex had expired after self::FETCH_MAX_EXECUTION_TIME
+            // and the existing command(s) is running longer than self::FETCH_MAX_EXECUTION_TIME.
+            if (count($fetch_command_pids) > 0 && !\Cache::get($mutex_name)) {
+                // Kill freescout:fetch-emails commands running for too long
+                shell_exec('kill '.implode(' | kill ', $fetch_command_pids));
+            } elseif (count($fetch_command_pids) == 0) {
+                // Make sure 'ps' command actually works.
+                $ps_works = \Helper::getRunningProcesses('schedule:run');
 
-                $mutex_name = $schedule->command('freescout:fetch-emails')
-                    ->skip(function () {
-                        return true;
-                    })
-                    ->mutexName();
-                
-                // If there is no cache mutext but there are running fetch commands 
-                // it means the mutex had expired after self::FETCH_MAX_EXECUTION_TIME
-                // and the existing command(s) is running longer than self::FETCH_MAX_EXECUTION_TIME.
-                if (count($fetch_command_pids) > 0 && !\Cache::get($mutex_name)) {
-                    // Kill freescout:fetch-emails commands running for too long
-                    shell_exec('kill '.implode(' | kill ', $fetch_command_pids));
-                } elseif (count($fetch_command_pids) == 0) {
-                    // Make sure 'ps' command actually works.
-                    $ps_works = \Helper::getRunningProcesses('schedule:run');
-
-                    if (count($ps_works)) {
-                        // Previous freescout:fetch-emails may have been killed or errored and did not remove the mutex.
-                        // So here we are forcefully removing the mutex. Otherwise mutex will live for 24 hours.
-                        if (\Cache::has($mutex_name)) {
-                            \Cache::forget($mutex_name);
-                        }
+                if (count($ps_works)) {
+                    // Previous freescout:fetch-emails may have been killed or errored and did not remove the mutex.
+                    // So here we are forcefully removing the mutex. Otherwise mutex will live for 24 hours.
+                    if (\Cache::has($mutex_name)) {
+                        \Cache::forget($mutex_name);
                     }
                 }
             }
@@ -182,7 +179,7 @@ class Kernel extends ConsoleKernel
         // and the second 'queue:work' command is launched by cron. When `artisan schedule:run` is executed it sees 
         // that there are two 'queue:work' processes running and kills them.
         // After one minute 'queue:work' is executed by cron via `artisan schedule:run` and works in the background.
-        if (function_exists('shell_exec')) {
+        if ($this->isScheduleRun() && function_exists('shell_exec')) {
             $running_commands = \Helper::getRunningProcesses();
 
             if (count($running_commands) > 1) {
@@ -229,6 +226,15 @@ class Kernel extends ConsoleKernel
             ->everyMinute()
             ->withoutOverlapping()
             ->sendOutputTo(storage_path().'/logs/queue-jobs.log');
+    }
+
+    /**
+     * This function is needed because every time $schedule->command() is executed 
+     * the schedule() is executed also.
+     */
+    public function isScheduleRun()
+    {
+        return in_array('schedule:run', $_SERVER['argv']);
     }
 
     /**
