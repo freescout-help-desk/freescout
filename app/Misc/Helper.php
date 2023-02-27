@@ -1388,9 +1388,6 @@ class Helper
 
         try {
             $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '".$search."'"));
-            if ($search == \Helper::getWorkerIdentifier('freescout:fetch-emails')) {
-                \Log::error('ps aux '.json_encode($processes));
-            }
             foreach ($processes as $process) {
                 preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
                 if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {
@@ -1781,5 +1778,10 @@ class Helper
     public static function isInstalled()
     {
         return file_exists(storage_path().DIRECTORY_SEPARATOR.'.installed');
+    }
+
+    public static function isConsole()
+    {
+        return app()->runningInConsole();
     }
 }

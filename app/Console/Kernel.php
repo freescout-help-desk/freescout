@@ -95,7 +95,7 @@ class Kernel extends ConsoleKernel
         $fetch_command_identifier = \Helper::getWorkerIdentifier('freescout:fetch-emails');
 
         // Kill fetch commands running for too long.
-        // This code is executed every time $schedule->command() in this function is executed.
+        // In shedule:run this code is executed every time $schedule->command() in this function is executed.
         if ($this->isScheduleRun() && function_exists('shell_exec')) {
             $fetch_command_pids = \Helper::getRunningProcesses($fetch_command_identifier);
 
@@ -234,7 +234,11 @@ class Kernel extends ConsoleKernel
      */
     public function isScheduleRun()
     {
-        return in_array('schedule:run', $_SERVER['argv']);
+        if (!\Helper::isConsole()) {
+            return true;
+        } else {
+            return !empty($_SERVER['argv']) && in_array('schedule:run', $_SERVER['argv']);
+        }
     }
 
     /**
