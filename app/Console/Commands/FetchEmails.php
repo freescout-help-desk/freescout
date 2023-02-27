@@ -557,6 +557,13 @@ class FetchEmails extends Command
                 $subject = iconv_mime_decode($subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, 'UTF-8');
             }
 
+            $to = $this->formatEmailList($message->getTo());
+
+            $cc = $this->formatEmailList($message->getCc());
+
+            // It will always return an empty value as it's Bcc.
+            $bcc = $this->formatEmailList($message->getBcc());
+            
             // If existing user forwarded customer's email to the mailbox
             // we are creating a new conversation as if it was sent by the customer.
             if ($in_reply_to
@@ -587,13 +594,6 @@ class FetchEmails extends Command
                     }
                 }
             }
-
-            $to = $this->formatEmailList($message->getTo());
-
-            $cc = $this->formatEmailList($message->getCc());
-
-            // It will always return an empty value as it's Bcc.
-            $bcc = $this->formatEmailList($message->getBcc());
 
             // Create customers
             $emails = array_merge(
