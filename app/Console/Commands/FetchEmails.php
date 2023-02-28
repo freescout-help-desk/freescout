@@ -1054,14 +1054,10 @@ class FetchEmails extends Command
         // Fix for Webklex/laravel-imap.
         // https://github.com/freescout-helpdesk/freescout/issues/2782
         if (\Str::startsWith($name, '=?')) {
-            $name_data = imap_mime_header_decode($name);
+            $name_decoded = \imap_utf8($name);
 
-            if (!empty($name_data) 
-                && !empty($name_data->charset) 
-                && !empty($name_data->text) 
-                && $name_data->text != $name
-            ) {
-                return $name_data->text;
+            if ($name_decoded) {
+                return $name_decoded;
             }
         }
 
