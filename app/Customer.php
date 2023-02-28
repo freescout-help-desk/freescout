@@ -596,12 +596,19 @@ class Customer extends Model
                     $this->emails()->saveMany($new_emails);
                 }
             }
-            // Create customers for deleted emails
+
             foreach ($deleted_emails as $email) {
-                $customer = new self();
-                $customer->save();
-                $email->customer()->associate($customer);
-                $email->save();
+                if (Conversation::where('customer_email', $email->email)->exists()) {
+                    // Create customers for deleted emails
+                    // if there is a conversation with 'customer_email'.
+                    $customer = new self();
+                    $customer->save();
+                    $email->customer()->associate($customer);
+                    $email->save();
+                } else {
+                    // Simply delete an email.
+                    $email->delete();
+                }
             }
         }
     }
