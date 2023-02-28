@@ -1030,7 +1030,7 @@ class FetchEmails extends Command
         $created_attachments = [];
         foreach ($email_attachments as $email_attachment) {
             $created_attachment = Attachment::create(
-                $email_attachment->getName(),
+                $this->processAttachmentName($email_attachment->getName()),
                 $email_attachment->getMimeType(),
                 Attachment::typeNameToInt($email_attachment->getType()),
                 $email_attachment->getContent(),
@@ -1047,6 +1047,25 @@ class FetchEmails extends Command
         }
 
         return $created_attachments;
+    }
+
+    public function processAttachmentName($name)
+    {
+        // Fix for Webklex/laravel-imap.
+        // https://github.com/freescout-helpdesk/freescout/issues/2782
+        if (\Str::startsWith($name, '=?')) {
+            $name_data = imap_mime_header_decode($name);
+
+            if (!empty($name_data) 
+                && !empty($name_data->charset) 
+                && !empty($name_data->text) 
+                && $name_data->text != $name
+            ) {
+                return $name_data->text;
+            }
+        }
+
+        return $name;
     }
 
     /**
