@@ -155,7 +155,6 @@
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
             "vendor/webklex/laravel-imap/src/IMAP/Message.php",
             "vendor/webklex/laravel-imap/src/IMAP/Client.php",
-            "vendor/webklex/php-imap/src/Header.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/RequirementsChecker.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/PermissionsChecker.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/EnvironmentManager.php",
@@ -266,7 +265,9 @@
             "vendor/javoscript/laravel-macroable-models/src/MacroableModels.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/EmbeddedFile.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php",
-            "vendor/natxet/cssmin/src/CssMin.php"
+            "vendor/natxet/cssmin/src/CssMin.php",
+            "vendor/webklex/php-imap/src/Header.php",
+            "vendor/webklex/php-imap/src/Connection/Protocols/ImapProtocol.php"
         ]
     },
     "autoload-dev": {
