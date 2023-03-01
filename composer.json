@@ -268,6 +268,7 @@
             "vendor/natxet/cssmin/src/CssMin.php",
             "vendor/webklex/php-imap/src/Header.php",
             "vendor/webklex/php-imap/src/Structure.php",
+            "vendor/webklex/php-imap/src/Message.php",
             "vendor/webklex/php-imap/src/Connection/Protocols/ImapProtocol.php"
         ]
     },
