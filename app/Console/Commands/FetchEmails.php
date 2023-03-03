@@ -161,7 +161,7 @@ class FetchEmails extends Command
         foreach ($imap_folders as $folder_name) {
             $folder = null;
             try {
-                $folder = $client->getFolder($folder_name);
+                $folder = \MailHelper::getImapFolder($client, $folder_name);
             } catch (\Exception $e) {
                 // Just log error and continue.
                 $this->error('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$folder_name);
