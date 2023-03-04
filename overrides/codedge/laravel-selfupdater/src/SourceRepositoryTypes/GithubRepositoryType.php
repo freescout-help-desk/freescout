@@ -95,7 +95,9 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
         $release = $releaseCollection->first();
 
         $storagePath = $this->config['download_path'];
-        //$storagePath = storage_path().DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'updater';
+        
+        $fs = new \Illuminate\Filesystem\Filesystem;
+        $fs->cleanDirectory($storagePath);
 
         if (!File::exists($storagePath)) {
             File::makeDirectory($storagePath, 493, true, true);
@@ -116,6 +118,7 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
         $this->downloadRelease($this->client, $release->zipball_url, $storageFile);
 
         $this->unzipArchive($storageFile, $storagePath);
+
         $this->createReleaseFolder($storagePath, $release->name);
     }
 
