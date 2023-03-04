@@ -263,7 +263,7 @@ class Client {
         $delimiter = $delimiter === null ? config('imap.options.delimiter', '/') : $delimiter;
 
         $oFolder = new Folder($this, (object) [
-            'name'       => $this->getAddress().$folder_name,
+            'name'       => $this->getAddress().imap_utf8_to_mutf7($folder_name),
             'attributes' => $attributes,
             'delimiter'  => $delimiter
         ]);

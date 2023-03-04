@@ -690,7 +690,7 @@ class Mail
 
         foreach ($imap_folders as $folder_name) {
             try {
-                $folder = $client->getFolder($folder_name);
+                $folder = self::getImapFolder($client, $folder_name);
                 // Message-ID: <123@123.com>
                 $query = $folder->query()
                     ->text('<'.$message_id.'>')
@@ -869,6 +869,15 @@ class Mail
             }
             return $swiftmessage;
         });
+    }
+
+    public static function getImapFolder($client, $folder_name)
+    {
+        if (method_exists($client, 'getFolderByPath')) {
+            return $client->getFolderByPath($folder_name);
+        } else {
+            return $client->getFolder($folder_name);
+        }
     }
 
     // public static function oauthGetProvider($provider_code, $params)

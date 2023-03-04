@@ -30,7 +30,7 @@
 
   * No limitations on the number of users, tickets, mailboxes, etc.
   * 100% Mobile-friendly.
-  * Multilingual (English, Croatian, Czech, Danish, Dutch, French, German, Italian, Japanese, Korean, Persian, Polish, Portuguese, Russian, Spanish, Slovak, Swedish).
+  * Multilingual (English, Croatian, Czech, Danish, Dutch, Finnish, French, German, Italian, Japanese, Korean, Persian, Polish, Portuguese, Russian, Spanish, Slovak, Swedish).
   * Seamless email integration.
   * Suppports modern Microsoft Exchange authentication.
   * Web installer & updater.

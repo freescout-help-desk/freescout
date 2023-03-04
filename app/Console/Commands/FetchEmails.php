@@ -161,7 +161,7 @@ class FetchEmails extends Command
         foreach ($imap_folders as $folder_name) {
             $folder = null;
             try {
-                $folder = $client->getFolder($folder_name);
+                $folder = \MailHelper::getImapFolder($client, $folder_name);
             } catch (\Exception $e) {
                 // Just log error and continue.
                 $this->error('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$folder_name);
@@ -1030,7 +1030,7 @@ class FetchEmails extends Command
         $created_attachments = [];
         foreach ($email_attachments as $email_attachment) {
             $created_attachment = Attachment::create(
-                $email_attachment->getName(),
+                $this->processAttachmentName($email_attachment->getName()),
                 $email_attachment->getMimeType(),
                 Attachment::typeNameToInt($email_attachment->getType()),
                 $email_attachment->getContent(),
@@ -1047,6 +1047,21 @@ class FetchEmails extends Command
         }
 
         return $created_attachments;
+    }
+
+    public function processAttachmentName($name)
+    {
+        // Fix for Webklex/laravel-imap.
+        // https://github.com/freescout-helpdesk/freescout/issues/2782
+        if (\Str::startsWith($name, '=?')) {
+            $name_decoded = \imap_utf8($name);
+
+            if ($name_decoded) {
+                return $name_decoded;
+            }
+        }
+
+        return $name;
     }
 
     /**
