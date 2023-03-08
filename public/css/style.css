@@ -2128,13 +2128,7 @@ button.conv-checkbox-clear {
     top: 3px;
     color: #c1861e;
 }
-/*.thread-type {
-    /*margin-right: 7px;* /
-    font-weight: bold;
-}
-.thread-type span {
-    font-weight: normal;
-}*/
+.thread-info-icon,
 .thread-to-first {
     margin-right: 1px;
     color: #a5b2bd;
@@ -3832,6 +3826,9 @@ a.help-icon:hover {
     color: #93a1af;
 }
 .text-help a:hover {
+    color: #23527c;
+}
+.link-active {
     color: #23527c;
 }
 .link-black,
