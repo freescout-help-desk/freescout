@@ -313,7 +313,7 @@ class FetchEmails extends Command
             // Gnerate artificial Message-ID if importing same email into several mailboxes.
             if ($extra) {
                 // Generate artificial Message-ID.
-                $message_id = \MailHelper::generateMessageId($from);
+                $message_id = \MailHelper::generateMessageId(strstr($message_id, '@') ? $message_id : $from, $mailbox->id.$message_id);
                 $this->line('['.date('Y-m-d H:i:s').'] Generated artificial Message-ID: '.$message_id);
             }
 
@@ -527,8 +527,19 @@ class FetchEmails extends Command
             // It may happen when forwarding conversation for example.
             if ($prev_thread) {
                 if ($prev_thread->conversation->mailbox_id != $mailbox->id) {
-                    $prev_thread = null;
-                    $is_reply = false;
+                    // https://github.com/freescout-helpdesk/freescout/issues/2807
+                    // Try to get thread by generated message ID.
+                    if ($in_reply_to) {
+                        $prev_thread = Thread::where('message_id', \MailHelper::generateMessageId($in_reply_to, $mailbox->id.$in_reply_to))->first();
+
+                        if (!$prev_thread) {
+                            $prev_thread = null;
+                            $is_reply = false;
+                        }
+                    } else {
+                        $prev_thread = null;
+                        $is_reply = false;
+                    }
                 }
             }
 
