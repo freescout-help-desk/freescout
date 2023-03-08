@@ -140,6 +140,7 @@
                     @endif
                 </div>
                 <div class="thread-info">
+                    @action('thread.info.prepend', $thread)
                     @if ($thread->type == App\Thread::TYPE_NOTE)
                         {{--<span class="thread-type">{{ __('Note') }} <span>·</span> </span>--}}
                     @else
