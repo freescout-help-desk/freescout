@@ -361,7 +361,7 @@ class Mailbox extends Model
     /**
      * Get folders available for the current user.
      */
-    public function getAccessibleFolders()
+    public function getAssesibleFolders()
     {
         $folders = $this->folders()
             ->where(function ($query) {

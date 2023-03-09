@@ -98,7 +98,7 @@ class RealtimeMailboxNewThread implements ShouldBroadcastNow
             $folder = new Folder();
         }
         $template_data = [
-            'folders' => $mailbox->getAccessibleFolders(),
+            'folders' => $mailbox->getAssesibleFolders(),
             'folder'  => $folder,
             'mailbox' => $mailbox,
         ];
