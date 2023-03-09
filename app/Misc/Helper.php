@@ -1797,7 +1797,7 @@ class Helper
         if (\Option::get('send_emails_problem')) {
             $flashes[] = [
                 'type'      => 'warning',
-                'text'      =>  __('There is a problem processing emails queue — an admin should check :%a_begin%System status:%a_end% and :%a_begin_recommendations%Recommendations:%a_end%', ['%a_begin%' => '<a href="'.route('system').'#cron" target="_blank">', '%a_end%' => '</a>', /*'%a_begin_logs%' => '<a href="'.route('logs', ['name' => 'send_errors']).'#cron" target="_blank">',*/ '%a_begin_recommendations%' => '<a href="https://github.com/freescout-helpdesk/freescout/wiki/Background-Jobs" target="_blank">']),
+                'text'      =>  __('There is a problem processing emails queue — an admin should check :%a_begin%System Status:%a_end% and :%a_begin_recommendations%Recommendations:%a_end%', ['%a_begin%' => '<a href="'.route('system').'#cron" target="_blank">', '%a_end%' => '</a>', /*'%a_begin_logs%' => '<a href="'.route('logs', ['name' => 'send_errors']).'#cron" target="_blank">',*/ '%a_begin_recommendations%' => '<a href="https://github.com/freescout-helpdesk/freescout/wiki/Background-Jobs" target="_blank">']),
                 'unescaped' => true,
             ];
         }
