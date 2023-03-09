@@ -1778,6 +1778,7 @@ button.conv-checkbox-clear {
  */
 .body-conv .content-2col {
     display: flex;
+    /*flex-wrap: wrap;*/
 }
 #conv-layout {
     position: relative;
@@ -2928,6 +2929,14 @@ ul.sidebar-block-list {
 /**
  * Alerts
  */
+.alerts {
+    flex: 0 0 100%;
+}
+.alerts .alert {
+    margin-bottom: 0;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
 .alert-floating {
     font-size: 14px;
     left: 50%;

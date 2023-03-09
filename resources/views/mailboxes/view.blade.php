@@ -15,7 +15,12 @@
 @endsection
 
 @section('content')
-    @include('partials/flash_messages')
+    <div class="alerts">
+        @php
+            $flashes = \Helper::maybeShowSendingProblemsAlert();
+        @endphp
+        @include('partials/flash_messages')
+    </div>
     @if ($folder->type == App\Folder::TYPE_DELETED && $folder->total_count)
         <div class="section-heading mailbox-toolbar">
 	        <a href="#" class="btn btn-primary mailbox-empty-folder">{{ __('Empty Trash') }}</a>
