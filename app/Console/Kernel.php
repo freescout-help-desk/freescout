@@ -46,6 +46,11 @@ class Kernel extends ConsoleKernel
             ->everyMinute()
             ->withoutOverlapping();
 
+        $schedule->command('freescout:send-monitor')
+            // Every 12 hours.
+            ->cron('0 */12 * * *')
+            ->withoutOverlapping();
+
         $schedule->command('freescout:update-folder-counters')
             ->hourly();
 

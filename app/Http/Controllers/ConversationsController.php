@@ -287,13 +287,15 @@ class ConversationsController extends Controller
 
         $is_following = $conversation->isUserFollowing($user->id);
 
-        \Eventy::action('conversation.view.start', $conversation);
+        \Eventy::action('conversation.view.start', $conversation, $request);
+
+        $threads = $conversation->threads()->orderBy('created_at', 'desc')->get();
 
         return view($template, [
             'conversation'       => $conversation,
             'mailbox'            => $conversation->mailbox,
             'customer'           => $customer,
-            'threads'            => $conversation->threads()->orderBy('created_at', 'desc')->get(),
+            'threads'            => \Eventy::filter('conversation.view.threads', $threads),
             'folder'             => $folder,
             'folders'            => $conversation->mailbox->getAssesibleFolders(),
             'after_send'         => $after_send,

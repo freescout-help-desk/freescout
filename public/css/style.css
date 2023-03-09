@@ -1778,6 +1778,7 @@ button.conv-checkbox-clear {
  */
 .body-conv .content-2col {
     display: flex;
+    /*flex-wrap: wrap;*/
 }
 #conv-layout {
     position: relative;
@@ -2128,13 +2129,7 @@ button.conv-checkbox-clear {
     top: 3px;
     color: #c1861e;
 }
-/*.thread-type {
-    /*margin-right: 7px;* /
-    font-weight: bold;
-}
-.thread-type span {
-    font-weight: normal;
-}*/
+.thread-info-icon,
 .thread-to-first {
     margin-right: 1px;
     color: #a5b2bd;
@@ -2934,6 +2929,14 @@ ul.sidebar-block-list {
 /**
  * Alerts
  */
+.alerts {
+    flex: 0 0 100%;
+}
+.alerts .alert {
+    margin-bottom: 0;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
 .alert-floating {
     font-size: 14px;
     left: 50%;
@@ -3832,6 +3835,9 @@ a.help-icon:hover {
     color: #93a1af;
 }
 .text-help a:hover {
+    color: #23527c;
+}
+.link-active {
     color: #23527c;
 }
 .link-black,
