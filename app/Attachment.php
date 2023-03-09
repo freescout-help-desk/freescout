@@ -215,7 +215,7 @@ class Attachment extends Model
     }
 
     /**
-     * Conver type name to integer.
+     * Convert type name to integer.
      */
     public static function typeNameToInt($type_name)
     {

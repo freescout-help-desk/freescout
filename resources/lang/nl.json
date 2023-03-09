@@ -252,7 +252,7 @@
     "Error occurred. Please try again or try another :%a_start%update method:%a_end%": "Er is een fout opgetreden. Probeer het opnieuw of probeer een andere :% a_start% updatemethode% a_end%.",
     "Error sending alert": "Fout bij verzenden van melding",
     "Error sending email to customer": "Fout bij het verzenden van e-mail naar klant",
-    "Error sending email to the user who replied to notiication from wrong email": "Fout bij het verzenden van e-mail naar de gebruiker die op een melding van een verkeerde e-mail heeft geantwoord",
+    "Error sending email to the user who replied to notification from wrong email": "Fout bij het verzenden van e-mail naar de gebruiker die op een melding van een verkeerde e-mail heeft geantwoord",
     "Error sending email to user": "Fout bij het verzenden van e-mail naar gebruiker",
     "Error sending invitation email to user": "Fout bij het verzenden van uitnodigings-e-mail naar gebruiker",
     "Error sending password changed notification to user": "Fout bij verzenden van wachtwoord gewijzigd melding naar gebruiker",

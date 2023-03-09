@@ -218,7 +218,7 @@
     "Error sending invitation email to user": "Erreur lors de l'envoi d'un e-mail d'invitation à l'utilisateur",
     "Error sending password changed notification to user": "Erreur lors de l'envoi de la notification de modification du mot de passe à l'utilisateur",
     "Error sending alert": "Erreur lors de l'envoi de l'alerte",
-    "Error sending email to the user who replied to notiication from wrong email": "Erreur lors de l'envoi d'un e-mail à l'utilisateur qui a répondu à la notification d'un mauvais e-mail",
+    "Error sending email to the user who replied to notification from wrong email": "Erreur lors de l'envoi d'un e-mail à l'utilisateur qui a répondu à la notification d'un mauvais e-mail",
     "Error fetching email": "Erreur lors de la récupération de l'e-mail",
     "System error": "Erreur système",
     "Deleted user": "Utilisateur supprimé",

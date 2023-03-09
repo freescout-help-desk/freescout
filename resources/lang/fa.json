@@ -297,7 +297,7 @@
     "Error sending alert": "خطا در ارسال هشدار",
     "Error sending email to customer": "خطا در ارسال ایمیل به مشتری",
     "Email :tag_email_begin:email:tag_email_end has been moved from another customer:  :a_begin:customer:a_end.": "ایمیل:tag_email_begin:email:tag_email_end از مشتری دیگری منتقل شده است: :a_begin:customer:a_end.",
-    "Error sending email to the user who replied to notiication from wrong email": "خطا در ارسال ایمیل به کاربری که به اعلان ایمیل اشتباه پاسخ داده است",
+    "Error sending email to the user who replied to notification from wrong email": "خطا در ارسال ایمیل به کاربری که به اعلان ایمیل اشتباه پاسخ داده است",
     "Error sending email to user": "خطا در ارسال ایمیل به کاربر",
     "Error sending invitation email to user": "خطا در ارسال ایمیل دعوت به کاربر",
     "Error sending password changed notification to user": "خطا در ارسال اعلان تغییر رمز عبور به کاربر",

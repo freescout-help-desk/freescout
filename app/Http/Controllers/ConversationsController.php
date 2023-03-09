@@ -297,7 +297,7 @@ class ConversationsController extends Controller
             'customer'           => $customer,
             'threads'            => \Eventy::filter('conversation.view.threads', $threads),
             'folder'             => $folder,
-            'folders'            => $conversation->mailbox->getAssesibleFolders(),
+            'folders'            => $conversation->mailbox->getAccessibleFolders(),
             'after_send'         => $after_send,
             'to'                 => $to,
             'to_customers'       => $to_customers,
@@ -370,7 +370,7 @@ class ConversationsController extends Controller
             'thread'       => $thread,
             'mailbox'      => $mailbox,
             'folder'       => $folder,
-            'folders'      => $mailbox->getAssesibleFolders(),
+            'folders'      => $mailbox->getAccessibleFolders(),
             'after_send'   => $after_send,
             'to'           => $to,
         ]);
@@ -473,7 +473,7 @@ class ConversationsController extends Controller
     //         'conversation' => $conversation,
     //         'mailbox'      => $conversation->mailbox,
     //         'folder'       => $conversation->folder,
-    //         'folders'      => $conversation->mailbox->getAssesibleFolders(),
+    //         'folders'      => $conversation->mailbox->getAccessibleFolders(),
     //     ]);
     // }
 

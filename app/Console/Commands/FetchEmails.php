@@ -25,7 +25,7 @@ class FetchEmails extends Command
     /**
      * The name and signature of the console command.
      *
-     * --identifier parameter is used to kill fetch-emails command runnign for too long.
+     * --identifier parameter is used to kill fetch-emails command running for too long.
      *
      * @var string
      */

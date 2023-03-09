@@ -454,7 +454,7 @@ class MailboxesController extends Controller
         }
         $this->authorize('viewCached', $mailbox);
 
-        $folders = $mailbox->getAssesibleFolders();
+        $folders = $mailbox->getAccessibleFolders();
 
         $folder = null;
         if (!empty($folder_id)) {

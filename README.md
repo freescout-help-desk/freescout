@@ -32,7 +32,7 @@
   * 100% Mobile-friendly.
   * Multilingual (English, Croatian, Czech, Danish, Dutch, Finnish, French, German, Italian, Japanese, Korean, Persian, Polish, Portuguese, Russian, Spanish, Slovak, Swedish).
   * Seamless email integration.
-  * Suppports modern Microsoft Exchange authentication.
+  * Supports modern Microsoft Exchange authentication.
   * Web installer & updater.
   * Starred conversations.
   * Forwarding conversations.

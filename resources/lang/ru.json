@@ -628,7 +628,7 @@
     "Error sending invitation email to user": "Ошибка при отправке письма-приглашения агенту",
     "Error sending password changed notification to user": "Ошибка при отправке уведомления об изменении пароля агенту",
     "Error sending alert": "Ошибка при отправке оповещения",
-    "Error sending email to the user who replied to notiication from wrong email": "Ошибка при отправке письма пользователю, который ответил на уведомление с неправильного адреса",
+    "Error sending email to the user who replied to notification from wrong email": "Ошибка при отправке письма пользователю, который ответил на уведомление с неправильного адреса",
     "Error fetching email": "Ошибка при получении письма",
     "System error": "Системная ошибка",
     "Deleted user": "Агент удалён",

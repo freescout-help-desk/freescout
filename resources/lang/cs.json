@@ -279,7 +279,7 @@
     "Error occurred sending email. Please check your mail server logs for more details.": "Došlo k chybě při odesílání e-mailu. Podrobnější informace naleznete v protokolech poštovního serveru.",
     "Error sending alert": "Chyba při odeslání upozornění",
     "Error sending email to customer": "Chyba při odesílání e-mailu zákazníkovi",
-    "Error sending email to the user who replied to notiication from wrong email": "Chyba odeslání e-mailu uživateli, který odpověděl na oznámení z nesprávného e-mailu",
+    "Error sending email to the user who replied to notification from wrong email": "Chyba odeslání e-mailu uživateli, který odpověděl na oznámení z nesprávného e-mailu",
     "Error sending email to user": "Chyba při odesílání e-mailu uživateli",
     "Error sending invitation email to user": "Chyba při odesílání e-mailu s pozvánkou uživateli",
     "Error sending password changed notification to user": "Chyba při odesílání oznámení o změně hesla uživateli",

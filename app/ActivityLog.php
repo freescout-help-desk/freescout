@@ -64,7 +64,7 @@ class ActivityLog extends Activity
             case self::DESCRIPTION_EMAILS_SENDING_ERROR_ALERT:
                 return __('Error sending alert');
             case self::DESCRIPTION_EMAILS_SENDING_WRONG_EMAIL:
-                return __('Error sending email to the user who replied to notiication from wrong email');
+                return __('Error sending email to the user who replied to notification from wrong email');
             case self::DESCRIPTION_EMAILS_FETCHING_ERROR:
                 return __('Error fetching email');
             case self::DESCRIPTION_SYSTEM_ERROR:

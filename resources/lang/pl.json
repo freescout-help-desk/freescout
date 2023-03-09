@@ -279,7 +279,7 @@
     "Error occurred sending email. Please check your mail server logs for more details.": "Wystąpił błąd podczas wysyłania wiadomości e-mail. Aby uzyskać więcej informacji, sprawdź dzienniki serwera pocztowego.",
     "Error sending alert": "Błąd podczas wysyłania ostrzeżenia",
     "Error sending email to customer": "Błąd podczas wysyłania wiadomości e-mail do klienta ",
-    "Error sending email to the user who replied to notiication from wrong email": "Błąd podczas wysyłania wiadomości e-mail do użytkownika, który odpowiedział na powiadomienie z niewłaściwego adresu e-mail ",
+    "Error sending email to the user who replied to notification from wrong email": "Błąd podczas wysyłania wiadomości e-mail do użytkownika, który odpowiedział na powiadomienie z niewłaściwego adresu e-mail ",
     "Error sending email to user": "Błąd podczas wysyłania wiadomości e-mail do użytkownika ",
     "Error sending invitation email to user": "Błąd podczas wysyłania e-maila z zaproszeniem do użytkownika ",
     "Error sending password changed notification to user": "Błąd podczas wysyłania powiadomienia o zmianie hasła do użytkownika ",
