@@ -276,7 +276,7 @@ class Conversation extends Model
     }
 
     /**
-     * Chached mailbox.
+     * Cached mailbox.
      * @return [type] [description]
      */
     public function mailbox_cached()
@@ -606,7 +606,7 @@ class Conversation extends Model
     }
 
     /**
-     * Set conersation status and all related fields.
+     * Set conversation status and all related fields.
      *
      * @param int $status
      */

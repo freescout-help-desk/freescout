@@ -79,7 +79,7 @@
     "Error sending invitation email to user": "Errore durante l'invio dell'email di invito all'utente",
     "Error sending password changed notification to user": "Errore durante l'invio della notifica di modifica della password all'utente",
     "Error sending alert": "Errore nell'invio dell'avviso",
-    "Error sending email to the user who replied to notiication from wrong email": "Errore nell'invio dell'email all'utente che ha risposto alla notifica da un'email errata",
+    "Error sending email to the user who replied to notification from wrong email": "Errore nell'invio dell'email all'utente che ha risposto alla notifica da un'email errata",
     "Error fetching email": "Errore nel recupero delle mail",
     "System error": "Errore di sistema",
     "Deleted user": "Utente eliminato",

@@ -295,7 +295,7 @@
     "Error sending alert": "Fehler beim Senden der Benachrichtigung",
     "Error sending email to customer": "Fehler beim Senden der E-Mail an den Kunden",
     "Email :tag_email_begin:email:tag_email_end has been moved from another customer:  :a_begin:customer:a_end.": "E-Mail :tag_email_begin:email:tag_email_end wurde von einem anderen Kunden verschoben: :a_begin:customer:a_end.",
-    "Error sending email to the user who replied to notiication from wrong email": "Fehler beim Senden der E-Mail an den Benutzer der auf die Benachrichtigung von der falschen E-Mail geantwortet hat",
+    "Error sending email to the user who replied to notification from wrong email": "Fehler beim Senden der E-Mail an den Benutzer der auf die Benachrichtigung von der falschen E-Mail geantwortet hat",
     "Error sending email to user": "Fehler beim Senden der E-Mail an den Benutzer",
     "Error sending invitation email to user": "Fehler beim Senden der Einladungs-E-Mail an den Benutzer",
     "Error sending password changed notification to user": "Fehler beim Senden der Benachrichtigung über die Passwortänderung an den Benutzer",

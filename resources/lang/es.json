@@ -245,7 +245,7 @@
     "Error occurred sending email. Please check your mail server logs for more details.": "Ocurrió un error enviando correo. Por favor revise el registro del servidor para más detalles.",
     "Error sending alert": "Error enviando alerta",
     "Error sending email to customer": "Error enviando correo a cliente",
-    "Error sending email to the user who replied to notiication from wrong email": "Error enviando correo al usuario que respondió la notificación desde un correo erróneo",
+    "Error sending email to the user who replied to notification from wrong email": "Error enviando correo al usuario que respondió la notificación desde un correo erróneo",
     "Error sending email to user": "Error enviando correo al usuario",
     "Error sending invitation email to user": "Error enviando invitación al usuario",
     "Error sending password changed notification to user": "Error enviando notificación de cambio de contraseña",
