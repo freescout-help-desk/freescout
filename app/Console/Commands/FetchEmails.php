@@ -598,10 +598,16 @@ class FetchEmails extends Command
                     $sender_is_user = User::nonDeleted()->where('email', $from)->exists();
                     
                     if ($sender_is_user) {
-                        // Substitute sender.
-                        $from = $original_sender;
-                        $subject = trim($m[1]);
-                        $message_from_customer = true;
+                        // Skip if the email starts with @fwd.
+                        if (!preg_match("/^[\s]*@fwd/su", trim(strip_tags($body)))) {
+                            // Substitute sender.
+                            $from = $original_sender;
+                            $subject = trim($m[1]);
+                            $message_from_customer = true;
+                        } else {
+                            // Remove @fwd from body.
+                            $body = trim(preg_replace("/@fwd([\s<]+)/su", '$1', $body));
+                        }
                     }
                 }
             }
