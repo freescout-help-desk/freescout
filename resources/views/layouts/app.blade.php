@@ -85,7 +85,7 @@
                                     </a>
                                     <ul class="dropdown-menu dm-scrollable">
                                         @foreach ($mailboxes as $mailbox_item)
-                                            <li @if ($mailbox_item->id == app('request')->id)class="active"@endif><a href="{{ \Eventy::filter('mailbox.url', route('mailboxes.view', ['id' => $mailbox_item->id]), $mailbox_item) }}">@action('menu.mailbox.before_name', $mailbox_item){{ $mailbox_item->name }}</a></li>
+                                            <li @if ($mailbox_item->id == app('request')->id)class="active"@endif><a href="{{ \Eventy::filter('mailbox.url', route('mailboxes.view', ['id' => $mailbox_item->id]), $mailbox_item) }}">@action('menu.mailbox.before_name', $mailbox_item){{ $mailbox_item->name }}@action('menu.mailbox.after_name', $mailbox_item)</a></li>
                                         @endforeach
                                     </ul>
                                 </li>
