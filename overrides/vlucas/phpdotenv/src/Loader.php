@@ -231,7 +231,7 @@ class Loader
 
         if ($this->beginsWithAQuote($value)) { // value starts with a quote
             $quote = $value[0];
-            $regexPattern = sprintf(
+            /*$regexPattern = sprintf(
                 '/^
                 %1$s           # match a quote at the start of the value
                 (              # capturing sub-pattern used
@@ -246,7 +246,13 @@ class Loader
                 /mx',
                 $quote
             );
+            $value = preg_replace($regexPattern, '$1', $value);*/
+            // Simply get everything before the last quote.
+            // https://github.com/freescout-helpdesk/freescout/issues/2822#issuecomment-1467700371
+            $regexPattern = sprintf('/(.*[^\\\\])%1$s[^%1$s]*/mx', $quote);
             $value = preg_replace($regexPattern, '$1', $value);
+            $value = substr($value, 1);
+
             $value = str_replace("\\$quote", $quote, $value);
             $value = str_replace('\\\\', '\\', $value);
         } else {
