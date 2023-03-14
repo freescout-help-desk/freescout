@@ -1546,14 +1546,7 @@ class Helper
     public static function downloadRemoteFileAsTmp($uri)
     {
         try {
-            $headers = get_headers($uri);
-
-            // 307 - Temporary Redirect.
-            if (!preg_match("/(200|301|302|307)/", $headers[0])) {
-                return false;
-            }
-
-            $contents = file_get_contents($uri);
+            $contents = self::getRemoteFileContents($uri);
 
             if (!$contents) {
                 return false;
@@ -1564,6 +1557,38 @@ class Helper
             \File::put($temp_file, $contents);
 
             return $temp_file;
+
+        } catch (\Exception $e) {
+
+            \Helper::logException($e, 'Error downloading a remote file ('.$uri.'): ');
+
+            return false;
+        }
+    }
+
+    // Replacement for file_get_contents() as some hostings 
+    // do not allow reading remote files via allow_url_fopen option.
+    public static function getRemoteFileContents($url)
+    {
+        try {
+            $headers = get_headers($url);
+
+            // 307 - Temporary Redirect.
+            if (!preg_match("/(200|301|302|307)/", $headers[0])) {
+                return false;
+            }
+
+              $ch = curl_init();
+              curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+              curl_setopt($ch, CURLOPT_URL, $url);
+              $contents = curl_exec($ch);
+              curl_close($ch);
+
+            if (!$contents) {
+                return false;
+            }
+
+            return $contents;
 
         } catch (\Exception $e) {
 

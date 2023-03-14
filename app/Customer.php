@@ -1372,7 +1372,7 @@ class Customer extends Model
             return false;
         }
 
-        $image_data = file_get_contents($url);
+        $image_data = \Helper::getRemoteFileContents($url);
 
         if (!$image_data) {
             return false;
