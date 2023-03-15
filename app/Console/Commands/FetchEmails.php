@@ -22,6 +22,8 @@ use Webklex\IMAP\Client;
 
 class FetchEmails extends Command
 {
+    const FWD_AS_CUSTOMER_COMMAND = '@fwd';
+
     /**
      * The name and signature of the console command.
      *
@@ -589,6 +591,7 @@ class FetchEmails extends Command
                 && !$user_id && !$is_reply && !$prev_thread
                 // Only if the email has been sent to one mailbox.
                 && count($to) == 1 && count($cc) == 0
+                && preg_match("/^[\s]*".self::FWD_AS_CUSTOMER_COMMAND."/su", trim(strip_tags($body)))
             ) {
                 // Try to get "From:" from body.
                 $original_sender = $this->getOriginalSenderFromFwd($body);
@@ -598,16 +601,13 @@ class FetchEmails extends Command
                     $sender_is_user = User::nonDeleted()->where('email', $from)->exists();
                     
                     if ($sender_is_user) {
-                        // Skip if the email starts with @fwd.
-                        if (!preg_match("/^[\s]*@fwd/su", trim(strip_tags($body)))) {
-                            // Substitute sender.
-                            $from = $original_sender;
-                            $subject = trim($m[1]);
-                            $message_from_customer = true;
-                        } else {
-                            // Remove @fwd from body.
-                            $body = trim(preg_replace("/@fwd([\s<]+)/su", '$1', $body));
-                        }
+                        // Substitute sender.
+                        $from = $original_sender;
+                        $subject = trim($m[1]);
+                        $message_from_customer = true;
+
+                        // Remove @fwd from body.
+                        $body = trim(preg_replace("/".self::FWD_AS_CUSTOMER_COMMAND."([\s<]+)/su", '$1', $body));
                     }
                 }
             }
@@ -728,6 +728,8 @@ class FetchEmails extends Command
     {
         // https://github.com/freescout-helpdesk/freescout/issues/2672
         $body = preg_replace("/[\"']cid:/", '!', $body);
+        // Cut out the command, otherwise it will be recognized as an email.
+        $body = preg_replace("/".self::FWD_AS_CUSTOMER_COMMAND."([\s<]+)/su", '$1', $body);
 
         // Looking like email texts may appear in attributes:
         // https://github.com/freescout-helpdesk/freescout/issues/276
