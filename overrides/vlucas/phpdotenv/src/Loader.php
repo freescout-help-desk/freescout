@@ -249,6 +249,9 @@ class Loader
             $value = preg_replace($regexPattern, '$1', $value);*/
             // Simply get everything before the last quote.
             // https://github.com/freescout-helpdesk/freescout/issues/2822#issuecomment-1467700371
+            if (preg_match(sprintf('#\\\\%1$s$#mx', $quote), $value)) {
+                $value = rtrim($value, $quote);
+            }
             $regexPattern = sprintf('/(.*[^\\\\])%1$s[^%1$s]*/mx', $quote);
             $value = preg_replace($regexPattern, '$1', $value);
             $value = substr($value, 1);
