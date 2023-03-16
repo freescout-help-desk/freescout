@@ -269,6 +269,13 @@ class FetchEmails extends Command
             $from = $message->getReplyTo();
             if (!$from) {
                 $from = $message->getFrom();
+            } else {
+                // If this is an auto-responder do not use Reply-To as sender email.
+                // https://github.com/freescout-helpdesk/freescout/issues/2826
+                $headers = $this->headerToStr($message->getHeader());
+                if (\MailHelper::isAutoResponder($headers)) {
+                    $from = $message->getFrom();
+                }
             }
 
             if (!$from) {
