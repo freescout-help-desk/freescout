@@ -466,7 +466,7 @@ class Conversation extends Model
             }
         }
 
-        $this->preview = \App\Misc\Helper::textPreview($text, self::PREVIEW_MAXLENGTH);
+        $this->preview = \Helper::textPreview($text, self::PREVIEW_MAXLENGTH);
 
         return $this->preview;
     }
@@ -2292,6 +2292,25 @@ class Conversation extends Model
 
         if ($save) {
             $this->save();
+        }
+    }
+
+    public static function updatePreview($conversation_id)
+    {
+        // Get last suitable thread.
+        $thread = Thread::where('conversation_id', $conversation_id)
+            ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
+            ->where('state', Thread::STATE_PUBLISHED)
+            ->where(function ($query) {
+                $query->where('subtype', null)
+                    ->orWhere('subtype', '!=', Thread::SUBTYPE_FORWARD);
+            })
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if ($thread) {
+            $thread->conversation->setPreview($thread->body);
+            $thread->conversation->save();
         }
     }
 }
