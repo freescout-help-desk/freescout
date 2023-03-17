@@ -3813,7 +3813,8 @@ a.help-icon:hover {
 }
 .popover {
     color:#4f5d6b;
-    font-size:13.4px
+    font-size:13.4px;
+    z-index: 1040;
 }
 .descr-block {
     margin: 20px;

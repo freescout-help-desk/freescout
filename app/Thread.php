@@ -724,6 +724,10 @@ class Thread extends Model
     {
         $this->deteleAttachments();
         $this->delete();
+
+        if ($this->isNote()) {
+            Conversation::updatePreview($this->conversation_id);
+        }
     }
 
     /**

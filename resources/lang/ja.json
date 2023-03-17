@@ -227,7 +227,7 @@
     "Error occurred sending email. Please check your mail server logs for more details.": "メール送信時にエラーが発生しました。詳細はメールサーバーのログをご確認ください。",
     "Error sending alert": "アラートの送信中にエラーが発生しました",
     "Error sending email to customer": "顧客へのメール送信エラー",
-    "Error sending email to the user who replied to notiication from wrong email": "間違ったメールから通知に返信したユーザーにメールを送信するエラー",
+    "Error sending email to the user who replied to notification from wrong email": "間違ったメールから通知に返信したユーザーにメールを送信するエラー",
     "Error sending email to user": "ユーザーへのメール送信エラー",
     "Error sending invitation email to user": "ユーザーに招待メールを送信する際のエラー",
     "Error sending password changed notification to user": "ユーザーへのパスワード変更通知の送信エラー",

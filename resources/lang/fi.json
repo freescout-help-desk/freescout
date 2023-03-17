@@ -279,7 +279,7 @@
     "Error occurred sending email. Please check your mail server logs for more details.": "Sähköpostin lähettämisessä tapahtui virhe. Tarkista tarkemmat tiedot sähköpostipalvelimen lokitiedoista.",
     "Error sending alert": "Virhe hälytyksen lähettämisessä",
     "Error sending email to customer": "Virhe sähköpostin lähettämisessä asiakkaalle",
-    "Error sending email to the user who replied to notiication from wrong email": "Virhe sähköpostin lähettämisessä käyttäjälle, joka vastasi ilmoitukseen väärästä sähköpostista",
+    "Error sending email to the user who replied to notification from wrong email": "Virhe sähköpostin lähettämisessä käyttäjälle, joka vastasi ilmoitukseen väärästä sähköpostista",
     "Error sending email to user": "Virhe sähköpostin lähettämisessä käyttäjälle",
     "Error sending invitation email to user": "Virhe kutsusähköpostin lähettämisessä käyttäjälle",
     "Error sending password changed notification to user": "Virhe salasanan muutosilmoituksen lähettämisessä käyttäjälle",

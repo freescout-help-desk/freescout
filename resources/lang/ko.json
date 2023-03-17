@@ -227,7 +227,7 @@
     "Error occurred sending email. Please check your mail server logs for more details.": "메일을 보내는 동안 오류가 발생했습니다. 자세한 세부사항은 메일 서버 로그를 확인하십시오.",
     "Error sending alert": "경고를 보내는 동안 오류가 발생했습니다.",
     "Error sending email to customer": "고객에게 메일을 보내는 동안 오류가 발생했습니다.",
-    "Error sending email to the user who replied to notiication from wrong email": "잘못된 메일 알림에 답변한 사용자에게 메일을 보내는 중 오류가 발생했습니다.",
+    "Error sending email to the user who replied to notification from wrong email": "잘못된 메일 알림에 답변한 사용자에게 메일을 보내는 중 오류가 발생했습니다.",
     "Error sending email to user": "사용자에게 메일을 보내는 동안 오류가 발생했습니다.",
     "Error sending invitation email to user": "사용자에게 초대 메일을 보내는 동안 오류가 발생했습니다.",
     "Error sending password changed notification to user": "사용자에게 비밀번호 변경 알림을 보내는 동안 오류가 발생했습니다.",
