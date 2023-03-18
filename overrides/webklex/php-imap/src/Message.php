@@ -724,7 +724,11 @@ class Message {
         }
 
         if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
-            return @iconv($from, $to.'//IGNORE', $str);
+            try {
+                return iconv($from, $to.'//IGNORE', $str);
+            } catch (\Exception $e) {
+                return @iconv($from, $to, $str);
+            }
         } else {
             if (!$from) {
                 return mb_convert_encoding($str, $to);

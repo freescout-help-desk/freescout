@@ -98,7 +98,13 @@ class SystemController extends Controller
                     $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '{$command_identifier}'"));
                     $pids = [];
                     foreach ($processes as $process) {
+                        $process = trim($process);
                         preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
+                        if (empty($m)) {
+                            // Another format (used in Docker image).
+                            // 1713 nginx     0:00 /usr/bin/php82...
+                            preg_match("/^([\d]+)\s+[\S]+\s+/", $process, $m);
+                        }
                         if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {
                             $running_commands++;
                             $pids[] = $m[1];
