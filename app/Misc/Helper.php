@@ -1503,6 +1503,11 @@ class Helper
         return \DB::connection()->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'pgsql';
     }
 
+    public static function sqlLikeOperator()
+    {
+        return self::isPgSql() ? 'ilike' : 'like';
+    }
+
     public static function humanFileSize($size, $unit="")
     {
         if ((!$unit && $size >= 1<<30) || $unit == "GB") {
