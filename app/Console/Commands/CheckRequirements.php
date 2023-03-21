@@ -11,7 +11,7 @@ class CheckRequirements extends Command
      *
      * @var string
      */
-    protected $signature = 'freescout:check-requriements';
+    protected $signature = 'freescout:check-requirements';
 
     /**
      * The console command description.
