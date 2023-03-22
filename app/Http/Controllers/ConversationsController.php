@@ -2662,7 +2662,9 @@ class ConversationsController extends Controller
             switch ($filter) {
                 case 'after':
                 case 'before':
-                    $value = date('Y-m-d', strtotime($value));
+                    if ($value) {
+                        $filters[$filter] = date('Y-m-d', strtotime($value));
+                    }
                     break;
             }
         }
