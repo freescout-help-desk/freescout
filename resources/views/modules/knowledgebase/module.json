@@ -1,0 +1,26 @@
+{
+    "name": "Knowledge Base",
+    "alias": "knowledgebase",
+    "description": "Create professional self-service help center for customers or supports agents!",
+    "version": "1.0.42",
+    "detailsUrl": "https://freescout.net/module/knowledge-base/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.8.48",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\KnowledgeBase\\Providers\\KnowledgeBaseServiceProvider"
+    ],
+    "aliases": {
+        "Kb": "Modules\\KnowledgeBase\\Providers\\KnowledgeBaseServiceProvider",
+        "KbCategory": "Modules\\KnowledgeBase\\Entities\\KbCategory",
+        "KbArticle": "Modules\\KnowledgeBase\\Entities\\KbArticle"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

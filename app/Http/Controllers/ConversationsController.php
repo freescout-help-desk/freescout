@@ -743,8 +743,18 @@ class ConversationsController extends Controller
                         }
                         // When switching from regular message to phone and message sent
                         // without saving a draft type need to be saved here.
-                        if ($conversation->type == Conversation::TYPE_EMAIL && $type == Conversation::TYPE_PHONE) {
+                        // Or vise versa.
+                        if (($conversation->type == Conversation::TYPE_EMAIL && $type == Conversation::TYPE_PHONE)
+                            || ($conversation->type == Conversation::TYPE_PHONE && $type == Conversation::TYPE_EMAIL)
+                        ) {
                             $conversation->type = $type;
+                        }
+                        // Allow to convert phone conversations into email conversations.
+                        if ($conversation->isPhone() && !$is_note && $conversation->customer
+                            && $customer_email = $conversation->customer->getMainEmail()
+                        ) {
+                            $conversation->type = Conversation::TYPE_EMAIL;
+                            $conversation->customer_email = $customer_email;
                         }
                     }
 
@@ -1893,7 +1903,7 @@ class ConversationsController extends Controller
                 \Session::flash('flash_success_floating', __('Conversations deleted'));
                 break;
 
-            // Delete converations.
+            // Delete converations in a specific folder.
             case 'empty_folder':
                 // At first, check if this user is able to delete conversations
                 if (!auth()->user()->isAdmin() && !auth()->user()->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS)) {
@@ -1901,20 +1911,27 @@ class ConversationsController extends Controller
                     return \Response::json($response);
                 }
 
-                $folder = Folder::find($request->folder_id ?? '');
+                $response = \Eventy::filter('conversations.empty_folder', $response, 
+                    $request->mailbox_id,
+                    $request->folder_id
+                );
 
-                if (!$folder) {
-                    $response['msg'] = __('Folder not found');
-                }
+                if (empty($response['processed'])) {
+                    $folder = Folder::find($request->folder_id ?? '');
 
-                if (!$response['msg']) {
-                    $conversation_ids = Conversation::where('folder_id', $folder->id)->pluck('id')->toArray();
-                    Conversation::deleteConversationsForever($conversation_ids);
-                    if ($folder->mailbox) {
-                        Conversation::clearStarredByUserCache($user->id, $folder->mailbox_id);
-                        $folder->mailbox->updateFoldersCounters();
-                    } else {
-                        $folder->updateCounters();
+                    if (!$folder) {
+                        $response['msg'] = __('Folder not found');
+                    }
+
+                    if (!$response['msg']) {
+                        $conversation_ids = Conversation::where('folder_id', $folder->id)->pluck('id')->toArray();
+                        Conversation::deleteConversationsForever($conversation_ids);
+                        if ($folder->mailbox) {
+                            Conversation::clearStarredByUserCache($user->id, $folder->mailbox_id);
+                            $folder->mailbox->updateFoldersCounters();
+                        } else {
+                            $folder->updateCounters();
+                        }
                     }
                 }
 

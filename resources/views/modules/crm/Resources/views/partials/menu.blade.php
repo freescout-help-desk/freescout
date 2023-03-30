@@ -1,0 +1,1 @@
+<li class="{{ \App\Misc\Helper::menuSelectedHtml('crm') }}"><a href="{{ route('conversations.search', ['mode' => App\Conversation::SEARCH_MODE_CUSTOMERS, 'xs_crm' => 1]) }}">{{ __('Customers') }}</a></li>

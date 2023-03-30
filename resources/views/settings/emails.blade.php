@@ -6,7 +6,6 @@
         <p>{{ __("These settings are used to send system emails (alerts to admin and invitation emails to users).") }}</p>
 
         <p>
-            {!! __("It is recommended to use :%tag_begin%PHP's mail() function:%tag_end%.", ['%tag_begin%' => '<strong>', '%tag_end%' =>'</strong>']) !!}
             {{ __("If you want to send system emails via webmail providers (Gmail, Yahoo, etc), use only SMTP method and make sure that SMTP username is equal to 'Mail From', otherwise webmail provider won't send emails.") }}
         </p>
     </div>

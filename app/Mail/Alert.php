@@ -32,6 +32,8 @@ class Alert extends Mailable
      */
     public function build()
     {
+        \MailHelper::prepareMailable($this);
+        
         $subject = '['.\Config::get('app.name').'] ';
         if (!empty($this->title)) {
             $subject .= $this->title;

@@ -1,0 +1,25 @@
+{
+    "name": "freescout/knowledgebase",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\KnowledgeBase\\Providers\\KnowledgeBaseServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\KnowledgeBase\\": ""
+        }
+    }
+}

@@ -1,0 +1,40 @@
+.panel-nested.panel-group {
+	position: relative;
+	margin-left: 10px;
+    margin-bottom: 9px;
+    margin-right: 10px;
+}
+.panel-nested .panel-sortable .handle {
+	left: 4px;
+}
+.kb-article-container {
+	max-width: 900px;
+}
+.kb-article-toolbar {
+	overflow: hidden;
+}
+.kb-article-right {
+	float: right;
+	margin-left: 5px;
+}
+.kb-article-toolbar {
+	vertical-align: bottom;
+	line-height: 30px;
+}
+#kb-article-text {
+	min-height: 340px;
+}
+.kb-article-container .note-editable {
+    min-height: 300px!important;
+}
+#kb-article-delete {
+	cursor: pointer;
+}
+#kb-article-delete:hover {
+	background-color: #f1f3f5;
+}
+.kb-locale-name {
+	position: relative;
+    vertical-align: top;
+    top: 2px;
+}

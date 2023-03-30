@@ -668,7 +668,10 @@ class FetchEmails extends Command
     public function getOriginalSenderFromFwd($body)
     {
         preg_match("/[\"'<:]([^\"'<:]+@[^\"'>:]+)[\"'>:]/", $body, $b);
-        return Email::sanitizeEmail($b[1] ?? '');
+        $email = $b[1] ?? '';
+        // https://github.com/freescout-helpdesk/freescout/issues/2517
+        $email = preg_replace("#.*&lt(.*)&gt.*#", "$1", $email);
+        return Email::sanitizeEmail($email);
     }
 
     public function saveBounceData($new_thread, $bounced_message_id, $from)

@@ -1,0 +1,25 @@
+{
+    "name": "Customers Management (CRM)",
+    "alias": "crm",
+    "description": "Manage, create, export customers or add custom fields!",
+    "version": "1.0.33",
+    "detailsUrl": "https://freescout.net/module/crm/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.8.48",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\Crm\\Providers\\CrmServiceProvider"
+    ],
+    "aliases": {
+        "Crm": "Modules\\Crm\\Providers\\CrmServiceProvider",
+        "CustomerField": "Modules\\Crm\\Entities\\CustomerField"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}
