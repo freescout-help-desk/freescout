@@ -1,0 +1,25 @@
+{
+    "name": "freescout/darkmode",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\DarkMode\\Providers\\DarkModeServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\DarkMode\\": ""
+        }
+    }
+}

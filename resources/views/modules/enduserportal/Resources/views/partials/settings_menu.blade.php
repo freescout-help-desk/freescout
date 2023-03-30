@@ -1,0 +1,1 @@
+<li @if (Route::is('enduserportal.settings'))class="active"@endif><a href="{{ route('enduserportal.settings', ['mailbox_id'=>$mailbox->id]) }}"><i class="glyphicon glyphicon-phone"></i> {{ __('End-User Portal') }}</a></li>

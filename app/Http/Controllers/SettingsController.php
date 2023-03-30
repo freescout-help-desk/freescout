@@ -170,6 +170,8 @@ class SettingsController extends Controller
                 break;
         }
 
+        $params = \Eventy::filter('settings.alter_section_params', $params, $section);
+
         if ($param) {
             if (isset($params[$param])) {
                 return $params[$param];
@@ -233,6 +235,8 @@ class SettingsController extends Controller
                 $settings = \Eventy::filter('settings.section_settings', $settings, $section);
                 break;
         }
+
+        $settings = \Eventy::filter('settings.alter_section_settings', $settings, $section);
 
         return $settings;
     }
@@ -344,6 +348,8 @@ class SettingsController extends Controller
         }
 
         // Clear cache if some options have been saved to .env file.
+        // Clearing the cache also restarts queue:work as it also
+        // needs to get new .env parameters.
         if ($cc_required) {
             \Helper::clearCache(['--doNotGenerateVars' => true]);
         }

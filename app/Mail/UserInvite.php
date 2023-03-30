@@ -27,6 +27,8 @@ class UserInvite extends Mailable
      */
     public function build()
     {
+        \MailHelper::prepareMailable($this);
+        
         $message = $this->subject(__('Welcome to :company_name!', ['company_name' => Option::getCompanyName()]))
                     ->view('emails/user/user_invite')
                     ->text('emails/user/user_invite_text');

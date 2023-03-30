@@ -43,6 +43,9 @@
                                     <select id="role" type="text" class="form-control input-sized" name="role" required autofocus>
                                         <option value="{{ App\User::ROLE_USER }}" @if (old('role', $user->role) == App\User::ROLE_USER)selected="selected"@endif>{{ __('User') }}</option>
                                         <option value="{{ App\User::ROLE_ADMIN }}" @if (old('role', $user->role) == App\User::ROLE_ADMIN)selected="selected"@endif>{{ __('Administrator') }}</option>
+                                        <option value="{{ App\User::ROLE_TICKETCOORDINATOR }}" @if (old('role') == App\User::ROLE_TICKETCOORDINATOR)selected="selected"@endif>{{ __('Ticket Coordinator') }}</option>
+						                <option value="{{ App\User::ROLE_TICKETENGINEER }}" @if (old('role') == App\User::ROLE_TICKETENGINEER)selected="selected"@endif>{{ __('Ticket Engineer') }}</option>
+						                <option value="{{ App\User::ROLE_ITHEAD }}" @if (old('role') == App\User::ROLE_ITHEAD)selected="selected"@endif>{{ __('It Head') }}</option>
                                     </select>
 
                                     <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left" data-title="{{ __('Roles') }}" data-content="{{ __('<strong>Administrators</strong> can create new users and have access to all mailboxes and settings') }} <br><br>{{ __('<strong>Users</strong> have access to the mailbox(es) specified in their permissions') }}"></i>

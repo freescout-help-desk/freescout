@@ -1640,4 +1640,34 @@ class Helper
         $phone = preg_replace("/[^0-9]/", '', $phone);
         return (string)$phone;
     }
+
+    public static function checkRequiredExtensions()
+    {
+        $php_extensions = [];
+        foreach (\Config::get('installer.requirements.php') as $extension_name) {
+            $alternatives = explode('/', $extension_name);
+            if ($alternatives) {
+                foreach ($alternatives as $alternative) {
+                    $php_extensions[$extension_name] = extension_loaded(trim($alternative));
+                    if ($php_extensions[$extension_name]) {
+                        break;
+                    }
+                }
+            } else {
+                $php_extensions[$extension_name] = extension_loaded($extension_name);
+            }
+        }
+
+        return $php_extensions;
+    }
+
+    public static function checkRequiredFunctions()
+    {
+        return [
+            'shell_exec (PHP)' => function_exists('shell_exec'),
+            'proc_open (PHP)' => function_exists('proc_open'),
+            'fpassthru (PHP)' => function_exists('fpassthru'),
+            'ps (shell)' => function_exists('shell_exec') ? shell_exec('ps') : false,
+        ];
+    }
 }

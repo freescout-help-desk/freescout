@@ -5,11 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
-    
+
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@if ($__env->yieldContent('title_full'))@yield('title_full') @elseif ($__env->yieldContent('title'))@yield('title') - {{ config('app.name', 'FreeScout') }} @else{{ config('app.name', 'FreeScout') }}@endif</title>
+    <title>@if ($__env->yieldContent('title_full'))@yield('title_full') @elseif ($__env->yieldContent('title'))@yield('title') - CaniDesk @else{{ config('app.name', 'FreeScout') }}@endif</title>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     {{--<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -258,7 +258,7 @@
             && empty(app('request')->x_embed) && empty($__env->yieldContent('no_footer')))
             <div class="footer">
                 @if (!\Eventy::filter('footer.text', ''))
-                    &copy; 2018-{{ date('Y') }} <a href="{{ config('app.freescout_url') }}" target="blank">{{ \Config::get('app.name') }}</a> — {{ __('Free open source help desk & shared mailbox') }}
+                    &copy; 2022-{{ date('Y') }} <a href="https://www.canaris.in/" target="blank">CaniDesk</a> —
                 @else
                     {!! \Eventy::filter('footer.text', '') !!}
                 @endif
@@ -267,7 +267,6 @@
                 @endif
                 {{-- Show version to admin only --}}
                 @if (Auth::user() && Auth::user()->isAdmin())
-                    <br/>
                     <a href="{{ route('system') }}">{{ config('app.version') }}</a>
                 @endif
             </div>

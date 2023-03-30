@@ -75,6 +75,7 @@ class ModulesController extends Controller
                 // Determined later
                 'new_version'        => '',
             ];
+
             $module_data = \App\Module::formatModuleData($module_data);
             $installed_modules[] = $module_data;
         }
@@ -171,86 +172,75 @@ class ModulesController extends Controller
                         'module_alias' => $alias,
                         'url'          => \App\Module::getAppUrl(),
                     ];
-                    $result = WpApi::activateLicense($params);
+                    // Activate license start
+                    if ($request->action == 'install') {
+                        // Download and install module
+                        $license_details = WpApi::getVersion($params);
 
-                    if (WpApi::$lastError) {
-                        $response['msg'] = WpApi::$lastError['message'];
-                    } elseif (!empty($result['code']) && !empty($result['message'])) {
-                        $response['msg'] = $result['message'];
-                    } else {
-                        if (!empty($result['status']) && $result['status'] == 'valid') {
-                            if ($request->action == 'install') {
-                                // Download and install module
-                                $license_details = WpApi::getVersion($params);
+                        if (WpApi::$lastError) {
+                            $response['msg'] = WpApi::$lastError['message'];
+                        } elseif (!empty($license_details['code']) && !empty($license_details['message'])) {
+                            $response['msg'] = $license_details['message'];
+                        } elseif (!empty($license_details['download_link'])) {
+                            // Download module
+                            $module_archive = \Module::getPath().DIRECTORY_SEPARATOR.$alias.'.zip';
 
-                                if (WpApi::$lastError) {
-                                    $response['msg'] = WpApi::$lastError['message'];
-                                } elseif (!empty($license_details['code']) && !empty($license_details['message'])) {
-                                    $response['msg'] = $license_details['message'];
-                                } elseif (!empty($license_details['download_link'])) {
-                                    // Download module
-                                    $module_archive = \Module::getPath().DIRECTORY_SEPARATOR.$alias.'.zip';
+                            try {
+                                \Helper::downloadRemoteFile($license_details['download_link'], $module_archive);
+                            } catch (\Exception $e) {
+                                $response['msg'] = $e->getMessage();
+                            }
 
-                                    try {
-                                        \Helper::downloadRemoteFile($license_details['download_link'], $module_archive);
-                                    } catch (\Exception $e) {
-                                        $response['msg'] = $e->getMessage();
-                                    }
-
-                                    $download_error = false;
-                                    if (!file_exists($module_archive)) {
-                                        $download_error = true;
-                                    } else {
-                                        // Extract
-                                        try {
-                                            \Helper::unzip($module_archive, \Module::getPath());
-                                        } catch (\Exception $e) {
-                                            $response['msg'] = $e->getMessage();
-                                        }
-                                        // Check if extracted module exists
-                                        \Module::clearCache();
-                                        $module = \Module::findByAlias($alias);
-                                        if (!$module) {
-                                            $download_error = true;
-                                        }
-                                    }
-
-                                    // Remove archive
-                                    if (file_exists($module_archive)) {
-                                        \File::delete($module_archive);
-                                    }
-
-                                    if (!$response['msg'] && !$download_error) {
-                                        // Activate license
-                                        \App\Module::activateLicense($alias, $license);
-
-                                        \Session::flash('flash_success_floating', __('Module successfully installed!'));
-                                        $response['status'] = 'success';
-                                    } elseif ($download_error) {
-                                        $response['reload'] = true;
-
-                                        if ($response['msg']) {
-                                            \Session::flash('flash_error_floating', $response['msg']);
-                                        }
-
-                                        \Session::flash('flash_error_unescaped', __('Error occured downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']));
-                                    }
-                                } else {
-                                    $response['msg'] = __('Error occured. Please try again later.');
-                                }
+                            $download_error = false;
+                            if (!file_exists($module_archive)) {
+                                $download_error = true;
                             } else {
-                                // Just activate license
+                                // Extract
+                                try {
+                                    \Helper::unzip($module_archive, \Module::getPath());
+                                } catch (\Exception $e) {
+                                    $response['msg'] = $e->getMessage();
+                                }
+                                // Check if extracted module exists
+                                \Module::clearCache();
+                                $module = \Module::findByAlias($alias);
+                                if (!$module) {
+                                    $download_error = true;
+                                }
+                            }
+
+                            // Remove archive
+                            if (file_exists($module_archive)) {
+                                \File::delete($module_archive);
+                            }
+
+                            if (!$response['msg'] && !$download_error) {
+                                // Activate license
                                 \App\Module::activateLicense($alias, $license);
 
-                                \Session::flash('flash_success_floating', __('License successfully activated!'));
+                                \Session::flash('flash_success_floating', __('Module successfully installed!'));
                                 $response['status'] = 'success';
+                            } elseif ($download_error) {
+                                $response['reload'] = true;
+
+                                if ($response['msg']) {
+                                    \Session::flash('flash_error_floating', $response['msg']);
+                                }
+
+                                \Session::flash('flash_error_unescaped', __('Error occured downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']));
                             }
-                        } elseif (!empty($result['error'])) {
-                            $response['msg'] = $this->getErrorMessage($result['error'], $result);
                         } else {
                             $response['msg'] = __('Error occured. Please try again later.');
                         }
+                    } else {
+                        // Just activate license
+                        \App\Module::activateLicense($alias, $license);
+
+                        \Session::flash('flash_success_floating', __('License successfully activated!'));
+                        $response['status'] = 'success';
                     }
+                    // Activate license end
+
                 }
                 break;
 
@@ -263,56 +253,56 @@ class ModulesController extends Controller
                 }
 
                 // Check license
-                if (!$response['msg']) {
-                    if (!empty($module->get('authorUrl')) && $module->isOfficial()) {
-                        $params = [
-                            'license'      => $module->getLicense(),
-                            'module_alias' => $alias,
-                            'url'          => \App\Module::getAppUrl(),
-                        ];
-                        $license_result = WpApi::checkLicense($params);
+                // if (!$response['msg']) {
+                //     if (!empty($module->get('authorUrl')) && $module->isOfficial()) {
+                //         $params = [
+                //             'license'      => $module->getLicense(),
+                //             'module_alias' => $alias,
+                //             'url'          => \App\Module::getAppUrl(),
+                //         ];
+                //         $license_result = WpApi::checkLicense($params);
 
-                        if (!empty($license_result['code']) && !empty($license_result['message'])) {
-                            // Remove remembered license key and deactivate license in DB
-                            \App\Module::deactivateLicense($alias, '');
+                //         if (!empty($license_result['code']) && !empty($license_result['message'])) {
+                //             // Remove remembered license key and deactivate license in DB
+                //             \App\Module::deactivateLicense($alias, '');
 
-                            $response['msg'] = $license_result['message'];
-                        } elseif (!empty($license_result['status']) && $license_result['status'] != 'valid' && $license_result['status'] != 'inactive') {
-                            // Remove remembered license key and deactivate license in DB
-                            \App\Module::deactivateLicense($alias, '');
+                //             $response['msg'] = $license_result['message'];
+                //         } elseif (!empty($license_result['status']) && $license_result['status'] != 'valid' && $license_result['status'] != 'inactive') {
+                //             // Remove remembered license key and deactivate license in DB
+                //             \App\Module::deactivateLicense($alias, '');
 
-                            switch ($license_result['status']) {
-                                case 'expired':
-                                    $response['msg'] = __('License key has expired');
-                                    break;
-                                case 'disabled':
-                                    $response['msg'] = __('License key has been revoked');
-                                    break;
-                                case 'inactive':
-                                    $response['msg'] = __('License key has not been activated yet');
-                                case 'site_inactive':
-                                    $response['msg'] = __('Your domain is deactivated');
-                                    break;
-                            }
-                        } elseif (!empty($license_result['status']) && $license_result['status'] == 'inactive') {
-                            // Activate the license.
-                            $result = WpApi::activateLicense($params);
-                            if (WpApi::$lastError) {
-                                $response['msg'] = WpApi::$lastError['message'];
-                            } elseif (!empty($result['code']) && !empty($result['message'])) {
-                                $response['msg'] = $result['message'];
-                            } else {
-                                if (!empty($result['status']) && $result['status'] == 'valid') {
-                                    // Success.
-                                } elseif (!empty($result['error'])) {
-                                    $response['msg'] = $this->getErrorMessage($result['error'], $result);
-                                } else {
-                                    // Some unknown error. Do nothing.
-                                }
-                            }
-                        }
-                    }
-                }
+                //             switch ($license_result['status']) {
+                //                 case 'expired':
+                //                     $response['msg'] = __('License key has expired');
+                //                     break;
+                //                 case 'disabled':
+                //                     $response['msg'] = __('License key has been revoked');
+                //                     break;
+                //                 case 'inactive':
+                //                     $response['msg'] = __('License key has not been activated yet');
+                //                 case 'site_inactive':
+                //                     $response['msg'] = __('Your domain is deactivated');
+                //                     break;
+                //             }
+                //         } elseif (!empty($license_result['status']) && $license_result['status'] == 'inactive') {
+                //             // Activate the license.
+                //             $result = WpApi::activateLicense($params);
+                //             if (WpApi::$lastError) {
+                //                 $response['msg'] = WpApi::$lastError['message'];
+                //             } elseif (!empty($result['code']) && !empty($result['message'])) {
+                //                 $response['msg'] = $result['message'];
+                //             } else {
+                //                 if (!empty($result['status']) && $result['status'] == 'valid') {
+                //                     // Success.
+                //                 } elseif (!empty($result['error'])) {
+                //                     $response['msg'] = $this->getErrorMessage($result['error'], $result);
+                //                 } else {
+                //                     // Some unknown error. Do nothing.
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
 
                 if (!$response['msg']) {
                     \App\Module::setActive($alias, true);
@@ -362,7 +352,7 @@ class ModulesController extends Controller
 
                     // \Session::flash does not work after BufferedOutput
                     $flash = [
-                        'text'      => '<strong>'.$msg.'</strong><pre class="margin-top">'.$output.'</pre>',
+                        'text'      => '<strong>'.$msg.'</strong>',
                         'unescaped' => true,
                         'type'      => $type,
                     ];

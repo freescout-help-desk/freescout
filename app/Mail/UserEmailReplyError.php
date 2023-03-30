@@ -25,6 +25,8 @@ class UserEmailReplyError extends Mailable
      */
     public function build()
     {
+        \MailHelper::prepareMailable($this);
+        
         return $this->subject(__('Unable to process your update'))
             ->view('emails/user/email_reply_error');
     }
