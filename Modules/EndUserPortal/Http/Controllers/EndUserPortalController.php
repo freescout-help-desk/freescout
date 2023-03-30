@@ -198,7 +198,7 @@ class EndUserPortalController extends Controller
         // }
         
         $customer = $customer = Customer::getByEmail($email);
-        if(!\Hash::check($request->password, $customer->password)){
+        if(!$customer || !\Hash::check($request->password, $customer->password)){
             $result['result'] = 'error';
             $result['message'] = __('Email or password is incorrect', ['email' => htmlspecialchars($request->email)]);
             return view('enduserportal::login', [
