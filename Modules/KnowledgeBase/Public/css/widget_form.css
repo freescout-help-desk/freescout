@@ -1,0 +1,123 @@
+#kb-header {
+	padding: 8px 14px;
+    color: #ffffff;
+    font-size: 16px;
+    background-color: #0068bd;
+    text-align: center;
+    font-weight: bold;
+    line-height: 28px;
+    position: fixed;
+    top: 0;
+    z-index: 1;
+	width: 100%;
+}
+
+#kb-minimize {
+	cursor: pointer;
+	float: right;
+	width: 28px;
+	height: 28px;
+	text-align: center;
+	padding-top: 2px;
+}
+
+#kb-minimize:hover {
+	opacity: 0.7;
+}
+
+#kb-content {
+	margin-top: 44px;
+}
+
+#kb-powered {
+	text-align: center;
+	color: #93a1af;
+	position: relative;
+	top: -5px;
+	font-size: 12px;
+	margin-bottom: 0;
+	font-family: system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,Arial,sans-serif;
+}
+#kb-powered a {
+	color: #93a1af !important;
+	font-weight: bold;
+}
+
+#kb-submit-form-bottom {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	background-color: #ffffff;
+	padding: 12px 15px 0;
+	box-shadow: rgba(0, 0, 0, 0.08) 0px -0.071428rem 0.85714rem;
+}
+
+#kb-submit-form-bottom .form-group {
+	margin-bottom: 12px;
+}
+#kb-submit-form-bottom .btn {
+	border-radius: 4px;
+}
+
+#kb-search {
+	padding: 0 15px 10px;
+}
+#kb-search .input-group {
+    position: relative;
+    top: -3px;
+}
+#kb-search .input-group-addon {
+	z-index: 9;
+    position: relative;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+#kb-search input {
+	border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+#kb-search .input-group > .form-control,
+#kb-search .input-group > .input-group-addon,
+#kb-search .input-group > .input-group-btn > .btn {
+    height: 38px;
+    padding: 10px 16px;
+    font-size: 14px;
+    line-height: 0.9;
+    border-radius: 4px;
+}
+
+.kb-middle {
+	margin-top: 50px;
+    text-align: center;
+}
+.kb-middle strong {
+	font-size: 20px;
+}
+.kb-middle .glyphicon {
+	color: #D8DDE2;
+	font-size: 57px;
+}
+#kb-results {
+    overflow-y: auto;
+    height: calc(100vh - 149px);
+}
+.kb-has-contact #kb-results {
+	height: calc(100vh - 183px);
+}
+.kb-articles {
+	list-style: none;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+.kb-articles li {
+	margin-top: 6px;
+    margin-bottom: 6px;
+}
+.kb-content {
+	margin-left: 15px;
+	margin-right: 15px;
+}
+.kb-article-title {
+	margin-top: 10px;
+}

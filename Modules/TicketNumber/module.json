@@ -1,0 +1,22 @@
+{
+    "name": "Ticket Number",
+    "alias": "ticketnumber",
+    "description": "Add ticket number in the subject of emails sent to customers!",
+    "version": "1.0.2",
+    "detailsUrl": "https://freescout.net/module/ticket-number/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.7.14",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\TicketNumber\\Providers\\TicketNumberServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

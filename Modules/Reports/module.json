@@ -1,0 +1,24 @@
+{
+    "name": "Reports",
+    "alias": "reports",
+    "description": "Real-time reports on conversations, productivity and customer satisfaction!",
+    "version": "1.0.23",
+    "detailsUrl": "https://freescout.net/module/reports/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.8.49",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\Reports\\Providers\\ReportsServiceProvider"
+    ],
+    "aliases": {
+        "Reports": "Modules\\Reports\\Providers\\ReportsServiceProvider"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

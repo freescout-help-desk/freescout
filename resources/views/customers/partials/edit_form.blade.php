@@ -49,6 +49,19 @@
                         {{-- @include('partials/field_error', ['field'=>'emails.*']) --}}
                     </div>
                 </div>
+                <div class="form-group{{ $errors->has('last_name') ? ' has-error' : '' }}">
+                    <label for="last_name" class="col-sm-2 control-label">{{ __('Password') }}</label>
+
+                    <div class="col-sm-6">
+                        <input id="password" type="password" class="form-control input-sized-lg" name="password" value="" maxlength="30">
+                        @if($customer->password)
+                        <p class="block-help">{{ __('Leave empty if you do not wish to change password') }}</p>
+                        @else
+                        <p class="block-help">{{ __('Select a password and remember to share with the user.') }}</p>
+                        @endif
+                        @include('partials/field_error', ['field'=>'password'])
+                    </div>
+                </div>
 
                 <div class="form-group{{ $errors->has('phones') ? ' has-error' : '' }} margin-bottom-0">
                     <label for="phones" class="col-sm-2 control-label">{{ __('Phone') }}</label>

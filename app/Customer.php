@@ -454,7 +454,7 @@ class Customer extends Model
      *
      * @var [type]
      */
-    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url', 'age', 'gender', 'notes', 'channel', 'channel_id', 'social_profiles'];
+    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url', 'age', 'gender', 'notes', 'channel', 'channel_id', 'social_profiles', 'password'];
 
     /**
      * Fields stored as JSON.

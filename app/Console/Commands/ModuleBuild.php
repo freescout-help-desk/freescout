@@ -65,7 +65,7 @@ class ModuleBuild extends Command
         if ($all) {
             foreach ($modules as $module) {
                 $this->buildModule($module);
-                $this->call('freescout:module-laroute', ['module_alias' => $module->getAlias()]);
+                // $this->call('freescout:module-laroute', ['module_alias' => $module->getAlias()]);
             }
         } else {
             $module = \Module::findByAlias($module_alias);
@@ -75,7 +75,7 @@ class ModuleBuild extends Command
                 return;
             }
             $this->buildModule($module);
-            $this->call('freescout:module-laroute');
+            // $this->call('freescout:module-laroute');
         }
     }
 
@@ -90,7 +90,7 @@ class ModuleBuild extends Command
             return;
         }
 
-        $this->buildVars($module);
+        // $this->buildVars($module);
     }
 
     public function buildVars($module)

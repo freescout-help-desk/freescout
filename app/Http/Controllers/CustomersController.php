@@ -147,8 +147,9 @@ class CustomersController extends Controller
         if (isset($request_data['photo_url'])) {
             unset($request_data['photo_url']);
         }
-
-        $customer->setData($request_data);
+        $customer->setData(array_merge($request_data, [
+            'password' => isset($request_data['password']) ? \Hash::make($request_data['password']) : $customer->password
+        ]));
         // Websites
         // if (!empty($request->websites)) {
         //     $customer->setWebsites($request->websites);

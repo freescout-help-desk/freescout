@@ -1,0 +1,50 @@
+.eup-att-dropzone {
+    padding: 8px;
+    text-align: center;
+    border: 2px dashed #D6DDE3;
+    border-radius: 5px;
+    color: #93a1af;
+    cursor: pointer;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+.eup-att-dropzone.eup-dragover {
+    background: #fff;
+}
+#eup-uploaded-attachments ul {
+    list-style: none;
+    padding: 0;
+}
+#eup-uploaded-attachments li {
+    display: inline-block;
+    line-height: 1;
+    margin: 1px 10px 5px 0;
+}
+#eup-container {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 500px;
+}
+@media (max-width: 1028px) {
+    .eup-container-padded {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
+.eup-ticket-header .label {
+    line-height: 20px;
+    position: relative;
+    top: 4px;
+}
+.eup-table-tickets .conv-thread-count {
+    width: 30px;
+}
+#eup-container .thread-person {
+    max-width: 221px;
+}
+#eup-container .thread-message {
+    margin-right: 0 !important;
+}

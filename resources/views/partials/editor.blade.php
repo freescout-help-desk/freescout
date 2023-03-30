@@ -1,6 +1,6 @@
 @section('stylesheets')
 	@parent
-    <link href="{{ asset('js/summernote/summernote.css') }}" rel="stylesheet">
+    <link href="{{ url('js/summernote/summernote.css') }}" rel="stylesheet">
 @endsection
 
 @section('javascripts')

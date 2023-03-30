@@ -1,5 +1,5 @@
 {
-    "\":name\" module successfully DEactivated!": "De module \":name\" is succesvol gedeactiveerd!",
+    "\":name\" module successfully Deactivated!": "De module \":name\" is succesvol gedeactiveerd!",
     "\":name\" module successfully activated!": "De module \":name\" is succesvol geactiveerd!",
     "\":name\" module successfully updated!": "De module \":name\" is succesvol geüpdate!",
     "(no subject)": "(geen onderwerp)",
@@ -340,7 +340,7 @@
     "License key has been revoked": "Licentiesleutel is ingetrokken",
     "License key has expired": "Licentiesleutel is verlopen",
     "License key has not been activated yet": "Licentiesleutel is nog niet geactiveerd",
-    "License successfully DEactivated!": "Licentie succesvol gedeactiveerd!",
+    "License successfully Deactivated!": "Licentie succesvol gedeactiveerd!",
     "License successfully activated!": "Licentie succesvol geactiveerd!",
     "List": "Lijst",
     "Load more": "Laad meer",
