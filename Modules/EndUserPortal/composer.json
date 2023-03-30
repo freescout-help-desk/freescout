@@ -1,0 +1,25 @@
+{
+    "name": "freescout/enduserportal",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\EndUserPortal\\Providers\\EndUserPortalServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\EndUserPortal\\": ""
+        }
+    }
+}

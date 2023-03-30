@@ -12,7 +12,7 @@
     ":user created an account for you at :app_url": ":user criou uma conta para você em :app_url",
     ".env file": ".env arquivo",
     "\":name\" module successfully activated!": "\":name\" módulo ativado com sucesso!",
-    "\":name\" module successfully DEactivated!": "\":name\" módulo desativado com sucesso!",
+    "\":name\" module successfully Deactivated!": "\":name\" módulo desativado com sucesso!",
     "\":name\" module successfully updated!": "\":name\" módulo atualizado com sucesso!",
     "(no subject)": "(sem assunto)",
     "(optional)": "(opcional)",

@@ -1,0 +1,24 @@
+{
+    "name": "End-User Portal",
+    "alias": "enduserportal",
+    "description": "Let your customers submit tickets from the End-User Portal or contact form widget.",
+    "version": "1.0.43",
+    "detailsUrl": "https://freescout.net/module/end-user-portal/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.8.62",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\EndUserPortal\\Providers\\EndUserPortalServiceProvider"
+    ],
+    "aliases": {
+        "EndUserPortal": "Modules\\EndUserPortal\\Providers\\EndUserPortalServiceProvider"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

@@ -176,7 +176,7 @@ class ModulesController extends Controller
                     if ($request->action == 'install') {
                         // Download and install module
                         $license_details = WpApi::getVersion($params);
-
+                        
                         if (WpApi::$lastError) {
                             $response['msg'] = WpApi::$lastError['message'];
                         } elseif (!empty($license_details['code']) && !empty($license_details['message'])) {
@@ -381,7 +381,7 @@ class ModulesController extends Controller
                 $msg = __('Error occured deactivating :name module', ['name' => $name]);
                 if (strstr($output, 'Configuration cached successfully')) {
                     $type = 'success';
-                    $msg = __('":name" module successfully DEactivated!', ['name' => $name]);
+                    $msg = __('":name" module successfully Deactivated!', ['name' => $name]);
                 }
 
                 // \Session::flash does not work after BufferedOutput
@@ -428,7 +428,7 @@ class ModulesController extends Controller
 
                             // Flash does not work here.
                             $flash = [
-                                'text'      => '<strong>'.__('License successfully DEactivated!').'</strong>',
+                                'text'      => '<strong>'.__('License successfully Deactivated!').'</strong>',
                                 'unescaped' => true,
                                 'type'      => 'success',
                             ];

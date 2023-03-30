@@ -1,0 +1,126 @@
+#custom-fields-form {
+    overflow: hidden;
+}
+.conv-top-block #custom-fields-form {
+    margin-left: -17px;
+}
+#custom-fields-form .toggle-field {
+    padding-bottom: 0;
+}
+.cf-group {
+    padding-bottom: 8px;
+    /*width: 50%;*/
+    padding-left: 17px;
+    float: left;
+    display: inline-block;
+    width: 50%;
+}
+.conv-top-block #custom-fields-form textarea {
+    height: 85px;
+}
+.cf-result {
+    float: right;
+}
+.cf-mode-create .cf-result {
+    display: none;
+}
+.cf-option.input-group {
+    padding-top: 3px;
+}
+.cf-option .cf-option-handle {
+    cursor: move;
+    background-color: #fff;
+}
+.cf-option input {
+    border-right: 0;
+}
+.cf-option .cf-option-handle .glyphicon {
+    font-size: 9px;
+}
+.cf-options .cf-option:not(:last-child) .cf-option-add {
+    display: none;
+}
+.cf-option-restore {
+    display: none;
+}
+.cf-removed .cf-option-restore {
+    display: table-cell;
+}
+.cf-removed .cf-option-remove {
+    display: none;
+}
+.cf-conv-row td {
+    border-top: 0!important;
+}
+.cf-row-wrapper {
+    font-weight: normal;
+    font-size: 13.4px;
+    position: relative;
+    padding: 3px 11px 3px 25px;
+    top: -5px;
+    /*background-color: #fff;*/
+    display: flex;
+}
+.cf-row-wrapper.cf-has-cb {
+    margin-left: 60px;
+}
+.cf-row-wrapper.cf-has-customer {
+    padding-left: 154px;
+}
+.cf-row-field {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-style: italic;
+    color: #005a9e;
+    opacity: 0.8;
+    cursor: default;
+}
+.cf-row-wrapper .cf-row-field:first-child .glyphicon {
+    margin-right: 1px;
+}
+.cf-row-field .glyphicon {
+    opacity: 0.3;
+}
+/*.conv-active.cf-conv-row td,
+.conv-active.cf-conv-row div {
+    background-color: #f0f4fa;
+}*/
+
+/**
+ * Mobile
+ */
+@media (max-width: 575px) {
+    .cf-group {
+        display: block;
+        width: 100%;
+    }
+    #custom-fields-form textarea {
+        height: auto;
+    }
+}
+/**
+ * Narrow conv list
+ */
+@media (max-width: 991px) {
+    .table.table-conversations tbody tr.cf-conv-row {
+        height: auto;
+    }
+    .cf-row-wrapper {
+        position: static;
+        padding: 4px 0 0 !important;
+        margin: 0 11px 3px !important;
+    }
+    .cf-row-field .glyphicon {
+        display: none;
+    }
+}
+/**
+ * Desktop
+ */
+@media (min-width: 576px) {
+    #custom-fields-form .cf-group:nth-child(even) {
+        float: right;
+    }
+}

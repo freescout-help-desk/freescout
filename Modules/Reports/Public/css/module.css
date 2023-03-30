@@ -1,0 +1,124 @@
+.rpt-header {
+    background-color: #deecf9;
+    padding: 12px 18px;
+    line-height: 30px;
+    overflow: auto;
+}
+.rpt-title {
+    color: #2a3b47;
+    font-size: 20px;
+    font-weight: 400;
+    display: inline-block;
+}
+.rpt-filters {
+    display: inline-block;
+    float: right;
+}
+#rpt-filters .rpt-filter .form-control {
+    display: inline-block;
+    width: auto;
+    max-width: 120px;
+    margin-left: 5px;
+}
+.rpt-views-trigger .btn {
+    padding-left: 8px!important;
+    padding-right: 8px!important;
+}
+.rpt-views-trigger .input-group {
+    margin: 6px 11px 3px 11px;
+    width: 200px;
+    line-height: 28px;
+}
+.rpt-views-trigger li {
+    position: relative;
+}
+.rpt-views-trigger li a {
+    margin-left: 27px;
+    padding-left: 3px;
+}
+.rpt-view-delete {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    font-size: 11px;
+    cursor: pointer;
+}
+.rpt-filter,
+.rpt-views-trigger {
+    display: inline-block;
+    margin-right: 15px;
+}
+.rpt-filter .glyphicon-refresh {
+    top: 3px;
+}
+.rpt-filter:last-child {
+    margin-right: 0;
+}
+.rpt-filter:nth-last-child(2) {
+    margin-right: 5px;
+}
+.rpt-metrics {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.rpt-metric {
+    flex-grow: 1;
+    flex-basis: 0;
+    padding: 18px;
+}
+.rpt-metric-title {
+    color: #93a1af;
+    font-size: 15px;
+    white-space: nowrap;
+}
+.rpt-metric-title .glyphicon {
+    font-size: 85%;
+    opacity: 0.5;
+}
+.rpt-metric-value {
+    font-size: 30px;
+    line-height: 40px;
+    white-space: nowrap;
+    cursor: default;
+}
+.rpt-metric-change {
+    font-size: 16px;
+    position: relative;
+    top: -2px;
+}
+#rpt-chart {
+    height: 350px;
+}
+#rpt-chart-container {
+    min-height: 200px;
+    margin-bottom: 20px;
+}
+#rpt-tables {
+    margin: 20px;
+}
+#rpt-tables th {
+    text-transform: uppercase;
+}
+#rpt-options {
+    padding-left: 18px;
+    padding-right: 18px;
+    margin-bottom: 20px;
+}
+.rpt-option {
+    margin-top: 10px;
+}
+.rpt-filter-date {
+    width: 90px !important;
+    margin-left: 0!important;
+}
+@media (max-width:1100px) {
+    #rpt-filters {
+        float: none;
+        margin-top: 2px;
+        margin-bottom: 7px;
+    }
+    .rpt-filter {
+        margin-top: 10px;
+    }
+}
