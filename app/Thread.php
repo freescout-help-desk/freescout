@@ -330,7 +330,31 @@ class Thread extends Model
             $body = $this->body;
         }
 
-        return \Helper::linkify($this->getCleanBody($body));
+        $body = \Helper::linkify($this->getCleanBody($body));
+
+        // Add target="_blank" to links.
+        $pattern = '/<a(.*?)?href=[\'"]?[\'"]?(.*?)?>/i';
+
+        $body = preg_replace_callback($pattern, function($m){
+            $tpl = array_shift($m);
+            $href = isset($m[1]) ? $m[1] : null;
+
+            if (preg_match('/target=[\'"]?(.*?)[\'"]?/i', $tpl)) {
+                return $tpl;
+            }
+
+            if (trim($href) && 0 === strpos($href, '#')) {
+                // Anchor links.
+                return $tpl;
+            }
+
+            return preg_replace_callback('/href=/i', function($m2){
+                return sprintf('target="_blank" %s', array_shift($m2));
+            }, $tpl);
+
+        }, $body);
+
+        return $body;
     }
 
     /**
