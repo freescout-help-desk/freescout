@@ -60,7 +60,7 @@ function eupInitSubmit()
 		}
 
 		// On click of status change
-		$('.conv-status li > a').on('click',function(){
+		$('.conv-status a').on('click',function(){
 			var status = $(this).attr('data-status');
 			var conversation_id = $(this).attr('data-conv-id');
 			if (!status) {

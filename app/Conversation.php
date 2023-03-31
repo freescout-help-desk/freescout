@@ -91,7 +91,7 @@ class Conversation extends Model
 
     public static $statusesEup = [
         self::STATUS_ACTIVE_EUP  => 'active',
-        self::STATUS_CLOSED_EUP  => 'closed',
+        self::STATUS_CLOSED_EUP  => 'close',
         //self::STATUS_OPEN_EUP => 'open',
     ];
 
@@ -554,7 +554,7 @@ class Conversation extends Model
                 break;
 
             case self::STATUS_CLOSED:
-                return __('Closed');
+                return __('Close');
                 break;
 
             case self::STATUS_SPAM:
@@ -563,6 +563,9 @@ class Conversation extends Model
 
             case self::STATUS_OPEN:
                 return __('Open');
+                break;
+            case self::STATUS_CLOSED_EUP:
+                return __('Close');
                 break;
 
             default:

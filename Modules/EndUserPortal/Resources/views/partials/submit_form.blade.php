@@ -6,19 +6,19 @@
 @endphp
 @if (request()->get('success') && empty($conversation->id))
     <div class="alert alert-success text-center">
-        <strong>{{ __('Your message has been sent!') }}</strong>
+        <strong>{{ __('Your call has been successfully registered. Engineer will be assigned shortly.!') }}</strong>
         @if (\EndUserPortal::authCustomer() && !empty(request()->get('ticket_id')))
-             <a href="{{ route('enduserportal.ticket', ['mailbox_id' => EndUserPortal::encodeMailboxId($mailbox->id), 'conversation_id' => request()->get('ticket_id')])  }}">({{ __('View') }})</a>
+             <a href="{{ route('enduserportal.ticket', ['mailbox_id' => EndUserPortal::encodeMailboxId($mailbox->id), 'conversation_id' => request()->get('ticket_id')])  }}">({{ __('View Ticket') }})</a>
         @endif
     </div>
     <div class="text-center margin-bottom">
         {{-- request()->url() does not return HTTPS protocol --}}
-        <a href="{{ parse_url(request()->url(), PHP_URL_PATH) }}?{{ http_build_query(array_merge(request()->all(), ['success' => '', 'message' => ''])) }}">{{ __('Submit another message') }}</a>
+        <a href="{{ parse_url(request()->url(), PHP_URL_PATH) }}?{{ http_build_query(array_merge(request()->all(), ['success' => '', 'message' => ''])) }}">{{ __('Submit another ticket') }}</a>
     </div>
 @else
     @if (request()->get('success') && !empty($conversation->id))
         <div class="alert alert-success text-center">
-            <strong>{{ __('Your message has been sent!') }}</strong>
+            <strong>{{ __('Your call has been successfully registered. Engineer will be assigned shortly.!') }}</strong>
         </div>
     @endif
     <form class="" method="POST" action="{{ $form_action ?? '' }}" id="eup-ticket-form">

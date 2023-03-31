@@ -14,20 +14,11 @@
 			</p>
 
 			<div class="heading eup-ticket-header">{{ $conversation->getSubject() }}
-				@if(count($threads) > 1)
-					<div class="btn-group pull-right" id="conv-status" data-toggle="tooltip" title="{{ __("Status") }}: {{ $conversation->getStatusName() }}">
-						<button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->getStatus()] }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __("Status") }}: {{ $conversation->getStatusName() }}"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->getStatus()] }}"></i></button>
-						<button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->getStatus()] }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __("Status") }}">
-							<span>{{ $conversation->getStatusName() }}</span> <span class="caret"></span>
-						</button>		
-						<ul class="dropdown-menu conv-status">
-							@foreach (App\Conversation::$statusesEup as $status => $dummy)
-								<li><a href="#" data-status="{{ $status }}" data-conv-id="{{$conversation->id}}">{{ App\Conversation::statusCodeToName($status) }}</a></li>
-							@endforeach
-						</ul>
-					</div>
-				@else
-					<span class="pull-right label label-default">{{ \EndUserPortal::getStatusName($conversation) }}</span>
+				<span class="pull-right label label-default">{{ \EndUserPortal::getStatusName($conversation) }}</span>
+				@if (\EndUserPortal::getStatusName($conversation) == 'Open')
+					<span class="pull-right label label-danger mr-3 conv-status"><a href="javascript:void(0)" class="span-link" data-status="{{ App\Conversation::STATUS_CLOSED_EUP }}" data-conv-id="{{$conversation->id}}">{{ App\Conversation::statusCodeToName(App\Conversation::STATUS_CLOSED_EUP) }}</a></span>
+					@else
+					<span class="pull-right label label-success mr-3 conv-status"><a href="javascript:void(0)" class="span-link" data-status="{{ App\Conversation::STATUS_ACTIVE }}" data-conv-id="{{$conversation->id}}">{{ App\Conversation::statusCodeToName(App\Conversation::STATUS_ACTIVE) }}</a></span>
 				@endif
 			</div>
 		</div>

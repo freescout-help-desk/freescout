@@ -48,3 +48,15 @@
 #eup-container .thread-message {
     margin-right: 0 !important;
 }
+
+.mr-3{
+    margin-right: 2em;
+}
+.span-link {
+    text-decoration: none;
+    color: white;
+}
+.span-link:hover{
+    text-decoration: none;
+    color: white;
+}
