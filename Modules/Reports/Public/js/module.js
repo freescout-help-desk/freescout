@@ -62,9 +62,8 @@ function rptRefresh()
 	loader.attr('disabled', 'disabled').children('.glyphicon:first').addClass('glyphicon-spin');
 	$('.rpt-filter :input').attr('disabled', 'disabled');
 	$('#rpt-options :input').attr('disabled', 'disabled');
-
 	fsAjax(data, 
-		laroute.route('reports.ajax'), 
+		laroute.route('reports.ajax'),
 		function(response) {
 			if (isAjaxSuccess(response) && response.report) {
 				$('#rpt-report').html(response.report);

@@ -35,7 +35,9 @@ class ConversationsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        // TODO: add customer auth like user till then removing auth 
+        // $this->middleware('auth');
+        return true;
     }
 
     /**
@@ -478,7 +480,6 @@ class ConversationsController extends Controller
         ];
 
         $user = auth()->user();
-
         switch ($request->action) {
 
             // Change conversation user
@@ -545,42 +546,57 @@ class ConversationsController extends Controller
                 } else {
                     $new_status = (int) $request->status;
                 }
-
-                if (!$conversation) {
-                    $response['msg'] = __('Conversation not found');
-                }
-                if (!$response['msg'] && $conversation->status == $new_status) {
-                    $response['msg'] = __('Status already set');
-                }
-                if (!$response['msg'] && !$user->can('update', $conversation)) {
-                    $response['msg'] = __('Not enough permissions');
-                }
-                if (!$response['msg'] && !in_array((int) $new_status, array_keys(Conversation::$statuses))) {
-                    $response['msg'] = __('Incorrect status');
-                }
-                if (!$response['msg']) {
-                    // Determine redirect
-                    // Must be done before updating current conversation's status or assignee.
-                    $redirect_same_page = false;
-                    if ($request->status == 'not_spam' || $request->x_embed == 1) {
-                        // Stay on the current page
-                        $response['redirect_url'] = $conversation->url();
-                        $redirect_same_page = true;
-                    } else {
-                        $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+                
+                if($user){
+                    if (!$conversation) {
+                        $response['msg'] = __('Conversation not found');
+                    }
+                    if (!$response['msg'] && $conversation->status == $new_status) {
+                        $response['msg'] = __('Status already set');
+                    }
+                    if (!$response['msg'] && !$user->can('update', $conversation)) {
+                        $response['msg'] = __('Not enough permissions');
+                    }
+                    if (!$response['msg'] && !in_array((int) $new_status, array_keys(Conversation::$statuses))) {
+                        $response['msg'] = __('Incorrect status');
+                    }
+                    if (!$response['msg']) {
+                        // Determine redirect
+                        // Must be done before updating current conversation's status or assignee.
+                        $redirect_same_page = false;
+                        if ($request->status == 'not_spam' || $request->x_embed == 1) {
+                            // Stay on the current page
+                            $response['redirect_url'] = $conversation->url();
+                            $redirect_same_page = true;
+                        } else {
+                            $response['redirect_url'] = $this->getRedirectUrl($request, $conversation, $user);
+                        }
+                        // $response['redirect_url'] = $conversation->url();
+                        // $redirect_same_page = true;
+    
+                        $conversation->changeStatus($new_status, $user);
+    
+                        $response['status'] = 'success';
+                        // Flash
+                        $flash_message = __('Status updated');
+                        if (!$redirect_same_page || $response['redirect_url'] != $conversation->url()) {
+                            $flash_message .= ' &nbsp;<a href="'.$conversation->url().'">'.__('View').'</a>';
+                        }
+                        \Session::flash('flash_success_floating', $flash_message);
+    
+                        $response['msg'] = __('Status updated');
                     }
 
+                } else {
+                    $user = Customer::where('id', $conversation->user_id)->first();
                     $conversation->changeStatus($new_status, $user);
-
-                    $response['status'] = 'success';
-                    // Flash
-                    $flash_message = __('Status updated');
-                    if (!$redirect_same_page || $response['redirect_url'] != $conversation->url()) {
-                        $flash_message .= ' &nbsp;<a href="'.$conversation->url().'">'.__('View').'</a>';
-                    }
-                    \Session::flash('flash_success_floating', $flash_message);
-
-                    $response['msg'] = __('Status updated');
+    
+                        $response['status'] = 'success';
+                        // Flash
+                        $flash_message = __('Status updated');
+                        \Session::flash('flash_success_floating', $flash_message);
+    
+                        $response['msg'] = __('Status updated');
                 }
                 break;
 
