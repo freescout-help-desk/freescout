@@ -58,6 +58,34 @@ function eupInitSubmit()
 		if (typeof($.fn.flatpickr) != "undefined") {
 			$('.eup-type-date').flatpickr({allowInput: true});
 		}
+
+		// On click of status change
+		$('.conv-status li > a').on('click',function(){
+			var status = $(this).attr('data-status');
+			var conversation_id = $(this).attr('data-conv-id');
+			if (!status) {
+				return;
+			}
+			fsAjax({
+				action: 'conversation_change_status',
+				status: status,
+				conversation_id: conversation_id,
+			},
+			laroute.route('conversations.ajax'),
+			function(response) {
+				if (typeof(response.status) != "undefined" && response.status == 'success') {
+					if (typeof(response.redirect_url) != "undefined") {
+						window.location.href = response.redirect_url;
+					} else {
+						window.location.reload();
+					}
+				} else if (typeof(response.msg) != "undefined") {
+					showFloatingAlert('error', response.msg);
+				} else {
+					showFloatingAlert('error', Lang.get("messages.error_occured"));
+				}
+			});
+		});
 	});
 }
 

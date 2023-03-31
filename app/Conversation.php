@@ -82,6 +82,20 @@ class Conversation extends Model
     ];
 
     /**
+     * Conversation statuses for EUP (code must be equal to thread statuses).
+     */
+    const STATUS_ACTIVE_EUP = 1;
+    const STATUS_CLOSED_EUP = 3;
+    // Present in the API, but what does it mean?
+    const STATUS_OPEN_EUP = 5;
+
+    public static $statusesEup = [
+        self::STATUS_ACTIVE_EUP  => 'active',
+        self::STATUS_CLOSED_EUP  => 'closed',
+        //self::STATUS_OPEN_EUP => 'open',
+    ];
+
+    /**
      * https://glyphicons.bootstrapcheatsheets.com/.
      */
     public static $status_icons = [
