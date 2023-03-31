@@ -54,26 +54,6 @@
                                     <input type="radio" name="out_method" value="{{ App\Mailbox::OUT_METHOD_SMTP }}" id="out_method_{{ App\Mailbox::OUT_METHOD_SMTP }}" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) checked="checked" @endif> {{ __("SMTP") }}
                                 </label>
                             </div>
-                            <div class="control-group text-help margin-top-10">
-                                <ul>
-                                    <li>
-                                        <a href="https://aws.amazon.com/ses/pricing/" target="_blank">Amazon SES</a> -
-                                        <span class="text-help">{!! __(":number free emails per month from :%a_begin%Amazon EC2:%a_end% server.", ['number' => '62 000', '%a_begin%' => '<a href="https://aws.amazon.com/ec2/" target="_blank">', '%a_end%' => '</a>']) !!}</span>
-                                    </li>
-                                    <li>
-                                        <a href="https://www.mailgun.com" target="_blank">Mailgun</a> -
-                                        <span class="text-help">{{ __(":number free emails per month.", ['number' => '10 000']) }}</span>
-                                    </li>
-                                    <li>
-                                        <a href="https://www.sendinblue.com/?tap_a=30591-fb13f0&tap_s=294678-0b81e5" target="_blank">SendinBlue</a> -
-                                        <span class="text-help">{{ __(":number free emails per month.", ['number' => '9 000']) }}</span>
-                                    </li>
-                                    <li>
-                                        <a href="https://www.mailjet.com/?tap_a=25852-4bddf6&tap_s=545617-55177a&aff=545617-55177a" target="_blank">Mailjet</a> -
-                                        <span class="text-help">{{ __(":number free emails per month.", ['number' => '6 000']) }}</span>
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
                     </div>
 
