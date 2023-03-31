@@ -1,0 +1,127 @@
+#eupw-header {
+	padding: 8px 14px;
+    color: #ffffff;
+    font-size: 16px;
+    background-color: #0068bd;
+    text-align: center;
+    font-weight: bold;
+    line-height: 28px;
+    position: fixed;
+    top: 0;
+    z-index: 1;
+	width: 100%;
+}
+
+#eupw-minimize {
+	cursor: pointer;
+	float: right;
+	width: 28px;
+	height: 28px;
+	text-align: center;
+	padding-top: 2px;
+}
+
+#eupw-minimize:hover {
+	opacity: 0.7;
+}
+
+#eupw-back {
+	cursor: pointer;
+	color: #fff;
+	float: left;
+	width: 28px;
+	height: 28px;
+	text-align: center;
+	padding-top: 2px;
+}
+
+#eupw-back:hover {
+	opacity: 0.7;
+}
+
+#eupw-form-wrapper {
+	padding: 15px 15px 0 15px;
+}
+
+#eupw-content {
+	margin-top: 44px;
+}
+
+.input-md {
+    height: 38px;
+    padding: 10px 16px;
+    /*font-size: 18px;*/
+    line-height: 18px;
+    border-radius: 3px;
+}
+
+.form-control {
+	border: 1px solid #dae0e5;
+}
+
+#eupw-powered {
+	text-align: center;
+	color: #93a1af;
+	position: relative;
+	top: -5px;
+	font-size: 12px;
+	margin-bottom: 0;
+	font-family: system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,Arial,sans-serif;
+}
+#eupw-powered a {
+	color: #93a1af !important;
+	font-weight: bold;
+}
+#eup-ticket-form textarea {
+	height: 173px;
+}
+#eup-submit-form-bottom {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	background-color: #ffffff;
+	margin-left: -15px;
+	margin-right: -15px;
+	padding: 12px 15px 0;
+	box-shadow: rgba(0, 0, 0, 0.08) 0px -0.071428rem 0.85714rem;
+}
+#eup-submit-form-main-area {
+	margin-bottom: 90px;
+	overflow-y: auto;
+	height: calc(100vh - 150px);
+	margin-right: -15px;
+	padding-right: 15px;
+}
+#eup-submit-form-bottom .form-group {
+	margin-bottom: 12px;
+}
+.eup-att-dropzone.eup-dragover {
+    background-color: #f8f9f9;
+}
+
+/**
+ * From main style.css
+ */
+.attachments-upload .glyphicon-remove {
+    display: none;
+}
+.attachment-loaded img,
+.attachment-loaded .ellipsis {
+    display: none;
+}
+.attachment-loaded .glyphicon-remove {
+    display: inline-block;
+    color: #999;
+    cursor: pointer;
+    position: relative;
+    top: 2px;
+}
+.attachment-loaded .glyphicon-remove:hover {
+    color: #333;
+}
+.checkbox, .radio {
+    min-height: 18px;
+    padding-left: 22px;
+    padding-right: 7px;
+    position: relative;
+}
