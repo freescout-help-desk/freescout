@@ -21,7 +21,7 @@ class SendMonitor extends Command
      *
      * @var string
      */
-    protected $description = 'Check emails sending and show an alert in the web interface if sending is not working';
+    protected $description = 'Check if queue:work is processing emails queue and show an alert in the web interface if needed';
 
     /**
      * Create a new command instance.
