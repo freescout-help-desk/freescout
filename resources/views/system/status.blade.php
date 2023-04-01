@@ -228,6 +228,7 @@
                                                 <input type="hidden" name="job_id" value="{{ $job->id }}" />
 
                                                 <button type="submit" name="action" value="cancel_job" class="btn btn-default btn-xs margin-left-10">{{ __('Cancel') }}</button>
+                                                <button type="submit" name="action" value="retry_job" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-repeat"></i> {{ __('Retry') }}</button>
                                             </form>
                                         </th>
                                     </tr>
@@ -246,6 +247,10 @@
                                     <tr>
                                         <td>{{ __('Created At') }}</td>
                                         <td>{{  App\User::dateFormat($job->created_at) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ __('Next Attempt') }}</td>
+                                        <td>{{  App\User::dateFormat($job->available_at) }}</td>
                                     </tr>
                                 </tbody>
                             </table>
