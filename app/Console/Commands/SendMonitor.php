@@ -60,7 +60,7 @@ class SendMonitor extends Command
             $this->error('['.date('Y-m-d H:i:s').'] There are problems with emails queue processing');
         } else {
             \Option::remove('send_emails_problem');
-            $this->info('['.date('Y-m-d H:i:s').'] Sending is working');
+            $this->info('['.date('Y-m-d H:i:s').'] Emails queue processing is working');
         }
     }
 }
