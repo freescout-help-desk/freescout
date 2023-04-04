@@ -1589,11 +1589,18 @@ class Helper
                 return false;
             }
 
-              $ch = curl_init();
-              curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-              curl_setopt($ch, CURLOPT_URL, $url);
-              $contents = curl_exec($ch);
-              curl_close($ch);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 180);
+            curl_setopt($ch, CURLOPT_PROXY, config('app.proxy'));
+            $contents = curl_exec($ch);
+
+            if (curl_errno($ch)) {
+                throw new \Exception(curl_errno($ch).' '.curl_error($ch), 1);
+            }
+
+            curl_close($ch);
 
             if (!$contents) {
                 return false;
@@ -1603,7 +1610,7 @@ class Helper
 
         } catch (\Exception $e) {
 
-            \Helper::logException($e, 'Error downloading a remote file ('.$uri.'): ');
+            \Helper::logException($e, 'Error downloading a remote file ('.$url.'): ');
 
             return false;
         }
