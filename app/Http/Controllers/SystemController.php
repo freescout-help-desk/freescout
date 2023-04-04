@@ -223,6 +223,12 @@ class SystemController extends Controller
                 \Session::flash('flash_success_floating', __('Done'));
                 break;
 
+            case 'retry_job':
+                \App\Job::where('id', $request->job_id)->update(['available_at' => time()]);
+                sleep(1);
+                \Session::flash('flash_success_floating', __('Done'));
+                break;
+
             case 'delete_failed_jobs':
                 \App\FailedJob::where('queue', $request->failed_queue)->delete();
                 \Session::flash('flash_success_floating', __('Failed jobs deleted'));

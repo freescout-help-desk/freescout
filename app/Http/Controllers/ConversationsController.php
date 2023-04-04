@@ -2662,7 +2662,9 @@ class ConversationsController extends Controller
             switch ($filter) {
                 case 'after':
                 case 'before':
-                    $value = date('Y-m-d', strtotime($value));
+                    if ($value) {
+                        $filters[$filter] = date('Y-m-d', strtotime($value));
+                    }
                     break;
             }
         }
@@ -2866,7 +2868,7 @@ class ConversationsController extends Controller
         }
         $conversation->save();
 
-        // If forwarding cas been undone, we need to remove newly created conversation.
+        // If forwarding has been undone, we need to remove newly created conversation.
         // No need to remove notifications, as they won't work if conversation does not exist.
         if ($thread->isForward()) {
             $forwarded_conversation = $thread->getForwardChildConversation();
@@ -2876,6 +2878,8 @@ class ConversationsController extends Controller
                 $forwarded_conversation->delete();
             }
         }
+
+        Conversation::updatePreview($conversation->id);
 
         return redirect()->away($conversation->url($folder_id, null, ['show_draft' => $thread->id]));
     }

@@ -4332,23 +4332,24 @@ function conversationsTableInit()
 	converstationBulkActionsInit();
 	convListSortingInit();
 
-	if ("ontouchstart" in window)
-	{
-		$(document).ready(function() {
-			$('.conv-row').on('contextmenu', function(event) {
-				event.preventDefault();
-				event.stopPropagation();
-			});
-
-			$('.conv-row').on('taphold', {duration: 700}, function(event) {
-				var row = $(event.target).parents('.conv-row');
-				var checkbox = $(row).find('input.conv-checkbox');
-				$(checkbox).prop('checked', !checkbox.prop('checked'));
-				$(checkbox).trigger('change');
-				$(row).toggleClass('selected');
-			});
+	// When checking "ontouchstart" it does not work in the mobile app
+	// if ("ontouchstart" in window)
+	// {
+	$(document).ready(function() {
+		$('.conv-row').on('contextmenu', function(event) {
+			event.preventDefault();
+			event.stopPropagation();
 		});
-	}
+
+		$('.conv-row').on('taphold', {duration: 700}, function(event) {
+			var row = $(event.target).parents('.conv-row');
+			var checkbox = $(row).find('input.conv-checkbox');
+			$(checkbox).prop('checked', !checkbox.prop('checked'));
+			$(checkbox).trigger('change');
+			$(row).toggleClass('selected');
+		});
+	});
+	//}
 }
 
 // Get ids of the selected conversations

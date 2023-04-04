@@ -3860,7 +3860,7 @@ var Editor = /** @class */ (function () {
             var anchors = [];
             if (isTextChanged) {
                 rng = rng.deleteContents();
-                var anchor = rng.insertNode($$1('<A>' + linkText + '</A>')[0]);
+                var anchor = rng.insertNode($$1('<A></A>').text(linkText)[0]);
                 anchors.push(anchor);
             }
             else {
