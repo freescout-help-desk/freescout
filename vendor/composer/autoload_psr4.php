@@ -71,6 +71,7 @@ return array(
     'Illuminate\\Mail\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Mail'),
     'Illuminate\\Http\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Http'),
     'Illuminate\\Foundation\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation'),
+    'Illuminate\\Filesystem\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Filesystem'),
     'Illuminate\\Database\\Eloquent\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Database/Eloquent'),
     'Illuminate\\Container\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Container'),
     'Illuminate\\Config\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Config'),
