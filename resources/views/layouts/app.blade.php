@@ -77,7 +77,7 @@
                                 $mailboxes = \Eventy::filter('menu.mailboxes', $mailboxes);
                             @endphp
                             @if (count($mailboxes) == 1)
-                                <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}"><a href="{{ \Eventy::filter('mailbox.url', route('mailboxes.view', ['id'=>$mailboxes[0]->id]), $mailboxes[0]) }}">@action('menu.mailbox.before_name', $mailboxes[0]){{ __('Mailbox') }}@action('menu.mailbox.after_name', $mailboxes[0])</a></li>
+                                <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}"><a href="{{ \Eventy::filter('mailbox.url', route('mailboxes.view', ['id'=>$mailboxes[0]->id]), $mailboxes[0]) }}">@action('menu.mailbox_single.before_name', $mailboxes[0]){{ __('Mailbox') }}@action('menu.mailbox_single.after_name', $mailboxes[0])</a></li>
                             @elseif (count($mailboxes) > 1)
                                 <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
