@@ -49,11 +49,11 @@
                         @endif
                         {!! $thread->body !!}
 
-                        @action('reply_email.before_signature', $thread, $loop, $threads, $conversation, $mailbox)
+                        @action('reply_email.before_signature', $thread, $loop, $threads, $conversation, $mailbox, $threads_count)
                         @if ($thread->source_via == App\Thread::PERSON_USER && \Eventy::filter('reply_email.include_signature', true, $thread))
                             <br>{!! $conversation->getSignatureProcessed(['thread' => $thread]) !!}
                         @endif
-                        @action('reply_email.after_signature', $thread, $loop, $threads, $conversation, $mailbox)
+                        @action('reply_email.after_signature', $thread, $loop, $threads, $conversation, $mailbox, $threads_count)
                         <br><br>
                     </div>
                 </div>
