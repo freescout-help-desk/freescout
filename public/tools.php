@@ -100,12 +100,12 @@ if (!empty($_POST)) {
                 try {
 
                     // First check PHP version
-                    $version_output = shell_exec($php_path.' -v');
+                    $version_output = shell_exec($php_path.' -r "echo phpversion();"');
 
-                    if (!strstr($version_output, 'PHP 7.')) {
+                    if (version_compare($version_output, '7.1', '>=')) {
                         $alerts[] = [
                             'type' => 'danger',
-                            'text' => 'Incorrect PHP version (7.x is required):<br/><br/><pre>'.htmlspecialchars($version_output).'</pre>',
+                            'text' => 'Incorrect PHP version (7.1+ is required):<br/><br/><pre>'.htmlspecialchars($version_output).'</pre>',
                         ];
                     } else {
                         if ($_POST['action'] == 'update') {
