@@ -12,6 +12,8 @@ Route::group(['middleware' => [\App\Http\Middleware\EncryptCookies::class, \Illu
 {
 	// Portal.
     Route::get('/help/{mailbox_id}/auth', 'EndUserPortalController@login')->name('enduserportal.login');
+    Route::get('/help/{mailbox_id}/reset-password', 'EndUserPortalController@resetPassword')->name('enduserportal.reset');
+    Route::post('/help/{mailbox_id}/reset-password', 'EndUserPortalController@resetPasswordSave')->name('enduserportal.reset');
     Route::post('/help/{mailbox_id}/auth/logout', 'EndUserPortalController@logout')->name('enduserportal.logout');
     Route::post('/help/{mailbox_id}/auth', 'EndUserPortalController@loginProcess');
     Route::get('/help/{mailbox_id}/auth/{customer_id}', 'EndUserPortalController@loginFromEmail')->name('enduserportal.login_from_email');

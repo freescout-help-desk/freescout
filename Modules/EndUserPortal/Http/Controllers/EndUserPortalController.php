@@ -848,4 +848,28 @@ class EndUserPortalController extends Controller
 
         abort(404);
     }
+
+    public function resetPassword(Request $request, $mailbox_id) {
+        $mailbox = $this->processMailboxId($mailbox_id);
+
+        return view('enduserportal::reset_password', compact('mailbox'));
+    }
+    public function resetPasswordSave(Request $request, $mailbox_id) {
+        $mailbox = $this->processMailboxId($mailbox_id);
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string|min:8|confirmed'
+        ]);
+        if ($validator->fails()) {
+            return redirect()->route('enduserportal.reset', ['mailbox_id' => \EndUserPortal::encodeMailboxId($mailbox->id)])
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+        $user = \EndUserPortal::authCustomer();
+        $customer = Customer::where('id', $user->id)->first();
+        $customer->password = \Hash::make($request->password);
+        $customer->last_login = now();
+        $customer->save();
+        return redirect()->route('enduserportal.tickets', ['mailbox_id' => \EndUserPortal::encodeMailboxId($mailbox->id)]);
+    }
+
 }

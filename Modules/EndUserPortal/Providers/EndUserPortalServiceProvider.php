@@ -245,6 +245,10 @@ class EndUserPortalServiceProvider extends ServiceProvider
         $customer = Customer::find($customer_id);
         if ($customer) {
             $cookie = cookie('enduserportal_auth', encrypt($customer_id), self::AUTH_PERIOD);
+            if (is_null($customer->last_login)){
+                return redirect()->route('enduserportal.reset', ['mailbox_id' => \EndUserPortal::encodeMailboxId($mailbox_id)])
+                    ->withCookie($cookie);
+            }
             return redirect()->route('enduserportal.tickets', ['mailbox_id' => \EndUserPortal::encodeMailboxId($mailbox_id)])
                 ->withCookie($cookie);
         } else {
