@@ -302,7 +302,11 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
 
         return $this->client->request(
             'GET',
-            self::GITHUB_API_URL.'/repos/'.$this->config['repository_vendor'].'/'.$this->config['repository_name'].'/tags'
+            self::GITHUB_API_URL.'/repos/'.$this->config['repository_vendor'].'/'.$this->config['repository_name'].'/tags', [
+                'timeout' => config('app.curl_timeout'),
+                'connect_timeout' => config('app.curl_connect_timeout'),
+                'proxy' => config('app.proxy'),
+            ]
         );
     }
 
