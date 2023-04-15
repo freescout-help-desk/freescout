@@ -1,0 +1,24 @@
+{
+    "name": "Export Conversations",
+    "alias": "exportconversations",
+    "description": "Export conversations into CSV!",
+    "version": "1.0.8",
+    "detailsUrl": "https://freescout.net/module/export-conversations/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.8.48",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\ExportConversations\\Providers\\ExportConversationsServiceProvider"
+    ],
+    "aliases": {
+        "ExportConversations": "Modules\\ExportConversations\\Providers\\ExportConversationsServiceProvider"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

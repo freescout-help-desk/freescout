@@ -1,0 +1,25 @@
+{
+    "name": "freescout/exportconversations",
+    "description": "",
+    "authors": [
+        {
+            "name": "FreeScout",
+            "email": "support@freescout.net"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\ExportConversations\\Providers\\ExportConversationsServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\ExportConversations\\": ""
+        }
+    }
+}
