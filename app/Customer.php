@@ -15,7 +15,6 @@ class Customer extends Model
     public $rememberCacheDriver = 'array';
 
     const PHOTO_DIRECTORY = 'customers';
-    const PHOTO_SIZE = 64; // px
     const PHOTO_QUALITY = 77;
 
     /**
@@ -1272,7 +1271,8 @@ class Customer extends Model
      */
     public function savePhoto($real_path, $mime_type)
     {
-        $resized_image = \App\Misc\Helper::resizeImage($real_path, $mime_type, self::PHOTO_SIZE, self::PHOTO_SIZE);
+        $photo_size = config('app.customer_photo_size');
+        $resized_image = \App\Misc\Helper::resizeImage($real_path, $mime_type, $photo_size, $photo_size);
 
         if (!$resized_image) {
             return false;
