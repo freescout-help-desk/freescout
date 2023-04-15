@@ -28,7 +28,6 @@ class User extends Authenticatable
     public $rememberCacheDriver = 'array';
 
     const PHOTO_DIRECTORY = 'users';
-    const PHOTO_SIZE = 50; // px
     const PHOTO_QUALITY = 77;
 
     const EMAIL_MAX_LENGTH = 100;
@@ -809,7 +808,9 @@ class User extends Authenticatable
             $real_path = $uploaded_file->getRealPath();
             $mime_type = $uploaded_file->getMimeType();
         }
-        $resized_image = \App\Misc\Helper::resizeImage($real_path, $mime_type, self::PHOTO_SIZE, self::PHOTO_SIZE);
+
+        $photo_size = config('app.user_photo_size');
+        $resized_image = \App\Misc\Helper::resizeImage($real_path, $mime_type, $photo_size, $photo_size);
 
         if (!$resized_image) {
             return false;
