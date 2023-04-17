@@ -291,6 +291,43 @@ class ConversationsController extends Controller
 
         $threads = $conversation->threads()->orderBy('created_at', 'desc')->get();
 
+        // Mailbox aliases.
+        $from_aliases = $conversation->mailbox->getAliases();
+        $from_alias = '';
+
+        if (count($from_aliases) == 1) {
+            $from_aliases = [];
+        }
+        if (count($from_aliases)) {
+            // Preset the last alias used.
+            $check_initial_thread = true;
+            foreach ($threads as $thread) {
+                if ($thread->isUserMessage() && !$thread->isDraft()) {
+                    $check_initial_thread = false;
+                    if ($thread->from) {
+                        $from_alias = $thread->from;
+                    }
+                    break;
+                }
+            }
+            // Maybe the first email has been sent to some mailbox alias.
+            if (!$from_alias && $check_initial_thread) {
+                $initial_thread = $threads->last();
+                if ($initial_thread && $initial_thread->isCustomerMessage()) {
+                    $initial_recipients = $initial_thread->getToArray();
+                    $initial_recipients = array_merge($initial_recipients, $initial_thread->getCcArray());
+                    foreach ($initial_recipients as $initial_recipient) {
+                        foreach ($from_aliases as $from_alias_email => $dummy) {
+                            if ($initial_recipient == $from_alias_email) {
+                                $from_alias = $from_alias_email;
+                                break 2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         return view($template, [
             'conversation'       => $conversation,
             'mailbox'            => $conversation->mailbox,
@@ -310,6 +347,8 @@ class ConversationsController extends Controller
             'to_email'           => $to_email,
             'viewers'            => $viewers,
             'is_following'       => $is_following,
+            'from_aliases'       => $from_aliases,
+            'from_alias'         => $from_alias,
         ]);
     }
 
@@ -1015,6 +1054,11 @@ class ConversationsController extends Controller
                                 $thread->setMeta(Thread::META_CONVERSATION_HISTORY, $request->conv_history);
                             }
                         }
+                    }
+
+                    // From (mailbox alias).
+                    if (!empty($request->from_alias)) {
+                        $thread->from = $request->from_alias;
                     }
 
                     \Eventy::action('thread.before_save_from_request', $thread, $request);
