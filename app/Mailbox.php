@@ -954,4 +954,11 @@ class Mailbox extends Model
     {
         return $this->meta['oauth'][$param] ?? '';
     }
+
+    public function sanitizeFields()
+    {
+        if ($this->email) {
+            $this->email = Email::sanitizeEmail($this->email);
+        }
+    }
 }

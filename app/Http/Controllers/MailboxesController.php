@@ -87,6 +87,7 @@ class MailboxesController extends Controller
 
         $mailbox = new Mailbox();
         $mailbox->fill($request->all());
+        $mailbox->sanitizeFields();
         $mailbox->save();
 
         $mailbox->users()->sync($request->users);
@@ -214,7 +215,7 @@ class MailboxesController extends Controller
         \Eventy::action('mailbox.settings_before_save', $mailbox, $request);
 
         $mailbox->fill($request->all());
-
+        $mailbox->sanitizeFields();
         $mailbox->save();
 
         \Session::flash('flash_success_floating', __('Mailbox settings saved'));
