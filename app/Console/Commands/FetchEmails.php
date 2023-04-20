@@ -741,10 +741,13 @@ class FetchEmails extends Command
         // Cut out the command, otherwise it will be recognized as an email.
         $body = preg_replace("/".self::FWD_AS_CUSTOMER_COMMAND."([\s<]+)/su", '$1', $body);
 
-        // Looking like email texts may appear in attributes:
+        // Looks like email texts may appear in attributes:
         // https://github.com/freescout-helpdesk/freescout/issues/276
+        // - :test@example.org
+        // - <test@example.org>
+        // - &lt;test@example.org&gt;
 
-        preg_match("/[\"'<:]([^\"'<:!@\s]+@[^\"'>:@\s]+)[\"'>:]/", $body, $b);
+        preg_match("/[\"'<:;]([^\"'<:;!@\s]+@[^\"'>:&@\s]+)[\"'>:&]/", $body, $b);
 
         $email = $b[1] ?? '';
         // https://github.com/freescout-helpdesk/freescout/issues/2517
