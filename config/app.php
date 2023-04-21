@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.71',
+    'version' => '1.8.72',
 
     /*
     |--------------------------------------------------------------------------
@@ -391,6 +391,23 @@ return [
     |-------------------------------------------------------------------------
     */
     'curl_timeout'    => env('APP_CURL_TIMEOUT', 40),
+    'curl_connect_timeout'    => env('APP_CURL_CONNECTION_TIMEOUT', 30),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Customer photo size (px).
+    | https://github.com/freescout-helpdesk/freescout/issues/2919
+    |-------------------------------------------------------------------------
+    */
+    'customer_photo_size'    => env('APP_CUSTOMER_PHOTO_SIZE', 64),
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | User photo size (px).
+    |-------------------------------------------------------------------------
+    */
+    'user_photo_size'    => env('APP_USER_PHOTO_SIZE', 50),
 
     /*
     |--------------------------------------------------------------------------

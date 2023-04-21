@@ -87,6 +87,7 @@ class MailboxesController extends Controller
 
         $mailbox = new Mailbox();
         $mailbox->fill($request->all());
+
         $mailbox->save();
 
         $mailbox->users()->sync($request->users);

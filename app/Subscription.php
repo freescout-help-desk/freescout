@@ -361,10 +361,17 @@ class Subscription extends Model
             }
         }
 
-        // - Menu notification (uses same medium as for email)
-        if (!empty($notify[self::MEDIUM_EMAIL]) || !empty($notify[self::MEDIUM_MENU])) {
-
-            $notify_menu = ($notify[self::MEDIUM_EMAIL] ?? []) + ($notify[self::MEDIUM_MENU] ?? []);
+        // - Menu notification (uses same medium as for Email, if email notifications are disabled - use Browser notificaitons)
+        if (!empty($notify[self::MEDIUM_EMAIL]) 
+            || !empty($notify[self::MEDIUM_BROWSER])
+            || !empty($notify[self::MEDIUM_MENU])
+        ) {
+            if (!empty($notify[self::MEDIUM_EMAIL])) {
+                $notify_menu = $notify[self::MEDIUM_EMAIL] ?? [];
+            } else {
+                $notify_menu = $notify[self::MEDIUM_BROWSER] ?? [];
+            }
+            $notify_menu = $notify_menu + ($notify[self::MEDIUM_MENU] ?? []);
             foreach ($notify_menu as $notify_info) {
                 $website_notification = new WebsiteNotification($notify_info['conversation'], self::chooseThread($notify_info['threads']));
                 $website_notification->delay($delay);

@@ -2471,7 +2471,8 @@ button.conv-checkbox-clear {
 .btn-create-conv,
 .conv-forward-block .btn-send-text,
 .conv-note-block .btn-send-text,
-.conv-note-block .conv-recipient {
+.conv-note-block .conv-recipient,
+.conv-note-block .conv-from-alias {
     display: none;
 }
 .conv-note-block .btn-add-note-text {

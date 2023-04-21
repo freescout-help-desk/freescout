@@ -702,9 +702,44 @@ class Mailbox extends Model
         if ($this->aliases) {
             $aliases = explode(',', $this->aliases);
             foreach ($aliases as $alias) {
+                $alias = trim($alias);
+                $alias = preg_replace("#\(.*#", '', $alias);
+
                 $alias = Email::sanitizeEmail($alias);
                 if ($alias) {
                     $emails[] = $alias;
+                }
+            }
+        }
+
+        return $emails;
+    }
+
+    /**
+     * Get mailbox aliases as an associative array.
+     */
+    public function getAliases($include_mailbox_email = true)
+    {
+        if ($include_mailbox_email) {
+            $emails = [$this->email => $this->name];
+        } else {
+            $emails = [];
+        }
+
+        if ($this->aliases) {
+            $aliases = explode(',', $this->aliases);
+            foreach ($aliases as $alias) {
+                $name = '';
+                $alias = trim($alias);
+                preg_match("#[^\(]+\((.*)\)#", $alias, $m);
+                if (!empty($m[1])) {
+                    $name = $m[1];
+                    $alias = preg_replace("#\(.*#", '', $alias);
+                }
+
+                $alias = Email::sanitizeEmail($alias);
+                if ($alias) {
+                    $emails[$alias] = $name;
                 }
             }
         }
@@ -918,5 +953,12 @@ class Mailbox extends Model
     public function oauthGetParam($param)
     {
         return $this->meta['oauth'][$param] ?? '';
+    }
+
+    public function setEmailAttribute($value)
+    {
+        if ($value) {
+            $this->attributes['email'] = Email::sanitizeEmail($value);
+        }
     }
 }
