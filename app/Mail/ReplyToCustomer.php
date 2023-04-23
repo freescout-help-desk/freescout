@@ -94,18 +94,25 @@ class ReplyToCustomer extends Mailable
                 }
                 if (!empty($from_alias)) {
                     $aliases = $mailbox->getAliases();
-                    $from_alias_name = $aliases[$from_alias] ?? '';
 
-                    $swift_from = $headers->get('From');
+                    // Make sure that the From contains a mailbox alias,
+                    // as user thread may have From specified when a user
+                    // replies to an email notification.
+                    if (array_key_exists($from_alias, $aliases)) {
 
-                    if ($from_alias_name) {
-                        $swift_from->setNameAddresses([
-                            $from_alias => $from_alias_name
-                        ]);
-                    } else {
-                        $swift_from->setAddresses([
-                            $from_alias
-                        ]);
+                        $from_alias_name = $aliases[$from_alias] ?? '';
+
+                        $swift_from = $headers->get('From');
+
+                        if ($from_alias_name) {
+                            $swift_from->setNameAddresses([
+                                $from_alias => $from_alias_name
+                            ]);
+                        } else {
+                            $swift_from->setAddresses([
+                                $from_alias
+                            ]);
+                        }
                     }
                 }
 
