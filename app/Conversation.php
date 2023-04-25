@@ -522,6 +522,11 @@ class Conversation extends Model
         return $this->state == self::STATE_PUBLISHED;
     }
 
+    public function isDraft()
+    {
+        return $this->state == self::STATE_DRAFT;
+    }
+    
     /**
      * Get status name.
      *

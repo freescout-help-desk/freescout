@@ -133,6 +133,20 @@
                                 </div>
                             </div>
 
+                            @if (count($from_aliases))
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{ __('From') }}</label>
+
+                                    <div class="col-sm-9">
+                                        <select name="from_alias" class="form-control">
+                                            @foreach ($from_aliases as $from_alias_email => $from_alias_name)
+                                                <option value="@if ($from_alias_email != $mailbox->email){{ $from_alias_email }}@endif" @if (!empty($from_alias) && $from_alias == $from_alias_email)selected="selected"@endif>@if ($from_alias_name){{ $from_alias_email }} ({{ $from_alias_name }})@else{{ $from_alias_email }}@endif</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            @endif
+
                             <div class="form-group{{ $errors->has('to') ? ' has-error' : '' }}" id="field-to">
                                 <label for="to" class="col-sm-2 control-label">{{ __('To') }}</label>
 

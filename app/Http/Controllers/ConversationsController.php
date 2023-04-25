@@ -298,7 +298,10 @@ class ConversationsController extends Controller
         if (count($from_aliases) == 1) {
             $from_aliases = [];
         }
-        if (count($from_aliases)) {
+        if ($conversation->isDraft() && !empty($threads[0])) {
+            $from_alias = $threads[0]->from ?? '';
+        }
+        if (count($from_aliases) && !$from_alias) {
             // Preset the last alias used.
             $check_initial_thread = true;
             foreach ($threads as $thread) {
@@ -412,6 +415,7 @@ class ConversationsController extends Controller
             'folders'      => $mailbox->getAssesibleFolders(),
             'after_send'   => $after_send,
             'to'           => $to,
+            'from_aliases' => $mailbox->getAliases(),
         ]);
     }
 
@@ -1450,6 +1454,7 @@ class ConversationsController extends Controller
                     } else {
                         $thread->type = Thread::TYPE_MESSAGE;
                     }
+                    $thread->from = $request->from_alias ?? null;
                     $thread->body = $request->body;
                     $thread->setTo($to);
                     // We save CC and BCC as is and filter emails when sending replies
@@ -1582,6 +1587,7 @@ class ConversationsController extends Controller
 
                     $response['data'] = [
                         'thread_id'   => $thread->id,
+                        'from_alias'  => $thread->from,
                         'to'          => $thread->getToFirst(),
                         'cc'          => $thread->getCcArray(),
                         'bcc'         => $thread->getBccArray(),
