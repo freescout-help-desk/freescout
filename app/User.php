@@ -507,6 +507,7 @@ class User extends Authenticatable
         }
 
         if (class_exists('IntlDateFormatter')) {
+
             // Convert `strftime` format to `IntlDateFormatter` pattern.
             // https://unicode-org.github.io/icu/userguide/format_parse/datetime/
             $format = strtr($format, [
@@ -518,6 +519,7 @@ class User extends Authenticatable
                 'h' => 'hh',
                 'i' => 'mm',
                 'l' => 'cccc',
+                'O' => 'xx',
             ]);
             return $date->formatLocalized($format);
         } else {
