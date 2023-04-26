@@ -84,7 +84,7 @@
         <tbody>
             @foreach ($php_extensions as $extension_name => $extension_status)
                 <tr>
-                    <th>{{ $extension_name }}</th>
+                    <th>{{ $extension_name }}@if ($extension_name == 'intl') {{ __('(optional)') }}@endif</th>
                     <td class="table-main-col">
                         @if ($extension_status)
                             <strong class="text-success">OK</strong>

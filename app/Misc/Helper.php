@@ -1791,7 +1791,10 @@ class Helper
     public static function checkRequiredExtensions()
     {
         $php_extensions = [];
-        foreach (\Config::get('installer.requirements.php') as $extension_name) {
+        $required_extensions = \Config::get('installer.requirements.php');
+        // Add optional.
+        $required_extensions[] = 'intl';
+        foreach ($required_extensions as $extension_name) {
             $alternatives = explode('/', $extension_name);
             if ($alternatives) {
                 foreach ($alternatives as $alternative) {

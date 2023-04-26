@@ -1844,7 +1844,17 @@ class Carbon extends DateTime implements JsonSerializable
             $format = preg_replace('#(?<!%)((?:%%)*)%e#', '\1%#d', $format); // @codeCoverageIgnore
         }
 
-        $formatted = strftime($format, strtotime($this->toDateTimeString()));
+        // https://php.watch/versions/8.1/strftime-gmstrftime-deprecated
+        //$formatted = strftime($format, strtotime($this->toDateTimeString()));
+        $formatter = new \IntlDateFormatter(
+            config('app.locale'), 
+            \IntlDateFormatter::LONG,
+            \IntlDateFormatter::NONE,
+            config('app.timezone'),
+            \IntlDateFormatter::GREGORIAN,
+            $format
+        );
+        $formatted = datefmt_format($formatter, strtotime($this->toDateTimeString()));
 
         return static::$utf8 ? utf8_encode($formatted) : $formatted;
     }

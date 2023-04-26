@@ -505,7 +505,24 @@ class User extends Authenticatable
                 $date->setTimezone($user->timezone);
             }
         }
-        return $date->format($format);
+
+        if (class_exists('IntlDateFormatter')) {
+            // Convert `strftime` format to `IntlDateFormatter` pattern.
+            // https://unicode-org.github.io/icu/userguide/format_parse/datetime/
+            $format = strtr($format, [
+                'M' => 'MMM',
+                'm' => 'MM',
+                'j' => 'd',
+                'd' => 'dd',
+                'H' => 'HH',
+                'h' => 'hh',
+                'i' => 'mm',
+                'l' => 'cccc',
+            ]);
+            return $date->formatLocalized($format);
+        } else {
+            return $date->format($format);
+        }
     }
 
     /**
