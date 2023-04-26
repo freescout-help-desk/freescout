@@ -1792,8 +1792,7 @@ class Helper
     {
         $php_extensions = [];
         $required_extensions = \Config::get('installer.requirements.php');
-        // Add optional.
-        $required_extensions[] = 'intl';
+
         foreach ($required_extensions as $extension_name) {
             $alternatives = explode('/', $extension_name);
             if ($alternatives) {
