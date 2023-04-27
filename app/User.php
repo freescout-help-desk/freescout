@@ -517,14 +517,22 @@ class User extends Authenticatable
                 'd' => 'dd',
                 'H' => 'HH',
                 'h' => 'hh',
-                'i' => 'mm',
+                'i' => 'mmm',
                 'l' => 'cccc',
                 'O' => 'xx',
             ]);
+
+            // Remove dot from month name.
             $formatted = $date->formatLocalized($format);
             if (!strstr($format, '.')) {
                 $formatted = str_replace('.', '', $formatted);
             }
+            
+            // AM/PM to am/pm
+            $formatted = preg_replace_callback('#\d(AM|PM)$#', function ($m) {
+                return strtolower($m[1] ?? '');
+            }, $formatted);
+
             return \Helper::mbUcfirst($formatted);
         } else {
             return $date->format($format);
