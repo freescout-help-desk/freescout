@@ -1849,4 +1849,11 @@ class Helper
 
         return $flashes;
     }
+
+    public static function mbUcfirst($string, $encoding = 'UTF-8')
+    {
+        $first_char = mb_substr($string, 0, 1, $encoding);
+        $then = mb_substr($string, 1, null, $encoding);
+        return mb_strtoupper($first_char, $encoding) . $then;
+    }
 }

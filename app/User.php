@@ -521,7 +521,11 @@ class User extends Authenticatable
                 'l' => 'cccc',
                 'O' => 'xx',
             ]);
-            return $date->formatLocalized($format);
+            $formatted = $date->formatLocalized($format);
+            if (!strstr($format, '.')) {
+                $formatted = str_replace('.', '', $formatted);
+            }
+            return \Helper::mbUcfirst($formatted);
         } else {
             return $date->format($format);
         }
