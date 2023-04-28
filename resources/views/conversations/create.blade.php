@@ -134,7 +134,7 @@
                             </div>
 
                             @if (count($from_aliases))
-                                <div class="form-group">
+                                <div class="form-group email-conv-fields">
                                     <label class="col-sm-2 control-label">{{ __('From') }}</label>
 
                                     <div class="col-sm-9">
