@@ -1791,7 +1791,9 @@ class Helper
     public static function checkRequiredExtensions()
     {
         $php_extensions = [];
-        foreach (\Config::get('installer.requirements.php') as $extension_name) {
+        $required_extensions = \Config::get('installer.requirements.php');
+
+        foreach ($required_extensions as $extension_name) {
             $alternatives = explode('/', $extension_name);
             if ($alternatives) {
                 foreach ($alternatives as $alternative) {
@@ -1846,5 +1848,12 @@ class Helper
         }
 
         return $flashes;
+    }
+
+    public static function mbUcfirst($string, $encoding = 'UTF-8')
+    {
+        $first_char = mb_substr($string, 0, 1, $encoding);
+        $then = mb_substr($string, 1, null, $encoding);
+        return mb_strtoupper($first_char, $encoding) . $then;
     }
 }

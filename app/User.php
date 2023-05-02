@@ -505,7 +505,38 @@ class User extends Authenticatable
                 $date->setTimezone($user->timezone);
             }
         }
-        return $date->format($format);
+
+        if (class_exists('IntlDateFormatter')) {
+
+            // Convert `strftime` format to `IntlDateFormatter` pattern.
+            // https://unicode-org.github.io/icu/userguide/format_parse/datetime/
+            $format = strtr($format, [
+                'M' => 'MMM',
+                'm' => 'MM',
+                'j' => 'd',
+                'd' => 'dd',
+                'H' => 'HH',
+                'h' => 'hh',
+                'i' => 'mm',
+                'l' => 'cccc',
+                'O' => 'xx',
+            ]);
+
+            // Remove dot from month name.
+            $formatted = $date->formatLocalized($format);
+            if (!strstr($format, '.')) {
+                $formatted = str_replace('.', '', $formatted);
+            }
+            
+            // AM/PM to am/pm
+            $formatted = preg_replace_callback('#\d(AM|PM)$#', function ($m) {
+                return strtolower($m[1] ?? '');
+            }, $formatted);
+
+            return \Helper::mbUcfirst($formatted);
+        } else {
+            return $date->format($format);
+        }
     }
 
     /**

@@ -101,7 +101,9 @@ class SendReplyToCustomer implements ShouldQueue
 
         // Threads has to be sorted here, if sorted before, they come here in wrong order
         $this->threads = $this->threads->sortByDesc(function ($item, $key) {
-            return $item->id;
+            // Threads has to be sorted by created_at and not by id.
+            // https://github.com/freescout-helpdesk/freescout/issues/2938
+            return $item->created_at->getTimestamp();
         });
 
         $new = false;
