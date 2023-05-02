@@ -17,6 +17,10 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\ProcessSwiftMessage',
         ],
 
+        'Illuminate\Mail\Events\MessageSent' => [
+            'App\Listeners\RestartSwiftMailer',
+        ],
+
         'Illuminate\Auth\Events\Registered' => [
             'App\Listeners\LogRegisteredUser',
         ],
