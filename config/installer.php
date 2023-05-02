@@ -39,7 +39,7 @@ return [
             'ZIP',
             'iconv',
             'cURL',
-            'intl',
+            //'intl',
         ],
         // 'apache' => [
         //     'mod_rewrite',
