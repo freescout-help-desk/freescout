@@ -327,7 +327,13 @@ class Message
         }
 
         if (property_exists($header, 'subject')) {
-            $this->subject = \imap_utf8($header->subject);
+            // https://github.com/freescout-helpdesk/freescout/issues/2965
+            if (!\Str::startsWith(mb_strtolower($header->subject), '=?utf-8?')) {
+                $this->subject = \imap_utf8($header->subject);
+            } else {
+                $this->subject = iconv_mime_decode($header->subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+            }
+            
             if (\Str::startsWith(mb_strtolower($this->subject), '=?utf-8?')) {
 
                 // https://bugs.php.net/bug.php?id=68821
