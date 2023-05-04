@@ -4,6 +4,7 @@ namespace Modules\CustomFields\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Watson\Rememberable\Rememberable;
+use App\Mailbox;
 
 class CustomField extends Model
 {
@@ -244,7 +245,15 @@ class CustomField extends Model
         if (self::$search_custom_fields) {
             return self::$search_custom_fields;
         }
-        $mailbox_ids = auth()->user()->mailboxesIdsCanView();
+        if (auth()->user()){
+            $mailbox_ids = auth()->user()->mailboxesIdsCanView();
+        }else{
+            $mailbox_id_data = Mailbox::select('id')->get();
+            $mailbox_ids = [];
+            foreach ($mailbox_id_data as $key => $mb_id) {
+                $mailbox_ids[$key] = $mb_id->id;
+            }
+        }
 
         if ($mailbox_ids) {
             $custom_fields = CustomField::whereIn('mailbox_id', $mailbox_ids)

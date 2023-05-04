@@ -2100,9 +2100,8 @@ class Conversation extends Model
         return $result;
     }
 
-    public static function search($q, $filters, $user = null, $query_conversations = null)
+    public static function search($q, $filters, $user = null, $query_conversations = null, $mailbox_ids = [])
     {
-        $mailbox_ids = [];
 
         // Like is case insensitive.
         $like = '%'.mb_strtolower($q).'%';
@@ -2125,7 +2124,10 @@ class Conversation extends Model
             }
         } else {
             // Get IDs of mailboxes to which user has access
-            $mailbox_ids = $user->mailboxesIdsCanView();
+            
+            if(empty($mailbox_ids)) {
+                $mailbox_ids = $user->mailboxesIdsCanView();
+            }
         }
 
         $query_conversations->whereIn('conversations.mailbox_id', $mailbox_ids);
@@ -2134,8 +2136,8 @@ class Conversation extends Model
         if (\Helper::isPgSql()) {
             $like_op = 'ilike';
         }
-
         if ($q) {
+
             $query_conversations->where(function ($query) use ($like, $filters, $q, $like_op) {
                 $query->where('conversations.subject', $like_op, $like)
                     ->orWhere('conversations.customer_email', $like_op, $like)
@@ -2152,7 +2154,6 @@ class Conversation extends Model
                 $query = \Eventy::filter('search.conversations.or_where', $query, $filters, $q);
             });
         }
-
         // Apply search filters.
         if (!empty($filters['assigned'])) {
             if ($filters['assigned'] == self::USER_UNASSIGNED) {
@@ -2228,7 +2229,6 @@ class Conversation extends Model
         if (!strstr($query_sql, '`customers`.`id`')) {
             $query_conversations->leftJoin('customers', 'conversations.customer_id', '=' ,'customers.id');
         }
-
         $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);
 
         $sorting = Conversation::getConvTableSorting();
