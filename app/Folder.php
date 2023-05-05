@@ -223,44 +223,11 @@ class Folder extends Model
 
     public function updateCounters()
     {
-        if (\Eventy::filter('folder.update_counters', false, $this)) {
+        if(\Cache::has('updating_folder_' . $this->id)) {
             return;
         }
-        if ($this->type == self::TYPE_MINE && $this->user_id) {
-            $this->active_count = Conversation::where('user_id', $this->user_id)
-                ->where('mailbox_id', $this->mailbox_id)
-                ->where('state', Conversation::STATE_PUBLISHED)
-                ->where('status', Conversation::STATUS_ACTIVE)
-                ->count();
-            $this->total_count = Conversation::where('user_id', $this->user_id)
-                ->where('mailbox_id', $this->mailbox_id)
-                ->where('state', Conversation::STATE_PUBLISHED)
-                ->count();
-        } elseif ($this->type == self::TYPE_STARRED) {
-            $this->active_count = count(Conversation::getUserStarredConversationIds($this->mailbox_id, $this->user_id));
-            $this->total_count = $this->active_count;
-        } elseif ($this->type == self::TYPE_DELETED) {
-            $this->active_count = $this->conversations()->where('state', Conversation::STATE_DELETED)
-                ->count();
-            $this->total_count = $this->active_count;
-        } elseif ($this->isIndirect()) {
-            // Conversation are connected to folder via conversation_folder table.
-            // Drafts.
-            $this->active_count = ConversationFolder::where('conversation_folder.folder_id', $this->id)
-                ->join('conversations', 'conversations.id', '=', 'conversation_folder.conversation_id')
-                //->where('state', Conversation::STATE_PUBLISHED)
-                ->count();
-            $this->total_count = $this->active_count;
-        } else {
-            $this->active_count = $this->conversations()
-                ->where('state', Conversation::STATE_PUBLISHED)
-                ->where('status', Conversation::STATUS_ACTIVE)
-                ->count();
-            $this->total_count = $this->conversations()
-                ->where('state', Conversation::STATE_PUBLISHED)
-                ->count();
-        }
-        $this->save();
+        \Cache::forever('updating_folder_' . $this->id, true);
+        \App\Jobs\UpdateFolderCounters::dispatch($this);
     }
 
     /**
