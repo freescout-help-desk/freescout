@@ -527,10 +527,10 @@ class WeeklyReport extends Command
         }
         $data = array('name'=>'Weekly Report - '.date('Y-m-d'));
         $mail = \Mail::send('emails.user.weekly_report', $data, function($message) use ($filename){
-            $message->to('shubham@40bears.com', 'Canidesk Test')->subject
-            ('Weekly Report');
-         $message->from('rekha@manndeshibank.com','Canidesk');
-        //  $message->from('support@canaris.in','Canidesk');
+            // Change to this email in production rekha@manndeshibank.com for mann bank
+            $message->to('support@canaris.in', 'Canidesk Test')->subject
+            ('Weekly Report for '. Carbon::now()->subDays(7)->format('Y-m-d') . ' ~ '. Carbon::now()->format('Y-m-d'));
+         $message->from('support@canaris.in','Canidesk');
          $message->attach(public_path().'/'.$filename);
         });
         dd($mail);
