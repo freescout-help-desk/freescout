@@ -53,7 +53,6 @@ class WeeklyReport extends Command
     public function handle()
     {
         $fields = [
-            'id',
             'number',
             'type',
             'user_id',
@@ -518,8 +517,9 @@ class WeeklyReport extends Command
         }
         $data = array('name'=>'Weekly Report - '.date('Y-m-d'));
         $mail = \Mail::send('emails.user.weekly_report', $data, function($message) use ($filename){
-            // Change to this email in production rekha@manndeshibank.com for mann bank
-            $message->to('support@canaris.in', 'Canidesk Test')->subject
+            // Umcomment this to in production
+            // $message->to('rekha@manndeshibank.com', 'Rekha');
+            $message->to('pravin.pimpale@canaris.in', 'Canidesk')->subject
             ('Weekly Report for '. Carbon::now()->subDays(7)->format('Y-m-d') . ' ~ '. Carbon::now()->format('Y-m-d'));
          $message->from('support@canaris.in','Canidesk');
          $message->attach(public_path().'/'.$filename);
