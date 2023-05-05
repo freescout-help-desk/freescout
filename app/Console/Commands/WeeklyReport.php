@@ -529,8 +529,8 @@ class WeeklyReport extends Command
         $mail = \Mail::send('emails.user.weekly_report', $data, function($message) use ($filename){
             $message->to('shubham@40bears.com', 'Canidesk Test')->subject
             ('Weekly Report');
-        //  $message->from('rekha@manndeshibank.com','Canidesk');
-         $message->from('support@canaris.in','Canidesk');
+         $message->from('rekha@manndeshibank.com','Canidesk');
+        //  $message->from('support@canaris.in','Canidesk');
          $message->attach(public_path().'/'.$filename);
         });
         dd($mail);
