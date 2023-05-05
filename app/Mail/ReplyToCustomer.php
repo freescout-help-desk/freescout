@@ -80,7 +80,7 @@ class ReplyToCustomer extends Mailable
         $new_headers = $this->headers;
         if (!empty($new_headers) || $from_alias) {
             $mailbox = $this->mailbox;
-            $this->withSwiftMessage(function ($swiftmessage) use ($new_headers, $from_alias, $mailbox) {
+            $this->withSwiftMessage(function ($swiftmessage) use ($new_headers, $from_alias, $mailbox, $thread) {
                 if (!empty($new_headers)) {
                     if (!empty($new_headers['Message-ID'])) {
                         $swiftmessage->setId($new_headers['Message-ID']);
@@ -101,6 +101,15 @@ class ReplyToCustomer extends Mailable
                     if (array_key_exists($from_alias, $aliases)) {
 
                         $from_alias_name = $aliases[$from_alias] ?? '';
+
+                        // Take into account mailbox From Name setting.
+                        $mailbox_mail_from = $mailbox->getMailFrom($thread->created_by_user, $thread->conversation);
+                        if ($mailbox_mail_from['name'] == $mailbox->name && $from_alias_name) {
+                            // Use name from alias.
+                        } else {
+                            // User name or custom.
+                            $from_alias_name = $mailbox_mail_from['name'];
+                        }
 
                         $swift_from = $headers->get('From');
 
