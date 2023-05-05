@@ -7,6 +7,8 @@ use App\Conversation;
 use App\Mailbox;
 use App\Misc\Mail;
 use App\User;
+use Carbon\Carbon;
+
 class WeeklyReport extends Command
 {
 
@@ -76,11 +78,11 @@ class WeeklyReport extends Command
         $downloadType = 'pdf';
         $filters['type'] = '';
         $filters['mailbox'] = '';
-        $filters['after'] = '2023-03-01';
-        $filters['before'] = '2023-05-04';
+        $filters['after'] = Carbon::now()->subDays(7)->format('Y-m-d');
+        $filters['before'] = Carbon::now()->format('Y-m-d');
         $filters['state'] = [2];
         $filters['status'] = [1,2,3];
-
+        
         // if (!empty($request->f['mailbox'])) {
             //     $mailbox_ids[] = $request->f['mailbox'];
             // }
@@ -523,11 +525,13 @@ class WeeklyReport extends Command
             header("Content-Disposition: attachment; filename=$filename");
             echo $out;
         }
-        $data = array('name'=>'Shubham');
-        $mail = \Mail::send('emails.user.weekly_report', $data, function($message){
+        $data = array('name'=>'Weekly Report - '.date('Y-m-d'));
+        $mail = \Mail::send('emails.user.weekly_report', $data, function($message) use ($filename){
             $message->to('shubham@40bears.com', 'Canidesk Test')->subject
-            ('Laravel HTML Testing Mail');
+            ('Weekly Report');
+        //  $message->from('rekha@manndeshibank.com','Canidesk');
          $message->from('support@canaris.in','Canidesk');
+         $message->attach(public_path().'/'.$filename);
         });
         dd($mail);
     }
