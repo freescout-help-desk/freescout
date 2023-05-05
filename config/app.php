@@ -411,6 +411,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Use this option if you have many folders and you are experiencing
+    | performance issues. When this option is enabled sometimes it may take 
+    | several seconds for folders counters to update in the interface.
+    | 
+    | https://github.com/freescout-helpdesk/freescout/pull/2982
+    |-------------------------------------------------------------------------
+    */
+    'update_folder_counters_in_background'    => env('APP_UPDATE_FOLDER_COUNTERS_IN_BACKGROUND', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
