@@ -1435,16 +1435,20 @@ class Helper
 
     public static function sanitizeUploadedFileData($file_path, $storage, $content = null)
     {
-        // Remove <script> from SVG files.
-        if (strtolower(pathinfo($file_path, PATHINFO_EXTENSION)) == 'svg'
+        // Remove <script>, href="", iframe, etc from SVG files.
+        // Any image can be interpreted as SVG by browser,
+        // so checking extension is not enough.
+        if ($storage->mimeType($file_path) == 'image/svg+xml'
             && $storage->exists($file_path)
         ) {
             if (!$content) {
                 $content = $storage->get($file_path);
             }
             if ($content) {
-                $content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
-                $storage->put($file_path, $content);
+                $svg_sanitizer = new \enshrined\svgSanitize\Sanitizer();
+                $clean_svg = $svg_sanitizer->sanitize($content);
+                //$content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
+                $storage->put($file_path, $clean_svg);
             }
         }
     }

@@ -39,6 +39,8 @@ return [
             'ZIP',
             'iconv',
             'cURL',
+            'DOM',
+            'libxml',
             //'intl',
         ],
         // 'apache' => [
