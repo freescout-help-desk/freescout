@@ -811,6 +811,7 @@ class ConversationsController extends Controller
                         ) {
                             $conversation->type = Conversation::TYPE_EMAIL;
                             $conversation->customer_email = $customer_email;
+                            $is_phone = false;
                         }
                     }
 

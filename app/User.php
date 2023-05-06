@@ -518,6 +518,7 @@ class User extends Authenticatable
                 'H' => 'HH',
                 'h' => 'hh',
                 'i' => 'mm',
+                's' => 'ss',
                 'l' => 'cccc',
                 'O' => 'xx',
             ]);

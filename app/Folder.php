@@ -223,9 +223,15 @@ class Folder extends Model
 
     public function updateCounters()
     {
-        if (\Eventy::filter('folder.update_counters', false, $this)) {
-            return;
+        if (config('app.update_folder_counters_in_background')) {
+            \App\Jobs\UpdateFolderCounters::dispatch($this);
+        } else {
+            $this->updateCountersNow();
         }
+    }
+
+    public function updateCountersNow()
+    {
         if ($this->type == self::TYPE_MINE && $this->user_id) {
             $this->active_count = Conversation::where('user_id', $this->user_id)
                 ->where('mailbox_id', $this->mailbox_id)
