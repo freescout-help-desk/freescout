@@ -1438,17 +1438,20 @@ class Helper
         // Remove <script>, href="", iframe, etc from SVG files.
         // Any image can be interpreted as SVG by browser,
         // so checking extension is not enough.
-        if ($storage->mimeType($file_path) == 'image/svg+xml'
-            && $storage->exists($file_path)
+        if ($storage->exists($file_path)
+            && ($storage->mimeType($file_path) == 'image/svg+xml' 
+                || strtolower(pathinfo($file_path, PATHINFO_EXTENSION)) == 'svg')
         ) {
             if (!$content) {
                 $content = $storage->get($file_path);
             }
             if ($content) {
                 $svg_sanitizer = new \enshrined\svgSanitize\Sanitizer();
-                $clean_svg = $svg_sanitizer->sanitize($content);
-                //$content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
-                $storage->put($file_path, $clean_svg);
+                $clean_content = $svg_sanitizer->sanitize($content);
+                if (!$clean_content)  {
+                    $clean_content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
+                }
+                $storage->put($file_path, $clean_content);
             }
         }
     }
