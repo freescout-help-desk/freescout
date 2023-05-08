@@ -328,21 +328,26 @@ class Message
 
         if (property_exists($header, 'subject')) {
             // https://github.com/freescout-helpdesk/freescout/issues/2965
-            if (!\Str::startsWith(mb_strtolower($header->subject), '=?utf-8?')) {
-                $this->subject = \imap_utf8($header->subject);
-            } else {
-                $this->subject = iconv_mime_decode($header->subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+            // Also imap_utf8() can't properly decode =?gb18030?B?1eLKx9K7t+Ky4srU08q8/g==?=
+            // iconv_mime_decode() - can.
+            // if (!\Str::startsWith(mb_strtolower($header->subject), '=?utf-8?')) {
+            //     $this->subject = \imap_utf8($header->subject);
+            // } else {
+            $this->subject = iconv_mime_decode($header->subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+            if (!$this->subject) {
+                $this->subject = $header->subject;
             }
+            //}
             
-            if (\Str::startsWith(mb_strtolower($this->subject), '=?utf-8?')) {
+            // if (\Str::startsWith(mb_strtolower($this->subject), '=?utf-8?')) {
 
-                // https://bugs.php.net/bug.php?id=68821
-                $this->subject = preg_replace_callback('/(=\?[^\?]+\?Q\?)([^\?]+)(\?=)/i', function($matches) {
-                    return $matches[1] . str_replace('_', '=20', $matches[2]) . $matches[3];
-                }, $header->subject);
+            //     // https://bugs.php.net/bug.php?id=68821
+            //     $this->subject = preg_replace_callback('/(=\?[^\?]+\?Q\?)([^\?]+)(\?=)/i', function($matches) {
+            //         return $matches[1] . str_replace('_', '=20', $matches[2]) . $matches[3];
+            //     }, $header->subject);
 
-                $this->subject = mb_decode_mimeheader($this->subject);
-            }
+            //     $this->subject = mb_decode_mimeheader($this->subject);
+            // }
         }
 
         if (property_exists($header, 'date')) {
