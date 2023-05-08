@@ -997,6 +997,9 @@ a h4 {
 /**
  * Editor
  */
+.summernote-inservar {
+    max-width: 200px;
+}
 .note-editor.note-frame {
     border-color: #dee4e9 !important;
 }
