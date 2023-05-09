@@ -164,6 +164,11 @@ class MailboxesController extends Controller
             \Helper::denyAccess();
         }
 
+        // Checkboxes
+        $request->merge([
+            'aliases_reply' => ($request->filled('aliases_reply') ?? false),
+        ]);
+
         if ($user->can('updateSettings', $mailbox)) {
 
             // if not admin, the text only fields don't pass so spike them into the request.

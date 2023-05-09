@@ -292,7 +292,7 @@ class ConversationsController extends Controller
         $threads = $conversation->threads()->orderBy('created_at', 'desc')->get();
 
         // Mailbox aliases.
-        $from_aliases = $conversation->mailbox->getAliases();
+        $from_aliases = $conversation->mailbox->getAliases(true, true);
         $from_alias = '';
 
         if (count($from_aliases) == 1) {
@@ -415,7 +415,7 @@ class ConversationsController extends Controller
             'folders'      => $mailbox->getAssesibleFolders(),
             'after_send'   => $after_send,
             'to'           => $to,
-            'from_aliases' => $mailbox->getAliases(),
+            'from_aliases' => $mailbox->getAliases(true, true),
         ]);
     }
 
