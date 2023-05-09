@@ -448,11 +448,7 @@ class MailboxesController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->isAdmin()) {
-            $mailbox = Mailbox::findOrFailWithSettings($id, $user->id);
-        } else {
-            $mailbox = Mailbox::findOrFail($id);
-        }
+        $mailbox = Mailbox::findOrFailWithSettings($id, $user->id);
         $this->authorize('viewCached', $mailbox);
 
         $folders = $mailbox->getAssesibleFolders();
