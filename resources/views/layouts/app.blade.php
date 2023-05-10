@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex,nofollow">
 
     <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">    
+    <meta name="csrf-token" content="{{ csrf_token() }}">       
 
     <title>@if ($__env->yieldContent('title_full'))@yield('title_full') @elseif ($__env->yieldContent('title'))@yield('title') - CaniDesk @else{{ config('app.name', 'CaniDesk') }}@endif</title>
 
