@@ -28,6 +28,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
     );
 
     public static $prefixLengthsPsr4 = array (
+        'e' => 
+        array (
+            'enshrined\\svgSanitize\\' => 22,
+        ),
         'X' => 
         array (
             'XdgBaseDir\\' => 11,
@@ -197,6 +201,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
     );
 
     public static $prefixDirsPsr4 = array (
+        'enshrined\\svgSanitize\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/enshrined/svg-sanitize/src',
+        ),
         'XdgBaseDir\\' => 
         array (
             0 => __DIR__ . '/..' . '/dnoegel/php-xdg-base-dir/src',
@@ -781,6 +789,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'App\\Jobs\\SendNotificationToUsers' => __DIR__ . '/../..' . '/app/Jobs/SendNotificationToUsers.php',
         'App\\Jobs\\SendReplyToCustomer' => __DIR__ . '/../..' . '/app/Jobs/SendReplyToCustomer.php',
         'App\\Jobs\\TriggerAction' => __DIR__ . '/../..' . '/app/Jobs/TriggerAction.php',
+        'App\\Jobs\\UpdateFolderCounters' => __DIR__ . '/../..' . '/app/Jobs/UpdateFolderCounters.php',
         'App\\Listeners\\ActivateUser' => __DIR__ . '/../..' . '/app/Listeners/ActivateUser.php',
         'App\\Listeners\\LogFailedLogin' => __DIR__ . '/../..' . '/app/Listeners/LogFailedLogin.php',
         'App\\Listeners\\LogLockout' => __DIR__ . '/../..' . '/app/Listeners/LogLockout.php',
@@ -792,6 +801,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'App\\Listeners\\ProcessSwiftMessage' => __DIR__ . '/../..' . '/app/Listeners/ProcessSwiftMessage.php',
         'App\\Listeners\\RefreshConversations' => __DIR__ . '/../..' . '/app/Listeners/RefreshConversations.php',
         'App\\Listeners\\RememberUserLocale' => __DIR__ . '/../..' . '/app/Listeners/RememberUserLocale.php',
+        'App\\Listeners\\RestartSwiftMailer' => __DIR__ . '/../..' . '/app/Listeners/RestartSwiftMailer.php',
         'App\\Listeners\\SendAutoReply' => __DIR__ . '/../..' . '/app/Listeners/SendAutoReply.php',
         'App\\Listeners\\SendNotificationToUsers' => __DIR__ . '/../..' . '/app/Listeners/SendNotificationToUsers.php',
         'App\\Listeners\\SendPasswordChanged' => __DIR__ . '/../..' . '/app/Listeners/SendPasswordChanged.php',
@@ -3875,6 +3885,17 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'aCssRulesetEndToken' => __DIR__ . '/../..' . '/overrides/natxet/cssmin/src/CssMin.php',
         'aCssRulesetStartToken' => __DIR__ . '/../..' . '/overrides/natxet/cssmin/src/CssMin.php',
         'aCssToken' => __DIR__ . '/../..' . '/overrides/natxet/cssmin/src/CssMin.php',
+        'enshrined\\svgSanitize\\ElementReference\\Resolver' => __DIR__ . '/..' . '/enshrined/svg-sanitize/src/ElementReference/Resolver.php',
+        'enshrined\\svgSanitize\\ElementReference\\Subject' => __DIR__ . '/..' . '/enshrined/svg-sanitize/src/ElementReference/Subject.php',
+        'enshrined\\svgSanitize\\ElementReference\\Usage' => __DIR__ . '/..' . '/enshrined/svg-sanitize/src/ElementReference/Usage.php',
+        'enshrined\\svgSanitize\\Exceptions\\NestingException' => __DIR__ . '/..' . '/enshrined/svg-sanitize/src/Exceptions/NestingException.php',
+        'enshrined\\svgSanitize\\Helper' => __DIR__ . '/..' . '/enshrined/svg-sanitize/src/Helper.php',
+        'enshrined\\svgSanitize\\Sanitizer' => __DIR__ . '/..' . '/enshrined/svg-sanitize/src/Sanitizer.php',
+        'enshrined\\svgSanitize\\data\\AllowedAttributes' => __DIR__ . '/..' . '/enshrined/svg-sanitize/src/data/AllowedAttributes.php',
+        'enshrined\\svgSanitize\\data\\AllowedTags' => __DIR__ . '/..' . '/enshrined/svg-sanitize/src/data/AllowedTags.php',
+        'enshrined\\svgSanitize\\data\\AttributeInterface' => __DIR__ . '/..' . '/enshrined/svg-sanitize/src/data/AttributeInterface.php',
+        'enshrined\\svgSanitize\\data\\TagInterface' => __DIR__ . '/..' . '/enshrined/svg-sanitize/src/data/TagInterface.php',
+        'enshrined\\svgSanitize\\data\\XPath' => __DIR__ . '/..' . '/enshrined/svg-sanitize/src/data/XPath.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

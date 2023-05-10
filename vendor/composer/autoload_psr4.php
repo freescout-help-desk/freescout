@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'enshrined\\svgSanitize\\' => array($vendorDir . '/enshrined/svg-sanitize/src'),
     'XdgBaseDir\\' => array($vendorDir . '/dnoegel/php-xdg-base-dir/src'),
     'Webklex\\PHPIMAP\\' => array($baseDir . '/overrides/webklex/php-imap/src', $vendorDir . '/webklex/php-imap/src'),
     'Webklex\\IMAP\\' => array($baseDir . '/overrides/webklex/laravel-imap/src/IMAP', $vendorDir . '/webklex/laravel-imap/src/IMAP'),
