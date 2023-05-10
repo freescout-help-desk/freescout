@@ -20,7 +20,7 @@
                 </ul>
             </div>
         @endif
-        <a class="btn btn-trans" href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" aria-label="{{ __("New Conversation") }}" data-toggle="tooltip" title="{{ __("New Conversation") }}" role="button"><i class="glyphicon glyphicon-envelope"></i></a>
+        <a class="btn btn-trans" href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" aria-label="{{ __("New Conversations") }}" data-toggle="tooltip" title="{{ __("New Tickets") }}" role="button"><i class="glyphicon glyphicon-envelope"></i></a>
     </div>
 @endif
 @action('mailbox.after_sidebar_buttons')
