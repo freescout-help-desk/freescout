@@ -232,6 +232,9 @@ class Folder extends Model
 
     public function updateCountersNow()
     {
+        if (\Eventy::filter('folder.update_counters', false, $this)) {
+            return;
+        }
         if ($this->type == self::TYPE_MINE && $this->user_id) {
             $this->active_count = Conversation::where('user_id', $this->user_id)
                 ->where('mailbox_id', $this->mailbox_id)
