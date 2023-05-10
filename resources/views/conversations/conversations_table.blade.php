@@ -214,7 +214,7 @@
         </tfoot>
     </table>
 @else
-    @include('partials/empty', ['empty_text' => __('There are no conversations here')])
+    @include('partials/empty', ['empty_text' => __('There are no Tickets here')])
 @endif
 
 @section('javascript')

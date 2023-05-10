@@ -28,7 +28,8 @@
             <div id="conv-toolbar">
                 
                 <div class="conv-actions">
-                    <h2>{{ __("New Conversation") }}</h2>
+                    <h2>{{ __("New Tickets") }}</h2>
+                    
 
                     <div class="btn-group">
                         <button type="button" class="btn btn-default active" id="email-conv-switch" onclick="switchToNewEmailConversation({{ App\Conversation::TYPE_EMAIL }})"><i class="glyphicon glyphicon-envelope"></i></button>
