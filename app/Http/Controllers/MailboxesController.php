@@ -164,6 +164,11 @@ class MailboxesController extends Controller
             \Helper::denyAccess();
         }
 
+        // Checkboxes
+        $request->merge([
+            'aliases_reply' => ($request->filled('aliases_reply') ?? false),
+        ]);
+
         if ($user->can('updateSettings', $mailbox)) {
 
             // if not admin, the text only fields don't pass so spike them into the request.
@@ -448,11 +453,7 @@ class MailboxesController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->isAdmin()) {
-            $mailbox = Mailbox::findOrFailWithSettings($id, $user->id);
-        } else {
-            $mailbox = Mailbox::findOrFail($id);
-        }
+        $mailbox = Mailbox::findOrFailWithSettings($id, $user->id);
         $this->authorize('viewCached', $mailbox);
 
         $folders = $mailbox->getAssesibleFolders();

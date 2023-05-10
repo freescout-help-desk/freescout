@@ -15,3 +15,6 @@ about: Create a general help request
 * Mentioning how much you've spent on modules is the way to be banned.
 
 Still here? Well clean this out and go ahead :)
+
+PHP version: 
+FreeScout version: 
