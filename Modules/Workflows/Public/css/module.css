@@ -1,0 +1,45 @@
+.wf-panel {
+    margin-bottom: 10px;
+}
+.wf-panel .panel-body {
+    padding: 10px 15px;
+}
+.wf-index .glyphicon {
+    top: 2px;
+}
+.wf-block-or-text {
+	text-align: center;
+    margin: 5px 0;
+    color: #93a1af;
+}
+.wf-block-and-text {
+	text-align: center;
+    margin: 0 0 10px;
+}
+.wf-or-blocks .wf-or-block:last-child .wf-block-or-text,
+.wf-and-blocks .wf-and-block:last-child .wf-block-and-text {
+	display: none;
+}
+.wf-block-or-trigger-wrapper {
+	text-align: center;
+	margin-top: 10px;
+}
+.wf-email-form .conv-reply-label {
+    width: 53px;
+}
+.wf-run-list .btn {
+    text-align: left;
+    white-space: normal;
+}
+.wf-block-values .select2-container {
+    width: 100% !important;
+}
+
+@media (min-width: 768px) {
+    .wf-block-values .select2-container {
+        width: 50% !important;
+    }
+    .wf-name {
+        width: 50% !important;
+    }
+}

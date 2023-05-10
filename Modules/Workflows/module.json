@@ -1,0 +1,24 @@
+{
+    "name": "Workflows",
+    "alias": "workflows",
+    "description": "Automate actions, keep track of aging conversations, send predefined emails and much more!",
+    "version": "1.0.43",
+    "detailsUrl": "https://freescout.net/module/workflows/",
+    "author": "FreeScout",
+    "authorUrl": "https://freescout.net",
+    "requiredAppVersion": "1.8.49",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\Workflows\\Providers\\WorkflowsServiceProvider"
+    ],
+    "aliases": {
+        "Workflow": "Modules\\Workflows\\Entities\\Workflow"
+    },
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}
