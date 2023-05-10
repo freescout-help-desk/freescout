@@ -12,12 +12,12 @@
     </div>
 
     <div class="form-group{{ $errors->has('settings[custom_number]') ? ' has-error' : '' }}">
-        <label for="custom_number" class="col-sm-2 control-label">{{ __('Conversation Number') }}</label>
+        <label for="custom_number" class="col-sm-2 control-label">{{ __('Ticket Number') }}</label>
 
         <div class="col-sm-6">
 
             <div class="controls">
-                <label for="custom_number_0" class="radio inline plain"><input type="radio" name="settings[custom_number]" value="false" id="custom_number_0" @if (!$settings['custom_number'])checked="checked"@endif> {{ __('Equal to conversation ID') }}</label>
+                <label for="custom_number_0" class="radio inline plain"><input type="radio" name="settings[custom_number]" value="false" id="custom_number_0" @if (!$settings['custom_number'])checked="checked"@endif> {{ __('Equal to Ticket ID') }}</label>
                 <label for="custom_number_1" class="radio inline"><input type="radio" name="settings[custom_number]" value="true" id="custom_number_1" @if ($settings['custom_number'])checked="checked"@endif> {{ __('Custom') }}…</label>
             </div>
             @include('partials/field_error', ['field'=>'settings.custom_number'])
@@ -92,13 +92,13 @@
     <h3 class="subheader">{{ __('Emails to Customers') }}</h3>
 
     <div class="form-group{{ $errors->has('settings[email_conv_history]') ? ' has-error' : '' }}">
-        <label for="email_conv_history" class="col-sm-2 control-label">{{ __('Conversation History') }}</label>
+        <label for="email_conv_history" class="col-sm-2 control-label">{{ __('Tickets History') }}</label>
 
         <div class="col-sm-6">
             <select id="email_conv_history" class="form-control input-sized" name="settings[email_conv_history]" required autofocus>
                 <option value="none" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'none')selected="selected"@endif>{{ __('Do not include previous messages') }}</option>
                 <option value="last" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'last')selected="selected"@endif>{{ __('Include the last message') }}</option>
-                <option value="full" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'full')selected="selected"@endif>{{ __('Send full conversation history') }}</option>
+                <option value="full" @if (old('settings[email_conv_history]', $settings['email_conv_history']) == 'full')selected="selected"@endif>{{ __('Send full Ticket history') }}</option>
             </select>
 
             @include('partials/field_error', ['field'=>'settings.email_conv_history'])
@@ -143,13 +143,13 @@
     <h3 class="subheader">{{ __('Notification Emails to Users') }}</h3>
 
     <div class="form-group{{ $errors->has('settings[email_user_history]') ? ' has-error' : '' }}">
-        <label for="email_user_history" class="col-sm-2 control-label">{{ __('Conversation History') }}</label>
+        <label for="email_user_history" class="col-sm-2 control-label">{{ __('Tickets History') }}</label>
 
         <div class="col-sm-6">
             <select id="email_user_history" class="form-control input-sized" name="settings[email_user_history]" required autofocus>
                 <option value="none" @if (old('settings[email_user_history]', $settings['email_user_history']) == 'none')selected="selected"@endif>{{ __('Do not include previous messages') }}</option>
                 <option value="last" @if (old('settings[email_user_history]', $settings['email_user_history']) == 'last')selected="selected"@endif>{{ __('Include the last message') }}</option>
-                <option value="full" @if (old('settings[email_user_history]', $settings['email_user_history']) == 'full')selected="selected"@endif>{{ __('Send full conversation history') }}</option>
+                <option value="full" @if (old('settings[email_user_history]', $settings['email_user_history']) == 'full')selected="selected"@endif>{{ __('Send full Ticket history') }}</option>
             </select>
 
             @include('partials/field_error', ['field'=>'settings.email_user_history'])
