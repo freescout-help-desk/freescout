@@ -92,7 +92,7 @@
     <h3 class="subheader">{{ __('Emails to Customers') }}</h3>
 
     <div class="form-group{{ $errors->has('settings[email_conv_history]') ? ' has-error' : '' }}">
-        <label for="email_conv_history" class="col-sm-2 control-label">{{ __('Tickets History') }}</label>
+        <label for="email_conv_history" class="col-sm-2 control-label">{{ __('Ticket History') }}</label>
 
         <div class="col-sm-6">
             <select id="email_conv_history" class="form-control input-sized" name="settings[email_conv_history]" required autofocus>
