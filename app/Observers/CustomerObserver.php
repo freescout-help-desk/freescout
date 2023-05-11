@@ -12,4 +12,9 @@ class CustomerObserver
         // Set numeric phones.
         $customer->setPhones($phones);
     }
+
+    public function deleting(Customer $customer)
+    {
+        \Eventy::action('customer.deleting', $customer);
+    }
 }
