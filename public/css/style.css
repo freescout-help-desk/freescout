@@ -4372,7 +4372,41 @@ a.disabled:focus {
         display: none !important;
     }
 }
-
+.table-borderless > tbody > tr > td,
+.table-borderless > tbody > tr > th,
+.table-borderless > tfoot > tr > td,
+.table-borderless > tfoot > tr > th,
+.table-borderless > thead > tr > td,
+.table-borderless > thead > tr > th {
+    border: none;
+}
+.table-borderless i {
+    font-size: 20px;
+    margin-right: 10px;
+    text-align: left;
+}
+.custom-cell {
+    height: 54px !important;
+    vertical-align: middle !important;
+    position: relative;
+}
+.tag {
+    text-align:center; 
+    padding: 5px 10px; 
+    border-radius: 4px;
+}
+.tag-ACTIVE {
+    background-color: rgba(27, 255, 77, 0.2); 
+    color: #1BFF4D; 
+} 
+.tag-CLOSED {
+    background-color: rgba(255, 48, 48, 0.2);
+    color: #FF3030;
+}
+.tag-PENDING {
+    background-color: rgba(250, 254, 37, 0.2);
+    color: #FAFE25;
+}
 /**
  * Mobile
  */
