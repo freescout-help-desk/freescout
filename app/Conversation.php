@@ -645,6 +645,16 @@ class Conversation extends Model
         $this->user_id = $user_id;
         $this->updateFolder();
         $this->user_updated_at = $now;
+		
+        // If user was previously following the conversation then unfollow
+        if (!is_null($user_id)) {
+            $follower = Follower::where('conversation_id', $this->id)
+                ->where('user_id', $user_id)
+                ->first();
+            if ($follower) {
+                $follower->delete();
+            }
+        }
     }
 
     /**
