@@ -15,6 +15,8 @@ use App\Events\ConversationUserChanged;
 use App\Events\ConversationCustomerChanged;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
+use Modules\CustomFields\Entities\ConversationCustomField;
+use Modules\CustomFields\Entities\CustomField;
 use Watson\Rememberable\Rememberable;
 
 class Conversation extends Model
@@ -2288,5 +2290,15 @@ class Conversation extends Model
         if ($save) {
             $this->save();
         }
+    }
+
+    public function customFields() 
+    {
+        return $this->belongsToMany(CustomField::class);
+    }
+
+    public function conversationCustomField()
+    {
+        return $this->hasMany(ConversationCustomField::class);
     }
 }
