@@ -20,6 +20,13 @@
             </tr>
         </thead>
         <tbody>
+            @foreach($tickets as $ticket)
+            @php
+                $status = $ticket['status'] == 1 ? 'ACTIVE' : ($ticket['status'] == 2 ? 'PENDING' : ($ticket['status'] == 3 ? 'CLOSED' : 'SPAM'));
+                $createdAt = \Carbon\Carbon::parse($ticket['created_at']);
+                $lastReplyAt = \Carbon\Carbon::parse($ticket['last_reply_at']);
+                $duration = $lastReplyAt->diff($createdAt);
+            @endphp
             <tr>
                 <td class="custom-cell">
                     <div class="form-check">
@@ -28,13 +35,13 @@
                         </label>
                     </div>
                 </td>
-                <td class="custom-cell">#1446266</td>
-                <td class="custom-cell"><span class="tag tag-open">OPEN</span></td>
+                <td class="custom-cell">#{{$ticket->number}}</td>
+                <td class="custom-cell"><span class="tag tag-{{ $status }}">{{$status}}</span></td>
                 <td class="custom-cell">normal</td>
-                <td class="custom-cell">pravin pimpale</td>
+                <td class="custom-cell">{{$ticket->user->first_name . ' ' . $ticket->user->last_name}}</td>
                 <td class="custom-cell">network</td>
-                <td class="custom-cell">Canniset - Changes for Au</td>
-                <td class="custom-cell">2 HRS</td>
+                <td class="custom-cell">{{$ticket->subject}}</td>
+                <td class="custom-cell">{{$duration->format('%h HRS')}}</td>
                 <td class="custom-cell">
                     <div class="text-right">
                         <i class="glyphicon glyphicon glyphicon-trash"></i>
@@ -43,75 +50,7 @@
                     </div>
                 </td>
             </tr>
-            <tr>
-                <td class="custom-cell">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="">
-                        <label class="form-check-label" for="defaultCheck1">
-                        </label>
-                    </div>
-                </td>
-                <td class="custom-cell">#1446266</td>
-                <td class="custom-cell"><span class="tag tag-closed">CLOSED</span></td>
-                <td class="custom-cell">normal</td>
-                <td class="custom-cell">pravin pimpale</td>
-                <td class="custom-cell">network</td>
-                <td class="custom-cell">Canniset - Changes for Au</td>
-                <td class="custom-cell">2 HRS</td>
-                <td class="custom-cell">
-                    <div class="text-right">
-                        <i class="glyphicon glyphicon glyphicon-trash"></i>
-                        <i class="glyphicon glyphicon-eye-open"></i>
-                        <i class="glyphicon glyphicon-option-vertical"></i>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="custom-cell">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="">
-                        <label class="form-check-label" for="defaultCheck1">
-                        </label>
-                    </div>
-                </td>
-                <td class="custom-cell">#1446266</td>
-                <td class="custom-cell"><span class="tag tag-hold">HOLD</span></td>
-                <td class="custom-cell">normal</td>
-                <td class="custom-cell">pravin pimpale</td>
-                <td class="custom-cell">network</td>
-                <td class="custom-cell">Canniset - Changes for Au</td>
-                <td class="custom-cell">2 HRS</td>
-                <td class="custom-cell">
-                    <div class="text-right">
-                        <i class="glyphicon glyphicon glyphicon-trash"></i>
-                        <i class="glyphicon glyphicon-eye-open"></i>
-                        <i class="glyphicon glyphicon-option-vertical"></i>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="custom-cell">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="">
-                        <label class="form-check-label" for="defaultCheck1">
-                        </label>
-                    </div>
-                </td>
-                <td class="custom-cell">#1446266</td>
-                <td class="custom-cell"><span class="tag tag-open">OPEN</span></td>
-                <td class="custom-cell">normal</td>
-                <td class="custom-cell">pravin pimpale</td>
-                <td class="custom-cell">network</td>
-                <td class="custom-cell">Canniset - Changes for Au</td>
-                <td class="custom-cell">2 HRS</td>
-                <td class="custom-cell">
-                    <div class="text-right">
-                        <i class="glyphicon glyphicon glyphicon-trash"></i>
-                        <i class="glyphicon glyphicon-eye-open"></i>
-                        <i class="glyphicon glyphicon-option-vertical"></i>
-                    </div>
-                </td>
-            </tr>
+            @endforeach
         </tbody>
     </table>
 
