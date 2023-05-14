@@ -529,9 +529,9 @@ class User extends Authenticatable
                 $formatted = str_replace('.', '', $formatted);
             }
             
-            // AM/PM to am/pm
-            $formatted = preg_replace_callback('#\d(AM|PM)$#', function ($m) {
-                return strtolower($m[1] ?? '');
+            // AM/PM to am/pm.
+            $formatted = preg_replace_callback('#\d+(AM|PM)$#', function ($m) {
+                return strtolower($m[0] ?? '');
             }, $formatted);
 
             return \Helper::mbUcfirst($formatted);

@@ -299,6 +299,22 @@ class FetchEmails extends Command
 
             $duplicate_message_id = false;
 
+            // Special hack to allow threading into conversations Jira messages.
+            // https://github.com/freescout-helpdesk/freescout/issues/2927
+            // 
+            // Jira does not properly populate Reference / In-Reply-To headers.
+            // When Jira sends a reply the In-Reply-To header is set to:
+            // JIRA.$\{issue-id}.$\{issue-created-date-millis}@$\{host}
+            // 
+            // If we see the first message of a ticket we change the Message-ID,
+            // so all follow-ups in the ticket are nicely threaded.
+            $jira_message_id = preg_replace('/^(JIRA\.\d+\.\d+)\..*(@Atlassian.JIRA)/', '\1\2', $message_id);
+            if ($jira_message_id != $message_id) {
+                if (!Thread::where('message_id', $jira_message_id)->exists()) {
+                    $message_id = $jira_message_id;
+                }
+            }
+
             if (!$extra) {
                 $duplicate_message_id = Thread::where('message_id', $message_id)->first();
             }
