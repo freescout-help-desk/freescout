@@ -713,17 +713,10 @@ select[multiple].input-md {
  * Cards
  */
 .card {
-    border: 1px solid #dedede;
-    box-sizing: border-box;
     display: block;
     position: relative;
     margin: 0 18px 18px 0;
-    padding: 14px;
-    width: 250px;
-    height: 82px;
     float: left;
-    -webkit-box-shadow:0 0 5px rgba(0,0,0,.2);
-    box-shadow:0 0 5px rgba(0,0,0,.2);
 }
 a.card:active,
 a.card:focus,
