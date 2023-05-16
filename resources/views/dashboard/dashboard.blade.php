@@ -8,7 +8,7 @@
                 <div class="card h-150 w-300" style="height: 150px; width: 300px;">
                     <div class="card-body text-center">
                         <p class="card-text">Total Tickets</p>
-                        <h2 class="card-title text-danger" style="font-size: 80px;">0</h2>
+                        <h2 class="card-title text-danger" style="font-size: 80px;">{{$totalCount}}</h2>
                     </div>
                 </div>
             </div>
@@ -16,7 +16,7 @@
                 <div class="card h-150 w-300" style="height: 150px; width: 300px;">
                     <div class="card-body text-center">
                         <p class="card-text">Unassigned Tickets</p>
-                        <h2 class="card-title" style="font-size: 80px;">15</h2>
+                        <h2 class="card-title" style="font-size: 80px;">{{$unassignedCount}}</h2>
                     </div>
                 </div>
             </div>
@@ -24,7 +24,7 @@
                 <div class="card h-150 w-300" style="height: 150px; width: 300px;">
                     <div class="card-body text-center">
                         <p class="card-text">Overdue Tickets</p>
-                        <h2 class="card-title text-danger" style="font-size: 80px;">0</h2>
+                        <h2 class="card-title text-danger" style="font-size: 80px;">{{$overdueCount}}</h2>
                     </div>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                 <div class="card h-150 w-300" style="height: 150px; width: 300px;">
                     <div class="card-body text-center">
                         <p class="card-text">Open Tickets</p>
-                        <h2 class="card-title" style="font-size: 80px;">40</h2>
+                        <h2 class="card-title" style="font-size: 80px;">{{$unclosedCount}}</h2>
                     </div>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                 <div class="card h-150 w-300" style="height: 150px; width: 300px;">
                     <div class="card-body text-center">
                         <p class="card-text">Close Tickets</p>
-                        <h2 class="card-title" style="font-size: 80px;">33</h2>
+                        <h2 class="card-title" style="font-size: 80px;">{{$closedCount}}</h2>
                     </div>
                 </div>
             </div>
@@ -50,7 +50,7 @@
                 <div class="card h-150 w-300" style="height: 150px; width: 300px;">
                     <div class="card-body text-center">
                         <p class="card-text">Hold Tickets</p>
-                        <h2 class="card-title" style="font-size: 80px;">40</h2>
+                        <h2 class="card-title" style="font-size: 80px;">{{$unclosedCreated30DaysAgoCount}}</h2>
                     </div>
                 </div>
             </div>
@@ -90,7 +90,7 @@
 
 const chartData = {
   labels: ["Open Tickets", "Close Tickets", "Hold Tickets", "Overdue Tickets"],
-  data: [30, 17, 10, 7],
+  data: ["{{ $unclosedCount}}", "{{$closedCount}}", "{{$unclosedCreated30DaysAgoCount}}", "{{$overdueCount}}"],
 };
 
 const myChart = document.querySelector(".my-chart");
@@ -201,13 +201,13 @@ populateUl();
 </ul>
 <ul class="bars">
     <h2 class="header">Weekly Tickets</h2>
-<li><div class="bar" data-percentage="30"></div><span>S</span></li>
-<li><div class="bar" data-percentage="50"></div><span>M</span></li>
-<li><div class="bar" data-percentage="40"></div><span>T</span></li>
-<li><div class="bar" data-percentage="50"></div><span>W</span></li>
-<li><div class="bar" data-percentage="80"></div><span>T</span></li>
-<li><div class="bar" data-percentage="20"></div><span>F</span></li>
-<li><div class="bar" data-percentage="30"></div><span>S</span></li>
+    <li><div class="bar" data-percentage="{{$tickets['Sunday']}}"></div><span>S</span></li>
+    <li><div class="bar" data-percentage="{{$tickets['Monday']}}"></div><span>M</span></li>
+    <li><div class="bar" data-percentage="{{$tickets['Tuesday']}}"></div><span>T</span></li>
+    <li><div class="bar" data-percentage="{{$tickets['Wednesday']}}"></div><span>W</span></li>
+    <li><div class="bar" data-percentage="{{$tickets['Thursday']}}"></div><span>T</span></li>
+    <li><div class="bar" data-percentage="{{$tickets['Friday']}}"></div><span>F</span></li>
+    <li><div class="bar" data-percentage="{{$tickets['Saturday']}}"></div><span>S</span></li>
 <h2 class="head">Average resolved tickets</h2>
 </ul>
 </div>
