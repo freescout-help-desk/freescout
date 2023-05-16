@@ -71,7 +71,7 @@
     />
   </head>
   <body>
-    <h2 class="chart-heading">Popular Programming Languages</h2>
+    <h2 class="chart-heading">Total on of Tickets</h2>
     <div class="programming-stats">
       <div class="chart-container">
         <canvas class="my-chart"></canvas>
@@ -89,8 +89,8 @@
 <script>
 
 const chartData = {
-  labels: ["Python", "Java", "JavaScript", "C#", "Others"],
-  data: [30, 17, 10, 7, 36],
+  labels: ["open Tickets", "Close Tickets", "Hold Tickets", "Overdue Tickets"],
+  data: [30, 17, 10, 7],
 };
 
 const myChart = document.querySelector(".my-chart");
@@ -140,7 +140,6 @@ populateUl();
 }
 
 .chart-container {
-     
   width: 50px;
 }
 
