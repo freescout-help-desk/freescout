@@ -89,7 +89,7 @@
 <script>
 
 const chartData = {
-  labels: ["open Tickets", "Close Tickets", "Hold Tickets", "Overdue Tickets"],
+  labels: ["Open Tickets", "Close Tickets", "Hold Tickets", "Overdue Tickets"],
   data: [30, 17, 10, 7],
 };
 
