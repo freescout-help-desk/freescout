@@ -130,22 +130,27 @@ const populateUl = () => {
 populateUl();
 </script>
 
-<script>
+<style>
 .chart-heading {
   font-family: "Rubik", sans-serif;
   color: #023047;
   text-transform: uppercase;
   font-size: 24px;
-  text-align: center;
+  text-align: left;
+  
 }
 
 .chart-container {
   width: 50px;
+  display: block;
+    box-sizing: border-box;
+    height: 231px;
+    width: 231px;   
 }
 
 .programming-stats {
   font-family: "Rubik", sans-serif;
-  display: flex;
+  display: -webkit-inline-box;
   align-items: center;
   gap: 24px;
   margin: 0 auto;
@@ -178,6 +183,6 @@ populateUl();
   color: #e63946;
 }
 
-</script>
+</style>
 
 @endsection
