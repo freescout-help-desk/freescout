@@ -71,7 +71,7 @@
     />
   </head>
   <body>
-    <h2 class="chart-heading">Popular Programming Languages</h2>
+    <h2 class="chart-heading">Total on of Tickets</h2>
     <div class="programming-stats">
       <div class="chart-container">
         <canvas class="my-chart"></canvas>
@@ -89,8 +89,8 @@
 <script>
 
 const chartData = {
-  labels: ["Python", "Java", "JavaScript", "C#", "Others"],
-  data: [30, 17, 10, 7, 36],
+  labels: ["open Tickets", "Close Tickets", "Hold Tickets", "Overdue Tickets"],
+  data: [30, 17, 10, 7],
 };
 
 const myChart = document.querySelector(".my-chart");
@@ -130,23 +130,27 @@ const populateUl = () => {
 populateUl();
 </script>
 
-<script>
+<style>
 .chart-heading {
   font-family: "Rubik", sans-serif;
   color: #023047;
   text-transform: uppercase;
   font-size: 24px;
-  text-align: center;
+  text-align: left;
+  
 }
 
 .chart-container {
-     
   width: 50px;
+  display: block;
+    box-sizing: border-box;
+    height: 231px;
+    width: 231px;   
 }
 
 .programming-stats {
   font-family: "Rubik", sans-serif;
-  display: flex;
+  display: -webkit-inline-box;
   align-items: center;
   gap: 24px;
   margin: 0 auto;
@@ -179,6 +183,6 @@ populateUl();
   color: #e63946;
 }
 
-</script>
+</style>
 
 @endsection
