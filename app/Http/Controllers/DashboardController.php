@@ -18,23 +18,39 @@ class DashboardController extends Controller
         $thirtyDaysAgo = Carbon::today()->subDays(30);
 
         $results = Conversation::select(
-            DB::raw('COUNT(CASE WHEN DATE(created_at) = ? THEN 1 END) as opened_today_count'),
+            DB::raw('COUNT(*) as total_count'),
             DB::raw('COUNT(CASE WHEN created_by_user_id IS NULL THEN 1 END) as unassigned_count'),
             DB::raw('COUNT(CASE WHEN created_at < ? AND closed_at IS NULL THEN 1 END) as overdue_count'),
             DB::raw('COUNT(CASE WHEN closed_at IS NULL THEN 1 END) as unclosed_count'),
-            DB::raw('COUNT(CASE WHEN closed_at IS NULL AND last_reply_at < ? THEN 1 END) as unclosed_replied_7_days_ago_count'),
+            DB::raw('COUNT(CASE WHEN closed_at IS NOT NULL AND created_at < ? THEN 1 END) as closed_tickets_count'),
             DB::raw('COUNT(CASE WHEN closed_at IS NULL AND created_at < ? THEN 1 END) as unclosed_created_30_days_ago_count')
         )
             ->setBindings([$today, $fourDaysAgo, $sevenDaysAgo, $thirtyDaysAgo])
             ->first();
 
-        $openedTodayCount = $results->opened_today_count;
+        $totalCount = $results->total_count;
         $unassignedCount = $results->unassigned_count;
         $overdueCount = $results->overdue_count;
         $unclosedCount = $results->unclosed_count;
-        $unclosedReplied7DaysAgoCount = $results->unclosed_replied_7_days_ago_count;
+        $closedCount = $results->closed_tickets_count;
         $unclosedCreated30DaysAgoCount = $results->unclosed_created_30_days_ago_count;
 
-        return view('/dashboard/dashboard', compact('openedTodayCount', 'unassignedCount','overdueCount', 'unclosedCount','unclosedReplied7DaysAgoCount', 'unclosedCreated30DaysAgoCount', ));
+        // For Weekly data
+        $startDate = now()->startOfWeek();
+        $endDate = now()->endOfWeek();
+        $daysOfWeek = [
+            'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+        ];
+
+        $ticketsInitial = Conversation::selectRaw('DAYNAME(created_at) as day, COUNT(*) as count')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('day')
+            ->pluck('count', 'day')
+            ->toArray();
+        $tickets = [];
+        foreach ($daysOfWeek as $day) {
+            $tickets[$day] = $ticketsInitial[$day] ?? 0;
+        };
+        return view('/dashboard/dashboard', compact('totalCount', 'unassignedCount','overdueCount', 'unclosedCount','closedCount', 'unclosedCreated30DaysAgoCount', 'tickets'));
     }
 }
