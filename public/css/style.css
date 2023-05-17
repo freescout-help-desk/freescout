@@ -4400,12 +4400,30 @@ a.disabled:focus {
     background-color: rgba(250, 254, 37, 0.2);
     color: #FAFE25;
 }
+.stat-options{
+    font-size: 3rem;
+    font-weight: bold;
+}
+.stat-values{
+    font-size: 5rem;
+}
+.donut-container{
+    margin-top: 10rem;
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: space-between; 
+    align-items: center; 
+    gap: 2rem; 
+}
 /**
  * Mobile
  */
 @media (max-width:767px) {
     .descr-block {
         margin: 20px 0;
+    }
+    .donut-container {
+        grid-template-columns: repeat(1, 1fr);
     }
 }
 /**
