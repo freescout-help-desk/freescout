@@ -51,6 +51,18 @@ class DashboardController extends Controller
         foreach ($daysOfWeek as $day) {
             $tickets[$day] = $ticketsInitial[$day] ?? 0;
         };
-        return view('/dashboard/dashboard', compact('totalCount', 'unassignedCount','overdueCount', 'unclosedCount','closedCount', 'unclosedCreated30DaysAgoCount', 'tickets'));
+
+        // Ticket Category Labels
+        $values = DB::table('custom_fields')
+            ->where('name', 'Ticket Category')
+            ->pluck('options');
+
+        $options = json_decode($values[0], true);
+        $categoryValues = [];
+        foreach ($options as $key => $value) {
+            array_push($categoryValues, $value);
+        }
+        // Category Tickets
+        return view('/dashboard/dashboard', compact('totalCount', 'unassignedCount', 'overdueCount', 'unclosedCount', 'closedCount', 'unclosedCreated30DaysAgoCount', 'tickets', 'categoryValues'));
     }
 }
