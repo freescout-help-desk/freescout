@@ -193,6 +193,7 @@
             "vendor/tormjens/eventy/src/Action.php",
             "vendor/symfony/debug/ExceptionHandler.php",
             "vendor/symfony/http-foundation/ResponseHeaderBag.php",
+            "vendor/symfony/http-foundation/Cookie.php",
             "vendor/chumper/zipper/src/Chumper/Zipper/Repositories/ZipRepository.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Host.php",
 
