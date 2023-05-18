@@ -55,7 +55,7 @@
                 <td class="custom-cell">#{{$ticket->number}}</td>
                 <td class="custom-cell"><span class="tag tag-{{ $status }}">{{$status}}</span></td>
                 <td class="custom-cell">{{$optionValue}}</td>
-                <td class="custom-cell">{{$ticket->user->first_name . ' ' . $ticket->user->last_name}}</td>
+                <td class="custom-cell">{{$ticket->user ? $ticket->user->first_name . ' ' . $ticket->user->last_name : "-"}}</td>
                 <td class="custom-cell">network</td>
                 <td class="custom-cell">{{$ticket->subject}}</td>
                 <td class="custom-cell">{{$duration->format('%h HRS')}}</td>

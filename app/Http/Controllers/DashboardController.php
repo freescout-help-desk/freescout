@@ -54,13 +54,16 @@ class DashboardController extends Controller
 
         // Ticket Category Labels
         $values = DB::table('custom_fields')
-            ->where('name', 'Ticket Category')
-            ->pluck('options');
+            ->where('name', 'Ticket Category')->first();
+            // ->pluck('options')->get();
 
-        $options = json_decode($values[0], true);
+        // var_dump($values);die();
         $categoryValues = [];
-        foreach ($options as $key => $value) {
-            array_push($categoryValues, $value);
+        if(!empty($values)){
+            $options = json_decode($values[0], true);
+            foreach ($options as $key => $value) {
+                array_push($categoryValues, $value);
+            }
         }
         // Category Tickets
         return view('/dashboard/dashboard', compact('totalCount', 'unassignedCount', 'overdueCount', 'unclosedCount', 'closedCount', 'unclosedCreated30DaysAgoCount', 'tickets', 'categoryValues'));
