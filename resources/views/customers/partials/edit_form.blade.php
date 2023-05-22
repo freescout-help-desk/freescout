@@ -12,7 +12,7 @@
                     <label for="first_name" class="col-sm-2 control-label">{{ __('First Name') }}</label>
 
                     <div class="col-sm-6">
-                        <input id="first_name" type="text" class="form-control input-sized-lg" name="first_name" value="{{ old('first_name', $customer->first_name) }}" maxlength="20">
+                        <input id="first_name" type="text" class="form-control input-sized-lg" name="first_name" value="{{ old('first_name', $customer->first_name) }}" maxlength="255">
 
                         @include('partials/field_error', ['field'=>'first_name'])
                     </div>
@@ -22,7 +22,7 @@
                     <label for="last_name" class="col-sm-2 control-label">{{ __('Last Name') }}</label>
 
                     <div class="col-sm-6">
-                        <input id="last_name" type="text" class="form-control input-sized-lg" name="last_name" value="{{ old('last_name', $customer->last_name) }}" maxlength="30">
+                        <input id="last_name" type="text" class="form-control input-sized-lg" name="last_name" value="{{ old('last_name', $customer->last_name) }}" maxlength="255">
 
                         @include('partials/field_error', ['field'=>'last_name'])
                     </div>
