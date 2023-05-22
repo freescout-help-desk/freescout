@@ -106,8 +106,9 @@
                 </div>
             </div>
         </div>
-        <div style="display: flex; flex:1; align-items:center; gap: 7rem; background: #1D1C24;padding: 4px; border-radius: 4px; height:350px">
-            <canvas id="lineChart" ></canvas>
+
+          <div style="display: flex; flex:1; align-items:center; gap: 7rem; background: #1D1C24;padding: 4px; border-radius: 4px; height:350px">
+            <canvas id="horizontalChart" ></canvas>
           </div>
     </div>
 
@@ -116,7 +117,7 @@
                 <canvas id="barChart"></canvas>
         </div>
         <div style="display: flex; flex:1; align-items:center; gap: 7rem; background: #1D1C24;padding: 4px; border-radius: 4px; height:350px">
-            <canvas id="horizontalChart" ></canvas>
+            <canvas id="lineChart" ></canvas>
           </div>
     </div>
 </div>
