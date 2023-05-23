@@ -213,8 +213,9 @@
 
         var ctxHorizontal = document.getElementById('horizontalChart').getContext('2d');
         // Set chart data
+        let cValues = @json($categoryValues);
         var data = {
-            labels: ['network', 'hardware', 'inquiry', 'database', 'software'],
+            labels: [...cValues],
             datasets: [{
                 label: 'Average resolved tickets',
                 data: ["{{$tickets['Sunday']}}", "{{$tickets['Monday']}}", "{{$tickets['Tuesday']}}", "{{$tickets['Wednesday']}}", "{{$tickets['Thursday']}}", "{{$tickets['Friday']}}", "{{$tickets['Saturday']}}"],
