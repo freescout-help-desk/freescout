@@ -6,9 +6,9 @@
             <label for="ticket">Ticket Category</label>
             <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px; color:#1D1C24;">
                 <option value="none"></option>
-                <option value="open">OPEN</option>
-                <option value="hold">HOLD</option>
-                <option value="closed">CLOSED</option>
+                @foreach($categoryValues as $category)
+                    <option value="{{$category}}">{{$category}}</option>
+                @endforeach
             </select>
         </div>
         <div>

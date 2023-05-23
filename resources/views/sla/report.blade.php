@@ -41,8 +41,6 @@
                         }
                     }
                 @endphp
-
-                <p>Option: {{ $optionValue }}</p>
             @endforeach
             <tr>
                 <td class="custom-cell">
