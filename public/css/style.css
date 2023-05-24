@@ -3637,9 +3637,12 @@ body.print {
     padding-left: 12px;
 }
 @media print {
-  .thread-attachments a[href]:after {
-    content: none !important;
-  }
+    a[href]:after {
+        content: none !important;
+    }
+    .thread-content a[href]:after {
+        content: " (" attr(href) ") " !important;
+    }
 }
 
 /**
