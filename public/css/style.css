@@ -25,6 +25,10 @@
 .footer-hide .footer {
     display: none;
 }
+div.dt-buttons{
+    float: right;
+    margin-left: 1em;
+}
 .content {
     margin-top: 20px;
     /*padding-bottom: 60px;*/
@@ -4378,6 +4382,12 @@ a.disabled:focus {
     margin-right: 10px;
     text-align: left;
 }
+.dm .custom-cell {
+    height: 54px !important;
+    vertical-align: middle !important;
+    position: relative;
+    background: #1d1c24 !important;
+}
 .custom-cell {
     height: 54px !important;
     vertical-align: middle !important;
@@ -4388,17 +4398,29 @@ a.disabled:focus {
     padding: 5px 10px;
     border-radius: 4px;
 }
-.tag-ACTIVE {
+.dm .tag-ACTIVE {
     background-color: rgba(27, 255, 77, 0.2);
     color: #1BFF4D;
 }
+.tag-ACTIVE {
+    background-color: rgba(27, 255, 77, 64);
+    color: #000;
+}
 .tag-CLOSED {
+    background-color: rgba(255, 48, 48, 64);
+    color: #000;
+}
+.dm .tag-CLOSED {
     background-color: rgba(255, 48, 48, 0.2);
     color: #FF3030;
 }
-.tag-PENDING {
+.dm .tag-PENDING {
     background-color: rgba(250, 254, 37, 0.2);
     color: #FAFE25;
+}
+.tag-PENDING {
+    background-color: rgba(250, 254, 37, 64);
+    color: #000;
 }
 .stat-options{
     font-size: 3rem;
