@@ -21,6 +21,8 @@ class Attachment extends Model
 
     CONST DISK = 'private';
 
+    CONST MIME_TYPE_MAX_LENGTH = 127;
+
     // https://github.com/Webklex/laravel-imap/blob/master/src/IMAP/Attachment.php
     public static $types = [
         'message'     => self::TYPE_MESSAGE,
@@ -56,6 +58,14 @@ class Attachment extends Model
         if (!$content && !$uploaded_file) {
             return false;
         }
+
+        // Sanitize mime type.
+        // https://github.com/freescout-helpdesk/freescout/issues/3048
+        $mime_duplicate = strpos($mime_type, "application/vnd.openxmlformats", 1);
+        if ($mime_duplicate) {
+            $mime_type = substr($mime_type, $mime_duplicate);
+        }
+        $mime_type = substr($mime_type, 0, self::MIME_TYPE_MAX_LENGTH);
 
         $orig_extension = pathinfo($file_name, PATHINFO_EXTENSION);
 
