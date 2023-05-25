@@ -362,7 +362,7 @@ border-radius:none;
 
 .dm .footer {
  background-color: #303d71 !important;
- display:none;
+ display: block;
 }
 
 /* Input and forms */
