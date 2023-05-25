@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Conversation;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -57,10 +58,17 @@ class DashboardController extends Controller
             ->where('name', 'Ticket Category')
             ->pluck('options');
 
-        $options = json_decode($values[0], true);
+        // var_dump($values);die();
         $categoryValues = [];
-        foreach ($options as $key => $value) {
-            array_push($categoryValues, $value);
+        if(!empty($values)){
+            try{
+                $options = json_decode($values[0], true);
+                foreach ($options as $key => $value) {
+                    array_push($categoryValues, $value);
+                }
+            }catch(Exception $ex){
+
+            }
         }
         // Category Tickets
         return view('/dashboard/dashboard', compact('totalCount', 'unassignedCount', 'overdueCount', 'unclosedCount', 'closedCount', 'unclosedCreated30DaysAgoCount', 'tickets', 'categoryValues'));

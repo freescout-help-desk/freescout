@@ -1,19 +1,19 @@
 @extends('layouts.app')
 @section('content')
-<div class="container-fluid" style="padding: 0 60px;">
+<div class="container-fluid color" style="padding: 0 60px;margin-bottom: 3em;">
     <div style="border: 2px solid #eee; padding: 2rem; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
         <div>
             <label for="ticket">Ticket Category</label>
-            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px;">
+            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px; color:#1D1C24;">
                 <option value="none"></option>
-                <option value="open">OPEN</option>
-                <option value="hold">HOLD</option>
-                <option value="closed">CLOSED</option>
+                @foreach($categoryValues as $category)
+                    <option value="{{$category}}">{{$category}}</option>
+                @endforeach
             </select>
         </div>
         <div>
             <label for="ticket">Product</label>
-            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px;">
+            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px; color:#1D1C24;">
                 <option value="none"></option>
                 <option value="open">Product 1</option>
                 <option value="hold">Product 2</option>
@@ -22,7 +22,7 @@
         </div>
         <div>
             <label for="ticket">Type</label>
-            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px;">
+            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px; color:#1D1C24;">
                 <option value="none"></option>
                 <option value="open">Type 1</option>
                 <option value="hold">Type 2</option>
@@ -31,7 +31,7 @@
         </div>
         <div>
             <label for="ticket">Mailbox</label>
-            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px;">
+            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px; color:#1D1C24;">
                 <option value="none"></option>
                 <option value="open">Mailbox 1</option>
                 <option value="hold">Mailbox 2</option>
@@ -40,7 +40,7 @@
         </div>
         <div style="display: flex; align-items: center;">
             <label for="date">Date</label>
-            <input type="date" class="form-control" id="date" style="margin-left: 10px; margin-bottom: 2px; border-radius: 4px;">
+            <input type="date" class="form-control" id="date" style="margin-left: 10px; margin-bottom: 2px; border-radius: 4px; color:snow;">
         </div>
     </div>
 
@@ -73,13 +73,16 @@
             <h1 class="stat-values">{{$unclosedCreated30DaysAgoCount}}</h1>
         </div>
     </div>
+
+
+
     <div class="donut-container">
-        <div style="display: flex; flex:1; align-items:center; gap: 7rem; background: #1D1C24; padding: 20px; border-radius: 4px;">
+        <div style="display: flex; flex:1; align-items:center; gap: 5rem; background: #1D1C24;padding: 4px; border-radius: 4px; height:350px">
             <div>
-                <canvas id="donutChart" height="410"></canvas>
+                <canvas id="donutChart" height="230px"></canvas>
             </div>
             <div>
-                <div style="display: flex; align-items:flex-start; gap: 10px;">
+                <div style="display: flex;flex:1; align-items:center; gap: 5px;">
                     <div style="background-color: plum; height: 20px; width: 20px; border-radius: 4px;"></div>
                     <div>
                         <p>Number Of Tickets</p>
@@ -103,27 +106,22 @@
                 </div>
             </div>
         </div>
-        <div style="flex: 1; background: #1D1C24; padding: 4px; border-radius: 4px;">
-            <canvas id="horizontalChart" style="background: #1D1C24;" height="440"></canvas>
-        </div>
+
+          <div style="display: flex; flex:1; align-items:center; gap: 7rem; background: #1D1C24;padding: 4px; border-radius: 4px; height:350px">
+            <canvas id="horizontalChart" ></canvas>
+          </div>
     </div>
 
-    <div class="row" style="margin-top: 4rem; display:flex; justify-content:center;">
-        <div class="col-md-12">
-            <canvas id="barChart" style="background: #1D1C24; padding: 2rem;" height="420"></canvas>
+    <div class="bar-container">
+        <div style="display: flex; flex:1; align-items:center; gap: 7rem; background: #1D1C24;padding: 4px; border-radius: 4px; height:350px; justify-content:center;">
+                <canvas id="barChart"></canvas>
         </div>
-    </div>
-
-    <div class="row" style="margin-top: 4rem; display:flex;">
-        <div class="col-md-5" style="background: #1D1C24">
-          <canvas id="lineChart" height="200" style="padding: 2rem;"></canvas>
-        </div>
-        <div class="col-md-0"></div>
-        <div class="col-md-5">
-            <!-- content for second column here -->
-        </div>
+        <div style="display: flex; flex:1; align-items:center; gap: 7rem; background: #1D1C24;padding: 4px; border-radius: 4px; height:350px">
+            <canvas id="lineChart" ></canvas>
+          </div>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -199,7 +197,7 @@
             scales: {
                 y: {
                     beginAtZero: true,
-                    stepSize: 4, 
+                    stepSize: 4,
                 }
             }
         };
@@ -210,13 +208,14 @@
             data: data,
             options: options
         });
-        
+
         // Horizontal Bar Data
 
         var ctxHorizontal = document.getElementById('horizontalChart').getContext('2d');
         // Set chart data
+        let cValues = @json($categoryValues);
         var data = {
-            labels: ['network', 'hardware', 'inquiry', 'database', 'software'],
+            labels: [...cValues],
             datasets: [{
                 label: 'Average resolved tickets',
                 data: ["{{$tickets['Sunday']}}", "{{$tickets['Monday']}}", "{{$tickets['Tuesday']}}", "{{$tickets['Wednesday']}}", "{{$tickets['Thursday']}}", "{{$tickets['Friday']}}", "{{$tickets['Saturday']}}"],
@@ -234,7 +233,7 @@
             scales: {
                 x: {
                     beginAtZero: true,
-                    stepSize: 4, 
+                    stepSize: 4,
                 }
             }
         };
@@ -245,7 +244,7 @@
             data: data,
             options: options
         });
-       
+
 });
 </script>
 

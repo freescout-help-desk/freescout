@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
-<div class="container">
-    <table class="table datatable table-borderless">
+<div class="container report-container">
+    <table class="table datatable table-borderless slatable" >
         <thead>
             <tr>
                 <th class="custom-cell">
@@ -42,7 +42,7 @@
                     }
                 @endphp
 
-                <p>Option: {{ $optionValue }}</p>
+                <p style="font-weight: bold;width: 20%;float: left;">SLA REPORT</p>
             @endforeach
             <tr>
                 <td class="custom-cell">
@@ -54,8 +54,8 @@
                 </td>
                 <td class="custom-cell">#{{$ticket->number}}</td>
                 <td class="custom-cell"><span class="tag tag-{{ $status }}">{{$status}}</span></td>
-                <td class="custom-cell">{{$optionValue}}</td>
-                <td class="custom-cell">{{$ticket->user->first_name . ' ' . $ticket->user->last_name}}</td>
+                <td class="custom-cell">{{isset($optionValue) ? $optionValue : '-'}}</td>
+                <td class="custom-cell">{{$ticket->user ? $ticket->user->first_name . ' ' . $ticket->user->last_name : "-"}}</td>
                 <td class="custom-cell">network</td>
                 <td class="custom-cell">{{$ticket->subject}}</td>
                 <td class="custom-cell">{{$duration->format('%h HRS')}}</td>
@@ -65,4 +65,52 @@
     </table>
 
 </div>
+<style>
+   .dm .slatable{
+    background-color: #1d1c24;
+   }
+   .slatable{
+    background-color: #eeeeee;
+   }
+   .custom-cell{
+    font-size: 12px;
+   }
+   .dm button.dt-button, div.dt-button, a.dt-button, input.dt-button{
+    color: snow;
+   }
+   .dm .pagination > li > a, .pagination > li > span{
+      background: #1d1c24;
+      color: #8bb4dd;
+   }
+   .dm .report-container{
+    background: #1d1c24;
+   }
+   .report-container{
+    background-color: #eeeeee;
+    padding: 1.3em;
+    width: 90%;
+   }
+   .dm .input-sm{
+    border-radius: 3px;
+   }
+</style>
+@endsection
+
+@section('javascript')
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.datatable').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            'csv'
+        ]
+    });
+});
+</script>
+
 @endsection

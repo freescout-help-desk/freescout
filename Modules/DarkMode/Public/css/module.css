@@ -56,12 +56,13 @@ input:checked + .dm-switch-inner:before {
     transform: translateX(13px);
 }
 
+
 /**
  * Dark theme.
  */
 
 .dm h1, .dm h2, .dm h3, .dm h4, .dm h5, .dm h6, .dm p, .dm div, .dm li, .dm table, .dm td {
-    color: #8bb4dd;
+    color: snow;
 }
 
 body.dm, .dm #app,
@@ -89,7 +90,7 @@ border-color:#303d71;
     color:#c9c9c9;
 }
 
-.dm .dropdown-menu > li > a:hover, 
+.dm .dropdown-menu > li > a:hover,
 .dm .dropdown-menu > li > a:focus {
     background-color: #303d71;
 }
@@ -147,7 +148,7 @@ border-color:#303d71;
 .dm .table.table-conversations th {
     border-bottom: 1px solid #2a345d;
 }
- 
+
 .dm .table-conversations td a {
     color:#e1e1e1;
 }
@@ -331,7 +332,7 @@ border-radius:none;
 }
 
 .dm .note-editor.note-frame .note-editing-area .note-editable,
-.dm #editor_signature, 
+.dm #editor_signature,
 .dm .note-editor.note-frame .note-statusbar.note-statusbar-toolbar {
     background-color: #2a3663 !important;
     color:#8bb4dd;
@@ -480,7 +481,7 @@ border-radius:none;
 }
 
 .dm .conv-new #conv-toolbar h2 {
-    color: #4482c4; 
+    color: #4482c4;
 }
 
 .dm .navbar-default .navbar-nav > .active > a,
@@ -536,7 +537,7 @@ border-radius:none;
 .dm .web-notification-date {background-color: #262f54; border-bottom: 1px solid #252e51;}
 .dm .table-conversations .conv-active td {color: #24a438;}
 .dm .web-notification {border-bottom: 1px solid #262f54;}
-.dm .web-notification a:hover, 
+.dm .web-notification a:hover,
 .dm .web-notification a:focus {
     background-color: #394885;
 }
@@ -551,7 +552,7 @@ border-radius:none;
 .dm .web-notification.is-unread a {background-color: #293d7a;}
 .dm .nav-tabs {border-bottom: 1px solid #232d53;}
 .dm .nav-tabs > li.active > a,
-.dm .nav-tabs > li.active > a:hover, 
+.dm .nav-tabs > li.active > a:hover,
 .dm .nav-tabs > li.active > a:focus {
     border: 1px solid #232d53; color: #cfcfcf; background-color: #232d53;
 }

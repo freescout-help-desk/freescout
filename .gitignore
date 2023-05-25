@@ -23,6 +23,7 @@ Thumbs.db
 #/.htaccess
 /public/css/builds/
 /public/js/builds/
+/public/modules/
 /public/.well-known
 /public/docs
 /storage/.ignore_locales

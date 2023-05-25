@@ -37,7 +37,8 @@ Route::get('/storage/attachment/{dir_1}/{dir_2}/{dir_3}/{file_name}', 'OpenContr
 if (config('app.dashboard_path')) {
 	Route::get('/', config('app.home_controller'));
 }
-Route::get('/'.config('app.dashboard_path'), 'SecureController@dashboard')->name('dashboard');
+// Route::get('/'.config('app.dashboard_path'), 'DashboardController@index')->name('dashboard');
+Route::get('/'.config('app.dashboard_path'), ['uses' => 'DashboardController@index', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('dashboard');
 Route::get('/app-logs/app', ['uses' => '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs.app');
 Route::get('/app-logs/{name?}', ['uses' => 'SecureController@logs', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs');
 Route::post('/app-logs/{name?}', ['uses' => 'SecureController@logsSubmit', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs.action');
@@ -128,7 +129,7 @@ Route::post('/uploads/upload', ['uses' => 'SecureController@upload', 'laroute' =
 
 
 // SLA-REPORT
-Route::get('/reports/sla', 'SlaReportController@slaReport');
+Route::get('/reports/sla', 'SlaReportController@slaReport')->name('reports.sla');;
 
 // Dashboard
 Route::get('/reports/dashboard', 'DashboardController@index')->name('dashboard');
