@@ -9,7 +9,7 @@ class SlaReportController extends Controller
 {
     public function slaReport()
     {
-        $tickets = Conversation::with('user', 'conversationCustomField.custom_field', 'customFields')->get();
+        $tickets = Conversation::with('user', 'conversationCustomField.custom_field', 'conversationCategory')->get();
         return view('sla/report', compact('tickets'));
     }
 }

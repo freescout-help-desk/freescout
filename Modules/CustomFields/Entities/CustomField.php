@@ -2,6 +2,7 @@
 
 namespace Modules\CustomFields\Entities;
 
+use App\Conversation;
 use Illuminate\Database\Eloquent\Model;
 use Watson\Rememberable\Rememberable;
 use App\Mailbox;
@@ -20,27 +21,27 @@ class CustomField extends Model
     // Also mentioned in module.js.
     const MULTISELECT_DELIMITER = ',';
 
-	const TYPE_DROPDOWN   = 1;
-	const TYPE_SINGLE_LINE = 2;
-	const TYPE_MULTI_LINE = 3;
-	const TYPE_NUMBER     = 4;
-	const TYPE_DATE       = 5;
+    const TYPE_DROPDOWN   = 1;
+    const TYPE_SINGLE_LINE = 2;
+    const TYPE_MULTI_LINE = 3;
+    const TYPE_NUMBER     = 4;
+    const TYPE_DATE       = 5;
     const TYPE_MULTISELECT = 7;
-	
-	public static $types = [
-		self::TYPE_DROPDOWN   => 'Dropdown',
-		self::TYPE_SINGLE_LINE => 'Single Line',
-        self::TYPE_MULTISELECT => 'Single Line Tags',
-		self::TYPE_MULTI_LINE => 'Multi Line',
-		self::TYPE_NUMBER     => 'Number',
-		self::TYPE_DATE       => 'Date',
-	];
 
-    protected $fillable = [
-    	'name', 'type', 'required', 'options'
+    public static $types = [
+        self::TYPE_DROPDOWN   => 'Dropdown',
+        self::TYPE_SINGLE_LINE => 'Single Line',
+        self::TYPE_MULTISELECT => 'Single Line Tags',
+        self::TYPE_MULTI_LINE => 'Multi Line',
+        self::TYPE_NUMBER     => 'Number',
+        self::TYPE_DATE       => 'Date',
     ];
 
-	protected $attributes = [
+    protected $fillable = [
+        'name', 'type', 'required', 'options'
+    ];
+
+    protected $attributes = [
         'type' => self::TYPE_DROPDOWN,
     ];
 
@@ -53,18 +54,18 @@ class CustomField extends Model
      */
     public static function getTypes()
     {
-    	return [
-			1 => __('Dropdown'),
-			2 => __('Single Line'),
-			3 => __('Multi Line'),
-			4 => __('Number'),
-			5 => __('Date'),
-    	];
+        return [
+            1 => __('Dropdown'),
+            2 => __('Single Line'),
+            3 => __('Multi Line'),
+            4 => __('Number'),
+            5 => __('Date'),
+        ];
     }
 
     public function setSortOrderLast()
     {
-    	$this->sort_order = (int)CustomField::max('sort_order')+1;
+        $this->sort_order = (int)CustomField::max('sort_order') + 1;
     }
 
     public function getAsText()
@@ -72,7 +73,7 @@ class CustomField extends Model
         if ($this->type == self::TYPE_DROPDOWN) {
             return $this->options[$this->value] ?? $this->value ?? '';
         } elseif ($this->type == self::TYPE_MULTISELECT) {
-            return str_replace(self::MULTISELECT_DELIMITER, self::MULTISELECT_DELIMITER.' ', $this->value ?? '');
+            return str_replace(self::MULTISELECT_DELIMITER, self::MULTISELECT_DELIMITER . ' ', $this->value ?? '');
         } else {
             return $this->value ?? '';
         }
@@ -80,7 +81,7 @@ class CustomField extends Model
 
     public static function getMailboxCustomFields($mailbox_id, $cache = false)
     {
-    	$query = CustomField::where('mailbox_id', $mailbox_id)
+        $query = CustomField::where('mailbox_id', $mailbox_id)
             ->orderby('sort_order');
         if ($cache) {
             $query->rememberForever();
@@ -237,7 +238,7 @@ class CustomField extends Model
 
     public function getNameEncoded()
     {
-        return self::NAME_PREFIX.$this->id;
+        return self::NAME_PREFIX . $this->id;
     }
 
     public static function getSearchCustomFields()
@@ -245,9 +246,9 @@ class CustomField extends Model
         if (self::$search_custom_fields) {
             return self::$search_custom_fields;
         }
-        if (auth()->user()){
+        if (auth()->user()) {
             $mailbox_ids = auth()->user()->mailboxesIdsCanView();
-        }else{
+        } else {
             $mailbox_id_data = Mailbox::select('id')->get();
             $mailbox_ids = [];
             foreach ($mailbox_id_data as $key => $mb_id) {
@@ -260,11 +261,11 @@ class CustomField extends Model
                 // groupBy('name') does not work in PostgreSQL.
                 ->distinct('name')
                 ->get();
-    
+
             if (count($custom_fields)) {
 
                 foreach ($custom_fields as $i => $custom_field) {
-                    $custom_fields[$i]->name = '#'.$custom_field->name;
+                    $custom_fields[$i]->name = '#' . $custom_field->name;
                 }
                 self::$search_custom_fields = $custom_fields;
                 return $custom_fields;
@@ -299,5 +300,15 @@ class CustomField extends Model
             }
         }
         return $values;
+    }
+
+    public function conversations()
+    {
+        return $this->belongsToMany(
+            Conversation::class,
+            ConversationCustomField::class,
+            'custom_field_id', // Foreign key on Conversation_custom_field table
+            'conversation_id' // Foreign key on Conversations table
+        );
     }
 }
