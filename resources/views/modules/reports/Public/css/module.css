@@ -12,7 +12,7 @@
 }
 .rpt-filters {
     display: inline-block;
-    float: right;
+    
 }
 #rpt-filters .rpt-filter .form-control {
     display: inline-block;
@@ -109,7 +109,7 @@
     margin-top: 10px;
 }
 .rpt-filter-date {
-    width: 90px !important;
+    width: 120px !important;
     margin-left: 0!important;
 }
 @media (max-width:1100px) {
