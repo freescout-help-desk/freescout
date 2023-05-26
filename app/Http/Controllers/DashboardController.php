@@ -7,6 +7,9 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Modules\Reports\Http\Controllers\ReportsController;
+
+
 
 class DashboardController extends Controller
 {

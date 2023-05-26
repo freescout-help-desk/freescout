@@ -1,10 +1,10 @@
 @extends('layouts.app')
 @section('content')
 <div class="container-fluid color" style="padding: 0 60px;margin-bottom: 3em;">
-    <div style="border: 2px solid #eee; padding: 2rem; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+    <div class="filter">
         <div>
             <label for="ticket">Ticket Category</label>
-            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px; color:#1D1C24;">
+            <select name="ticket" id="" ticket class="ticket" >
                 <option value="none"></option>
                 @foreach($categoryValues as $category)
                     <option value="{{$category}}">{{$category}}</option>
@@ -13,7 +13,7 @@
         </div>
         <div>
             <label for="ticket">Product</label>
-            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px; color:#1D1C24;">
+            <select name="ticket" id="" ticket class="ticket">
                 <option value="none"></option>
                 <option value="open">Product 1</option>
                 <option value="hold">Product 2</option>
@@ -22,26 +22,27 @@
         </div>
         <div>
             <label for="ticket">Type</label>
-            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px; color:#1D1C24;">
-                <option value="none"></option>
-                <option value="open">Type 1</option>
-                <option value="hold">Type 2</option>
-                <option value="closed">Type 3</option>
+            <select name="ticket" id="" ticket class="ticket">
+                <option value=""></option>
+			<option value="{{ App\Conversation::TYPE_EMAIL }}">{{ __('Email') }}</option>
+			<option value="{{ App\Conversation::TYPE_CHAT }}">{{ __('Chat') }}</option>
+			<option value="{{ App\Conversation::TYPE_PHONE }}">{{ __('Phone') }}</option>
             </select>
         </div>
         <div>
             <label for="ticket">Mailbox</label>
-            <select name="ticket" id="" ticket style="background-color: transparent; border-radius: 4px; margin-left: 4px; color:#1D1C24;">
-                <option value="none"></option>
-                <option value="open">Mailbox 1</option>
-                <option value="hold">Mailbox 2</option>
-                <option value="closed">Mailbox 3</option>
+            <select name="ticket" id="" ticket class="ticket">
+                <option value=""></option>
+			@foreach (Auth::user()->mailboxesCanView(true) as $mailbox)
+				<option value="{{ $mailbox->id }}">{{ $mailbox->name }}</option>
+			@endforeach
             </select>
         </div>
         <div style="display: flex; align-items: center;">
             <label for="date">Date</label>
-            <input type="date" class="form-control" id="date" style="margin-left: 10px; margin-bottom: 2px; border-radius: 4px; color:snow;">
+            <input type="date" class="form-control date" id="date" >
         </div>
+
     </div>
 
     <div class="row text-center" style="margin-top: 6rem;">
@@ -77,51 +78,227 @@
 
 
     <div class="donut-container">
-        <div style="display: flex; flex:1; align-items:center; gap: 5rem; background: #1D1C24;padding: 4px; border-radius: 4px; height:350px">
+        <div class="donut-chart" >
             <div>
                 <canvas id="donutChart" height="230px"></canvas>
             </div>
             <div>
-                <div style="display: flex;flex:1; align-items:center; gap: 5px;">
-                    <div style="background-color: plum; height: 20px; width: 20px; border-radius: 4px;"></div>
+                <div class="donut-chart-lable">
+                    <div  class="donut-chart-box"></div>
                     <div>
-                        <p>Number Of Tickets</p>
-                        <p>{{$totalCount}}</p>
+                        <p class="donutp">Number Of Tickets</p>
+                        <p class="donutp">{{$totalCount}}</p>
                     </div>
                 </div>
                 <hr>
                 <div class="row">
                     <div class="col-sm-6">
-                        <p>Open tickets</p>
-                        <p>{{$unclosedCount}}</p>
+                        <p class="donutp">Open tickets</p>
+                        <p class="donutp">{{$unclosedCount}}</p>
                     </div>
                     <div class="col-sm-6">
-                        <p>Close tickets</p>
-                        <p>{{$closedCount}}</p>
+                        <p class="donutp">Close tickets</p>
+                        <p class="donutp">{{$closedCount}}</p>
                     </div>
                     <div class="col-sm-6">
-                        <p>Hold tickets</p>
-                        <p>{{$unclosedCreated30DaysAgoCount}}</p>
+                        <p class="donutp">Hold tickets</p>
+                        <p class="donutp">{{$unclosedCreated30DaysAgoCount}}</p>
                     </div>
                 </div>
             </div>
         </div>
 
-          <div style="display: flex; flex:1; align-items:center; gap: 7rem; background: #1D1C24;padding: 4px; border-radius: 4px; height:350px">
+          <div class="horizontalChart">
             <canvas id="horizontalChart" ></canvas>
           </div>
     </div>
 
     <div class="bar-container">
-        <div style="display: flex; flex:1; align-items:center; gap: 7rem; background: #1D1C24;padding: 4px; border-radius: 4px; height:350px; justify-content:center;">
+        <div class="barChart">
                 <canvas id="barChart"></canvas>
         </div>
-        <div style="display: flex; flex:1; align-items:center; gap: 7rem; background: #1D1C24;padding: 4px; border-radius: 4px; height:350px">
+        <div class="lineChart">
             <canvas id="lineChart" ></canvas>
           </div>
     </div>
 </div>
+<style>
+    .dm .filter{
+        border: 1px solid #eee;
+        padding: 2rem;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .dm hr{
+        border: 1px solid #eee;
+    }
+     hr{
+        border: 1px solid black;
+    }
+    .filter{
+        border: 1px solid #9b9898;
+        padding: 2rem;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .dm.filter .ticket{
+        background-color: transparent;
+        padding: 3px;
+        border-radius: 4px;
+        margin-left: 4px;
+        color:#1D1C24;
+    }
+    .filter .ticket{
+        background-color: transparent;
+        padding: 3px;
+        border-radius: 4px;
+        margin-left: 4px;
+        color:#1D1C24;
+        background: #f8f5f5;
+    }
+    .dm .filter .ticket:focus{
+        background-color: transparent;
+        padding: 3px;
+        border-radius: 4px;
+        margin-left: 4px;
+        color:#1D1C24;
+    }
+    .filter .ticket:focus{
+        background-color: transparent;
+        padding: 3px;
+        border-radius: 4px;
+        margin-left: 4px;
+        color:#1D1C24;
+    }
+    .dm .filter .ticket, .date{
+        margin-left: 10px;
+        padding: 3px;
+        margin-bottom: 2px;
+        border-radius: 4px;
+        color:#000;
+        background: #303d71;
+    }
+    .dm .filter .ticket, .date :visited{
+        color:snow;
+    }
+    .dm .date{
+        background-color: #303d71 !important;
+        color: #f8f5f5;
+    }
+    .filter .ticket, #date{
+        margin-left: 10px;
+        padding: 3px;
+        margin-bottom: 2px;
+        border-radius: 4px;
+        color:#000;
+        background: #f8f5f5;
+    }
+    .dm .donut-container .donut-chart{
+        display: flex;
+        flex:1;
+        align-items:center;
+         gap: 5rem;
+         background: #1D1C24;
+         padding: 4px;
+         border-radius: 4px;
+          height:350px
+    }
+    .donut-container .donut-chart{
+        display: flex;
+        flex:1;
+        align-items:center;
+         gap: 5rem;
+         background:#eeeeee;
+         padding: 4px;
+         border-radius: 4px;
+          height:350px
+    }
+    .donut-container .donut-chart .donut-chart-lable{
+        display: flex;
+        flex:1;
+        align-items:center;
+        gap: 5px;
+    }
+    .donut-container .donut-chart .donut-chart-box{
+        background-color: plum;
+        height: 40px;
+        width: 40px;
+        border-radius: 4px;
 
+    }
+    .donutp{
+        display: table-header-group;
+    }
+    .dm .horizontalChart{
+        display: flex;
+        flex:1;
+        align-items:center;
+        gap: 7rem;
+        background: #1D1C24;
+        padding: 4px;
+        border-radius: 4px;
+        height:350px
+    }
+    .horizontalChart{
+        display: flex;
+        flex:1;
+        align-items:center;
+        gap: 7rem;
+        background: #eeeeee;
+        padding: 4px;
+        border-radius: 4px;
+        height:350px
+    }
+    .dm .bar-container .barChart{
+        display: flex;
+        flex:1;
+        align-items:center;
+        gap: 7rem;
+        background: #1D1C24;
+        padding: 4px;
+        border-radius: 4px;
+        height:350px;
+        justify-content:center;
+    }
+    .bar-container .barChart{
+        display: flex;
+        flex:1;
+        align-items:center;
+        gap: 7rem;
+        background: #eeeeee;
+        padding: 4px;
+        border-radius: 4px;
+        height:350px;
+        justify-content:center;
+    }
+    .dm .bar-container .lineChart{
+        display: flex;
+        flex:1;
+        align-items:center;
+        gap: 7rem;
+        background: #1D1C24;
+        padding: 4px;
+        border-radius: 4px;
+        height:350px
+    }
+    .bar-container .lineChart{
+        display: flex;
+        flex:1;
+        align-items:center;
+        gap: 7rem;
+        background: #eeeeee;
+        padding: 4px;
+        border-radius: 4px;
+        height:350px
+    }
+    input, button, select, textarea{
+        color: #1D1C24
+    }
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -158,8 +335,19 @@
       var ctxLine = document.getElementById('lineChart').getContext('2d');
 
     // Define the chart data
+    const currentDate = new Date();
+    const weekNames = [];
+
+        for (let i = 6; i >= 0; i--) {
+            const day = new Date(currentDate);
+            day.setDate(day.getDate() - i);
+            const options = { weekday: 'long' }; // Specify the format of the weekday
+            const weekName = new Intl.DateTimeFormat('en-US', options).format(day);
+            weekNames.push(weekName);
+        }
+
     var chartData = {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      labels: weekNames,
       datasets: [{
         label: 'Average Time Taken To Close Within SLA',
         data: [10, 20, 15, 25, 30, 10, 20],
@@ -179,11 +367,21 @@
 
     var ctxBar = document.getElementById('barChart').getContext('2d');
         // Set chart data
+        const weeklyBarChart = ["{{$tickets['Sunday']}}", "{{$tickets['Monday']}}", "{{$tickets['Tuesday']}}", "{{$tickets['Wednesday']}}", "{{$tickets['Thursday']}}", "{{$tickets['Friday']}}", "{{$tickets['Saturday']}}"];
+
+        for (let i = 6; i >= 0; i--) {
+            const day = new Date(currentDate);
+            day.setDate(day.getDate() - i);
+            const options = { weekday: 'long' }; // Specify the format of the weekday
+            const weekName = new Intl.DateTimeFormat('en-US', options).format(day);
+            weekNames.push(weekName);
+        }
+
         var data = {
-            labels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+            labels: weekNames,
             datasets: [{
                 label: 'Average resolved tickets',
-                data: ["{{$tickets['Sunday']}}", "{{$tickets['Monday']}}", "{{$tickets['Tuesday']}}", "{{$tickets['Wednesday']}}", "{{$tickets['Thursday']}}", "{{$tickets['Friday']}}", "{{$tickets['Saturday']}}"],
+                data: weeklyBarChart,
                 backgroundColor: '#2EA5FB', // Bar color
                 borderColor: 'rgba(54, 162, 235, 1)', // Border color
                 borderWidth: 1 // Border width
