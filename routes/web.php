@@ -133,3 +133,5 @@ Route::get('/reports/sla', 'SlaReportController@slaReport')->name('reports.sla')
 
 // Dashboard
 Route::get('/reports/dashboard', 'DashboardController@index')->name('dashboard');
+
+Route::get('/reports/dashboard', 'DashboardController@index')->name('filter');

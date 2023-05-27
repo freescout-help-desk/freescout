@@ -1,49 +1,65 @@
 @extends('layouts.app')
 @section('content')
 <div class="container-fluid color" style="padding: 0 60px;margin-bottom: 3em;">
-    <div class="filter">
-        <div>
-            <label for="ticket">Ticket Category</label>
-            <select name="ticket" id="" ticket class="ticket" >
-                <option value="none"></option>
-                @foreach($categoryValues as $category)
+    <form action="{{ route('filter') }}" method="GET">
+    <div class="rpt-filters">
+
+        {{-- <div class="rpt-views-trigger">
+            @include('reports::partials/views')
+        </div> --}}
+
+        <div class="rpt-filter">
+            {{ __('Tickets Category') }}
+            <select class="form-control" name="ticket" >
+                <option value=""></option>
+                @foreach ($categoryValues as $category)
                     <option value="{{$category}}">{{$category}}</option>
                 @endforeach
             </select>
         </div>
-        <div>
-            <label for="ticket">Product</label>
-            <select name="ticket" id="" ticket class="ticket">
-                <option value="none"></option>
-                <option value="open">Product 1</option>
-                <option value="hold">Product 2</option>
-                <option value="closed">Product 3</option>
-            </select>
-        </div>
-        <div>
-            <label for="ticket">Type</label>
-            <select name="ticket" id="" ticket class="ticket">
+        <div class="rpt-filter">
+            {{ __('Product') }}
+            <select class="form-control" name="product">
                 <option value=""></option>
-			<option value="{{ App\Conversation::TYPE_EMAIL }}">{{ __('Email') }}</option>
-			<option value="{{ App\Conversation::TYPE_CHAT }}">{{ __('Chat') }}</option>
-			<option value="{{ App\Conversation::TYPE_PHONE }}">{{ __('Phone') }}</option>
+                @foreach ($productValues as $product)
+                    <option value="{{$product}}">{{$product}}</option>
+                @endforeach
             </select>
         </div>
-        <div>
-            <label for="ticket">Mailbox</label>
-            <select name="ticket" id="" ticket class="ticket">
+        <div class="rpt-filter">
+            {{ __('Type') }}
+            <select class="form-control" name="type">
                 <option value=""></option>
-			@foreach (Auth::user()->mailboxesCanView(true) as $mailbox)
-				<option value="{{ $mailbox->id }}">{{ $mailbox->name }}</option>
-			@endforeach
+                <option value="{{ App\Conversation::TYPE_EMAIL }}">{{ __('Email') }}</option>
+                <option value="{{ App\Conversation::TYPE_CHAT }}">{{ __('Chat') }}</option>
+                <option value="{{ App\Conversation::TYPE_PHONE }}">{{ __('Phone') }}</option>
             </select>
         </div>
-        <div style="display: flex; align-items: center;">
-            <label for="date">Date</label>
-            <input type="date" class="form-control date" id="date" >
+        <div class="rpt-filter">
+            {{ __('Mailbox') }}
+            <select class="form-control" name="mailbox">
+                <option value=""></option>
+                @foreach (Auth::user()->mailboxesCanView(true) as $mailbox)
+                    <option value="{{ $mailbox->id }}">{{ $mailbox->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="rpt-filter">
+            <nobr><input type="date" name="from" class="form-control rpt-filter-date" value="{{ $filters['from'] }}" />-<input type="date" name="to" class="form-control rpt-filter-date" value="{{ $filters['to'] }}" /></nobr>
+            {{-- <button class="btn btn-primary" name="period">Oct 1, 2017 - Nov 1, 2017 <span class="caret"></span></button> --}}
+        </div>
+
+        <div class="rpt-filter" data-toggle="tooltip" title="{{ __('Refresh') }}">
+            <button class="btn btn-primary" id="rpt-btn-loader" onclick="refreshPage()" type="submit"><i class="glyphicon glyphicon-refresh"></i></button>
         </div>
 
     </div>
+
+</form>
+
+
+
 
     <div class="row text-center" style="margin-top: 6rem;">
         <div class="col-md-4">
@@ -93,14 +109,17 @@
                 <hr>
                 <div class="row">
                     <div class="col-sm-6">
+                        <span class="circle circle-green"></span>
                         <p class="donutp">Open tickets</p>
                         <p class="donutp">{{$unclosedCount}}</p>
                     </div>
                     <div class="col-sm-6">
+                        <span class="circle circle-red"></span>
                         <p class="donutp">Close tickets</p>
                         <p class="donutp">{{$closedCount}}</p>
                     </div>
                     <div class="col-sm-6">
+                        <span class="circle circle-blue"></span>
                         <p class="donutp">Hold tickets</p>
                         <p class="donutp">{{$unclosedCreated30DaysAgoCount}}</p>
                     </div>
@@ -123,79 +142,49 @@
     </div>
 </div>
 <style>
-    .dm .filter{
-        border: 1px solid #eee;
-        padding: 2rem;
-        border-radius: 4px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+
+.circle {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+      position: relative;
+    top: 22px;
+    left: -15px;
     }
+    .circle-green {
+      background-color: #89F81B;
+    }
+
+    .circle-red {
+      background-color: red;
+    }
+
+    .circle-blue {
+      background-color: #173292;
+    }
+
+.stat-options{
+      /* color: hotpink; */
+}
+.dm .form-control {
+    display: inline ;
+    width: 140px;
+    min-inline-size: max-content;
+}
+
+.form-control {
+    display: inline ;
+    width: 140px;
+    min-inline-size: max-content;
+}
+
     .dm hr{
         border: 1px solid #eee;
     }
      hr{
         border: 1px solid black;
-    }
-    .filter{
-        border: 1px solid #9b9898;
-        padding: 2rem;
-        border-radius: 4px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .dm.filter .ticket{
-        background-color: transparent;
-        padding: 3px;
-        border-radius: 4px;
-        margin-left: 4px;
-        color:#1D1C24;
-    }
-    .filter .ticket{
-        background-color: transparent;
-        padding: 3px;
-        border-radius: 4px;
-        margin-left: 4px;
-        color:#1D1C24;
-        background: #f8f5f5;
-    }
-    .dm .filter .ticket:focus{
-        background-color: transparent;
-        padding: 3px;
-        border-radius: 4px;
-        margin-left: 4px;
-        color:#1D1C24;
-    }
-    .filter .ticket:focus{
-        background-color: transparent;
-        padding: 3px;
-        border-radius: 4px;
-        margin-left: 4px;
-        color:#1D1C24;
-    }
-    .dm .filter .ticket, .date{
-        margin-left: 10px;
-        padding: 3px;
-        margin-bottom: 2px;
-        border-radius: 4px;
-        color:#000;
-        background: #303d71;
-    }
-    .dm .filter .ticket, .date :visited{
-        color:snow;
-    }
-    .dm .date{
-        background-color: #303d71 !important;
-        color: #f8f5f5;
-    }
-    .filter .ticket, #date{
-        margin-left: 10px;
-        padding: 3px;
-        margin-bottom: 2px;
-        border-radius: 4px;
-        color:#000;
-        background: #f8f5f5;
     }
     .dm .donut-container .donut-chart{
         display: flex;
@@ -310,7 +299,8 @@
     var data = {
         datasets: [{
             data: ["{{ $unclosedCount}}", "{{$closedCount}}", "{{$unclosedCreated30DaysAgoCount}}"],
-            backgroundColor: ['#89F81B', '#7831F9', '#173292'],
+            backgroundColor: ['#89F81B', 'red', '#173292'],
+            // backgroundColor: ['red', 'blue', 'yellow'],
             borderColor: 'transparent',
         }]
     };
@@ -444,6 +434,9 @@
         });
 
 });
+function refreshPage() {
+    location.reload();
+}
 </script>
 
 @endsection

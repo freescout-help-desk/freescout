@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="container report-container">
+    <p style="font-weight: bold;width: 20%;float: left;">SLA REPORT</p>
     <table class="table datatable table-borderless slatable" >
         <thead>
             <tr>
@@ -42,7 +43,7 @@
                     }
                 @endphp
 
-                <p style="font-weight: bold;width: 20%;float: left;">SLA REPORT</p>
+
             @endforeach
             <tr>
                 <td class="custom-cell">
