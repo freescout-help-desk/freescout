@@ -206,14 +206,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Enable if using CloudFlare "Flexible SSL":
-    | https://support.cloudflare.com/hc/en-us/articles/200170416-What-do-the-SSL-options-mean-
-    |-------------------------------------------------------------------------
-    */
-    'force_https' => env('APP_FORCE_HTTPS', false),
-
-    /*
-    |--------------------------------------------------------------------------
     | Logs monitoring parameters.
     | These settings must be stored to avoid DB query in Kenel.php
     |-------------------------------------------------------------------------

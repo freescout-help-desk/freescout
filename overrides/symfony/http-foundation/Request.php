@@ -1245,9 +1245,11 @@ class Request
             return \in_array(strtolower($proto[0]), array('https', 'on', 'ssl', '1'), true);
         }
 
-        $https = $this->server->get('HTTPS');
+        // FreeScout determines protocol using app.url parameter
+        //$https = $this->server->get('HTTPS');
 
-        return !empty($https) && 'off' !== strtolower($https);
+        //return !empty($https) && 'off' !== strtolower($https);
+        return \Helper::isHttps();
     }
 
     /**

@@ -1706,13 +1706,23 @@ class Helper
         return md5(config('app.key').'web_cron_hash');
     }
 
+    public static function getProtocol($url = '')
+    {
+        return mb_strtolower(parse_url($url ?: config('app.url'), PHP_URL_SCHEME) ?: 'http');
+    }
+
+    public static function isHttps($url = '')
+    {
+        return self::getProtocol($url) == 'https';
+    }
+
     public static function fixProtocol($url)
     {
-        if (parse_url(config('app.url'), PHP_URL_SCHEME) == 'http' && parse_url($url, PHP_URL_SCHEME) != 'http') {
+        if (self::getProtocol() == 'http' && parse_url($url, PHP_URL_SCHEME) != 'http') {
             return str_replace('https://', 'http://', $url);
         }
 
-        if (parse_url(config('app.url'), PHP_URL_SCHEME) == 'https' && parse_url($url, PHP_URL_SCHEME) != 'https') {
+        if (self::getProtocol() == 'https' && parse_url($url, PHP_URL_SCHEME) != 'https') {
             return str_replace('http://', 'https://', $url);
         }
 

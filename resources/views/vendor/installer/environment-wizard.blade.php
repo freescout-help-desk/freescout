@@ -57,32 +57,6 @@
                     @endif
                 </div>
 
-                <div class="form-group {{ $errors->has('app_force_https') ? ' has-error ' : '' }}">
-                    <label for="app_force_https">
-                        Use HTTPS protocol
-                    </label>
-                    @php
-                        $force_https = false;
-                        if (old('app_force_https') == 'true' || \Config::get('app.force_https')) {
-                            $force_https = true;
-                        }
-                    @endphp
-                    <label for="app_force_https_true">
-                        <input type="radio" name="app_force_https" id="app_force_https_true" value="true" @if ($force_https) checked @endif />
-                        Yes
-                    </label>
-                    <label for="app_force_https_false">
-                        <input type="radio" name="app_force_https" id="app_force_https_false" value="false" @if (!$force_https) checked @endif />
-                        No
-                    </label>
-                    @if ($errors->has('app_force_https'))
-                        <span class="error-block">
-                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                            {{ $errors->first('app_force_https') }}
-                        </span>
-                    @endif
-                </div>
-
                 <div class="buttons">
                     <button class="button" onclick="showDatabaseSettings();return false">
                         {{ trans('installer_messages.environment.wizard.form.buttons.setup_database') }}
