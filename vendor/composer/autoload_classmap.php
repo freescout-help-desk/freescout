@@ -2690,7 +2690,7 @@ return array(
     'Symfony\\Component\\HttpFoundation\\AcceptHeaderItem' => $vendorDir . '/symfony/http-foundation/AcceptHeaderItem.php',
     'Symfony\\Component\\HttpFoundation\\ApacheRequest' => $vendorDir . '/symfony/http-foundation/ApacheRequest.php',
     'Symfony\\Component\\HttpFoundation\\BinaryFileResponse' => $vendorDir . '/symfony/http-foundation/BinaryFileResponse.php',
-    'Symfony\\Component\\HttpFoundation\\Cookie' => $vendorDir . '/symfony/http-foundation/Cookie.php',
+    'Symfony\\Component\\HttpFoundation\\Cookie' => $baseDir . '/overrides/symfony/http-foundation/Cookie.php',
     'Symfony\\Component\\HttpFoundation\\Exception\\ConflictingHeadersException' => $vendorDir . '/symfony/http-foundation/Exception/ConflictingHeadersException.php',
     'Symfony\\Component\\HttpFoundation\\Exception\\RequestExceptionInterface' => $vendorDir . '/symfony/http-foundation/Exception/RequestExceptionInterface.php',
     'Symfony\\Component\\HttpFoundation\\Exception\\SuspiciousOperationException' => $vendorDir . '/symfony/http-foundation/Exception/SuspiciousOperationException.php',
