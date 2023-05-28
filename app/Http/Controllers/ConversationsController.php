@@ -190,14 +190,6 @@ class ConversationsController extends Controller
             }
         }
 
-        // To (for new conversation draft only).
-        $to = [];
-        $emails = Conversation::sanitizeEmails($conversation->customer_email);
-        // Get customers info for emails.
-        if (count($emails)) {
-            $to = Customer::emailsToCustomers($emails);
-        }
-
         // Exclude mailbox emails from $to_customers.
         $mailbox_emails = $mailbox->getEmails();
         foreach ($to_customers as $key => $to_customer) {
@@ -331,6 +323,19 @@ class ConversationsController extends Controller
             }
         }
 
+        // Get To for new conversation draft.
+        $new_conv_to = [];
+        if (empty($threads[0]) || empty($threads[0]->to)) {
+            // Before new conversation To field was stored in $conversation->customer_email.
+            $emails = Conversation::sanitizeEmails($conversation->customer_email);
+            // Get customers info for emails.
+            if (count($emails)) {
+                $new_conv_to = Customer::emailsToCustomers($emails);
+            }
+        } else {
+            $new_conv_to = Customer::emailsToCustomers($threads[0]->getToArray());
+        }
+
         return view($template, [
             'conversation'       => $conversation,
             'mailbox'            => $conversation->mailbox,
@@ -339,7 +344,7 @@ class ConversationsController extends Controller
             'folder'             => $folder,
             'folders'            => $conversation->mailbox->getAssesibleFolders(),
             'after_send'         => $after_send,
-            'to'                 => $to,
+            'to'                 => $new_conv_to,
             'to_customers'       => $to_customers,
             'prev_conversations' => $prev_conversations,
             'cc'                 => $conversation->getCcArray($exclude_array),
@@ -1332,6 +1337,9 @@ class ConversationsController extends Controller
                         $conversation = new Conversation();
                     }
 
+                    // To is a single email or array of emails.
+                    $to = '';
+
                     if ($new || $is_create) {
                         // New conversation
                         $customer_email = '';
@@ -1350,15 +1358,19 @@ class ConversationsController extends Controller
                             $customer = $phone_customer_data['customer'];
                         } else {
                             // Email.
+                            // Now instead of customer_email we store emails in thread->to.
                             $to_array = Conversation::sanitizeEmails($request->to);
                             if (count($to_array)) {
                                 if (count($to_array) == 1) {
-                                    $customer_email = array_first($to_array);
+                                    //$customer_email = array_first($to_array);
+                                    $to = array_first($to_array);
                                     $customer = Customer::create($customer_email);
                                 } else {
                                     // Creating a conversation to multiple customers
-                                    // In customer_email temporary store a list of customer emails
-                                    $customer_email = implode(',', $to_array);
+                                    // In customer_email temporary store a list of customer emails.
+                                    //$customer_email = implode(',', $to_array);
+                                    $to = $to_array;
+                                    
                                     // Keep $customer as null.
                                     // When conversation will be sent, separate conversation
                                     // will be created for each customer.
@@ -1392,8 +1404,6 @@ class ConversationsController extends Controller
                     // New draft conversation is not assigned to anybody
                     //$conversation->user_id = null;
 
-                    // To is a single email string
-                    $to = '';
                     if (empty($request->to) || !is_array($request->to)) {
                         if (!empty($request->to)) {
                             // New conversation.
@@ -1413,7 +1423,8 @@ class ConversationsController extends Controller
 
                     // Save extra recipients to CC
                     if ($is_create) {
-                        $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                        //$conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), (is_array($to) ? $to : [$to])));
+                        $conversation->setCc($request->cc);
                         $conversation->setBcc($request->bcc);
                     }
                     // $conversation->last_reply_at = $now;

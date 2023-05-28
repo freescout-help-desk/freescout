@@ -3636,6 +3636,14 @@ body.print {
     margin: 0;
     padding-left: 12px;
 }
+@media print {
+    a[href]:after {
+        content: none !important;
+    }
+    .thread-content a[href]:after {
+        content: " (" attr(href) ") " !important;
+    }
+}
 
 /**
  * Misc
