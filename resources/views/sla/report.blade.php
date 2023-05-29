@@ -35,7 +35,7 @@
                     $options = $customField['options'];
                     $value = $item['value'];
                     $optionValue = null;
-
+                    var_dump($options);
                     foreach ($options as $key => $option) {
                         if ($key == $value) {
                             $optionValue = $option;
@@ -49,11 +49,10 @@
             @endforeach
             @foreach ($ticketPriorityArray as $item)
             @php
-                // $customField = $item['custom_field'];
-                $options = $item['options'];
-                // $value = $item['value'];
-                $ticketPriority = null;
 
+                $options = $item['options'];
+
+                $ticketPriority = null;
                 foreach ($options as $key => $option) {
                     if ($key == $value) {
                         $ticketPriority = $option;
