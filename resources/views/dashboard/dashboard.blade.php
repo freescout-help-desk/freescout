@@ -282,11 +282,54 @@
         background: #eeeeee;
         padding: 4px;
         border-radius: 4px;
-        height:350px
+        height:350px;
+       
     }
     input, button, select, textarea{
         color: #1D1C24
     }
+
+
+    @media screen and (max-width: 600px) {
+      
+        .bar-container {
+        display: flex;
+        margin-left: 30px;
+        flex-direction: column;
+        margin-left: 4px;
+
+      }
+
+      .bar-container .barChart {
+       margin-left: 5px;
+       width: 532px;
+      }
+
+      .bar-container .lineChart {
+        width: 532px;
+      }
+     
+      .horizontalChart {
+    width: 532px;
+}
+
+.donut-container .donut-chart {
+    width: 532px;
+    margin-left:0px ;
+}
+.donut-container {
+    display: flex;
+    flex-direction:column;
+}
+
+.container-fluid{
+    padding: auto;
+}
+
+
+   
+  
+}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
