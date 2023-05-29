@@ -96,7 +96,7 @@
     <div class="donut-container">
         <div class="donut-chart" >
             <div>
-                <canvas id="donutChart" height="230px"></canvas>
+                <canvas id="donutChart" height="230px" width="100%"></canvas>
             </div>
             <div>
                 <div class="donut-chart-lable">
@@ -194,7 +194,8 @@
          background: #1D1C24;
          padding: 4px;
          border-radius: 4px;
-          height:350px
+          height:350px;
+          width: 100%;
     }
     .donut-container .donut-chart{
         display: flex;
@@ -204,7 +205,8 @@
          background:#eeeeee;
          padding: 4px;
          border-radius: 4px;
-          height:350px
+          height:350px;
+          width: 100%;
     }
     .donut-container .donut-chart .donut-chart-lable{
         display: flex;
@@ -230,7 +232,8 @@
         background: #1D1C24;
         padding: 4px;
         border-radius: 4px;
-        height:350px
+        height:350px;
+        width: 100%;
     }
     .horizontalChart{
         display: flex;
@@ -240,7 +243,8 @@
         background: #eeeeee;
         padding: 4px;
         border-radius: 4px;
-        height:350px
+        height:350px;
+        width: 100%;
     }
     .dm .bar-container .barChart{
         display: flex;
@@ -252,6 +256,7 @@
         border-radius: 4px;
         height:350px;
         justify-content:center;
+        width: 100%;
     }
     .bar-container .barChart{
         display: flex;
@@ -263,6 +268,7 @@
         border-radius: 4px;
         height:350px;
         justify-content:center;
+        width: 100%;
     }
     .dm .bar-container .lineChart{
         display: flex;
@@ -272,7 +278,8 @@
         background: #1D1C24;
         padding: 4px;
         border-radius: 4px;
-        height:350px
+        height:350px;
+        width: 100%;
     }
     .bar-container .lineChart{
         display: flex;
@@ -283,52 +290,60 @@
         padding: 4px;
         border-radius: 4px;
         height:350px;
-       
+        width: 100%;
     }
     input, button, select, textarea{
         color: #1D1C24
     }
 
 
-    @media screen and (max-width: 600px) {
-      
-        .bar-container {
+    /* its my code for external coonent*/
+    .dm .donut-container{
+        max-width:100%;
         display: flex;
-        margin-left: 30px;
-        flex-direction: column;
-        margin-left: 4px;
+        flex:50%;
 
-      }
-
-      .bar-container .barChart {
-       margin-left: 5px;
-       width: 532px;
-      }
-
-      .bar-container .lineChart {
-        width: 532px;
-      }
-     
-      .horizontalChart {
-    width: 532px;
-}
-
-.donut-container .donut-chart {
-    width: 532px;
-    margin-left:0px ;
-}
-.donut-container {
-    display: flex;
-    flex-direction:column;
-}
-
-.container-fluid{
-    padding: auto;
-}
+    }
+    .donut-container{
+        max-width:100%;
+        display: flex;
+        flex:50%;
+    }
 
 
-   
-  
+    .dm .bar-container{
+        max-width:100%;
+        display: flex;
+        flex:50%;
+    }
+    .bar-container{
+        display: flex;
+        flex:50%;
+        max-width:100%;
+    }
+
+     /* its my code for external coonent*/
+
+    @media (max-width: 600px) {
+        .dm .donut-container{
+        display: flex;
+        flex-direction:column;
+    }
+    .donut-container{
+        display: flex;
+        flex-direction:column;
+        
+    }
+
+
+    .dm .bar-container{
+        display: flex;
+        flex-direction:column;
+    }
+    .bar-container{
+        display: flex;
+        flex-direction:column;
+    }
 }
 </style>
 
