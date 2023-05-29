@@ -23,6 +23,7 @@
             @foreach($tickets as $ticket)
             @php
                 $dataArray = json_decode($ticket->conversationCustomField, true);
+                $ticketPriorityArray =json_decode($ticket->conversationPriority, true);
                 $status = $ticket['status'] == 1 ? 'ACTIVE' : ($ticket['status'] == 2 ? 'PENDING' : ($ticket['status'] == 3 ? 'CLOSED' : 'SPAM'));
                 $createdAt = \Carbon\Carbon::parse($ticket['created_at']);
                 $lastReplyAt = \Carbon\Carbon::parse($ticket['last_reply_at']);
@@ -34,7 +35,7 @@
                     $options = $customField['options'];
                     $value = $item['value'];
                     $optionValue = null;
-
+                    var_dump($options);
                     foreach ($options as $key => $option) {
                         if ($key == $value) {
                             $optionValue = $option;
@@ -44,7 +45,23 @@
                 @endphp
 
 
+
             @endforeach
+            @foreach ($ticketPriorityArray as $item)
+            @php
+
+                $options = $item['options'];
+
+                $ticketPriority = null;
+                foreach ($options as $key => $option) {
+                    if ($key == $value) {
+                        $ticketPriority = $option;
+                        break;
+                    }
+                }
+            @endphp
+
+        @endforeach
             <tr>
                 <td class="custom-cell">
                     <div class="form-check">
@@ -55,9 +72,9 @@
                 </td>
                 <td class="custom-cell">#{{$ticket->number}}</td>
                 <td class="custom-cell"><span class="tag tag-{{ $status }}">{{$status}}</span></td>
-                <td class="custom-cell">{{isset($optionValue) ? $optionValue : '-'}}</td>
+                <td class="custom-cell">{{isset($ticketPriority) ? $ticketPriority : '-'}}</td>
                 <td class="custom-cell">{{$ticket->user ? $ticket->user->first_name . ' ' . $ticket->user->last_name : "-"}}</td>
-                <td class="custom-cell">network</td>
+                <td class="custom-cell">{{isset($optionValue) ? $optionValue : '-'}}</td>
                 <td class="custom-cell">{{$ticket->subject}}</td>
                 <td class="custom-cell">{{$duration->format('%h HRS')}}</td>
             </tr>
