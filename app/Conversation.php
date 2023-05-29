@@ -2318,4 +2318,16 @@ class Conversation extends Model
             'custom_field_id' // Local key on Conversation_custom_field table
         )->where('custom_fields.name', 'Ticket Category');
     }
+    public function conversationPriority()
+    {
+
+        return $this->hasManyThrough(
+            CustomField::class,
+            ConversationCustomField::class,
+            'conversation_id', // Foreign key on Conversation_custom_field table
+            'id', // Foreign key on Custom_field table
+            'id', // Local key on Conversations table
+            'custom_field_id' // Local key on Conversation_custom_field table
+        )->where('custom_fields.name', 'Priority');
+    }
 }
