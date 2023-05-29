@@ -53,7 +53,7 @@
                 $options = $item['options'];
                 // $value = $item['value'];
                 $ticketPriority = null;
-                var_dump($item);
+
                 foreach ($options as $key => $option) {
                     if ($key == $value) {
                         $ticketPriority = $option;
