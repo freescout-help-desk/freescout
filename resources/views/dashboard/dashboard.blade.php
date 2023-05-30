@@ -56,9 +56,10 @@
         </div>
 
 </form>
-<div class="container-fluid color" style="padding: 0 60px;margin-bottom: 3em;">
+<div class="container-fluid color" style="padding: 0 20px;margin-bottom: 3em;">
     <div class="row text-center" style="margin-top: 6rem;">
-        <div class="col-md-4">
+       <div class="row-text-center1">
+       <div class="col-md-4">
             <p class="stat-options">Total Tickets</p>
             <h1 class="stat-values">{{$totalCount}}</h1>
         </div>
@@ -70,10 +71,12 @@
             <p class="stat-options">Overdue Tickets</p>
             <h1 class="stat-values">{{$overdueCount}}</h1>
         </div>
+       </div>
     </div>
 
-    <div class="row text-center" style="margin-top: 4rem;">
-        <div class="col-md-4">
+    <div class="row text-center" style="margin-top: 0rem;">
+       <div class="row-text-center1">
+       <div class="col-md-4">
             <p class="stat-options">Open Tickets</p>
             <h1 class="stat-values">{{$unclosedCount}}</h1>
         </div>
@@ -85,6 +88,7 @@
             <p class="stat-options">Hold Tickets</p>
             <h1 class="stat-values">{{$unclosedCreated30DaysAgoCount}}</h1>
         </div>
+       </div>
     </div>
 
 
@@ -147,6 +151,10 @@
     align-items: center;
     justify-content: space-evenly;
     background: #deecf9;
+}
+
+.dm .top-form{
+    background: #005eb4;
 }
 .circle {
       display: inline-block;
@@ -349,6 +357,29 @@
         display: flex;
         flex-direction:column;
     }
+    
+
+    .row-text-center1{
+        display:flex;
+        flex-direction:row;
+        margin-left:0px;
+    }
+
+
+    .stat-options {
+        font-size: 15px;
+        max-width: 100%;
+        margin-top:20px;
+    }
+    .stat-values{
+        font-size: 15px;
+        max-width: 100%;
+    }
+
+    .donut-container{
+        margin-top: 3rem;
+    }
+   
 }
 </style>
 
