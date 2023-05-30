@@ -22,7 +22,7 @@
         <li class="no-link"><span class="text-help">{{ __('Filters') }}</span></li>
 		@foreach ($filters_list as $filter)
             <li class="menu-link menu-padded">
-            	<a href="#" data-filter="{{ $filter }}" @if (isset($filters[$filter]))class="active"@endif>{{ __($filter) }}:</a>
+            	<a href="#" data-filter="{{ $filter }}" @if (isset($filters[$filter]))class="active"@endif>{{ mb_strtolower(__(ucwords($filter))) }}:</a>
             </li>
         @endforeach
     </ul>
