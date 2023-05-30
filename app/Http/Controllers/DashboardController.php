@@ -18,6 +18,8 @@ class DashboardController extends Controller
     //Index Route
     public function index(Request $request)
     {
+        
+        
         $today = Carbon::today();
         $fourDaysAgo = Carbon::today()->subDays(4);
         $sevenDaysAgo = Carbon::today()->subDays(7);
@@ -129,6 +131,6 @@ class DashboardController extends Controller
 
         }
         // Category Tickets
-        return view('/dashboard/dashboard', compact('totalCount', 'unassignedCount', 'overdueCount', 'unclosedCount', 'closedCount', 'unclosedCreated30DaysAgoCount', 'tickets', 'categoryValues','filters','productValues'));
+        return view('dashboard.dashboard', compact('totalCount', 'unassignedCount', 'overdueCount', 'unclosedCount', 'closedCount', 'unclosedCreated30DaysAgoCount', 'tickets', 'categoryValues','filters','productValues'));
     }
 }

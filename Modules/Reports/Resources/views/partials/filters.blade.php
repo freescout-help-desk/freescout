@@ -1,8 +1,8 @@
 <div class="rpt-filters">
 
-	{{--<div class="rpt-views-trigger">
+	<!-- <div class="rpt-views-trigger">
 		@include('reports::partials/views')
-	</div>--}}
+	</div> -->
 
 	<div class="rpt-filter">
 		{{ __('Type') }} 
@@ -51,11 +51,12 @@
 
 @php
 	$custom_fields = Reports::getCustomFieldFilters();
+	
 @endphp
 @if (count($custom_fields))
     <div class="rpt-filters">
-        @foreach($custom_fields as $custom_field)
-            <div class="rpt-filter rpt-cf-mailbox rpt-cf-mailbox-{{ $custom_field->mailbox_id }} hidden">
+		@foreach($custom_fields as $custom_field)
+            <div class="rpt-filter rpt-cf-mailbox rpt-cf-mailbox-{{ $custom_field->mailbox_id }}">
                 <span class="rpt-cf-name">{{ $custom_field->name }}</span>
 
                 @if ($custom_field->type == CustomField::TYPE_DROPDOWN)

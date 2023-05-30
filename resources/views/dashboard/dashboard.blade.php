@@ -1,66 +1,62 @@
 @extends('layouts.app')
 @section('content')
-<div class="container-fluid color" style="padding: 0 60px;margin-bottom: 3em;">
-    <form action="{{ route('filter') }}" method="GET">
-    <div class="rpt-filters">
+<form action="{{ route('filter') }}" method="GET" class="top-form">
+        <div class="rpt-filters">
 
-        {{-- <div class="rpt-views-trigger">
-            @include('reports::partials/views')
-        </div> --}}
+            {{-- <div class="rpt-views-trigger">
+                @include('reports::partials/views')
+            </div> --}}
 
-        <div class="rpt-filter">
-            {{ __('Tickets Category') }}
-            <select class="form-control" name="ticket" >
-                <option value=""></option>
-                @foreach ($categoryValues as $category)
-                    <option value="{{$category}}">{{$category}}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="rpt-filter">
-            {{ __('Product') }}
-            <select class="form-control" name="product">
-                <option value=""></option>
-                @foreach ($productValues as $product)
-                    <option value="{{$product}}">{{$product}}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="rpt-filter">
-            {{ __('Type') }}
-            <select class="form-control" name="type">
-                <option value=""></option>
-                <option value="{{ App\Conversation::TYPE_EMAIL }}">{{ __('Email') }}</option>
-                <option value="{{ App\Conversation::TYPE_CHAT }}">{{ __('Chat') }}</option>
-                <option value="{{ App\Conversation::TYPE_PHONE }}">{{ __('Phone') }}</option>
-            </select>
-        </div>
-        <div class="rpt-filter">
-            {{ __('Mailbox') }}
-            <select class="form-control" name="mailbox">
-                <option value=""></option>
-                @foreach (Auth::user()->mailboxesCanView(true) as $mailbox)
-                    <option value="{{ $mailbox->id }}">{{ $mailbox->name }}</option>
-                @endforeach
-            </select>
-        </div>
+            <div class="rpt-filter">
+                {{ __('Tickets Category') }}
+                <select class="form-control" name="ticket" >
+                    <option value=""></option>
+                    @foreach ($categoryValues as $category)
+                        <option value="{{$category}}">{{$category}}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="rpt-filter">
+                {{ __('Product') }}
+                <select class="form-control" name="product">
+                    <option value=""></option>
+                    @foreach ($productValues as $product)
+                        <option value="{{$product}}">{{$product}}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="rpt-filter">
+                {{ __('Type') }}
+                <select class="form-control" name="type">
+                    <option value=""></option>
+                    <option value="{{ App\Conversation::TYPE_EMAIL }}">{{ __('Email') }}</option>
+                    <option value="{{ App\Conversation::TYPE_CHAT }}">{{ __('Chat') }}</option>
+                    <option value="{{ App\Conversation::TYPE_PHONE }}">{{ __('Phone') }}</option>
+                </select>
+            </div>
+            <div class="rpt-filter">
+                {{ __('Mailbox') }}
+                <select class="form-control" name="mailbox">
+                    <option value=""></option>
+                    @foreach (Auth::user()->mailboxesCanView(true) as $mailbox)
+                        <option value="{{ $mailbox->id }}">{{ $mailbox->name }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div class="rpt-filter">
-            <nobr><input type="date" name="from" class="form-control rpt-filter-date" value="{{ $filters['from'] }}" />-<input type="date" name="to" class="form-control rpt-filter-date" value="{{ $filters['to'] }}" /></nobr>
-            {{-- <button class="btn btn-primary" name="period">Oct 1, 2017 - Nov 1, 2017 <span class="caret"></span></button> --}}
-        </div>
+            <div class="rpt-filter">
+                <nobr><input type="date" name="from" class="form-control rpt-filter-date" value="{{ $filters['from'] }}" />-<input type="date" name="to" class="form-control rpt-filter-date" value="{{ $filters['to'] }}" /></nobr>
+                {{-- <button class="btn btn-primary" name="period">Oct 1, 2017 - Nov 1, 2017 <span class="caret"></span></button> --}}
+            </div>
 
-        <div class="rpt-filter" data-toggle="tooltip" title="{{ __('Refresh') }}">
-            <button class="btn btn-primary" id="rpt-btn-loader" onclick="refreshPage()" type="submit"><i class="glyphicon glyphicon-refresh"></i></button>
-        </div>
+            <div class="rpt-filter" data-toggle="tooltip" title="{{ __('Refresh') }}">
+                <button class="btn btn-primary" id="rpt-btn-loader" onclick="refreshPage()" type="submit"><i class="glyphicon glyphicon-refresh"></i></button>
+            </div>
 
-    </div>
+        </div>
 
 </form>
-
-
-
-
+<div class="container-fluid color" style="padding: 0 60px;margin-bottom: 3em;">
     <div class="row text-center" style="margin-top: 6rem;">
         <div class="col-md-4">
             <p class="stat-options">Total Tickets</p>
@@ -142,7 +138,16 @@
     </div>
 </div>
 <style>
-
+.content{
+    margin-top: 0;
+}
+.top-form{
+    display: flex;
+    height: 4em;
+    align-items: center;
+    justify-content: space-evenly;
+    background: #deecf9;
+}
 .circle {
       display: inline-block;
       width: 10px;
