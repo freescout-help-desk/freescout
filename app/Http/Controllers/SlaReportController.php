@@ -11,7 +11,7 @@ class SlaReportController extends Controller
 {
     public function slaReport()
     {
-        $tickets = Conversation::with('user', 'conversationCustomField.custom_field', 'conversationCategory','conversationPriority')->get();
+        $tickets = Conversation::with('user', 'conversationCustomField.custom_field', 'conversationCategory','conversationPriority','conversationEscalated')->get();
         return view('sla/report', compact('tickets'));
     }
 }

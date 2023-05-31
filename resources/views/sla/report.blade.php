@@ -12,10 +12,13 @@
                 </th>
                 <th class="custom-cell">TICKET NO</th>
                 <th class="custom-cell">STATUS</th>
-                <th class="custom-cell">PREFERENCE</th>
+                <th class="custom-cell">Priority</th>
                 <th class="custom-cell">ENGINEER</th>
                 <th class="custom-cell">CATEGORY</th>
                 <th class="custom-cell">SUBJECT</th>
+                <th class="custom-cell">Mailbox</th>
+                <th class="custom-cell">Escalated</th>
+                <th class="custom-cell">Created date</th>
                 <th class="custom-cell">RESOLUTION TIME</th>
             </tr>
         </thead>
@@ -25,6 +28,7 @@
                 $dataArray = json_decode($ticket->conversationCustomField, true);
                 $ticketPriorityArray =json_decode($ticket->conversationPriority, true);
                 $ticketCategoryArray =json_decode($ticket->conversationCategory, true);
+                $ticketEscalated =json_decode($ticket->conversationEscalated, true);
                 $status = $ticket['status'] == 1 ? 'ACTIVE' : ($ticket['status'] == 2 ? 'PENDING' : ($ticket['status'] == 3 ? 'CLOSED' : 'SPAM'));
                 $createdAt = \Carbon\Carbon::parse($ticket['created_at']);
                 $lastReplyAt = \Carbon\Carbon::parse($ticket['last_reply_at']);
@@ -45,6 +49,8 @@
                     }
                 @endphp
             @endforeach
+
+
 
             @foreach ($ticketCategoryArray as $item)
             @php
@@ -75,6 +81,30 @@
             @endphp
 
         @endforeach
+
+        @foreach ($ticketEscalated as $item)
+        @php
+
+            $options = $item['options'];
+            $ticketEscalate = null;
+            foreach ($options as $key => $option) {
+                if ($key == $value) {
+                    $ticketEscalate = $option;
+                    break;
+                }
+            }
+        @endphp
+
+    @endforeach
+        @php
+            $rtime=$duration->format('%h HRS');
+            $restime=null;
+            if($rtime==0){
+                $restime="N/A";
+            }else{
+                $restime=$rtime;
+            }
+        @endphp
             <tr>
                 <td class="custom-cell">
                     <div class="form-check">
@@ -89,7 +119,10 @@
                 <td class="custom-cell">{{$ticket->user ? $ticket->user->first_name . ' ' . $ticket->user->last_name : "-"}}</td>
                 <td class="custom-cell">{{isset($ticketCategory) ? $ticketCategory : '-'}}</td>
                 <td class="custom-cell">{{$ticket->subject}}</td>
-                <td class="custom-cell">{{$duration->format('%h HRS')}}</td>
+                <td class="custom-cell">{{$ticket->user ? $ticket->user->email : "-"}}</td>
+                <td class="custom-cell">{{isset($ticketEscalate) ? $ticketEscalate : '-'}}</td>
+                <td class="custom-cell">{{$ticket->created_at}}</td>
+                <td class="custom-cell">{{$restime}}</td>
             </tr>
             @endforeach
         </tbody>
@@ -143,7 +176,15 @@ $(document).ready(function() {
     $('.datatable').DataTable({
         dom: 'Bfrtip',
         buttons: [
-            'csv','pdf'
+            'csv',
+            {
+                extend: 'pdfHtml5',
+                text: 'PDF',
+                orientation:'landscape',
+                exportOptions: {
+                    columns: ':visible'
+                },
+            }
         ]
     });
 });
