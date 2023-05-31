@@ -120,7 +120,7 @@
                 <td class="custom-cell">{{isset($ticketCategory) ? $ticketCategory : '-'}}</td>
                 <td class="custom-cell">{{$ticket->subject}}</td>
                 <td class="custom-cell">{{$ticket->user ? $ticket->user->email : "-"}}</td>
-                <td class="custom-cell">{{isset($ticketEscalate) ? $ticketEscalate : '-'}}</td>
+                <td class="custom-cell">{{isset($ticketEscalate) ? 'YES' : 'NO'}}</td>
                 <td class="custom-cell">{{$ticket->created_at}}</td>
                 <td class="custom-cell">{{$restime}}</td>
             </tr>
