@@ -204,7 +204,12 @@ class Header {
         $this->extractAddresses($header);
 
         if (property_exists($header, 'subject')) {
-            $this->set("subject", $this->decode($header->subject));
+            //$this->set("subject", $this->decode($header->subject));
+            $subject = iconv_mime_decode($header->subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+            if (!$subject) {
+                $subject = $header->subject;
+            }
+            $this->set("subject", $subject);
         }
         if (property_exists($header, 'references')) {
             $this->set("references", $this->decode($header->references));
