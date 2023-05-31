@@ -753,6 +753,13 @@ class ConversationsController extends Controller
                     }
                 }
 
+                $body = $request->body;
+
+                // Replace base64 images with attachment URLs in case text
+                // was copy and pasted into the editor.
+                // https://github.com/freescout-helpdesk/freescout/issues/3057
+                $body = Thread::replaceBase64ImagesWithAttachments($body);
+
                 // List of emails.
                 $to_array = [];
                 if ($is_forward) {
@@ -789,7 +796,7 @@ class ConversationsController extends Controller
                         $conversation = new Conversation();
                         $conversation->type = $type;
                         $conversation->subject = $request->subject;
-                        $conversation->setPreview($request->body);
+                        $conversation->setPreview($body);
                         $conversation->mailbox_id = $request->mailbox_id;
                         $conversation->created_by_user_id = auth()->user()->id;
                         $conversation->source_via = Conversation::PERSON_USER;
@@ -937,7 +944,7 @@ class ConversationsController extends Controller
                         $conversation->threads_count++;
                         // We need to set preview here as when conversation is created from draft,
                         // ThreadObserver::created() method is not called.
-                        $conversation->setPreview($request->body);
+                        $conversation->setPreview($body);
                     }
                     $conversation->save();
 
@@ -993,7 +1000,7 @@ class ConversationsController extends Controller
                     $thread->created_by_user_id = auth()->user()->id;
                     $thread->edited_by_user_id = null;
                     $thread->edited_at = null;
-                    $thread->body = $request->body;
+                    $thread->body = $body;
                     if ($is_create && !$is_multiple && count($to_array) > 1) {
                         $thread->setTo($to_array);
                     } else {
