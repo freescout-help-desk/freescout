@@ -1,5 +1,9 @@
 @extends('layouts.app')
 @section('content')
+<div class="top-form-hide-button">
+<i class="fa-solid fa-chevron-left" onclick="top_form_hide()"></i>
+</div>
+<div class="top-form-hide">
 <form action="{{ route('filter') }}" method="GET" class="top-form">
         <div class="rpt-filters">
 
@@ -9,7 +13,7 @@
 
             <div class="rpt-filter">
                 {{ __('Tickets Category') }}
-                <select class="form-control" name="ticket" >
+                <select class="form-control rpt-filter-select1" name="ticket">
                     <option value=""></option>
                     @foreach ($categoryValues as $category)
                         <option value="{{$category}}">{{$category}}</option>
@@ -18,7 +22,7 @@
             </div>
             <div class="rpt-filter">
                 {{ __('Product') }}
-                <select class="form-control" name="product">
+                <select class="form-control rpt-filter-select2" name="product">
                     <option value=""></option>
                     @foreach ($productValues as $product)
                         <option value="{{$product}}">{{$product}}</option>
@@ -27,7 +31,7 @@
             </div>
             <div class="rpt-filter">
                 {{ __('Type') }}
-                <select class="form-control" name="type">
+                <select class="form-control rpt-filter-select3" name="type">
                     <option value=""></option>
                     <option value="{{ App\Conversation::TYPE_EMAIL }}">{{ __('Email') }}</option>
                     <option value="{{ App\Conversation::TYPE_CHAT }}">{{ __('Chat') }}</option>
@@ -36,7 +40,7 @@
             </div>
             <div class="rpt-filter">
                 {{ __('Mailbox') }}
-                <select class="form-control" name="mailbox">
+                <select class="form-control rpt-filter-select4" name="mailbox">
                     <option value=""></option>
                     @foreach (Auth::user()->mailboxesCanView(true) as $mailbox)
                         <option value="{{ $mailbox->id }}">{{ $mailbox->name }}</option>
@@ -48,14 +52,13 @@
                 <nobr><input type="date" name="from" class="form-control rpt-filter-date" value="{{ $filters['from'] }}" />-<input type="date" name="to" class="form-control rpt-filter-date" value="{{ $filters['to'] }}" /></nobr>
                 {{-- <button class="btn btn-primary" name="period">Oct 1, 2017 - Nov 1, 2017 <span class="caret"></span></button> --}}
             </div>
-
-            <div class="rpt-filter" data-toggle="tooltip" title="{{ __('Refresh') }}">
+            <div class="rpt-filter rpt-filter-hide " data-toggle="tooltip" title="{{ __('Refresh') }}">
                 <button class="btn btn-primary" id="rpt-btn-loader" onclick="refreshPage()" type="submit"><i class="glyphicon glyphicon-refresh"></i></button>
+                <button class="top-form-hide-button-back" type="button" style="font-size:15px;" onclick="top_form_hide()">Back</button>
             </div>
-
         </div>
-
 </form>
+</div>
 <div class="container-fluid color" style="padding: 0 20px;margin-bottom: 3em;">
     <div class="row text-center" style="margin-top: 6rem;">
        <div class="row-text-center1">
@@ -95,7 +98,7 @@
 
     <div class="donut-container">
         <div class="donut-chart" >
-            <div>
+            <div class="col-sm-6">
                 <canvas id="donutChart" height="230px" width="100%"></canvas>
             </div>
             <div>
@@ -142,6 +145,8 @@
     </div>
 </div>
 <style>
+
+
 .content{
     margin-top: 0;
 }
@@ -334,11 +339,18 @@
         flex:50%;
         max-width:100%;
     }
+    .top-form-hide-button{
+      display: none;
+     
+    }
+    .top-form-hide-button-back{
+      display: none;
+    }
 
      /* its my code for external coonent*/
 
     @media (max-width: 600px) {
-        .dm .donut-container{
+    .dm .donut-container{
         display: flex;
         flex-direction:column;
     }
@@ -347,8 +359,6 @@
         flex-direction:column;
         
     }
-
-
     .dm .bar-container{
         display: flex;
         flex-direction:column;
@@ -357,15 +367,11 @@
         display: flex;
         flex-direction:column;
     }
-    
-
     .row-text-center1{
         display:flex;
         flex-direction:row;
         margin-left:0px;
     }
-
-
     .stat-options {
         font-size: 15px;
         max-width: 100%;
@@ -375,13 +381,85 @@
         font-size: 15px;
         max-width: 100%;
     }
-
     .donut-container{
         margin-top: 3rem;
     }
-   
+    .top-form{
+        height: 22em;
+    }
+    .rpt-filters{
+        display: flex;
+        flex-direction: column;
+        margin-left: -6rem;
+    }
+    .rpt-filter {
+       padding: 3px;
+    }
+    .rpt-filter-select1{
+        margin-left: 13px;
+    }
+    .rpt-filter-select2{
+        margin-left: 66px;
+    }
+    .rpt-filter-select3{
+        margin-left: 85px;
+    }
+    .rpt-filter-select4{
+        margin-left: 66px;
+    } 
+    .top-form-hide{
+        display: none;
+    }
+    .top-form-hide-button{
+      display: block;
+      text-align:right;
+      /* margin:10px 10px; */
+      position: fixed;
+    top: 60px;
+    right: 40px;
+    font-size: 36px;
+    }
+
+    .top-form-hide-button-back{
+    display: block;
+    color: #fff;
+    background-color: #0078d7;
+    border-color: #0078d7;
+    padding: 1px 0;
+    width: 202px;
+    margin-top: 13px;
+    height: 38px;
+    margin-left: 12px;
+    margin-top: 1px;
+} 
+.rpt-filter-hide{
+    display: flex;
+    flex-direction:row;
+ }      
 }
 </style>
+
+<script>
+    function top_form_hide(){
+        var list2 = document.getElementsByClassName("top-form-hide");
+        var list1 = document.getElementsByClassName("top-form-hide-button");
+        // print(list);
+        Array.from(list1).forEach((x1) => {
+    if (x1.style.display == "none") {
+      x1.style.display = "block";
+      Array.from(list2).forEach((x2) => {
+       x2.style.display="none";
+  });
+     
+    } else {
+      x1.style.display = "none";
+      Array.from(list2).forEach((x2) => {
+       x2.style.display="block";
+  });
+    }
+  });
+    }
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
