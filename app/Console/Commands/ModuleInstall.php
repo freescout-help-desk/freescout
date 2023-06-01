@@ -93,7 +93,9 @@ class ModuleInstall extends Command
 
         // Symlimk may exist but lead to the module folder in a wrong case.
         // So we need first try to remove it.
-        @unlink($from);
+        if (!file_exists($from)) {
+            @unlink($from);
+        }
 
         if (file_exists($from)) {
             return $this->info('Public symlink already exists');
