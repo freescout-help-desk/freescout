@@ -346,10 +346,10 @@ class ModulesController extends Controller
 
                     // Check public folder.
                     if ($module && file_exists($module->getPath().DIRECTORY_SEPARATOR.'Public')) {
-                        $public_folder = public_path().\Module::getPublicPath($alias);
-                        if (!file_exists($public_folder)) {
+                        $symlink_path = public_path().\Module::getPublicPath($alias);
+                        if (!file_exists($symlink_path)) {
                             $type = 'danger';
-                            $msg = 'Error occurred creating a module symlink ('.$public_folder.'). Please check folder permissions.';
+                            $msg = 'Error occurred creating a module symlink ('.$symlink_path.'). Please check folder permissions.';
                             \App\Module::setActive($alias, false);
                             \Artisan::call('freescout:clear-cache');
                         }

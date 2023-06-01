@@ -91,6 +91,10 @@ class ModuleInstall extends Command
         $from = public_path('modules').DIRECTORY_SEPARATOR.$module->alias;
         $to = $module->getExtraPath('Public');
 
+        // Symlimk may exist but lead to the module folder in a wrong case.
+        // So we need first try to remove it.
+        @unlink($from);
+
         if (file_exists($from)) {
             return $this->info('Public symlink already exists');
         }
