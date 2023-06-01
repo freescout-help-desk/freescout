@@ -34,9 +34,9 @@ Route::post('/user-setup/{hash}', 'OpenController@userSetupSave');
 Route::get('/storage/attachment/{dir_1}/{dir_2}/{dir_3}/{file_name}', 'OpenController@downloadAttachment')->name('attachment.download');
 
 // General routes for logged in users
-if (config('app.dashboard_path')) {
-	Route::get('/', config('app.home_controller'));
-}
+// if (config('app.dashboard_path')) {
+// 	Route::get('/', config('app.home_controller'));
+// }
 // Route::get('/'.config('app.dashboard_path'), 'DashboardController@index')->name('dashboard');
 Route::get('/'.config('app.dashboard_path'), ['uses' => 'DashboardController@index', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('dashboard');
 Route::get('/app-logs/app', ['uses' => '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('logs.app');

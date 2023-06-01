@@ -136,14 +136,14 @@ class ReportsServiceProvider extends ServiceProvider
     public static function getCustomFieldFilters()
     {
         $custom_fields = [];
-
         if (\Module::isActive('customfields')) {
-
+            
             $mailbox_ids = auth()->user()->mailboxesIdsCanView();
-
+            
             if ($mailbox_ids) {
                 $custom_fields = \Modules\CustomFields\Entities\CustomField::whereIn('mailbox_id', $mailbox_ids)
-                    ->get();
+                ->get();
+                
             }
         }
         return $custom_fields;
