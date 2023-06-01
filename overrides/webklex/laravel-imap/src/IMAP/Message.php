@@ -333,10 +333,7 @@ class Message
             // if (!\Str::startsWith(mb_strtolower($header->subject), '=?utf-8?')) {
             //     $this->subject = \imap_utf8($header->subject);
             // } else {
-            $this->subject = iconv_mime_decode($header->subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
-            if (!$this->subject) {
-                $this->subject = $header->subject;
-            }
+            $this->subject = \MailHelper::decodeSubject($header->subject);
             //}
             
             // if (\Str::startsWith(mb_strtolower($this->subject), '=?utf-8?')) {

@@ -880,6 +880,34 @@ class Mail
         }
     }
 
+    public static function decodeSubject($subject)
+    {
+        // Sometimes subject is split into parts and each part is base63 encoded.
+        // And sometimes it's first encoded and after that split.
+        // https://github.com/freescout-helpdesk/freescout/issues/3066      
+  
+        // First try to join all lines skipping =?utf-8?B? in betweeb.
+        $parts = preg_match_all("/(=\?[^\?]+\?[BQ]\?)([^\?]+)(\?=)[\r\n\t ]*/i", $subject, $m);
+        
+        $joined_parts = '';
+        if (count($m[1]) > 1 && !empty($m[2])) {
+            $joined_parts = $m[1][0].implode('', $m[2]).$m[3][0];
+
+            $subject_decoded = iconv_mime_decode($joined_parts, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+            
+            if ($subject_decoded && trim($subject_decoded) != trim(rtrim($joined_parts, '='))) {
+                return $subject_decoded;
+            }
+        }
+
+        $subject_decoded = iconv_mime_decode($subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+        if (!$subject_decoded) {
+            $subject_decoded = $subject;
+        }
+
+        return $subject_decoded;
+    }
+
     // public static function oauthGetProvider($provider_code, $params)
     // {
     //     $provider = null;
