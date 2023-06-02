@@ -33,7 +33,7 @@
                 @if ($user->photo_url)
                     <img src="{{ $user->getPhotoUrl() }}" />
                 @else
-                    <i class="card-avatar" data-initial="{{ strtoupper($user->first_name[0]) }}{{ strtoupper($user->last_name[0] ?? '') }}"></i>
+                    <i class="card-avatar" data-initial="{{ strtoupper($user->first_name[0] ?? '') }}{{ strtoupper($user->last_name[0] ?? '') }}"></i>
                 @endif
                 <h4 class="user-q">{{ $user->first_name }} {{ $user->last_name }}</h4>
                 <p class="text-truncate user-q">@filter('users.email', $user->email)</p>
