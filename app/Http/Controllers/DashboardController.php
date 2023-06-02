@@ -25,13 +25,14 @@ class DashboardController extends Controller
         $sevenDaysAgo = Carbon::today()->subDays(7);
         $thirtyDaysAgo = Carbon::today()->subDays(30);
 
-        $ticketFilter = $request->input('ticket');
-        $productFilter = $request->input('product');
-        $typeFilter = $request->input('type');
-        $mailboxId = $request->input('mailbox');
-
-        $from = $request->input('from');
-        $to = $request->input('to');
+        $filters = [
+            'ticket' => $request->input('ticket'),
+            'product' => $request->input('product'),
+            'type' => $request->input('type'),
+            'mailbox' => $request->input('mailbox'),
+            'from' => $request->input('from'),
+            'to' => $request->input('to')
+        ];
 
         // Ticket Category Labels
         $values = DB::table('custom_fields')
@@ -66,15 +67,15 @@ class DashboardController extends Controller
         $categoryIndex = '';
         $productIndex = '';
 
-        if ($ticketFilter === '0' || $ticketFilter === null) {
+        if ( $filters['ticket'] === '0' || $filters['ticket'] === null) {
             $categoryIndex = 0;
         } else {
-            $categoryIndex = array_search($ticketFilter, $categoryValues) + 1;
+            $categoryIndex = array_search($filters['ticket'], $categoryValues) + 1;
         }
-        if ($productFilter === '0' || $productFilter === null) {
+        if ($filters['product'] === '0' || $filters['product'] === null) {
             $productIndex = 0;
         } else {
-            $productIndex = array_search($productFilter, $productValues) + 1;
+            $productIndex = array_search($filters['product'], $productValues) + 1;
         }
 
 
@@ -92,11 +93,11 @@ class DashboardController extends Controller
                 ->select('conversations.*');
         }
         // Filtering based on Mailbox selected
-        if (!empty($mailboxId)) {
-            $query = $query->where('mailbox_id', $mailboxId);
+        if (!empty($filters['mailbox'])) {
+            $query = $query->where('mailbox_id', $filters['mailbox']);
         }
-        if (!empty($typeFilter)) {
-            $query = $query->where('type', $typeFilter);
+        if (!empty($filters['type'])) {
+            $query = $query->where('type', $filters['type']);
         }
 
         // Extract the data

@@ -9,7 +9,7 @@
                 <select class="form-control" name="ticket" >
                     <option value="0">All</option>
                     @foreach ($categoryValues as $category)
-                        <option value="{{$category}}">{{$category}}</option>
+                        <option value="{{$category}}" {{ $filters['ticket'] === $category ? 'selected' : '' }}>{{$category}}</option>
                     @endforeach
                 </select>
             </div>
@@ -18,7 +18,7 @@
                 <select class="form-control" name="product">
                     <option value="0">All</option>
                     @foreach ($productValues as $product)
-                        <option value="{{$product}}">{{$product}}</option>
+                        <option value="{{$product}}" {{ $filters['product'] === $product ? 'selected' : '' }}>{{$product}}</option>
                     @endforeach
                 </select>
             </div>
@@ -26,9 +26,9 @@
                 {{ __('Type') }}
                 <select class="form-control" name="type">
                     <option value="0">All</option>
-                    <option value="{{ App\Conversation::TYPE_EMAIL }}">{{ __('Email') }}</option>
-                    <option value="{{ App\Conversation::TYPE_CHAT }}">{{ __('Chat') }}</option>
-                    <option value="{{ App\Conversation::TYPE_PHONE }}">{{ __('Phone') }}</option>
+                    <option value="{{ App\Conversation::TYPE_EMAIL }}" {{ $filters['type'] == App\Conversation::TYPE_EMAIL ? 'selected' : '' }}>{{ __('Email') }}</option>
+                    <option value="{{ App\Conversation::TYPE_CHAT }}" {{ $filters['type'] == App\Conversation::TYPE_CHAT ? 'selected' : '' }}>{{ __('Chat') }}</option>
+                    <option value="{{ App\Conversation::TYPE_PHONE }}" {{ $filters['type'] == App\Conversation::TYPE_PHONE ? 'selected' : '' }}>{{ __('Phone') }}</option>
                 </select>
             </div>
             <div class="rpt-filter">
@@ -36,7 +36,7 @@
                 <select class="form-control" name="mailbox">
                     <option value="0">All</option>
                     @foreach (Auth::user()->mailboxesCanView(true) as $mailbox)
-                        <option value="{{ $mailbox->id }}">{{ $mailbox->name }}</option>
+                        <option value="{{ $mailbox->id }}" {{ $filters['mailbox'] == $mailbox->id ? 'selected' : '' }}>{{ $mailbox->name }}</option>
                     @endforeach
                 </select>
             </div>
