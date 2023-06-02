@@ -3,14 +3,11 @@
 <form action="{{ route('filter') }}" method="GET" class="top-form">
         <div class="rpt-filters">
 
-            {{-- <div class="rpt-views-trigger">
-                @include('reports::partials/views')
-            </div> --}}
 
             <div class="rpt-filter">
                 {{ __('Tickets Category') }}
                 <select class="form-control" name="ticket" >
-                    <option value=""></option>
+                    <option value="0">All</option>
                     @foreach ($categoryValues as $category)
                         <option value="{{$category}}">{{$category}}</option>
                     @endforeach
@@ -19,7 +16,7 @@
             <div class="rpt-filter">
                 {{ __('Product') }}
                 <select class="form-control" name="product">
-                    <option value=""></option>
+                    <option value="0">All</option>
                     @foreach ($productValues as $product)
                         <option value="{{$product}}">{{$product}}</option>
                     @endforeach
@@ -28,7 +25,7 @@
             <div class="rpt-filter">
                 {{ __('Type') }}
                 <select class="form-control" name="type">
-                    <option value=""></option>
+                    <option value="0">All</option>
                     <option value="{{ App\Conversation::TYPE_EMAIL }}">{{ __('Email') }}</option>
                     <option value="{{ App\Conversation::TYPE_CHAT }}">{{ __('Chat') }}</option>
                     <option value="{{ App\Conversation::TYPE_PHONE }}">{{ __('Phone') }}</option>
@@ -37,7 +34,7 @@
             <div class="rpt-filter">
                 {{ __('Mailbox') }}
                 <select class="form-control" name="mailbox">
-                    <option value=""></option>
+                    <option value="0">All</option>
                     @foreach (Auth::user()->mailboxesCanView(true) as $mailbox)
                         <option value="{{ $mailbox->id }}">{{ $mailbox->name }}</option>
                     @endforeach
@@ -46,7 +43,6 @@
 
             <div class="rpt-filter">
                 <nobr><input type="date" name="from" class="form-control rpt-filter-date" value="{{ $filters['from'] }}" />-<input type="date" name="to" class="form-control rpt-filter-date" value="{{ $filters['to'] }}" /></nobr>
-                {{-- <button class="btn btn-primary" name="period">Oct 1, 2017 - Nov 1, 2017 <span class="caret"></span></button> --}}
             </div>
 
             <div class="rpt-filter" data-toggle="tooltip" title="{{ __('Refresh') }}">
@@ -178,9 +174,6 @@
       background-color: #173292;
     }
 
-.stat-options{
-      /* color: hotpink; */
-}
 .dm .form-control {
     display: inline ;
     width: 140px;
@@ -345,7 +338,7 @@
     .donut-container{
         display: flex;
         flex-direction:column;
-        
+
     }
 
 
@@ -357,7 +350,7 @@
         display: flex;
         flex-direction:column;
     }
-    
+
 
     .row-text-center1{
         display:flex;
@@ -379,7 +372,7 @@
     .donut-container{
         margin-top: 3rem;
     }
-   
+
 }
 </style>
 
@@ -394,7 +387,6 @@
         datasets: [{
             data: ["{{ $unclosedCount}}", "{{$closedCount}}", "{{$unclosedCreated30DaysAgoCount}}"],
             backgroundColor: ['#89F81B', 'red', '#173292'],
-            // backgroundColor: ['red', 'blue', 'yellow'],
             borderColor: 'transparent',
         }]
     };

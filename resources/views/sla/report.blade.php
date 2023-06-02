@@ -1,5 +1,57 @@
 @extends('layouts.app')
 @section('content')
+<form action="{{ route('slafilter') }}" method="GET" class="container slafilter">
+    <div class="rpt-filters row">
+
+
+        <div class="rpt-filter">
+            {{ __('Tickets Category') }}
+            <select class="form-control ticket_select" name="ticket" >
+                <option value="0">All</option>
+                @foreach ($categoryValues as $category)
+                    <option value="{{$category}}">{{$category}}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="rpt-filter">
+            {{ __('Product') }}
+            <select class="form-control product_select" name="product">
+                <option value="0">All</option>
+                @foreach ($productValues as $product)
+                    <option value="{{$product}}">{{$product}}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="rpt-filter">
+            {{ __('Type') }}
+            <select class="form-control type_select" name="type">
+                <option value="0">All</option>
+                <option value="{{ App\Conversation::TYPE_EMAIL }}">{{ __('Email') }}</option>
+                <option value="{{ App\Conversation::TYPE_CHAT }}">{{ __('Chat') }}</option>
+                <option value="{{ App\Conversation::TYPE_PHONE }}">{{ __('Phone') }}</option>
+            </select>
+        </div>
+        <div class="rpt-filter">
+            {{ __('Mailbox') }}
+            <select class="form-control mailbox_select" name="mailbox">
+                <option value="0">All</option>
+                @foreach (Auth::user()->mailboxesCanView(true) as $mailbox)
+                    <option value="{{ $mailbox->id }}">{{ $mailbox->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="rpt-filter">
+            <nobr><input type="date" name="from" class="form-control rpt-filter-date" value="{{ $filters['from'] }}" />-<input type="date" name="to" class="form-control rpt-filter-date" value="{{ $filters['to'] }}" /></nobr>
+        </div>
+
+        <div class="rpt-filter" data-toggle="tooltip" title="{{ __('Refresh') }}">
+            <button class="btn btn-primary" id="rpt-btn-loader" onclick="refreshPage()" type="submit"><i class="glyphicon glyphicon-refresh"></i></button>
+        </div>
+
+    </div>
+
+</form>
 <div class="container report-container">
     <p style="font-weight: bold;width: 20%;float: left;">SLA REPORT</p>
     <table class="table datatable table-borderless slatable" >
@@ -104,7 +156,29 @@
             }else{
                 $restime=$rtime;
             }
+
         @endphp
+        @if ($ticketFilter==='0')
+        <tr>
+            <td class="custom-cell">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="">
+                    <label class="form-check-label" for="defaultCheck1">
+                    </label>
+                </div>
+            </td>
+            <td class="custom-cell">#{{$ticket->number}}</td>
+            <td class="custom-cell"><span class="tag tag-{{ $status }}">{{$status}}</span></td>
+            <td class="custom-cell">{{isset($ticketPriority) ? $ticketPriority : '-'}}</td>
+            <td class="custom-cell">{{$ticket->user ? $ticket->user->first_name . ' ' . $ticket->user->last_name : "-"}}</td>
+            <td class="custom-cell">{{isset($ticketCategory) ? $ticketCategory : '-'}}</td>
+            <td class="custom-cell">{{$ticket->subject}}</td>
+            <td class="custom-cell">{{$ticket->user ? $ticket->user->email : "-"}}</td>
+            <td class="custom-cell">{{isset($ticketEscalate) ? 'YES' : 'NO'}}</td>
+            <td class="custom-cell">{{$ticket->created_at}}</td>
+            <td class="custom-cell">{{$restime}}</td>
+        </tr>
+        @elseif(isset($ticketCategory) && $ticketCategory === $ticketFilter)
             <tr>
                 <td class="custom-cell">
                     <div class="form-check">
@@ -124,12 +198,113 @@
                 <td class="custom-cell">{{$ticket->created_at}}</td>
                 <td class="custom-cell">{{$restime}}</td>
             </tr>
+            @endif
             @endforeach
         </tbody>
     </table>
 
 </div>
 <style>
+
+.content{
+    margin-top: 0;
+}
+.slafilter{
+    display: flex;
+    height: 4em;
+    align-items: center;
+    justify-content: space-evenly;
+    background: #deecf9;
+}
+
+.dm .top-form{
+    background: #005eb4;
+}
+@media only screen and (max-width: 1500px){
+.slafilter {
+    margin-bottom: 1em;
+    margin-left: 0px;
+}
+}
+
+@media only screen and (max-width: 1200px){
+    .slafilter{
+        margin-bottom: 1em;
+        margin-left: 64px;
+    }
+    .ticket_select{
+        margin-left: 10px;
+    }
+    .product_select{
+        margin-left: 64px;
+    }
+    .type_select{
+        margin-left: 81px;
+    }
+    .mailbox_select{
+        margin-left: 64px;
+    }
+    .rpt-filter{
+        margin-bottom: 10px;
+    }
+}
+@media only screen and (max-width: 1200px){
+    .slafilter{
+        margin-bottom: 1em;
+        margin-left: -30px;
+    }
+}
+@media only screen and (max-width: 600px){
+    .slafilter{
+        margin-bottom: 1em;
+        margin-left: 41px;
+    }
+    .ticket_select{
+        margin-left: 10px;
+    }
+    .product_select{
+        margin-left: 64px;
+    }
+    .type_select{
+        margin-left: 81px;
+    }
+    .mailbox_select{
+        margin-left: 64px;
+    }
+}
+@media only screen and (max-width: 425px){
+    .slafilter{
+        margin-bottom: 1em;
+        margin-left: 40px;
+    }
+     .ticket_select{
+        margin-left: 10px;
+    }
+    .product_select{
+        margin-left: 64px;
+    }
+    .type_select{
+        margin-left: 81px;
+    }
+    .mailbox_select{
+        margin-left: 64px;
+    }
+}
+    .slafilter{
+        margin-bottom: 1em;
+        margin-left: -60px;
+    }
+    .dm .form-control {
+    display: inline ;
+    width: 140px;
+    min-inline-size: max-content;
+}
+
+.form-control {
+    display: inline ;
+    width: 140px;
+    min-inline-size: max-content;
+}
    .dm .slatable{
     background-color: #1d1c24;
    }
@@ -188,6 +363,9 @@ $(document).ready(function() {
         ]
     });
 });
+function refreshPage() {
+    location.reload();
+}
 </script>
 
 @endsection
