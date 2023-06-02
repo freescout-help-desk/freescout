@@ -129,9 +129,16 @@ Route::post('/uploads/upload', ['uses' => 'SecureController@upload', 'laroute' =
 
 
 // SLA-REPORT
-Route::get('/reports/sla', 'SlaReportController@slaReport')->name('reports.sla');;
+Route::get('/reports/sla', 'SlaReportController@slaReport')->name('reports.sla');
 
 // Dashboard
 Route::get('/reports/dashboard', 'DashboardController@index')->name('dashboard');
 
 Route::get('/reports/dashboard', 'DashboardController@index')->name('filter');
+
+Route::get('/reports/settings', 'SlaReportController@settings');
+// Route::get('/reports/settings',function(){
+// 	return(view('settings'));
+// });
+
+
