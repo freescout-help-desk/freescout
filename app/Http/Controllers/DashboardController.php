@@ -16,7 +16,7 @@ use Modules\Reports\Http\Controllers\ReportsController;
 class DashboardController extends Controller
 {
     //Index Route
-    public function index(Request $request)
+    public function index(Request $request ,$prev = false, $date_field = 'conversations.created_at', $date_field_to = '')
     {
 
 
@@ -33,6 +33,28 @@ class DashboardController extends Controller
             'from' => $request->input('from'),
             'to' => $request->input('to')
         ];
+
+        //Filter accourding timezon
+        $from = $request->input('from');
+        $to =  $request->input('to');
+
+        if (!$date_field_to) {
+            $date_field_to = $date_field;
+        }
+
+        if ($prev) {
+            if ($from && $to) {
+                $from_carbon = Carbon::parse($from);
+                $to_carbon = Carbon::parse($to);
+
+                $days = $from_carbon->diffInDays($to_carbon);
+
+                if ($days) {
+                    $from = $from_carbon->subDays($days)->format('Y-m-d');
+                    $to = $to_carbon->subDays($days)->format('Y-m-d');
+                }
+            }
+        }
 
         // Ticket Category Labels
         $values = DB::table('custom_fields')
@@ -94,10 +116,17 @@ class DashboardController extends Controller
         }
         // Filtering based on Mailbox selected
         if (!empty($filters['mailbox'])) {
-            $query = $query->where('mailbox_id', $filters['mailbox']);
+            $query = $query->where('conversations.mailbox_id', $filters['mailbox']);
         }
         if (!empty($filters['type'])) {
-            $query = $query->where('type', $filters['type']);
+            $query = $query->where('conversations.type', $filters['type']);
+        }
+
+        if (!empty($from)) {
+            $query->where($date_field, '>=', date('Y-m-d 00:00:00', strtotime($from)));
+        }
+        if (!empty($to)) {
+            $query->where($date_field_to, '<=', date('Y-m-d 23:59:59', strtotime($to)));
         }
 
         // Extract the data
@@ -120,8 +149,6 @@ class DashboardController extends Controller
         $closedCount = $results->closed_tickets_count;
         $unclosedCreated30DaysAgoCount = $results->unclosed_created_30_days_ago_count;
 
-        $filters['to'] = User::dateFormat(date('Y-m-d H:i:s'), 'Y-m-d', null, false);
-        $filters['from'] = date('Y-m-d', strtotime($filters['to'] . ' -1 week'));
 
         // For Weekly data
         $startDate = now()->startOfWeek();
