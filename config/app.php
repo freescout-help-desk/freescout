@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.78',
+    'version' => '1.8.79',
 
     /*
     |--------------------------------------------------------------------------
@@ -206,14 +206,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Enable if using CloudFlare "Flexible SSL":
-    | https://support.cloudflare.com/hc/en-us/articles/200170416-What-do-the-SSL-options-mean-
-    |-------------------------------------------------------------------------
-    */
-    'force_https' => env('APP_FORCE_HTTPS', false),
-
-    /*
-    |--------------------------------------------------------------------------
     | Logs monitoring parameters.
     | These settings must be stored to avoid DB query in Kenel.php
     |-------------------------------------------------------------------------
@@ -290,7 +282,7 @@ return [
     |
     |-------------------------------------------------------------------------
     */
-    'no_retry_mail_errors'    => env('APP_NO_RETRY_MAIL_ERRORS', '(no valid recipients|does not comply with RFC)'),
+    'no_retry_mail_errors'    => env('APP_NO_RETRY_MAIL_ERRORS', '(no valid recipients|does not comply with RFC|message file too big)'),
 
     /*
     |--------------------------------------------------------------------------

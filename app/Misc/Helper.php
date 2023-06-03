@@ -1331,7 +1331,7 @@ class Helper
         $links = array();
 
         // Extract existing links and tags
-        $value = preg_replace_callback('~(<a .*?>.*?</a>|<.*?>)~i', function ($match) use (&$links) { return '<' . array_push($links, $match[1]) . '>'; }, $value ?? '');
+        $value = preg_replace_callback('~(<a .*?>.*?</a>|<.*?>)~i', function ($match) use (&$links) { return '<' . array_push($links, $match[1]) . '>'; }, $value ?? '') ?: $value;
 
         $value = $value ?? '';
 
@@ -1339,14 +1339,17 @@ class Helper
         foreach ((array)$protocols as $protocol) {
             switch ($protocol) {
                 case 'http':
-                case 'https':   $value = preg_replace_callback('~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { if ($match[1]) $protocol = $match[1]; $link = $match[2] ?: $match[3]; return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>'; }, $value); break;
-                case 'mail':    $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:])~', function ($match) use (&$links, $attr) { return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>'; }, $value); break;
-                default:        $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { return '<' . array_push($links, "<a $attr href=\"$protocol://{$match[1]}\">$protocol://{$match[1]}</a>") . '>'; }, $value); break;
+                case 'https':   $value = preg_replace_callback('~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { if ($match[1]) $protocol = $match[1]; $link = $match[2] ?: $match[3]; return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>'; }, $value) ?: $value;
+                    break;
+                case 'mail':    $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:])~', function ($match) use (&$links, $attr) { return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>'; }, $value) ?: $value;
+                    break;
+                default:        $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { return '<' . array_push($links, "<a $attr href=\"$protocol://{$match[1]}\">$protocol://{$match[1]}</a>") . '>'; }, $value) ?: $value;
+                    break;
             }
         }
 
         // Insert all link
-        return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { return $links[$match[1] - 1]; }, $value ?? '');
+        return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { return $links[$match[1] - 1]; }, $value ?? '') ?: $value;
     }
 
     /**
@@ -1706,13 +1709,23 @@ class Helper
         return md5(config('app.key').'web_cron_hash');
     }
 
+    public static function getProtocol($url = '')
+    {
+        return mb_strtolower(parse_url($url ?: config('app.url'), PHP_URL_SCHEME) ?: 'http');
+    }
+
+    public static function isHttps($url = '')
+    {
+        return self::getProtocol($url) == 'https';
+    }
+
     public static function fixProtocol($url)
     {
-        if (parse_url(config('app.url'), PHP_URL_SCHEME) == 'http' && parse_url($url, PHP_URL_SCHEME) != 'http') {
+        if (self::getProtocol() == 'http' && parse_url($url, PHP_URL_SCHEME) != 'http') {
             return str_replace('https://', 'http://', $url);
         }
 
-        if (parse_url(config('app.url'), PHP_URL_SCHEME) == 'https' && parse_url($url, PHP_URL_SCHEME) != 'https') {
+        if (self::getProtocol() == 'https' && parse_url($url, PHP_URL_SCHEME) != 'https') {
             return str_replace('http://', 'https://', $url);
         }
 
@@ -1862,5 +1875,15 @@ class Helper
         $first_char = mb_substr($string, 0, 1, $encoding);
         $then = mb_substr($string, 1, null, $encoding);
         return mb_strtoupper($first_char, $encoding) . $then;
+    }
+
+    /**
+     * This is needed to allow using regexes for large texts.
+     */
+    public static function setPcreBacktrackLimit()
+    {
+        if ((int)ini_get('pcre.backtrack_limit') <= 1000000) {
+            ini_set('pcre.backtrack_limit', 1000000000);
+        }
     }
 }

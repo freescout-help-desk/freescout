@@ -28,7 +28,7 @@ class HttpsRedirect {
 
     public function handle($request, Closure $next)
     {
-        if (\Config::get('app.force_https') == 'true') {
+        if (\Helper::isHttps()) {
             $request->setTrustedProxies( [ $request->getClientIp() ], array_keys($this->headers)); 
 
             if (!$request->secure() && strtolower($_SERVER['HTTPS'] ?? '') != 'on' 
@@ -40,7 +40,7 @@ class HttpsRedirect {
         }
 
         // Correct protocol in $_SERVER
-        if (parse_url(config('app.url'), PHP_URL_SCHEME) == 'https' 
+        if (\Helper::isHttps() 
             && !$request->secure() 
             && strtolower($_SERVER['HTTPS'] ?? '') != 'on'
         ) {

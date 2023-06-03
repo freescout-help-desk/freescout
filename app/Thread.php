@@ -308,11 +308,12 @@ class Thread extends Model
 
         // Change "background:" to "background-color:".
         // https://github.com/freescout-helpdesk/freescout/issues/2560
-        $body = preg_replace("/(<[^<>]+style=[\"'][^\"']*)background: *([^;() ]+;)/", '$1background-color:$2', $body);
+        // Keep in mind that with large texts preg_replace() may return null.
+        $body = preg_replace("/(<[^<>]+style=[\"'][^\"']*)background: *([^;() ]+;)/", '$1background-color:$2', $body) ?: $body;
 
         // Cut out "collapse" class as it hides elements.
-        $body = preg_replace("/(<[^<>\r\n]+class=([\"'][^\"']* |[\"']))(collapse|hidden)([\"' ])/", '$1$4', $body);
-        
+        $body = preg_replace("/(<[^<>\r\n]+class=([\"'][^\"']* |[\"']))(collapse|hidden)([\"' ])/", '$1$4', $body) ?: $body;
+
         return \Helper::purifyHtml($body);
     }
 
@@ -352,7 +353,7 @@ class Thread extends Model
                 return sprintf('target="_blank" %s', array_shift($m2));
             }, $tpl);
 
-        }, $body);
+        }, $body) ?: $body;
 
         return $body;
     }
@@ -1439,5 +1440,37 @@ class Thread extends Model
     public function isUserMessage()
     {
         return $this->type == self::TYPE_MESSAGE;
+    }
+
+    public static function replaceBase64ImagesWithAttachments($body, $user_id = null)
+    {
+        \Helper::setPcreBacktrackLimit();
+
+        $body = preg_replace_callback("#(<img[^<>]+src=[\"'])data:image/([^;]+);base64,([^\"']+)([\"'])#",
+            function ($match) {
+                $attachment = null;
+                $data = base64_decode($match[3]);
+
+                if ($data) {
+                    $attachment = Attachment::create(
+                        $file_name = number_format(microtime(true), 4, '', '').'.'.$match[2],
+                        $mime_type = 'image/'.$match[2],
+                        $type = Attachment::TYPE_IMAGE,
+                        $data,
+                        $uploaded_file = null,
+                        $embedded = true,
+                        $thread_id = null,
+                        $user_id = \Auth::id()
+                    );
+                }
+                if ($attachment) {
+                    return $match[1].$attachment->url().$match[4];
+                } else {
+                    return $match[0];
+                }
+            }, $body
+        );
+
+        return $body;
     }
 }
