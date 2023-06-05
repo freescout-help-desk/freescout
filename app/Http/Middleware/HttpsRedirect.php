@@ -41,7 +41,7 @@ class HttpsRedirect {
 
         // Correct protocol in $_SERVER
         if (\Helper::isHttps() 
-            && !$request->secure() 
+            //&& !$request->secure() 
             && strtolower($_SERVER['HTTPS'] ?? '') != 'on'
         ) {
             $_SERVER['HTTPS'] = 'on';
