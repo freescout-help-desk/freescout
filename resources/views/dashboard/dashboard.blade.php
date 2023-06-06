@@ -1,57 +1,69 @@
 @extends('layouts.app')
 @section('content')
-<form action="{{ route('filter') }}" method="GET" class="top-form">
-        <div class="rpt-filters">
-
-
-            <div class="rpt-filter">
-                {{ __('Tickets Category') }}
-                <select class="form-control" name="ticket" >
-                    <option value="0">All</option>
-                    @foreach ($categoryValues as $category)
-                        <option value="{{$category}}" {{ $filters['ticket'] === $category ? 'selected' : '' }}>{{$category}}</option>
-                    @endforeach
-                </select>
+<i class="glyphicon glyphicon-filter filter-trigger"></i>
+<div class="rpt-header">
+    <form action="{{ route('filter') }}" method="GET" class="top-form">
+            <div class="rpt-filters">
+    
+    
+                <div class="rpt-filter">
+                    <label>
+                        {{ __('Tickets Category') }}
+                    </label>
+                    <select class="form-control" name="ticket" >
+                        <option value="0">All</option>
+                        @foreach ($categoryValues as $category)
+                            <option value="{{$category}}" {{ $filters['ticket'] === $category ? 'selected' : '' }}>{{$category}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="rpt-filter">
+                    <label>
+                        {{ __('Product') }}
+                    </label>
+                    <select class="form-control" name="product">
+                        <option value="0">All</option>
+                        @foreach ($productValues as $product)
+                            <option value="{{$product}}" {{ $filters['product'] === $product ? 'selected' : '' }}>{{$product}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="rpt-filter">
+                    <label>
+                        {{ __('Type') }}
+                    </label>
+                    <select class="form-control" name="type">
+                        <option value="0">All</option>
+                        <option value="{{ App\Conversation::TYPE_EMAIL }}" {{ $filters['type'] == App\Conversation::TYPE_EMAIL ? 'selected' : '' }}>{{ __('Email') }}</option>
+                        <option value="{{ App\Conversation::TYPE_CHAT }}" {{ $filters['type'] == App\Conversation::TYPE_CHAT ? 'selected' : '' }}>{{ __('Chat') }}</option>
+                        <option value="{{ App\Conversation::TYPE_PHONE }}" {{ $filters['type'] == App\Conversation::TYPE_PHONE ? 'selected' : '' }}>{{ __('Phone') }}</option>
+                    </select>
+                </div>
+                <div class="rpt-filter">
+                    <label>
+                        {{ __('Mailbox') }}
+                    </label>
+                    <select class="form-control" name="mailbox">
+                        <option value="0">All</option>
+                        @foreach (Auth::user()->mailboxesCanView(true) as $mailbox)
+                            <option value="{{ $mailbox->id }}" {{ $filters['mailbox'] == $mailbox->id ? 'selected' : '' }}>{{ $mailbox->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+    
+                <div class="rpt-filter">
+                    <label class="mobile-label">{{__('Date Range')}}</label>
+                    <nobr><input type="date" name="from" class="form-control rpt-filter-date" value="{{ $filters['from'] }}" />-<input type="date" name="to" class="form-control rpt-filter-date" value="{{ $filters['to'] }}" /></nobr>
+                </div>
+    
+                <div class="rpt-filter" data-toggle="tooltip" title="{{ __('Refresh') }}">
+                    <button class="btn btn-primary" id="rpt-btn-loader" onclick="refreshPage()" type="submit"><i class="glyphicon glyphicon-refresh"></i></button>
+                </div>
+    
             </div>
-            <div class="rpt-filter">
-                {{ __('Product') }}
-                <select class="form-control" name="product">
-                    <option value="0">All</option>
-                    @foreach ($productValues as $product)
-                        <option value="{{$product}}" {{ $filters['product'] === $product ? 'selected' : '' }}>{{$product}}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="rpt-filter">
-                {{ __('Type') }}
-                <select class="form-control" name="type">
-                    <option value="0">All</option>
-                    <option value="{{ App\Conversation::TYPE_EMAIL }}" {{ $filters['type'] == App\Conversation::TYPE_EMAIL ? 'selected' : '' }}>{{ __('Email') }}</option>
-                    <option value="{{ App\Conversation::TYPE_CHAT }}" {{ $filters['type'] == App\Conversation::TYPE_CHAT ? 'selected' : '' }}>{{ __('Chat') }}</option>
-                    <option value="{{ App\Conversation::TYPE_PHONE }}" {{ $filters['type'] == App\Conversation::TYPE_PHONE ? 'selected' : '' }}>{{ __('Phone') }}</option>
-                </select>
-            </div>
-            <div class="rpt-filter">
-                {{ __('Mailbox') }}
-                <select class="form-control" name="mailbox">
-                    <option value="0">All</option>
-                    @foreach (Auth::user()->mailboxesCanView(true) as $mailbox)
-                        <option value="{{ $mailbox->id }}" {{ $filters['mailbox'] == $mailbox->id ? 'selected' : '' }}>{{ $mailbox->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="rpt-filter">
-                <nobr><input type="date" name="from" class="form-control rpt-filter-date" value="{{ $filters['from'] }}" />-<input type="date" name="to" class="form-control rpt-filter-date" value="{{ $filters['to'] }}" /></nobr>
-            </div>
-
-            <div class="rpt-filter" data-toggle="tooltip" title="{{ __('Refresh') }}">
-                <button class="btn btn-primary" id="rpt-btn-loader" onclick="refreshPage()" type="submit"><i class="glyphicon glyphicon-refresh"></i></button>
-            </div>
-
-        </div>
-
-</form>
+    
+    </form>
+</div>
 <div class="container-fluid color" style="padding: 0 20px;margin-bottom: 3em;">
     <div class="row text-center" style="margin-top: 6rem;">
        <div class="row-text-center1">
@@ -91,7 +103,7 @@
 
     <div class="donut-container">
         <div class="donut-chart" >
-            <div>
+            <div class="col-md-6">
                 <canvas id="donutChart" height="230px" width="100%"></canvas>
             </div>
             <div>
@@ -143,7 +155,7 @@
 }
 .top-form{
     display: flex;
-    height: 4em;
+    height: auto;
     align-items: center;
     justify-content: space-evenly;
     background: #deecf9;
@@ -151,6 +163,14 @@
 
 .dm .top-form{
     background: #005eb4;
+}
+.rpt-header{
+    box-shadow: -3px 13px 19px -2px #00000057;
+}
+.opn-menu{
+    padding: 12px 18px;
+    width: 75%;
+    left: 25%;
 }
 .circle {
       display: inline-block;
@@ -327,8 +347,18 @@
         flex:50%;
         max-width:100%;
     }
+    .mobile-label{
+        display: none;
+    }
+    .filter-trigger{
+    display: none;
+}
 
      /* its my code for external coonent*/
+     /**
+     * Update: 06/06/23
+     * I am over-writing your code
+      */
 
     @media (max-width: 600px) {
         .dm .donut-container{
@@ -339,6 +369,29 @@
         display: flex;
         flex-direction:column;
 
+    }
+    .rpt-filter{
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1.5em;
+    }
+    .rpt-header{
+        position: absolute;
+        z-index: 9;
+        height: 100vh;
+        width: 0;
+        transition: 200ms;
+        padding: 0;
+        left: 100%;
+        box-shadow: -3px 13px 19px -2px #00000057;
+    }
+    .opn-menu{
+        padding: 12px 18px;
+        width: 75%;
+        left: 25%;
+    }
+    .mobile-label{
+        display: block;
     }
 
 
@@ -365,15 +418,32 @@
         margin-top:20px;
     }
     .stat-values{
-        font-size: 15px;
+        font-size: 35px;
         max-width: 100%;
     }
 
     .donut-container{
         margin-top: 3rem;
     }
+    .filter-trigger{
+        display: block;
+        color: #0078d7;
+        font-size: 1.5em;
+        position: absolute;
+        right: 0;
+        background: white;
+        padding: 0.5em;
+        top: 50px;
+        box-shadow: 4px 2px 8px 1px #0000008f;
+        border: 1px solid #0078d7;
+        transition: 200ms;
+    }
+    .opn-filter{
+        right: 75%;
+    }
 
 }
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -517,6 +587,18 @@
             type: 'bar',
             data: data,
             options: options
+        });
+
+        $(document).on('click','.filter-trigger', function(){
+            $('.rpt-header').toggleClass('opn-menu');
+            $('.filter-trigger').toggleClass('opn-filter');
+            if($('.filter-trigger').hasClass('glyphicon-remove')){
+                $('.filter-trigger').removeClass('glyphicon-remove');
+                $('.filter-trigger').addClass('glyphicon-filter');
+            } else {
+                $('.filter-trigger').addClass('glyphicon-remove');
+                $('.filter-trigger').removeClass('glyphicon-filter');
+            }
         });
 
 });

@@ -35,8 +35,15 @@ class DashboardController extends Controller
         ];
 
         //Filter accourding timezon
-        $from = $request->input('from');
-        $to =  $request->input('to');
+        if($request->has('from') && $request->has('to')){
+            $from = $request->input('from');
+            $to =  $request->input('to');
+        }else{
+            $from = Carbon::today()->subDays(7);
+            $to = Carbon::today();
+            $filters['from'] = $from->format('Y-m-d');
+            $filters['to'] = $to->format('Y-m-d');
+        }
 
         if (!$date_field_to) {
             $date_field_to = $date_field;
