@@ -14,8 +14,8 @@ class SettingsCani extends Controller
     $settingslas->schedule=$request->schedule;
     $settingslas->time=$request->time;
     $settingslas->save();
-
-   
+    
+    return view('settings');
 
    }
 

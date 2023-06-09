@@ -13,6 +13,7 @@
 <div class="container_settings">
   <div class="inner-container">
       <form action="/reports/settings" class="setting_form" method="POST">
+        {{@csrf_field()}}
           <div class="setting_form_labe">
               <label for="">ToEmail</label>
               <input style="background-color: white;" class="setting_form_labe_input_email" type="text" name="to_email">

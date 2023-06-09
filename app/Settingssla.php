@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Settingssla extends Model
 {
-   use HashFactory;
+   // use HashFactory;
    public $timestamps=false;
 }
