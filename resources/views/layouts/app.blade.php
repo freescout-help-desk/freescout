@@ -164,7 +164,7 @@
                                                     @endif
 
                                                     @if ($web_notifications_info['notifications']->hasMorePages())
-                                                        <li class="web-notification-more">
+                                                        <li class="Container-flweb-notification-more">
                                                             <button class="btn btn-link btn-block link-dark" data-loading-text="{{ __('Loading') }}…">
                                                                 {{ __('Load more') }}
                                                             </button>

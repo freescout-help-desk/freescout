@@ -131,29 +131,11 @@ Route::post('/uploads/upload', ['uses' => 'SecureController@upload', 'laroute' =
 
 // SLA-REPORT
 Route::get('/reports/sla', 'SlaReportController@slaReport')->name('reports.sla');
+// Route::post('/reports/settings', 'SlaReportController@addDataSettings');
 
 // Dashboard
 Route::get('/reports/dashboard', 'DashboardController@index')->name('dashboard');
 
 Route::get('/reports/dashboard', 'DashboardController@index')->name('filter');
-
-// Route::get('/reports/settings', 'SlaReportController@settings')->name('settings');
-// // Route::get('/reports/settings',function(){
-// // 	return(view('settings'));
-// // });
-
-// Route::get('/reports/settings',function(){
-// 	return view('settings');
-// });
-
-// Route::post('/reports/settings',function(){
-// 	settings_sla::create([
-// 		'to_email'=>request('to_email'),
-// 		'frequency'=>request('frequency'),
-// 		'schedule'=>request('schedule'),
-// 		'time'=>request('time')
-// 	]);
-// 	return redirect('/reports/settings');
-// });
-Route::view('/reports/settings','settings');
+Route::view('/reports/settings','/sla/settings');
 Route::post('/reports/settings','SettingsCani@addDataSettings');
