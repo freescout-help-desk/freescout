@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+<div class="rpt-header">
 <form action="{{ route('slafilter') }}" method="GET" class="container slafilter">
     <div class="rpt-filters row">
 
@@ -52,6 +53,7 @@
     </div>
 
 </form>
+</div>
 <div class="container report-container">
     <p style="font-weight: bold;width: 20%;float: left;">SLA REPORT</p>
     <table class="table datatable table-borderless slatable" >
@@ -223,14 +225,12 @@
 @media only screen and (max-width: 1500px){
 .slafilter {
     margin-bottom: 1em;
-    margin-left: 0px;
 }
 }
 
 @media only screen and (max-width: 1200px){
     .slafilter{
-        margin-bottom: 1em;
-        margin-left: 64px;
+        margin-top: 1em;
     }
     .ticket_select{
         margin-left: 10px;
@@ -247,12 +247,7 @@
     .rpt-filter{
         margin-bottom: 10px;
     }
-}
-@media only screen and (max-width: 1200px){
-    .slafilter{
-        margin-bottom: 1em;
-        margin-left: -30px;
-    }
+
 }
 @media only screen and (max-width: 600px){
     .slafilter{
@@ -271,11 +266,17 @@
     .mailbox_select{
         margin-left: 64px;
     }
+    .rpt-header {
+    background-color: #deecf9;
+    padding: 90px 18px;
+    line-height: 30px;
+    overflow: auto;
+}
 }
 @media only screen and (max-width: 425px){
     .slafilter{
         margin-bottom: 1em;
-        margin-left: 40px;
+        margin-left: 20px;
     }
      .ticket_select{
         margin-left: 10px;
@@ -292,7 +293,6 @@
 }
     .slafilter{
         margin-bottom: 1em;
-        margin-left: -60px;
     }
     .dm .form-control {
     display: inline ;
@@ -328,6 +328,7 @@
     background-color: #eeeeee;
     padding: 1.3em;
     width: 90%;
+    margin-top: 1em;
    }
    .dm .input-sm{
     border-radius: 3px;
