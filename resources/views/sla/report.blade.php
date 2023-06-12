@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+<div class="rpt-header">
 <form action="{{ route('slafilter') }}" method="GET" class="container slafilter">
     <div class="rpt-filters row">
 
@@ -52,6 +53,7 @@
     </div>
 
 </form>
+</div>
 <div class="container report-container">
     <p style="font-weight: bold;width: 20%;float: left;">SLA REPORT</p>
     <table class="table datatable table-borderless slatable" >
@@ -216,6 +218,9 @@
     justify-content: space-evenly;
     background: #deecf9;
 }
+.rpt-header {
+    box-shadow: -3px 13px 19px -2px #00000057;
+}
 
 .dm .top-form{
     background: #005eb4;
@@ -223,14 +228,12 @@
 @media only screen and (max-width: 1500px){
 .slafilter {
     margin-bottom: 1em;
-    margin-left: 0px;
 }
 }
 
 @media only screen and (max-width: 1200px){
     .slafilter{
-        margin-bottom: 1em;
-        margin-left: 64px;
+        margin-top: 1em;
     }
     .ticket_select{
         margin-left: 10px;
@@ -247,14 +250,13 @@
     .rpt-filter{
         margin-bottom: 10px;
     }
+    .slatable{
+    overflow-x: auto;
+    display: flow-root;
 }
-@media only screen and (max-width: 1200px){
-    .slafilter{
-        margin-bottom: 1em;
-        margin-left: -30px;
-    }
+
 }
-@media only screen and (max-width: 600px){
+@media only screen and (max-width: 800px){
     .slafilter{
         margin-bottom: 1em;
         margin-left: 41px;
@@ -271,11 +273,29 @@
     .mailbox_select{
         margin-left: 64px;
     }
+    .rpt-header {
+    background-color: #deecf9;
+    padding: 90px 18px;
+    line-height: 30px;
+    overflow: auto;
 }
-@media only screen and (max-width: 425px){
+.slatable{
+    overflow-x: auto;
+    display: flow-root;
+}
+}
+@media only screen and (min-width: 801px)and (max-width: 1000px){
+    .rpt-header {
+    background-color: #deecf9;
+    padding: 37px 13px;
+    line-height: 30px;
+    overflow: auto;
+}
+}
+@media only screen and (max-width: 599px){
     .slafilter{
         margin-bottom: 1em;
-        margin-left: 40px;
+        margin-left: 20px;
     }
      .ticket_select{
         margin-left: 10px;
@@ -289,10 +309,12 @@
     .mailbox_select{
         margin-left: 64px;
     }
+    .rpt-header {
+    padding: 100px 0px;
+}
 }
     .slafilter{
         margin-bottom: 1em;
-        margin-left: -60px;
     }
     .dm .form-control {
     display: inline ;
@@ -328,6 +350,7 @@
     background-color: #eeeeee;
     padding: 1.3em;
     width: 90%;
+    margin-top: 2em;
    }
    .dm .input-sm{
     border-radius: 3px;
