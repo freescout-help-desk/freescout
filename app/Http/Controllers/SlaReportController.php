@@ -11,13 +11,16 @@ use Exception;
 
 class SlaReportController extends Controller
 {
-    public function slaReport(Request $request,$prev = false, $date_field = 'conversations.created_at', $date_field_to = '')
+    public function slaReport(Request $request)
     {
 
         $today = Carbon::today();
         $fourDaysAgo = Carbon::today()->subDays(4);
         $sevenDaysAgo = Carbon::today()->subDays(7);
         $thirtyDaysAgo = Carbon::today()->subDays(30);
+        $prev = false;
+        $date_field = 'conversations.created_at';
+        $date_field_to = '';
         // 1. Get all request parameter
         $filters = [
             'ticket' => $request->input('ticket'),

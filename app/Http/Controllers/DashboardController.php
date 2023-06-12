@@ -16,7 +16,7 @@ use Modules\Reports\Http\Controllers\ReportsController;
 class DashboardController extends Controller
 {
     //Index Route
-    public function index(Request $request ,$prev = false, $date_field = 'conversations.created_at', $date_field_to = '')
+    public function index(Request $request)
     {
 
 
@@ -24,6 +24,9 @@ class DashboardController extends Controller
         $fourDaysAgo = Carbon::today()->subDays(4);
         $sevenDaysAgo = Carbon::today()->subDays(7);
         $thirtyDaysAgo = Carbon::today()->subDays(30);
+        $prev = false;
+        $date_field = 'conversations.created_at';
+        $date_field_to = '';
 
         $filters = [
             'ticket' => $request->input('ticket'),
