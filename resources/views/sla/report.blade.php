@@ -247,9 +247,13 @@
     .rpt-filter{
         margin-bottom: 10px;
     }
+    .slatable{
+    overflow-x: auto;
+    display: flow-root;
+}
 
 }
-@media only screen and (max-width: 600px){
+@media only screen and (max-width: 800px){
     .slafilter{
         margin-bottom: 1em;
         margin-left: 41px;
@@ -269,6 +273,18 @@
     .rpt-header {
     background-color: #deecf9;
     padding: 90px 18px;
+    line-height: 30px;
+    overflow: auto;
+}
+.slatable{
+    overflow-x: auto;
+    display: flow-root;
+}
+}
+@media only screen and (min-width: 801px)and (max-width: 1000px){
+    .rpt-header {
+    background-color: #deecf9;
+    padding: 37px 13px;
     line-height: 30px;
     overflow: auto;
 }
