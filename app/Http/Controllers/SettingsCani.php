@@ -15,7 +15,7 @@ class SettingsCani extends Controller
     $settingslas->time=$request->time;
     $settingslas->save();
     
-    return view('settings');
+    return view('/sla/settings');
 
    }
 

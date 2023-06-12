@@ -16,7 +16,7 @@
             <form action="/reports/settings" class="setting_form form-horizontal margin-top margin-bottom" method="POST">
               {{@csrf_field()}}
               <div class="setting_form_labe form-group">
-                <label for="" class="col-sm-2 control-label">SendAutoReport</label>
+                <label for="" class="col-sm-2 control-label">Send Auto Report</label>
                <div class="col-sm-6">
                <div class="controls">
                 <div class="onoffswitch-wrap">
@@ -29,7 +29,7 @@
                </div>
             </div>
                 <div class="setting_form_labe form-group">
-                    <label for="" class="col-sm-2 control-label">ToEmail</label>
+                    <label for="" class="col-sm-2 control-label">To Email</label>
                    <div class="col-sm-6">
                     <input class="setting_form_labe_input_email form-control input-sized" placeholder="Enter Email" type="text" name="to_email">
                    </div>
