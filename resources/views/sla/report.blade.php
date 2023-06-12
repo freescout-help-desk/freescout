@@ -218,6 +218,9 @@
     justify-content: space-evenly;
     background: #deecf9;
 }
+.rpt-header {
+    box-shadow: -3px 13px 19px -2px #00000057;
+}
 
 .dm .top-form{
     background: #005eb4;
@@ -289,7 +292,7 @@
     overflow: auto;
 }
 }
-@media only screen and (max-width: 425px){
+@media only screen and (max-width: 599px){
     .slafilter{
         margin-bottom: 1em;
         margin-left: 20px;
@@ -306,6 +309,9 @@
     .mailbox_select{
         margin-left: 64px;
     }
+    .rpt-header {
+    padding: 100px 0px;
+}
 }
     .slafilter{
         margin-bottom: 1em;
@@ -344,7 +350,7 @@
     background-color: #eeeeee;
     padding: 1.3em;
     width: 90%;
-    margin-top: 1em;
+    margin-top: 2em;
    }
    .dm .input-sm{
     border-radius: 3px;
