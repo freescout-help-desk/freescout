@@ -2,7 +2,7 @@
 @section('content')
     <i class="glyphicon glyphicon-filter filter-trigger"></i>
     <div class="rpt-header">
-        <form action="{{ route('slafilter') }}" method="GET" class="top-form">
+        <form action="{{ route('slafilter') }}" method="GET" class="top-form" name="filterForm">
             <div class="rpt-filters">
 
 
@@ -126,6 +126,11 @@
                         @endphp
                     @endforeach
 
+                    @php
+                         $MailboxId=$ticket['mailbox_id'];
+                         $MailboxName= App\Mailbox::find($MailboxId);
+                            // var_dump($MailboxName['name']);
+                    @endphp
 
 
                     @foreach ($ticketCategoryArray as $item)
@@ -196,7 +201,7 @@
                                 {{ $ticket->user ? $ticket->user->first_name . ' ' . $ticket->user->last_name : '-' }}</td>
                             <td class="custom-cell">{{ isset($ticketCategory) ? $ticketCategory : '-' }}</td>
                             <td class="custom-cell">{{ $ticket->subject }}</td>
-                            <td class="custom-cell">{{ $ticket->user ? $ticket->user->email : '-' }}</td>
+                            <td class="custom-cell">{{ $MailboxName->name ? $MailboxName->name : '-' }}</td>
                             <td class="custom-cell">{{ isset($ticketEscalate) ? 'YES' : 'NO' }}</td>
                             <td class="custom-cell">{{ $ticket->created_at }}</td>
                             <td class="custom-cell">{{ $restime }}</td>
@@ -218,7 +223,7 @@
                                 {{ $ticket->user ? $ticket->user->first_name . ' ' . $ticket->user->last_name : '-' }}</td>
                             <td class="custom-cell">{{ isset($ticketCategory) ? $ticketCategory : '-' }}</td>
                             <td class="custom-cell">{{ $ticket->subject }}</td>
-                            <td class="custom-cell">{{ $ticket->user ? $ticket->user->email : '-' }}</td>
+                            <td class="custom-cell">{{ $MailboxName->name ? $MailboxName->name : '-' }}</td>
                             <td class="custom-cell">{{ isset($ticketEscalate) ? 'YES' : 'NO' }}</td>
                             <td class="custom-cell">{{ $ticket->created_at }}</td>
                             <td class="custom-cell">{{ $restime }}</td>
