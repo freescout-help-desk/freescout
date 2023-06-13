@@ -129,7 +129,6 @@
                     @php
                          $MailboxId=$ticket['mailbox_id'];
                          $MailboxName= App\Mailbox::find($MailboxId);
-                            // var_dump($MailboxName['name']);
                     @endphp
 
 
