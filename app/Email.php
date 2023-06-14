@@ -55,6 +55,9 @@ class Email extends Model
         if (!preg_match('/^.+@.+$/', $email ?? '')) {
             return false;
         }
+        if (preg_match('/^.+@unknown$/', $email ?? '')) {
+            return false;
+        }
         $email = filter_var($email, FILTER_SANITIZE_EMAIL);
         $email = mb_strtolower($email, 'UTF-8');
         // Remove trailing dots.

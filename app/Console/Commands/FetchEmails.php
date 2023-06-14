@@ -267,7 +267,8 @@ class FetchEmails extends Command
 
             // From - $from is the plain text email.
             $from = $message->getReplyTo();
-            if (!$from) {
+
+            if (!$from || !$this->formatEmailList($from)) {
                 $from = $message->getFrom();
             }
             // https://github.com/freescout-helpdesk/freescout/issues/2833
@@ -280,12 +281,15 @@ class FetchEmails extends Command
                 }
             }*/
 
+            if ($from) {
+                $from = $this->formatEmailList($from);
+            }
+
             if (!$from) {
                 $this->logError('From is empty');
                 $this->setSeen($message, $mailbox);
                 return;
             } else {
-                $from = $this->formatEmailList($from);
                 $from = $from[0];
             }
 
