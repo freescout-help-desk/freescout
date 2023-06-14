@@ -14,7 +14,7 @@
 */
 
 // use Symfony\Component\Routing\Route;
-use App\Http\Controllers\SettingsCani;
+// use App\Http\Controllers\SettingsCani;
 
 Auth::routes();
 
@@ -137,5 +137,5 @@ Route::get('/reports/sla', 'SlaReportController@slaReport')->name('reports.sla')
 Route::get('/reports/dashboard', 'DashboardController@index')->name('dashboard');
 
 Route::get('/reports/dashboard', 'DashboardController@index')->name('filter');
-Route::view('/reports/settings','/sla/settings');
+Route::get('/reports/settings','SettingsCani@index');
 Route::post('/reports/settings','SettingsCani@addDataSettings');

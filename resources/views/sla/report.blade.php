@@ -1,101 +1,104 @@
 @extends('layouts.app')
 @section('content')
-<div class="container report-container">
-    <p style="font-weight: bold;width: 20%;float: left;">SLA REPORT</p>
-    <table class="table datatable table-borderless slatable" >
-        <thead>
-            <tr>
-                <th class="custom-cell">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="selectAll">
-                    </div>
-                </th>
-                <th class="custom-cell">TICKET NO</th>
-                <th class="custom-cell">STATUS</th>
-                <th class="custom-cell">PREFERENCE</th>
-                <th class="custom-cell">ENGINEER</th>
-                <th class="custom-cell">CATEGORY</th>
-                <th class="custom-cell">SUBJECT</th>
-                <th class="custom-cell">RESOLUTION TIME</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($tickets as $ticket)
-            @php
-                $dataArray = json_decode($ticket->conversationCustomField, true);
-                $ticketPriorityArray =json_decode($ticket->conversationPriority, true);
-                $ticketCategoryArray =json_decode($ticket->conversationCategory, true);
-                $status = $ticket['status'] == 1 ? 'ACTIVE' : ($ticket['status'] == 2 ? 'PENDING' : ($ticket['status'] == 3 ? 'CLOSED' : 'SPAM'));
-                $createdAt = \Carbon\Carbon::parse($ticket['created_at']);
-                $lastReplyAt = \Carbon\Carbon::parse($ticket['last_reply_at']);
-                $duration = $lastReplyAt->diff($createdAt);
-            @endphp
-            @foreach ($dataArray as $item)
+<div class="horizontal-scroll">
+    <div class="container report-container">
+        <p style="font-weight: bold;width: 20%;float: left;">SLA REPORT</p>
+        <table class="table datatable table-borderless slatable" >
+            <thead>
+                <tr>
+                    <th class="custom-cell">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="selectAll">
+                        </div>
+                    </th>
+                    <th class="custom-cell">TICKET NO</th>
+                    <th class="custom-cell">STATUS</th>
+                    <th class="custom-cell">PREFERENCE</th>
+                    <th class="custom-cell">ENGINEER</th>
+                    <th class="custom-cell">CATEGORY</th>
+                    <th class="custom-cell">SUBJECT</th>
+                    <th class="custom-cell">RESOLUTION TIME</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($tickets as $ticket)
                 @php
-                    $customField = $item['custom_field'];
-                    $options = $customField['options'];
-                    $name = $customField['name'];
-                    $value = $item['value'];
-                    $optionValue = null;
+                    $dataArray = json_decode($ticket->conversationCustomField, true);
+                    $ticketPriorityArray =json_decode($ticket->conversationPriority, true);
+                    $ticketCategoryArray =json_decode($ticket->conversationCategory, true);
+                    $status = $ticket['status'] == 1 ? 'ACTIVE' : ($ticket['status'] == 2 ? 'PENDING' : ($ticket['status'] == 3 ? 'CLOSED' : 'SPAM'));
+                    $createdAt = \Carbon\Carbon::parse($ticket['created_at']);
+                    $lastReplyAt = \Carbon\Carbon::parse($ticket['last_reply_at']);
+                    $duration = $lastReplyAt->diff($createdAt);
+                @endphp
+                @foreach ($dataArray as $item)
+                    @php
+                        $customField = $item['custom_field'];
+                        $options = $customField['options'];
+                        $name = $customField['name'];
+                        $value = $item['value'];
+                        $optionValue = null;
+                        foreach ($options as $key => $option) {
+                            if ($key == $value) {
+                                $optionValue = $option;
+                                break;
+                            }
+                        }
+                    @endphp
+                @endforeach
+    
+                @foreach ($ticketCategoryArray as $item)
+                @php
+    
+                    $options = $item['options'];
+                    $ticketCategory = null;
                     foreach ($options as $key => $option) {
                         if ($key == $value) {
-                            $optionValue = $option;
+                            $ticketCategory = $option;
                             break;
                         }
                     }
                 @endphp
+    
             @endforeach
-
-            @foreach ($ticketCategoryArray as $item)
-            @php
-
-                $options = $item['options'];
-                $ticketCategory = null;
-                foreach ($options as $key => $option) {
-                    if ($key == $value) {
-                        $ticketCategory = $option;
-                        break;
+    
+                @foreach ($ticketPriorityArray as $item)
+                @php
+    
+                    $options = $item['options'];
+                    $ticketPriority = null;
+                    foreach ($options as $key => $option) {
+                        if ($key == $value) {
+                            $ticketPriority = $option;
+                            break;
+                        }
                     }
-                }
-            @endphp
-
-        @endforeach
-
-            @foreach ($ticketPriorityArray as $item)
-            @php
-
-                $options = $item['options'];
-                $ticketPriority = null;
-                foreach ($options as $key => $option) {
-                    if ($key == $value) {
-                        $ticketPriority = $option;
-                        break;
-                    }
-                }
-            @endphp
-
-        @endforeach
-            <tr>
-                <td class="custom-cell">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="">
-                        <label class="form-check-label" for="defaultCheck1">
-                        </label>
-                    </div>
-                </td>
-                <td class="custom-cell">#{{$ticket->number}}</td>
-                <td class="custom-cell"><span class="tag tag-{{ $status }}">{{$status}}</span></td>
-                <td class="custom-cell">{{isset($ticketPriority) ? $ticketPriority : '-'}}</td>
-                <td class="custom-cell">{{$ticket->user ? $ticket->user->first_name . ' ' . $ticket->user->last_name : "-"}}</td>
-                <td class="custom-cell">{{isset($ticketCategory) ? $ticketCategory : '-'}}</td>
-                <td class="custom-cell">{{$ticket->subject}}</td>
-                <td class="custom-cell">{{$duration->format('%h HRS')}}</td>
-            </tr>
+                @endphp
+    
             @endforeach
-        </tbody>
-    </table>
-
+                <tr>
+                    <td class="custom-cell">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="">
+                            <label class="form-check-label" for="defaultCheck1">
+                            </label>
+                        </div>
+                    </td>
+                    <td class="custom-cell">#{{$ticket->number}}</td>
+                    <td class="custom-cell"><span class="tag tag-{{ $status }}">{{$status}}</span></td>
+                    <td class="custom-cell">{{isset($ticketPriority) ? $ticketPriority : '-'}}</td>
+                    <td class="custom-cell">{{$ticket->user ? $ticket->user->first_name . ' ' . $ticket->user->last_name : "-"}}</td>
+                    <td class="custom-cell">{{isset($ticketCategory) ? $ticketCategory : '-'}}</td>
+                    <td class="custom-cell">{{$ticket->subject}}</td>
+                    <td class="custom-cell">{{$duration->format('%h HRS')}}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    
+    </div>
 </div>
+
 <style>
    .dm .slatable{
     background-color: #1d1c24;
@@ -124,6 +127,28 @@
    .dm .input-sm{
     border-radius: 3px;
    }
+
+@media only screen and (max-width: 600px) {
+   
+    .report-container{
+        width: fit-content;
+   }
+   .content{
+    margin-top: 0px;
+   }
+   div.dataTables_filter{
+    
+    margin-top: -35px;
+}
+div.dt-buttons {
+   
+    margin-left: 38em;
+}
+.horizontal-scroll {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+}
 </style>
 @endsection
 
