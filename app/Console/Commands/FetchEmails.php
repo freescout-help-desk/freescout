@@ -268,7 +268,12 @@ class FetchEmails extends Command
             // From - $from is the plain text email.
             $from = $message->getReplyTo();
 
-            if (!$from || !$this->formatEmailList($from)) {
+            if (!$from 
+                // https://github.com/freescout-helpdesk/freescout/issues/3101
+                || !($reply_to = $this->formatEmailList($from))
+                || empty($reply_to[0])
+                || preg_match('/^.+@unknown$/', $reply_to[0])
+            ) {
                 $from = $message->getFrom();
             }
             // https://github.com/freescout-helpdesk/freescout/issues/2833
