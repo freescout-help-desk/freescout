@@ -24,9 +24,9 @@
         @endif
     </div>
 
-    <div id="users-list" class="card-list margin-top">
+    <div id="users-list" class="card-list margin-top row">
         @foreach ($users as $user)
-            <a href="{{ route('users.profile', ['id'=>$user->id]) }}" class="card hover-shade @if ($user->invite_state != App\User::INVITE_STATE_ACTIVATED) card-inactive @endif">
+            <a href="{{ route('users.profile', ['id'=>$user->id]) }}" class="card col-lg-2 col-md-3 col-sm-5 hover-shade @if ($user->invite_state != App\User::INVITE_STATE_ACTIVATED) card-inactive @endif">
                 @if ($user->isAdmin())
                     <i class="user-admin-badge glyphicon glyphicon-bookmark" data-toggle="tooltip" title="{{ $user->getRoleName(true) }}"></i>
                 @endif
