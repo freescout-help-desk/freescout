@@ -127,8 +127,8 @@
                     @endforeach
 
                     @php
-                         $MailboxId=$ticket['mailbox_id'];
-                         $MailboxName= App\Mailbox::find($MailboxId);
+                        $MailboxId = $ticket['mailbox_id'];
+                        $MailboxName = App\Mailbox::find($MailboxId);
                     @endphp
 
 
@@ -183,27 +183,27 @@
                         }
 
                     @endphp
-                        <tr>
-                            <td class="custom-cell">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="">
-                                    <label class="form-check-label" for="defaultCheck1">
-                                    </label>
-                                </div>
-                            </td>
-                            <td class="custom-cell">#{{ $ticket->number }}</td>
-                            <td class="custom-cell"><span class="tag tag-{{ $status }}">{{ $status }}</span>
-                            </td>
-                            <td class="custom-cell">{{ isset($ticketPriority) ? $ticketPriority : '-' }}</td>
-                            <td class="custom-cell">
-                                {{ $ticket->user ? $ticket->user->first_name . ' ' . $ticket->user->last_name : '-' }}</td>
-                            <td class="custom-cell">{{ isset($ticketCategory) ? $ticketCategory : '-' }}</td>
-                            <td class="custom-cell">{{ $ticket->subject }}</td>
-                            <td class="custom-cell">{{ $MailboxName->name ? $MailboxName->name : '-' }}</td>
-                            <td class="custom-cell">{{ isset($ticketEscalate) ? 'YES' : 'NO' }}</td>
-                            <td class="custom-cell">{{ $ticket->created_at }}</td>
-                            <td class="custom-cell">{{ $restime }}</td>
-                        </tr>
+                    <tr>
+                        <td class="custom-cell">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="">
+                                <label class="form-check-label" for="defaultCheck1">
+                                </label>
+                            </div>
+                        </td>
+                        <td class="custom-cell">#{{ $ticket->number }}</td>
+                        <td class="custom-cell"><span class="tag tag-{{ $status }}">{{ $status }}</span>
+                        </td>
+                        <td class="custom-cell">{{ isset($ticketPriority) ? $ticketPriority : '-' }}</td>
+                        <td class="custom-cell">
+                            {{ $ticket->user ? $ticket->user->first_name . ' ' . $ticket->user->last_name : '-' }}</td>
+                        <td class="custom-cell">{{ isset($ticketCategory) ? $ticketCategory : '-' }}</td>
+                        <td class="custom-cell">{{ $ticket->subject }}</td>
+                        <td class="custom-cell">{{ $MailboxName->name ? $MailboxName->name : '-' }}</td>
+                        <td class="custom-cell">{{ isset($ticketEscalate) ? 'YES' : 'NO' }}</td>
+                        <td class="custom-cell">{{ $ticket->created_at }}</td>
+                        <td class="custom-cell">{{ $restime }}</td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
@@ -223,7 +223,11 @@
         }
 
         .dm .top-form {
-            background: #005eb4;
+            background: transparent;
+        }
+
+        .dm .rpt-header {
+            background-color: transparent;
         }
 
         .rpt-header {
@@ -384,10 +388,45 @@
             padding: 1.3em;
             width: 90%;
             margin-top: 2em;
+            border-radius: 7px;
         }
 
         .dm .input-sm {
             border-radius: 3px;
+        }
+        .dt-button-collection{
+            left: -4em !important;
+            width: 8em !important;
+        }
+        .dm .dt-button-collection{
+            left: -4em !important;
+            width: 8em !important;
+            background: #363636 !important;
+        }
+
+        .dt-button{
+            border: none !important;
+            background: transparent !important;
+        }
+        .dt-button.buttons-csv:hover{
+            border: none !important;
+            background: #0078d7 !important;
+            border-radius: 6px !important;
+        }
+        .dt-button.buttons-pdf:hover{
+            border: none !important;
+            background: #0078d7 !important;
+            border-radius: 6px !important;
+        }
+        .dm .dt-button.buttons-csv:hover{
+            border: none !important;
+            background: #131414 !important;
+            border-radius: 6px !important;
+        }
+        .dm .dt-button.buttons-pdf:hover{
+            border: none !important;
+            background: #131414 !important;
+            border-radius: 6px !important;
         }
     </style>
 @endsection
@@ -415,17 +454,21 @@
         $(document).ready(function() {
             $('.datatable').DataTable({
                 dom: 'Bfrtip',
-                buttons: [
-                    'csv',
-                    {
-                        extend: 'pdfHtml5',
-                        text: 'PDF',
-                        orientation: 'landscape',
-                        exportOptions: {
-                            columns: ':visible'
-                        },
-                    }
-                ]
+                buttons: [{
+                    extend: 'collection',
+                    text: '<span class="glyphicon glyphicon-download-alt"></span>',
+                    buttons: [
+                        'csv',
+                        {
+                            extend: 'pdfHtml5',
+                            text: 'PDF',
+                            orientation: 'landscape',
+                            exportOptions: {
+                                columns: ':visible'
+                            },
+                        }
+                    ]
+                }]
             });
         });
 
