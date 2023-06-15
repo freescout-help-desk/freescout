@@ -719,7 +719,7 @@ select[multiple].input-md {
 .card {
     display: block;
     position: relative;
-    margin: 0 18px 18px 0;
+    margin: 0 18px 18px 30px;
     float: left;
 }
 a.card:active,
@@ -817,12 +817,15 @@ a h4 {
 .card.no-img p {
     margin-left: 0;
 }
-/*.card-active {
+/* .card-active {
     border-left: 4px solid #5cb85c;
-}*/
+} */
 .card-inactive {
     /*border-left: 4px solid #93a1af;*/
     background-color: #f4f5f5;
+}
+.dm .card-inactive {
+    background-color: #292b5b;
 }
 .card .invite-state {
     background-color: #f4f5f5;
@@ -3702,6 +3705,11 @@ body.print {
 }
 .heading {
     color: #253540;
+    font-size: 20px;
+    font-weight: 400;
+}
+.dm .heading {
+    color: snow;
     font-size: 20px;
     font-weight: 400;
 }
