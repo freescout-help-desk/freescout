@@ -73,11 +73,11 @@ body.dm, .dm #app,
 /* Header */
 .dm .navbar-default,
 .dm .section-heading {
-    background-color: #303d71;
+    background-color: #0078d7;
 }
 
 .dm .navbar-default {
-border-color:#303d71;
+border-color:#0078d7;
 }
 .dm .dropdown-menu {
     background-color: #303d71;
@@ -469,8 +469,8 @@ border-radius:none;
 }
 
 .dm .navbar-default .navbar-nav > li > a {
-    color: #8bb4dd;
-    background-color: #232d53;
+    color: snow;
+    background-color: #0078d7;
     border-color: #8bb4dd;
 }
 
@@ -546,7 +546,7 @@ border-radius:none;
 .dm .note-editor.note-frame {border: 1px solid #2a3663; border-color: #232d53 !important;}
 .dm .panel-default > .panel-heading {border-color: #232d53;}
 .dm #editor_signature {border-bottom: 1px solid #232d53;}
-.dm .navbar-default {background-color: #232d53;}
+.dm .navbar-default {background-color: #0078d7;}
 .dm .input-group-addon {border: 1px solid #232d53;}
 .dm .dropdown-menu .divider {background-color: #2a3663;}
 .dm .web-notification.is-unread a {background-color: #293d7a;}

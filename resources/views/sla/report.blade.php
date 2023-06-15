@@ -223,11 +223,11 @@
         }
 
         .dm .top-form {
-            background: #005eb4;
+            background: transparent;
         }
 
         .dm .rpt-header {
-            background-color: #005eb4;
+            background-color: transparent;
         }
 
         .rpt-header {
@@ -456,7 +456,7 @@
                 dom: 'Bfrtip',
                 buttons: [{
                     extend: 'collection',
-                    text: '<span class="glyphicon glyphicon-download-alt" style=";"></span>',
+                    text: '<span class="glyphicon glyphicon-download-alt"></span>',
                     buttons: [
                         'csv',
                         {
@@ -470,7 +470,6 @@
                     ]
                 }]
             });
-            table.buttons().container().appendTo('.datatable_wrapper .dataTables_filter');
         });
 
         function refreshPage() {

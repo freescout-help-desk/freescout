@@ -175,11 +175,11 @@
         }
 
         .dm .top-form {
-            background: #005eb4;
+            background: transparent;
         }
 
         .dm .rpt-header {
-            background-color: #005eb4;
+            background-color: transparent;
         }
 
         .rpt-header {
