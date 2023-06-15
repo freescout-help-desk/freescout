@@ -131,11 +131,10 @@ Route::post('/uploads/upload', ['uses' => 'SecureController@upload', 'laroute' =
 
 // SLA-REPORT
 Route::get('/reports/sla', 'SlaReportController@slaReport')->name('reports.sla');
-// Route::post('/reports/settings', 'SlaReportController@addDataSettings');
 
 // Dashboard
 Route::get('/reports/dashboard', 'DashboardController@index')->name('dashboard');
 
 Route::get('/reports/dashboard', 'DashboardController@index')->name('filter');
-Route::get('/reports/settings','SettingsCani@index');
-Route::post('/reports/settings','SettingsCani@addDataSettings');
+Route::get('/reports/settings','ReportSettingsController@index');
+Route::post('/reports/settings','ReportSettingsController@addDataSettings');
