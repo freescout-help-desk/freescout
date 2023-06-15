@@ -882,25 +882,45 @@ class Mail
 
     public static function decodeSubject($subject)
     {
+        // Sometimes imap_utf8() can't decode the subject, for example:
+        // =?iso-2022-jp?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?=
+        // and sometimes iconv_mime_decode() can't decode the subject.
+        // So we are using both.
+        // 
+        // We are trying iconv_mime_decode() first because imap_utf8()
+        // decodes umlauts into two symbols:
+        // https://github.com/freescout-helpdesk/freescout/issues/2965
+
         // Sometimes subject is split into parts and each part is base63 encoded.
         // And sometimes it's first encoded and after that split.
         // https://github.com/freescout-helpdesk/freescout/issues/3066      
   
         // First try to join all lines skipping =?utf-8?B? in betweeb.
         $parts = preg_match_all("/(=\?[^\?]+\?[BQ]\?)([^\?]+)(\?=)[\r\n\t ]*/i", $subject, $m);
-        
+
         $joined_parts = '';
         if (count($m[1]) > 1 && !empty($m[2])) {
+            // Example: GyRCQGlNVTtZRTkhIT4uTlMbKEI=
             $joined_parts = $m[1][0].implode('', $m[2]).$m[3][0];
 
             $subject_decoded = iconv_mime_decode($joined_parts, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
-            
+
             if ($subject_decoded && trim($subject_decoded) != trim(rtrim($joined_parts, '='))) {
                 return $subject_decoded;
             }
         }
 
+        // iconv_mime_decode() can't decode:
+        // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
         $subject_decoded = iconv_mime_decode($subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+
+        // Sometimes iconv_mime_decode() can't decode some parts of the subject:
+        // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
+        // =?iso-2022-jp?B?GyRCQGlNVTtZRTkhIT4uTlMbKEI=?=
+        if (preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded)) {
+            $subject_decoded = \imap_utf8($subject);
+        }
+
         if (!$subject_decoded) {
             $subject_decoded = $subject;
         }
