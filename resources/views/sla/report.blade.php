@@ -388,10 +388,45 @@
             padding: 1.3em;
             width: 90%;
             margin-top: 2em;
+            border-radius: 7px;
         }
 
         .dm .input-sm {
             border-radius: 3px;
+        }
+        .dt-button-collection{
+            left: -4em !important;
+            width: 8em !important;
+        }
+        .dm .dt-button-collection{
+            left: -4em !important;
+            width: 8em !important;
+            background: #363636 !important;
+        }
+
+        .dt-button{
+            border: none !important;
+            background: transparent !important;
+        }
+        .dt-button.buttons-csv:hover{
+            border: none !important;
+            background: #0078d7 !important;
+            border-radius: 6px !important;
+        }
+        .dt-button.buttons-pdf:hover{
+            border: none !important;
+            background: #0078d7 !important;
+            border-radius: 6px !important;
+        }
+        .dm .dt-button.buttons-csv:hover{
+            border: none !important;
+            background: #131414 !important;
+            border-radius: 6px !important;
+        }
+        .dm .dt-button.buttons-pdf:hover{
+            border: none !important;
+            background: #131414 !important;
+            border-radius: 6px !important;
         }
     </style>
 @endsection
@@ -419,18 +454,23 @@
         $(document).ready(function() {
             $('.datatable').DataTable({
                 dom: 'Bfrtip',
-                buttons: [
-                    'csv',
-                    {
-                        extend: 'pdfHtml5',
-                        text: 'PDF',
-                        orientation: 'landscape',
-                        exportOptions: {
-                            columns: ':visible'
-                        },
-                    }
-                ]
+                buttons: [{
+                    extend: 'collection',
+                    text: '<span class="glyphicon glyphicon-download-alt" style=";"></span>',
+                    buttons: [
+                        'csv',
+                        {
+                            extend: 'pdfHtml5',
+                            text: 'PDF',
+                            orientation: 'landscape',
+                            exportOptions: {
+                                columns: ':visible'
+                            },
+                        }
+                    ]
+                }]
             });
+            table.buttons().container().appendTo('.datatable_wrapper .dataTables_filter');
         });
 
         function refreshPage() {
