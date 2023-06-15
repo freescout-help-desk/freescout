@@ -10,9 +10,9 @@ class ReportSettingsController extends Controller
 
     public function index(){
         
-        $settings2=Settingssla::all();
-        return view('/sla/settings',compact('settings2'));
-       
+      $settings=Settingssla::orderBy('id', 'desc')->first();
+      return view('/sla/settings',compact('settings'));
+      
     }
 
     public function addDataSettings(Request $request){

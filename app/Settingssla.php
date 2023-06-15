@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Settingssla extends Model
 {
    // use HashFactory;
-   public $timestamps=false;
+   public $timestamps=true;
 }

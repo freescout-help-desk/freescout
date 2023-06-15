@@ -15,10 +15,12 @@ class CreateSettingsslasTable extends Migration
     {
         Schema::create('settingsslas', function (Blueprint $table) {
             $table->increments('id');
+            $table->timestamps();
             $table->string('to_email');
             $table->string('frequency');
             $table->string('schedule');
             $table->time('time');
+            $table->boolean('auto_data');
         });
     }
 
