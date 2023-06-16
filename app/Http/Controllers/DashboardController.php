@@ -132,11 +132,8 @@ class DashboardController extends Controller
             $query = $query->where('conversations.type', $filters['type']);
         }
 
-        if (!empty($from)) {
-            $query->where($date_field, '>=', date('Y-m-d 00:00:00', strtotime($from)));
-        }
-        if (!empty($to)) {
-            $query->where($date_field_to, '<=', date('Y-m-d 23:59:59', strtotime($to)));
+        if (!empty($from) || !empty($to)) {
+            $query->whereBetween($date_field, [$from, $to]);
         }
 
         // Extract the data

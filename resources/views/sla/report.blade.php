@@ -2,7 +2,7 @@
 @section('content')
     <i class="glyphicon glyphicon-filter filter-trigger"></i>
     <div class="rpt-header">
-        <form action="{{ route('slafilter') }}" method="GET" class="top-form" name="filterForm">
+        <form action="{{ route('slafilter') }}" method="GET" class="top-form">
             <div class="rpt-filters">
 
 
