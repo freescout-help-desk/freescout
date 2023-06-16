@@ -29,7 +29,7 @@ class CustomFieldsSeeder extends Seeder
                 'mailbox_id'=>'1',
                 'name'=>'Product',
                 'type'=>'1',
-                'options'=>'{"1":"Caniasset - Asset management","2":"Canidesk - Ticketing tool","3":"SIEM","4":"NMS - Network monitoring system","5":"Multiple products","6":"None of the above"}',
+                'options'=>'{"1":"Caniasset - Asset management","2":"Canidesk - Ticketing tool","3":"SIEM","4":"NMS - Network monitoring system","5":"Multiple products"}',
                 'required'=>'1',
                 'sort_order'=>'1',
                 'show_in_list'=>'1',
