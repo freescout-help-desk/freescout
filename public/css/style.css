@@ -326,6 +326,15 @@ div.dt-buttons{
         text-overflow: ellipsis!important;
         white-space: nowrap!important;
     }
+    .dm .sidebar-title-real {
+        display: block;
+        font-size: 13.4px;
+        line-height: 14.4px;
+        color: #a0bdd8;
+        overflow: hidden!important;
+        text-overflow: ellipsis!important;
+        white-space: nowrap!important;
+    }
     .sidebar-title-real.mailbox-name .glyphicon {
         top: 2px !important;
         font-size: 13.4px !important;
