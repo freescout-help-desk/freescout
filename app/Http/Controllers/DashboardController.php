@@ -139,7 +139,7 @@ class DashboardController extends Controller
         // Extract the data
         $results = $query->select(
             DB::raw('COUNT(*) as total_count'),
-            DB::raw('COUNT(CASE WHEN created_by_user_id IS NULL THEN 1 END) as unassigned_count'),
+            DB::raw('COUNT(CASE WHEN user_id IS NULL THEN 1 END) as unassigned_count'),
             // DB::raw('COUNT(CASE WHEN closed_at IS NULL THEN 1 END) as overdue_count'),
             // DB::raw('COUNT(CASE WHEN created_at < ? AND closed_at IS NULL THEN 1 END) as overdue_count'),
             DB::raw('COUNT(CASE WHEN closed_at IS NULL THEN 1 END) as unclosed_count'),
