@@ -4616,6 +4616,9 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .navbar-default .navbar-nav .open .dropdown-menu > li > a {
     color: #4f5d6b;
   }
+  .dm .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #69a2db;
+  }
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
     color: #4f5d6b;
