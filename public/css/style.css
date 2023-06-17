@@ -457,13 +457,9 @@ a.navbar-brand:hover img {
 .form-nav-search .input-group {
     padding-top: 3px;
 }
-/*.navbar-nav > li > .dropdown-menu {
-    margin-top: -10px;
-    border-radius: 3px;
-}*/
-/*.navbar-nav.navbar-right > li > .dropdown-menu {
-    margin-top: -8px;
-}*/
+div.dt-button-background {
+    background: none !important;
+}
 .section-heading-right {
     display: block;
 }
