@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title', __('SLA Report'))
 @section('content')
     <i class="glyphicon glyphicon-filter filter-trigger"></i>
     <div class="rpt-header">
@@ -214,6 +215,10 @@
             margin-top: 0;
         }
 
+        .dm .rpt-filter-date{
+            color: #fff
+        }
+
         .top-form {
             display: flex;
             height: auto;
@@ -386,7 +391,7 @@
         .report-container {
             background-color: #eeeeee;
             padding: 1.3em;
-            width: 90%;
+            width: 93%;
             margin-top: 2em;
             border-radius: 7px;
         }
