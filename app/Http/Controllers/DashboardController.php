@@ -132,17 +132,14 @@ class DashboardController extends Controller
             $query = $query->where('conversations.type', $filters['type']);
         }
 
-        if (!empty($from)) {
-            $query->where($date_field, '>=', date('Y-m-d 00:00:00', strtotime($from)));
-        }
-        if (!empty($to)) {
-            $query->where($date_field_to, '<=', date('Y-m-d 23:59:59', strtotime($to)));
+        if (!empty($from) || !empty($to)) {
+            $query->whereBetween($date_field, [$from, $to]);
         }
 
         // Extract the data
         $results = $query->select(
             DB::raw('COUNT(*) as total_count'),
-            DB::raw('COUNT(CASE WHEN created_by_user_id IS NULL THEN 1 END) as unassigned_count'),
+            DB::raw('COUNT(CASE WHEN user_id IS NULL THEN 1 END) as unassigned_count'),
             // DB::raw('COUNT(CASE WHEN closed_at IS NULL THEN 1 END) as overdue_count'),
             // DB::raw('COUNT(CASE WHEN created_at < ? AND closed_at IS NULL THEN 1 END) as overdue_count'),
             DB::raw('COUNT(CASE WHEN closed_at IS NULL THEN 1 END) as unclosed_count'),

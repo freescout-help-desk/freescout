@@ -118,7 +118,6 @@
                                         @endif
                                         @if (Auth::user()->isAdmin())
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('modules') }}"><a href="{{ route('modules') }}">{{ __('Modules') }}</a></li>
-                                            <li class=""><a href="{{ asset('translations') }}">{{ __('Translate') }}</a></li>
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('logs') }}"><a href="{{ route('logs') }}">{{ __('Logs') }}</a></li>
                                             <li class="{{ \App\Misc\Helper::menuSelectedHtml('system') }}"><a href="{{ route('system') }}">{{ __('System') }}</a></li>
                                         @endif

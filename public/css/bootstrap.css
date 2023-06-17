@@ -2312,7 +2312,7 @@ th {
   border-top: 2px solid #ddd;
 }
 .table .table {
-  background-color: #fff;
+  background-color: transparent;
 }
 .table-condensed > thead > tr > th,
 .table-condensed > tbody > tr > th,
@@ -4615,6 +4615,9 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   /* submenu */
   .navbar-default .navbar-nav .open .dropdown-menu > li > a {
     color: #4f5d6b;
+  }
+  .dm .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #69a2db;
   }
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
   .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
