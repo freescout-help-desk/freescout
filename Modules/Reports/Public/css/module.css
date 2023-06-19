@@ -8,6 +8,11 @@
 .dm .rpt-header {
     background-color: transparent;
 }
+@media screen and (max-width: 600px) {
+    .dm .rpt-header {
+        background-color: #303d71 !important;
+    }
+}
 .rpt-title {
     color: #2a3b47;
     font-size: 20px;
