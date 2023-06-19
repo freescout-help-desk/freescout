@@ -726,10 +726,6 @@ select[multiple].input-md {
     position: relative;
     margin: 20px 18px 18px 30px;
     float: left;
-    background-color: #e0ffe6;
-}
-.dm .card {
-    background-color: #304635;
 }
 a.card:active,
 a.card:focus,
@@ -834,7 +830,7 @@ a h4 {
     background-color: #f4f5f5;
 }
 .dm .card-inactive {
-    background-color: #292b5b;
+    background-color: #1D1C24;
 }
 .card .invite-state {
     background-color: #f4f5f5;
