@@ -723,17 +723,27 @@ class Message {
             return $str;
         }
 
+        $result = '';
+
+        // Try iconv.
         if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
             try {
-                return iconv($from, $to.'//IGNORE', $str);
+                $result = iconv($from, $to.'//IGNORE', $str);
             } catch (\Exception $e) {
-                return @iconv($from, $to, $str);
+                $result = @iconv($from, $to, $str);
             }
-        } else {
+        }
+
+        // In some cases iconv can't decode the string and returns:
+        // Detected an illegal character in input string.
+        // https://github.com/freescout-helpdesk/freescout/issues/3089
+        if (!$result) {
             if (!$from) {
                 return mb_convert_encoding($str, $to);
             }
             return mb_convert_encoding($str, $to, $from);
+        } else {
+            return $result;
         }
     }
 
