@@ -718,7 +718,7 @@ private static array $aliases = [
             }
 
             if (preg_match('/=\?([^?]+)\?(Q|B)\?(.+)\?=/i', $name, $matches)) {
-                $name = $this->part->getHeader()->decode($name);
+                $name = \MailHelper::decodeSubject($name);
             }
 
             // check if $name is url encoded
