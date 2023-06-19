@@ -136,7 +136,7 @@ class SlaReportController extends Controller
             $tickets->where($date_field_to, '<=', date('Y-m-d 23:59:59', strtotime($to)));
         }
 
-        $tickets = $tickets->get();
+        $tickets = $tickets->where('conversations.threads_count', '!=', '0')->get();
 
         return view('sla/report', compact('tickets','categoryValues','productValues','filters'));
     }

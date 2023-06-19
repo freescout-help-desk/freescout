@@ -387,13 +387,13 @@ border-radius:none;
     color: #8bb4dd;
     border: 1px solid #232d53;
 }
-
+s
 .dm .note-statusbar-toolbar select.form-control {
     border-radius: .1rem;
     outline: initial!important;
     box-shadow: none!important;
     line-height: 1;
-    background: #2a3663;
+    background: #1D1C24;
     color: #8bb4dd;
     border: 1px solid #232d53;
 
@@ -452,10 +452,10 @@ border-radius:none;
 }
 
 .dm .modal-content {
-    background:#162c44;
+    background:#1D1C24;
 }
 .dm .modal-backdrop {
-    background-color: #162c44;
+    background-color: #12131F;
 }
 .dm .alert-floating.alert-success {
     background:#162c44;
@@ -574,9 +574,6 @@ border-radius:none;
     color: #a58bdd;
 }
 .dm .customer-contacts .contact-main {
-    color: #a58bdd;
-}
-.dm a {
     color: #a58bdd;
 }
 

@@ -724,7 +724,7 @@ select[multiple].input-md {
 .card {
     display: block;
     position: relative;
-    margin: 0 18px 18px 30px;
+    margin: 20px 18px 18px 30px;
     float: left;
 }
 a.card:active,
@@ -786,7 +786,7 @@ a h4 {
 }
 .card-avatar:before,
 .person-photo-auto:before {
-    background: #c1cbd4;
+    background: #5c6d7c;
     color: #fff;
     content: attr(data-initial);
     border-radius: 50%;
@@ -805,7 +805,7 @@ a h4 {
 }
 .photo-sm .person-photo-auto:before,
 .photo-xs .person-photo-auto:before {
-    background: #a5b2bd;
+    background: #5c6d7c;
     color: #fff;
     content: attr(data-initial);
     border-radius: 50%;
@@ -3427,21 +3427,28 @@ ul.sidebar-block-list {
  * Modules
  */
 .module-card {
-    background-color: #434058;
+    background-color: #ffffff;
     border: 1px solid #dedede;
     box-sizing: border-box;
     display: block;
     position: relative;
     margin: 0 18px 18px 0;
     padding: 18px;
-    -webkit-box-shadow:0 0 5px rgba(0,0,0,.2);
+    -webkit-box-shadow:0 0 5px rgba(72, 71, 71, 0.2);
+    box-shadow:0 0 5px rgba(77, 76, 76, 0.2);
+}
+.dm .module-card {
+    background-color: #434058;
     box-shadow:0 0 5px rgba(0,0,0,.2);
 }
 .module-card.active {
+    background-color: #deffde;
+}
+.dm .module-card.active {
     background-color: #1D1C24;
 }
 .module-card.not-installed {
-    background-color: #f4f5f5;
+    background-color: #374141;
 }
 .module-card img {
     width: 128px;

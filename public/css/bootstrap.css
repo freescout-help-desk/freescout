@@ -3595,7 +3595,6 @@ tbody.collapse.in {
 .dropdown-menu > .active > a:focus {
   /*background-color: #eaeaea;*/
   background-color: #deecf9;
-  color: #005a9e;
 }
 .dropdown-menu > .disabled > a,
 .dropdown-menu > .disabled > a:hover,
@@ -5125,8 +5124,6 @@ a.thumbnail.active {
   color: inherit;
 }
 .alert-success {
-  /*color: #6ac27b;
-  background-color: #dff0d8;*/
   color: #6ac27b;
   background-color: #deffde;
   border-color: #6ac27b;
@@ -5150,9 +5147,14 @@ a.thumbnail.active {
 }
 .alert-warning {
   color: #b37100;
-  background-color: #b37100;
+  background-color: #faebcc;
   border-color: #faebcc;
 }
+.dm .alert-warning {
+    color: #faebcc;
+    background-color: #b37100;
+    border-color: #faebcc;
+  }
 .alert-warning hr {
   border-top-color: #f7e1b5;
 }
@@ -6004,7 +6006,6 @@ button.close {
 }
 .modal-backdrop.in {
   filter: alpha(opacity=50);
-  opacity: .5;
 }
 .modal-header {
   padding: 15px;
