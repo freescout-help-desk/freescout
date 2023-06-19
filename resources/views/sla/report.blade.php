@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title', __('SLA Report'))
 @section('content')
     <i class="glyphicon glyphicon-filter filter-trigger"></i>
     <div class="rpt-header">
@@ -214,6 +215,10 @@
             margin-top: 0;
         }
 
+        .dm .rpt-filter-date {
+            color: #fff
+        }
+
         .top-form {
             display: flex;
             height: auto;
@@ -342,6 +347,13 @@
             }
         }
 
+        @media screen and (max-width: 640px) {
+            div.dt-buttons {
+            float: right !important;
+            text-align: center !important;
+        }
+    }
+
         */ .dm .form-control {
             display: inline;
             width: 140px;
@@ -386,7 +398,7 @@
         .report-container {
             background-color: #eeeeee;
             padding: 1.3em;
-            width: 90%;
+            width: 93%;
             margin-top: 2em;
             border-radius: 7px;
         }
@@ -394,36 +406,42 @@
         .dm .input-sm {
             border-radius: 3px;
         }
-        .dt-button-collection{
+
+        .dt-button-collection {
             left: -4em !important;
             width: 8em !important;
         }
-        .dm .dt-button-collection{
+
+        .dm .dt-button-collection {
             left: -4em !important;
             width: 8em !important;
             background: #363636 !important;
         }
 
-        .dt-button{
+        .dt-button {
             border: none !important;
             background: transparent !important;
         }
-        .dt-button.buttons-csv:hover{
+
+        .dt-button.buttons-csv:hover {
             border: none !important;
             background: #0078d7 !important;
             border-radius: 6px !important;
         }
-        .dt-button.buttons-pdf:hover{
+
+        .dt-button.buttons-pdf:hover {
             border: none !important;
             background: #0078d7 !important;
             border-radius: 6px !important;
         }
-        .dm .dt-button.buttons-csv:hover{
+
+        .dm .dt-button.buttons-csv:hover {
             border: none !important;
             background: #131414 !important;
             border-radius: 6px !important;
         }
-        .dm .dt-button.buttons-pdf:hover{
+
+        .dm .dt-button.buttons-pdf:hover {
             border: none !important;
             background: #131414 !important;
             border-radius: 6px !important;

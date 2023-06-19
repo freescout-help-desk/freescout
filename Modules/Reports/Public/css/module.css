@@ -5,6 +5,9 @@
     overflow: auto;
     box-shadow: -3px 13px 19px -2px #00000057;
 }
+.dm .rpt-header {
+    background-color: transparent;
+}
 .rpt-title {
     color: #2a3b47;
     font-size: 20px;
