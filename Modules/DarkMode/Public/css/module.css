@@ -92,7 +92,7 @@ border-color:#0078d7;
 
 .dm .dropdown-menu > li > a:hover,
 .dm .dropdown-menu > li > a:focus {
-    background-color: #303d71;
+    background-color: #000;
 }
 
 .dm .sidebar-menu .glyphicon {color: #93a1af;}
@@ -526,7 +526,7 @@ border-radius:none;
 .dm .panel {background-color: #274059;}
 .dm .panel-default {border-color: #243c53;}
 
-.dm .navbar-default .navbar-brand:hover {background-color: #262f54;}
+.dm .navbar-default .navbar-brand:hover {background-color: #12131F;}
 
 .dm .navbar-default .navbar-nav > .open > a,
 .dm .navbar-default .navbar-nav > .open > a:hover,
