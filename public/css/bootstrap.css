@@ -5150,9 +5150,14 @@ a.thumbnail.active {
 }
 .alert-warning {
   color: #b37100;
-  background-color: #b37100;
+  background-color: #faebcc;
   border-color: #faebcc;
 }
+.dm .alert-warning {
+    color: #b37100;
+    background-color: #b37100;
+    border-color: #faebcc;
+  }
 .alert-warning hr {
   border-top-color: #f7e1b5;
 }
@@ -6004,7 +6009,6 @@ button.close {
 }
 .modal-backdrop.in {
   filter: alpha(opacity=50);
-  opacity: .5;
 }
 .modal-header {
   padding: 15px;
