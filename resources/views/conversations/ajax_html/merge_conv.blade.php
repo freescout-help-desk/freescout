@@ -50,9 +50,3 @@
 <div class="form-group margin-top">
 	<button class="btn btn-primary btn-merge-conv" data-loading-text="{{ __('Merge') }}…" type="submit" disabled>{{ __('Merge') }}</button>
 </div>
-
-<style>
-    .alert-msg{
-        color: #b37100 !important;
-    }
-</style>
