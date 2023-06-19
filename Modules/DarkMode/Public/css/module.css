@@ -576,9 +576,6 @@ border-radius:none;
 .dm .customer-contacts .contact-main {
     color: #a58bdd;
 }
-.dm a {
-    color: #a58bdd;
-}
 
 @media (max-width:700px) {
     .dm .table.table-conversations tbody td,
