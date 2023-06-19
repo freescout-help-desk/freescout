@@ -273,6 +273,7 @@
             "vendor/webklex/php-imap/src/Header.php",
             "vendor/webklex/php-imap/src/Structure.php",
             "vendor/webklex/php-imap/src/Message.php",
+            "vendor/webklex/php-imap/src/Attachment.php",
             "vendor/webklex/php-imap/src/Connection/Protocols/ImapProtocol.php"
         ]
     },

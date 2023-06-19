@@ -13,7 +13,8 @@ class TestWebklex extends Command
     /**
      * The name and signature of the console command.
      *
-     * --uid Pass any UID from the output.
+     * --mailbox Any mailbox able to connect via IMAP to its mail server.
+     * --uid Pass any UID from the Webklex/PHP-IMAP fetching output.
      *
      * @var string
      */
@@ -87,5 +88,13 @@ class TestWebklex extends Command
         $this->info($message->getTextBody());
         $this->line('HTML Body: ');
         $this->info($message->getHTMLBody(false));
+
+        $attachments = $message->getAttachments();
+        if (count($attachments)) {
+            $this->line('Attachments: ');
+            foreach ($attachments as $attachment) {
+                $this->info($attachment->getName());
+            }
+        }
     }
 }
