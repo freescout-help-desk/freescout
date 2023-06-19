@@ -1250,7 +1250,7 @@ class FetchEmails extends Command
     }
 
     /**
-     * Conver email object to plain emails.
+     * Convert email object to plain emails.
      *
      * @param array $obj_list
      *
@@ -1267,9 +1267,17 @@ class FetchEmails extends Command
         $obj_list = $this->attrToArray($obj_list);
 
         foreach ($obj_list as $item) {
-            $item->mail = Email::sanitizeEmail($item->mail);
-            if ($item->mail) {
-                $plain_list[] = $item->mail;
+            // https://github.com/freescout-helpdesk/freescout/issues/3118
+            if (is_string($item)) {
+                $item = Email::sanitizeEmail($item);
+                if ($item) {
+                    $plain_list[] = $item;
+                }
+            } else {
+                $item->mail = Email::sanitizeEmail($item->mail);
+                if ($item->mail) {
+                    $plain_list[] = $item->mail;
+                }
             }
         }
 
