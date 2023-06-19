@@ -133,6 +133,10 @@ table.dataTable.display tbody tr.odd.selected {
 
 table.dataTable.hover tbody tr:hover,
 table.dataTable.display tbody tr:hover {
+    background-color: #e3e8eb
+}
+.dm table.dataTable.hover tbody tr:hover,
+table.dataTable.display tbody tr:hover {
     background-color: #24253c
 }
 
