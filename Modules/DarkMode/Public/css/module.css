@@ -177,7 +177,7 @@ border-color:#303d71;
     background-color: #2a3663;
 }
 .dm .thread-type-note {
-    background-color: #2a3663;
+    background-color: #12131F;
     box-shadow: inset 5px 0 0 0 #b37100;
 }
 .dm .thread-badge {
@@ -232,7 +232,7 @@ border-color:#2b3762;}
 
 /* Downloads */
 .dm .thread-attachments li {
-background:#303d71;
+background:#1D1C24;
 border: 1px solid #e1e1e1;
 }
 
@@ -290,7 +290,7 @@ border-color:#2a3663;
 }
 
 .dm .thread-type-lineitem {
-    background: #2e3a6c;
+    background: #1D1C24;
 }
 
 .dm .btn-default {
