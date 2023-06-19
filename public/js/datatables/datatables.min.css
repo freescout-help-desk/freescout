@@ -75,7 +75,7 @@ table.dataTable tbody tr {
     background-color: #f4f5f5
 }
 .dm table.dataTable tbody tr {
-    background-color: #374479
+    background-color: #1D1C24
 }
 
 table.dataTable tbody tr.selected {
@@ -123,22 +123,22 @@ table.dataTable.display tbody tr.odd {
 }
 .dm table.dataTable.stripe tbody tr.odd,
 table.dataTable.display tbody tr.odd {
-    background-color: #303d71
+    background-color: #12131F
 }
 
 table.dataTable.stripe tbody tr.odd.selected,
 table.dataTable.display tbody tr.odd.selected {
-    background-color: #2d3595
+    background-color: #24253c
 }
 
 table.dataTable.hover tbody tr:hover,
 table.dataTable.display tbody tr:hover {
-    background-color: #2d3595
+    background-color: #24253c
 }
 
 table.dataTable.hover tbody tr:hover.selected,
 table.dataTable.display tbody tr:hover.selected {
-    background-color: #2d3595
+    background-color: #24253c
 }
 
 table.dataTable.order-column tbody tr>.sorting_1,

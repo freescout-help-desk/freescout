@@ -5150,7 +5150,7 @@ a.thumbnail.active {
 }
 .alert-warning {
   color: #b37100;
-  background-color: #fcf8e3;
+  background-color: #b37100;
   border-color: #faebcc;
 }
 .alert-warning hr {
@@ -5161,7 +5161,7 @@ a.thumbnail.active {
 }
 .alert-danger {
   color: #d9534f;
-  background-color: #f5e2e1;
+  background-color: #1D1C24;
   border-color: #ebccd1;
 }
 .alert-danger hr {

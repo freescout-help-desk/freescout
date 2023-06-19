@@ -830,7 +830,7 @@ a h4 {
     background-color: #f4f5f5;
 }
 .dm .card-inactive {
-    background-color: #292b5b;
+    background-color: #1D1C24;
 }
 .card .invite-state {
     background-color: #f4f5f5;
@@ -3427,7 +3427,7 @@ ul.sidebar-block-list {
  * Modules
  */
 .module-card {
-    background-color: #ffffff;
+    background-color: #434058;
     border: 1px solid #dedede;
     box-sizing: border-box;
     display: block;
@@ -3438,7 +3438,7 @@ ul.sidebar-block-list {
     box-shadow:0 0 5px rgba(0,0,0,.2);
 }
 .module-card.active {
-    background-color: #deffde;
+    background-color: #1D1C24;
 }
 .module-card.not-installed {
     background-color: #f4f5f5;
