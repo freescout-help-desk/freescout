@@ -724,8 +724,12 @@ select[multiple].input-md {
 .card {
     display: block;
     position: relative;
-    margin: 0 18px 18px 30px;
+    margin: 20px 18px 18px 30px;
     float: left;
+    background-color: #e0ffe6;
+}
+.dm .card {
+    background-color: #304635;
 }
 a.card:active,
 a.card:focus,
@@ -749,7 +753,7 @@ a h4 {
     margin: 0 0 0 66px;
 }
 .card > img {
-    border: 1px solid #fff;
+    border: 1px solid #938b8b;
     border-radius: 50%;
     display: block;
     float: left;
@@ -786,7 +790,7 @@ a h4 {
 }
 .card-avatar:before,
 .person-photo-auto:before {
-    background: #c1cbd4;
+    background: #5c6d7c;
     color: #fff;
     content: attr(data-initial);
     border-radius: 50%;
@@ -805,7 +809,7 @@ a h4 {
 }
 .photo-sm .person-photo-auto:before,
 .photo-xs .person-photo-auto:before {
-    background: #a5b2bd;
+    background: #5c6d7c;
     color: #fff;
     content: attr(data-initial);
     border-radius: 50%;
