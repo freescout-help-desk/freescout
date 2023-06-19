@@ -477,7 +477,7 @@
             .filter-trigger {
                 display: block;
                 color: #0078d7;
-                font-size: 1.5em;
+                font-size: 15px;
                 position: absolute;
                 right: 0;
                 background: white;
