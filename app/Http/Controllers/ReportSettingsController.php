@@ -1,33 +1,38 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Conversation;
 use Illuminate\Http\Request;
-use App\Settingssla;
+use App\SLASetting;
+use Illuminate\Support\Facades\DB;
+use Mail;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use \PDF;
+
 
 class ReportSettingsController extends Controller
 {
-
     public function index(){
-        
-      $settings=Settingssla::orderBy('id', 'desc')->first();
-      return view('/sla/settings',compact('settings'));
-      
-    }
+
+    $settings=SLASetting::orderBy('id', 'desc')->first();
+    return view('sla.settings',compact('settings'));
+}
 
     public function addDataSettings(Request $request){
-    $settingslas=new Settingssla;
-    $settingslas->to_email=$request->to_email;
-    $settingslas->frequency=$request->frequency;
-    $settingslas->schedule=$request->schedule;
-    $settingslas->time=$request->time;
+    $slaSettings = new SLASetting();
+    $slaSettings->to_email=$request->to_email;
+
+    $slaSettings->frequency=$request->frequency;
+    $slaSettings->schedule=$request->schedule;
+    $slaSettings->time=$request->time;
     $auto=$request->auto_data;
     if($auto==""){
-        $settingslas->auto_data="0";
+        $slaSettings->auto_data="0";
     }else{
-        $settingslas->auto_data=$request->auto_data;
+        $slaSettings->auto_data=$request->auto_data;
     }
-    $settingslas->save();
+    $slaSettings->save();
     return redirect('/reports/settings');
    }
 

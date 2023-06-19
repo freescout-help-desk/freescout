@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSettingsslasTable extends Migration
+class CreateSlaSettingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateSettingsslasTable extends Migration
      */
     public function up()
     {
-        Schema::create('settingsslas', function (Blueprint $table) {
+        Schema::create('sla_settings', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
             $table->string('to_email');
@@ -31,6 +31,6 @@ class CreateSettingsslasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('settingsslas');
+        Schema::dropIfExists('sla_settings');
     }
 }
