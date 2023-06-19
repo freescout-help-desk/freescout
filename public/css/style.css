@@ -2180,6 +2180,12 @@ button.conv-checkbox-clear {
 .thread-body .alert .glyphicon {
     top: 2px;
 }
+.alert-msg{
+    color:  #b37100 !important;
+}
+.dm .close {
+    color: #fff;
+}
 .thread-meta {
     font-size: 12.5px;
     margin: 15px 0 0 0;
