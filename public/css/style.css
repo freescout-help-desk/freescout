@@ -1417,6 +1417,10 @@ thead .conv-cb label {
     /*background-color: #deecf9;*/
     background-color: #e5effb;
 }
+.dm input[type="date"]{
+    color-scheme: dark;
+    color: #b3b3b3;
+}
 .conv-sort {
     position: relative;
     left: 1px;
