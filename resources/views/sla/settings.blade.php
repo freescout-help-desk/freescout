@@ -80,6 +80,7 @@
     </div>
   </div>
 </div>
+<input type="hidden" id="selectedSchedule" value={{$settings && $settings->schedule ? $settings->schedule : 'demo'}} />
 <style>
   .layout-2col-settings{
     margin-top: -19px;
