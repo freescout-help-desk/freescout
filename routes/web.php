@@ -14,6 +14,7 @@
 */
 
 // use Symfony\Component\Routing\Route;
+// use App\Http\Controllers\SettingsCani;
 
 Auth::routes();
 
@@ -129,11 +130,13 @@ Route::post('/uploads/upload', ['uses' => 'SecureController@upload', 'laroute' =
 
 
 // SLA-REPORT
-Route::get('/reports/sla', 'SlaReportController@slaReport')->name('reports.sla');;
+Route::get('/reports/sla', 'SlaReportController@slaReport')->name('reports.sla');
 
 // Dashboard
 Route::get('/reports/dashboard', 'DashboardController@index')->name('dashboard');
 
 Route::get('/reports/dashboard', 'DashboardController@index')->name('filter');
+Route::get('/reports/settings','ReportSettingsController@index')->name('reports.settings');
+Route::post('/reports/settings','ReportSettingsController@addDataSettings');
 
 Route::post('/reports/sla/', 'SlaReportController@slaReport')->name('slafilter');

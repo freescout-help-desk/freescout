@@ -7,6 +7,7 @@
         <li class="{{ \App\Misc\Helper::menuSelectedHtml('reports.sla') }}"><a href="{{ route('reports.sla') }}">{{ __('SLA Report') }}</a></li>
         <li class="{{ \App\Misc\Helper::menuSelectedHtml('reports.conversations') }}"><a href="{{ route('reports.conversations') }}">{{ __('Conversations Report') }}</a></li>
         <li class="{{ \App\Misc\Helper::menuSelectedHtml('reports.productivity') }}"><a href="{{ route('reports.productivity') }}">{{ __('Productivity Report') }}</a></li>
+        <li class="{{ \App\Misc\Helper::menuSelectedHtml('reports.settings') }}"><a href="{{ route('reports.settings') }}">{{ __('Settings') }}</a></li>
         @if (\Module::isActive('satratings'))
         	<li class="{{ \App\Misc\Helper::menuSelectedHtml('reports.satisfaction') }}"><a href="{{ route('reports.satisfaction') }}">{{ __('Satisfaction Report') }}</a></li>
         @endif
