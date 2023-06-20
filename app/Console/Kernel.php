@@ -39,7 +39,7 @@ class Kernel extends ConsoleKernel
         // Restart processing queued jobs (just in case)
         $schedule->command('queue:restart')
             ->hourly();
-        $schedule->command('canidesk:auto-reporting')->everyMinute();
+        //$schedule->command('canidesk:auto-reporting')->everyMinute();
         $schedule->command('report:weekly')
             ->weekly()->mondays()->at('10:30');
 
