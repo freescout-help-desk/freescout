@@ -1,8 +1,8 @@
 <div class="alert alert-warning margin-bottom">
-    <div>
+    <div class="alert-msg">
         {{ __('Selected conversation will be merged into the current conversation behind the popup.') }}
     </div>
-    <div class="margin-top-10">
+    <div class="margin-top-10 alert-msg">
         <i class="glyphicon glyphicon-exclamation-sign text-larger"></i> &nbsp; <strong>{{ __("Merged conversations can not be unmerged.") }}</strong>
     </div>
 </div>
@@ -25,7 +25,7 @@
     <table class="table table-striped">
         <tr>
             <td>
-                
+
             </td>
         </tr>
     </table>

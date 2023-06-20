@@ -3,6 +3,15 @@
     padding: 12px 18px;
     line-height: 30px;
     overflow: auto;
+    box-shadow: -3px 13px 19px -2px #00000057;
+}
+.dm .rpt-header {
+    background-color: transparent;
+}
+@media screen and (max-width: 600px) {
+    .dm .rpt-header {
+        background-color: #12131F !important;
+    }
 }
 .rpt-title {
     color: #2a3b47;

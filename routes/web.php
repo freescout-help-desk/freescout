@@ -138,3 +138,5 @@ Route::get('/reports/dashboard', 'DashboardController@index')->name('dashboard')
 Route::get('/reports/dashboard', 'DashboardController@index')->name('filter');
 Route::get('/reports/settings','ReportSettingsController@index')->name('reports.settings');
 Route::post('/reports/settings','ReportSettingsController@addDataSettings');
+
+Route::post('/reports/sla/', 'SlaReportController@slaReport')->name('slafilter');

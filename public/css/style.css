@@ -326,6 +326,15 @@ div.dt-buttons{
         text-overflow: ellipsis!important;
         white-space: nowrap!important;
     }
+    .dm .sidebar-title-real {
+        display: block;
+        font-size: 13.4px;
+        line-height: 14.4px;
+        color: #a0bdd8;
+        overflow: hidden!important;
+        text-overflow: ellipsis!important;
+        white-space: nowrap!important;
+    }
     .sidebar-title-real.mailbox-name .glyphicon {
         top: 2px !important;
         font-size: 13.4px !important;
@@ -448,13 +457,9 @@ a.navbar-brand:hover img {
 .form-nav-search .input-group {
     padding-top: 3px;
 }
-/*.navbar-nav > li > .dropdown-menu {
-    margin-top: -10px;
-    border-radius: 3px;
-}*/
-/*.navbar-nav.navbar-right > li > .dropdown-menu {
-    margin-top: -8px;
-}*/
+div.dt-button-background {
+    background: none !important;
+}
 .section-heading-right {
     display: block;
 }
@@ -719,7 +724,7 @@ select[multiple].input-md {
 .card {
     display: block;
     position: relative;
-    margin: 0 18px 18px 0;
+    margin: 20px 18px 18px 30px;
     float: left;
 }
 a.card:active,
@@ -751,6 +756,9 @@ a h4 {
     max-height: 50px;
     max-width: 50px;
 }
+.dm .card > img {
+    border: 1px solid #12131F;
+}
 .card-avatar {
     border-radius: 4px;
     float: left;
@@ -781,7 +789,7 @@ a h4 {
 }
 .card-avatar:before,
 .person-photo-auto:before {
-    background: #c1cbd4;
+    background: #5c6d7c;
     color: #fff;
     content: attr(data-initial);
     border-radius: 50%;
@@ -800,7 +808,7 @@ a h4 {
 }
 .photo-sm .person-photo-auto:before,
 .photo-xs .person-photo-auto:before {
-    background: #a5b2bd;
+    background: #5c6d7c;
     color: #fff;
     content: attr(data-initial);
     border-radius: 50%;
@@ -817,12 +825,15 @@ a h4 {
 .card.no-img p {
     margin-left: 0;
 }
-/*.card-active {
+/* .card-active {
     border-left: 4px solid #5cb85c;
-}*/
+} */
 .card-inactive {
     /*border-left: 4px solid #93a1af;*/
     background-color: #f4f5f5;
+}
+.dm .card-inactive {
+    background-color: #1D1C24;
 }
 .card .invite-state {
     background-color: #f4f5f5;
@@ -835,7 +846,6 @@ a h4 {
     height: 24px;
     position: absolute;
     left: 45px;
-    top: 49px;
     width: 24px;
     z-index: 1;
 }
@@ -1406,6 +1416,10 @@ thead .conv-cb label {
 .conv-active .conv-date a {
     /*background-color: #deecf9;*/
     background-color: #e5effb;
+}
+.dm input[type="date"]{
+    color-scheme: dark;
+    color: #b3b3b3;
 }
 .conv-sort {
     position: relative;
@@ -2171,6 +2185,12 @@ button.conv-checkbox-clear {
 }
 .thread-body .alert .glyphicon {
     top: 2px;
+}
+.alert-msg{
+    color:  #b37100 !important;
+}
+.dm .close span {
+    color: #FFF;
 }
 .thread-meta {
     font-size: 12.5px;
@@ -3426,14 +3446,21 @@ ul.sidebar-block-list {
     position: relative;
     margin: 0 18px 18px 0;
     padding: 18px;
-    -webkit-box-shadow:0 0 5px rgba(0,0,0,.2);
+    -webkit-box-shadow:0 0 5px rgba(72, 71, 71, 0.2);
+    box-shadow:0 0 5px rgba(77, 76, 76, 0.2);
+}
+.dm .module-card {
+    background-color: #434058;
     box-shadow:0 0 5px rgba(0,0,0,.2);
 }
 .module-card.active {
     background-color: #deffde;
 }
+.dm .module-card.active {
+    background-color: #1D1C24;
+}
 .module-card.not-installed {
-    background-color: #f4f5f5;
+    background-color: #374141;
 }
 .module-card img {
     width: 128px;
@@ -3702,6 +3729,11 @@ body.print {
 }
 .heading {
     color: #253540;
+    font-size: 20px;
+    font-weight: 400;
+}
+.dm .heading {
+    color: snow;
     font-size: 20px;
     font-weight: 400;
 }
