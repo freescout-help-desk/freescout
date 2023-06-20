@@ -8,6 +8,10 @@ use App\Conversation;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use \PDF;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Mail;
+
 class AutoReport extends Command
 {
     /**
@@ -44,7 +48,7 @@ class AutoReport extends Command
     public function handle()
     {
 
-        // $settings=SLASetting::orderBy('id', 'desc')->first();
+        $settings=SLASetting::orderBy('id', 'desc')->first();
         // $email=explode(',', $settings->to_email);
         // $this->info($settings);
         $tickets = Conversation::with('user', 'conversationCustomField.custom_field', 'conversationCategory','conversationPriority')->get();
@@ -59,20 +63,22 @@ class AutoReport extends Command
         // Load the Blade view with the table data
         $html = view('sla.report-email', compact('tickets'));
         // Load the HTML content
-        $dompdf->loadHtml($html);
+        $dompdf->load_html($html);
 
         // Render the PDF
         $dompdf->render();
 
         // Output the generated PDF to the browser
-    $dompdf->save('report.pdf');
+        // $dompdf->save('report.pdf');
 
+        $output = $dompdf->output();
+        file_put_contents('report.pdf', $output);
         $data = array('name'=>"Example");
-        // $mail = Mail::send('mail', $data, function($message) {
-        // $message->to($settings->to_email, 'Tutorials Point')->subject
-        //     ('hello i am rajesh rathod')->attach('/home/rathod/Downloads/report.pdf');
-        // $message->from('hello@example.com','Example');
+        $mail = Mail::send('mail', $data, function($message) {
+        $message->to('rr7049908@gmail.com', 'Tutorials Point')->subject
+            ('hello i am rajesh rathod')->attach('/home/rathod/git/TaskSecond/canidesk/report.pdf');
+        $message->from('rajeshcanaris@gmail.com','Example');
         
-        // });
+        });
     }
 }
