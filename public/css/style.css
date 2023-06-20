@@ -2189,8 +2189,8 @@ button.conv-checkbox-clear {
 .alert-msg{
     color:  #b37100 !important;
 }
-.dm .close {
-    color: #fff;
+.dm .close span {
+    color: #FFF;
 }
 .thread-meta {
     font-size: 12.5px;
