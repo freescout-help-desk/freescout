@@ -16,6 +16,7 @@ class ReportSettingsController extends Controller
     public function index(){
 
     $settings=SLASetting::orderBy('id', 'desc')->first();
+    // return $settings;
     return view('sla.settings',compact('settings'));
 }
 

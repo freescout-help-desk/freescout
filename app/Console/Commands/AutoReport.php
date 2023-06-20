@@ -11,6 +11,7 @@ use \PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Mail;
+use Carbon\Carbon;
 
 class AutoReport extends Command
 {
@@ -45,13 +46,42 @@ class AutoReport extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(Request $request)
     {
 
+        $today = Carbon::today();
+        $fourDaysAgo = Carbon::today()->subDays(4);
+        $sevenDaysAgo = Carbon::today()->subDays(7);
+        $thirtyDaysAgo = Carbon::today()->subDays(30);
+        $prev = false;
+        $date_field = 'conversations.created_at';
+        $date_field_to = '';
+
+        
+
         $settings=SLASetting::orderBy('id', 'desc')->first();
-        // $email=explode(',', $settings->to_email);
-        // $this->info($settings);
-        $tickets = Conversation::with('user', 'conversationCustomField.custom_field', 'conversationCategory','conversationPriority')->get();
+        $emails=explode(',', $settings->to_email);
+        $this->info($settings->frequency);
+        $this->info($settings->schedule);
+    //    dd('done');
+        $this->info($settings);
+        $tickets = Conversation::query();
+        $tickets = $tickets->with('user', 'conversationCustomField.custom_field', 'conversationCategory','conversationPriority');
+        if(!empty($settings->frequency) && $settings->frequency === 'Monthly'){
+            $this->info(Carbon::now()->subDays(30)->startOfMonth()->endOfDay());
+            $tickets = $tickets->whereBetween('created_at',[Carbon::now()->subDays(30)->startOfMonth()->startOfDay(),Carbon::now()->subDays(30)->endOfMonth()->endOfDay()]);
+
+        }
+        else if(!empty($settings->frequency) && $settings->frequency === 'Weekly'){
+            $this->info(Carbon::now()->subDays(7)->startOfWeek()->endOfDay());
+            $tickets = $tickets->whereBetween('created_at',[Carbon::now()->subDays(7)->startOfWeek()->startOfDay(),Carbon::now()->subDays(7)->endOfWeek()->endOfDay()]);
+        }
+        else if(!empty($settings->frequency) && $settings->frequency === 'Daily'){
+            $this->info(Carbon::now()->subDays(1)->endOfDay());
+            $tickets = $tickets->whereBetween('created_at',[Carbon::now()->subDays(1)->startOfDay(),Carbon::now()->subDays(1)->endOfDay()]);
+
+        }
+        $tickets = $tickets->get();
         $dompdf = new Dompdf();
         // (Optional) Set Dompdf options
         $options = new Options();
@@ -62,6 +92,7 @@ class AutoReport extends Command
 
         // Load the Blade view with the table data
         $html = view('sla.report-email', compact('tickets'));
+        // return $html;
         // Load the HTML content
         $dompdf->load_html($html);
 
@@ -72,13 +103,18 @@ class AutoReport extends Command
         // $dompdf->save('report.pdf');
 
         $output = $dompdf->output();
-        file_put_contents('report.pdf', $output);
+        file_put_contents('storage/slaReport/report.pdf', $output);
         $data = array('name'=>"Example");
-        $mail = Mail::send('mail', $data, function($message) {
-        $message->to('rr7049908@gmail.com', 'Tutorials Point')->subject
-            ('hello i am rajesh rathod')->attach('/home/rathod/git/TaskSecond/canidesk/report.pdf');
-        $message->from('rajeshcanaris@gmail.com','Example');
+
+
+        foreach($emails as $email){
+            // $this->info($email);
+        $mail = Mail::send('mail', $data, function($message) use ($email, $settings){
+        $message->to($email, 'Canidesk User')->subject
+            ($settings->frequency.' Report')->attach('storage/slaReport/report.pdf');
+        $message->from('rajeshcanaris@gmail.com','[ Canidesk Report ]');
         
         });
+      }
     }
 }
