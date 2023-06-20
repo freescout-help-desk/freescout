@@ -756,6 +756,9 @@ a h4 {
     max-height: 50px;
     max-width: 50px;
 }
+.dm .card > img {
+    border: 1px solid #12131F;
+}
 .card-avatar {
     border-radius: 4px;
     float: left;
@@ -1413,6 +1416,10 @@ thead .conv-cb label {
 .conv-active .conv-date a {
     /*background-color: #deecf9;*/
     background-color: #e5effb;
+}
+.dm input[type="date"]{
+    color-scheme: dark;
+    color: #b3b3b3;
 }
 .conv-sort {
     position: relative;
