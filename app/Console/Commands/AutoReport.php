@@ -48,7 +48,8 @@ class AutoReport extends Command
      */
     public function handle(Request $request)
     {
-
+        $this->info(Carbon::now()->format('l'));
+        // dd('done');
         $today = Carbon::today();
         $fourDaysAgo = Carbon::today()->subDays(4);
         $sevenDaysAgo = Carbon::today()->subDays(7);
@@ -60,61 +61,69 @@ class AutoReport extends Command
         
 
         $settings=SLASetting::orderBy('id', 'desc')->first();
-        $emails=explode(',', $settings->to_email);
-        $this->info($settings->frequency);
-        $this->info($settings->schedule);
-    //    dd('done');
-        $this->info($settings);
-        $tickets = Conversation::query();
-        $tickets = $tickets->with('user', 'conversationCustomField.custom_field', 'conversationCategory','conversationPriority');
-        if(!empty($settings->frequency) && $settings->frequency === 'Monthly'){
-            $this->info(Carbon::now()->subDays(30)->startOfMonth()->endOfDay());
-            $tickets = $tickets->whereBetween('created_at',[Carbon::now()->subDays(30)->startOfMonth()->startOfDay(),Carbon::now()->subDays(30)->endOfMonth()->endOfDay()]);
+        if($settings->auto_data == 1){ // Start generating email report if auto reporting is turned on 
+            $emails=explode(',', $settings->to_email);
+            $this->info($settings->frequency);
+            $this->info($settings->schedule);
+        //    dd('done');
+            $this->info($settings);
+            $tickets = Conversation::query();
+            $tickets = $tickets->with('user', 'conversationCustomField.custom_field', 'conversationCategory','conversationPriority');
+           
+            if(!empty($settings->frequency) && $settings->frequency === 'Monthly' && $settings->schedule === Carbon::now()->format('d') && $settings->time === Carbon::now()->format('H:i:00') ){
+                $this->info(Carbon::now()->subDays(30)->startOfMonth()->endOfDay());
+                $tickets = $tickets->whereBetween('created_at',[Carbon::now()->subDays(30)->startOfMonth()->startOfDay(),Carbon::now()->subDays(30)->endOfMonth()->endOfDay()]);
 
+            }
+            else if(!empty($settings->frequency) && $settings->frequency === 'Weekly'&& $settings->schedule === Carbon::now()->format('l') && $settings->time === Carbon::now()->format('H:i:00')){
+                $this->info(Carbon::now()->subDays(7)->startOfWeek()->endOfDay());
+                $tickets = $tickets->whereBetween('created_at',[Carbon::now()->subDays(7)->startOfWeek()->startOfDay(),Carbon::now()->subDays(7)->endOfWeek()->endOfDay()]);
+                
+            }
+            else if(!empty($settings->frequency) && $settings->frequency === 'Daily' && $settings->time === Carbon::now()->format('H:i:00')){
+                $this->info(Carbon::now()->subDays(1)->endOfDay());
+                $tickets = $tickets->whereBetween('created_at',[Carbon::now()->subDays(1)->startOfDay(),Carbon::now()->subDays(1)->endOfDay()]);
+
+            }
+            // $tickets = $tickets->get();
+            $tickets = $tickets->get();
+
+            $dompdf = new Dompdf();
+            // (Optional) Set Dompdf options
+            $options = new Options();
+            $options->set('defaultFont', 'Arial'); // Set the default font
+            // You can customize other options if needed
+
+            $dompdf->setOptions($options);
+
+            // Load the Blade view with the table data
+            $html = view('sla.report-email', compact('tickets'));
+            // return $html;
+            // Load the HTML content
+            $dompdf->load_html($html);
+
+            // Render the PDF
+            $dompdf->render();
+
+            // Output the generated PDF to the browser
+            // $dompdf->save('report.pdf');
+
+            $output = $dompdf->output();
+            file_put_contents('storage/slaReport/report.pdf', $output);
+            $data = array('name'=>"Example");
+
+            if($settings->frequency === 'Daily' && $settings->time === Carbon::now()->format('H:i:00') || $settings->frequency === 'Weekly'&& $settings->schedule === Carbon::now()->format('l') && $settings->time === Carbon::now()->format('H:i:00') || $settings->frequency === 'Monthly' && $settings->schedule === Carbon::now()->format('d') && $settings->time === Carbon::now()->format('H:i:00') ){
+                foreach($emails as $email){
+                    // $this->info($email);
+                $mail = Mail::send('mail', $data, function($message) use ($email, $settings){
+                $message->to($email, 'Canidesk User')->subject
+                    ($settings->frequency.' Report')->attach('storage/slaReport/report.pdf');
+                $message->from('rajeshcanaris@gmail.com','[ Canidesk Report ]');
+                
+                });
+            }
+            }
         }
-        else if(!empty($settings->frequency) && $settings->frequency === 'Weekly'){
-            $this->info(Carbon::now()->subDays(7)->startOfWeek()->endOfDay());
-            $tickets = $tickets->whereBetween('created_at',[Carbon::now()->subDays(7)->startOfWeek()->startOfDay(),Carbon::now()->subDays(7)->endOfWeek()->endOfDay()]);
-        }
-        else if(!empty($settings->frequency) && $settings->frequency === 'Daily'){
-            $this->info(Carbon::now()->subDays(1)->endOfDay());
-            $tickets = $tickets->whereBetween('created_at',[Carbon::now()->subDays(1)->startOfDay(),Carbon::now()->subDays(1)->endOfDay()]);
-
-        }
-        $tickets = $tickets->get();
-        $dompdf = new Dompdf();
-        // (Optional) Set Dompdf options
-        $options = new Options();
-        $options->set('defaultFont', 'Arial'); // Set the default font
-        // You can customize other options if needed
-
-        $dompdf->setOptions($options);
-
-        // Load the Blade view with the table data
-        $html = view('sla.report-email', compact('tickets'));
-        // return $html;
-        // Load the HTML content
-        $dompdf->load_html($html);
-
-        // Render the PDF
-        $dompdf->render();
-
-        // Output the generated PDF to the browser
-        // $dompdf->save('report.pdf');
-
-        $output = $dompdf->output();
-        file_put_contents('storage/slaReport/report.pdf', $output);
-        $data = array('name'=>"Example");
-
-
-        foreach($emails as $email){
-            // $this->info($email);
-        $mail = Mail::send('mail', $data, function($message) use ($email, $settings){
-        $message->to($email, 'Canidesk User')->subject
-            ($settings->frequency.' Report')->attach('storage/slaReport/report.pdf');
-        $message->from('rajeshcanaris@gmail.com','[ Canidesk Report ]');
-        
-        });
-      }
+       
     }
 }

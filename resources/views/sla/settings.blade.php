@@ -49,22 +49,24 @@
                     </select>
                     </div>
                 </div>
-                <div class="setting_form_labe form-group" id="mySchedule1_a">
-                    <label for="" class="col-sm-2 control-label">Schedule</label>
-                   <div class="col-sm-6">
-                    <select class="setting_form_labe_input_schedule form-control input-sized" name="schedule" id="mySchedule1" >
-                      <option selected>Choose Schedule</option>
-                  </select>
-                  </div>
-                </div>
-                <div class="setting_form_labe form-group" id="mySchedule2_a">
-                  <label for="" class="col-sm-2 control-label">Schedule</label>
-                 <div class="col-sm-6">
-                  <select class="setting_form_labe_input_schedule form-control input-sized" name="schedule" id="mySchedule2" >
-                    <option selected>Choose Schedule</option>
-                </select>
-                </div>
+               @if($settings->frequency!='null')
+               <div class="setting_form_labe form-group" id="mySchedule1_a">
+                <label for="" class="col-sm-2 control-label">Schedule</label>
+               <div class="col-sm-6">
+                <select class="setting_form_labe_input_schedule form-control input-sized" name="schedule" id="mySchedule1" >
+                  <option selected>Choose Schedule</option>
+              </select>
               </div>
+            </div>
+            <div class="setting_form_labe form-group" id="mySchedule2_a">
+              <label for="" class="col-sm-2 control-label">Schedule</label>
+             <div class="col-sm-6">
+              <select class="setting_form_labe_input_schedule form-control input-sized" name="schedule" id="mySchedule2" >
+                <option selected>Choose Schedule</option>
+            </select>
+            </div>
+          </div>
+               @endif
                 <div class="setting_form_labe form-group">
                     <label for="" class="col-sm-2 control-label">Time</label>
                     <div class="col-sm-6">
@@ -98,6 +100,8 @@
   ];
 
    $(document).ready(function (){
+      $('#mySchedule1_a').hide();
+      $('#mySchedule2_a').hide();
     $("#myFrequency").change(function(){
       toggleSchedule($(this).val());
     });

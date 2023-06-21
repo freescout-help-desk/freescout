@@ -25,7 +25,12 @@ class ReportSettingsController extends Controller
     $slaSettings->to_email=$request->to_email;
 
     $slaSettings->frequency=$request->frequency;
-    $slaSettings->schedule=$request->schedule;
+    if($request->frequency==="Daily"){
+        $slaSettings->schedule='null';
+    }else{
+        $slaSettings->schedule=$request->schedule;
+    }
+   
     $slaSettings->time=$request->time;
     $auto=$request->auto_data;
     if($auto==""){
