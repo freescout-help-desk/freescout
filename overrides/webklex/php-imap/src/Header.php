@@ -403,6 +403,10 @@ class Header {
             return $str;
         }
 
+        if (strtolower($from) == 'iso-2022-jp'){
+           $from = 'iso-2022-jp-ms';
+        }
+
         try {
             if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
                 return iconv($from, $to, $str);

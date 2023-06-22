@@ -725,6 +725,10 @@ class Message {
 
         $result = '';
 
+        if (strtolower($from) == 'iso-2022-jp'){
+           $from = 'iso-2022-jp-ms';
+        }
+        
         // Try iconv.
         if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
             try {
