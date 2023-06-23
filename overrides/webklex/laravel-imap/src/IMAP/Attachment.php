@@ -226,7 +226,28 @@ class Attachment {
      * @param $name
      */
     public function setName($name) {
-        $this->name = mb_decode_mimeheader($name);
+       //fixed attachment filename garbled
+        //mb_decode_mimeheader sometimes failes to handle Quoted-printable style header.
+        //and to specify iso-2022-jp-ms instead of iso-2022-jp. use imap_mime_header_decode and mb_convert_encoding
+        $array = imap_mime_header_decode($name);
+
+        $name_decoded = '';
+        foreach($array as $one_line){
+            if (strtolower($one_line->charset) == 'iso-2022-jp'){
+                $one_line->charset = 'iso-2022-jp-ms';
+            }
+
+            if($one_line->charset == 'default' || strtolower($one_line->charset) == 'utf-8'){
+                $name_decoded .= $one_line->text;
+            }else{
+                if (function_exists('iconv') && strtolower($one_line->charset) != 'utf-7' && strtolower($one_line->charset) != 'iso-2022-jp-ms') {
+                    $name_decoded .= iconv($one_line->charset, "UTF-8", $one_line->text);
+                } else {
+                    $name_decoded .= mb_convert_encoding($one_line->text, "UTF-8", $one_line->charset);
+                }
+            }
+        }
+        $this->name = $name_decoded;
     }
 
     /**
