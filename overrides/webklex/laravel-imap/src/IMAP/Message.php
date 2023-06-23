@@ -857,11 +857,16 @@ class Message
         if (strtolower($from) == 'us-ascii' && $to == 'UTF-8') {
             return $str;
         }
+        //fix iso-2022-jp-ms character garble 
+        if (strtolower($from) == 'iso-2022-jp'){
+            $from = 'iso-2022-jp-ms';
+        }
 
         try {
             try {
-                if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
-                    // FreeScout #351
+                //fix iso-2022-jp-ms character garble 
+                //iconv couldn't handle iso-2022-jp-ms properly. so use mb_convert_encoding instead.
+                if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7' && strtolower($from) != 'iso-2022-jp-ms') {                    // FreeScout #351
                     return iconv($from, $to, $str);
                 } else {
                     if (!$from) {
