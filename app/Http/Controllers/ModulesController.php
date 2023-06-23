@@ -245,6 +245,8 @@ class ModulesController extends Controller
                                 \Session::flash('flash_success_floating', __('License successfully activated!'));
                                 $response['status'] = 'success';
                             }
+                        } elseif (!empty($result['status']) && $result['status'] == 'invalid') {
+                            $response['msg'] = __('Invalid license key');
                         } elseif (!empty($result['error'])) {
                             $response['msg'] = $this->getErrorMessage($result['error'], $result);
                         } else {
