@@ -894,6 +894,8 @@ class Mail
         // Sometimes subject is split into parts and each part is base63 encoded.
         // And sometimes it's first encoded and after that split.
         // https://github.com/freescout-helpdesk/freescout/issues/3066      
+
+        // Abnormal way - text is encoded and split into parts.
   
         // First try to join all lines skipping =?utf-8?B? in betweeb.
         $parts = preg_match_all("/(=\?[^\?]+\?[BQ]\?)([^\?]+)(\?=)[\r\n\t ]*/i", $subject, $m);
@@ -909,6 +911,8 @@ class Mail
                 return $subject_decoded;
             }
         }
+
+        // Standard way - each part is encoded separately.
 
         // iconv_mime_decode() can't decode:
         // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=

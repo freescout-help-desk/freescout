@@ -858,17 +858,42 @@ class Message
             return $str;
         }
 
+        if (strtolower($from) == 'iso-2022-jp'){
+           $from = 'iso-2022-jp-ms';
+        }
+
         try {
             try {
+                // if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
+                //     // FreeScout #351
+                //     return iconv($from, $to, $str);
+                // } else {
+                //     if (!$from) {
+                //         return mb_convert_encoding($str, $to);
+                //     }
+
+                //     return mb_convert_encoding($str, $to, $from);
+                // }
+                
+                // Try iconv.
                 if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
-                    // FreeScout #351
-                    return iconv($from, $to, $str);
-                } else {
+                    try {
+                        $result = iconv($from, $to.'//IGNORE', $str);
+                    } catch (\Exception $e) {
+                        $result = @iconv($from, $to, $str);
+                    }
+                }
+
+                // In some cases iconv can't decode the string and returns:
+                // Detected an illegal character in input string.
+                // https://github.com/freescout-helpdesk/freescout/issues/3089
+                if (!$result) {
                     if (!$from) {
                         return mb_convert_encoding($str, $to);
                     }
-
                     return mb_convert_encoding($str, $to, $from);
+                } else {
+                    return $result;
                 }
             } catch (\Exception $e) {
                 // FreeScout #360
