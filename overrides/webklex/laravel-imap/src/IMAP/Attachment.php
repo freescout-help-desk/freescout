@@ -146,6 +146,12 @@ class Attachment {
 
         if (property_exists($this->structure, 'dparameters')) {
             foreach ($this->structure->dparameters as $parameter) {
+                //RFC6266 defines use filename* parameter prior to filename. 
+                if (strtolower($parameter->attribute) == "filename*") {
+                    $this->setNameRFC6266($parameter->value);
+                    $this->disposition = property_exists($this->structure, 'disposition') ? $this->structure->disposition : null;
+                    break;
+                }
                 if (strtolower($parameter->attribute) == "filename") {
                     $this->setName($parameter->value);
                     $this->disposition = property_exists($this->structure, 'disposition') ? $this->structure->disposition : null;
@@ -222,9 +228,34 @@ class Attachment {
         return $this->id;
     }
 
+    //decode urlencoded char
+    public function setNameRFC6266($name){
+        //filename* parameter include it's encodings. so remove it and if it is not utf-8 convert parameter to utf-8;
+        $name=strstr($name,"''");
+        $charset=strstr($name,"''",true);
+        $name=urldecode(substr($name,2));//first 2char is "''";
+        $this->name = $this->decodeOneline($name,$charset);
+    }
     /**
      * @param $name
      */
+
+    private function decodeOneline($text,$charset){
+        if (strtolower($charset) == 'iso-2022-jp'){
+            $charset = 'iso-2022-jp-ms';
+        }
+
+        if($charset == 'default' || strtolower($charset) == 'utf-8'){
+            return $text;
+        }else{
+            if (function_exists('iconv') && strtolower($charset) != 'utf-7' && strtolower($charset) != 'iso-2022-jp-ms') {
+                return iconv($charset, "UTF-8", $text);
+            } else {
+                return mb_convert_encoding($text, "UTF-8", $charset);
+            }
+        }
+    }
+
     public function setName($name) {
        //fixed attachment filename garbled
         //mb_decode_mimeheader sometimes failes to handle Quoted-printable style header.
@@ -233,19 +264,8 @@ class Attachment {
 
         $name_decoded = '';
         foreach($array as $one_line){
-            if (strtolower($one_line->charset) == 'iso-2022-jp'){
-                $one_line->charset = 'iso-2022-jp-ms';
-            }
-
-            if($one_line->charset == 'default' || strtolower($one_line->charset) == 'utf-8'){
-                $name_decoded .= $one_line->text;
-            }else{
-                if (function_exists('iconv') && strtolower($one_line->charset) != 'utf-7' && strtolower($one_line->charset) != 'iso-2022-jp-ms') {
-                    $name_decoded .= iconv($one_line->charset, "UTF-8", $one_line->text);
-                } else {
-                    $name_decoded .= mb_convert_encoding($one_line->text, "UTF-8", $one_line->charset);
-                }
-            }
+            //separate decoding code into independent function. 
+            $name_decoded.=$this->decodeOneline($one_line->text,$one_line->charset);
         }
         $this->name = $name_decoded;
     }
