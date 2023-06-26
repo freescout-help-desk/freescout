@@ -876,7 +876,7 @@ class Message
                 // }
                 
                 // Try iconv.
-                if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {
+                if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7' && $from != 'iso-2022-jp-ms') {
                     try {
                         $result = iconv($from, $to.'//IGNORE', $str);
                     } catch (\Exception $e) {
