@@ -228,16 +228,11 @@ class Attachment {
         return $this->id;
     }
 
-    //decode urlencoded char
-    public function setNameRFC6266($name){
-        //filename* parameter include it's encodings. so remove it and if it is not utf-8 convert parameter to utf-8;
-        $name=strstr($name,"''");
-        $charset=strstr($name,"''",true);
-        $name=urldecode(substr($name,2));//first 2char is "''";
-        $this->name = $this->decodeOneline($name,$charset);
-    }
     /**
-     * @param $name
+     * @param string $text
+     * @param string $charset
+     * 
+     * @return string
      */
 
     private function decodeOneline($text,$charset){
@@ -255,6 +250,40 @@ class Attachment {
             }
         }
     }
+
+    //decode RFC6266 style encoded characters.
+    /**
+     * @param string $name
+     */
+
+     public function setNameRFC6266($name){
+        //RFC6266 and RFC8187 define
+        // filename* = charset + 'country code' + URL encoded strings;
+        // like title*=utf-8'en'%C2%A3%20rates
+        //so confirm wherer two ' exist in $name and divide $name into charset and urlencoded string;
+        $first_q = strpos($name,"'");
+        if(false !== $first_q){
+            $text = substr($name,$first_q + 1);
+            $second_q = strpos($text,"'");
+            if(false !== $second_q){
+                $text = substr($text,$second_q + 1);
+                $charset = strstr($name,"'",true);
+            }else{
+                $text = $name;
+                $charset = "utf-8";
+            }
+        }else{
+            $text = $name;
+            $charset = "utf-8";
+        }
+        //I don't know usage of country code.
+        $this->name = $this->decodeOneline(urldecode($text),$charset);
+
+    }
+
+    /**
+     * @param $name
+     */
 
     public function setName($name) {
        //fixed attachment filename garbled
