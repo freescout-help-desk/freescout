@@ -273,14 +273,14 @@ class Attachment {
                 $name_charset = $m[1];
             }
 
-            $decoder = $this->config['decoder']['message'];
-            if ($decoder === 'utf-8' && extension_loaded('imap')) {
-                $name = \imap_utf8($name);
-            }
+            // $decoder = $this->config['decoder']['message'];
+            // if ($decoder === 'utf-8' && extension_loaded('imap')) {
+            //     $name = \imap_utf8($name);
+            // }
 
-            if (preg_match('/=\?([^?]+)\?(Q|B)\?(.+)\?=/i', $name, $matches)) {
-                $name = \MailHelper::decodeSubject($name);
-            }
+            //if (preg_match('/=\?([^?]+)\?(Q|B)\?(.+)\?=/i', $name, $matches)) {
+            $name = \MailHelper::decodeSubject($name);
+            //}
 
             // check if $name is url encoded
             if (preg_match('/%[0-9A-F]{2}/i', $name)) {
