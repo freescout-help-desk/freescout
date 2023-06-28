@@ -215,6 +215,7 @@ class Mail
         if ($escape) {
             foreach ($vars as $i => $var) {
                 $vars[$i] = htmlspecialchars($var ?? '');
+                $vars[$i] = nl2br($vars[$i]);
             }
         }
 
