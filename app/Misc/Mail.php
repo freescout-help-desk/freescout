@@ -217,6 +217,10 @@ class Mail
                 $vars[$i] = htmlspecialchars($var ?? '');
                 $vars[$i] = nl2br($vars[$i]);
             }
+        } else {
+            foreach ($vars as $i => $var) {
+                $vars[$i] = nl2br($var ?? '');
+            }
         }
 
         return strtr($text, $vars);
