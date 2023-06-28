@@ -907,7 +907,21 @@ class Mail
 
             $subject_decoded = iconv_mime_decode($joined_parts, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
 
-            if ($subject_decoded && trim($subject_decoded) != trim(rtrim($joined_parts, '='))) {
+            if ($subject_decoded 
+                && trim($subject_decoded) != trim($joined_parts)
+                && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+            ) {
+                return $subject_decoded;
+            }
+
+            // Try imap_utf8().
+            // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQ=?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
+            $subject_decoded = \imap_utf8($joined_parts);
+
+            if ($subject_decoded 
+                && trim($subject_decoded) != trim($joined_parts)
+                && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+            ) {
                 return $subject_decoded;
             }
         }
