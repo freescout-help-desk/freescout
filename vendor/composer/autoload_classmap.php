@@ -3102,7 +3102,7 @@ return array(
     'UsersTableSeeder' => $baseDir . '/database/seeds/UsersTableSeeder.php',
     'Watson\\Rememberable\\Query\\Builder' => $vendorDir . '/watson/rememberable/src/Query/Builder.php',
     'Watson\\Rememberable\\Rememberable' => $vendorDir . '/watson/rememberable/src/Rememberable.php',
-    'Webklex\\IMAP\\Attachment' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Attachment.php',
+    'Webklex\\IMAP\\Attachment' => $baseDir . '/overrides/webklex/laravel-imap/src/IMAP/Attachment.php',
     'Webklex\\IMAP\\Client' => $baseDir . '/overrides/webklex/laravel-imap/src/IMAP/Client.php',
     'Webklex\\IMAP\\ClientManager' => $vendorDir . '/webklex/laravel-imap/src/IMAP/ClientManager.php',
     'Webklex\\IMAP\\EncodingAliases' => $vendorDir . '/webklex/laravel-imap/src/IMAP/EncodingAliases.php',

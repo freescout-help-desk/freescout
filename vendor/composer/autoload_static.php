@@ -3799,7 +3799,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'UsersTableSeeder' => __DIR__ . '/../..' . '/database/seeds/UsersTableSeeder.php',
         'Watson\\Rememberable\\Query\\Builder' => __DIR__ . '/..' . '/watson/rememberable/src/Query/Builder.php',
         'Watson\\Rememberable\\Rememberable' => __DIR__ . '/..' . '/watson/rememberable/src/Rememberable.php',
-        'Webklex\\IMAP\\Attachment' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Attachment.php',
+        'Webklex\\IMAP\\Attachment' => __DIR__ . '/../..' . '/overrides/webklex/laravel-imap/src/IMAP/Attachment.php',
         'Webklex\\IMAP\\Client' => __DIR__ . '/../..' . '/overrides/webklex/laravel-imap/src/IMAP/Client.php',
         'Webklex\\IMAP\\ClientManager' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/ClientManager.php',
         'Webklex\\IMAP\\EncodingAliases' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/EncodingAliases.php',
