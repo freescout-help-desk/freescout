@@ -228,6 +228,7 @@ class SendReplyToCustomer implements ShouldQueue
             $subject = 'Re: '.$subject;
         }
         $subject = \Eventy::filter('email.reply_to_customer.subject', $subject, $this->conversation);
+        $this->threads = \Eventy::filter('email.reply_to_customer.threads', $this->threads, $this->conversation, $mailbox);
 
         $headers['X-FreeScout-Mail-Type'] = 'customer.message';
 

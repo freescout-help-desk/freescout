@@ -263,7 +263,8 @@ class Client {
         $delimiter = $delimiter === null ? config('imap.options.delimiter', '/') : $delimiter;
 
         $oFolder = new Folder($this, (object) [
-            'name'       => $this->getAddress().imap_utf8_to_mutf7($folder_name),
+            // https://github.com/freescout-helpdesk/freescout/issues/3152
+            'name'       => $this->getAddress().(function_exists('.imap_utf8_to_mutf7') ? imap_utf8_to_mutf7($folder_name) : $folder_name),
             'attributes' => $attributes,
             'delimiter'  => $delimiter
         ]);

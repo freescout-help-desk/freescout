@@ -82,6 +82,8 @@ class TestWebklex extends Command
 
         $this->line('Headers: ');
         $this->info($message->getHeader()->raw);
+        $this->line('From: ');
+        $this->info(json_encode($message->getFrom()[0] ?? [], JSON_UNESCAPED_UNICODE));
         $this->line('Subject: ');
         $this->info($message->getSubject());
         $this->line('Text Body: ');

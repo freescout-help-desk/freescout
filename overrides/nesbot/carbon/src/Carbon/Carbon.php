@@ -877,6 +877,11 @@ class Carbon extends DateTime implements JsonSerializable
     #[\ReturnTypeWillChange]
     public static function createFromFormat($format, $time, $tz = null)
     {
+        // FreeScout fix for PostgreSQL timestamp fields.
+        if ($format == 'Y-m-d H:i:s' && strstr($time, '+')) {
+            $time = preg_replace("/\+.*/", '', $time);
+        } 
+        
         // First attempt to create an instance, so that error messages are based on the unmodified format.
         $date = self::createFromFormatAndTimezone($format, $time, $tz);
         $lastErrors = parent::getLastErrors();

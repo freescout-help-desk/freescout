@@ -215,6 +215,11 @@ class Mail
         if ($escape) {
             foreach ($vars as $i => $var) {
                 $vars[$i] = htmlspecialchars($var ?? '');
+                $vars[$i] = nl2br($vars[$i]);
+            }
+        } else {
+            foreach ($vars as $i => $var) {
+                $vars[$i] = nl2br($var ?? '');
             }
         }
 
@@ -894,6 +899,8 @@ class Mail
         // Sometimes subject is split into parts and each part is base63 encoded.
         // And sometimes it's first encoded and after that split.
         // https://github.com/freescout-helpdesk/freescout/issues/3066      
+
+        // Abnormal way - text is encoded and split into parts.
   
         // First try to join all lines skipping =?utf-8?B? in betweeb.
         $parts = preg_match_all("/(=\?[^\?]+\?[BQ]\?)([^\?]+)(\?=)[\r\n\t ]*/i", $subject, $m);
@@ -905,10 +912,26 @@ class Mail
 
             $subject_decoded = iconv_mime_decode($joined_parts, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
 
-            if ($subject_decoded && trim($subject_decoded) != trim(rtrim($joined_parts, '='))) {
+            if ($subject_decoded 
+                && trim($subject_decoded) != trim($joined_parts)
+                && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+            ) {
+                return $subject_decoded;
+            }
+
+            // Try imap_utf8().
+            // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQ=?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
+            $subject_decoded = \imap_utf8($joined_parts);
+
+            if ($subject_decoded 
+                && trim($subject_decoded) != trim($joined_parts)
+                && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+            ) {
                 return $subject_decoded;
             }
         }
+
+        // Standard way - each part is encoded separately.
 
         // iconv_mime_decode() can't decode:
         // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=

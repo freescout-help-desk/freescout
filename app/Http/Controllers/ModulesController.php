@@ -633,8 +633,10 @@ class ModulesController extends Controller
             case 'key_mismatch':
                 $msg = __('License key belongs to another module');
                 break;
+            // This also happens when entering a valid license key for wrong module.
             case 'invalid_item_id':
-                $msg = __('Module not found in the modules directory');
+                $msg = __('Invalid license key');
+                //$msg = __('Module not found in the modules directory');
                 break;
             default:
                 if ($result && !empty($result['error'])) {
