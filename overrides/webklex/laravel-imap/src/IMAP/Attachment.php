@@ -259,6 +259,8 @@ class Attachment {
                 $name = urldecode($name);
             }
         }
+
+        $this->name = $name;
     }
 
     /**
