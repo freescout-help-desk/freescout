@@ -1813,6 +1813,10 @@ class Helper
         $php_extensions = [];
         $required_extensions = \Config::get('installer.requirements.php');
 
+        // Optional.
+        $required_extensions[] = 'intl';
+        $required_extensions[] = 'pcntl';
+
         foreach ($required_extensions as $extension_name) {
             $alternatives = explode('/', $extension_name);
             if ($alternatives) {
