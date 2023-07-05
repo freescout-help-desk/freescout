@@ -75,7 +75,8 @@
         "doctrine/instantiator": "1.0.5",
         "myclabs/deep-copy": "1.7.0",
         "webmozart/assert": "1.3.0",
-        "psr/container": "1.0.0"
+        "psr/container": "1.0.0",
+        "psr/http-message": "1.0.1"
     },
     "autoload": {
         "classmap": [
