@@ -754,7 +754,7 @@
     ":%tag_start%Note added:%tag_end% :%view_start%View:%a_end%": ":%tag_start%Note ajoutée:%tag_end% :%view_start%View:%a_end%",
     ":%tag_start%Email Sent:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%": ":%tag_start%E-mail envoyé:%tag_end% :%view_start%View:%a_end% ou :%undo_start%Undo:%a_end%",
     ":%tag_start%Email Sent:%tag_end% :%undo_start%Undo:%a_end%": ":%tag_start%E-mail Envoyé:%tag_end% :%undo_start%Undo:%a_end%",
-    "Use Deactivate License button to transfer license key from another domain": "Utilisez le bouton Désactiver la licence pour transférer la clé de licence d'un autre domaine.",
+    "Use 'Deactivate License' link above to transfer license key from another domain": "Utilisez le bouton Désactiver la licence pour transférer la clé de licence d'un autre domaine.",
     "Default Subscriptions For New Users": "Abonnements par défaut pour les nouveaux utilisateurs",
     "Remind License Keys": "Me rappeler les clés de licence",
     "Connect": "Connexion",
