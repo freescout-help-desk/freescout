@@ -185,7 +185,8 @@ class SendNotificationToUsers implements ShouldQueue
         if ($global_exception) {
             // Retry job with delay.
             // https://stackoverflow.com/questions/35258175/how-can-i-create-delays-between-failed-queued-job-attempts-in-laravel
-            if ($this->attempts() < $this->tries) {
+            // We do not try to resend Bounce messages: https://github.com/freescout-helpdesk/freescout/issues/3156
+            if ($this->attempts() < $this->tries && !$last_thread->isBounce()) {
                 if ($this->attempts() == 1) {
                     // Second attempt after 5 min.
                     $this->release(300);
