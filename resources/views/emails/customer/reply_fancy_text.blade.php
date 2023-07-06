@@ -4,7 +4,7 @@
 @foreach ($threads as $thread)
 @if (!$loop->first)-----------------------------------------------------------
 ## {{--@if ($loop->last){{ __(':person sent a message', ['person' => $thread->getFromName($mailbox)]) }}@else {{ __(':person replied', ['person' => $thread->getFromName($mailbox)]) }}@endif--}}{{ $thread->getFromName($mailbox) }}@if ($is_forwarded && $thread->from) <{{ $thread->from }}>@endif, {{ __('on :date', ['date' => App\Customer::dateFormat($thread->created_at, 'M j @ H:i')]) }} ({{ \Config::get('app.timezone') }}):@endif 
-{{-- Html2Text\Html2Text::convert($thread->body) - this was causing "AttValue: " expected in Entity" error sometimes --}}{{ \Helper::htmlToText($thread->body, true) }}
+{{-- Html2Text\Html2Text::convert($thread->body) - this was causing "AttValue: " expected in Entity" error sometimes --}}{!! \Helper::htmlToText($thread->body, true) !!}
 @if ($thread->source_via == App\Thread::PERSON_USER && \Eventy::filter('reply_email.include_signature', true, $thread))
 
 {{-- Html2Text\Html2Text::convert($conversation->mailbox->signature) --}}{{ \Helper::htmlToText($conversation->getSignatureProcessed(['thread' => $thread])) }}
