@@ -749,7 +749,7 @@
     "Social Profiles": "소셜 프로필",
     "Type :delete": ":delete 종류",
     "Remember Me": "로그인 상태 기억",
-    "Use Deactivate License button to transfer license key from another domain": "라이선스 사용 중지 버튼을 사용하여 다른 도메인에서 라이선스 키 이전",
+    "Use 'Deactivate License' link above to transfer license key from another domain": "라이선스 사용 중지 버튼을 사용하여 다른 도메인에서 라이선스 키 이전",
     "Published": "게시됨",
     "Remind License Keys": "라이선스 키 알림",
     "Hi :user, an account has been created for you at :app_url": "안녕하세요. :user 고객님 :app_url에 계정이 생성되었습니다.",

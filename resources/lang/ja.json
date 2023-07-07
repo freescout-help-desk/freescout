@@ -749,7 +749,7 @@
     "Social Profiles": "ソーシャルプロファイル",
     "Type :delete": "タイプ :delete",
     "Remember Me": "ログイン状態を記憶",
-    "Use Deactivate License button to transfer license key from another domain": "別のドメインからライセンスキーを転送するには、 [ライセンスの無効化] ボタンを使用します",
+    "Use 'Deactivate License' link above to transfer license key from another domain": "別のドメインからライセンスキーを転送するには、 [ライセンスの無効化] ボタンを使用します",
     "Published": "公開",
     "Remind License Keys": "ライセンスキーを思い出す",
     "Hi :user, an account has been created for you at :app_url": "こんにちは :user さん、アカウントは :app_url で作成されました",

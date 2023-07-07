@@ -885,8 +885,41 @@ class Mail
         }
     }
 
+    // $subjects = [
+    //             '=?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
+    //  249143' => 'Geschäftskonto erstellen für 249143',
+    //             '=?ISO-8859-1?Q?Vorgang 538336029: M=F6chten Sie Ihre E-Mail-Adresse =E4ndern??=' => 'Vorgang 538336029: Möchten Sie Ihre E-Mail-Adresse ändern?',
+    //             '=?iso-2022-jp?B?IBskQiFaSEcyPDpuQ?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=' => ' 【版下作成依頼】群峰アクシア(株)',
+    //             '=?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=' => ' 【版下作成依頼】群峰アクシア(株)',
+    //             '=?iso-2022-jp?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?=' => '☆第132号　「ガーデン&エクステリア」専門店のためのＱ&Ａサロン　【月刊エクステリア・ワーク】',
+    //             '=?UTF-8?Q?Schadensmeldung_F=C3=9C230414439?=' => 'Schadensmeldung FÜ230414439',
+    //             '=?utf-8?B?0JLRi9C/0LjRgdC60LAg0LfQsCDQv9GA0L7RiNC10LTRiNC4?= =?utf-8?B?0Lkg0LzQtdGB0Y/RhiDQv9C+INCe0J7QniAi0JjQmtCh0KTQkNCZ0JLQ?= =?utf-8?B?mNCa0KEi?=' => 'Выписка за прошедший месяц по ООО "ИКСФАЙВИКС"',
+    //             '=?UTF-8?B?0JLRi9C/0LjRgdC60LAg0LfQsCDQv9GA0L7RiNC10LTRiNC40Lkg0LzQtdGB0Y/RhiDQvw==?=
+    //  =?UTF-8?B?0L4g0J7QntCeICLQmNCa0KHQpNCQ0JnQktCY0JrQoSI=?=' => 'Выписка за прошедший месяц по ООО "ИКСФАЙВИКС"',
+    //             '=?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=' => ' 【版下作成依頼】群峰アクシア(株)',
+    //             '=?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
+    //  =?iso-2022-jp?B?GyRCQGlNVTtZRTkhIT4uTlMbKEI=?=' => ' 【版下作成依頼】群峰アクシア(株)千葉支店 小林',
+    //             '=?UTF-8?B?44CQ44Os44Kk44Ki44Km44OI44O76KaL56mN5L2c5oiQ5L6d6aC844CR?=
+    //  =?UTF-8?B?57eR5Yy644CA5Yqg6Jek6YK444CA54m55rOo5qGI5YaF44OX44Os44O8?=
+    //  =?UTF-8?B?44OILnBkZg==?=' => '【レイアウト・見積作成依頼】緑区　加藤邸　特注案内プレート.pdf',
+    //         ];
+    //         $i = 1;
+    //         foreach ($subjects as $subject => $subject_valid) {
+    //             $subject_decoded = \MailHelper::decodeSubject($subject);
+    //             echo ($i). ") ";
+    //             if ($subject_decoded != $subject_valid) {
+    //                 echo '[INVALID] ';
+    //             }
+    //             echo \MailHelper::decodeSubject($subject)."\n";
+    //             $i++;
+    //         }
     public static function decodeSubject($subject)
     {
+        // Remove new lines as iconv_mime_decode() may loose a part separated by new line:
+        // =?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
+        //  249143
+        $subject = preg_replace("/[\r\n]/", '', $subject);
+
         // Sometimes imap_utf8() can't decode the subject, for example:
         // =?iso-2022-jp?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?=
         // and sometimes iconv_mime_decode() can't decode the subject.
@@ -900,13 +933,15 @@ class Mail
         // And sometimes it's first encoded and after that split.
         // https://github.com/freescout-helpdesk/freescout/issues/3066      
 
-        // Abnormal way - text is encoded and split into parts.
+        // Step 1. Abnormal way - text is encoded and split into parts.
   
-        // First try to join all lines skipping =?utf-8?B? in betweeb.
-        $parts = preg_match_all("/(=\?[^\?]+\?[BQ]\?)([^\?]+)(\?=)[\r\n\t ]*/i", $subject, $m);
+        // First try to join all lines and parts.
+        // Keep in mind that there can be non-encoded parts also:
+        // =?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
+        preg_match_all("/(=\?[^\?]+\?[BQ]\?)([^\?]+)(\?=)[\r\n\t ]*/i", $subject, $m);
 
         $joined_parts = '';
-        if (count($m[1]) > 1 && !empty($m[2])) {
+        if (count($m[1]) > 1 && !empty($m[2]) && !preg_match("/[\r\n\t ]+[^=]/i", $subject)) {
             // Example: GyRCQGlNVTtZRTkhIT4uTlMbKEI=
             $joined_parts = $m[1][0].implode('', $m[2]).$m[3][0];
 
@@ -920,7 +955,7 @@ class Mail
             }
 
             // Try imap_utf8().
-            // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQ=?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
+            // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQ?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
             $subject_decoded = \imap_utf8($joined_parts);
 
             if ($subject_decoded 
@@ -931,7 +966,7 @@ class Mail
             }
         }
 
-        // Standard way - each part is encoded separately.
+        // Step 2. Standard way - each part is encoded separately.
 
         // iconv_mime_decode() can't decode:
         // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
@@ -942,6 +977,14 @@ class Mail
         // =?iso-2022-jp?B?GyRCQGlNVTtZRTkhIT4uTlMbKEI=?=
         if (preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded)) {
             $subject_decoded = \imap_utf8($subject);
+        }
+
+        // All previous functions could not decode text.
+        // mb_decode_mimeheader() properly decodes umlauts into one unice symbol.
+        // But we use mb_decode_mimeheader() as a last resort as it may garble some symbols.
+        // Example: =?ISO-8859-1?Q?Vorgang 538336029: M=F6chten Sie Ihre E-Mail-Adresse =E4ndern??=
+        if (preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded) && $subject == $subject_decoded) {
+            $subject_decoded = mb_decode_mimeheader($subject);
         }
 
         if (!$subject_decoded) {
