@@ -886,6 +886,8 @@ class Mail
     }
 
     // $subjects = [
+    //             '=?UTF-8?B?UmU6IMKgUmU6wqBSZTogUsO8Y2tzZW5kdW5nIGRlcyBBcmJlaXRzbWF0?=
+    // =?UTF-8?Q?erials?=' => 'Re:  Re: Re: Rücksendung des Arbeitsmaterials',
     //             '=?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
     //  249143' => 'Geschäftskonto erstellen für 249143',
     //             '=?ISO-8859-1?Q?Vorgang 538336029: M=F6chten Sie Ihre E-Mail-Adresse =E4ndern??=' => 'Vorgang 538336029: Möchten Sie Ihre E-Mail-Adresse ändern?',
@@ -950,6 +952,7 @@ class Mail
             if ($subject_decoded 
                 && trim($subject_decoded) != trim($joined_parts)
                 && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+                && mb_check_encoding($subject_decoded, 'UTF-8')
             ) {
                 return $subject_decoded;
             }
@@ -961,6 +964,7 @@ class Mail
             if ($subject_decoded 
                 && trim($subject_decoded) != trim($joined_parts)
                 && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+                && mb_check_encoding($subject_decoded, 'UTF-8')
             ) {
                 return $subject_decoded;
             }
