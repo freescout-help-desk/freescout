@@ -891,6 +891,8 @@ class Mail
         // =?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
         //  249143
         $subject = preg_replace("/[\r\n]/", '', $subject);
+        // https://github.com/freescout-helpdesk/freescout/issues/3185
+        $subject = str_replace('=?iso-2022-jp?', '=?iso-2022-jp-ms?', $subject);
 
         // Sometimes imap_utf8() can't decode the subject, for example:
         // =?iso-2022-jp?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?=
@@ -957,7 +959,9 @@ class Mail
         // mb_decode_mimeheader() properly decodes umlauts into one unice symbol.
         // But we use mb_decode_mimeheader() as a last resort as it may garble some symbols.
         // Example: =?ISO-8859-1?Q?Vorgang 538336029: M=F6chten Sie Ihre E-Mail-Adresse =E4ndern??=
-        if (preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded) && $subject == $subject_decoded) {
+        if ((preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded) && $subject == $subject_decoded)
+            || !mb_check_encoding($subject_decoded, 'UTF-8')
+        ) {
             $subject_decoded = mb_decode_mimeheader($subject);
         }
 
