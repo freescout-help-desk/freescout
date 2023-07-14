@@ -1054,7 +1054,7 @@ class Conversation extends Model
             } else {
                 return __('anyone');
             }
-        } elseif (($user && $this->user_id == $user->id) || (!$user && $this->user_id == auth()->user()->id)) {
+        } elseif (($user && $this->user_id == $user->id) || (!$user && auth()->user() && $this->user_id == auth()->user()->id)) {
             if ($ucfirst) {
                 return __('Me');
             } else {
