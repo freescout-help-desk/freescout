@@ -133,6 +133,32 @@ class SendReplyToCustomer implements ShouldQueue
             }
         }
 
+        // In-Reply-To and References headers.
+        $references = '';
+        if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
+
+            $headers['In-Reply-To'] = '<'.$last_customer_thread->message_id.'>';
+            //$headers['References'] = '<'.$last_customer_thread->message_id.'>';
+            // https://github.com/freescout-helpdesk/freescout/issues/3175
+            $i = 0;
+            $references_array = [];
+            foreach ($this->threads as $thread) {
+                if ($i > 0) {
+                    $reference = $thread->getMessageId();
+                    if ($reference) {
+                        $references_array[] = $reference;
+                    }
+                }
+                $i++;
+            }
+            if ($references_array) {
+                $references = '<'.implode('> <', array_reverse($references_array)).'>';
+            }
+            if ($references) {
+                $headers['References'] = $references;
+            }
+        }
+
         // Conversation history.
         $email_conv_history = config('app.email_conv_history');
 
@@ -175,32 +201,6 @@ class SendReplyToCustomer implements ShouldQueue
 
         // Configure mail driver according to Mailbox settings
         \App\Misc\Mail::setMailDriver($mailbox, $this->last_thread->created_by_user, $this->conversation);
-
-        // Get penultimate email Message-Id if reply
-        $references = '';
-        if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
-
-            $headers['In-Reply-To'] = '<'.$last_customer_thread->message_id.'>';
-            //$headers['References'] = '<'.$last_customer_thread->message_id.'>';
-            // https://github.com/freescout-helpdesk/freescout/issues/3175
-            $i = 0;
-            $references_array = [];
-            foreach ($this->threads as $thread) {
-                if ($i > 0) {
-                    $reference = $thread->getMessageId();
-                    if ($reference) {
-                        $references_array[] = $reference;
-                    }
-                }
-                $i++;
-            }
-            if ($references_array) {
-                $references = '<'.implode('> <', array_reverse($references_array)).'>';
-            }
-            if ($references) {
-                $headers['References'] = $references;
-            }
-        }
 
         $this->message_id = $this->last_thread->getMessageId($mailbox);
         $headers['Message-ID'] = $this->message_id;
