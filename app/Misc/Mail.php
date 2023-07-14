@@ -885,111 +885,34 @@ class Mail
         }
     }
 
-    // $subjects = [
-    //             '=?UTF-8?B?UmU6IMKgUmU6wqBSZTogUsO8Y2tzZW5kdW5nIGRlcyBBcmJlaXRzbWF0?=
-    // =?UTF-8?Q?erials?=' => 'Re:  Re: Re: Rücksendung des Arbeitsmaterials',
-    //             '=?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
-    //  249143' => 'Geschäftskonto erstellen für 249143',
-    //             '=?ISO-8859-1?Q?Vorgang 538336029: M=F6chten Sie Ihre E-Mail-Adresse =E4ndern??=' => 'Vorgang 538336029: Möchten Sie Ihre E-Mail-Adresse ändern?',
-    //             '=?iso-2022-jp?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?=' => '☆第132号　「ガーデン&エクステリア」専門店のためのＱ&Ａサロン　【月刊エクステリア・ワーク】',
-    //             '=?UTF-8?Q?Schadensmeldung_F=C3=9C230414439?=' => 'Schadensmeldung FÜ230414439',
-    //             '=?utf-8?B?0JLRi9C/0LjRgdC60LAg0LfQsCDQv9GA0L7RiNC10LTRiNC4?= =?utf-8?B?0Lkg0LzQtdGB0Y/RhiDQv9C+INCe0J7QniAi0JjQmtCh0KTQkNCZ0JLQ?= =?utf-8?B?mNCa0KEi?=' => 'Выписка за прошедший месяц по ООО "ИКСФАЙВИКС"',
-    //             '=?UTF-8?B?0JLRi9C/0LjRgdC60LAg0LfQsCDQv9GA0L7RiNC10LTRiNC40Lkg0LzQtdGB0Y/RhiDQvw==?=
-    //  =?UTF-8?B?0L4g0J7QntCeICLQmNCa0KHQpNCQ0JnQktCY0JrQoSI=?=' => 'Выписка за прошедший месяц по ООО "ИКСФАЙВИКС"',
-    //             '=?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
-    //             '=?UTF-8?B?44CQ44Os44Kk44Ki44Km44OI44O76KaL56mN5L2c5oiQ5L6d6aC844CR?=
-    //  =?UTF-8?B?57eR5Yy644CA5Yqg6Jek6YK444CA54m55rOo5qGI5YaF44OX44Os44O8?=
-    //         ];
-    //         $i = 1;
-    //         foreach ($subjects as $subject => $subject_valid) {
-    //             $subject_decoded = \MailHelper::decodeSubject($subject);
-    //             echo ($i). ") ";
-    //             if ($subject_decoded != $subject_valid) {
-    //                 echo '[INVALID] ';
-    //             }
-    //             echo \MailHelper::decodeSubject($subject)."\n";
-    //             $i++;
-    //         }
     public static function decodeSubject($subject)
     {
-        // Remove new lines as iconv_mime_decode() may loose a part separated by new line:
-        // =?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
-        //  249143
-        $subject = preg_replace("/[\r\n]/", '', $subject);
+        //fix iso-2022-ms character garbled.
+        //fix multiple "=?utf-8?B?" in one header garbled;
+        //somtimes multiple "=?utf-8?B?" in one header. so after decode join them.
+        //iso-2022-jp will garble when it's contain iso-2022-jp-ms.
+        //so decode it as iso-2022-jp-ms; 
+        //
+        $array = imap_mime_header_decode($subject);
 
-        // Sometimes imap_utf8() can't decode the subject, for example:
-        // =?iso-2022-jp?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?=
-        // and sometimes iconv_mime_decode() can't decode the subject.
-        // So we are using both.
-        // 
-        // We are trying iconv_mime_decode() first because imap_utf8()
-        // decodes umlauts into two symbols:
-        // https://github.com/freescout-helpdesk/freescout/issues/2965
-
-        // Sometimes subject is split into parts and each part is base63 encoded.
-        // And sometimes it's first encoded and after that split.
-        // https://github.com/freescout-helpdesk/freescout/issues/3066      
-
-        // Step 1. Abnormal way - text is encoded and split into parts.
-  
-        // First try to join all lines and parts.
-        // Keep in mind that there can be non-encoded parts also:
-        // =?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
-        preg_match_all("/(=\?[^\?]+\?[BQ]\?)([^\?]+)(\?=)[\r\n\t ]*/i", $subject, $m);
-
-        $joined_parts = '';
-        if (count($m[1]) > 1 && !empty($m[2]) && !preg_match("/[\r\n\t ]+[^=]/i", $subject)) {
-            // Example: GyRCQGlNVTtZRTkhIT4uTlMbKEI=
-            $joined_parts = $m[1][0].implode('', $m[2]).$m[3][0];
-
-            $subject_decoded = iconv_mime_decode($joined_parts, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
-
-            if ($subject_decoded 
-                && trim($subject_decoded) != trim($joined_parts)
-                && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
-                && mb_check_encoding($subject_decoded, 'UTF-8')
-            ) {
-                return $subject_decoded;
+        $subject_decoded = '';
+        //it's nessesary to decode each segment separately after that conbined them as one string.
+        //mail sender automatically encode one string into several "=?utf-8?B?" segment. when it's not possible decode combined string.
+        foreach($array as $one_line){
+            if (strtolower($one_line->charset) == 'iso-2022-jp'){
+                $one_line->charset = 'iso-2022-jp-ms';
             }
 
-            // Try imap_utf8().
-            // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQ?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
-            $subject_decoded = \imap_utf8($joined_parts);
-
-            if ($subject_decoded 
-                && trim($subject_decoded) != trim($joined_parts)
-                && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
-                && mb_check_encoding($subject_decoded, 'UTF-8')
-            ) {
-                return $subject_decoded;
+            if($one_line->charset == 'default' || strtolower($one_line->charset) == 'utf-8'){
+                $subject_decoded .= $one_line->text;
+            }else{
+                if (function_exists('iconv') && strtolower($one_line->charset) != 'utf-7' && strtolower($one_line->charset) != 'iso-2022-jp-ms') {
+                    $subject_decoded .= iconv($one_line->charset, "UTF-8", $one_line->text);
+                } else {
+                    $subject_decoded .= mb_convert_encoding($one_line->text, "UTF-8", $one_line->charset);
+                }
             }
         }
-
-        // Step 2. Standard way - each part is encoded separately.
-
-        // iconv_mime_decode() can't decode:
-        // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
-        $subject_decoded = iconv_mime_decode($subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
-
-        // Sometimes iconv_mime_decode() can't decode some parts of the subject:
-        // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
-        // =?iso-2022-jp?B?GyRCQGlNVTtZRTkhIT4uTlMbKEI=?=
-        if (preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded)) {
-            $subject_decoded = \imap_utf8($subject);
-        }
-
-        // All previous functions could not decode text.
-        // mb_decode_mimeheader() properly decodes umlauts into one unice symbol.
-        // But we use mb_decode_mimeheader() as a last resort as it may garble some symbols.
-        // Example: =?ISO-8859-1?Q?Vorgang 538336029: M=F6chten Sie Ihre E-Mail-Adresse =E4ndern??=
-        if (preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded) && $subject == $subject_decoded) {
-            $subject_decoded = mb_decode_mimeheader($subject);
-        }
-
-        if (!$subject_decoded) {
-            $subject_decoded = $subject;
-        }
-
         return $subject_decoded;
     }
 
