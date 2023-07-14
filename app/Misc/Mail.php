@@ -885,40 +885,14 @@ class Mail
         }
     }
 
-    // $subjects = [
-    //             '=?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
-    //  249143' => 'Geschäftskonto erstellen für 249143',
-    //             '=?ISO-8859-1?Q?Vorgang 538336029: M=F6chten Sie Ihre E-Mail-Adresse =E4ndern??=' => 'Vorgang 538336029: Möchten Sie Ihre E-Mail-Adresse ändern?',
-    //             '=?iso-2022-jp?B?IBskQiFaSEcyPDpuQ?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=' => ' 【版下作成依頼】群峰アクシア(株)',
-    //             '=?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=' => ' 【版下作成依頼】群峰アクシア(株)',
-    //             '=?iso-2022-jp?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?=' => '☆第132号　「ガーデン&エクステリア」専門店のためのＱ&Ａサロン　【月刊エクステリア・ワーク】',
-    //             '=?UTF-8?Q?Schadensmeldung_F=C3=9C230414439?=' => 'Schadensmeldung FÜ230414439',
-    //             '=?utf-8?B?0JLRi9C/0LjRgdC60LAg0LfQsCDQv9GA0L7RiNC10LTRiNC4?= =?utf-8?B?0Lkg0LzQtdGB0Y/RhiDQv9C+INCe0J7QniAi0JjQmtCh0KTQkNCZ0JLQ?= =?utf-8?B?mNCa0KEi?=' => 'Выписка за прошедший месяц по ООО "ИКСФАЙВИКС"',
-    //             '=?UTF-8?B?0JLRi9C/0LjRgdC60LAg0LfQsCDQv9GA0L7RiNC10LTRiNC40Lkg0LzQtdGB0Y/RhiDQvw==?=
-    //  =?UTF-8?B?0L4g0J7QntCeICLQmNCa0KHQpNCQ0JnQktCY0JrQoSI=?=' => 'Выписка за прошедший месяц по ООО "ИКСФАЙВИКС"',
-    //             '=?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=' => ' 【版下作成依頼】群峰アクシア(株)',
-    //             '=?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
-    //  =?iso-2022-jp?B?GyRCQGlNVTtZRTkhIT4uTlMbKEI=?=' => ' 【版下作成依頼】群峰アクシア(株)千葉支店 小林',
-    //             '=?UTF-8?B?44CQ44Os44Kk44Ki44Km44OI44O76KaL56mN5L2c5oiQ5L6d6aC844CR?=
-    //  =?UTF-8?B?57eR5Yy644CA5Yqg6Jek6YK444CA54m55rOo5qGI5YaF44OX44Os44O8?=
-    //  =?UTF-8?B?44OILnBkZg==?=' => '【レイアウト・見積作成依頼】緑区　加藤邸　特注案内プレート.pdf',
-    //         ];
-    //         $i = 1;
-    //         foreach ($subjects as $subject => $subject_valid) {
-    //             $subject_decoded = \MailHelper::decodeSubject($subject);
-    //             echo ($i). ") ";
-    //             if ($subject_decoded != $subject_valid) {
-    //                 echo '[INVALID] ';
-    //             }
-    //             echo \MailHelper::decodeSubject($subject)."\n";
-    //             $i++;
-    //         }
     public static function decodeSubject($subject)
     {
         // Remove new lines as iconv_mime_decode() may loose a part separated by new line:
         // =?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
         //  249143
         $subject = preg_replace("/[\r\n]/", '', $subject);
+        // https://github.com/freescout-helpdesk/freescout/issues/3185
+        $subject = str_replace('=?iso-2022-jp?', '=?iso-2022-jp-ms?', $subject);
 
         // Sometimes imap_utf8() can't decode the subject, for example:
         // =?iso-2022-jp?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?=
@@ -950,6 +924,7 @@ class Mail
             if ($subject_decoded 
                 && trim($subject_decoded) != trim($joined_parts)
                 && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+                && mb_check_encoding($subject_decoded, 'UTF-8')
             ) {
                 return $subject_decoded;
             }
@@ -961,6 +936,7 @@ class Mail
             if ($subject_decoded 
                 && trim($subject_decoded) != trim($joined_parts)
                 && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+                && mb_check_encoding($subject_decoded, 'UTF-8')
             ) {
                 return $subject_decoded;
             }
@@ -983,7 +959,9 @@ class Mail
         // mb_decode_mimeheader() properly decodes umlauts into one unice symbol.
         // But we use mb_decode_mimeheader() as a last resort as it may garble some symbols.
         // Example: =?ISO-8859-1?Q?Vorgang 538336029: M=F6chten Sie Ihre E-Mail-Adresse =E4ndern??=
-        if (preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded) && $subject == $subject_decoded) {
+        if ((preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded) && $subject == $subject_decoded)
+            || !mb_check_encoding($subject_decoded, 'UTF-8')
+        ) {
             $subject_decoded = mb_decode_mimeheader($subject);
         }
 

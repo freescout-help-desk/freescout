@@ -943,7 +943,16 @@ class FetchEmails extends Command
         if ($new) {
             $thread->first = true;
         }
-        $thread->save();
+        try {
+            $thread->save();
+        } catch (\Exception $e) {
+            // Could not save thread.
+            // https://github.com/freescout-helpdesk/freescout/issues/3186
+            if ($new) {
+                $conversation->deleteForever();
+            }
+            throw $e;
+        }
 
         $saved_attachments = $this->saveAttachments($attachments, $thread->id);
         if ($saved_attachments) {

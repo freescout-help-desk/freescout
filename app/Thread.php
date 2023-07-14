@@ -1473,4 +1473,19 @@ class Thread extends Model
 
         return $body;
     }
+
+    public function getMessageId($mailbox = null)
+    {
+        if ($this->isCustomerMessage() && $this->message_id) {
+            return $this->message_id;
+        }
+        if ($this->isUserMessage()) {
+            if (!$mailbox) {
+                $mailbox = $this->conversation->mailbox;
+            }
+            return \MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER.'-'.$this->id.'-'.\MailHelper::getMessageIdHash($this->id).'@'.$mailbox->getEmailDomain();
+        }
+
+        return '';
+    }
 }
