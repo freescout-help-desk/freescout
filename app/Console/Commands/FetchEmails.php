@@ -666,7 +666,7 @@ class FetchEmails extends Command
                 'to'          => $to,
                 'cc'          => $cc,
                 'bcc'         => $bcc,
-                'subject'     => $subject,
+                'subject'     => $subject."",
                 'body'        => $body,
                 'attachments' => $attachments,
                 'message'     => $message,
