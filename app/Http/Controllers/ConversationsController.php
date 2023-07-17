@@ -1565,12 +1565,15 @@ class ConversationsController extends Controller
                         $flash_message = __('Deleted draft');
                         \Session::flash('flash_success_floating', $flash_message);
                     } else {
-                        // Just remove the thread, no need to reload the page
-                        $thread->deleteThread();
-                        // Remove conversation from drafts folder if needed
-                        $removed_from_folder = $conversation->maybeRemoveFromDrafts();
-                        if ($removed_from_folder) {
-                            $conversation->mailbox->updateFoldersCounters(Folder::TYPE_DRAFTS);
+                        // https://github.com/freescout-helpdesk/freescout/issues/2873
+                        if ($thread->state == Thread::STATE_DRAFT) {
+                            // Just remove the thread, no need to reload the page
+                            $thread->deleteThread();
+                            // Remove conversation from drafts folder if needed
+                            $removed_from_folder = $conversation->maybeRemoveFromDrafts();
+                            if ($removed_from_folder) {
+                                $conversation->mailbox->updateFoldersCounters(Folder::TYPE_DRAFTS);
+                            }
                         }
                     }
 
