@@ -51,10 +51,12 @@
                                 </label>
                             </div>
                         </div>
+                        
+                        @action('login_form.before_submit')
 
                         <div class="form-group">
                             <div class="col-md-8 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary @action('login_form.submit_class')" @action('login_form.submit_attrs')>
                                     {{ __('Login') }}
                                 </button>
 

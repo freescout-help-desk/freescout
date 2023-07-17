@@ -1890,4 +1890,17 @@ class Helper
             ini_set('pcre.backtrack_limit', 1000000000);
         }
     }
+
+    /**
+     * Get client IP address.
+     */
+    public static function getClientIp()
+    {
+        // Fix for CloudFlare: https://laracasts.com/discuss/channels/laravel/cloudflare-and-user-ip
+        // But if CloudFlare is not used any value can be set to "Cf-Connecting-Ip" header.
+        // if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
+        //     $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+        // }
+        return request()->ip();
+    }
 }
