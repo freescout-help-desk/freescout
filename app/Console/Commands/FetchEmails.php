@@ -597,7 +597,8 @@ class FetchEmails extends Command
             //     continue;
             // }
 
-            $subject = $message->getSubject();
+            // Webklex/php-imap returns object instead of a string.
+            $subject = $message->getSubject()."";
 
             // Convert subject encoding
             if (preg_match('/=\?[a-z\d-]+\?[BQ]\?.*\?=/i', $subject)) {
@@ -666,7 +667,7 @@ class FetchEmails extends Command
                 'to'          => $to,
                 'cc'          => $cc,
                 'bcc'         => $bcc,
-                'subject'     => $subject."",
+                'subject'     => $subject,
                 'body'        => $body,
                 'attachments' => $attachments,
                 'message'     => $message,
