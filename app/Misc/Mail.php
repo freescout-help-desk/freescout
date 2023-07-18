@@ -892,7 +892,7 @@ class Mail
         //  249143
         $subject = preg_replace("/[\r\n]/", '', $subject);
         // https://github.com/freescout-helpdesk/freescout/issues/3185
-        $subject = str_replace('=?iso-2022-jp?', '=?iso-2022-jp-ms?', $subject);
+        $subject = str_ireplace('=?iso-2022-jp?', '=?iso-2022-jp-ms?', $subject);
 
         // Sometimes imap_utf8() can't decode the subject, for example:
         // =?iso-2022-jp?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?=
@@ -919,26 +919,32 @@ class Mail
             // Example: GyRCQGlNVTtZRTkhIT4uTlMbKEI=
             $joined_parts = $m[1][0].implode('', $m[2]).$m[3][0];
 
-            $subject_decoded = iconv_mime_decode($joined_parts, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+            // Base64 and URL encoded string can't contain "=" in the middle
+            // https://stackoverflow.com/questions/6916805/why-does-a-base64-encoded-string-have-an-sign-at-the-end
+            $has_equal_in_the_middle = preg_match("#=+([^$\? =])#", $joined_parts);
 
-            if ($subject_decoded 
-                && trim($subject_decoded) != trim($joined_parts)
-                && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
-                && mb_check_encoding($subject_decoded, 'UTF-8')
-            ) {
-                return $subject_decoded;
-            }
+            if (!$has_equal_in_the_middle) {
+                $subject_decoded = iconv_mime_decode($joined_parts, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
 
-            // Try imap_utf8().
-            // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQ?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
-            $subject_decoded = \imap_utf8($joined_parts);
+                if ($subject_decoded 
+                    && trim($subject_decoded) != trim($joined_parts)
+                    && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+                    && mb_check_encoding($subject_decoded, 'UTF-8')
+                ) {
+                    return $subject_decoded;
+                }
 
-            if ($subject_decoded 
-                && trim($subject_decoded) != trim($joined_parts)
-                && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
-                && mb_check_encoding($subject_decoded, 'UTF-8')
-            ) {
-                return $subject_decoded;
+                // Try imap_utf8().
+                // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQ?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
+                $subject_decoded = \imap_utf8($joined_parts);
+
+                if ($subject_decoded 
+                    && trim($subject_decoded) != trim($joined_parts)
+                    && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+                    && mb_check_encoding($subject_decoded, 'UTF-8')
+                ) {
+                    return $subject_decoded;
+                }
             }
         }
 
@@ -951,7 +957,9 @@ class Mail
         // Sometimes iconv_mime_decode() can't decode some parts of the subject:
         // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
         // =?iso-2022-jp?B?GyRCQGlNVTtZRTkhIT4uTlMbKEI=?=
-        if (preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded)) {
+        if (preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded)
+            || !mb_check_encoding($subject_decoded, 'UTF-8')
+        ) {
             $subject_decoded = \imap_utf8($subject);
         }
 
