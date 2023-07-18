@@ -1815,7 +1815,6 @@ class Helper
 
         // Optional.
         $required_extensions[] = 'intl';
-        $required_extensions[] = 'pcntl';
 
         foreach ($required_extensions as $extension_name) {
             $alternatives = explode('/', $extension_name);
@@ -1830,6 +1829,14 @@ class Helper
                 $php_extensions[$extension_name] = extension_loaded($extension_name);
             }
         }
+
+        // Required in console.
+        if (self::isConsole()) {
+            $pcntl_enabled = extension_loaded('pcntl');
+        } else {
+            $pcntl_enabled = preg_match("/enable/m", shell_exec("php -i | grep pcntl"));
+        }
+        $php_extensions['pcntl (console PHP)'] = $pcntl_enabled;
 
         return $php_extensions;
     }
