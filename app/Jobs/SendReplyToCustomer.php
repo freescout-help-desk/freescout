@@ -318,6 +318,11 @@ class SendReplyToCustomer implements ShouldQueue
                 $envelope['date'] = now()->toRfc2822String();
                 $envelope['message_id'] = $this->message_id;
 
+                // CC.
+                if (count($cc_array)) {
+                    $envelope['cc'] = implode(',', $cc_array);
+                }
+
                 // Get penultimate email Message-Id if reply
                 if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
                     $envelope['custom_headers'] = [
@@ -386,12 +391,12 @@ class SendReplyToCustomer implements ShouldQueue
                     // Get folder method does not work if sent folder has spaces.
                     if ($folder) {
                         try {
-                            $save_result = $this->saveEmailToFolder($client, $folder, $envelope, $parts);
+                            $save_result = $this->saveEmailToFolder($client, $folder, $envelope, $parts, $bcc_array);
                             // Sometimes emails with attachments by some reason are not saved.
                             // https://github.com/freescout-helpdesk/freescout/issues/2749
                             if (!$save_result) {
                                 // Save without attachments.
-                                $this->saveEmailToFolder($client, $folder, $envelope, [$part_body]);
+                                $this->saveEmailToFolder($client, $folder, $envelope, [$part_body], $bcc_array);
                             }
                         } catch (\Exception $e) {
                             // Just log error and continue.
@@ -425,12 +430,27 @@ class SendReplyToCustomer implements ShouldQueue
     }
 
     // Save an email to IMAP folder.
-    public function saveEmailToFolder($client, $folder, $envelope, $parts)
+    public function saveEmailToFolder($client, $folder, $envelope, $parts, $bcc = [])
     {
+        $envelope_str = imap_mail_compose($envelope, $parts);
+
+        // Add BCC.
+        // https://stackoverflow.com/questions/47353938/php-imap-append-with-bcc
+        if (!empty($bcc)) {
+            // There will be a "To:" parameter for sure.
+            $to_pos = strpos($envelope_str , "To:");
+            if ($to_pos !== false) {
+                $bcc_str = "Bcc: " . implode(',', $bcc) . "\r\n";
+                $envelope_str = substr_replace($envelope_str , $bcc_str, $to_pos, 0);
+                \Log::error('envelope_str1 '.$envelope_str);
+            }
+        }
+        \Log::error('envelope_str2 '.$envelope_str);
+
         if (get_class($client) == 'Webklex\PHPIMAP\Client') {
-            return $folder->appendMessage(imap_mail_compose($envelope, $parts), ['Seen'], now()->format('d-M-Y H:i:s O'));
+            return $folder->appendMessage($envelope_str, ['Seen'], now()->format('d-M-Y H:i:s O'));
         } else {
-            return $folder->appendMessage(imap_mail_compose($envelope, $parts), '\Seen', now()->format('d-M-Y H:i:s O'));
+            return $folder->appendMessage($envelope_str, '\Seen', now()->format('d-M-Y H:i:s O'));
         }
     }
 
