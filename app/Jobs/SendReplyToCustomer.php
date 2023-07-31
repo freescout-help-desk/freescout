@@ -442,10 +442,8 @@ class SendReplyToCustomer implements ShouldQueue
             if ($to_pos !== false) {
                 $bcc_str = "Bcc: " . implode(',', $bcc) . "\r\n";
                 $envelope_str = substr_replace($envelope_str , $bcc_str, $to_pos, 0);
-                \Log::error('envelope_str1 '.$envelope_str);
             }
         }
-        \Log::error('envelope_str2 '.$envelope_str);
 
         if (get_class($client) == 'Webklex\PHPIMAP\Client') {
             return $folder->appendMessage($envelope_str, ['Seen'], now()->format('d-M-Y H:i:s O'));
