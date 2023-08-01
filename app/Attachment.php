@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\AwsS3v3\AwsS3Adapter;
+
 
 class Attachment extends Model
 {
@@ -19,9 +21,9 @@ class Attachment extends Model
 
     const DIRECTORY = 'attachment';
 
-    CONST DISK = 'private';
-
     CONST MIME_TYPE_MAX_LENGTH = 127;
+
+    public static string $disk;
 
     // https://github.com/Webklex/laravel-imap/blob/master/src/IMAP/Attachment.php
     public static $types = [
@@ -41,6 +43,12 @@ class Attachment extends Model
     ];
 
     public $timestamps = false;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this::$disk = config('filesystems.attachments');
+    }
 
     /**
      * Get thread.
@@ -121,7 +129,7 @@ class Attachment extends Model
         $file_info = self::saveFileToDisk($attachment, $file_name, $content, $uploaded_file);
 
         $attachment->file_dir = $file_info['file_dir'];
-        $attachment->size = Storage::disk(self::DISK)->size($file_info['file_path']);
+        $attachment->size = Storage::disk(self::$disk)->size($file_info['file_path']);
         $attachment->save();
 
         return $attachment;
@@ -141,14 +149,14 @@ class Attachment extends Model
         do {
             $i++;
             $file_path = self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir.$i.DIRECTORY_SEPARATOR.$file_name;
-        } while (Storage::disk(self::DISK)->exists($file_path));
+        } while (Storage::disk(self::$disk)->exists($file_path));
 
         $file_dir .= $i.DIRECTORY_SEPARATOR;
 
         if ($uploaded_file) {
-            $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name, ['disk' => self::DISK]);
+            $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name, ['disk' => self::$disk]);
         } else {
-            Storage::disk(self::DISK)->put($file_path, $content);
+            Storage::disk(self::$disk)->put($file_path, $content);
         }
 
         \Helper::sanitizeUploadedFileData($file_path, \Helper::getPrivateStorage(), $content);
@@ -243,7 +251,9 @@ class Attachment extends Model
      */
     public function url()
     {
-        return Storage::url($this->getStorageFilePath()).'?id='.$this->id.'&token='.$this->getToken();
+        return Storage::disk($this::$disk)->getAdapter() instanceof AwsS3Adapter ?
+            Storage::disk($this::$disk)->temporaryUrl($this->getStorageFilePath(), now()->addMinutes(30)) :
+            Storage::url($this->getStorageFilePath()).'?id='.$this->id.'&token='.$this->getToken();
     }
 
     /**
@@ -276,7 +286,7 @@ class Attachment extends Model
     }
 
     private function getDisk() {
-        return Storage::disk(self::DISK);
+        return Storage::disk(self::$disk);
     }
 
     /**
@@ -377,7 +387,7 @@ class Attachment extends Model
      */
     public static function deleteAttachments($attachments)
     {
-        if (!$attachments instanceof \Illuminate\Support\Collection) { 
+        if (!$attachments instanceof \Illuminate\Support\Collection) {
             $attachments = collect($attachments);
         }
 
