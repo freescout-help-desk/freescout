@@ -97,6 +97,11 @@ class Attachment extends Model
             $file_name = 'RFC822.eml';
         }
 
+        // https://github.com/freescout-helpdesk/freescout/issues/1412#issuecomment-1658881493
+        if ($file_name == 'undefined' && $mime_type == 'text/calendar') {
+            $file_name = 'calendar.ics';
+        }
+
         if (strlen($file_name) > 255) {
             $without_ext = pathinfo($file_name, PATHINFO_FILENAME);
             $extension = pathinfo($file_name, PATHINFO_EXTENSION);
