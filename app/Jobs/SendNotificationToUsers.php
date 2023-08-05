@@ -58,11 +58,7 @@ class SendNotificationToUsers implements ShouldQueue
         \App\Misc\Mail::setMailDriver($mailbox, null, $this->conversation);
 
         // Threads has to be sorted here, if sorted before, they come here in wrong order
-        $this->threads = $this->threads->sortByDesc(function ($item, $key) {
-            // Threads has to be sorted by created_at and not by id.
-            // https://github.com/freescout-helpdesk/freescout/issues/2938
-            return $item->created_at->getTimestamp();
-        });
+        $this->threads = Thread::sortThreads($this->threads);
 
         $headers = [];
         $last_thread = $this->threads->first();

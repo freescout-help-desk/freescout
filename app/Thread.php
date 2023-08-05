@@ -1488,4 +1488,27 @@ class Thread extends Model
 
         return '';
     }
+
+    // Sorts threads in desc order by created_at and ID.
+    // 
+    // Threads has to be sorted by created_at and not by id.
+    // https://github.com/freescout-helpdesk/freescout/issues/2938
+    // Sometimes thread.created_at may be the same,
+    // in such cases we also need to sort by thread ID.
+    public static function sortThreads($threads)
+    {
+        return $threads->sort(function ($a, $b) {
+            $a_ts = $a->created_at->getTimestamp();
+            $b_ts = $b->created_at->getTimestamp();
+            if ($a_ts == $b_ts) {
+                if ($a->id < $b->id) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            } else {
+                return ($a_ts < $b_ts) ? 1 : -1;
+            }
+        });
+    }
 }

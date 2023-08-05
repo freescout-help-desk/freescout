@@ -503,7 +503,7 @@ class FetchEmails extends Command
                         $prev_thread_id = '';
 
                         // Customer replied to the email from user
-                        preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-([^@]+)@/", $prev_message_id, $m);
+                        preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
                         // Simply checking thread_id from message_id was causing an issue when 
                         // customer was sending a message from FreeScout - the message was 
                         // connected to the wrong conversation.
@@ -521,7 +521,7 @@ class FetchEmails extends Command
 
                         // Customer replied to the auto reply
                         if (!$prev_thread_id) {
-                            preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-([^@]+)@/", $prev_message_id, $m);
+                            preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
                             if (!empty($m[1]) && !empty($m[2])) {
                                 $message_id_hash = $m[2];
                                 if (strlen($message_id_hash) == 16) {
