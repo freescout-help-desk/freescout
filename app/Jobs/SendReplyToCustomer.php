@@ -81,9 +81,7 @@ class SendReplyToCustomer implements ShouldQueue
 
                 // Add replies from original conversation.
                 $forwarded_replies = $forward_child_thread->getForwardParentConversation()->getReplies();
-                $forwarded_replies = $forwarded_replies->sortByDesc(function ($item, $key) {
-                    return $item->created_at;
-                });
+                $forwarded_replies = Thread::sortThreads($forwarded_replies);
                 $forward_parent_thread = Thread::find($forward_child_thread->getMetaFw(Thread::META_FORWARD_PARENT_THREAD_ID));
 
                 if ($forward_parent_thread) {
@@ -100,15 +98,13 @@ class SendReplyToCustomer implements ShouldQueue
         }
 
         // Threads has to be sorted here, if sorted before, they come here in wrong order
-        $this->threads = $this->threads->sortByDesc(function ($item, $key) {
-            // Threads has to be sorted by created_at and not by id.
-            // https://github.com/freescout-helpdesk/freescout/issues/2938
-            return $item->created_at->getTimestamp();
-        });
+        $this->threads = Thread::sortThreads($this->threads);
 
         $new = false;
         $headers = [];
+
         $this->last_thread = $this->threads->first();
+
         if ($this->last_thread === null) {
             return;
         }
