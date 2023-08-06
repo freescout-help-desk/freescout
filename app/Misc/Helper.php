@@ -1834,7 +1834,7 @@ class Helper
         if (self::isConsole() || !function_exists('shell_exec')) {
             $pcntl_enabled = extension_loaded('pcntl');
         } else {
-            $pcntl_enabled = preg_match("/enable/m", shell_exec("php -i | grep pcntl"));
+            $pcntl_enabled = preg_match("/enable/m", shell_exec("php -i | grep pcntl") ?? '');
         }
         $php_extensions['pcntl (console PHP)'] = $pcntl_enabled;
 
