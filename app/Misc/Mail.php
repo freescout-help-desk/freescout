@@ -885,6 +885,9 @@ class Mail
         }
     }
 
+    /**
+     * This function is used to decode email subjects and attachment names in Webklex libraries.
+     */
     public static function decodeSubject($subject)
     {
         // https://stackoverflow.com/questions/15276191/why-does-a-diamond-with-a-questionmark-in-it-appear-in-my-html
@@ -912,43 +915,53 @@ class Mail
 
         // Step 1. Abnormal way - text is encoded and split into parts.
   
-        // First try to join all lines and parts.
-        // Keep in mind that there can be non-encoded parts also:
-        // =?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
-        preg_match_all("/(=\?[^\?]+\?[BQ]\?)([^\?]+)(\?=)[\r\n\t ]*/i", $subject, $m);
+        // Only one type of encoding should be used.
+        preg_match_all("/(=\?[^\?]+\?[BQ]\?)([^\?]+)(\?=)/i", $subject, $m);
+        $encodings = $m[1] ?? [];
+        array_walk($encodings, function($value) {
+            $value = strtolower($value);
+        });
+        $one_encoding = count(array_unique($encodings)) == 1;
 
-        $joined_parts = '';
-        if (count($m[1]) > 1 && !empty($m[2]) && !preg_match("/[\r\n\t ]+[^=]/i", $subject)) {
-            // Example: GyRCQGlNVTtZRTkhIT4uTlMbKEI=
-            $joined_parts = $m[1][0].implode('', $m[2]).$m[3][0];
+        if ($one_encoding) {
+            // First try to join all lines and parts.
+            // Keep in mind that there can be non-encoded parts also:
+            // =?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
+            preg_match_all("/(=\?[^\?]+\?[BQ]\?)([^\?]+)(\?=)[\r\n\t ]*/i", $subject, $m);
 
-            // Base64 and URL encoded string can't contain "=" in the middle
-            // https://stackoverflow.com/questions/6916805/why-does-a-base64-encoded-string-have-an-sign-at-the-end
-            $has_equal_in_the_middle = preg_match("#=+([^$\? =])#", $joined_parts);
+            $joined_parts = '';
+            if (count($m[1]) > 1 && !empty($m[2]) && !preg_match("/[\r\n\t ]+[^=]/i", $subject)) {
+                // Example: GyRCQGlNVTtZRTkhIT4uTlMbKEI=
+                $joined_parts = $m[1][0].implode('', $m[2]).$m[3][0];
 
-            if (!$has_equal_in_the_middle) {
-                $subject_decoded = iconv_mime_decode($joined_parts, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+                // Base64 and URL encoded string can't contain "=" in the middle
+                // https://stackoverflow.com/questions/6916805/why-does-a-base64-encoded-string-have-an-sign-at-the-end
+                $has_equal_in_the_middle = preg_match("#=+([^$\? =])#", $joined_parts);
 
-                if ($subject_decoded 
-                    && trim($subject_decoded) != trim($joined_parts)
-                    && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
-                    && mb_check_encoding($subject_decoded, 'UTF-8')
-                    || \Str::contains($subject_decoded, $invalid_utf_symbols)
-                ) {
-                    return $subject_decoded;
-                }
+                if (!$has_equal_in_the_middle) {
+                    $subject_decoded = iconv_mime_decode($joined_parts, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
 
-                // Try imap_utf8().
-                // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQ?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
-                $subject_decoded = \imap_utf8($joined_parts);
+                    if ($subject_decoded 
+                        && trim($subject_decoded) != trim($joined_parts)
+                        && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+                        && mb_check_encoding($subject_decoded, 'UTF-8')
+                        || \Str::contains($subject_decoded, $invalid_utf_symbols)
+                    ) {
+                        return $subject_decoded;
+                    }
 
-                if ($subject_decoded 
-                    && trim($subject_decoded) != trim($joined_parts)
-                    && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
-                    && mb_check_encoding($subject_decoded, 'UTF-8')
-                    || \Str::contains($subject_decoded, $invalid_utf_symbols)
-                ) {
-                    return $subject_decoded;
+                    // Try imap_utf8().
+                    // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQ?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
+                    $subject_decoded = \imap_utf8($joined_parts);
+
+                    if ($subject_decoded 
+                        && trim($subject_decoded) != trim($joined_parts)
+                        && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
+                        && mb_check_encoding($subject_decoded, 'UTF-8')
+                        || \Str::contains($subject_decoded, $invalid_utf_symbols)
+                    ) {
+                        return $subject_decoded;
+                    }
                 }
             }
         }
