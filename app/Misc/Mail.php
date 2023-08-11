@@ -192,7 +192,12 @@ class Mail
         if (!empty($data['mailbox'])) {
             $vars['{%mailbox.email%}'] = $data['mailbox']->email;
             $vars['{%mailbox.name%}'] = $data['mailbox']->name;
-            $vars['{%mailbox.fromName%}'] = $data['mailbox']->getMailFrom(!empty($data['user']) ? $data['user'] : null)['name'];
+            // To avoid recursion.
+            if (isset($data['mailbox_from_name'])) {
+                $vars['{%mailbox.fromName%}'] = $data['mailbox_from_name'];
+            } else {
+                $vars['{%mailbox.fromName%}'] = $data['mailbox']->getMailFrom(!empty($data['user']) ? $data['user'] : null)['name'];
+            }
         }
         if (!empty($data['customer'])) {
             $vars['{%customer.fullName%}'] = $data['customer']->getFullName(true);
