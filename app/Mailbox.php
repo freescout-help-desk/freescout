@@ -558,12 +558,21 @@ class Mailbox extends Model
         $name = $this->name;
 
         if ($this->from_name == self::FROM_NAME_CUSTOM && $this->from_name_custom) {
-            $name = $this->from_name_custom;
+            $data = [
+                'mailbox' => $this,
+                'mailbox_from_name' => '', // To avoid recursion.
+                'conversation' => $conversation,
+                'user' => $from_user ?: auth()->user(),
+            ];
+            $name = \MailHelper::replaceMailVars($this->from_name_custom, $data);
         } elseif ($this->from_name == self::FROM_NAME_USER && $from_user) {
             $name = $from_user->getFullName();
         }
 
-        return [ 'address' => \Eventy::filter( 'mailbox.get_mail_from_address', $this->email, $from_user, $conversation ), 'name' => \Eventy::filter( 'mailbox.get_mail_from_name', $name, $from_user, $conversation ) ];
+        return [
+            'address' => \Eventy::filter('mailbox.get_mail_from_address', $this->email, $from_user, $conversation),
+            'name' => \Eventy::filter('mailbox.get_mail_from_name', $name, $from_user, $conversation)
+        ];
     }
 
     /**
