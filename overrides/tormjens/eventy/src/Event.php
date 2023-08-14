@@ -31,7 +31,7 @@ abstract class Event
             'priority'  => $priority,
             'arguments' => $arguments,
         ];
-        usort($listeners[$hook], function ($a, $b) {
+        usort($this->listeners[$hook], function ($a, $b) {
             return $a['priority'] - $b['priority'];
         });
 
