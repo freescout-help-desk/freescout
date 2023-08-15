@@ -32,7 +32,7 @@ abstract class Event
             'arguments' => $arguments,
         ];
         usort($this->listeners[$hook], function ($a, $b) {
-            return $a['priority'] - $b['priority'];
+            return (int)$a['priority'] - (int)$b['priority'];
         });
 
         return $this;
@@ -79,13 +79,7 @@ abstract class Event
      */
     public function getListeners($hook)
     {
-        if (isset($this->listeners[$hook])) {
-            $listeners = $this->listeners[$hook];
-
-            return $listeners;
-        }
-
-        return [];
+        return $this->listeners[$hook] ?? [];
     }
 
     /**
