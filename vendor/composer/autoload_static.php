@@ -3773,7 +3773,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Rule\\Processor' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Rule/Processor.php',
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Rule\\Rule' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Rule/Rule.php',
         'TorMorten\\Eventy\\Action' => __DIR__ . '/../..' . '/overrides/tormjens/eventy/src/Action.php',
-        'TorMorten\\Eventy\\Event' => __DIR__ . '/..' . '/tormjens/eventy/src/Event.php',
+        'TorMorten\\Eventy\\Event' => __DIR__ . '/../..' . '/overrides/tormjens/eventy/src/Event.php',
         'TorMorten\\Eventy\\EventBladeServiceProvider' => __DIR__ . '/..' . '/tormjens/eventy/src/EventBladeServiceProvider.php',
         'TorMorten\\Eventy\\EventServiceProvider' => __DIR__ . '/..' . '/tormjens/eventy/src/EventServiceProvider.php',
         'TorMorten\\Eventy\\Events' => __DIR__ . '/..' . '/tormjens/eventy/src/Events.php',
