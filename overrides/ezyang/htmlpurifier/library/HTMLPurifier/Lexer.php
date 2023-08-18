@@ -366,7 +366,7 @@ class HTMLPurifier_Lexer
     public function extractBody($html)
     {
         $matches = array();
-        $result = preg_match('|(.*?)<body[^>]*>(.*)</body>|is', $html, $matches);
+        $result = preg_match('|(.*?)<body[^>]*>(.*)</body>|is', $html ?? '', $matches);
         if ($result) {
             // Make sure it's not in a comment
             $comment_start = strrpos($matches[1], '<!--');

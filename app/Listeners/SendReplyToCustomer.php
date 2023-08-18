@@ -23,9 +23,11 @@ class SendReplyToCustomer
     {
         $conversation = $event->conversation;
 
-        // Do not send email if this is a Phone conversation.
+        // Do not send email if this is a Phone conversation and customer has no email.
         if ($conversation->isPhone()) {
-            return;
+            if (!$conversation->customer->getMainEmail()) {
+                return;
+            }
         }
 
         $replies = $conversation->getReplies();

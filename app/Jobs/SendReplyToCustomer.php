@@ -202,6 +202,16 @@ class SendReplyToCustomer implements ShouldQueue
         $headers['Message-ID'] = $this->message_id;
 
         $this->customer_email = $this->conversation->customer_email;
+
+        // For phone conversations we may need to get customer email.
+        // https://github.com/freescout-helpdesk/freescout/issues/3270
+        if (!$this->customer_email && $this->conversation->isPhone()) {            
+            $this->customer_email = $this->conversation->customer->getMainEmail();
+            if (!$this->customer_email) {
+                return;
+            }
+        }
+
         $to_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getToArray());
         $cc_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getCcArray());
         $bcc_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getBccArray());

@@ -14,18 +14,16 @@ class Action extends Event
      */
     public function fire($action, $args)
     {
-        if ($this->getListeners()) {
-            $this->getListeners()->where('hook', $action)->each(function ($listener) use ($action, $args) {
-                $parameters = [];
-                for ($i = 0; $i < $listener['arguments']; $i++) {
-                    if (isset($args[$i])) {
-                        $parameters[] = $args[$i];
-                    } else {
-                        $parameters[] = null;
-                    }
+        foreach ($this->getListeners($action) as $listener) {
+            $parameters = [];
+            for ($i = 0; $i < $listener['arguments']; $i++) {
+                if (isset($args[$i])) {
+                    $parameters[] = $args[$i];
+                } else {
+                    $parameters[] = null;
                 }
-                call_user_func_array($this->getFunction($listener['callback']), $parameters);
-            });
+            }
+            call_user_func_array($this->getFunction($listener['callback']), $parameters);
         }
     }
 }
