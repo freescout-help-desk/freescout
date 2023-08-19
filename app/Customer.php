@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Email;
+use App\CustomerChannel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -1445,5 +1446,10 @@ class Customer extends Model
         // Delete emails.
         Email::where('customer_id', $this->id)->delete();
         $this->delete();
+    }
+
+    public function getChannels()
+    {
+        return CustomerChannel::where('customer_id', $this->id)->get();
     }
 }
