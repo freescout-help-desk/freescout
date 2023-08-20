@@ -1450,6 +1450,43 @@ class Customer extends Model
 
     public function getChannels()
     {
+        if (!$this->channel || !$this->channel_id) {
+            return collect([]);
+        }
         return CustomerChannel::where('customer_id', $this->id)->get();
     }
+
+    public function addChannel($channel, $channel_id)
+    {
+        // We are doing this to let existing modules not to throw error
+        // and as a flag that this customer has record(s) in cucstomer_channel table.
+        if (!$this->channel || !$this->channel_id) {
+            $this->channel = $channel;
+            $this->channel_id = $channel_id;
+            $this->save();
+        }
+
+        return CustomerChannel::create($this->id, $channel, $channel_id);
+    }
+
+    public static function getCustomerByChannel($channel, $channel_id)
+    {
+        $customer_channel = CustomerChannel::where('channel', $channel)
+            ->where('channel_id', $channel_id)
+            ->first();
+
+        if ($customer_channel) {
+            return $customer_channel->customer;
+        } else {
+            return null;
+        }
+    }
+
+    public function getChannelId($channel)
+    {
+        return CustomerChannel::where('customer_id', $this->id)
+            ->where('channel', $channel)
+            ->value('channel_id');
+    }
 }
+

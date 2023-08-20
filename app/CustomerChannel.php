@@ -15,6 +15,11 @@ class CustomerChannel extends Model
 
     public $timestamps = false;
 
+    public function customer()
+    {
+        return $this->belongsTo('App\Customer');
+    }
+
     public static function create($customer_id, $channel, $channel_id)
     {
         try {
@@ -23,8 +28,11 @@ class CustomerChannel extends Model
             $customer_channel->channel     = $channel;
             $customer_channel->channel_id  = $channel_id;
             $customer_channel->save();
+
+            return $customer_channel;
         } catch (\Exception $e) {
             // Already exists.
+            return null;
         }
     }
 
