@@ -642,8 +642,8 @@ class Customer extends Model
             return $phones;
         } elseif ($dummy_if_empty) {
             return [[
-                'type' => self::PHONE_TYPE_WORK,
                 'value' => '',
+                'type' => self::PHONE_TYPE_WORK,
             ]];
         } else {
             return [];
@@ -867,12 +867,16 @@ class Customer extends Model
                     }
 
                     $social_profiles[] = [
+                        // Order of elements in array is important as we rely on it
+                        // when searching customers by social profiles using "like".
                         'value' => (string) $social_profile['value'],
                         'type'  => $type,
                     ];
                 }
             } else {
                 $social_profiles[] = [
+                    // Order of elements in array is important as we rely on it
+                    // when searching customers by social profiles using "like".
                     'value' => (string) $social_profile,
                     'type'  => self::SOCIAL_TYPE_OTHER,
                 ];
@@ -1487,6 +1491,35 @@ class Customer extends Model
         return CustomerChannel::where('customer_id', $this->id)
             ->where('channel', $channel)
             ->value('channel_id');
+    }
+
+    public static function findCustomersBySocialProfile($type, $value)
+    {
+        $value = mb_strtolower($value);
+
+        $like = '%'.$value.'","type":'.$type.'}]';
+        $customers = Customer::where('social_profiles', \Helper::sqlLikeOperator(), $like)->get();
+
+        // Now more prcise filtering.
+        foreach ($customers as $i => $customer) {
+            $ok = false;
+            foreach ($customer->getSocialProfiles() as $social_profile) {
+                if ($social_profile['type'] == $type
+                    // Try to check username written in different ways:
+                    // - username
+                    // - @username
+                    // - https://example.org/username
+                    && preg_match("#(^|/|@)".preg_quote($value)."$#", trim(mb_strtolower($social_profile['value'])))
+                ) {
+                    $ok = true;
+                    break;
+                }
+            }
+            if (!$ok) {
+                $customers->forget($i);
+            }
+        }
+        return $customers;
     }
 }
 
