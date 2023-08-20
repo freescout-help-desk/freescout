@@ -107,7 +107,7 @@ class MailboxPolicy
      */
     public function updateAutoReply(User $user, Mailbox $mailbox)
     {
-        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, 'auto')) {
+        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, Mailbox::ACCESS_PERM_AUTO_REPLIES)) {
             return true;
         } else {
             return false;
@@ -124,7 +124,7 @@ class MailboxPolicy
      */
     public function updatePermissions(User $user, Mailbox $mailbox)
     {
-        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, 'perm')) {
+        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, Mailbox::ACCESS_PERM_PERMISSIONS)) {
             return true;
         } else {
             return false;
@@ -141,7 +141,7 @@ class MailboxPolicy
      */
     public function updateSettings(User $user, Mailbox $mailbox)
     {
-        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, 'edit')) {
+        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, Mailbox::ACCESS_PERM_EDIT)) {
             return true;
         } else {
             return false;
@@ -158,7 +158,7 @@ class MailboxPolicy
      */
     public function updateEmailSignature(User $user, Mailbox $mailbox)
     {
-        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, 'sig')) {
+        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, Mailbox::ACCESS_PERM_SIGNATURE)) {
             return true;
         } else {
             return false;

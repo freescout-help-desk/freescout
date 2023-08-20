@@ -349,6 +349,10 @@ class User extends Authenticatable
         }
     }
 
+    /**
+     * Main function to check if user has some exta access permission
+     * for a given mailbox.
+     */
     public function hasManageMailboxPermission($mailbox_id, $perm) {
         if ($this->isAdmin()) {
             return true;
@@ -357,6 +361,14 @@ class User extends Authenticatable
             $mailbox = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
             if ($mailbox && !empty($mailbox->access) && in_array($perm, json_decode($mailbox->access))) {
                 return true;
+            } else {
+                // Experimental feature.
+                // This option does not affect admin users.
+                $show_only_assigned_conversations = config('app.show_only_assigned_conversations');
+                if (in_array($this->id, explode(',', $show_only_assigned_conversations))) {
+                    return true;
+                }
+                return false;
             }
         }
     }

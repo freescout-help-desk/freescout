@@ -1070,25 +1070,27 @@ class Conversation extends Model
      */
     public static function getQueryByFolder($folder, $user_id)
     {
+        // Get conversations from personal folder
         if ($folder->type == Folder::TYPE_MINE) {
-            // Get conversations from personal folder
             $query_conversations = self::where('user_id', $user_id)
                 ->where('mailbox_id', $folder->mailbox_id)
                 ->whereIn('status', [self::STATUS_ACTIVE, self::STATUS_PENDING])
                 ->where('state', self::STATE_PUBLISHED);
-        } elseif ($folder->type == Folder::TYPE_ASSIGNED) {
 
-            // Assigned - do not show my conversations
+        // Assigned - do not show my conversations.
+        } elseif ($folder->type == Folder::TYPE_ASSIGNED) {
             $query_conversations = $folder->conversations()
                 // This condition also removes from result records with user_id = null
                 ->where('user_id', '<>', $user_id)
                 ->where('state', self::STATE_PUBLISHED);
+
+        // Starred by user conversations.
         } elseif ($folder->type == Folder::TYPE_STARRED) {
             $starred_conversation_ids = self::getUserStarredConversationIds($folder->mailbox_id, $user_id);
             $query_conversations = self::whereIn('id', $starred_conversation_ids);
-        } elseif ($folder->isIndirect()) {
 
-            // Conversations are connected to folder via conversation_folder table.
+        // Conversations are connected to folder via conversation_folder table.
+        } elseif ($folder->isIndirect()) {
             $query_conversations = self::select('conversations.*')
                 //->where('conversations.mailbox_id', $folder->mailbox_id)
                 ->join('conversation_folder', 'conversations.id', '=', 'conversation_folder.conversation_id')
@@ -1096,10 +1098,26 @@ class Conversation extends Model
             if ($folder->type != Folder::TYPE_DRAFTS) {
                 $query_conversations->where('state', self::STATE_PUBLISHED);
             }
+
+        // Deleted.
         } elseif ($folder->type == Folder::TYPE_DELETED) {
             $query_conversations = $folder->conversations()->where('state', self::STATE_DELETED);
+
+        // Everything else.
         } else {
             $query_conversations = $folder->conversations()->where('state', self::STATE_PUBLISHED);
+        }
+
+        // If show only assigned to the current user conversations.
+        if (!\Helper::isConsole()
+            && $user_id
+            && $user = auth()->user()
+        ) {
+            if ($user->id == $user_id
+                && $user->hasManageMailboxPermission($folder->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)
+            ) {
+                $query_conversations->where('user_id', '=', $user_id);
+            }
         }
 
         return \Eventy::filter('folder.conversations_query', $query_conversations, $folder, $user_id);
