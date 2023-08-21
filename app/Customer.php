@@ -1493,7 +1493,7 @@ class Customer extends Model
             ->value('channel_id');
     }
 
-    public static function findCustomersBySocialProfile($type, $value)
+    public static function findCustomersBySocialProfile($type, $value, $exclude_channel = null)
     {
         $value = mb_strtolower($value);
 
@@ -1519,7 +1519,15 @@ class Customer extends Model
                 $customers->forget($i);
             }
         }
-        return $customers;
+
+        if ($exclude_channel && count($customers)) {
+            $exclude_customer_ids = CustomerChannel::whereIn('customer_id', $customers->pluck('id'))
+                ->where('channel', $exclude_channel)
+                ->pluck('customer_id');
+            return $customers->whereNotIn('customer_id', $exclude_customer_ids);
+        } else {
+            return $customers;
+        }
     }
 }
 
