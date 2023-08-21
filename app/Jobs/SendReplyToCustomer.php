@@ -298,6 +298,13 @@ class SendReplyToCustomer implements ShouldQueue
                     $this->release(3600);
                 }
 
+                // If an email has not been sent after 1 hour - show an error message to support agent.
+                if ($this->attempts() >= 3) {
+                    $this->last_thread->send_status = SendLog::STATUS_SEND_ERROR;
+                    $this->last_thread->updateSendStatusData(['msg' => $error_message]);
+                    $this->last_thread->save();
+                }
+
                 throw $e;
             } else {
                 $this->last_thread->send_status = SendLog::STATUS_SEND_ERROR;
@@ -309,6 +316,13 @@ class SendReplyToCustomer implements ShouldQueue
 
                 return;
             }
+        }
+
+        // Clean error message if email finally has been sent.
+        if ($this->last_thread->send_status == SendLog::STATUS_SEND_ERROR) {
+            $this->last_thread->send_status = null;
+            $this->last_thread->updateSendStatusData(['msg' => '']);
+            $this->last_thread->save();
         }
 
         $imap_sent_folder = $mailbox->imap_sent_folder;

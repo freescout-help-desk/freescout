@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.91',
+    'version' => '1.8.92',
 
     /*
     |--------------------------------------------------------------------------
@@ -98,7 +98,7 @@ return [
     */
 
     'locale'          => env('APP_LOCALE', 'en'),
-    'locales'         => ['en', 'hr', 'cs', 'da', 'nl', 'fi', 'fr', 'de', 'it', 'ja', 'ko', 'no', 'fa', 'pl', 'pt-PT', 'pt-BR', 'ru', 'es', 'sk', 'sv'],
+    'locales'         => ['en', 'zh-CN', 'hr', 'cs', 'da', 'nl', 'fi', 'fr', 'de', 'it', 'ja', 'ko', 'no', 'fa', 'pl', 'pt-PT', 'pt-BR', 'ru', 'es', 'sk', 'sv'],
     'locales_rtl'     => ['fa'],
     'default_locale'  => 'en',
 
@@ -418,6 +418,20 @@ return [
     |-------------------------------------------------------------------------
     */
     'update_folder_counters_in_background'    => env('APP_UPDATE_FOLDER_COUNTERS_IN_BACKGROUND', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Experimental feature allowing to specify users who can see only conversations 
+    | assigned to themselves. For such users only Mine folder shows actual number of conversations.
+    | This option does not affect admin users.
+    |
+    | The option should be specified as a comma separated list of user IDs which
+    | can be found in the their profile URL (/users/profile/7).
+    |
+    | Example: 7,5,31
+    |-------------------------------------------------------------------------
+    */
+    'show_only_assigned_conversations'    => env('APP_SHOW_ONLY_ASSIGNED_CONVERSATIONS', ''),
 
     /*
     |--------------------------------------------------------------------------

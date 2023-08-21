@@ -25,7 +25,14 @@ class ConversationPolicy
             return true;
         } else {
             if ($conversation->mailbox->users->contains($user)) {
-                return true;
+                // Maybe user can see only assigned conversations.
+                if ($conversation->user_id != $user->id
+                    && $user->hasManageMailboxPermission($conversation->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)
+                ) {
+                    return false;
+                } else {
+                    return true;
+                }
             } else {
                 return false;
             }
@@ -45,7 +52,14 @@ class ConversationPolicy
             return true;
         } else {
             if ($conversation->mailbox->users_cached->contains($user)) {
-                return true;
+                // Maybe user can see only assigned conversations.
+                if ($conversation->user_id != $user->id
+                    && $user->hasManageMailboxPermission($conversation->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)
+                ) {
+                    return false;
+                } else {
+                    return true;
+                }
             } else {
                 return false;
             }

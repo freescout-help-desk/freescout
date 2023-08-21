@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Customer;
+use App\CustomerChannel;
 
 class CustomerObserver
 {
@@ -16,5 +17,17 @@ class CustomerObserver
     public function deleting(Customer $customer)
     {
         \Eventy::action('customer.deleting', $customer);
+    }
+
+    public function created(Customer $customer)
+    {
+        if ($customer->channel && $customer->channel_id) {
+            CustomerChannel::create($customer->id, $customer->channel, $customer->channel_id);
+        }
+    }
+
+    public function deleted(Customer $customer)
+    {
+        CustomerChannel::where('customer_id', $customer->id)->delete();
     }
 }

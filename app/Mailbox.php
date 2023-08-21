@@ -102,6 +102,7 @@ class Mailbox extends Model
     const ACCESS_PERM_PERMISSIONS  = 'perm';
     const ACCESS_PERM_AUTO_REPLIES = 'auto';
     const ACCESS_PERM_SIGNATURE    = 'sig';
+    const ACCESS_PERM_ASSIGNED     = 'asg';
 
     public static $access_permissions = [
         self::ACCESS_PERM_EDIT,
