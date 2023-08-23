@@ -69,6 +69,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('freescout:clean-send-log')
             ->monthly();
 
+        $schedule->command('freescout:clean-notifications-table')
+            ->weekly();
+
         $schedule->command('freescout:clean-tmp')
             ->daily();
 
