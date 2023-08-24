@@ -21,7 +21,15 @@ class ThreadObserver
             return;
         }
 
-        $now = date('Y-m-d H:i:s');
+        // fetch time setting.
+        $server_time_as_received = config('app.server_time_as_received');
+
+        if($server_time_as_received){
+            $now = $time;
+        }else{
+            $now = date('Y-m-d H:i:s');
+        }
+        
         if (!in_array($thread->type, [Thread::TYPE_LINEITEM, Thread::TYPE_NOTE]) && $thread->state == Thread::STATE_PUBLISHED) {
             $conversation->threads_count++;
         }

@@ -88,6 +88,19 @@
             @include('partials/field_error', ['field'=>'settings.time_format'])
         </div>
     </div>
+    <div class="form-group{{ $errors->has('settings[server_time_as_received]') ? ' has-error' : '' }}">
+        <label for="server_time_as_received" class="col-sm-2 control-label">{{ __('Mail Timestamp') }}</label>
+
+        <div class="col-sm-6">
+            <div class="control-group">
+                <label class="checkbox" for="server_time_as_received">
+                    <input type="checkbox" name="settings[server_time_as_received]" value="{{ true }}" id="server_time_as_received" @if (old('settings[server_time_as_received]', $settings['server_time_as_received'])==1) checked="checked" @endif> {{ __('Set server time as received') }}
+                </label>
+            </div>
+
+            @include('partials/field_error', ['field'=>'settings.fetch_time'])
+        </div>
+    </div>
 
     <h3 class="subheader">{{ __('Emails to Customers') }}</h3>
 

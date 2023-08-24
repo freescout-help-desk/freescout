@@ -129,6 +129,9 @@ class SettingsController extends Controller
                             'env' => 'APP_USER_PERMISSIONS',
                             'env_encode' => true,
                         ],
+                        'server_time_as_received' => [
+                            'env' => 'APP_SERVER_TIME_AS_RECEIVED',
+                        ],
                     ],
                 ];
                 break;
@@ -202,6 +205,7 @@ class SettingsController extends Controller
                     'time_format'          => Option::get('time_format', User::TIME_FORMAT_24),
                     'locale'               => \Helper::getRealAppLocale(),
                     'timezone'             => config('app.timezone'),
+                    'server_time_as_received'             => config('app.server_time_as_received'),
                 ];
                 break;
             case 'emails':
