@@ -25,7 +25,7 @@ class ThreadObserver
         $server_time_as_received = config('app.server_time_as_received');
 
         if($server_time_as_received){
-            $now = $time;
+            $now = $thread->created_at;
         }else{
             $now = date('Y-m-d H:i:s');
         }
