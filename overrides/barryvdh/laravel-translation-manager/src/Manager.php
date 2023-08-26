@@ -144,12 +144,12 @@ class Manager
                 if (strpos($jsonTranslationFile, '.json') === false) {
                     continue;
                 }
+
+                $locale = basename($jsonTranslationFile, '.json');
                 // Miss incorrect locales.
                 if (!preg_match('/^[a-zA-Z_]+$/', $locale)) {
                     continue;
                 }
-
-                $locale = basename($jsonTranslationFile, '.json');
 
                 $group = '_'.$module->getAlias();
 
