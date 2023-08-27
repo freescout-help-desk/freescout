@@ -565,7 +565,7 @@ class Mailbox extends Model
                 'conversation' => $conversation,
                 'user' => $from_user ?: auth()->user(),
             ];
-            $name = \MailHelper::replaceMailVars($this->from_name_custom, $data);
+            $name = \MailHelper::replaceMailVars($this->from_name_custom, $data, false, true);
         } elseif ($this->from_name == self::FROM_NAME_USER && $from_user) {
             $name = $from_user->getFullName();
         }
