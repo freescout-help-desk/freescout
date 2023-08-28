@@ -103,7 +103,10 @@ class SettingsController extends Controller
                         'mail_password' => [
                             'safe_password' => true,
                             'encrypt' => true,
-                        ]
+                        ],
+                        'use_mail_date_on_fetching' => [
+                            'env' => 'APP_USE_MAIL_DATE_ON_FETCHING',
+                        ],
                     ],
                 ];
                 break;
@@ -214,6 +217,7 @@ class SettingsController extends Controller
                     'mail_password'   => \Helper::decrypt(Option::get('mail_password', \Config::get('mail.password'))),
                     'mail_encryption' => Option::get('mail_encryption', \Config::get('mail.encryption')),
                     'fetch_schedule'  => config('app.fetch_schedule'),
+                    'use_mail_date_on_fetching'             => config('app.use_mail_date_on_fetching'),
                 ];
                 break;
             case 'alerts':
