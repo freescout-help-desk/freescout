@@ -17,6 +17,7 @@ use App\SendLog;
 use App\Subscription;
 use App\Thread;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Webklex\IMAP\Client;
 
@@ -856,13 +857,13 @@ class FetchEmails extends Command
     public function saveCustomerThread($mailbox, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers,$time)
     {
         // fetch time setting.
-        $server_time_as_received = config('app.server_time_as_received');
+        $use_mail_date_on_fetching = config('app.use_mail_date_on_fetching');
 
         // Find conversation
         $new = false;
         $conversation = null;
         $prev_customer_id = null;
-        if($server_time_as_received){
+        if ($use_mail_date_on_fetching) {
             $now = $time;
         }else{
             $now = date('Y-m-d H:i:s');
@@ -1010,11 +1011,11 @@ class FetchEmails extends Command
     public function saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $headers)
     {
         // fetch time setting.
-        $server_time_as_received = config('app.server_time_as_received');
+        $use_mail_date_on_fetching = config('app.use_mail_date_on_fetching');
 
         $conversation = null;
-        if($server_time_as_received){
-            $now = $time;
+        if ($use_mail_date_on_fetching) {
+            $now = $time;//Carbon::parse( $time )->timezone('Asia/Tokyo');
         }else{
             $now = date('Y-m-d H:i:s');
         }

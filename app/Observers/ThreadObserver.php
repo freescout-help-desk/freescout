@@ -22,9 +22,9 @@ class ThreadObserver
         }
 
         // fetch time setting.
-        $server_time_as_received = config('app.server_time_as_received');
+        $use_mail_date_on_fetching = config('app.use_mail_date_on_fetching');
 
-        if($server_time_as_received){
+        if ($use_mail_date_on_fetching) {
             $now = $thread->created_at;
         }else{
             $now = date('Y-m-d H:i:s');

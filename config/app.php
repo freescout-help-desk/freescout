@@ -326,7 +326,7 @@ return [
     |    |
     |-------------------------------------------------------------------------
     */
-    'server_time_as_received'    => env('APP_SERVER_TIME_AS_RECEIVED', '0'),
+    'use_mail_date_on_fetching'    => env('APP_USE_MAIL_DATE_ON_FETCHING', false),
 
      /*
     |--------------------------------------------------------------------------
