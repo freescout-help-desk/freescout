@@ -2363,11 +2363,14 @@ var WrappedRange = /** @class */ (function () {
      * @param {Node} node
      * @return {Node}
      */
-    WrappedRange.prototype.insertNode = function (node) {
+    WrappedRange.prototype.insertNode = function (node, doNotInsertPara) {
         var rng = this.wrapBodyInlineWithPara().deleteContents();
         var info = dom.splitPoint(rng.getStartPoint(), dom.isInline(node));
         if (info.rightNode) {
             info.rightNode.parentNode.insertBefore(node, info.rightNode);
+            if (dom.isEmpty(info.rightNode) && ((typeof(doNotInsertPara) != "undefined" && doNotInsertPara) || dom.isPara(node))) {
+                info.rightNode.parentNode.removeChild(info.rightNode);
+            }
         }
         else {
             info.container.appendChild(node);
@@ -2382,7 +2385,7 @@ var WrappedRange = /** @class */ (function () {
         var childNodes = lists.from(contentsContainer.childNodes);
         var rng = this.wrapBodyInlineWithPara().deleteContents();
         return childNodes.reverse().map(function (childNode) {
-            return rng.insertNode(childNode);
+            return rng.insertNode(childNode, !dom.isInline(childNode));
         }).reverse();
     };
     /**

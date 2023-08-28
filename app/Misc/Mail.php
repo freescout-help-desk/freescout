@@ -179,7 +179,7 @@ class Mail
     /**
      * Replace mail vars in the text.
      */
-    public static function replaceMailVars($text, $data = [], $escape = false)
+    public static function replaceMailVars($text, $data = [], $escape = false, $remove_non_replaced = false)
     {
         // Available variables to insert into email in UI.
         $vars = [];
@@ -228,7 +228,15 @@ class Mail
             }
         }
 
-        return strtr($text, $vars);
+        $result = strtr($text, $vars);
+
+        // Remove non-replaced placeholders.
+        if ($remove_non_replaced) {
+            $result = preg_replace('#\{%[^\.%\}]+\.[^%\}]+%\}#', '', $result ?? '');
+            $result = trim($result);
+        }
+
+        return $result;
     }
 
     /**
