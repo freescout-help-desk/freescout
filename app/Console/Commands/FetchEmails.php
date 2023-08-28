@@ -854,7 +854,7 @@ class FetchEmails extends Command
     /**
      * Save email from customer as thread.
      */
-    public function saveCustomerThread($mailbox, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers,$time)
+    public function saveCustomerThread($mailbox, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers, $time)
     {
         // fetch time setting.
         $use_mail_date_on_fetching = config('app.use_mail_date_on_fetching');
@@ -1008,14 +1008,14 @@ class FetchEmails extends Command
     /**
      * Save email reply from user as thread.
      */
-    public function saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $headers)
+    public function saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $headers, $time)
     {
         // fetch time setting.
         $use_mail_date_on_fetching = config('app.use_mail_date_on_fetching');
 
         $conversation = null;
         if ($use_mail_date_on_fetching) {
-            $now = $time;//Carbon::parse( $time )->timezone('Asia/Tokyo');
+            $now = $time;
         }else{
             $now = date('Y-m-d H:i:s');
         }
