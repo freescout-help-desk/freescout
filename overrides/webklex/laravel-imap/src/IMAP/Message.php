@@ -392,8 +392,15 @@ class Message
             $date = trim(rtrim($date));
             $date = preg_replace('/[<>]/', '', $date);
             $date = str_replace('_', ' ', $date);
+
+            //https://www.php.net/manual/en/datetime.construct.php
+            //note: The $timezone parameter and the current timezone are ignored when the $datetime parameter either is a UNIX timestamp (e.g. @946684800) or specifies a timezone (e.g. 2010-01-28T15:00:00+02:00).
+            //
+            //So add ->timezone at here.
+            //I experienced "imap_rfc822_parse_headers" returns different timezone date string from original header. under such a situation, mail receive time is not recorded correctly.
+            $timezone = config('app.timezone');
             try {
-                $this->date = Carbon::parse($date);
+                $this->date = Carbon::parse($date)->timezone($timezone);
             } catch (\Exception $e) {
                 switch (true) {
                     case preg_match('/([0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ UT)+$/i', $date) > 0:
@@ -410,7 +417,7 @@ class Message
                         break;
                 }
                 try {
-                    $this->date = Carbon::parse($date);
+                    $this->date = Carbon::parse($date)->timezone($timezone);
                 } catch (\Exception $_e) {
                     $this->date = Carbon::now();
                     // No need to write this to log.
