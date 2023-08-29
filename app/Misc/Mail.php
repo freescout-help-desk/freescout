@@ -952,8 +952,11 @@ class Mail
                 $has_equal_in_the_middle = preg_match("#=+([^$\? =])#", $joined_parts);
 
                 if (!$has_equal_in_the_middle) {
-                    $subject_decoded = iconv_mime_decode($joined_parts, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
-
+                    if(mb_check_encoding($joined_parts, 'iso-2022-jp-ms')){
+                        $subject_decoded = mb_decode_mimeheader($joined_parts);
+                    }else{
+                        $subject_decoded = iconv_mime_decode($joined_parts, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+                    }
                     if ($subject_decoded 
                         && trim($subject_decoded) != trim($joined_parts)
                         && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
@@ -983,7 +986,11 @@ class Mail
 
         // iconv_mime_decode() can't decode:
         // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
-        $subject_decoded = iconv_mime_decode($subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+        if(mb_check_encoding($subject, 'iso-2022-jp-ms')){
+            $subject_decoded = mb_decode_mimeheader($subject);
+        }else{
+            $subject_decoded = iconv_mime_decode($subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+        }
 
         // Sometimes iconv_mime_decode() can't decode some parts of the subject:
         // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
