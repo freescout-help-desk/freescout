@@ -1,0 +1,38 @@
+{
+    "name": "league/flysystem-aws-s3-v3",
+    "description": "Flysystem adapter for the AWS S3 SDK v3.x",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Frank de Jonge",
+            "email": "info@frenky.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "league/flysystem": "^1.0.40",
+        "aws/aws-sdk-php": "^3.20.0"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "^2.0.0",
+        "henrikbjorn/phpspec-code-coverage" : "~1.0.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "League\\Flysystem\\AwsS3v3\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "League\\Flysystem\\AwsS3v3\\Stub\\": "stub"
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
