@@ -1109,7 +1109,7 @@ a h4 {
 }
 .draft-saved {
     color: #a5b2bd;
-    font-size: 13.4px;
+    font-size: 12.4px;
     float: left;
     position: relative;
     top: 2px;
@@ -2556,7 +2556,7 @@ button.conv-checkbox-clear {
 }
 .conv-type-chat .conv-reply-block:not(.conv-note-block) .note-btn-attachment,
 .conv-type-chat .conv-reply-block:not(.conv-note-block) .note-actions .note-btn,
-.conv-type-chat .conv-reply-block:not(.conv-note-block) .btn-codeview + .note-btn-group .note-btn {
+.conv-type-chat .conv-reply-block:not(.conv-note-block) .btn-codeview ~ .note-btn-group .note-btn {
     display: block;
 }
 .alert-switch-to-note {

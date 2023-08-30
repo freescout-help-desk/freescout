@@ -3076,7 +3076,7 @@ return array(
     'TijsVerkoyen\\CssToInlineStyles\\Css\\Rule\\Processor' => $vendorDir . '/tijsverkoyen/css-to-inline-styles/src/Css/Rule/Processor.php',
     'TijsVerkoyen\\CssToInlineStyles\\Css\\Rule\\Rule' => $vendorDir . '/tijsverkoyen/css-to-inline-styles/src/Css/Rule/Rule.php',
     'TorMorten\\Eventy\\Action' => $baseDir . '/overrides/tormjens/eventy/src/Action.php',
-    'TorMorten\\Eventy\\Event' => $vendorDir . '/tormjens/eventy/src/Event.php',
+    'TorMorten\\Eventy\\Event' => $baseDir . '/overrides/tormjens/eventy/src/Event.php',
     'TorMorten\\Eventy\\EventBladeServiceProvider' => $vendorDir . '/tormjens/eventy/src/EventBladeServiceProvider.php',
     'TorMorten\\Eventy\\EventServiceProvider' => $vendorDir . '/tormjens/eventy/src/EventServiceProvider.php',
     'TorMorten\\Eventy\\Events' => $vendorDir . '/tormjens/eventy/src/Events.php',

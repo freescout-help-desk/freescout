@@ -6,8 +6,11 @@
     	@if ($customer->getFullName(true, true))
 			<a href="{{ route('customers.update', ['id' => $customer->id]) }}" class="customer-name">{{ $customer->getFullName(true, true) }}</a>
 		@endif
-		@if ($customer->getChannelName())
-			<div class="customer-tags"><span class="fs-tag"><span class="fs-tag-name">{{ $customer->getChannelName() }}</span></span>@action('customer.tags', $customer, $conversation ?? null)</div>
+		@php
+			$channels = $customer->getChannels();
+		@endphp
+		@if (count($channels))
+			<div class="customer-tags">@foreach ($channels as $channel)<span class="fs-tag"><span class="fs-tag-name">{{ $channel->getChannelName() }}</span></span>@endforeach{{ '' }}@action('customer.tags', $customer, $conversation ?? null)</div>
 		@endif
 		<ul class="customer-contacts customer-section">
 			@if (!empty($main_email))

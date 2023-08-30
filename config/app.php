@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.86',
+    'version' => '1.8.94',
 
     /*
     |--------------------------------------------------------------------------
@@ -98,7 +98,7 @@ return [
     */
 
     'locale'          => env('APP_LOCALE', 'en'),
-    'locales'         => ['en', 'hr', 'cs', 'da', 'nl', 'fi', 'fr', 'de', 'it', 'ja', 'ko', 'no', 'fa', 'pl', 'pt-PT', 'pt-BR', 'ru', 'es', 'sk', 'sv'],
+    'locales'         => ['en', 'zh-CN', 'hr', 'cs', 'da', 'nl', 'fi', 'fr', 'de', 'it', 'ja', 'ko', 'no', 'fa', 'pl', 'pt-PT', 'pt-BR', 'ru', 'es', 'sk', 'sv'],
     'locales_rtl'     => ['fa'],
     'default_locale'  => 'en',
 
@@ -266,9 +266,11 @@ return [
     | SVG images are not viewable to avid XSS.
     |-------------------------------------------------------------------------
     */
-    'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'tif', 'tiff', 'webp', 'pdf', 'txt', 'mp3', 'wav', 'ogg', 'wma']),
-    // Regular expremissions (#...#)
-    'viewable_mime_types'    => env('APP_VIEWABLE_MIME_TYPES', ['image/.*', 'application/pdf', 'text/plain', 'audio/.*']),
+    'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'tif', 'tiff', 'webp', 'pdf', 'txt', 'diff', 'patch', 'json', 'mp3', 'wav', 'ogg', 'wma']),
+    // Additional restriction by mime type.
+    // If HTML file is renamed into .txt for example it will be shown by the browser as HTML.
+    // Regular expressions (#...#)
+    'viewable_mime_types'    => env('APP_VIEWABLE_MIME_TYPES', ['image/.*', 'application/pdf', 'text/plain', 'text/x-diff', 'application/json', 'audio/.*']),
 
     /*
     |--------------------------------------------------------------------------
@@ -382,8 +384,13 @@ return [
     | Timeout for curl and GuzzleHttp.
     |-------------------------------------------------------------------------
     */
-    'curl_timeout'    => env('APP_CURL_TIMEOUT', 40),
-    'curl_connect_timeout'    => env('APP_CURL_CONNECTION_TIMEOUT', 30),
+    // Should be set for curl and Guzzle.
+    'curl_timeout'         => env('APP_CURL_TIMEOUT', 40),
+    // Should be set for Guzzle. Curl has default CURLOPT_CONNECTTIMEOUT=30 sec.
+    'curl_connect_timeout' => env('APP_CURL_CONNECTION_TIMEOUT', 30),
+    // CloudFlare may block requests without user agent.
+    // Need to be set for curl. Guzzle sends it's own user agent: GuzzleHttp/6.3.3 curl/7.58.0 PHP/8.2.5
+    'curl_user_agent'      => env('APP_CURL_USER_AGENT', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 7_1_4) AppleWebKit/603.26 (KHTML, like Gecko) Chrome/55.0.3544.220 Safari/534'),
 
     /*
     |--------------------------------------------------------------------------
@@ -411,6 +418,20 @@ return [
     |-------------------------------------------------------------------------
     */
     'update_folder_counters_in_background'    => env('APP_UPDATE_FOLDER_COUNTERS_IN_BACKGROUND', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Experimental feature allowing to specify users who can see only conversations 
+    | assigned to themselves. For such users only Mine folder shows actual number of conversations.
+    | This option does not affect admin users.
+    |
+    | The option should be specified as a comma separated list of user IDs which
+    | can be found in the their profile URL (/users/profile/7).
+    |
+    | Example: 7,5,31
+    |-------------------------------------------------------------------------
+    */
+    'show_only_assigned_conversations'    => env('APP_SHOW_ONLY_ASSIGNED_CONVERSATIONS', ''),
 
     /*
     |--------------------------------------------------------------------------

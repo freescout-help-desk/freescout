@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Email;
+use App\CustomerChannel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -641,8 +642,8 @@ class Customer extends Model
             return $phones;
         } elseif ($dummy_if_empty) {
             return [[
-                'type' => self::PHONE_TYPE_WORK,
                 'value' => '',
+                'type' => self::PHONE_TYPE_WORK,
             ]];
         } else {
             return [];
@@ -866,12 +867,16 @@ class Customer extends Model
                     }
 
                     $social_profiles[] = [
+                        // Order of elements in array is important as we rely on it
+                        // when searching customers by social profiles using "like".
                         'value' => (string) $social_profile['value'],
                         'type'  => $type,
                     ];
                 }
             } else {
                 $social_profiles[] = [
+                    // Order of elements in array is important as we rely on it
+                    // when searching customers by social profiles using "like".
                     'value' => (string) $social_profile,
                     'type'  => self::SOCIAL_TYPE_OTHER,
                 ];
@@ -1446,4 +1451,83 @@ class Customer extends Model
         Email::where('customer_id', $this->id)->delete();
         $this->delete();
     }
+
+    public function getChannels()
+    {
+        if (!$this->channel || !$this->channel_id) {
+            return collect([]);
+        }
+        return CustomerChannel::where('customer_id', $this->id)->get();
+    }
+
+    public function addChannel($channel, $channel_id)
+    {
+        // We are doing this to let existing modules not to throw error
+        // and as a flag that this customer has record(s) in cucstomer_channel table.
+        if (!$this->channel || !$this->channel_id) {
+            $this->channel = $channel;
+            $this->channel_id = $channel_id;
+            $this->save();
+        }
+
+        return CustomerChannel::create($this->id, $channel, $channel_id);
+    }
+
+    public static function getCustomerByChannel($channel, $channel_id)
+    {
+        $customer_channel = CustomerChannel::where('channel', $channel)
+            ->where('channel_id', $channel_id)
+            ->first();
+
+        if ($customer_channel) {
+            return $customer_channel->customer;
+        } else {
+            return null;
+        }
+    }
+
+    public function getChannelId($channel)
+    {
+        return CustomerChannel::where('customer_id', $this->id)
+            ->where('channel', $channel)
+            ->value('channel_id');
+    }
+
+    public static function findCustomersBySocialProfile($type, $value, $exclude_channel = null)
+    {
+        $value = mb_strtolower($value);
+
+        $like = '%'.$value.'","type":'.$type.'}]';
+        $customers = Customer::where('social_profiles', \Helper::sqlLikeOperator(), $like)->get();
+
+        // Now more prcise filtering.
+        foreach ($customers as $i => $customer) {
+            $ok = false;
+            foreach ($customer->getSocialProfiles() as $social_profile) {
+                if ($social_profile['type'] == $type
+                    // Try to check username written in different ways:
+                    // - username
+                    // - @username
+                    // - https://example.org/username
+                    && preg_match("#(^|/|@)".preg_quote($value)."$#", trim(mb_strtolower($social_profile['value'])))
+                ) {
+                    $ok = true;
+                    break;
+                }
+            }
+            if (!$ok) {
+                $customers->forget($i);
+            }
+        }
+
+        if ($exclude_channel && count($customers)) {
+            $exclude_customer_ids = CustomerChannel::whereIn('customer_id', $customers->pluck('id'))
+                ->where('channel', $exclude_channel)
+                ->pluck('customer_id');
+            return $customers->whereNotIn('customer_id', $exclude_customer_ids);
+        } else {
+            return $customers;
+        }
+    }
 }
+

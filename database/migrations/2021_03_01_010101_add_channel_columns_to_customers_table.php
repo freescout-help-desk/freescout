@@ -17,6 +17,8 @@ class AddChannelColumnsToCustomersTable extends Migration
             $table->dropColumn('chats');
             $table->unsignedTinyInteger('channel')->nullable();
             // It may have any length.
+            // Now it's not clear why it may have any length,
+            // so in customer_channel table it's varchar.
             $table->text('channel_id')->nullable();
 
             // We are not adding index, as requests are made in the background,

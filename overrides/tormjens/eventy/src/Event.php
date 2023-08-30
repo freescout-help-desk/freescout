@@ -9,11 +9,11 @@ abstract class Event
      *
      * @var array
      */
-    protected $listeners = null;
+    protected $listeners = [];
 
     public function __construct()
     {
-        $this->listeners = collect([]);
+
     }
 
     /**
@@ -26,12 +26,14 @@ abstract class Event
      */
     public function listen($hook, $callback, $priority = 20, $arguments = 1)
     {
-        $this->listeners->push([
-            'hook'      => $hook,
+        $this->listeners[$hook][] = [
             'callback'  => $callback,
             'priority'  => $priority,
             'arguments' => $arguments,
-        ]);
+        ];
+        usort($this->listeners[$hook], function ($a, $b) {
+            return (int)$a['priority'] - (int)$b['priority'];
+        });
 
         return $this;
     }
@@ -45,13 +47,12 @@ abstract class Event
      */
     public function remove($hook, $callback, $priority = 20)
     {
-        if ($this->listeners) {
-            $this->listeners->where('hook', $hook)
-                ->where('callback', $callback)
-                ->where('priority', $priority)
-                ->each(function ($listener, $key) {
-                    $this->listeners->forget($key);
-                });
+        if (isset($this->listeners[$hook])) {
+            foreach ($this->listeners[$hook] as $key => $listener) {
+                if ($listener['callback'] == $callback && $listener['priority'] == $priority) {
+                    unset($this->listeners[$hook][$key]);
+                }
+            }
         }
     }
 
@@ -63,14 +64,11 @@ abstract class Event
     public function removeAll($hook = null)
     {
         if ($hook) {
-            if ($this->listeners) {
-                $this->listeners->where('hook', $hook)->each(function ($listener, $key) {
-                    $this->listeners->forget($key);
-                });
+            if (isset($this->listeners[$hook])) {
+                unset($this->listeners[$hook]);
             }
         } else {
-            // no hook was specified, so clear entire collection
-            $this->listeners = collect([]);
+            $this->listeners = [];
         }
     }
 
@@ -79,15 +77,9 @@ abstract class Event
      *
      * @return array
      */
-    public function getListeners()
+    public function getListeners($hook)
     {
-        // $listeners = $this->listeners->values();
-        // sort by priority
-        // uksort($values, function ($a, $b) {
-        //     return strnatcmp($a, $b);
-        // });
-
-        return $this->listeners->sortBy('priority');
+        return $this->listeners[$hook] ?? [];
     }
 
     /**
