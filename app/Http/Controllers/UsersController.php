@@ -103,7 +103,7 @@ class UsersController extends Controller
         $user = \Eventy::filter('user.create_save', $user, $request);
         $user->save();
 
-        $user->mailboxes()->sync($request->mailboxes);
+        $user->mailboxes()->sync($request->mailboxes ?: []);
         $user->syncPersonalFolders($request->mailboxes);
 
         // Send invite
@@ -286,7 +286,7 @@ class UsersController extends Controller
 
         $user = User::findOrFail($id);
 
-        $user->mailboxes()->sync($request->mailboxes);
+        $user->mailboxes()->sync($request->mailboxes ?: []);
         $user->syncPersonalFolders($request->mailboxes);
 
         // Save permissions.

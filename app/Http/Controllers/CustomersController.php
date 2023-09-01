@@ -217,7 +217,7 @@ class CustomersController extends Controller
         $user = User::findOrFail($id);
         $this->authorize('update', $user);
 
-        $user->mailboxes()->sync($request->mailboxes);
+        $user->mailboxes()->sync($request->mailboxes ?: []);
 
         \Session::flash('flash_success', __('Permissions saved successfully'));
 

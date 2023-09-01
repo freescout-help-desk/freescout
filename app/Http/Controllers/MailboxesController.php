@@ -90,7 +90,7 @@ class MailboxesController extends Controller
 
         $mailbox->save();
 
-        $mailbox->users()->sync($request->users);
+        $mailbox->users()->sync($request->users ?: []);
         $mailbox->syncPersonalFolders($request->users);
 
         \Session::flash('flash_success_floating', __('Mailbox created successfully'));
@@ -269,7 +269,7 @@ class MailboxesController extends Controller
 
         $user = auth()->user();
 
-        $mailbox->users()->sync(\Eventy::filter('mailbox.permission_users', $request->users, $id));
+        $mailbox->users()->sync(\Eventy::filter('mailbox.permission_users', $request->users, $id) ?: []);
         $mailbox->syncPersonalFolders($request->users);
 
         // Save admins settings.
