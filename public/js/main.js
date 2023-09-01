@@ -2531,6 +2531,10 @@ function loadConversations(page, table, no_loader)
 			sorting[data_name.replace(/^sorting_/, '')] = datas[data_name];
 		}
 	}
+	
+	const url = new URL(window.location);
+	url.searchParams.set('page', page);
+	window.history.pushState({}, '', url);
 
 	fsAjax(
 		{

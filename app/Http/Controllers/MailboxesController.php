@@ -449,7 +449,7 @@ class MailboxesController extends Controller
     /**
      * View mailbox.
      */
-    public function view($id, $folder_id = null)
+    public function view($id, Request $request, $folder_id = null)
     {
         $user = auth()->user();
 
@@ -473,8 +473,9 @@ class MailboxesController extends Controller
 
         $this->authorize('view', $folder);
 
+        $pageNumber = $request->has('page') ? $request->page : null;
         $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
-        $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE);
+        $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE,['*'], 'page', $pageNumber);
 
         return view('mailboxes/view', [
             'mailbox'       => $mailbox,
