@@ -17,6 +17,7 @@ class CreateCustomerChannelTable extends Migration
         // We preserve "channel" and "channel_id" fields in "customers" table.
         // They allow to figure out that there is a record in customer_channel table.
         Schema::create('customer_channel', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('customer_id')->index();
             $table->unsignedTinyInteger('channel');
             $table->string('channel_id', 64);

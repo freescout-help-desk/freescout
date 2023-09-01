@@ -179,7 +179,7 @@ class Mail
     /**
      * Replace mail vars in the text.
      */
-    public static function replaceMailVars($text, $data = [], $escape = false)
+    public static function replaceMailVars($text, $data = [], $escape = false, $remove_non_replaced = false)
     {
         // Available variables to insert into email in UI.
         $vars = [];
@@ -228,7 +228,15 @@ class Mail
             }
         }
 
-        return strtr($text, $vars);
+        $result = strtr($text, $vars);
+
+        // Remove non-replaced placeholders.
+        if ($remove_non_replaced) {
+            $result = preg_replace('#\{%[^\.%\}]+\.[^%\}]+%\}#', '', $result ?? '');
+            $result = trim($result);
+        }
+
+        return $result;
     }
 
     /**
@@ -895,9 +903,6 @@ class Mail
      */
     public static function decodeSubject($subject)
     {
-        // https://stackoverflow.com/questions/15276191/why-does-a-diamond-with-a-questionmark-in-it-appear-in-my-html
-        $invalid_utf_symbols = ['�'];
-
         // Remove new lines as iconv_mime_decode() may loose a part separated by new line:
         // =?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
         //  249143
@@ -949,8 +954,7 @@ class Mail
                     if ($subject_decoded 
                         && trim($subject_decoded) != trim($joined_parts)
                         && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
-                        && mb_check_encoding($subject_decoded, 'UTF-8')
-                        || \Str::contains($subject_decoded, $invalid_utf_symbols)
+                        && !self::isNotYetFullyDecoded($subject_decoded)
                     ) {
                         return $subject_decoded;
                     }
@@ -962,8 +966,7 @@ class Mail
                     if ($subject_decoded 
                         && trim($subject_decoded) != trim($joined_parts)
                         && trim($subject_decoded) != trim(rtrim($joined_parts, '='))
-                        && mb_check_encoding($subject_decoded, 'UTF-8')
-                        || \Str::contains($subject_decoded, $invalid_utf_symbols)
+                        && !self::isNotYetFullyDecoded($subject_decoded)
                     ) {
                         return $subject_decoded;
                     }
@@ -980,10 +983,7 @@ class Mail
         // Sometimes iconv_mime_decode() can't decode some parts of the subject:
         // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
         // =?iso-2022-jp?B?GyRCQGlNVTtZRTkhIT4uTlMbKEI=?=
-        if (preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded)
-            || !mb_check_encoding($subject_decoded, 'UTF-8')
-            || \Str::contains($subject_decoded, $invalid_utf_symbols)
-        ) {
+        if (self::isNotYetFullyDecoded($subject_decoded)) {
             $subject_decoded = \imap_utf8($subject);
         }
 
@@ -991,10 +991,7 @@ class Mail
         // mb_decode_mimeheader() properly decodes umlauts into one unice symbol.
         // But we use mb_decode_mimeheader() as a last resort as it may garble some symbols.
         // Example: =?ISO-8859-1?Q?Vorgang 538336029: M=F6chten Sie Ihre E-Mail-Adresse =E4ndern??=
-        if ((preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded) && $subject == $subject_decoded)
-            || !mb_check_encoding($subject_decoded, 'UTF-8')
-            || \Str::contains($subject_decoded, $invalid_utf_symbols)
-        ) {
+        if (self::isNotYetFullyDecoded($subject_decoded)) {
             $subject_decoded = mb_decode_mimeheader($subject);
         }
 
@@ -1003,6 +1000,15 @@ class Mail
         }
 
         return $subject_decoded;
+    }
+
+    public static function isNotYetFullyDecoded($subject_decoded) {
+        // https://stackoverflow.com/questions/15276191/why-does-a-diamond-with-a-questionmark-in-it-appear-in-my-html
+        $invalid_utf_symbols = ['�'];
+
+        return preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded)
+            || !mb_check_encoding($subject_decoded, 'UTF-8')
+            || \Str::contains($subject_decoded, $invalid_utf_symbols);
     }
 
     // public static function oauthGetProvider($provider_code, $params)

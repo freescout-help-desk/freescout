@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.94',
+    'version' => '1.8.95',
 
     /*
     |--------------------------------------------------------------------------
@@ -319,6 +319,14 @@ return [
     'user_permissions'    => env('APP_USER_PERMISSIONS', ''),
 
     /*
+    |--------------------------------------------------------------------------
+    | Use date from mail header on fetching.
+    |
+    |-------------------------------------------------------------------------
+    */
+    'use_mail_date_on_fetching'    => env('APP_USE_MAIL_DATE_ON_FETCHING', false),
+
+     /*
     |--------------------------------------------------------------------------
     | Dashboard path.
     |

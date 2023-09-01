@@ -125,6 +125,20 @@
         </div>
     </div>
 
+    <div class="form-group{{ $errors->has('settings[use_mail_date_on_fetching]') ? ' has-error' : '' }}">
+        <label for="use_mail_date_on_fetching" class="col-sm-2 control-label">{{ __('Mail Date & Time') }}</label>
+
+        <div class="col-sm-6">
+            <div class="control-group">
+                <label for="use_mail_date_on_fetching_0" class="radio"><input type="radio" name="settings[use_mail_date_on_fetching]" value="false" id="use_mail_date_on_fetching_0" @if (!$settings['use_mail_date_on_fetching'])checked="checked"@endif> {{ __('Use actual fetching date and time') }}</label>
+
+                <label for="use_mail_date_on_fetching_1" class="radio"><input type="radio" name="settings[use_mail_date_on_fetching]" value="true" id="use_mail_date_on_fetching_1" @if ($settings['use_mail_date_on_fetching'])checked="checked"@endif> {{ __('Use date and time from mail headers') }}</label>
+            </div>
+
+            @include('partials/field_error', ['field'=>'settings.use_mail_date_on_fetching'])
+        </div>
+    </div>
+
     <div class="form-group margin-top">
         <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">

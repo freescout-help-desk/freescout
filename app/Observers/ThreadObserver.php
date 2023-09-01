@@ -21,7 +21,15 @@ class ThreadObserver
             return;
         }
 
-        $now = date('Y-m-d H:i:s');
+        // Fetch date & time setting.
+        $use_mail_date_on_fetching = config('app.use_mail_date_on_fetching');
+
+        if ($use_mail_date_on_fetching) {
+            $now = $thread->created_at;
+        }else{
+            $now = date('Y-m-d H:i:s');
+        }
+        
         if (!in_array($thread->type, [Thread::TYPE_LINEITEM, Thread::TYPE_NOTE]) && $thread->state == Thread::STATE_PUBLISHED) {
             $conversation->threads_count++;
         }

@@ -659,6 +659,12 @@ class FetchEmails extends Command
             );
             $this->createCustomers($emails, $mailbox->getEmails());
 
+            $date = $this->attrToDate($message->getDate());
+            $app_timezone = config('app.timezone');
+            if ($app_timezone) {
+                $date->setTimezone($app_timezone);
+            }
+
             $data = \Eventy::filter('fetch_emails.data_to_save', [
                 'mailbox'     => $mailbox,
                 'message_id'  => $message_id,
@@ -674,6 +680,7 @@ class FetchEmails extends Command
                 'is_bounce'   => $is_bounce,
                 'message_from_customer' => $message_from_customer,
                 'user'        => $user,
+                'date'        => $date,
             ]);
 
             $new_thread = null;
@@ -714,7 +721,7 @@ class FetchEmails extends Command
 
                 if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
                     // SendAutoReply listener will check bounce flag and will not send an auto reply if this is an auto responder.
-                    $new_thread = $this->saveCustomerThread($mailbox, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data['attachments'], $data['message']->getHeader());
+                    $new_thread = $this->saveCustomerThread($mailbox, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data['attachments'], $data['message']->getHeader(), $data['date']);
                 } else {
                     $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
                     $this->setSeen($message, $mailbox);
@@ -734,7 +741,7 @@ class FetchEmails extends Command
                 }
 
                 if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
-                    $new_thread = $this->saveUserThread($data['mailbox'], $data['message_id'], $data['prev_thread'], $data['user'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['body'], $data['attachments'], $data['message']->getHeader());
+                    $new_thread = $this->saveUserThread($data['mailbox'], $data['message_id'], $data['prev_thread'], $data['user'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['body'], $data['attachments'], $data['message']->getHeader(), $data['date']);
                 } else {
                     $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
                     $this->setSeen($message, $mailbox);
@@ -852,13 +859,20 @@ class FetchEmails extends Command
     /**
      * Save email from customer as thread.
      */
-    public function saveCustomerThread($mailbox, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers)
+    public function saveCustomerThread($mailbox, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers, $date)
     {
-        // Find conversation
+        // Fetch date & time setting.
+        $use_mail_date_on_fetching = config('app.use_mail_date_on_fetching');
+
+        // Find conversation.
         $new = false;
         $conversation = null;
         $prev_customer_id = null;
-        $now = date('Y-m-d H:i:s');
+        if ($use_mail_date_on_fetching) {
+            $now = $date;
+        }else{
+            $now = date('Y-m-d H:i:s');
+        }
         $conv_cc = $cc;
 
         // Customers are created before with email and name
@@ -893,6 +907,7 @@ class FetchEmails extends Command
             $conversation->created_by_customer_id = $customer->id;
             $conversation->source_via = Conversation::PERSON_CUSTOMER;
             $conversation->source_type = Conversation::SOURCE_TYPE_EMAIL;
+            $conversation->created_at = $now;
         }
 
         // Update has_attachments only if email has attachments AND conversation hasn't has_attachments already set
@@ -941,6 +956,8 @@ class FetchEmails extends Command
         $thread->source_type = Thread::SOURCE_TYPE_EMAIL;
         $thread->customer_id = $customer->id;
         $thread->created_by_customer_id = $customer->id;
+        $thread->created_at = $now;
+        $thread->updated_at = $now;
         if ($new) {
             $thread->first = true;
         }
@@ -996,10 +1013,17 @@ class FetchEmails extends Command
     /**
      * Save email reply from user as thread.
      */
-    public function saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $headers)
+    public function saveUserThread($mailbox, $message_id, $prev_thread, $user, $from, $to, $cc, $bcc, $body, $attachments, $headers, $date)
     {
+        // fetch time setting.
+        $use_mail_date_on_fetching = config('app.use_mail_date_on_fetching');
+
         $conversation = null;
-        $now = date('Y-m-d H:i:s');
+        if ($use_mail_date_on_fetching) {
+            $now = $time;
+        }else{
+            $now = date('Y-m-d H:i:s');
+        }
         $user_id = $user->id;
 
         $conversation = $prev_thread->conversation;
@@ -1066,6 +1090,8 @@ class FetchEmails extends Command
         $thread->source_type = Thread::SOURCE_TYPE_EMAIL;
         $thread->customer_id = $conversation->customer_id;
         $thread->created_by_user_id = $user_id;
+        $thread->created_at = $now;
+        $thread->updated_at = $now;
         $thread->save();
 
         $saved_attachments = $this->saveAttachments($attachments, $thread->id);
@@ -1294,6 +1320,19 @@ class FetchEmails extends Command
 
         if (is_object($attr) && get_class($attr) == 'Webklex\PHPIMAP\Attribute') {
             $attr = $attr->get();
+        }
+
+        return $attr;
+    }
+
+    public function attrToDate($attr)
+    {
+        if (!$attr) {
+            return null;
+        }
+
+        if (is_object($attr) && get_class($attr) == 'Webklex\PHPIMAP\Attribute') {
+            $attr = $attr->toDate();
         }
 
         return $attr;

@@ -2532,6 +2532,12 @@ function loadConversations(page, table, no_loader)
 		}
 	}
 
+	if (typeof(URL) != "undefined") {
+		const url = new URL(window.location);
+		url.searchParams.set('page', page);
+		window.history.replaceState({}, '', url);
+	}
+
 	fsAjax(
 		{
 			action: 'conversations_pagination',

@@ -7,6 +7,8 @@
 namespace App\Misc;
 
 use Carbon\Carbon;
+use App\Option;
+use App\User;
 use Illuminate\Support\Facades\Storage;
 
 class Helper
@@ -40,6 +42,11 @@ class Helper
      * Stores list of global entities (for caching).
      */
     public static $global_entities = [];
+
+    /**
+     * Flat allowing not to include datepicker JS and CSS twice.
+     */
+    public static $datepicker_included = false;
 
     /**
      * Files with such extensions are being renamed on upload.
@@ -1909,5 +1916,21 @@ class Helper
         //     $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
         // }
         return request()->ip();
+    }
+
+    public static function getTimeFormat()
+    {
+        $user = auth()->user();
+
+        if ($user) {
+            return $user->time_format;
+        } else {
+            return Option::get('time_format', User::TIME_FORMAT_24);
+        }
+    }
+
+    public static function isTimeFormat24()
+    {
+        return self::getTimeFormat() == User::TIME_FORMAT_24;
     }
 }

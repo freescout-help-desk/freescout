@@ -90,7 +90,7 @@ class MailboxesController extends Controller
 
         $mailbox->save();
 
-        $mailbox->users()->sync($request->users);
+        $mailbox->users()->sync($request->users ?: []);
         $mailbox->syncPersonalFolders($request->users);
 
         \Session::flash('flash_success_floating', __('Mailbox created successfully'));
@@ -269,7 +269,7 @@ class MailboxesController extends Controller
 
         $user = auth()->user();
 
-        $mailbox->users()->sync(\Eventy::filter('mailbox.permission_users', $request->users, $id));
+        $mailbox->users()->sync(\Eventy::filter('mailbox.permission_users', $request->users, $id) ?: []);
         $mailbox->syncPersonalFolders($request->users);
 
         // Save admins settings.
@@ -449,7 +449,7 @@ class MailboxesController extends Controller
     /**
      * View mailbox.
      */
-    public function view($id, $folder_id = null)
+    public function view(Request $request, $id, $folder_id = null)
     {
         $user = auth()->user();
 
@@ -474,7 +474,9 @@ class MailboxesController extends Controller
         $this->authorize('view', $folder);
 
         $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
-        $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE);
+        $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(
+            Conversation::DEFAULT_LIST_SIZE, ['*'], 'page', $request->get('page')
+        );
 
         return view('mailboxes/view', [
             'mailbox'       => $mailbox,
