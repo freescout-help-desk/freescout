@@ -320,6 +320,31 @@
                                         <td>{{ __('Queue') }}</td>
                                         <td>{{ $job->queue }}</td>
                                     </tr>
+                                    @if (\Str::startsWith($payload['displayName'], 'App\Jobs\Send'))
+                                        @php
+                                            $command = \Helper::getJobPayloadCommand($payload);
+                                            if ($command
+                                                && !empty($command->conversation)
+                                                && !empty($command->threads)
+                                            ) {
+                                                $last_thread = \App\Thread::getLastThread($command->threads);
+                                            }
+                                        @endphp
+                                        @if (!empty($last_thread))
+                                            <tr>
+                                                <td>{{ __('Message') }}</td>
+                                                <td><a href="{{ route('conversations.view', ['id' => $last_thread->conversation_id]) }}#thread-{{ $last_thread->id }}" target="_blank">#{{ $command->conversation->number }}</a></</td>
+                                            </tr>
+                                        @endif
+                                        <tr>
+                                            <td>{{ __('Outgoing Emails') }}</td>
+                                            <td>
+                                                @if (!empty($last_thread))
+                                                    <small><a href="{{ route('logs', ['name' => 'out_emails', 'thread_id' => $last_thread->id]) }}" target="_blank">{{ __('View log') }}</a></small>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endif
                                     <tr>
                                         <td>{{ __('Failed At') }}</td>
                                         <td>{{  App\User::dateFormat($job->failed_at, 'M j, Y H:i:s') }}</td>
