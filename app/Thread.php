@@ -1511,4 +1511,10 @@ class Thread extends Model
             }
         });
     }
+
+    public static function getLastThread($threads)
+    {
+        $threads = self::sortThreads($threads);
+        return $threads->first();
+    }
 }

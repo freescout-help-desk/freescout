@@ -1933,4 +1933,9 @@ class Helper
     {
         return self::getTimeFormat() == User::TIME_FORMAT_24;
     }
+
+    public static function getJobPayloadCommand($payload)
+    {
+        return unserialize($payload['data']['command']);
+    }
 }
