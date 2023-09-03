@@ -65,6 +65,20 @@
                 </td>
             </tr>--}}
             <tr>
+                <th>DB</th>
+                <td class="table-main-col">
+                    {{ ucfirst(\DB::connection()->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME)) }} ({{ \DB::connection()->getPDO()->getAttribute(\PDO::ATTR_SERVER_VERSION) }})
+                    @if ($missing_migrations)
+                        &nbsp;&nbsp;<a href="{{ route('system.tools') }}" class="btn btn-danger btn-xs">{{ 'Migrate DB' }}</a>
+                        <div class="alert alert-danger margin-top-10">
+                            @foreach($missing_migrations as $missing_migration)
+                                {{ $missing_migration }} <strong class="glyphicon glyphicon-exclamation-sign"></strong><br/>
+                            @endforeach
+                        </div>
+                    @endif
+                </td>
+            </tr>
+            <tr>
                 <th>{{ __('Web Server') }}</th>
                 <td class="table-main-col">@if (!empty($_SERVER['SERVER_SOFTWARE'])){{ $_SERVER['SERVER_SOFTWARE'] }}@else ? @endif</td>
             </tr>
@@ -267,7 +281,7 @@
                                                 </strong>
                                             @endif
                                             @if ($job->attempts > 0 && !empty($last_thread))
-                                                 – <small><a href="{{ route('logs', ['name' => 'out_emails', 'thread_id' => $last_thread->id]) }}" target="_blank">{{ __('View log') }}</a></small>
+                                                 &nbsp;<small>(<a href="{{ route('logs', ['name' => 'out_emails', 'thread_id' => $last_thread->id]) }}" target="_blank">{{ __('View log') }}</a>)</small>
                                             @endif
                                         </td>
                                     </tr>

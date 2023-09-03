@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use App\Option;
 use App\User;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 class Helper
 {
@@ -1937,5 +1938,16 @@ class Helper
     public static function getJobPayloadCommand($payload)
     {
         return unserialize($payload['data']['command']);
+    }
+
+    /**
+     * Runs artisan command and returns it's output.
+     */
+    public static function runCommand($command, $options = [])
+    {
+        $output_buffer = new BufferedOutput();
+        \Artisan::call($command, $options, $output_buffer);
+        
+        return $output_buffer->fetch();
     }
 }
