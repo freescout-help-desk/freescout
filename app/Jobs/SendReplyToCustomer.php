@@ -196,7 +196,13 @@ class SendReplyToCustomer implements ShouldQueue
         }
 
         // Configure mail driver according to Mailbox settings
-        \App\Misc\Mail::setMailDriver($mailbox, $this->last_thread->created_by_user, $this->conversation);
+        \MailHelper::setMailDriver($mailbox, $this->last_thread->created_by_user, $this->conversation);
+
+        // https://github.com/freescout-helpdesk/freescout/issues/3330
+        // if (\MailHelper::$smtp_queue_id_plugin_registered) {
+        //     \Mail::getSwiftMailer()->registerPlugin(new \App\Misc\SwiftGetSmtpQueueId());
+        //     \MailHelper::$smtp_queue_id_plugin_registered = true;
+        // }
 
         $this->message_id = $this->last_thread->getMessageId($mailbox);
         $headers['Message-ID'] = $this->message_id;
