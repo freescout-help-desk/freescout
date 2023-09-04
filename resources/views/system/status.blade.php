@@ -325,6 +325,9 @@
                     </p>
                     <div class="jobs-list">
                         @foreach ($failed_jobs as $job)
+                            @php
+                                $payload = json_decode($job->payload, true);
+                            @endphp
                             <table class="table">
                                 <tbody>
                                     <tr>
@@ -342,6 +345,8 @@
                                                 && !empty($command->threads)
                                             ) {
                                                 $last_thread = \App\Thread::getLastThread($command->threads);
+                                            }else{
+                                                unset($last_thread);
                                             }
                                         @endphp
                                         @if (!empty($last_thread))
