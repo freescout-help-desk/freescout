@@ -258,7 +258,7 @@
                                     @if (\Str::startsWith($payload['displayName'], 'App\Jobs\Send'))
                                         @php
                                             $command = \Helper::getJobPayloadCommand($payload);
-                                            $$last_thread = null;
+                                            $last_thread = null;
                                             if ($command
                                                 && !empty($command->conversation)
                                                 && !empty($command->threads)
