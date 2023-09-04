@@ -1853,8 +1853,9 @@ class Helper
     {
         return [
             'shell_exec (PHP)' => function_exists('shell_exec'),
-            'proc_open (PHP)' => function_exists('proc_open'),
-            'fpassthru (PHP)' => function_exists('fpassthru'),
+            'proc_open (PHP)'  => function_exists('proc_open'),
+            'fpassthru (PHP)'  => function_exists('fpassthru'),
+            'symlink (PHP)'    => function_exists('symlink'),
             'ps (shell)' => function_exists('shell_exec') ? shell_exec('ps') : false,
         ];
     }
