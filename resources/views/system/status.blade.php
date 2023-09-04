@@ -258,6 +258,7 @@
                                     @if (\Str::startsWith($payload['displayName'], 'App\Jobs\Send'))
                                         @php
                                             $command = \Helper::getJobPayloadCommand($payload);
+                                            $$last_thread = null;
                                             if ($command
                                                 && !empty($command->conversation)
                                                 && !empty($command->threads)
@@ -325,6 +326,9 @@
                     </p>
                     <div class="jobs-list">
                         @foreach ($failed_jobs as $job)
+                            @php
+                                $payload = json_decode($job->payload, true);
+                            @endphp
                             <table class="table">
                                 <tbody>
                                     <tr>
@@ -337,6 +341,7 @@
                                     @if (\Str::startsWith($payload['displayName'], 'App\Jobs\Send'))
                                         @php
                                             $command = \Helper::getJobPayloadCommand($payload);
+                                            $last_thread = null;
                                             if ($command
                                                 && !empty($command->conversation)
                                                 && !empty($command->threads)
@@ -351,7 +356,7 @@
                                             </tr>
                                         @endif
                                         <tr>
-                                            <td>{{ __('Outgoing Emails') }}</td>
+                                            <td>{{ __('Logs') }}</td>
                                             <td>
                                                 @if (!empty($last_thread))
                                                     <small><a href="{{ route('logs', ['name' => 'out_emails', 'thread_id' => $last_thread->id]) }}" target="_blank">{{ __('View log') }}</a></small>
