@@ -771,12 +771,11 @@ class Helper
         $client = new \GuzzleHttp\Client();
 
         try {
-            $client->request('GET', $url, [
+            $client->request('GET', $url, \Helper::setGuzzleDefaultOptions([
                 'sink' => $destinationFilePath,
                 'timeout' => 300, // seconds
                 'connect_timeout' => 7,
-                'proxy' => config('app.proxy'),
-            ]);
+            ]));
         } catch (\Exception $e) {
             self::logException($e);
         }
@@ -1610,8 +1609,8 @@ class Helper
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_URL, $url);
+            \Helper::setCurlDefaultOptions($ch);
             curl_setopt($ch, CURLOPT_TIMEOUT, 180);
-            curl_setopt($ch, CURLOPT_PROXY, config('app.proxy'));
             $contents = curl_exec($ch);
 
             if (curl_errno($ch)) {
@@ -1950,5 +1949,26 @@ class Helper
         \Artisan::call($command, $options, $output_buffer);
         
         return $output_buffer->fetch();
+    }
+
+    public static function setCurlDefaultOptions($ch)
+    {
+        // Curl has default CURLOPT_CONNECTTIMEOUT=30 seconds.
+        curl_setopt($ch, CURLOPT_TIMEOUT, config('app.curl_timeout'));
+        curl_setopt($ch, CURLOPT_PROXY, config('app.proxy'));        
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, config('app.curl_ssl_verifypeer'));        
+    }
+
+    public static function setGuzzleDefaultOptions($params)
+    {
+        $default_params = [
+            'timeout' => config('app.curl_timeout'),
+            'connect_timeout' => config('app.curl_connect_timeout'),
+            'proxy'  => config('app.proxy'),
+            // https://docs.guzzlephp.org/en/6.5/request-options.html#verify
+            'verify' => config('app.curl_ssl_verifypeer'),
+        ];
+
+        return array_merge($default_params, $params);
     }
 }

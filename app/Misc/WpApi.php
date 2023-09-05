@@ -37,20 +37,16 @@ class WpApi
                 $url .= '?';
             }
             $url .= 'v='.config('app.version');
-            return $client->request('POST', $url, [
-                'timeout' => config('app.curl_timeout'), // seconds
+            return $client->request('POST', $url, \Helper::setGuzzleDefaultOptions([
                 'connect_timeout' => 10,
                 'form_params' => $params,
-                'proxy' => config('app.proxy'),
-            ]);
+            ]));
         } else {
             $params['v'] = config('app.version');
-            return $client->request('GET', $url, [
-                'timeout' => config('app.curl_timeout'), // seconds
+            return $client->request('GET', $url, \Helper::setGuzzleDefaultOptions([
                 'connect_timeout' => 10,
                 'query' => $params,
-                'proxy' => config('app.proxy'),
-            ]);
+            ]));
         }
     }
 
