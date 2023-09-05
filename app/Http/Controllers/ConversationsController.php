@@ -15,6 +15,7 @@ use App\Events\UserCreatedThreadDraft;
 use App\Events\UserReplied;
 use App\Folder;
 use App\Follower;
+use App\Job;
 use App\Mailbox;
 use App\MailboxUser;
 use App\SendLog;
@@ -2913,6 +2914,19 @@ class ConversationsController extends Controller
         // Convert reply into draft
         $thread->state = Thread::STATE_DRAFT;
         $thread->save();
+
+        // https://github.com/freescout-helpdesk/freescout/issues/3300
+        // Cancel all SendReplyToCustomer jobs for this thread.
+        $jobs_to_cancel = \App\Job::where('queue', 'emails')
+            ->where('payload', 'like', '{"displayName":"App\\\\\\\\Jobs\\\\\\\\SendReplyToCustomer"%')
+            ->get();
+
+        foreach ($jobs_to_cancel as $job) {
+            $job_thread = $job->getCommandLastThread();
+            if ($job_thread && $job_thread->id == $thread->id) {
+                $job->delete();
+            }
+        }
 
         // Get penultimate reply
         $last_thread = $conversation->threads()

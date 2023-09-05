@@ -232,7 +232,7 @@
                     <div class="jobs-list">
                         @foreach ($queued_jobs as $job)
                             @php
-                                $payload = json_decode($job->payload, true);
+                                $payload = $job->getPayloadDecoded();
                             @endphp
                             <table class="table">
                                 <tbody>
@@ -257,7 +257,7 @@
                                     </tr>
                                     @if (\Str::startsWith($payload['displayName'], 'App\Jobs\Send'))
                                         @php
-                                            $command = \Helper::getJobPayloadCommand($payload);
+                                            $command = $job->getCommand();
                                             $last_thread = null;
                                             if ($command
                                                 && !empty($command->conversation)
@@ -327,7 +327,7 @@
                     <div class="jobs-list">
                         @foreach ($failed_jobs as $job)
                             @php
-                                $payload = json_decode($job->payload, true);
+                                $payload = $job->getPayloadDecoded();
                             @endphp
                             <table class="table">
                                 <tbody>
@@ -340,7 +340,7 @@
                                     </tr>
                                     @if (\Str::startsWith($payload['displayName'], 'App\Jobs\Send'))
                                         @php
-                                            $command = \Helper::getJobPayloadCommand($payload);
+                                            $command = $job->getCommand();
                                             $last_thread = null;
                                             if ($command
                                                 && !empty($command->conversation)

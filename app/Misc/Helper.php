@@ -1935,11 +1935,6 @@ class Helper
         return self::getTimeFormat() == User::TIME_FORMAT_24;
     }
 
-    public static function getJobPayloadCommand($payload)
-    {
-        return unserialize($payload['data']['command']);
-    }
-
     /**
      * Runs artisan command and returns it's output.
      */
