@@ -296,6 +296,14 @@ class SendReplyToCustomer implements ShouldQueue
 
             $error_message = $e->getMessage();
 
+            // Remove stack trace from error message.
+            $error_message = preg_replace('#[\r\n]*" in /.*#s', '"', $error_message);
+
+            // SMTP response code is stored in the exception message:
+            // Expected response code 235 but got code "535", with message...
+            preg_match('#but got code "(\d+)",#', $error_message, $response_m);
+            $response_code = (int)($response_m[1] ?? 0);
+
             // Retry job with delay.
             // https://stackoverflow.com/questions/35258175/how-can-i-create-delays-between-failed-queued-job-attempts-in-laravel
             if ($this->attempts() < $this->tries && !preg_match("/".config("app.no_retry_mail_errors")."/i", $error_message)) {
@@ -308,7 +316,7 @@ class SendReplyToCustomer implements ShouldQueue
                 }
 
                 // If an email has not been sent after 1 hour - show an error message to support agent.
-                if ($this->attempts() >= 3) {
+                if ($this->attempts() >= 3 || $response_code >= 500) {
                     $this->last_thread->send_status = SendLog::STATUS_SEND_ERROR;
                     $this->last_thread->updateSendStatusData(['msg' => $error_message]);
                     $this->last_thread->save();
