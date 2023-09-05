@@ -83,6 +83,11 @@ class Mail
     public static $last_mail_config_hash = '';
 
     /**
+     * Used to get SMTP queue id when sending emails to customers.
+     */
+    public static $smtp_queue_id_plugin_registered = false;
+
+    /**
      * Configure mail sending parameters.
      *
      * @param App\Mailbox $mailbox

@@ -136,6 +136,9 @@ class SecureController extends Controller
                         $status .= '. Message-ID: '.$record->message_id;
                     }
                 }
+                if ($record->smtp_queue_id) {
+                    $status .= '. SMTP ID: '.$record->smtp_queue_id;
+                }
 
                 $logs[] = [
                     'date'          => $record->created_at,

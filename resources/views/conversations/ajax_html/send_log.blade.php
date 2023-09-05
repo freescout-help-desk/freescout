@@ -20,7 +20,7 @@
 		    			<td>@if ($log->mail_type == App\SendLog::MAIL_TYPE_AUTO_REPLY) [{{ __('auto reply') }}] @else &nbsp; @endif</td>
 		    			<td>{{ App\User::dateFormat($log->created_at, 'M j, Y H:i:s') }}</td>
 		    			<td>
-		    				<span class="@if ($log->isErrorStatus())text-danger @elseif ($log->isSuccessStatus()) text-success @endif">{{ $log->getStatusName() }}</span>
+		    				<span class="@if ($log->isErrorStatus())text-danger @elseif ($log->isSuccessStatus()) text-success @endif">{{ $log->getStatusName() }}@if ($log->smtp_queue_id) (SMTP ID: {{ $log->smtp_queue_id }})@endif</span>
 		    				@if ($log->status_message)
 		    					<div class="text-help">{{ $log->status_message }}</div>
 		    				@endif

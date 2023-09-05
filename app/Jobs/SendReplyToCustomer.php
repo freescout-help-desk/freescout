@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Mail\ReplyToCustomer;
 use App\SendLog;
 use App\Thread;
+use App\Misc\SwiftGetSmtpQueueId;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -199,10 +200,10 @@ class SendReplyToCustomer implements ShouldQueue
         \MailHelper::setMailDriver($mailbox, $this->last_thread->created_by_user, $this->conversation);
 
         // https://github.com/freescout-helpdesk/freescout/issues/3330
-        // if (\MailHelper::$smtp_queue_id_plugin_registered) {
-        //     \Mail::getSwiftMailer()->registerPlugin(new \App\Misc\SwiftGetSmtpQueueId());
-        //     \MailHelper::$smtp_queue_id_plugin_registered = true;
-        // }
+        if (!\MailHelper::$smtp_queue_id_plugin_registered) {
+            \Mail::getSwiftMailer()->registerPlugin(new SwiftGetSmtpQueueId());
+            \MailHelper::$smtp_queue_id_plugin_registered = true;
+        }
 
         $this->message_id = $this->last_thread->getMessageId($mailbox);
         $headers['Message-ID'] = $this->message_id;
@@ -270,6 +271,8 @@ class SendReplyToCustomer implements ShouldQueue
                 ->cc($cc_array)
                 ->bcc($bcc_array)
                 ->send($reply_mail);
+
+            $smtp_queue_id = SwiftGetSmtpQueueId::$last_smtp_queue_id;
         } catch (\Exception $e) {
             // We come here in case SMTP server unavailable for example
             if ($this->attempts() == 1) {
@@ -323,6 +326,8 @@ class SendReplyToCustomer implements ShouldQueue
                 return;
             }
         }
+
+        SwiftGetSmtpQueueId::$last_smtp_queue_id = null;
 
         // Clean error message if email finally has been sent.
         if ($this->last_thread->send_status == SendLog::STATUS_SEND_ERROR) {
@@ -452,7 +457,7 @@ class SendReplyToCustomer implements ShouldQueue
         $this->failures = Mail::failures();
 
         // Save to send log
-        $this->saveToSendLog();
+        $this->saveToSendLog('', $smtp_queue_id);
     }
 
     // Save an email to IMAP folder.
@@ -504,7 +509,7 @@ class SendReplyToCustomer implements ShouldQueue
     /**
      * Save emails to send log.
      */
-    public function saveToSendLog($error_message = '')
+    public function saveToSendLog($error_message = '', $smtp_queue_id = '')
     {
         foreach ($this->recipients as $recipient) {
             if (in_array($recipient, $this->failures)) {
@@ -519,7 +524,7 @@ class SendReplyToCustomer implements ShouldQueue
             } else {
                 $customer_id = null;
             }
-            SendLog::log($this->last_thread->id, $this->message_id, $recipient, SendLog::MAIL_TYPE_EMAIL_TO_CUSTOMER, $status, $customer_id, null, $status_message);
+            SendLog::log($this->last_thread->id, $this->message_id, $recipient, SendLog::MAIL_TYPE_EMAIL_TO_CUSTOMER, $status, $customer_id, null, $status_message, $smtp_queue_id);
         }
     }
 }
