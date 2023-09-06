@@ -1733,12 +1733,10 @@ class ConversationsController extends Controller
 
                 if (!$response['msg']) {
                     if ($request->sub_action == 'star') {
-                        $conversation->addToFolder(Folder::TYPE_STARRED, $user->id);
+                        $conversation->star($user);
                     } else {
-                        $conversation->removeFromFolder(Folder::TYPE_STARRED, $user->id);
+                        $conversation->unstar($user);
                     }
-                    Conversation::clearStarredByUserCache($user->id, $conversation->mailbox_id);
-                    $conversation->mailbox->updateFoldersCounters(Folder::TYPE_STARRED);
                     $response['status'] = 'success';
                 }
                 break;
