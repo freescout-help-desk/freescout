@@ -269,10 +269,11 @@ class Module extends Model
 
         if ($module_aliases === null) {
             // Get all active modules.
-            $module_aliases = collect(\Module::all())
-                ->where('active', true)
-                ->pluck('alias')
-                ->toArray();
+            foreach (\Module::all() as $module) {
+                if ($module->active()) {
+                    $module_aliases[] = $module->getAlias();
+                }
+            }
         }
         if (count($module_aliases)) {
             foreach ($module_aliases as $module_alias) {
