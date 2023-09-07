@@ -256,4 +256,100 @@ class Module extends Model
             return false;
         }
     }
+
+    public static function getSymlinkPath($alias)
+    {
+        return public_path().\Module::getPublicPath($alias);
+    }
+
+    // Check and try to fix invalid or missing symlinks.
+    public static function checkSymlinks($module_aliases = null)
+    {
+        $invalid_symlinks = [];
+
+        if ($module_aliases === null) {
+            // Get all active modules.
+            $module_aliases = collect(\Module::all())
+                ->where('active', true)
+                ->pluck('alias')
+                ->toArray();
+        }
+        if (count($module_aliases)) {
+            foreach ($module_aliases as $module_alias) {
+                $from = self::getSymlinkPath($module_alias);
+
+                $create = false;
+
+                // file_exists() also checks if symlink target exists.
+                if (!file_exists($from) || !is_link($from)) {
+                    if (is_dir($from)) {
+                        @rename($from, $from.'_'.date('YmdHis'));
+                    } else {
+                        @unlink($from);
+                    }
+                    $create = true;
+                } 
+
+                // Skip this check.
+                // elseif (is_link($from) && readlink($symlink_path) != '') {
+                //     // Symlink leads to the wrong place.
+                //     $create = true;
+                // }
+
+                // Try to create the symlink.
+                if ($create) {
+                    $to = self::createModuleSymlink($module_alias);
+
+                    if (!is_link($from) || !file_exists($from)) {
+                        if ($to) {
+                            $invalid_symlinks[$from] = $to;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $invalid_symlinks;
+    }
+
+    // There is similar function in ModuleInstall.php
+    public static function createModuleSymlink($alias)
+    {
+        $from = self::getSymlinkPath($alias);
+
+        $module = \Module::findByAlias($alias);
+        if (!$module) {
+            return false;
+        }
+
+        $to = $module->getExtraPath('Public');
+
+        // Symlimk may exist but lead to the module folder in a wrong case.
+        // So we need first try to remove it.
+        if (!file_exists($from)) {
+            @unlink($from);
+        }
+
+        if (file_exists($from)) {
+            return $to;
+        }
+
+        if (!file_exists($to)) {
+            // Try to create Public folder.
+            try {
+                \File::makeDirectory($to, \Helper::DIR_PERMISSIONS);
+            } catch (\Exception $e) {
+                // Do nothing.
+            }
+        }
+
+        try {
+            symlink($to, $from);
+        } catch (\Exception $e) {
+            \Log::error('Error occurred creating ['.$from.'] symlink: '.$e->getMessage());
+            //return false;
+        }
+
+        return $to;
+    }
 }

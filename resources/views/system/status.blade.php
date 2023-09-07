@@ -193,6 +193,10 @@
         </tbody>
     </table>
 
+    @if ($invalid_symlinks)
+        @include('modules/partials/invalid_symlinks')
+    @endif
+
     <h3 id="cron" class="margin-top-40">Cron Commands</h3>
     <p>
         {!! __('Make sure that you have the following line in your crontab:') !!}<br/>

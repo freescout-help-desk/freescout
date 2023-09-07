@@ -220,6 +220,7 @@ class SystemController extends Controller
             'env_is_writable'       => $env_is_writable,
             'non_writable_cache_file' => $non_writable_cache_file,
             'missing_migrations'    => $missing_migrations,
+            'invalid_symlinks'      => \App\Module::checkSymlinks(),
         ]);
     }
 

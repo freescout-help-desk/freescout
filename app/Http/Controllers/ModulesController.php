@@ -134,6 +134,12 @@ class ModulesController extends Controller
             $modules_directory = [];
         }
 
+        // Check modules symlinks. Somestimes instead of symlinks folders with files appear.
+        
+        $invalid_symlinks = \App\Module::checkSymlinks(
+            collect($installed_modules)->where('active', true)->pluck('alias')->toArray()
+        );
+
         return view('modules/modules', [
             'installed_modules' => $installed_modules,
             'modules_directory' => $modules_directory,
@@ -141,6 +147,7 @@ class ModulesController extends Controller
             'flashes'           => $flashes,
             'updates_available' => $updates_available,
             'all_modules'       => $all_modules,
+            'invalid_symlinks'  => $invalid_symlinks,
         ]);
     }
 

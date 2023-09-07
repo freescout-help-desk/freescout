@@ -21,7 +21,7 @@ class ModuleInstall extends Command
      *
      * @var string
      */
-    protected $description = 'Install module or all modules (if module_alias is empty)';
+    protected $description = 'Install module or all modules (if module_alias is empty): run migrations and create a symlink';
 
     /**
      * Create a new command instance.
@@ -86,6 +86,7 @@ class ModuleInstall extends Command
         $this->call('freescout:clear-cache');
     }
 
+    // There is similar function in \App\Module.
     public function createModulePublicSymlink($module)
     {
         $from = public_path('modules').DIRECTORY_SEPARATOR.$module->alias;
@@ -93,12 +94,26 @@ class ModuleInstall extends Command
 
         // Symlimk may exist but lead to the module folder in a wrong case.
         // So we need first try to remove it.
-        if (!file_exists($from)) {
-            @unlink($from);
+        if (!file_exists($from) || !is_link($from)) {
+            if (is_dir($from)) {
+                @rename($from, $from.'_'.date('YmdHis'));
+            } else {
+                @unlink($from);
+            }
         }
 
         if (file_exists($from)) {
             return $this->info('Public symlink already exists');
+        }
+
+        // Check target.
+        if (!file_exists($to)) {
+            // Try to create Public folder.
+            try {
+                \File::makeDirectory($to, \Helper::DIR_PERMISSIONS);
+            } catch (\Exception $e) {
+                // Do nothing.
+            }
         }
 
         try {
