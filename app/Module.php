@@ -275,7 +275,7 @@ class Module extends Model
                 }
             }
         }
-        if (count($module_aliases)) {
+        if ($module_aliases && count($module_aliases)) {
             foreach ($module_aliases as $module_alias) {
                 $from = self::getSymlinkPath($module_alias);
 
