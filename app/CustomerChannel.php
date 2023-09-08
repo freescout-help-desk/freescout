@@ -15,6 +15,11 @@ class CustomerChannel extends Model
 
     public $timestamps = false;
 
+    /**
+     * Cached communication channels.
+     */
+    public static $channels = null;
+
     public function customer()
     {
         return $this->belongsTo('App\Customer');
@@ -39,5 +44,15 @@ class CustomerChannel extends Model
     public function getChannelName()
     {
         return \Eventy::filter('channel.name', '', $this->channel);
+    }
+
+    public static function getChannels()
+    {
+        if (self::$channels !== null) {
+            return self::$channels;
+        } else {
+            self::$channels = \Eventy::filter('channels.list', []);
+            return self::$channels;
+        }
     }
 }

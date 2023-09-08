@@ -1294,12 +1294,12 @@ class Conversation extends Model
     /**
      * Merge conversations
      */
-    public function mergeConversations($merge_conversation, $user)
+    public function mergeConversations($second_conversation, $user)
     {
         // Move all threads from old to new conversation.
-        foreach ($merge_conversation->threads as $thread) {
+        foreach ($second_conversation->threads as $thread) {
             $thread->conversation_id = $this->id;
-            $thread->setMeta(Thread::META_PREV_CONVERSATION, $merge_conversation->id);
+            $thread->setMeta(Thread::META_PREV_CONVERSATION, $second_conversation->id);
             $thread->save();
         }
 
@@ -1312,38 +1312,70 @@ class Conversation extends Model
             'source_via'  => Thread::PERSON_USER,
             'source_type' => Thread::SOURCE_TYPE_WEB,
             'customer_id' => $this->customer_id,
-            'meta'        => [Thread::META_MERGED_WITH_CONV => $merge_conversation->id],
+            'meta'        => [Thread::META_MERGED_WITH_CONV => $second_conversation->id],
         ]);
 
         // Add record to the old conversation.
-        Thread::create($merge_conversation, Thread::TYPE_LINEITEM, '', [
+        Thread::create($second_conversation, Thread::TYPE_LINEITEM, '', [
             'created_by_user_id' => $user->id,
-            'user_id'     => $merge_conversation->user_id,
+            'user_id'     => $second_conversation->user_id,
             'state'       => Thread::STATE_PUBLISHED,
             'action_type' => Thread::ACTION_TYPE_MERGED,
             'source_via'  => Thread::PERSON_USER,
             'source_type' => Thread::SOURCE_TYPE_WEB,
-            'customer_id' => $merge_conversation->customer_id,
+            'customer_id' => $second_conversation->customer_id,
             'meta'        => [Thread::META_MERGED_INTO_CONV => $this->id],
         ]);
 
-        if ($merge_conversation->has_attachments && !$this->has_attachments) {
+        if ($second_conversation->has_attachments && !$this->has_attachments) {
             $this->has_attachments = true;
             $this->save();
         }
 
+        // Move star mark.
+        $mailbox_star_folders = Folder::where('mailbox_id', $second_conversation->mailbox_id)
+            ->where('type', Folder::TYPE_STARRED)
+            ->get();
+
+        $conv_star_folder_ids = ConversationFolder::select('folder_id')
+            ->whereIn('folder_id', $mailbox_star_folders->pluck('id'))
+            ->where('conversation_id', $second_conversation->id)
+            ->pluck('folder_id');
+
+        foreach ($conv_star_folder_ids as $conv_star_folder_id) {
+            $folder = $mailbox_star_folders->find($conv_star_folder_id);
+            if ($folder->user) {
+                $this->star($folder->user);
+                $second_conversation->unstar($folder->user);
+            }
+        }
+
         // Delete old conversation.
-        $merge_conversation->deleteToFolder($user);
+        $second_conversation->deleteToFolder($user);
 
         // Update counters.
         $this->mailbox->updateFoldersCounters();
-        if ($this->mailbox_id != $merge_conversation->mailbox_id) {
-            $merge_conversation->mailbox->updateFoldersCounters();
+        if ($this->mailbox_id != $second_conversation->mailbox_id) {
+            $second_conversation->mailbox->updateFoldersCounters();
         }
 
-        \Eventy::action('conversation.merged', $this, $merge_conversation, $user);
+        \Eventy::action('conversation.merged', $this, $second_conversation, $user);
 
         return true;
+    }
+
+    public function star($user)
+    {
+        $this->addToFolder(Folder::TYPE_STARRED, $user->id);
+        self::clearStarredByUserCache($user->id, $this->mailbox_id);
+        $this->mailbox->updateFoldersCounters(Folder::TYPE_STARRED);
+    }
+
+    public function unstar($user)
+    {
+        $this->removeFromFolder(Folder::TYPE_STARRED, $user->id);
+        self::clearStarredByUserCache($user->id, $this->mailbox_id);
+        $this->mailbox->updateFoldersCounters(Folder::TYPE_STARRED);
     }
 
     /**

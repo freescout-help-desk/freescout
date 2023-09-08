@@ -1020,7 +1020,7 @@ class FetchEmails extends Command
 
         $conversation = null;
         if ($use_mail_date_on_fetching) {
-            $now = $time;
+            $now = $date;
         }else{
             $now = date('Y-m-d H:i:s');
         }

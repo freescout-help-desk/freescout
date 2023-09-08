@@ -16,8 +16,8 @@ If you want to support the project feel free to **star this repository**. It hel
 ![FreeScout](https://freescout-helpdesk.github.io/img/screenshots/screenshot.png)
 
 ## Table of Contents
-   * [Features](#features)
    * [Demo](#demo)
+   * [Features](#features)
    * [Mobile Apps](#mobile-apps)
    * [Requirements](#requirements)
    * [Installation](#installation)
@@ -27,6 +27,10 @@ If you want to support the project feel free to **star this repository**. It hel
    * [News & Updates](#news--updates)
    * [Contributing](#contributing)
    * [Screenshots](#screenshots)
+
+## Demo
+
+**[Live Demo](https://demo.freescout.net)**
 
 ## Features
 
@@ -55,10 +59,6 @@ If you want to support the project feel free to **star this repository**. It hel
   * Search.
 
 Need anything else? Suggest features [here](https://freescout.net/request-feature/).
-
-## Demo
-
-**[Live Demo](https://demo.freescout.net)**
 
 ## Mobile Apps
 

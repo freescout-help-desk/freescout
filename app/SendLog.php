@@ -92,7 +92,7 @@ class SendLog extends Model
     /**
      * Save log record.
      */
-    public static function log($thread_id, $message_id, $email, $mail_type, $status, $customer_id = null, $user_id = null, $status_message = null)
+    public static function log($thread_id, $message_id, $email, $mail_type, $status, $customer_id = null, $user_id = null, $status_message = null, $smtp_queue_id = null)
     {
         $send_log = new self();
         $send_log->thread_id = $thread_id;
@@ -103,6 +103,9 @@ class SendLog extends Model
         $send_log->customer_id = $customer_id;
         $send_log->user_id = $user_id;
         $send_log->status_message = $status_message;
+        if ($smtp_queue_id) {
+            $send_log->smtp_queue_id = $smtp_queue_id;
+        }
         $send_log->save();
 
         return true;

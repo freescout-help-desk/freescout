@@ -83,6 +83,11 @@ class Mail
     public static $last_mail_config_hash = '';
 
     /**
+     * Used to get SMTP queue id when sending emails to customers.
+     */
+    public static $smtp_queue_id_plugin_registered = false;
+
+    /**
      * Configure mail sending parameters.
      *
      * @param App\Mailbox $mailbox
@@ -814,9 +819,9 @@ class Mail
                 //curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $post_params);
                 curl_setopt($curl, CURLOPT_HTTPHEADER, array("application/x-www-form-urlencoded"));
-                curl_setopt($curl, CURLOPT_TIMEOUT, 180);
-                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                \Helper::setCurlDefaultOptions($curl);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 180);
 
                 $response = curl_exec($curl);
 

@@ -112,12 +112,16 @@ class SecureController extends Controller
                 'type',
                 'email',
                 'status',
-                'conversation',
+                'message',
                 'user',
                 'customer',
             ];
 
-            $activities = SendLog::orderBy('created_at', 'desc')->paginate($page_size);
+            $activities_query = SendLog::orderBy('created_at', 'desc');
+            if ($request->get('thread_id')) {
+                $activities_query->where('thread_id', $request->get('thread_id'));
+            }
+            $activities = $activities_query->paginate($page_size);
 
             foreach ($activities as $record) {
                 $conversation = '';
@@ -132,13 +136,16 @@ class SecureController extends Controller
                         $status .= '. Message-ID: '.$record->message_id;
                     }
                 }
+                if ($record->smtp_queue_id) {
+                    $status .= '. SMTP ID: '.$record->smtp_queue_id;
+                }
 
                 $logs[] = [
                     'date'          => $record->created_at,
                     'type'          => $record->getMailTypeName(),
                     'email'         => $record->email,
                     'status'        => $status,
-                    'conversation'  => $conversation,
+                    'message'       => $conversation,
                     'user'          => $record->user,
                     'customer'      => $record->customer,
                 ];

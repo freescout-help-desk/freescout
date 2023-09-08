@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.95',
+    'version' => '1.8.96',
 
     /*
     |--------------------------------------------------------------------------
@@ -399,6 +399,8 @@ return [
     // CloudFlare may block requests without user agent.
     // Need to be set for curl. Guzzle sends it's own user agent: GuzzleHttp/6.3.3 curl/7.58.0 PHP/8.2.5
     'curl_user_agent'      => env('APP_CURL_USER_AGENT', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 7_1_4) AppleWebKit/603.26 (KHTML, like Gecko) Chrome/55.0.3544.220 Safari/534'),
+    // Should be set for curl and Guzzle.
+    'curl_ssl_verifypeer'  => env('APP_CURL_SSL_VERIFYPEER', false),
 
     /*
     |--------------------------------------------------------------------------

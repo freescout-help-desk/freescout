@@ -36,6 +36,12 @@
             </div>
         @endif
 
+        @if ($invalid_symlinks)
+            <div class="row-container margin-top">
+                @include('modules/partials/invalid_symlinks')
+            </div>
+        @endif
+
         <div class="row-container margin-top">
             @foreach ($installed_modules as $module)
                 @include('modules/partials/module_card')

@@ -65,6 +65,20 @@
                 </td>
             </tr>--}}
             <tr>
+                <th>DB</th>
+                <td class="table-main-col">
+                    {{ ucfirst(\DB::connection()->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME)) }} ({{ \DB::connection()->getPDO()->getAttribute(\PDO::ATTR_SERVER_VERSION) }})
+                    @if ($missing_migrations)
+                        &nbsp;&nbsp;<a href="{{ route('system.tools') }}" class="btn btn-danger btn-xs">{{ 'Migrate DB' }}</a>
+                        <div class="alert alert-danger margin-top-10">
+                            @foreach($missing_migrations as $missing_migration)
+                                {{ $missing_migration }} <strong class="glyphicon glyphicon-exclamation-sign"></strong><br/>
+                            @endforeach
+                        </div>
+                    @endif
+                </td>
+            </tr>
+            <tr>
                 <th>{{ __('Web Server') }}</th>
                 <td class="table-main-col">@if (!empty($_SERVER['SERVER_SOFTWARE'])){{ $_SERVER['SERVER_SOFTWARE'] }}@else ? @endif</td>
             </tr>
@@ -179,6 +193,10 @@
         </tbody>
     </table>
 
+    @if ($invalid_symlinks)
+        @include('modules/partials/invalid_symlinks')
+    @endif
+
     <h3 id="cron" class="margin-top-40">Cron Commands</h3>
     <p>
         {!! __('Make sure that you have the following line in your crontab:') !!}<br/>
@@ -217,10 +235,13 @@
                     </p>
                     <div class="jobs-list">
                         @foreach ($queued_jobs as $job)
+                            @php
+                                $payload = $job->getPayloadDecoded();
+                            @endphp
                             <table class="table">
                                 <tbody>
                                     <tr>
-                                        <th>{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}</th>
+                                        <th>{{ $loop->index+1 }}. {{ $payload['displayName'] }}</th>
                                         <th>
                                             <form action="{{ route('system.action') }}" method="POST" class="text-right">
                                                 {{ csrf_field() }}
@@ -238,12 +259,35 @@
                                         <td>{{ __('Queue') }}</td>
                                         <td>{{ $job->queue }}</td>
                                     </tr>
+                                    @if (\Str::startsWith($payload['displayName'], 'App\Jobs\Send'))
+                                        @php
+                                            $command = $job->getCommand();
+                                            $last_thread = null;
+                                            if ($command
+                                                && !empty($command->conversation)
+                                                && !empty($command->threads)
+                                            ) {
+                                                $last_thread = \App\Thread::getLastThread($command->threads);
+                                            }
+                                        @endphp
+                                        @if (!empty($last_thread))
+                                            <tr>
+                                                <td>{{ __('Message') }}</td>
+                                                <td><a href="{{ route('conversations.view', ['id' => $last_thread->conversation_id]) }}#thread-{{ $last_thread->id }}" target="_blank">#{{ $command->conversation->number }}</a></td>
+                                            </tr>
+                                        @endif
+                                    @endif
                                     <tr>
                                         <td>{{ __('Attempts') }}</td>
                                         <td>
                                             @if ($job->attempts > 0)<strong class="text-danger">@endif
                                                 {{ $job->attempts }}
-                                            @if ($job->attempts > 0)</strong>@endif
+                                            @if ($job->attempts > 0)
+                                                </strong>
+                                            @endif
+                                            @if ($job->attempts > 0 && !empty($last_thread))
+                                                 &nbsp;<small>(<a href="{{ route('logs', ['name' => 'out_emails', 'thread_id' => $last_thread->id]) }}" target="_blank">{{ __('View log') }}</a>)</small>
+                                            @endif
                                         </td>
                                     </tr>
                                     <tr>
@@ -286,6 +330,9 @@
                     </p>
                     <div class="jobs-list">
                         @foreach ($failed_jobs as $job)
+                            @php
+                                $payload = $job->getPayloadDecoded();
+                            @endphp
                             <table class="table">
                                 <tbody>
                                     <tr>
@@ -295,6 +342,32 @@
                                         <td>{{ __('Queue') }}</td>
                                         <td>{{ $job->queue }}</td>
                                     </tr>
+                                    @if (\Str::startsWith($payload['displayName'], 'App\Jobs\Send'))
+                                        @php
+                                            $command = $job->getCommand();
+                                            $last_thread = null;
+                                            if ($command
+                                                && !empty($command->conversation)
+                                                && !empty($command->threads)
+                                            ) {
+                                                $last_thread = \App\Thread::getLastThread($command->threads);
+                                            }
+                                        @endphp
+                                        @if (!empty($last_thread))
+                                            <tr>
+                                                <td>{{ __('Message') }}</td>
+                                                <td><a href="{{ route('conversations.view', ['id' => $last_thread->conversation_id]) }}#thread-{{ $last_thread->id }}" target="_blank">#{{ $command->conversation->number }}</a></</td>
+                                            </tr>
+                                        @endif
+                                        <tr>
+                                            <td>{{ __('Logs') }}</td>
+                                            <td>
+                                                @if (!empty($last_thread))
+                                                    <small><a href="{{ route('logs', ['name' => 'out_emails', 'thread_id' => $last_thread->id]) }}" target="_blank">{{ __('View log') }}</a></small>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endif
                                     <tr>
                                         <td>{{ __('Failed At') }}</td>
                                         <td>{{  App\User::dateFormat($job->failed_at, 'M j, Y H:i:s') }}</td>
