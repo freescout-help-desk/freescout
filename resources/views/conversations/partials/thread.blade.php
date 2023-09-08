@@ -12,7 +12,7 @@
             @action('thread.after_header', $thread, $loop, $threads, $conversation, $mailbox)
         </div>
         <div class="dropdown thread-options">
-            <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown"><b class="caret"></b></span>
+            <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true"><b class="caret"></b></span>
             @if (Auth::user()->isAdmin())
                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                     @action('thread.menu', $thread)
@@ -291,7 +291,7 @@
             </div>
         </div>
         <div class="dropdown thread-options">
-            <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown"><b class="caret"></b></span>
+            <span class="dropdown-toggle {{--glyphicon glyphicon-option-vertical--}}" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true"><b class="caret"></b></span>
             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                 @if (Auth::user()->can('edit', $thread))
                     <li><a href="#" title="" class="thread-edit-trigger" role="button">{{ __("Edit") }}</a></li>
