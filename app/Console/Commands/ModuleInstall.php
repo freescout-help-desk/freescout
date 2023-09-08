@@ -112,7 +112,10 @@ class ModuleInstall extends Command
             try {
                 \File::makeDirectory($to, \Helper::DIR_PERMISSIONS);
             } catch (\Exception $e) {
-                // Do nothing.
+                // If it's a broken symlink.
+                if (is_link($to)) {
+                    @unlink($to);
+                }
             }
         }
 

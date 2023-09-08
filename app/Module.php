@@ -275,7 +275,7 @@ class Module extends Model
                 }
             }
         }
-        if (count($module_aliases)) {
+        if ($module_aliases && count($module_aliases)) {
             foreach ($module_aliases as $module_alias) {
                 $from = self::getSymlinkPath($module_alias);
 
@@ -340,7 +340,10 @@ class Module extends Model
             try {
                 \File::makeDirectory($to, \Helper::DIR_PERMISSIONS);
             } catch (\Exception $e) {
-                // Do nothing.
+                // If it's a broken symlink.
+                if (is_link($to)) {
+                    @unlink($to);
+                }
             }
         }
 
