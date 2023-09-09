@@ -1950,6 +1950,7 @@ class Helper
     {
         // Curl has default CURLOPT_CONNECTTIMEOUT=30 seconds.
         curl_setopt($ch, CURLOPT_TIMEOUT, config('app.curl_timeout'));
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, config('app.curl_connect_timeout'));
         curl_setopt($ch, CURLOPT_PROXY, config('app.proxy'));        
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, config('app.curl_ssl_verifypeer'));        
     }
