@@ -292,25 +292,23 @@ class Module extends Model
                         }
                         $create = true;
                     } 
-
-                    // Skip this check.
-                    // elseif (is_link($from) && readlink($symlink_path) != '') {
-                    //     // Symlink leads to the wrong place.
-                    //     $create = true;
-                    // }
-
-                    // Try to create the symlink.
-                    if ($create) {
-                        $to = self::createModuleSymlink($module_alias);
-
-                        if (!is_link($from) || !file_exists($from)) {
-                            if ($to) {
-                                $invalid_symlinks[$from] = $to;
-                            }
-                        }
-                    }
                 } catch (\Exception $e) {
-                    continue;
+                    $create = true;
+                }
+
+                // Skip this check.
+                // elseif (is_link($from) && readlink($symlink_path) != '') {
+                //     // Symlink leads to the wrong place.
+                //     $create = true;
+                // }
+
+                // Try to create the symlink.
+                if ($create) {
+                    $to = self::createModuleSymlink($module_alias);
+
+                    if ($to && (!is_link($from) || is_link($to) || !file_exists($from))) {
+                        $invalid_symlinks[$from] = $to;
+                    }
                 }
             }
         }
@@ -332,6 +330,11 @@ class Module extends Model
 
         // file_exists() may throw "open_basedir restriction in effect".
         try {
+            // If module's Public is symlink.
+            if (is_link($to)) {
+                @unlink($to);
+            }
+
             // Symlimk may exist but lead to the module folder in a wrong case.
             // So we need first try to remove it.
             if (!file_exists($from)) {

@@ -94,6 +94,11 @@ class ModuleInstall extends Command
 
         // file_exists() may throw "open_basedir restriction in effect".
         try {
+            // If module's Public is symlink.
+            if (is_link($to)) {
+                @unlink($to);
+            }
+            
             // Symlimk may exist but lead to the module folder in a wrong case.
             // So we need first try to remove it.
             if (!file_exists($from) || !is_link($from)) {
@@ -129,7 +134,7 @@ class ModuleInstall extends Command
         } catch (\Exception $e) {
             $this->error('Error occurred creating ['.$from.' » '.$to.'] symlink: '.$e->getMessage());
         }
-        
+
         $this->info('The ['.$from.'] symlink has been created');
     }
 }
