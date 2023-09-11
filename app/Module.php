@@ -282,14 +282,19 @@ class Module extends Model
                 $create = false;
 
                 // file_exists() also checks if symlink target exists.
-                if (!file_exists($from) || !is_link($from)) {
-                    if (is_dir($from)) {
-                        @rename($from, $from.'_'.date('YmdHis'));
-                    } else {
-                        @unlink($from);
-                    }
+                // file_exists() and is_dir() may throw "open_basedir restriction in effect".
+                try {
+                    if (!file_exists($from) || !is_link($from)) {
+                        if (is_dir($from)) {
+                            @rename($from, $from.'_'.date('YmdHis'));
+                        } else {
+                            @unlink($from);
+                        }
+                        $create = true;
+                    } 
+                } catch (\Exception $e) {
                     $create = true;
-                } 
+                }
 
                 // Skip this check.
                 // elseif (is_link($from) && readlink($symlink_path) != '') {
@@ -301,10 +306,8 @@ class Module extends Model
                 if ($create) {
                     $to = self::createModuleSymlink($module_alias);
 
-                    if (!is_link($from) || !file_exists($from)) {
-                        if ($to) {
-                            $invalid_symlinks[$from] = $to;
-                        }
+                    if ($to && (!is_link($from) || is_link($to) || !file_exists($from))) {
+                        $invalid_symlinks[$from] = $to;
                     }
                 }
             }
@@ -325,33 +328,43 @@ class Module extends Model
 
         $to = $module->getExtraPath('Public');
 
-        // Symlimk may exist but lead to the module folder in a wrong case.
-        // So we need first try to remove it.
-        if (!file_exists($from)) {
-            @unlink($from);
-        }
+        // file_exists() may throw "open_basedir restriction in effect".
+        try {
+            // If module's Public is symlink.
+            if (is_link($to)) {
+                @unlink($to);
+            }
 
-        if (file_exists($from)) {
-            return $to;
-        }
+            // Symlimk may exist but lead to the module folder in a wrong case.
+            // So we need first try to remove it.
+            if (!file_exists($from)) {
+                @unlink($from);
+            }
 
-        if (!file_exists($to)) {
-            // Try to create Public folder.
-            try {
-                \File::makeDirectory($to, \Helper::DIR_PERMISSIONS);
-            } catch (\Exception $e) {
-                // If it's a broken symlink.
-                if (is_link($to)) {
-                    @unlink($to);
+            if (file_exists($from)) {
+                return $to;
+            }
+
+            if (!file_exists($to)) {
+                // Try to create Public folder.
+                try {
+                    \File::makeDirectory($to, \Helper::DIR_PERMISSIONS);
+                } catch (\Exception $e) {
+                    // If it's a broken symlink.
+                    if (is_link($to)) {
+                        @unlink($to);
+                    }
                 }
             }
-        }
 
-        try {
-            symlink($to, $from);
+            try {
+                symlink($to, $from);
+            } catch (\Exception $e) {
+                \Log::error('Error occurred creating ['.$from.' » '.$to.'] symlink: '.$e->getMessage());
+                //return false;
+            }
         } catch (\Exception $e) {
-            \Log::error('Error occurred creating ['.$from.'] symlink: '.$e->getMessage());
-            //return false;
+            return false;
         }
 
         return $to;

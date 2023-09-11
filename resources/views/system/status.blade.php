@@ -358,15 +358,13 @@
                                                 <td>{{ __('Message') }}</td>
                                                 <td><a href="{{ route('conversations.view', ['id' => $last_thread->conversation_id]) }}#thread-{{ $last_thread->id }}" target="_blank">#{{ $command->conversation->number }}</a></</td>
                                             </tr>
-                                        @endif
                                         <tr>
                                             <td>{{ __('Logs') }}</td>
                                             <td>
-                                                @if (!empty($last_thread))
-                                                    <small><a href="{{ route('logs', ['name' => 'out_emails', 'thread_id' => $last_thread->id]) }}" target="_blank">{{ __('View log') }}</a></small>
-                                                @endif
+                                                <small><a href="{{ route('logs', ['name' => 'out_emails', 'thread_id' => $last_thread->id]) }}" target="_blank">{{ __('View log') }}</a></small>
                                             </td>
                                         </tr>
+                                        @endif
                                     @endif
                                     <tr>
                                         <td>{{ __('Failed At') }}</td>
