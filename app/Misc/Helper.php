@@ -1681,33 +1681,30 @@ class Helper
             }
         }
 
-        // Remove illegal chars
-        $illegal_chars_unix = [
-            '/',
-            chr(0),
+        // Remove illegal chars.
+        $illegal_chars = [
+            // Unix.
+                '/',
+                chr(0),
+            // Windows.
+                '<',
+                '>',
+                ':',
+                '"',
+                '/',
+                '\\',
+                '|',
+                '?',
+                '*',
+            // Macos.
+                ':',
         ];
-        $illegal_chars_windows = [
-            '<',
-            '>',
-            ':',
-            '"',
-            '/',
-            '\\',
-            '|',
-            '?',
-            '*',
-        ];
-        // 0-31 (ASCII control characters)
+        // 0-31 (ASCII control characters) for Windows.
         for ($i = 0; $i < 32; $i++) {
-            $illegal_chars_windows[] = chr($i);
+            $illegal_chars[] = chr($i);
         }
-        $illegal_chars_macos = [
-            ':'
-        ];
 
-        $escaped_regex = preg_quote(implode('', array_merge(
-            $illegal_chars_unix, $illegal_chars_windows, $illegal_chars_macos
-        )), '/');
+        $escaped_regex = preg_quote(implode('', $illegal_chars), '/');
 
         // https://github.com/freescout-helpdesk/freescout/issues/3377
         $file_name = mb_convert_encoding($file_name, 'UTF-8', 'UTF-8');
