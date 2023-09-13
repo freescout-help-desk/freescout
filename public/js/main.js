@@ -4804,6 +4804,32 @@ function initModulesList()
 
 			e.preventDefault();
 		});
+		$('.update-all-trigger').click(function(e) {
+			var button = $(this);
+
+			button.button('loading');
+			var aliases = $.map($("#new_versions_list a[data-module-alias]"), function(el) {
+			    return $(el).attr("data-module-alias");
+			});
+
+			fsAjax(
+				{
+					action: 'update_all',
+					aliases: aliases
+				},
+				laroute.route('modules.ajax'),
+				function(response) {
+					if (isAjaxSuccess(response)) {
+						window.location.href = '';
+					} else {
+						showAjaxError(response);
+						button.button('reset');
+					}
+				}, true
+			);
+
+			e.preventDefault();
+		});
 		$('.deactivate-license-trigger').click(function(e) {
 			var button = $(this);
 			var alias = button.parents('.module-card:first').attr('data-alias');

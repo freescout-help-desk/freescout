@@ -383,12 +383,20 @@ class Module extends Model
             // Error message with the link for downloading the module.
             'download_msg' => '',
             'output' => '',
+            'module_name' => '',
         ];
 
         $module = \Module::findByAlias($alias);
 
         if (!$module) {
             $result['msg'] = __('Module not found').': '.$alias;
+        }
+
+        // Get module name.
+        $name = '?';
+        if ($module) {
+            $name = $module->getName();
+            $result['module_name'] = $name;
         }
 
         // Download new version.
@@ -466,12 +474,6 @@ class Module extends Model
             $output_log = new BufferedOutput();
             \Artisan::call('freescout:module-install', ['module_alias' => $alias], $output_log);
             $result['output'] = $output_log->fetch() ?: ' ';
-
-            // Get module name.
-            $name = '?';
-            if ($module) {
-                $name = $module->getName();
-            }
 
             $result['msg'] = __('Error occurred activating ":name" module', ['name' => $name]);
 

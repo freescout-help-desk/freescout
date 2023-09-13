@@ -35,7 +35,11 @@ class ModulesController extends Controller
 
         $flash = \Cache::get('modules_flash');
         if ($flash) {
-            $flashes[] = $flash;
+            if (is_array($flash)) {
+                $flashes = $flash;
+            } else {
+                $flashes[] = $flash;
+            }
             \Cache::forget('modules_flash');
         }
 
@@ -498,8 +502,8 @@ class ModulesController extends Controller
                 if ($update_result['output'] || $update_result['status']) {
 
                     $type = 'danger';
-
                     $msg = $update_result['msg'];
+
                     if ($update_result['status'] == 'success') {
                         $type = 'success';
                         $msg = $update_result['msg_success'];
@@ -514,6 +518,41 @@ class ModulesController extends Controller
                     \Cache::forever('modules_flash', $flash);
                     $response['status'] = 'success';
                 }
+
+                break;
+
+            case 'update_all':
+                $update_all_flashes = [];
+
+                foreach ($request->aliases as $alias) {
+                    $update_result = \App\Module::updateModule($alias);
+
+                    $type = 'danger';
+                    $msg = $update_result['msg'];
+
+                    if ($update_result['status'] == 'success') {
+                        $type = 'success';
+                        $msg = $update_result['msg_success'];
+                    } elseif ($update_result['download_msg']) {
+                        $msg .= '<br/>'.$update_result['download_msg'];
+                    }
+
+                    $text = '<strong>'.$update_result['module_name'].':</strong> '.$msg;
+                    if (trim($update_result['output'])) {
+                        $text .= '<pre class="margin-top">'.$update_result['output'].'</pre>';
+                    }
+
+                    // \Session::flash does not work after BufferedOutput
+                    $update_all_flashes[] = [
+                        'text'      => $text,
+                        'unescaped' => true,
+                        'type'      => $type,
+                    ];
+                }
+                if ($update_all_flashes) {
+                    \Cache::forever('modules_flash', $update_all_flashes);
+                }
+                $response['status'] = 'success';
 
                 break;
 
