@@ -660,9 +660,16 @@ class FetchEmails extends Command
             $this->createCustomers($emails, $mailbox->getEmails());
 
             $date = $this->attrToDate($message->getDate());
-            $app_timezone = config('app.timezone');
-            if ($app_timezone) {
-                $date->setTimezone($app_timezone);
+
+            if ($date) {
+                $app_timezone = config('app.timezone');
+                if ($app_timezone) {
+                    $date->setTimezone($app_timezone);
+                }
+            }
+            $now = now();
+            if (!$date || $date->greaterThan($now)) {
+                $date = $now;
             }
 
             $data = \Eventy::filter('fetch_emails.data_to_save', [
