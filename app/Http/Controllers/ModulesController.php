@@ -35,7 +35,7 @@ class ModulesController extends Controller
 
         $flash = \Cache::get('modules_flash');
         if ($flash) {
-            if (is_array($flash)) {
+            if (is_array($flash) && !isset($flash['text'])) {
                 $flashes = $flash;
             } else {
                 $flashes[] = $flash;

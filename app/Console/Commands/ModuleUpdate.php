@@ -58,14 +58,18 @@ class ModuleUpdate extends Command
         $installed_modules = \Module::all();
 
         $counter = 0;
+        $found = false;
         foreach ($modules_directory as $dir_module) {
             // Update single module.
             if ($module_alias && $dir_module['alias'] != $module_alias) {
                 continue;
             }
+            
+            $found = true;
+
             // Detect if new version is available.
             foreach ($installed_modules as $module) {
-                if ($module->getAlias() != $dir_module['alias']) {
+                if ($module->getAlias() != $dir_module['alias'] || !$module->active()) {
                     continue;
                 }
                 if (!empty($dir_module['version']) && version_compare($dir_module['version'], $module->get('version'), '>')) {
@@ -82,7 +86,7 @@ class ModuleUpdate extends Command
                         $this->error('ERROR: '.$msg);
                     }
                     if (trim($update_result['output'])) {
-                        $this->line(preg_replace("#\n#", "\n   ", '   '.$update_result['output']));
+                        $this->line(preg_replace("#\n#", "\n> ", '> '.trim($update_result['output'])));
                     }
                     
                     $counter++;
@@ -90,7 +94,9 @@ class ModuleUpdate extends Command
             }
         }
 
-        if (!$counter) {
+        if ($module_alias && !$found) {
+            $this->error('Module with the following alias not found: '.$module_alias);
+        } elseif (!$counter) {
             $this->line('All modules are up-to-date');
         }
 

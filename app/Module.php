@@ -464,7 +464,7 @@ class Module extends Model
             } elseif ($license_details['status'] && $result['msg'] = self::getErrorMessage($license_details['status'])) {
                 //$result['msg'] = ;
             } else {
-                $result['msg'] = __('Error occurred. Please try again later.');
+                $result['msg'] = __('Error occurred').': '.json_encode($license_details);
             }
         }
 
@@ -526,6 +526,10 @@ class Module extends Model
             // This also happens when entering a valid license key for wrong module.
             case 'invalid_item_id':
                 $msg = __('Invalid license key');
+                //$msg = __('Module not found in the modules directory');
+                break;
+            case 'site_inactive':
+                $msg = __('License key is activated on another domain.').' '.__("Use 'Deactivate License' link above to transfer license key from another domain");
                 //$msg = __('Module not found in the modules directory');
                 break;
             default:
