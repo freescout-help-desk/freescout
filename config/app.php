@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.98',
+    'version' => '1.8.99',
 
     /*
     |--------------------------------------------------------------------------
@@ -561,6 +561,8 @@ return [
         // Custom
         'Helper'       => App\Misc\Helper::class,
         'MailHelper'   => App\Misc\Mail::class,
+        'ModuleHelper' => App\Module::class,
+        'WpApi'        => App\Misc\WpApi::class,
         'Option'       => App\Option::class,
         'Str'          => Illuminate\Support\Str::class,
         // Autodiscovery did not work for this one, becasuse it's composer.json

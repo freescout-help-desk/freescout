@@ -3,9 +3,12 @@
 # FreeScout upgrade script.
 # 
 # If you need you can create /tools/pre_update.sh script which will be launched in the beginning.
+# 
+# Available flags:
+# --yes - answer yes to everything
 
 DATE_TIME=`date +%Y-%m-%d_%H:%M:%S`
-echo -e "Starting upgrading: \e[32m${DATE_TIME}\e[0m";
+echo -e "Starting updating process: \e[32m${DATE_TIME}\e[0m";
 
 # Check PHP version
 php_v=`php -v | grep 'PHP [78]' | wc -l`
@@ -40,10 +43,25 @@ fi
 #	echo -e "Last commit: \e[32m${gitcommit}\e[0m";
 #fi
 
+# Get flags
+yes=false;
+while test $# -gt 0; do
+  case "$1" in
+    --yes)
+      yes=true
+      shift
+      break
+      ;;
+    *)
+	  shift
+      ;;
+  esac
+done
+
 # Check if git is installed
 git_installed=`command -v git`;
 if [ -z "$git_installed" ]; then
-	echo -e "\e[31mGit is not installed. Please intall Git and restart upgrade.\e[0m";
+	echo -e "\e[31mGit is not installed. Please intall Git and restart updating.\e[0m";
 	exit;
 fi
 
@@ -51,11 +69,15 @@ fi
 git_inited=`git status | grep 'On branch' | wc -l`
 
 if [ $git_inited != 1 ]; then
-
 	# Initizalize Git and install latest version of the app
 	
 	printf "\nGit repository is not initizalized yet. Would you like to install the latest version of the application via Git (this will replace existing files)? (Y/n) [n]:"
-	read confirm_gitinit;
+	if [ $yes = true ]; then
+		confirm_gitinit='Y';
+		printf "\n"
+	else
+		read confirm_gitinit;
+	fi
 	if [ $confirm_gitinit != "Y" ]; then
 	    exit;
 	fi
@@ -64,13 +86,14 @@ if [ $git_inited != 1 ]; then
 	git remote add origin https://github.com/freescout-helpdesk/freescout.git
 	git fetch
 
-	# If user stop here next time he will get: "Your Git repository is on a wrong branch"
+	# If user stops here next time he will get: "Your Git repository is on a wrong branch"
 	#printf "\nReady to install application from remote repository. Continue? (Y/n) [n]:"
 	#read confirm_checkout;
 	#if [ $confirm_checkout != "Y" ]; then
 	#    exit;
 	#fi
 	git checkout -t -f origin/dist
+	git checkout dist
 else
 	# Update app via Git
 	
@@ -96,7 +119,12 @@ else
 	if [ $has_unstaged = 1 ]; then
 		git status;
 		printf "\nThere are uncommitted files, they may be overwritten during upgrade. Continue? (Y/n) [n]:"
-		read confirm_overwrite
+		if [ $yes = true ]; then
+			confirm_overwrite='Y';
+			printf "\n"
+		else
+			read confirm_overwrite;
+		fi
 		if [ $confirm_overwrite != "Y" ]; then
 		    exit;
 		fi
@@ -104,10 +132,17 @@ else
 	fi
 
 	printf "\nNew commits:\n";
-	git log "$branch..origin/$branch" --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short
+	if [ $yes = false ]; then
+		git log "$branch..origin/$branch" --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short
+	fi
 
 	printf "\nPull updates and continue? (Y/n) [n]:"
-	read confirm_pull
+	if [ $yes = true ]; then
+		confirm_pull='Y';
+		printf "\n"
+	else
+		read confirm_pull;
+	fi
 	if [ $confirm_pull != "Y" ]; then
 	    exit;
 	fi
@@ -115,7 +150,12 @@ else
 	git pull -f
 
 	printf "\nPulling updates finished. Continue? (Y/n) [n]:"
-	read confirm_continue
+	if [ $yes = true ]; then
+		confirm_continue='Y';
+		printf "\n"
+	else
+		read confirm_continue;
+	fi
 	if [ $confirm_continue != "Y" ]; then
 	    exit;
 	fi
@@ -126,7 +166,12 @@ else
 	# If branch is master, run composer install
 	if [ $branch = 'master' ]; then
 		printf "\nComposer dependencies will be installed. Continue? (Y/n) [n]:"
-		read confirm_install
+		if [ $yes = true ]; then
+			confirm_install='Y';
+			printf "\n"
+		else
+			read confirm_install;
+		fi
 		if [ $confirm_install != "Y" ]; then
 		    exit;
 		fi
@@ -152,12 +197,20 @@ php artisan freescout:clear-cache
 #php artisan package:discover
 
 printf "Run DB migration and continue? (Y/n) [n]:"
-read confirm_migrate
+if [ $yes = true ]; then
+	confirm_migrate='Y';
+	printf "\n"
+else
+	read confirm_migrate;
+fi
 if [ $confirm_migrate != "Y" ]; then
     exit;
 fi
-php artisan migrate
-
+if [ $yes = true ]; then
+	php artisan migrate --force
+else
+	php artisan migrate
+fi
 
 php artisan queue:restart
 
@@ -165,3 +218,16 @@ if [ -f "${TOOLS_DIR}/post_update.sh" ]; then
 	echo "Including post_update.sh"
 	source "${TOOLS_DIR}/post_update.sh";
 fi
+
+printf "\nWould you like to update modules? (Y/n) [n]:"
+if [ $yes = true ]; then
+	confirm_modules='Y';
+	printf "\n"
+else
+	read confirm_modules;
+fi
+if [ $confirm_modules != "Y" ]; then
+    exit;
+fi
+
+php artisan freescout:module-update
