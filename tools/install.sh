@@ -2,6 +2,9 @@
 
 # This will install everything required to run a basic FreeScout installation.
 # This should be run on a clean Ubuntu server.
+#
+# For unattended install, set environment variables first:
+# CONFIRM_START=Y DOMAIN_NAME=... CONFIRM_PATH='' CONFIRM_HTTPS=Y install.sh
 
 install_path='/var/www/html'
 
@@ -27,7 +30,11 @@ Make sure you have a domain name pointed to your server IP: $server_ip
 You will be able to specify help desk domain name and choose installation directory.
 
 Would you like to start installation? (Y/n) [n]:";
-read confirm_start;
+confirm_start=$CONFIRM_START
+if [ -z "$CONFIRM_START" ]; then
+    printf "\nWould you like to start installation? (Y/n) [n]:"
+    read confirm_start
+else
 if [ "$confirm_start" != "Y" ]; then
     exit;
 fi
@@ -36,7 +43,11 @@ fi
 # Domain
 # 
 printf "\nEnter help desk domain name (without 'www'): "
-read domain_name;
+domain_name=$DOMAIN_NAME
+if [ -z "$domain_name" ]; then
+    printf "\nEnter help desk domain name (without 'www'): "
+    read domain_name
+fi
 if [ -z "$domain_name" ]; then
 	echo "Domain name is required. Terminating installation"
     exit;
@@ -77,7 +88,11 @@ echo "You may see a MySQL privileges error above. Don't worry - the script execu
 # Application Setup
 #
 printf "\nWhere would you like to install FreeScout? [$install_path]:"
-read confirm_path;
+confirm_path=$CONFIRM_PATH
+if [ -z "$confirm_path" ]; then
+    printf "\nWhere would you like to install FreeScout? [$install_path]:"
+    read confirm_path
+fi
 if [ ! -z "$confirm_path" ]; then
     install_path=`echo $confirm_path | sed 's:/*$::'`;
 fi
@@ -188,8 +203,11 @@ sudo service nginx reload
 # HTTPS
 # 
 printf "\nWould you like to enable HTTPS? It is free and required for browser push notifications to work. (Y/n) [n]:"
-read confirm_https;
-confirm_https=${confirm_https:-n}
+confirm_https=$CONFIRM_HTTPS
+if [ -z "$confirm_https" ]; then
+    printf "\nWould you like to enable HTTPS? It is free and required for browser push notifications to work. (Y/n) [n]:"
+    read confirm_https
+fi
 if [ $confirm_https = "Y" ]; then
 
 	printf "\nAFTER certbot will finish activating HTTPS, press 'c' to continue installation.\nPress any key to continue..."
