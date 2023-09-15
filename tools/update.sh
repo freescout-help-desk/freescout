@@ -132,7 +132,9 @@ else
 	fi
 
 	printf "\nNew commits:\n";
-	git log "$branch..origin/$branch" --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short
+	if [ $yes = false ]; then
+		git log "$branch..origin/$branch" --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short
+	fi
 
 	printf "\nPull updates and continue? (Y/n) [n]:"
 	if [ $yes = true ]; then
