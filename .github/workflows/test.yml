@@ -10,8 +10,8 @@ jobs:
       - name: Install Wget
         run: sudo apt install wget
       - name: Download install
-        run: wget https://raw.githubusercontent.com/freescout-helpdesk/scripts/master/install/ubuntu.sh
+        run: wget https://raw.githubusercontent.com/freescout-helpdesk/freescout/dist/tools/install.sh
       - name: chmod installer
-        run: chmod u+x ubuntu.sh
+        run: chmod u+x install.sh
       - name: Run installer
-        run: sudo ./ubuntu.sh
+        run: sudo ./install.sh
