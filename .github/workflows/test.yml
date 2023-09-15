@@ -1,0 +1,17 @@
+name: Test
+
+on: push
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Wget
+        run: sudo apt install wget
+      - name: Download install
+        run: wget https://raw.githubusercontent.com/freescout-helpdesk/scripts/master/install/ubuntu.sh
+      - name: chmod installer
+        run: chmod u+x ubuntu.sh
+      - name: Run installer
+        run: sudo ./ubuntu.sh
