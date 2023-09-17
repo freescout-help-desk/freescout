@@ -1,6 +1,9 @@
 name: Test
 
-on: push
+on:
+  push:
+    branches:
+      - 'dist'
 
 jobs:
   test:
