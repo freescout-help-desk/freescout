@@ -117,6 +117,7 @@
             "TorMorten\\Eventy\\": "overrides/tormjens/eventy/src/",
             "Symfony\\Component\\Debug\\": "overrides/symfony/debug/",
             "Symfony\\Component\\HttpFoundation\\": "overrides/symfony/http-foundation/",
+            "Symfony\\Component\\HttpFoundation\\File\\MimeType\\": "overrides/symfony/http-foundation/File/MimeType/",
             "Chumper\\Zipper\\Repositories\\": "overrides/chumper/zipper/src/Chumper/Zipper/Repositories/",
 
             "Illuminate\\Support\\": "overrides/laravel/framework/src/Illuminate/Support/",
@@ -198,6 +199,7 @@
             "vendor/symfony/debug/ExceptionHandler.php",
             "vendor/symfony/http-foundation/ResponseHeaderBag.php",
             "vendor/symfony/http-foundation/Cookie.php",
+            "vendor/symfony/http-foundation/File/MimeType/FileBinaryMimeTypeGuesser.php",
             "vendor/chumper/zipper/src/Chumper/Zipper/Repositories/ZipRepository.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Host.php",
 
