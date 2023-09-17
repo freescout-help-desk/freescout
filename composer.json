@@ -63,7 +63,7 @@
         "swiftmailer/swiftmailer": "v6.1.*",
         "symfony/translation": "v3.4.18",
         "nesbot/carbon": "1.35.*",
-        "league/flysystem": "1.0.48",
+        "league/flysystem": "1.1.4",
         "erusev/parsedown": "1.7.2",
         "doctrine/inflector": "v1.2.*",
         "guzzlehttp/guzzle": "6.5.8",
