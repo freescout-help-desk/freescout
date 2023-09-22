@@ -107,12 +107,14 @@ class Kernel extends ConsoleKernel
         if ($this->isScheduleRun() && function_exists('shell_exec')) {
             $fetch_command_pids = \Helper::getRunningProcesses($fetch_command_identifier);
 
-            $mutex_name = $schedule->command('freescout:fetch-emails')
+            // The name of the command here must be exactly the same as below!
+            // Otherwise long fetching will be killed and won't run longer than 1 mintue.
+            $mutex_name = $schedule->command('freescout:fetch-emails --identifier='.$fetch_command_identifier)
                 ->skip(function () {
                     return true;
                 })
                 ->mutexName();
-            
+
             // If there is no cache mutext but there are running fetch commands 
             // it means the mutex had expired after self::FETCH_MAX_EXECUTION_TIME
             // and the existing command(s) is running longer than self::FETCH_MAX_EXECUTION_TIME.
