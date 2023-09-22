@@ -103,7 +103,7 @@ class EncryptCookies
     {
         return is_array($cookie)
                         ? $this->decryptArray($cookie)
-                        : $this->encrypter->decrypt($cookie);
+                        : $this->encrypter->decrypt($cookie, false);
     }
 
     /**
@@ -118,7 +118,7 @@ class EncryptCookies
 
         foreach ($cookie as $key => $value) {
             if (is_string($value)) {
-                $decrypted[$key] = $this->encrypter->decrypt($value);
+                $decrypted[$key] = $this->encrypter->decrypt($value, false);
             }
         }
 
@@ -145,7 +145,7 @@ class EncryptCookies
             }
             
             $response->headers->setCookie($this->duplicate(
-                $cookie, $this->encrypter->encrypt($prefix.$cookie->getValue())
+                $cookie, $this->encrypter->encrypt($prefix.$cookie->getValue(), false)
             ));
         }
 
