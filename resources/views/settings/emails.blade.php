@@ -125,7 +125,7 @@
         </div>
     </div>
 
-    <div class="form-group{{ $errors->has('settings[use_mail_date_on_fetching]') ? ' has-error' : '' }}">
+    {{--<div class="form-group{{ $errors->has('settings[use_mail_date_on_fetching]') ? ' has-error' : '' }}">
         <label for="use_mail_date_on_fetching" class="col-sm-2 control-label">{{ __('Mail Date & Time') }}</label>
 
         <div class="col-sm-6">
@@ -137,7 +137,7 @@
 
             @include('partials/field_error', ['field'=>'settings.use_mail_date_on_fetching'])
         </div>
-    </div>
+    </div>--}}
 
     <div class="form-group margin-top">
         <div class="col-sm-6 col-sm-offset-2">

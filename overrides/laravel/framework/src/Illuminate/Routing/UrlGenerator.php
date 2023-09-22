@@ -424,6 +424,9 @@ class UrlGenerator implements UrlGeneratorContract
                 if (!$this->cachedRoot || \Helper::isDefaultAppUrl($this->cachedRoot)) {
                     $this->cachedRoot = $this->request->root();
                 }
+
+                // Remove the slash at the end as on some systems there is a slash at the end.
+                $this->cachedRoot = rtrim($this->cachedRoot, "/");
             }
 
             $root = $this->cachedRoot;

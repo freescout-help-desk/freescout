@@ -1681,6 +1681,36 @@ class Helper
             }
         }
 
+        // Remove illegal chars.
+        $illegal_chars = [
+            // Unix.
+                '/',
+                chr(0),
+            // Windows.
+                '<',
+                '>',
+                ':',
+                '"',
+                '/',
+                '\\',
+                '|',
+                '?',
+                '*',
+            // Macos.
+                ':',
+        ];
+        // 0-31 (ASCII control characters) for Windows.
+        for ($i = 0; $i < 32; $i++) {
+            $illegal_chars[] = chr($i);
+        }
+
+        $escaped_regex = preg_quote(implode('', $illegal_chars), '/');
+
+        // https://github.com/freescout-helpdesk/freescout/issues/3377
+        $file_name = mb_convert_encoding($file_name, 'UTF-8', 'UTF-8');
+        $file_name = preg_replace('/[' . $escaped_regex . ']/', '_', $file_name);
+        $file_name = preg_replace("/[\t\r\n]/", '', $file_name);
+
         return $file_name;
     }
 
@@ -1950,6 +1980,7 @@ class Helper
     {
         // Curl has default CURLOPT_CONNECTTIMEOUT=30 seconds.
         curl_setopt($ch, CURLOPT_TIMEOUT, config('app.curl_timeout'));
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, config('app.curl_connect_timeout'));
         curl_setopt($ch, CURLOPT_PROXY, config('app.proxy'));        
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, config('app.curl_ssl_verifypeer'));        
     }

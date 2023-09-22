@@ -6,7 +6,9 @@
 
 namespace App;
 
+use App\Misc\WpApi;
 use Illuminate\Database\Eloquent\Model;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 class Module extends Model
 {
@@ -275,21 +277,26 @@ class Module extends Model
                 }
             }
         }
-        if (count($module_aliases)) {
+        if ($module_aliases && count($module_aliases)) {
             foreach ($module_aliases as $module_alias) {
                 $from = self::getSymlinkPath($module_alias);
 
                 $create = false;
 
                 // file_exists() also checks if symlink target exists.
-                if (!file_exists($from) || !is_link($from)) {
-                    if (is_dir($from)) {
-                        @rename($from, $from.'_'.date('YmdHis'));
-                    } else {
-                        @unlink($from);
-                    }
+                // file_exists() and is_dir() may throw "open_basedir restriction in effect".
+                try {
+                    if (!file_exists($from) || !is_link($from)) {
+                        if (is_dir($from)) {
+                            @rename($from, $from.'_'.date('YmdHis'));
+                        } else {
+                            @unlink($from);
+                        }
+                        $create = true;
+                    } 
+                } catch (\Exception $e) {
                     $create = true;
-                } 
+                }
 
                 // Skip this check.
                 // elseif (is_link($from) && readlink($symlink_path) != '') {
@@ -301,10 +308,8 @@ class Module extends Model
                 if ($create) {
                     $to = self::createModuleSymlink($module_alias);
 
-                    if (!is_link($from) || !file_exists($from)) {
-                        if ($to) {
-                            $invalid_symlinks[$from] = $to;
-                        }
+                    if ($to && (!is_link($from) || is_link($to) || !file_exists($from))) {
+                        $invalid_symlinks[$from] = $to;
                     }
                 }
             }
@@ -325,32 +330,215 @@ class Module extends Model
 
         $to = $module->getExtraPath('Public');
 
-        // Symlimk may exist but lead to the module folder in a wrong case.
-        // So we need first try to remove it.
-        if (!file_exists($from)) {
-            @unlink($from);
-        }
-
-        if (file_exists($from)) {
-            return $to;
-        }
-
-        if (!file_exists($to)) {
-            // Try to create Public folder.
-            try {
-                \File::makeDirectory($to, \Helper::DIR_PERMISSIONS);
-            } catch (\Exception $e) {
-                // Do nothing.
-            }
-        }
-
+        // file_exists() may throw "open_basedir restriction in effect".
         try {
-            symlink($to, $from);
+            // If module's Public is symlink.
+            if (is_link($to)) {
+                @unlink($to);
+            }
+
+            // Symlimk may exist but lead to the module folder in a wrong case.
+            // So we need first try to remove it.
+            if (!file_exists($from)) {
+                @unlink($from);
+            }
+
+            if (file_exists($from)) {
+                return $to;
+            }
+
+            if (!file_exists($to)) {
+                // Try to create Public folder.
+                try {
+                    \File::makeDirectory($to, \Helper::DIR_PERMISSIONS);
+                } catch (\Exception $e) {
+                    // If it's a broken symlink.
+                    if (is_link($to)) {
+                        @unlink($to);
+                    }
+                }
+            }
+
+            try {
+                symlink($to, $from);
+            } catch (\Exception $e) {
+                \Log::error('Error occurred creating ['.$from.' » '.$to.'] symlink: '.$e->getMessage());
+                //return false;
+            }
         } catch (\Exception $e) {
-            \Log::error('Error occurred creating ['.$from.'] symlink: '.$e->getMessage());
-            //return false;
+            return false;
         }
 
         return $to;
+    }
+
+    public static function updateModule($alias)
+    {
+        $result = [
+            'status' => 'error',
+            // Error message.
+            'msg' => '',
+            'msg_success' => '',
+            'download_error' => false,
+            // Error message with the link for downloading the module.
+            'download_msg' => '',
+            'output' => '',
+            'module_name' => '',
+        ];
+
+        $module = \Module::findByAlias($alias);
+
+        if (!$module) {
+            $result['msg'] = __('Module not found').': '.$alias;
+        }
+
+        // Get module name.
+        $name = '?';
+        if ($module) {
+            $name = $module->getName();
+            $result['module_name'] = $name;
+        }
+
+        // Download new version.
+        if (!$result['msg']) {
+            $params = [
+                'license'      => self::getLicense($alias),
+                'module_alias' => $alias,
+                'url'          => self::getAppUrl(),
+            ];
+            $license_details = WpApi::getVersion($params);
+
+            if (WpApi::$lastError) {
+                $result['msg'] = WpApi::$lastError['message'];
+            } elseif (!empty($license_details['code']) && !empty($license_details['message'])) {
+                $result['msg'] = $license_details['message'];
+            } elseif (!empty($license_details['required_app_version']) && !\Helper::checkAppVersion($license_details['required_app_version'])) {
+                $result['msg'] = 'Module requires app version:'.' '.$license_details['required_app_version'];
+            } elseif (!empty($license_details['download_link'])) {
+                // Download module.
+                $module_archive = \Module::getPath().DIRECTORY_SEPARATOR.$alias.'.zip';
+
+                try {
+                    \Helper::downloadRemoteFile($license_details['download_link'], $module_archive);
+                } catch (\Exception $e) {
+                    $result['msg'] = $e->getMessage();
+                }
+
+                if (!file_exists($module_archive)) {
+                    $result['download_error'] = true;
+                } else {
+                    // Extract.
+                    try {
+                        // Sometimes by some reason Public folder becomes a symlink leading to itself.
+                        // It causes an error during updating process.
+                        // https://github.com/freescout-helpdesk/freescout/issues/2709
+                        $public_folder = $module->getPath().DIRECTORY_SEPARATOR.'Public';
+                        try {
+                            if (is_link($public_folder)) {
+                                unlink($public_folder);
+                            }
+                        } catch (\Exception $e) {
+                            // Do nothing.
+                        }
+
+                        \Helper::unzip($module_archive, \Module::getPath());
+                    } catch (\Exception $e) {
+                        $result['msg'] = $e->getMessage();
+                    }
+                    // Check if extracted module exists.
+                    \Module::clearCache();
+                    $module = \Module::findByAlias($alias);
+                    if (!$module) {
+                        $result['download_error'] = true;
+                    }
+                }
+
+                // Remove archive.
+                if (file_exists($module_archive)) {
+                    \File::delete($module_archive);
+                }
+
+                if ($result['download_error']) {
+                    $result['download_msg'] = __('Error occurred downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', ['%a_being%' => '<a href="'.$license_details['download_link'].'" target="_blank">', '%a_end%' => '</a>', 'folder' => '<strong>'.\Module::getPath().'</strong>']);
+                }
+            } elseif ($license_details['status'] && $result['msg'] = self::getErrorMessage($license_details['status'])) {
+                //$result['msg'] = ;
+            } else {
+                $result['msg'] = __('Error occurred').': '.json_encode($license_details);
+            }
+        }
+
+        // Run post-update instructions.
+        if (!$result['msg'] && !$result['download_error']) {
+
+            $output_log = new BufferedOutput();
+            \Artisan::call('freescout:module-install', ['module_alias' => $alias], $output_log);
+            $result['output'] = $output_log->fetch() ?: ' ';
+
+            $result['msg'] = __('Error occurred activating ":name" module', ['name' => $name]);
+
+            if (session('flashes_floating') && is_array(session('flashes_floating'))) {
+                // Error.
+                // If there was any error, module has been deactivated via modules.register_error filter
+                $result['msg'] = '';
+                foreach (session('flashes_floating') as $flash) {
+                    $result['msg'] .= $flash['text'].' ';
+                }
+            } elseif (strstr($result['output'], 'Configuration cached successfully')) {
+                // Success.
+                $result['status'] = 'success';
+                $result['msg'] = '';
+                $result['msg_success'] = __('":name" module successfully updated!', ['name' => $name]);
+            } else {
+                // Error.
+                // Deactivate module.
+                \App\Module::setActive($alias, false);
+                \Artisan::call('freescout:clear-cache');
+            }
+        }
+
+        return $result;
+    }
+
+    public static function getErrorMessage($code, $result = null)
+    {
+        $msg = '';
+
+        switch ($code) {
+            case 'missing':
+                $msg = __('License key does not exist');
+                break;
+            case 'license_not_activable':
+                $msg = __("You have to activate each bundle's module separately");
+                break;
+            case 'disabled':
+                $msg = __('License key has been revoked');
+                break;
+            case 'no_activations_left':
+                $msg = __('No activations left for this license key').' ('.__("Use 'Deactivate License' link above to transfer license key from another domain").')';
+                break;
+            case 'expired':
+                $msg = __('License key has expired');
+                break;
+            case 'key_mismatch':
+                $msg = __('License key belongs to another module');
+                break;
+            // This also happens when entering a valid license key for wrong module.
+            case 'invalid_item_id':
+                $msg = __('Invalid license key');
+                //$msg = __('Module not found in the modules directory');
+                break;
+            case 'site_inactive':
+                $msg = __('License key is activated on another domain.').' '.__("Use 'Deactivate License' link above to transfer license key from another domain");
+                //$msg = __('Module not found in the modules directory');
+                break;
+            default:
+                if ($result && !empty($result['error'])) {
+                    $msg = __('Error code:'.' '.$result['error']);
+                }
+                break;
+        }
+
+        return $msg;
     }
 }

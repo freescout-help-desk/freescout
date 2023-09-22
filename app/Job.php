@@ -47,6 +47,12 @@ class Job extends Model
     	if (empty($payload['data']) || empty($payload['data']['command'])) {
     		return null;
     	}
-        return unserialize($payload['data']['command']);
+        try {
+            // If some record has been deleted from DB, there will be an error:
+            // No query results for model [App\Conversation].
+            return unserialize($payload['data']['command']);
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }
