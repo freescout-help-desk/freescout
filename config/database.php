@@ -57,7 +57,7 @@ return [
             ]) : [],
         ],
 
-        'mysql_testing' => [
+        'testing' => [
             'driver'         => 'mysql',
             //'url'            => env('DB_TEST_DATABASE_URL'),
             'host'           => '127.0.0.1',
