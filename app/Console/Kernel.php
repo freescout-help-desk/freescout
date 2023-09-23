@@ -101,6 +101,7 @@ class Kernel extends ConsoleKernel
         }
 
         $fetch_command_identifier = \Helper::getWorkerIdentifier('freescout:fetch-emails');
+        $fetch_command_name = 'freescout:fetch-emails --identifier='.$fetch_command_identifier;
 
         // Kill fetch commands running for too long.
         // In shedule:run this code is executed every time $schedule->command() in this function is executed.
@@ -109,7 +110,7 @@ class Kernel extends ConsoleKernel
 
             // The name of the command here must be exactly the same as below!
             // Otherwise long fetching will be killed and won't run longer than 1 mintue.
-            $mutex_name = $schedule->command('freescout:fetch-emails --identifier='.$fetch_command_identifier)
+            $mutex_name = $schedule->command($fetch_command_name)
                 ->skip(function () {
                     return true;
                 })
@@ -136,7 +137,7 @@ class Kernel extends ConsoleKernel
         }
 
         // Fetch emails from mailboxes
-        $fetch_command = $schedule->command('freescout:fetch-emails --identifier='.$fetch_command_identifier)
+        $fetch_command = $schedule->command($fetch_command_name)
             // withoutOverlapping() option creates a mutex in the cache 
             // which by default expires in 24 hours.
             // So we are passing an 'expiresAt' parameter to withoutOverlapping() to
