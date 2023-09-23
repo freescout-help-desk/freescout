@@ -1,0 +1,20 @@
+parameters:
+
+    paths:
+        - app
+
+    # The level 8 is the highest level
+    level: 1
+
+    #phpVersion: 80002
+
+    #bootstrapFiles:
+    #  - bootstrap/phpstan.php
+
+    #ignoreErrors:
+    ##  - '#PHPDoc tag @throws with type .*?Psr\\SimpleCache\\InvalidArgumentException.*? is not subtype of Throwable#'
+
+    excludePaths:
+        - ./Config/**/*.php
+
+    checkMissingIterableValueType: false
