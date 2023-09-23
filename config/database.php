@@ -57,16 +57,20 @@ return [
             ]) : [],
         ],
 
-        'testing' => [
-            'driver'    => 'mysql',
-            'host'      => env('DB_TEST_HOST', 'localhost'),
-            'database'  => env('DB_TEST_DATABASE', 'homestead_test'),
-            'username'  => env('DB_TEST_USERNAME', 'homestead'),
-            'password'  => env('DB_TEST_PASSWORD', 'secret'),
-            'charset'   => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix'    => '',
-            'strict'    => false,
+        'mysql_testing' => [
+            'driver'         => 'mysql',
+            //'url'            => env('DB_TEST_DATABASE_URL'),
+            'host'           => '127.0.0.1',
+            'database'       => 'freescout-test',
+            'username'       => env('DB_TEST_USERNAME', 'freescout-test'),
+            'password'       => env('DB_TEST_PASSWORD', 'freescout-test'),
+            //'port'           => env('DB_TEST_PORT', '3306'),
+            'charset'        => 'utf8mb4',
+            'collation'      => 'utf8mb4_unicode_ci',
+            'prefix'         => '',
+            //'prefix_indexes' => true,
+            'strict'         => false,
+            'engine'      => null,
         ],
 
         'pgsql' => [
