@@ -672,7 +672,7 @@ class Manager
 
     public function addLocale($locale)
     {
-        $localeDir = $this->app->langPath().'/'.$locale;
+        $localeDir = $this->app->langPath().'/'.basename($locale);
 
         $this->ignoreLocales = array_diff($this->ignoreLocales, [$locale]);
         $this->saveIgnoredLocales();

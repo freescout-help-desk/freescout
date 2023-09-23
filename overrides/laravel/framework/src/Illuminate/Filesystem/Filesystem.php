@@ -230,6 +230,7 @@ class Filesystem
 
         $mode = $this->isDirectory($target) ? 'J' : 'H';
 
+        // OS Command Injection issue is already fixed.
         exec("mklink /{$mode} ".escapeshellarg($link)." ".escapeshellarg($target));
     }
 

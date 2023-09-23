@@ -4061,7 +4061,7 @@ function discardDraft(thread_id)
 		'</div>';
 
 	// Discard note
-	if (typeof(thread_id) == "undefined" && isNote()) {
+	if (typeof(thread_id) == "undefined" && isNote() && !isNewConversation()) {
 		showModalDialog(confirm_html, {
 			on_show: function(modal) {
 				modal.children().find('.discard-draft-confirm:first').click(function(e) {
