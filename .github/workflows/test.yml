@@ -23,18 +23,6 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: mysql, mbstring, xml, imap, zip, gd, curl, intl, json
 
-      - name: Get composer cache directory
-        id: composer-cache
-        run: |
-          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache composer packages
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ matrix.php }}
-          restore-keys: ${{ runner.os }}-composer-
-
       - name: Start MySQL
         run: |
           sudo systemctl start mysql
@@ -47,7 +35,7 @@ jobs:
           mysql -uroot -proot -e 'FLUSH PRIVILEGES;'
 
       - name: Install composer dependencies
-        run: composer install --ignore-platform-reqs --no-interaction --ansi
+        run: composer install --ignore-platform-reqs --no-interaction
 
       - name: Migrate and seed the database
         run: |
