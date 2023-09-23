@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\StreamInterface;
@@ -13,6 +14,8 @@ use Psr\Http\Message\StreamInterface;
  *
  * @link http://tools.ietf.org/html/rfc1952
  * @link http://php.net/manual/en/filters.compression.php
+ *
+ * @final
  */
 class InflateStream implements StreamInterface
 {
@@ -27,12 +30,13 @@ class InflateStream implements StreamInterface
         $stream = new LimitStream($stream, -1, 10 + $filenameHeaderLength);
         $resource = StreamWrapper::getResource($stream);
         stream_filter_append($resource, 'zlib.inflate', STREAM_FILTER_READ);
-        $this->stream = new Stream($resource);
+        $this->stream = $stream->isSeekable() ? new Stream($resource) : new NoSeekStream(new Stream($resource));
     }
 
     /**
      * @param StreamInterface $stream
      * @param $header
+     *
      * @return int
      */
     private function getLengthOfPossibleFilenameHeader(StreamInterface $stream, $header)

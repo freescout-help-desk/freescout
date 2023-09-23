@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\StreamInterface;
@@ -8,6 +9,8 @@ use Psr\Http\Message\StreamInterface;
  *
  * Allows for easy testing and extension of a provided stream without needing
  * to create a concrete class for a simple extension point.
+ *
+ * @final
  */
 class FnStream implements StreamInterface
 {
@@ -34,6 +37,7 @@ class FnStream implements StreamInterface
 
     /**
      * Lazily determine which methods are not implemented.
+     *
      * @throws \BadMethodCallException
      */
     public function __get($name)
@@ -50,6 +54,16 @@ class FnStream implements StreamInterface
         if (isset($this->_fn_close)) {
             call_user_func($this->_fn_close);
         }
+    }
+
+    /**
+     * An unserialize would allow the __destruct to run when the unserialized value goes out of scope.
+     *
+     * @throws \LogicException
+     */
+    public function __wakeup()
+    {
+        throw new \LogicException('FnStream should never be unserialized');
     }
 
     /**

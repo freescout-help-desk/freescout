@@ -5,7 +5,6 @@ namespace League\Flysystem\Adapter;
 use DirectoryIterator;
 use FilesystemIterator;
 use finfo as Finfo;
-use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use League\Flysystem\Exception;
 use League\Flysystem\NotSupportedException;
@@ -39,7 +38,7 @@ class Local extends AbstractAdapter
         'dir' => [
             'public' => 0755,
             'private' => 0700,
-        ]
+        ],
     ];
 
     /**
@@ -56,6 +55,7 @@ class Local extends AbstractAdapter
      * @var int
      */
     protected $writeFlags;
+
     /**
      * @var int
      */
@@ -99,11 +99,17 @@ class Local extends AbstractAdapter
     {
         if ( ! is_dir($root)) {
             $umask = umask(0);
-            @mkdir($root, $this->permissionMap['dir']['public'], true);
+
+            if ( ! @mkdir($root, $this->permissionMap['dir']['public'], true)) {
+                $mkdirError = error_get_last();
+            }
+
             umask($umask);
+            clearstatcache(false, $root);
 
             if ( ! is_dir($root)) {
-                throw new Exception(sprintf('Impossible to create the root directory "%s".', $root));
+                $errorMessage = isset($mkdirError['message']) ? $mkdirError['message'] : '';
+                throw new Exception(sprintf('Impossible to create the root directory "%s". %s', $root, $errorMessage));
             }
         }
     }
@@ -200,8 +206,9 @@ class Local extends AbstractAdapter
 
         $result = compact('type', 'path', 'size', 'contents');
 
-        if ($mimetype = Util::guessMimeType($path, $contents)) {
-            $result['mimetype'] = $mimetype;
+        if ($visibility = $config->get('visibility')) {
+            $this->setVisibility($path, $visibility);
+            $result['visibility'] = $visibility;
         }
 
         return $result;
@@ -213,7 +220,7 @@ class Local extends AbstractAdapter
     public function read($path)
     {
         $location = $this->applyPathPrefix($path);
-        $contents = file_get_contents($location);
+        $contents = @file_get_contents($location);
 
         if ($contents === false) {
             return false;
@@ -281,6 +288,8 @@ class Local extends AbstractAdapter
             $result[] = $this->normalizeFileInfo($file);
         }
 
+        unset($iterator);
+
         return array_filter($result);
     }
 
@@ -290,6 +299,7 @@ class Local extends AbstractAdapter
     public function getMetadata($path)
     {
         $location = $this->applyPathPrefix($path);
+        clearstatcache(false, $location);
         $info = new SplFileInfo($location);
 
         return $this->normalizeFileInfo($info);
@@ -312,7 +322,7 @@ class Local extends AbstractAdapter
         $finfo = new Finfo(FILEINFO_MIME_TYPE);
         $mimetype = $finfo->file($location);
 
-        if (in_array($mimetype, ['application/octet-stream', 'inode/x-empty'])) {
+        if (in_array($mimetype, ['application/octet-stream', 'inode/x-empty', 'application/x-empty'])) {
             $mimetype = Util\MimeType::detectByFilename($location);
         }
 
@@ -335,7 +345,15 @@ class Local extends AbstractAdapter
         $location = $this->applyPathPrefix($path);
         clearstatcache(false, $location);
         $permissions = octdec(substr(sprintf('%o', fileperms($location)), -4));
-        $visibility = $permissions & 0044 ? AdapterInterface::VISIBILITY_PUBLIC : AdapterInterface::VISIBILITY_PRIVATE;
+        $type = is_dir($location) ? 'dir' : 'file';
+
+        foreach ($this->permissionMap[$type] as $visibility => $visibilityPermissions) {
+            if ($visibilityPermissions == $permissions) {
+                return compact('path', 'visibility');
+            }
+        }
+
+        $visibility = substr(sprintf('%o', fileperms($location)), -4);
 
         return compact('path', 'visibility');
     }
@@ -364,11 +382,13 @@ class Local extends AbstractAdapter
         $location = $this->applyPathPrefix($dirname);
         $umask = umask(0);
         $visibility = $config->get('visibility', 'public');
+        $return = ['path' => $dirname, 'type' => 'dir'];
 
-        if ( ! is_dir($location) && ! mkdir($location, $this->permissionMap['dir'][$visibility], true)) {
-            $return = false;
-        } else {
-            $return = ['path' => $dirname, 'type' => 'dir'];
+        if ( ! is_dir($location)) {
+            if (false === @mkdir($location, $this->permissionMap['dir'][$visibility], true)
+                || false === is_dir($location)) {
+                $return = false;
+            }
         }
 
         umask($umask);
@@ -394,6 +414,8 @@ class Local extends AbstractAdapter
             $this->guardAgainstUnreadableFileInfo($file);
             $this->deleteFileInfoObject($file);
         }
+
+        unset($contents);
 
         return rmdir($location);
     }

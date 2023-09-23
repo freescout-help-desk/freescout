@@ -1,12 +1,13 @@
 <?php
 namespace GuzzleHttp\Handler;
 
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise\FulfilledPromise;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\TransferStats;
+use GuzzleHttp\Utils;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -33,7 +34,7 @@ class StreamHandler
             usleep($options['delay'] * 1000);
         }
 
-        $startTime = isset($options['on_stats']) ? microtime(true) : null;
+        $startTime = isset($options['on_stats']) ? Utils::currentTime() : null;
 
         try {
             // Does not support the expect header.
@@ -42,7 +43,7 @@ class StreamHandler
             // Append a content-length header if body size is zero to match
             // cURL's behavior.
             if (0 === $request->getBody()->getSize()) {
-                $request = $request->withHeader('Content-Length', 0);
+                $request = $request->withHeader('Content-Length', '0');
             }
 
             return $this->createResponse(
@@ -82,7 +83,7 @@ class StreamHandler
             $stats = new TransferStats(
                 $request,
                 $response,
-                microtime(true) - $startTime,
+                Utils::currentTime() - $startTime,
                 $error,
                 []
             );
@@ -343,13 +344,25 @@ class StreamHandler
             if ('v4' === $options['force_ip_resolve']) {
                 $records = dns_get_record($uri->getHost(), DNS_A);
                 if (!isset($records[0]['ip'])) {
-                    throw new ConnectException(sprintf("Could not resolve IPv4 address for host '%s'", $uri->getHost()), $request);
+                    throw new ConnectException(
+                        sprintf(
+                            "Could not resolve IPv4 address for host '%s'",
+                            $uri->getHost()
+                        ),
+                        $request
+                    );
                 }
                 $uri = $uri->withHost($records[0]['ip']);
             } elseif ('v6' === $options['force_ip_resolve']) {
                 $records = dns_get_record($uri->getHost(), DNS_AAAA);
                 if (!isset($records[0]['ipv6'])) {
-                    throw new ConnectException(sprintf("Could not resolve IPv6 address for host '%s'", $uri->getHost()), $request);
+                    throw new ConnectException(
+                        sprintf(
+                            "Could not resolve IPv6 address for host '%s'",
+                            $uri->getHost()
+                        ),
+                        $request
+                    );
                 }
                 $uri = $uri->withHost('[' . $records[0]['ipv6'] . ']');
             }
