@@ -23,7 +23,7 @@ class ConfigTest extends TestCase
         $this->assertTrue(true);
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
       $this->original_app_key = getenv("APP_KEY");
       $this->original_app_key_file = getenv("APP_KEY_FILE");
@@ -33,7 +33,7 @@ class ConfigTest extends TestCase
       parent::setUp();
     }
 
-    public function tearDown() {
+    public function tearDown() :void {
       # This is to ensure tests don't influence each other
       putenv("APP_KEY=" . $this->original_app_key);
       putenv("APP_KEY_FILE=" . $this->original_app_key_file);
