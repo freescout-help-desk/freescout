@@ -252,7 +252,8 @@ class FetchEmails extends Command
                     $this->line('['.date('Y-m-d H:i:s').'] '.$message_index.') '.$message->getSubject());
                     $message_index++;
 
-                    $this->processMessage($message, $message_id, $mailbox, $this->mailboxes);
+                    $dest_mailbox = \Eventy::filter('fetch_emails.mailbox_to_save_message', $mailbox, $folder);
+                    $this->processMessage($message, $message_id, $dest_mailbox, $this->mailboxes);
                 }
                 $page++;
             } while (count($messages) == self::PAGE_SIZE);
