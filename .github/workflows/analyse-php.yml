@@ -27,3 +27,4 @@ jobs:
         uses: php-actions/phpstan@v3
         with:
           memory_limit: 2G
+          configuration: phpstan.neon
