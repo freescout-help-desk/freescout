@@ -1,10 +1,11 @@
 name: Test Application
 
 on:
-  push:
-    branches:
-      - 'dist'
-  workflow_dispatch
+  - push:
+      branches:
+        - master
+        - dist
+  - workflow_dispatch
 
 jobs:
   test:
