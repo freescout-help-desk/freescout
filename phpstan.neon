@@ -1,3 +1,5 @@
+# https://phpstan.org/config-reference
+
 parameters:
 
     paths:
@@ -6,7 +8,7 @@ parameters:
     # The level 8 is the highest level
     level: 1
 
-    #phpVersion: 80002
+    phpVersion: 80002
 
     #bootstrapFiles:
     #  - bootstrap/phpstan.php

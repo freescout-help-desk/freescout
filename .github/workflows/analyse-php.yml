@@ -14,8 +14,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/checkout@v3
-      - uses: php-actions/composer@v6
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: mysql, mbstring, xml, imap, zip, gd, curl, intl, json
+
+      - name: Install composer dependencies
+        run: composer install --ignore-platform-reqs --no-interaction
 
       - name: PHPStan Static Analysis
         uses: php-actions/phpstan@v3
