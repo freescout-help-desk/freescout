@@ -1,0 +1,27 @@
+name: PHP Static Analysis
+
+on:
+  push:
+    branches:
+      - master
+      - dist
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: PHP Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.1
+        extensions: mysql, mbstring, xml, imap, zip, gd, curl, intl, json
+
+    - name: Install composer dependencies
+      run: composer install --ignore-platform-reqs --no-interaction
+
+    - name: Run analysis
+      run: phpstan --memory-limit=2g
