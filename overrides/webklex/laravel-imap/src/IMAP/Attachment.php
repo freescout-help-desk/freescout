@@ -195,6 +195,10 @@ class Attachment {
         $path = $path ?: storage_path();
         $filename = $filename ?: $this->getName();
 
+        // sanitize $name
+        // order of '..' is important
+        $filename = str_replace(['\\', '/', chr(0), ':', '..'], '', $filename ?? '');
+
         $path = substr($path, -1) == DIRECTORY_SEPARATOR ? $path : $path.DIRECTORY_SEPARATOR;
 
         return File::put($path.$filename, $this->getContent()) !== false;
@@ -258,6 +262,10 @@ class Attachment {
             if (preg_match('/%[0-9A-F]{2}/i', $name)) {
                 $name = urldecode($name);
             }
+
+            // sanitize $name
+            // order of '..' is important
+            $name = str_replace(['\\', '/', chr(0), ':', '..'], '', $name);
         }
 
         $this->name = $name;
