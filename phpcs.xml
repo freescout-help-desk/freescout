@@ -72,7 +72,6 @@
     <rule ref="PSR1.Files.SideEffects"/>
     <rule ref="PSR2.Classes.ClassDeclaration"/>
     <rule ref="PSR2.Classes.PropertyDeclaration"/>
-    <rule ref="PSR2.ControlStructures.ControlStructureSpacing"/>
     <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
     <rule ref="PSR2.ControlStructures.SwitchDeclaration"/>
     <rule ref="PSR2.Files.EndFileNewline"/>
@@ -132,6 +131,12 @@
     <rule ref="Squiz.WhiteSpace.ScopeKeywordSpacing"/>
     <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
     <rule ref="Zend.Files.ClosingTag"/>
+
+    <rule ref="PSR2.ControlStructures.ControlStructureSpacing">
+        <properties>
+            <property name="maxLineLength" value="1000" />
+        </properties>
+    </rule>
 
     <exclude-pattern>*/.phpstorm.meta.php</exclude-pattern>
     <exclude-pattern>*/_ide_helper.php</exclude-pattern>
