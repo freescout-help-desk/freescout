@@ -1,6 +1,10 @@
 name: Lint PHP
 
 on:
+  push:
+    branches:
+      - master
+      - dist
   workflow_dispatch:
 
 jobs:
