@@ -214,11 +214,6 @@ fi
 
 php artisan queue:restart
 
-if [ -f "${TOOLS_DIR}/post_update.sh" ]; then
-	echo "Including post_update.sh"
-	source "${TOOLS_DIR}/post_update.sh";
-fi
-
 printf "\nWould you like to update modules? (Y/n) [n]:"
 if [ $yes = true ]; then
 	confirm_modules='Y';
@@ -231,3 +226,8 @@ if [ $confirm_modules != "Y" ]; then
 fi
 
 php artisan freescout:module-update
+
+if [ -f "${TOOLS_DIR}/post_update.sh" ]; then
+	echo "Including post_update.sh"
+	source "${TOOLS_DIR}/post_update.sh";
+fi
