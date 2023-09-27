@@ -156,6 +156,11 @@ sudo echo 'server {
         access_log off;
         add_header Cache-Control "public, must-revalidate";
     }
+    # The list should be in sync with /storage/app/public/uploads/.htaccess and /config/app.php
+    location ~* ^/storage/.*\.((?!(jpg|jpeg|jfif|pjpeg|pjp|apng|bmp|gif|ico|cur|png|tif|tiff|webp|pdf|txt|diff|patch|json|mp3|wav|ogg|wma)).)*$ {
+        add_header Content-disposition "attachment; filename=$1";
+        default_type application/octet-stream;
+    }	
     location ~* ^/(?:css|fonts|img|installer|js|modules|[^\\\]+\..*)$ {
         expires 1M;
         access_log off;
