@@ -39,6 +39,8 @@ class Helper
      */
     const DIR_PERMISSIONS = 0755;
 
+    public static $csp_nonce = null;
+
     /**
      * Stores list of global entities (for caching).
      */
@@ -1996,5 +1998,36 @@ class Helper
         ];
 
         return array_merge($default_params, $params);
+    }
+
+    public static function cspNonce()
+    {
+        if (self::$csp_nonce === null) {
+            self::$csp_nonce = \Str::random(25);
+        }
+
+        return self::$csp_nonce;
+    }
+
+    public static function cspMetaTag()
+    {
+        if (!config('app.csp_enabled')) {
+            return '';
+        }
+
+        $nonce = \Helper::cspNonce();
+
+        return "<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'self' 'nonce-".$nonce."' "
+            .config('app.csp_script_src').' '.\Eventy::filter('csp.script_src', '')."\">
+            <meta property=\"csp-nonce\" id=\"csp-nonce\" content=\"".$nonce."\">";
+    }
+
+    public static function cspNonceAttr()
+    {
+        if (!config('app.csp_enabled')) {
+            return '';
+        }
+
+        return ' nonce="'.\Helper::cspNonce().'"';
     }
 }

@@ -46,7 +46,7 @@
             <li @if ($after_send == App\MailboxUser::AFTER_SEND_FOLDER) class="active" @endif><a href="#" data-after-send="{{ App\MailboxUser::AFTER_SEND_FOLDER }}">{{ __('Send and back to folder') }}</a></li>
             @if (empty($new_converstion))
                 <li class="divider"></li>
-                <li><a href="#" class="after-send-change" data-modal-body="#after-send-change-body" data-modal-title="{{ __('Default Redirect') }}" data-no-close-btn="true" data-modal-no-footer="true">{{ __('Change default redirect') }}…</a></li>
+                <li><a href="#" class="after-send-change" data-modal-body="#after-send-change-body" data-modal-title="{{ __('Default Redirect') }}" data-no-close-btn="true" data-modal-no-footer="true" data-modal-on-show="initAfterSendModal">{{ __('Change default redirect') }}…</a></li>
             @endif
             @if (empty($new_converstion))
             	<li class="divider"></li>
@@ -77,7 +77,7 @@
 
                     <div class="form-group">
                         <div class="col-sm-9 col-sm-offset-3">
-                            <button type="submit" class="btn btn-primary" data-loading-text="{{ __('Saving') }}…" onclick="saveAfterSend(this)">
+                            <button type="button" class="btn btn-primary after-send-save" data-loading-text="{{ __('Saving') }}…">
                                 {{ __('Save') }}
                             </button>
 

@@ -11,7 +11,7 @@
 </div>
 
 <div class="form-group">
-    <button type="submit" class="btn btn-primary" data-loading-text="{{ __('Saving') }}…" onclick="saveAfterSend(this)">
+    <button type="submit" class="btn btn-primary after-send-save" data-loading-text="{{ __('Saving') }}…">
         {{ __('Save') }}
     </button>
 

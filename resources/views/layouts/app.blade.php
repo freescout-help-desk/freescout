@@ -8,6 +8,7 @@
     
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {!! \Helper::cspMetaTag() !!}
 
     <title>@if ($__env->yieldContent('title_full'))@yield('title_full') @elseif ($__env->yieldContent('title'))@yield('title') - {{ config('app.name', 'FreeScout') }} @else{{ config('app.name', 'FreeScout') }}@endif</title>
 
@@ -191,9 +192,7 @@
                                         @action('menu_right.user.after_profile')
                                         <li class="divider"></li>
                                         <li>
-                                            <a href="{{ route('logout') }}"
-                                                onclick="event.preventDefault();
-                                                         document.getElementById('logout-form').submit();">
+                                            <a href="#" id="logout-link">
                                                 {{ __('Log Out') }}
                                             </a>
 
@@ -296,7 +295,7 @@
         }
     @endphp
     @yield('javascripts')
-    <script type="text/javascript">
+    <script type="text/javascript" {!! \Helper::cspNonceAttr() !!}>
         @if (\Helper::isInApp())
             @if (Auth::user())
                 fs_in_app_data['token'] = '{{ Auth::user()->getAuthToken() }}';

@@ -190,46 +190,17 @@
       </div>
     </div>
   </div>
-  <!-- jQuery for Bootstrap -->
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-          integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-          crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-          integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-          crossorigin="anonymous"></script>
-  <!-- FontAwesome -->
-  <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
-  <!-- Datatables -->
-  <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-  <script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
-  <script>
-    $(document).ready(function () {
-      $('.table-container tr').on('click', function () {
-        $('#' + $(this).data('display')).toggle();
-      });
-      $('#table-log').DataTable({
-        "order": [$('#table-log').data('orderingIndex'), 'desc'],
-        "stateSave": true,
-        "stateSaveCallback": function (settings, data) {
-          window.localStorage.setItem("datatable", JSON.stringify(data));
-        },
-        "stateLoadCallback": function (settings) {
-          var data = JSON.parse(window.localStorage.getItem("datatable"));
-          if (data) data.start = 0;
-          return data;
-        }
-      });
-      $('#delete-log, #clean-log, #delete-all-log').click(function () {
-        return confirm('Are you sure?');
-      });
-    });
-  </script>
 @endsection
 
 @section('stylesheets')
     <link href="{{ asset('js/datatables/datatables.min.css') }}" rel="stylesheet">
 @endsection
 
+@section('javascript')
+    @parent
+    initLogsTable();
+@endsection
+
 @section('javascripts')
-    <script src="{{ asset('js/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('js/datatables/datatables.min.js') }}" {!! \Helper::cspNonceAttr() !!}></script>
 @endsection

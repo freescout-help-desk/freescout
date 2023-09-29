@@ -11,7 +11,7 @@
 	    {!! Minify::javascript(['/js/flatpickr/flatpickr.min.js', '/js/flatpickr/l10n/'.strtolower(Config::get('app.locale')).'.js']) !!}
 	    {{-- Default config should be defined here because if "javascript" section is used when new datepicker is loaded it redefined the default config. --}}
 	    @if (\Helper::isTimeFormat24())
-		    <script type="text/javascript">
+		    <script type="text/javascript" {!! \Helper::cspNonceAttr() !!}>
 		    	flatpickr.defaultConfig.time_24hr = true;
 		    </script>
 		@endif

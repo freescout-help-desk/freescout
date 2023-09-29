@@ -308,11 +308,16 @@ $(document).ready(function(){
 		}, 100);
 	});
 
+	$('#logout-link').click(function(e) {
+		$('#logout-form').submit();
+		e.preventDefault();
+	});
+
 	// Dirty JS hack because there was no way found to expand outer container when sidebar grows.
 	if ($('#conv-layout-customer').length && $(window).outerWidth() >= 1100 && $('.conv-sidebar-block').length > 2) {
 		adjustCustomerSidebarHeight();
 		setTimeout(adjustCustomerSidebarHeight, 2000);
-	}
+	}                                                         
 });
 
 function initMuteMailbox()
@@ -1263,7 +1268,7 @@ function initConversation()
 }
 
 // Create new email conversation
-function switchToNewEmailConversation(type_email)
+function switchToNewEmailConversation()
 {
 	$('#email-conv-switch').addClass('active');
 	$('#phone-conv-switch').removeClass('active');
@@ -1276,7 +1281,7 @@ function switchToNewEmailConversation(type_email)
 	$('.conv-block:first').removeClass('conv-note-block').removeClass('conv-phone-block');
 	$('#form-create :input[name="is_note"]:first').val(0);
 	$('#form-create :input[name="is_phone"]:first').val(0);
-	$('#form-create :input[name="type"]:first').val(type_email);
+	$('#form-create :input[name="type"]:first').val(1);
 }
 
 // Create new phone conversation
@@ -1844,6 +1849,12 @@ function initNewConversation(is_phone)
 			$('#field-to_email').show();
 			$(this).hide();
 		});
+		$('#email-conv-switch').click(function() {
+			switchToNewEmailConversation();
+		});
+		$('#phone-conv-switch').click(function() {
+			switchToNewPhoneConversation();
+		});
     });
 }
 
@@ -2357,6 +2368,15 @@ function showAjaxError(response, no_autohide)
 	} else {
 		showFloatingAlert('error', Lang.get("messages.error_occurred"), no_autohide);
 	}
+}
+
+function initAfterSendModal(modal)
+{
+	$(document).ready(function() {
+		modal.children().find(".after-send-save:first").click(function(e) {
+			saveAfterSend(e.target);
+		});
+	});
 }
 
 // Save default redirect
@@ -4146,6 +4166,15 @@ function editThread(button)
 				thread_container.children().hide();
 				thread_container.prepend(response.html);
 				summernoteInit(thread_container.find('.thread-editor:first'));
+
+				thread_container.children().find('.thread-editor-cancel:first').click(function(e) {
+					cancelThreadEdit(e.target);
+					e.preventDefault();
+				});
+				thread_container.children().find('.thread-editor-save:first').click(function(e) {
+					saveThreadEdit(e.target);
+					e.preventDefault();
+				});
 			} else {
 				showAjaxError(response);
 			}
@@ -5208,4 +5237,28 @@ function closeAllModals()
 
 function replaceAll(text, search, replacement) {
     return text.split(search).join(replacement);
+}
+
+function initLogsTable()
+{
+	$(document).ready(function () {
+      $('.table-container tr').on('click', function () {
+        $('#' + $(this).data('display')).toggle();
+      });
+      $('#table-log').DataTable({
+        "order": [$('#table-log').data('orderingIndex'), 'desc'],
+        "stateSave": true,
+        "stateSaveCallback": function (settings, data) {
+          window.localStorage.setItem("datatable", JSON.stringify(data));
+        },
+        "stateLoadCallback": function (settings) {
+          var data = JSON.parse(window.localStorage.getItem("datatable"));
+          if (data) data.start = 0;
+          return data;
+        }
+      });
+      $('#delete-log, #clean-log, #delete-all-log').click(function () {
+        return confirm('Are you sure?');
+      });
+    });
 }
