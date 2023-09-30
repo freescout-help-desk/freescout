@@ -1523,8 +1523,13 @@ function showAttachments(data)
 			attachments_container.prepend(input_html);
 
 			// Links
-			var attachment_html = '<li class="atachment-upload-'+attachment.id+' attachment-loaded"><a href="'+attachment.url+'" class="break-words" target="_blank">'+attachment.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(attachment.size)+')</span> <i class="glyphicon glyphicon-remove" onclick="removeAttachment(\''+attachment.id+'\')"></i></li>';
+			var attachment_html = '<li class="atachment-upload-'+attachment.id+' attachment-loaded"><a href="'+attachment.url+'" class="break-words" target="_blank">'+attachment.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(attachment.size)+')</span> <i class="glyphicon glyphicon-remove" data-attachment-id="'+attachment.id+'"></i></li>';
 			attachments_container.find('ul:first').append(attachment_html);
+
+			// Delete attachment
+			$('li.attachment-loaded .glyphicon-remove:first').click(function(e) {
+				removeAttachment($(this).attr('data-attachment-id'));
+			});
 
 			attachments_container.show();
         }
@@ -1739,8 +1744,14 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 
 	// Show loader
 	if (attach) {
-		var attachment_html = '<li class="atachment-upload-'+attachment_dummy_id+'"><img src="'+Vars.public_url+'/img/loader-tiny.gif" width="16" height="16"/> <a href="javascript:void(0);" class="break-words disabled" target="_blank">'+file.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(file.size)+')</span> <i class="glyphicon glyphicon-remove" onclick="removeAttachment(\''+attachment_dummy_id+'\')"></i></li>';
+		var attachment_html = '<li class="atachment-upload-'+attachment_dummy_id+'"><img src="'+Vars.public_url+'/img/loader-tiny.gif" width="16" height="16"/> <a href="javascript:void(0);" class="break-words disabled" target="_blank">'+file.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(file.size)+')</span> <i class="glyphicon glyphicon-remove" data-attachment-id="'+attachment_dummy_id+'"></i></li>';
 		attachments_container.children('ul:first').append(attachment_html);
+
+		// Delete attachment
+		$('li.atachment-upload-'+attachment_dummy_id+' .glyphicon-remove:first').click(function(e) {
+			removeAttachment($(this).attr('data-attachment-id'));
+		});
+
 		attachments_container.show();
 	} else {
 		loaderShow();
