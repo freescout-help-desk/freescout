@@ -97,7 +97,7 @@ class JavascriptRenderer
         $this->baseUrl = $baseUrl;
 
         if ($basePath === null) {
-            $basePath = __DIR__ . DIRECTORY_SEPARATOR . 'Resources';
+            $basePath = str_replace('/overrides/', '/vendor/', __DIR__) . DIRECTORY_SEPARATOR . 'Resources';
         }
         $this->basePath = $basePath;
 
