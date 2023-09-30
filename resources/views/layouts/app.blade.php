@@ -49,7 +49,6 @@
                 <div class="container">
                     <div class="navbar-header">
 
-                        <!-- Collapsed Hamburger -->
                         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse" aria-expanded="false">
                             <span class="sr-only">{{ __('Toggle Navigation') }}</span>
                             <span class="icon-bar"></span>
@@ -57,21 +56,18 @@
                             <span class="icon-bar"></span>
                         </button>
 
-                        <!-- Branding Image -->
                         @if (\Helper::isInApp() && \Helper::isRoute('conversations.view'))
-                            <a class="navbar-brand" href="javascript: goBack(); void(0);" title="{{ __('Back') }}">
+                            <a class="navbar-brand" id="navbar-back" href="#" title="{{ __('Back') }}">
                                 <i class="glyphicon glyphicon-arrow-left"></i>
                             </a>
                         @else
                             <a class="navbar-brand" href="{{ route('dashboard') }}" title="{{ __('Dashboard') }}">
                                 <img src="@filter('layout.header_logo', asset('img/logo-brand.svg'))" height="100%" alt="" />
-                                {{-- config('app.name', 'FreeScout') --}}
                             </a>
                         @endif
                     </div>
 
                     <div class="collapse navbar-collapse" id="app-navbar-collapse">
-                        <!-- Left Side Of Navbar -->
                         <ul class="nav navbar-nav">
                             @php
                                 $mailboxes = Auth::user()->mailboxesCanView(true);
@@ -202,7 +198,7 @@
                                         </li>
                                         <li class="divider hidden in-app-switcher"></li>
                                         <li>
-                                            <a href="javascript:switchHelpdeskUrl();void(0);" class="hidden in-app-switcher">{{ __('Switch Helpdesk URL') }}</a>
+                                            <a href="#" class="hidden in-app-switcher">{{ __('Switch Helpdesk URL') }}</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -261,7 +257,7 @@
                     {!! \Eventy::filter('footer.text', '') !!}
                 @endif
                 @if (!Auth::user())
-                    <a href="javascript:switchHelpdeskUrl();void(0);" class="hidden in-app-switcher"><br/>{{ __('Switch Helpdesk URL') }}</a>
+                    <a href="#" class="hidden in-app-switcher"><br/>{{ __('Switch Helpdesk URL') }}</a>
                 @endif
                 {{-- Show version to admin only --}}
                 @if (Auth::user() && Auth::user()->isAdmin())

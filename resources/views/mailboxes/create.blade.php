@@ -65,7 +65,7 @@
 					                        <label for="users" class="col-sm-4 control-label">{{ __('Who Else Will Use This Mailbox') }}</label>
 
 					                        <div class="col-sm-6 control-padded">
-					                            <div><a href="javascript:void(0)" class="sel-all">{{ __('all') }}</a> / <a href="javascript:void(0)" class="sel-none">{{ __('none') }}</a></div>
+					                            <div><a href="#" class="sel-all">{{ __('all') }}</a> / <a href="#" class="sel-none">{{ __('none') }}</a></div>
 
 					                            <fieldset id="permissions-fields">
 							                        @foreach ($users as $user)

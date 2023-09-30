@@ -313,12 +313,25 @@ $(document).ready(function(){
 		e.preventDefault();
 	});
 
+	//applyVoidLinks();
+	$('ul.customer-contacts a.contact-main').click(function(e) {
+		copyToClipboard($(this).text());
+		e.preventDefault();
+	});
+
 	// Dirty JS hack because there was no way found to expand outer container when sidebar grows.
 	if ($('#conv-layout-customer').length && $(window).outerWidth() >= 1100 && $('.conv-sidebar-block').length > 2) {
 		adjustCustomerSidebarHeight();
 		setTimeout(adjustCustomerSidebarHeight, 2000);
-	}                                                         
+	}                                                   
 });
+
+/*function applyVoidLinks()
+{
+	$('a.void-link').click(function(e) {
+		e.preventDefault();
+	});
+}*/
 
 function initMuteMailbox()
 {
@@ -611,11 +624,13 @@ function fsFixEditorCodeSaving($el)
 function permissionsInit()
 {
 	$(document).ready(function(){
-	    $('.sel-all').click(function(event) {
+	    $('.sel-all').click(function(e) {
 			$("#permissions-fields input").attr('checked', 'checked');
+			e.preventDefault();
 		});
-		$('.sel-none').click(function(event) {
+		$('.sel-none').click(function(e) {
 			$("#permissions-fields input").removeAttr('checked');
+			e.preventDefault();
 		});
 	});
 }
@@ -818,7 +833,7 @@ function logsInit()
 function multiInputInit()
 {
 	$(document).ready(function() {
-	    $('.multi-add').click(function() {
+	    $('.multi-add').click(function(e) {
 	    	var clone = $(this).parents('.multi-container:first').children('.multi-item:first').clone(true, true);
 	    	var index = parseInt($(this).parents('.multi-container:first').children('.block-help:last').attr('data-max-i'));
 	    	if (isNaN(index)) {
@@ -838,13 +853,16 @@ function multiInputInit()
 	    	clone.insertAfter($(this).parents('.multi-container:first').children('.multi-item:last'));
 
 	    	$(this).parents('.multi-container:first').children('.block-help:last').attr('data-max-i', index);
+
+	    	e.preventDefault();
 		});
-		$('.multi-remove').click(function() {
+		$('.multi-remove').click(function(e) {
 	    	if ($(this).parents('.multi-container:first').children('.multi-item').length > 1) {
 	    		$(this).parents('.multi-item:first').remove();
 	    	} else {
 	    		$(this).parents('.multi-item:first').children(':input').val('');
 	    	}
+	    	e.preventDefault();
 		});
 	} );
 }
@@ -1744,7 +1762,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 
 	// Show loader
 	if (attach) {
-		var attachment_html = '<li class="atachment-upload-'+attachment_dummy_id+'"><img src="'+Vars.public_url+'/img/loader-tiny.gif" width="16" height="16"/> <a href="javascript:void(0);" class="break-words disabled" target="_blank">'+file.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(file.size)+')</span> <i class="glyphicon glyphicon-remove" data-attachment-id="'+attachment_dummy_id+'"></i></li>';
+		var attachment_html = '<li class="atachment-upload-'+attachment_dummy_id+'"><img src="'+Vars.public_url+'/img/loader-tiny.gif" width="16" height="16"/> <a href="#" class="break-words disabled" target="_blank">'+file.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(file.size)+')</span> <i class="glyphicon glyphicon-remove" data-attachment-id="'+attachment_dummy_id+'"></i></li>';
 		attachments_container.children('ul:first').append(attachment_html);
 
 		// Delete attachment
@@ -1856,9 +1874,10 @@ function initNewConversation(is_phone)
     	if (typeof(is_phone) != "undefined") {
         	switchToNewPhoneConversation();
         }
-	    $('#toggle-email').click(function() {
+	    $('#toggle-email').click(function(e) {
 			$('#field-to_email').show();
 			$(this).hide();
+			e.preventDefault();
 		});
 		$('#email-conv-switch').click(function() {
 			switchToNewEmailConversation();
@@ -1973,10 +1992,11 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 		}
 
 		// Show CC
-	    $('#toggle-cc').click(function() {
+	    $('#toggle-cc').click(function(e) {
 			$('.field-cc').removeClass('hidden');
 			$(this).parent().remove();
 			initRecipientSelector();
+			e.preventDefault();
 		});
 
 		// After send
@@ -2065,7 +2085,12 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 				});
 
 			e.preventDefault();
-		})
+		});
+
+	    $('#conv-subject .switch-to-note').click(function(e) {
+			switchToNote();
+			e.preventDefault();
+		});
 	});
 }
 
@@ -5011,6 +5036,14 @@ function inApp(topic, token)
 		if (!getCookie('in_app')) {
 			setCookie('in_app', '1');
 		}
+		$('#navbar-back').click(function(e) {
+			goBack();
+			e.preventDefault();
+		});
+		$('a.in-app-switcher').click(function(e) {
+			switchHelpdeskUrl();
+			e.preventDefault();
+		});
 	});
 }
 

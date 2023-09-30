@@ -232,14 +232,14 @@
                                 <div class="form-group cc-toggler @if (empty($to_customers) && !$cc && !$bcc) cc-shifted @endif @if ($cc && $bcc) hidden @endif">
                                     <label class="control-label"></label>
                                     <div class="conv-reply-field">
-                                        <a href="javascript:void(0);" class="help-link" id="toggle-cc">Cc/Bcc</a>
+                                        <a href="#" class="help-link" id="toggle-cc">Cc/Bcc</a>
                                     </div>
                                 </div>
 
                                 @if (!empty($threads[0]) && $threads[0]->type == App\Thread::TYPE_NOTE && $threads[0]->created_by_user_id != Auth::user()->id && $threads[0]->created_by_user)
                                     <div class="alert alert-warning alert-switch-to-note">
                                         <i class="glyphicon glyphicon-exclamation-sign"></i>
-                                        {!! __('This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.', ['%switch_start%' => '<a href="javascript:switchToNote();void(0);">', 'switch_end' => '</a>', 'user_name' => htmlspecialchars($threads[0]->created_by_user->getFullName()) ]) !!}
+                                        {!! __('This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.', ['%switch_start%' => '<a href="#" class="switch-to-note">', 'switch_end' => '</a>', 'user_name' => htmlspecialchars($threads[0]->created_by_user->getFullName()) ]) !!}
                                     </div>
                                 @endif
 
@@ -270,7 +270,7 @@
                 <div class="conv-customer-block conv-sidebar-block">
                     @include('customers/profile_snippet', ['customer' => $customer, 'main_email' => $conversation->customer_email, 'conversation' => $conversation])
                     <div class="dropdown customer-trigger" data-toggle="tooltip" title="{{ __("Settings") }}">
-                        <a href="javascript:void(0)" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
+                        <a href="#" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" ></a>
                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
                             <li role="presentation"><a href="{{ route('customers.update', ['id' => $customer->id]) }}" tabindex="-1" role="menuitem">{{ __("Edit Profile") }}</a></li>
                             @if (!$conversation->isChat())

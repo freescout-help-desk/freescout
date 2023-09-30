@@ -81,10 +81,10 @@
         </div>
 
         <div class="row-container margin-top">
-            <a href="javascript:$('#third-party-container').toggleClass('hidden');void(0);" class="btn btn-default">{{ __('Show') }} »</a>
+            <a href="#third-party-container" data-toggle="collapse" class="btn btn-default">{{ __('Show') }} »</a>
         </div>
 
-        <div class="row-container margin-top hidden" id="third-party-container">
+        <div class="row-container margin-top collapse" id="third-party-container">
             @foreach ($third_party_modules as $module)
                 @include('modules/partials/module_card')
             @endforeach

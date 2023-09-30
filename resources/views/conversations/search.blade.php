@@ -18,7 +18,6 @@
 	            @endif
 	        @endforeach
 	    @endif
-        {{--<li class="menu-padded"><a href="javascript: alert('todo: implement recent search');void(0);" class="help-link">{{ __('more') }}…</a></li>--}}
         <li class="no-link"><span class="text-help">{{ __('Filters') }}</span></li>
 		@foreach ($filters_list as $filter)
             <li class="menu-link menu-padded">

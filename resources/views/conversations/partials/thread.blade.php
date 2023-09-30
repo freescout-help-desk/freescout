@@ -38,8 +38,8 @@
                         [{{ __('Draft') }}]
                     </div>
                     <div class="btn-group btn-group-xs draft-actions">
-                        <a class="btn btn-default edit-draft-trigger" href="javascript:void(0);">{{ __('Edit') }}</a>
-                        <a class="btn btn-default discard-draft-trigger" href="javascript:void(0)">{{ __('Discard') }}</a>
+                        <a class="btn btn-default edit-draft-trigger" href="#">{{ __('Edit') }}</a>
+                        <a class="btn btn-default discard-draft-trigger" href="#">{{ __('Discard') }}</a>
                     </div>
                 </div>
                 <div class="thread-info">
@@ -299,7 +299,6 @@
                 @if ($thread->isNote() && !$thread->first && Auth::user()->can('delete', $thread))
                     <li><a href="#" class="thread-delete-trigger" role="button" data-loading-text="{{ __("Delete") }}…">{{ __("Delete") }}</a></li>
                 @endif
-                {{--<li><a href="javascript:alert('todo: implement hiding threads');void(0);" title="" class="thread-hide-trigger">{{ __("Hide") }} (todo)</a></li>--}}
                 <li><a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}?from_thread_id={{ $thread->id }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv" role="button">{{ __("New Conversation") }}</a></li>
                 @if ($thread->isCustomerMessage())
                     <li><a href="{{ route('conversations.clone_conversation', ['mailbox_id' => $mailbox->id, 'from_thread_id' => $thread->id]) }}" title="{{ __("Clone a conversation from this thread") }}" class="new-conv" role="button">{{ __("Clone Conversation") }}</a></li>

@@ -37,13 +37,13 @@
                                 <div class="multi-item {{ $errors->has('emails.'.$i) ? ' has-error' : '' }}">
                                     <div>
                                         <input type="email" class="form-control input-sized-lg" name="emails[]" value="{{ $email }}" maxlength="191">
-                                        <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
+                                        <a href="#" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                     </div>
 
                                     @include('partials/field_error', ['field'=>'emails.'.$i])
                                 </div>
                             @endforeach
-                            <p class="block-help"><a href="javascript:void(0)" class="multi-add " tabindex="-1">{{ __('Add an email address') }}</a></p>
+                            <p class="block-help"><a href="#" class="multi-add " tabindex="-1">{{ __('Add an email address') }}</a></p>
                         </div>
 
                         {{-- @include('partials/field_error', ['field'=>'emails.*']) --}}
@@ -67,12 +67,12 @@
                                                 </select>
                                                 <input type="tel" class="form-control " name="phones[{{ $i }}][value]" value="{{ $phone['value'] }}">
                                             </div>
-                                            <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
+                                            <a href="#" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                         </div>
                                     </div>
                                 @endif
                             @endforeach
-                            <p class="block-help" data-max-i="{{ $i }}"><a href="javascript:void(0)" class="multi-add" tabindex="-1">{{ __('Add a phone number') }}</a></p>
+                            <p class="block-help" data-max-i="{{ $i }}"><a href="#" class="multi-add" tabindex="-1">{{ __('Add a phone number') }}</a></p>
                         </div>
 
                         @include('partials/field_error', ['field'=>'phones'])
@@ -108,11 +108,11 @@
                                 <div class="multi-item">
                                     <div>
                                         <input type="url" class="form-control input-sized-lg" name="websites[]" value="{{ $website }}" maxlength="100">
-                                        <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
+                                        <a href="#" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                     </div>
                                 </div>
                             @endforeach
-                            <p class="block-help"><a href="javascript:void(0)" class="multi-add" tabindex="-1">{{ __('Add a website') }}</a></p>
+                            <p class="block-help"><a href="#" class="multi-add" tabindex="-1">{{ __('Add a website') }}</a></p>
                         </div>
 
                         @include('partials/field_error', ['field'=>'websites'])
@@ -138,12 +138,12 @@
                                                 <span class="input-group-btn" style="width:0px;"></span>
                                                 <input type="text" class="form-control" name="social_profiles[{{ $i }}][value]" value="{{ $social_profile['value'] }}">
                                             </div>
-                                            <a href="javascript:void(0)" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
+                                            <a href="#" class="multi-remove" tabindex="-1"><i class="glyphicon glyphicon-remove"></i></a>
                                         </div>
                                     </div>
                                 @endif
                             @endforeach
-                            <p class="block-help" data-max-i="{{ $i }}"><a href="javascript:void(0)" class="multi-add" tabindex="-1">{{ __('Add a social profile') }}</a></p>
+                            <p class="block-help" data-max-i="{{ $i }}"><a href="#" class="multi-add" tabindex="-1">{{ __('Add a social profile') }}</a></p>
                         </div>
 
                         @include('partials/field_error', ['field'=>'social_profiles'])
@@ -187,14 +187,14 @@
                         </select>
 
                         <div class="block-help small margin-bottom-0">
-                            <a href="javascript:$('#address-collapse').toggleClass('hidden');void(0);">{{ __('Address') }} <span class="caret"></span></a>
+                            <a href="#address-collapse" data-toggle="collapse">{{ __('Address') }} <span class="caret"></span></a>
                         </div>
 
                         @include('partials/field_error', ['field'=>'country'])
                     </div>
                 </div>
 
-                <div id="address-collapse" @if (empty(old('state', $customer->state)) && empty(old('city', $customer->city)) && empty(old('address', $customer->address)) && empty(old('zip', $customer->zip)))class="hidden" @endif>
+                <div id="address-collapse" @if (empty(old('state', $customer->state)) && empty(old('city', $customer->city)) && empty(old('address', $customer->address)) && empty(old('zip', $customer->zip)))@else class="collapse in" @endif>
 
                     <div class="form-group{{ $errors->has('state') ? ' has-error' : '' }}">
                         <label for="state" class="col-sm-2 control-label">{{ __('State') }}</label>
