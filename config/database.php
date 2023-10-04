@@ -73,6 +73,19 @@ return [
             'engine'      => null,
         ],
 
+        'testing_pgsql' => [
+            'driver'   => 'pgsql',
+            'host'     => '127.0.0.1',
+            'port'     => '5432',
+            'database' => 'freescout-test',
+            'username' => env('DB_TEST_USERNAME', 'freescout-test'),
+            'password' => env('DB_TEST_PASSWORD', 'freescout-test'),
+            'charset'  => 'utf8',
+            'prefix'   => '',
+            'schema'   => 'public',
+            'sslmode'  => 'prefer',
+        ],
+
         'pgsql' => [
             'driver'   => 'pgsql',
             'host'     => env('DB_HOST', '127.0.0.1'),
