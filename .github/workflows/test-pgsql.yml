@@ -1,4 +1,4 @@
-name: Test Application (PostgreSQL)
+name: Test App (PostgreSQL)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Test Application (with PostgreSQL)
+    name: Test App (PostgreSQL)
     runs-on: ubuntu-latest
 
     env:
@@ -33,7 +33,7 @@ jobs:
     strategy:
       matrix:
         php: ['7.3', '7.4', '8.0', '8.1', '8.2']
-        
+
     steps:
       - uses: actions/checkout@v3
 

@@ -1,4 +1,4 @@
-name: Test Application (MySQL)
+name: Test App (MySQL)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Test Application (with MySQL)
+    name: Test App (MySQL)
     runs-on: ubuntu-latest
     strategy:
       matrix:
