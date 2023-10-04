@@ -75,7 +75,7 @@ return [
 
         'testing_pgsql' => [
             'driver'   => 'pgsql',
-            'host'     => '127.0.0.1',
+            'host'     => 'localhost',
             'port'     => '5432',
             'database' => 'freescout-test',
             'username' => env('DB_TEST_USERNAME', 'freescout-test'),

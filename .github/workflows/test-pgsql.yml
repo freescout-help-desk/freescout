@@ -10,9 +10,6 @@ jobs:
   test:
     name: Test Application (with PostgreSQL)
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: ['7.3', '7.4', '8.0', '8.1', '8.2']
 
     env:
       DB_CONNECTION: testing_pgsql
@@ -25,9 +22,18 @@ jobs:
           POSTGRES_PASSWORD: freescout-test
           POSTGRES_DB: freescout-test
         ports:
-          - 5432/tcp
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
+    strategy:
+      matrix:
+        php: ['7.3', '7.4', '8.0', '8.1', '8.2']
+        
     steps:
       - uses: actions/checkout@v3
 
