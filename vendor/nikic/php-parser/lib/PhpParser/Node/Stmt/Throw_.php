@@ -10,13 +10,13 @@ class Throw_ extends Node\Stmt
     public $expr;
 
     /**
-     * Constructs a throw node.
+     * Constructs a legacy throw statement node.
      *
      * @param Node\Expr $expr       Expression
      * @param array     $attributes Additional attributes
      */
     public function __construct(Node\Expr $expr, array $attributes = []) {
-        parent::__construct($attributes);
+        $this->attributes = $attributes;
         $this->expr = $expr;
     }
 

@@ -2,9 +2,7 @@
 
 namespace PhpParser\Node;
 
-use PhpParser\NodeAbstract;
-
-class NullableType extends NodeAbstract
+class NullableType extends ComplexType
 {
     /** @var Identifier|Name Type */
     public $type;
@@ -16,7 +14,7 @@ class NullableType extends NodeAbstract
      * @param array                  $attributes Additional attributes
      */
     public function __construct($type, array $attributes = []) {
-        parent::__construct($attributes);
+        $this->attributes = $attributes;
         $this->type = \is_string($type) ? new Identifier($type) : $type;
     }
 

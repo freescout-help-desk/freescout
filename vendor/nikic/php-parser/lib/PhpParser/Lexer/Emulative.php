@@ -4,27 +4,95 @@ namespace PhpParser\Lexer;
 
 use PhpParser\Error;
 use PhpParser\ErrorHandler;
+use PhpParser\Lexer;
+use PhpParser\Lexer\TokenEmulator\AttributeEmulator;
+use PhpParser\Lexer\TokenEmulator\EnumTokenEmulator;
+use PhpParser\Lexer\TokenEmulator\CoaleseEqualTokenEmulator;
+use PhpParser\Lexer\TokenEmulator\ExplicitOctalEmulator;
+use PhpParser\Lexer\TokenEmulator\FlexibleDocStringEmulator;
+use PhpParser\Lexer\TokenEmulator\FnTokenEmulator;
+use PhpParser\Lexer\TokenEmulator\MatchTokenEmulator;
+use PhpParser\Lexer\TokenEmulator\NullsafeTokenEmulator;
+use PhpParser\Lexer\TokenEmulator\NumericLiteralSeparatorEmulator;
+use PhpParser\Lexer\TokenEmulator\ReadonlyFunctionTokenEmulator;
+use PhpParser\Lexer\TokenEmulator\ReadonlyTokenEmulator;
+use PhpParser\Lexer\TokenEmulator\ReverseEmulator;
+use PhpParser\Lexer\TokenEmulator\TokenEmulator;
 
-class Emulative extends \PhpParser\Lexer
+class Emulative extends Lexer
 {
-    const PHP_7_3 = '7.3.0dev';
+    const PHP_7_3 = '7.3dev';
+    const PHP_7_4 = '7.4dev';
+    const PHP_8_0 = '8.0dev';
+    const PHP_8_1 = '8.1dev';
+    const PHP_8_2 = '8.2dev';
+
+    /** @var mixed[] Patches used to reverse changes introduced in the code */
+    private $patches = [];
+
+    /** @var TokenEmulator[] */
+    private $emulators = [];
+
+    /** @var string */
+    private $targetPhpVersion;
 
     /**
-     * @var array Patches used to reverse changes introduced in the code
+     * @param mixed[] $options Lexer options. In addition to the usual options,
+     *                         accepts a 'phpVersion' string that specifies the
+     *                         version to emulate. Defaults to newest supported.
      */
-    private $patches;
+    public function __construct(array $options = [])
+    {
+        $this->targetPhpVersion = $options['phpVersion'] ?? Emulative::PHP_8_2;
+        unset($options['phpVersion']);
+
+        parent::__construct($options);
+
+        $emulators = [
+            new FlexibleDocStringEmulator(),
+            new FnTokenEmulator(),
+            new MatchTokenEmulator(),
+            new CoaleseEqualTokenEmulator(),
+            new NumericLiteralSeparatorEmulator(),
+            new NullsafeTokenEmulator(),
+            new AttributeEmulator(),
+            new EnumTokenEmulator(),
+            new ReadonlyTokenEmulator(),
+            new ExplicitOctalEmulator(),
+            new ReadonlyFunctionTokenEmulator(),
+        ];
+
+        // Collect emulators that are relevant for the PHP version we're running
+        // and the PHP version we're targeting for emulation.
+        foreach ($emulators as $emulator) {
+            $emulatorPhpVersion = $emulator->getPhpVersion();
+            if ($this->isForwardEmulationNeeded($emulatorPhpVersion)) {
+                $this->emulators[] = $emulator;
+            } else if ($this->isReverseEmulationNeeded($emulatorPhpVersion)) {
+                $this->emulators[] = new ReverseEmulator($emulator);
+            }
+        }
+    }
 
     public function startLexing(string $code, ErrorHandler $errorHandler = null) {
-        $this->patches = [];
-        $preparedCode = $this->prepareCode($code);
-        if (null === $preparedCode) {
+        $emulators = array_filter($this->emulators, function($emulator) use($code) {
+            return $emulator->isEmulationNeeded($code);
+        });
+
+        if (empty($emulators)) {
             // Nothing to emulate, yay
             parent::startLexing($code, $errorHandler);
             return;
         }
 
+        $this->patches = [];
+        foreach ($emulators as $emulator) {
+            $code = $emulator->preprocessCode($code, $this->patches);
+        }
+
         $collector = new ErrorHandler\Collecting();
-        parent::startLexing($preparedCode, $collector);
+        parent::startLexing($code, $collector);
+        $this->sortPatches();
         $this->fixupTokens();
 
         $errors = $collector->getErrors();
@@ -34,78 +102,40 @@ class Emulative extends \PhpParser\Lexer
                 $errorHandler->handleError($error);
             }
         }
+
+        foreach ($emulators as $emulator) {
+            $this->tokens = $emulator->emulate($code, $this->tokens);
+        }
     }
 
-    /**
-     * Prepares code for emulation. If nothing has to be emulated null is returned.
-     *
-     * @param string $code
-     * @return null|string
-     */
-    private function prepareCode(string $code) {
-        if (version_compare(\PHP_VERSION, self::PHP_7_3, '>=')) {
-            return null;
-        }
-
-        if (strpos($code, '<<<') === false) {
-            // Definitely doesn't contain heredoc/nowdoc
-            return null;
-        }
-
-        $flexibleDocStringRegex = <<<'REGEX'
-/<<<[ \t]*(['"]?)([a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*)\1\r?\n
-(?:.*\r?\n)*?
-(?<indentation>\h*)\2(?![a-zA-Z_\x80-\xff])(?<separator>(?:;?[\r\n])?)/x
-REGEX;
-        if (!preg_match_all($flexibleDocStringRegex, $code, $matches, PREG_SET_ORDER|PREG_OFFSET_CAPTURE)) {
-            // No heredoc/nowdoc found
-            return null;
-        }
-
-        // Keep track of how much we need to adjust string offsets due to the modifications we
-        // already made
-        $posDelta = 0;
-        foreach ($matches as $match) {
-            $indentation = $match['indentation'][0];
-            $indentationStart = $match['indentation'][1];
-
-            $separator = $match['separator'][0];
-            $separatorStart = $match['separator'][1];
-
-            if ($indentation === '' && $separator !== '') {
-                // Ordinary heredoc/nowdoc
-                continue;
-            }
-
-            if ($indentation !== '') {
-                // Remove indentation
-                $indentationLen = strlen($indentation);
-                $code = substr_replace($code, '', $indentationStart + $posDelta, $indentationLen);
-                $this->patches[] = [$indentationStart + $posDelta, 'add', $indentation];
-                $posDelta -= $indentationLen;
-            }
-
-            if ($separator === '') {
-                // Insert newline as separator
-                $code = substr_replace($code, "\n", $separatorStart + $posDelta, 0);
-                $this->patches[] = [$separatorStart + $posDelta, 'remove', "\n"];
-                $posDelta += 1;
-            }
-        }
-
-        if (empty($this->patches)) {
-            // We did not end up emulating anything
-            return null;
-        }
-
-        return $code;
+    private function isForwardEmulationNeeded(string $emulatorPhpVersion): bool {
+        return version_compare(\PHP_VERSION, $emulatorPhpVersion, '<')
+            && version_compare($this->targetPhpVersion, $emulatorPhpVersion, '>=');
     }
 
-    private function fixupTokens() {
-        assert(count($this->patches) > 0);
+    private function isReverseEmulationNeeded(string $emulatorPhpVersion): bool {
+        return version_compare(\PHP_VERSION, $emulatorPhpVersion, '>=')
+            && version_compare($this->targetPhpVersion, $emulatorPhpVersion, '<');
+    }
+
+    private function sortPatches()
+    {
+        // Patches may be contributed by different emulators.
+        // Make sure they are sorted by increasing patch position.
+        usort($this->patches, function($p1, $p2) {
+            return $p1[0] <=> $p2[0];
+        });
+    }
+
+    private function fixupTokens()
+    {
+        if (\count($this->patches) === 0) {
+            return;
+        }
 
         // Load first patch
         $patchIdx = 0;
+
         list($patchPos, $patchType, $patchText) = $this->patches[$patchIdx];
 
         // We use a manual loop over the tokens, because we modify the array on the fly
@@ -113,7 +143,20 @@ REGEX;
         for ($i = 0, $c = \count($this->tokens); $i < $c; $i++) {
             $token = $this->tokens[$i];
             if (\is_string($token)) {
-                // We assume that patches don't apply to string tokens
+                if ($patchPos === $pos) {
+                    // Only support replacement for string tokens.
+                    assert($patchType === 'replace');
+                    $this->tokens[$i] = $patchText;
+
+                    // Fetch the next patch
+                    $patchIdx++;
+                    if ($patchIdx >= \count($this->patches)) {
+                        // No more patches, we're done
+                        return;
+                    }
+                    list($patchPos, $patchType, $patchText) = $this->patches[$patchIdx];
+                }
+
                 $pos += \strlen($token);
                 continue;
             }
@@ -141,6 +184,11 @@ REGEX;
                         $token[1], $patchText, $patchPos - $pos + $posDelta, 0
                     );
                     $posDelta += $patchTextLen;
+                } else if ($patchType === 'replace') {
+                    // Replace inside the token string
+                    $this->tokens[$i][1] = substr_replace(
+                        $token[1], $patchText, $patchPos - $pos + $posDelta, $patchTextLen
+                    );
                 } else {
                     assert(false);
                 }
@@ -187,7 +235,7 @@ REGEX;
                 if ($patchType === 'add') {
                     $posDelta += strlen($patchText);
                     $lineDelta += substr_count($patchText, "\n");
-                } else {
+                } else if ($patchType === 'remove') {
                     $posDelta -= strlen($patchText);
                     $lineDelta -= substr_count($patchText, "\n");
                 }

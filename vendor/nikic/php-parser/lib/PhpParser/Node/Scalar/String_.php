@@ -34,12 +34,28 @@ class String_ extends Scalar
      * @param array  $attributes Additional attributes
      */
     public function __construct(string $value, array $attributes = []) {
-        parent::__construct($attributes);
+        $this->attributes = $attributes;
         $this->value = $value;
     }
 
     public function getSubNodeNames() : array {
         return ['value'];
+    }
+
+    /**
+     * @param bool $parseUnicodeEscape Whether to parse PHP 7 \u escapes
+     */
+    public static function fromString(string $str, array $attributes = [], bool $parseUnicodeEscape = true): self
+    {
+        $attributes['kind'] = ($str[0] === "'" || ($str[1] === "'" && ($str[0] === 'b' || $str[0] === 'B')))
+            ? Scalar\String_::KIND_SINGLE_QUOTED
+            : Scalar\String_::KIND_DOUBLE_QUOTED;
+
+        $attributes['rawValue'] = $str;
+
+        $string = self::parse($str, $parseUnicodeEscape);
+
+        return new self($string, $attributes);
     }
 
     /**
@@ -100,7 +116,7 @@ class String_ extends Scalar
                 if (isset(self::$replacements[$str])) {
                     return self::$replacements[$str];
                 } elseif ('x' === $str[0] || 'X' === $str[0]) {
-                    return chr(hexdec($str));
+                    return chr(hexdec(substr($str, 1)));
                 } elseif ('u' === $str[0]) {
                     return self::codePointToUtf8(hexdec($matches[2]));
                 } else {
@@ -134,7 +150,7 @@ class String_ extends Scalar
         }
         throw new Error('Invalid UTF-8 codepoint escape sequence: Codepoint too large');
     }
-    
+
     public function getType() : string {
         return 'Scalar_String';
     }

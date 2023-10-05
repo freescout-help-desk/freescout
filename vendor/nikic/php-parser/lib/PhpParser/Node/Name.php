@@ -8,6 +8,7 @@ class Name extends NodeAbstract
 {
     /**
      * @var string[] Parts of the name
+     * @deprecated Use getParts() instead
      */
     public $parts;
 
@@ -24,12 +25,21 @@ class Name extends NodeAbstract
      * @param array                $attributes Additional attributes
      */
     public function __construct($name, array $attributes = []) {
-        parent::__construct($attributes);
+        $this->attributes = $attributes;
         $this->parts = self::prepareName($name);
     }
 
     public function getSubNodeNames() : array {
         return ['parts'];
+    }
+
+    /**
+     * Get parts of name (split by the namespace separator).
+     *
+     * @return string[] Parts of name
+     */
+    public function getParts(): array {
+        return $this->parts;
     }
 
     /**
@@ -87,7 +97,7 @@ class Name extends NodeAbstract
     }
 
     /**
-     * Returns a string representation of the name itself, without taking taking the name type into
+     * Returns a string representation of the name itself, without taking the name type into
      * account (e.g., not including a leading backslash for fully qualified names).
      *
      * @return string String representation
@@ -164,7 +174,7 @@ class Name extends NodeAbstract
             $realLength = $numParts - $realOffset;
         } else {
             $realLength = $length < 0 ? $length + $numParts - $realOffset : $length;
-            if ($realLength < 0 || $realLength > $numParts) {
+            if ($realLength < 0 || $realLength > $numParts - $realOffset) {
                 throw new \OutOfBoundsException(sprintf('Length %d is out of bounds', $length));
             }
         }
@@ -237,7 +247,7 @@ class Name extends NodeAbstract
             'Expected string, array of parts or Name instance'
         );
     }
-    
+
     public function getType() : string {
         return 'Name';
     }

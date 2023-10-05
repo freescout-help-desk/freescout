@@ -16,8 +16,13 @@ top_statement_list_ex:
 
 top_statement_list:
       top_statement_list_ex
-          { makeNop($nop, $this->lookaheadStartAttributes, $this->endAttributes);
+          { makeZeroLengthNop($nop, $this->lookaheadStartAttributes);
             if ($nop !== null) { $1[] = $nop; } $$ = $1; }
+;
+
+ampersand:
+      T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG
+    | T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG
 ;
 
 reserved_non_modifiers:
@@ -27,7 +32,8 @@ reserved_non_modifiers:
     | T_FINALLY | T_THROW | T_USE | T_INSTEADOF | T_GLOBAL | T_VAR | T_UNSET | T_ISSET | T_EMPTY | T_CONTINUE | T_GOTO
     | T_FUNCTION | T_CONST | T_RETURN | T_PRINT | T_YIELD | T_LIST | T_SWITCH | T_ENDSWITCH | T_CASE | T_DEFAULT
     | T_BREAK | T_ARRAY | T_CALLABLE | T_EXTENDS | T_IMPLEMENTS | T_NAMESPACE | T_TRAIT | T_INTERFACE | T_CLASS
-    | T_CLASS_C | T_TRAIT_C | T_FUNC_C | T_METHOD_C | T_LINE | T_FILE | T_DIR | T_NS_C | T_HALT_COMPILER
+    | T_CLASS_C | T_TRAIT_C | T_FUNC_C | T_METHOD_C | T_LINE | T_FILE | T_DIR | T_NS_C | T_HALT_COMPILER | T_FN
+    | T_MATCH
 ;
 
 semi_reserved:
@@ -48,13 +54,14 @@ reserved_non_modifiers_identifier:
       reserved_non_modifiers                                { $$ = Node\Identifier[$1]; }
 ;
 
-namespace_name_parts:
-      T_STRING                                              { init($1); }
-    | namespace_name_parts T_NS_SEPARATOR T_STRING          { push($1, $3); }
+namespace_name:
+      T_STRING                                              { $$ = Name[$1]; }
+    | T_NAME_QUALIFIED                                      { $$ = Name[$1]; }
 ;
 
-namespace_name:
-      namespace_name_parts                                  { $$ = Name[$1]; }
+legacy_namespace_name:
+      namespace_name                                        { $$ = $1; }
+    | T_NAME_FULLY_QUALIFIED                                { $$ = Name[substr($1, 1)]; }
 ;
 
 plain_variable:
@@ -90,16 +97,11 @@ use_type:
     | T_CONST                                               { $$ = Stmt\Use_::TYPE_CONSTANT; }
 ;
 
-/* Using namespace_name_parts here to avoid s/r conflict on T_NS_SEPARATOR */
 group_use_declaration:
-      T_USE use_type namespace_name_parts T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-          { $$ = Stmt\GroupUse[new Name($3, stackAttributes(#3)), $6, $2]; }
-    | T_USE use_type T_NS_SEPARATOR namespace_name_parts T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-          { $$ = Stmt\GroupUse[new Name($4, stackAttributes(#4)), $7, $2]; }
-    | T_USE namespace_name_parts T_NS_SEPARATOR '{' inline_use_declarations '}'
-          { $$ = Stmt\GroupUse[new Name($2, stackAttributes(#2)), $5, Stmt\Use_::TYPE_UNKNOWN]; }
-    | T_USE T_NS_SEPARATOR namespace_name_parts T_NS_SEPARATOR '{' inline_use_declarations '}'
-          { $$ = Stmt\GroupUse[new Name($3, stackAttributes(#3)), $6, Stmt\Use_::TYPE_UNKNOWN]; }
+      T_USE use_type legacy_namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
+          { $$ = Stmt\GroupUse[$3, $6, $2]; }
+    | T_USE legacy_namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
+          { $$ = Stmt\GroupUse[$2, $5, Stmt\Use_::TYPE_UNKNOWN]; }
 ;
 
 unprefixed_use_declarations:
@@ -126,8 +128,10 @@ unprefixed_use_declaration:
 ;
 
 use_declaration:
-      unprefixed_use_declaration                            { $$ = $1; }
-    | T_NS_SEPARATOR unprefixed_use_declaration             { $$ = $2; }
+      legacy_namespace_name
+          { $$ = Stmt\UseUse[$1, null, Stmt\Use_::TYPE_UNKNOWN]; $this->checkUseUse($$, #1); }
+    | legacy_namespace_name T_AS identifier
+          { $$ = Stmt\UseUse[$1, $3, Stmt\Use_::TYPE_UNKNOWN]; $this->checkUseUse($$, #3); }
 ;
 
 inline_use_declaration:
@@ -160,7 +164,7 @@ inner_statement_list_ex:
 
 inner_statement_list:
       inner_statement_list_ex
-          { makeNop($nop, $this->lookaheadStartAttributes, $this->endAttributes);
+          { makeZeroLengthNop($nop, $this->lookaheadStartAttributes);
             if ($nop !== null) { $1[] = $nop; } $$ = $1; }
 ;
 
@@ -247,7 +251,12 @@ variables_list:
 
 optional_ref:
       /* empty */                                           { $$ = false; }
-    | '&'                                                   { $$ = true; }
+    | ampersand                                             { $$ = true; }
+;
+
+optional_arg_ref:
+      /* empty */                                           { $$ = false; }
+    | T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG                 { $$ = true; }
 ;
 
 optional_ellipsis:
@@ -255,8 +264,13 @@ optional_ellipsis:
     | T_ELLIPSIS                                            { $$ = true; }
 ;
 
+identifier_maybe_readonly:
+      identifier                                            { $$ = $1; }
+    | T_READONLY                                            { $$ = Node\Identifier[$1]; }
+;
+
 function_declaration_statement:
-    T_FUNCTION optional_ref identifier '(' parameter_list ')' optional_return_type '{' inner_statement_list '}'
+    T_FUNCTION optional_ref identifier_maybe_readonly '(' parameter_list ')' optional_return_type '{' inner_statement_list '}'
         { $$ = Stmt\Function_[$3, ['byRef' => $2, 'params' => $5, 'returnType' => $7, 'stmts' => $9]]; }
 ;
 
@@ -379,7 +393,7 @@ new_else_single:
 
 foreach_variable:
       variable                                              { $$ = array($1, false); }
-    | '&' variable                                          { $$ = array($2, true); }
+    | ampersand variable                                    { $$ = array($2, true); }
     | list_expr                                             { $$ = array($1, false); }
 ;
 
@@ -394,9 +408,9 @@ non_empty_parameter_list:
 ;
 
 parameter:
-      optional_param_type optional_ref optional_ellipsis plain_variable
+      optional_param_type optional_arg_ref optional_ellipsis plain_variable
           { $$ = Node\Param[$4, null, $1, $2, $3]; $this->checkParam($$); }
-    | optional_param_type optional_ref optional_ellipsis plain_variable '=' static_scalar
+    | optional_param_type optional_arg_ref optional_ellipsis plain_variable '=' static_scalar
           { $$ = Node\Param[$4, $6, $1, $2, $3]; $this->checkParam($$); }
 ;
 
@@ -429,7 +443,7 @@ non_empty_argument_list:
 
 argument:
       expr                                                  { $$ = Node\Arg[$1, false, false]; }
-    | '&' variable                                          { $$ = Node\Arg[$2, true, false]; }
+    | ampersand variable                                    { $$ = Node\Arg[$2, true, false]; }
     | T_ELLIPSIS expr                                       { $$ = Node\Arg[$2, false, true]; }
 ;
 
@@ -461,7 +475,7 @@ class_statement_list_ex:
 
 class_statement_list:
       class_statement_list_ex
-          { makeNop($nop, $this->lookaheadStartAttributes, $this->endAttributes);
+          { makeZeroLengthNop($nop, $this->lookaheadStartAttributes);
             if ($nop !== null) { $1[] = $nop; } $$ = $1; }
 ;
 
@@ -563,8 +577,8 @@ expr:
       variable                                              { $$ = $1; }
     | list_expr '=' expr                                    { $$ = Expr\Assign[$1, $3]; }
     | variable '=' expr                                     { $$ = Expr\Assign[$1, $3]; }
-    | variable '=' '&' variable                             { $$ = Expr\AssignRef[$1, $4]; }
-    | variable '=' '&' new_expr                             { $$ = Expr\AssignRef[$1, $4]; }
+    | variable '=' ampersand variable                       { $$ = Expr\AssignRef[$1, $4]; }
+    | variable '=' ampersand new_expr                       { $$ = Expr\AssignRef[$1, $4]; }
     | new_expr                                              { $$ = $1; }
     | T_CLONE expr                                          { $$ = Expr\Clone_[$2]; }
     | variable T_PLUS_EQUAL expr                            { $$ = Expr\AssignOp\Plus      [$1, $3]; }
@@ -579,6 +593,7 @@ expr:
     | variable T_SL_EQUAL expr                              { $$ = Expr\AssignOp\ShiftLeft [$1, $3]; }
     | variable T_SR_EQUAL expr                              { $$ = Expr\AssignOp\ShiftRight[$1, $3]; }
     | variable T_POW_EQUAL expr                             { $$ = Expr\AssignOp\Pow       [$1, $3]; }
+    | variable T_COALESCE_EQUAL expr                        { $$ = Expr\AssignOp\Coalesce  [$1, $3]; }
     | variable T_INC                                        { $$ = Expr\PostInc[$1]; }
     | T_INC variable                                        { $$ = Expr\PreInc [$2]; }
     | variable T_DEC                                        { $$ = Expr\PostDec[$1]; }
@@ -589,7 +604,8 @@ expr:
     | expr T_LOGICAL_AND expr                               { $$ = Expr\BinaryOp\LogicalAnd[$1, $3]; }
     | expr T_LOGICAL_XOR expr                               { $$ = Expr\BinaryOp\LogicalXor[$1, $3]; }
     | expr '|' expr                                         { $$ = Expr\BinaryOp\BitwiseOr [$1, $3]; }
-    | expr '&' expr                                         { $$ = Expr\BinaryOp\BitwiseAnd[$1, $3]; }
+    | expr T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG expr   { $$ = Expr\BinaryOp\BitwiseAnd[$1, $3]; }
+    | expr T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG expr       { $$ = Expr\BinaryOp\BitwiseAnd[$1, $3]; }
     | expr '^' expr                                         { $$ = Expr\BinaryOp\BitwiseXor[$1, $3]; }
     | expr '.' expr                                         { $$ = Expr\BinaryOp\Concat    [$1, $3]; }
     | expr '+' expr                                         { $$ = Expr\BinaryOp\Plus      [$1, $3]; }
@@ -628,7 +644,10 @@ expr:
     | T_REQUIRE expr                                        { $$ = Expr\Include_[$2, Expr\Include_::TYPE_REQUIRE]; }
     | T_REQUIRE_ONCE expr                                   { $$ = Expr\Include_[$2, Expr\Include_::TYPE_REQUIRE_ONCE]; }
     | T_INT_CAST expr                                       { $$ = Expr\Cast\Int_    [$2]; }
-    | T_DOUBLE_CAST expr                                    { $$ = Expr\Cast\Double  [$2]; }
+    | T_DOUBLE_CAST expr
+          { $attrs = attributes();
+            $attrs['kind'] = $this->getFloatCastKind($1);
+            $$ = new Expr\Cast\Double($2, $attrs); }
     | T_STRING_CAST expr                                    { $$ = Expr\Cast\String_ [$2]; }
     | T_ARRAY_CAST expr                                     { $$ = Expr\Cast\Array_  [$2]; }
     | T_OBJECT_CAST expr                                    { $$ = Expr\Cast\Object_ [$2]; }
@@ -675,9 +694,7 @@ array_expr:
 
 scalar_dereference:
       array_expr '[' dim_offset ']'                         { $$ = Expr\ArrayDimFetch[$1, $3]; }
-    | T_CONSTANT_ENCAPSED_STRING '[' dim_offset ']'
-          { $attrs = attributes(); $attrs['kind'] = strKind($1);
-            $$ = Expr\ArrayDimFetch[new Scalar\String_(Scalar\String_::parse($1), $attrs), $3]; }
+    | T_CONSTANT_ENCAPSED_STRING '[' dim_offset ']'         { $$ = Expr\ArrayDimFetch[Scalar\String_::fromString($1, attributes()), $3]; }
     | constant '[' dim_offset ']'                           { $$ = Expr\ArrayDimFetch[$1, $3]; }
     | scalar_dereference '[' dim_offset ']'                 { $$ = Expr\ArrayDimFetch[$1, $3]; }
     /* alternative array syntax missing intentionally */
@@ -709,8 +726,13 @@ lexical_var:
       optional_ref plain_variable                           { $$ = Expr\ClosureUse[$2, $1]; }
 ;
 
+name_readonly:
+      T_READONLY                                            { $$ = Name[$1]; }
+;
+
 function_call:
       name argument_list                                    { $$ = Expr\FuncCall[$1, $2]; }
+    | name_readonly argument_list                           { $$ = Expr\FuncCall[$1, $2]; }
     | class_name_or_var T_PAAMAYIM_NEKUDOTAYIM identifier_ex argument_list
           { $$ = Expr\StaticCall[$1, $3, $4]; }
     | class_name_or_var T_PAAMAYIM_NEKUDOTAYIM '{' expr '}' argument_list
@@ -729,9 +751,10 @@ class_name:
 ;
 
 name:
-      namespace_name_parts                                  { $$ = Name[$1]; }
-    | T_NS_SEPARATOR namespace_name_parts                   { $$ = Name\FullyQualified[$2]; }
-    | T_NAMESPACE T_NS_SEPARATOR namespace_name_parts       { $$ = Name\Relative[$3]; }
+      T_STRING                                              { $$ = Name[$1]; }
+    | T_NAME_QUALIFIED                                      { $$ = Name[$1]; }
+    | T_NAME_FULLY_QUALIFIED                                { $$ = Name\FullyQualified[substr($1, 1)]; }
+    | T_NAME_RELATIVE                                       { $$ = Name\Relative[substr($1, 10)]; }
 ;
 
 class_name_reference:
@@ -778,10 +801,8 @@ ctor_arguments:
 
 common_scalar:
       T_LNUMBER                                             { $$ = $this->parseLNumber($1, attributes(), true); }
-    | T_DNUMBER                                             { $$ = Scalar\DNumber[Scalar\DNumber::parse($1)]; }
-    | T_CONSTANT_ENCAPSED_STRING
-          { $attrs = attributes(); $attrs['kind'] = strKind($1);
-            $$ = new Scalar\String_(Scalar\String_::parse($1, false), $attrs); }
+    | T_DNUMBER                                             { $$ = Scalar\DNumber::fromString($1, attributes()); }
+    | T_CONSTANT_ENCAPSED_STRING                            { $$ = Scalar\String_::fromString($1, attributes(), false); }
     | T_LINE                                                { $$ = Scalar\MagicConst\Line[]; }
     | T_FILE                                                { $$ = Scalar\MagicConst\File[]; }
     | T_DIR                                                 { $$ = Scalar\MagicConst\Dir[]; }
@@ -812,7 +833,10 @@ static_operation:
     | static_scalar T_LOGICAL_AND static_scalar             { $$ = Expr\BinaryOp\LogicalAnd[$1, $3]; }
     | static_scalar T_LOGICAL_XOR static_scalar             { $$ = Expr\BinaryOp\LogicalXor[$1, $3]; }
     | static_scalar '|' static_scalar                       { $$ = Expr\BinaryOp\BitwiseOr [$1, $3]; }
-    | static_scalar '&' static_scalar                       { $$ = Expr\BinaryOp\BitwiseAnd[$1, $3]; }
+    | static_scalar T_AMPERSAND_NOT_FOLLOWED_BY_VAR_OR_VARARG static_scalar
+          { $$ = Expr\BinaryOp\BitwiseAnd[$1, $3]; }
+    | static_scalar T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG static_scalar
+          { $$ = Expr\BinaryOp\BitwiseAnd[$1, $3]; }
     | static_scalar '^' static_scalar                       { $$ = Expr\BinaryOp\BitwiseXor[$1, $3]; }
     | static_scalar '.' static_scalar                       { $$ = Expr\BinaryOp\Concat    [$1, $3]; }
     | static_scalar '+' static_scalar                       { $$ = Expr\BinaryOp\Plus      [$1, $3]; }
@@ -982,8 +1006,9 @@ non_empty_array_pair_list:
 array_pair:
       expr T_DOUBLE_ARROW expr                              { $$ = Expr\ArrayItem[$3, $1,   false]; }
     | expr                                                  { $$ = Expr\ArrayItem[$1, null, false]; }
-    | expr T_DOUBLE_ARROW '&' variable                      { $$ = Expr\ArrayItem[$4, $1,   true]; }
-    | '&' variable                                          { $$ = Expr\ArrayItem[$2, null, true]; }
+    | expr T_DOUBLE_ARROW ampersand variable                { $$ = Expr\ArrayItem[$4, $1,   true]; }
+    | ampersand variable                                    { $$ = Expr\ArrayItem[$2, null, true]; }
+    | T_ELLIPSIS expr                                       { $$ = new Expr\ArrayItem($2, null, false, attributes(), true); }
 ;
 
 encaps_list:

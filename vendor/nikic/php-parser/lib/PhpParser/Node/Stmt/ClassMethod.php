@@ -15,27 +15,31 @@ class ClassMethod extends Node\Stmt implements FunctionLike
     public $name;
     /** @var Node\Param[] Parameters */
     public $params;
-    /** @var null|Node\Identifier|Node\Name|Node\NullableType Return type */
+    /** @var null|Node\Identifier|Node\Name|Node\ComplexType Return type */
     public $returnType;
     /** @var Node\Stmt[]|null Statements */
     public $stmts;
+    /** @var Node\AttributeGroup[] PHP attribute groups */
+    public $attrGroups;
 
     private static $magicNames = [
-        '__construct'  => true,
-        '__destruct'   => true,
-        '__call'       => true,
-        '__callstatic' => true,
-        '__get'        => true,
-        '__set'        => true,
-        '__isset'      => true,
-        '__unset'      => true,
-        '__sleep'      => true,
-        '__wakeup'     => true,
-        '__tostring'   => true,
-        '__set_state'  => true,
-        '__clone'      => true,
-        '__invoke'     => true,
-        '__debuginfo'  => true,
+        '__construct'   => true,
+        '__destruct'    => true,
+        '__call'        => true,
+        '__callstatic'  => true,
+        '__get'         => true,
+        '__set'         => true,
+        '__isset'       => true,
+        '__unset'       => true,
+        '__sleep'       => true,
+        '__wakeup'      => true,
+        '__tostring'    => true,
+        '__set_state'   => true,
+        '__clone'       => true,
+        '__invoke'      => true,
+        '__debuginfo'   => true,
+        '__serialize'   => true,
+        '__unserialize' => true,
     ];
 
     /**
@@ -48,10 +52,11 @@ class ClassMethod extends Node\Stmt implements FunctionLike
      *                          'params'     => array()        : Parameters
      *                          'returnType' => null           : Return type
      *                          'stmts'      => array()        : Statements
+     *                          'attrGroups' => array()        : PHP attribute groups
      * @param array $attributes Additional attributes
      */
     public function __construct($name, array $subNodes = [], array $attributes = []) {
-        parent::__construct($attributes);
+        $this->attributes = $attributes;
         $this->flags = $subNodes['flags'] ?? $subNodes['type'] ?? 0;
         $this->byRef = $subNodes['byRef'] ?? false;
         $this->name = \is_string($name) ? new Node\Identifier($name) : $name;
@@ -59,10 +64,11 @@ class ClassMethod extends Node\Stmt implements FunctionLike
         $returnType = $subNodes['returnType'] ?? null;
         $this->returnType = \is_string($returnType) ? new Node\Identifier($returnType) : $returnType;
         $this->stmts = array_key_exists('stmts', $subNodes) ? $subNodes['stmts'] : [];
+        $this->attrGroups = $subNodes['attrGroups'] ?? [];
     }
 
     public function getSubNodeNames() : array {
-        return ['flags', 'byRef', 'name', 'params', 'returnType', 'stmts'];
+        return ['attrGroups', 'flags', 'byRef', 'name', 'params', 'returnType', 'stmts'];
     }
 
     public function returnsByRef() : bool {
@@ -79,6 +85,10 @@ class ClassMethod extends Node\Stmt implements FunctionLike
 
     public function getStmts() {
         return $this->stmts;
+    }
+
+    public function getAttrGroups() : array {
+        return $this->attrGroups;
     }
 
     /**
@@ -120,7 +130,7 @@ class ClassMethod extends Node\Stmt implements FunctionLike
 
     /**
      * Whether the method is final.
-     * 
+     *
      * @return bool
      */
     public function isFinal() : bool {
@@ -144,7 +154,7 @@ class ClassMethod extends Node\Stmt implements FunctionLike
     public function isMagic() : bool {
         return isset(self::$magicNames[$this->name->toLowerString()]);
     }
-    
+
     public function getType() : string {
         return 'Stmt_ClassMethod';
     }

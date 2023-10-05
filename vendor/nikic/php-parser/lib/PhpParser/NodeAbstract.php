@@ -2,8 +2,6 @@
 
 namespace PhpParser;
 
-use PhpParser\Node;
-
 abstract class NodeAbstract implements Node, \JsonSerializable
 {
     protected $attributes;
@@ -110,22 +108,18 @@ abstract class NodeAbstract implements Node, \JsonSerializable
     /**
      * Gets the doc comment of the node.
      *
-     * The doc comment has to be the last comment associated with the node.
-     *
      * @return null|Comment\Doc Doc comment object or null
      */
     public function getDocComment() {
         $comments = $this->getComments();
-        if (!$comments) {
-            return null;
+        for ($i = count($comments) - 1; $i >= 0; $i--) {
+            $comment = $comments[$i];
+            if ($comment instanceof Comment\Doc) {
+                return $comment;
+            }
         }
 
-        $lastComment = $comments[count($comments) - 1];
-        if (!$lastComment instanceof Comment\Doc) {
-            return null;
-        }
-
-        return $lastComment;
+        return null;
     }
 
     /**
@@ -137,16 +131,17 @@ abstract class NodeAbstract implements Node, \JsonSerializable
      */
     public function setDocComment(Comment\Doc $docComment) {
         $comments = $this->getComments();
-
-        $numComments = count($comments);
-        if ($numComments > 0 && $comments[$numComments - 1] instanceof Comment\Doc) {
-            // Replace existing doc comment
-            $comments[$numComments - 1] = $docComment;
-        } else {
-            // Append new comment
-            $comments[] = $docComment;
+        for ($i = count($comments) - 1; $i >= 0; $i--) {
+            if ($comments[$i] instanceof Comment\Doc) {
+                // Replace existing doc comment.
+                $comments[$i] = $docComment;
+                $this->setAttribute('comments', $comments);
+                return;
+            }
         }
 
+        // Append new doc comment.
+        $comments[] = $docComment;
         $this->setAttribute('comments', $comments);
     }
 
@@ -159,11 +154,11 @@ abstract class NodeAbstract implements Node, \JsonSerializable
     }
 
     public function getAttribute(string $key, $default = null) {
-        if (!array_key_exists($key, $this->attributes)) {
-            return $default;
-        } else {
+        if (array_key_exists($key, $this->attributes)) {
             return $this->attributes[$key];
         }
+
+        return $default;
     }
 
     public function getAttributes() : array {

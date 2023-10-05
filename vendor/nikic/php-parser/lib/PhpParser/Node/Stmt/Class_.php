@@ -13,6 +13,7 @@ class Class_ extends ClassLike
     const MODIFIER_STATIC    =  8;
     const MODIFIER_ABSTRACT  = 16;
     const MODIFIER_FINAL     = 32;
+    const MODIFIER_READONLY  = 64;
 
     const VISIBILITY_MODIFIER_MASK = 7; // 1 | 2 | 4
 
@@ -28,23 +29,25 @@ class Class_ extends ClassLike
      *
      * @param string|Node\Identifier|null $name Name
      * @param array       $subNodes   Array of the following optional subnodes:
-     *                                'flags'      => 0      : Flags
-     *                                'extends'    => null   : Name of extended class
-     *                                'implements' => array(): Names of implemented interfaces
-     *                                'stmts'      => array(): Statements
+     *                                'flags'       => 0      : Flags
+     *                                'extends'     => null   : Name of extended class
+     *                                'implements'  => array(): Names of implemented interfaces
+     *                                'stmts'       => array(): Statements
+     *                                'attrGroups'  => array(): PHP attribute groups
      * @param array       $attributes Additional attributes
      */
     public function __construct($name, array $subNodes = [], array $attributes = []) {
-        parent::__construct($attributes);
+        $this->attributes = $attributes;
         $this->flags = $subNodes['flags'] ?? $subNodes['type'] ?? 0;
         $this->name = \is_string($name) ? new Node\Identifier($name) : $name;
         $this->extends = $subNodes['extends'] ?? null;
         $this->implements = $subNodes['implements'] ?? [];
         $this->stmts = $subNodes['stmts'] ?? [];
+        $this->attrGroups = $subNodes['attrGroups'] ?? [];
     }
 
     public function getSubNodeNames() : array {
-        return ['flags', 'name', 'extends', 'implements', 'stmts'];
+        return ['attrGroups', 'flags', 'name', 'extends', 'implements', 'stmts'];
     }
 
     /**
@@ -65,6 +68,10 @@ class Class_ extends ClassLike
         return (bool) ($this->flags & self::MODIFIER_FINAL);
     }
 
+    public function isReadonly() : bool {
+        return (bool) ($this->flags & self::MODIFIER_READONLY);
+    }
+
     /**
      * Whether the class is anonymous.
      *
@@ -72,6 +79,27 @@ class Class_ extends ClassLike
      */
     public function isAnonymous() : bool {
         return null === $this->name;
+    }
+
+    /**
+     * @internal
+     */
+    public static function verifyClassModifier($a, $b) {
+        if ($a & self::MODIFIER_ABSTRACT && $b & self::MODIFIER_ABSTRACT) {
+            throw new Error('Multiple abstract modifiers are not allowed');
+        }
+
+        if ($a & self::MODIFIER_FINAL && $b & self::MODIFIER_FINAL) {
+            throw new Error('Multiple final modifiers are not allowed');
+        }
+
+        if ($a & self::MODIFIER_READONLY && $b & self::MODIFIER_READONLY) {
+            throw new Error('Multiple readonly modifiers are not allowed');
+        }
+
+        if ($a & 48 && $b & 48) {
+            throw new Error('Cannot use the final modifier on an abstract class');
+        }
     }
 
     /**
@@ -94,11 +122,15 @@ class Class_ extends ClassLike
             throw new Error('Multiple final modifiers are not allowed');
         }
 
+        if ($a & self::MODIFIER_READONLY && $b & self::MODIFIER_READONLY) {
+            throw new Error('Multiple readonly modifiers are not allowed');
+        }
+
         if ($a & 48 && $b & 48) {
             throw new Error('Cannot use the final modifier on an abstract class member');
         }
     }
-    
+
     public function getType() : string {
         return 'Stmt_Class';
     }
