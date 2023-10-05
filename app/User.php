@@ -1118,7 +1118,7 @@ class User extends Authenticatable
 
     public function getAuthToken()
     {
-        return md5($this->id.config('app.key'));
+        return md5($this->id.''.$this->created_at.config('app.key'));
     }
 
     public static function findNonDeleted($id, $extended = false)

@@ -1,0 +1,5 @@
+# The list should be in sync with /config/app.php and nginx config.
+<FilesMatch "\.((?!(jpg|jpeg|jfif|pjpeg|pjp|apng|bmp|gif|ico|cur|png|tif|tiff|webp|pdf|txt|diff|patch|json|mp3|wav|ogg|wma)).)*$">
+   ForceType application/octet-stream
+   Header set Content-Disposition attachment
+</FilesMatch>

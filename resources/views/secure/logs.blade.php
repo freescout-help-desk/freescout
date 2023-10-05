@@ -73,7 +73,7 @@
 @endsection
 
 @section('javascripts')
-    <script src="{{ asset('js/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('js/datatables/datatables.min.js') }}" {!! \Helper::cspNonceAttr() !!}></script>
 @endsection
 
 @section('javascript')

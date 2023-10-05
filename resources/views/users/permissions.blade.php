@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-xs-12">
 
-                        <p><a href="javascript:void(0)" class="sel-all">{{ __('all') }}</a> / <a href="javascript:void(0)" class="sel-none">{{ __('none') }}</a></p>
+                        <p><a href="#" class="sel-all">{{ __('all') }}</a> / <a href="#" class="sel-none">{{ __('none') }}</a></p>
 
                         <fieldset id="permissions-fields">
                             @foreach ($mailboxes as $mailbox)

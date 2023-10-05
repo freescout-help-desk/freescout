@@ -1,0 +1,59 @@
+name: Test App (PostgreSQL)
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test App (PostgreSQL)
+    runs-on: ubuntu-latest
+
+    env:
+      DB_CONNECTION: testing_pgsql
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: freescout-test
+          POSTGRES_PASSWORD: freescout-test
+          POSTGRES_DB: freescout-test
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    strategy:
+      matrix:
+        php: ['7.3', '7.4', '8.0', '8.1', '8.2']
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pgsql, mbstring, xml, imap, zip, gd, curl, intl, json
+
+      - name: Install composer dependencies
+        run: composer install --ignore-platform-reqs --no-interaction
+
+      - name: Migrate and seed the database
+        run: |
+          php${{ matrix.php }} artisan migrate --force -n --database=testing_pgsql
+          php${{ matrix.php }} artisan db:seed --force -n --database=testing_pgsql
+        env:
+          DB_PORT: ${{ job.services.postgres.ports[5432] }}
+
+      - name: Run PHP tests
+        run: php${{ matrix.php }} ./vendor/bin/phpunit
+        env:
+          DB_PORT: ${{ job.services.postgres.ports[5432] }}

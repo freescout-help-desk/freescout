@@ -1,0 +1,20 @@
+name: PHP Code Sniffer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Lint PHP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          tools: phpcs
+
+      - name: Run check
+        run: phpcs

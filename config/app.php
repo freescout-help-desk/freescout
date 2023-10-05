@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.100',
+    'version' => '1.8.101',
 
     /*
     |--------------------------------------------------------------------------
@@ -264,6 +264,7 @@ return [
     |--------------------------------------------------------------------------
     | File types which should be viewed in the browser instead of downloading.
     | SVG images are not viewable to avid XSS.
+    | The list should be in sync with /storage/app/public/uploads/.htaccess and nginx config.
     |-------------------------------------------------------------------------
     */
     'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'tif', 'tiff', 'webp', 'pdf', 'txt', 'diff', 'patch', 'json', 'mp3', 'wav', 'ogg', 'wma']),
@@ -442,6 +443,14 @@ return [
     |-------------------------------------------------------------------------
     */
     'show_only_assigned_conversations'    => env('APP_SHOW_ONLY_ASSIGNED_CONVERSATIONS', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable Content-Security-Policy meta tag to prevent possible XSS attacks.
+    |-------------------------------------------------------------------------
+    */
+    'csp_enabled'    => env('APP_CSP_ENABLED', false),
+    'csp_script_src' => env('APP_CSP_SCRIPT_SRC', ''),
 
     /*
     |--------------------------------------------------------------------------

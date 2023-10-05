@@ -33,3 +33,4 @@ Thumbs.db
 /tools
 .well-known
 /resources/lang/module.*
+.phpunit.result.cache

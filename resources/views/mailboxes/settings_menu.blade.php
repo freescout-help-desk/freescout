@@ -15,7 +15,7 @@
 @action('mailboxes.settings.menu', $mailbox)
 @if (!empty($is_dropdown))
     <li class="divider"></li>
-    <li><a href="{{ route('conversations.ajax_html', ['action' => 'default_redirect']) }}?mailbox_id={{ $mailbox->id }}" data-trigger="modal" data-modal-title="{{ __("Default Redirect") }}" data-modal-no-footer="true" data-modal-on-show="initDefaultRedirect" role="button"><i class="glyphicon glyphicon-share-alt"></i> {{ __('Default Redirect') }}…</span></a></li>
+    <li><a href="{{ route('conversations.ajax_html', ['action' => 'default_redirect']) }}?mailbox_id={{ $mailbox->id }}" data-trigger="modal" data-modal-title="{{ __("Default Redirect") }}" data-modal-no-footer="true" data-modal-on-show="initAfterSendModal" role="button"><i class="glyphicon glyphicon-share-alt"></i> {{ __('Default Redirect') }}…</span></a></li>
 @endif
 @if (!empty($is_dropdown))
 	<li class="divider"></li>

@@ -128,8 +128,7 @@ class HtmlDumper extends CliDumper
             return $this->dumpHeader;
         }
 
-        $line = str_replace('{$options}', json_encode($this->displayOptions, \JSON_FORCE_OBJECT), <<<'EOHTML'
-<script>
+        $line = str_replace('{$options}', json_encode($this->displayOptions, \JSON_FORCE_OBJECT), '<script '.\Helper::cspNonceAttr().'>'.<<<'EOHTML'
 Sfdump = window.Sfdump || (function (doc) {
 
 var refStyle = doc.createElement('style'),

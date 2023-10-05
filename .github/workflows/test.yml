@@ -1,20 +1,45 @@
-name: Test
+name: Test App (MySQL)
 
 on:
   push:
     branches:
-      - 'dist'
+      - master
+  workflow_dispatch:
 
 jobs:
   test:
-    name: Test
+    name: Test App (MySQL)
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['7.3', '7.4', '8.0', '8.1', '8.2']
     steps:
-      - name: Install Wget
-        run: sudo apt install wget
-      - name: Download install
-        run: wget https://raw.githubusercontent.com/freescout-helpdesk/freescout/dist/tools/install.sh
-      - name: chmod installer
-        run: chmod u+x install.sh
-      - name: Run installer
-        run: sudo ./install.sh
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mysql, mbstring, xml, imap, zip, gd, curl, intl, json
+
+      - name: Start MySQL
+        run: |
+          sudo systemctl start mysql
+
+      - name: Setup database
+        run: |
+          mysql -uroot -proot -e 'CREATE DATABASE IF NOT EXISTS `freescout-test`;'
+          mysql -uroot -proot -e "CREATE USER 'freescout-test'@'localhost' IDENTIFIED WITH mysql_native_password BY 'freescout-test';"
+          mysql -uroot -proot -e "GRANT ALL ON \`freescout-test\`.* TO 'freescout-test'@'localhost';"
+          mysql -uroot -proot -e 'FLUSH PRIVILEGES;'
+
+      - name: Install composer dependencies
+        run: composer install --ignore-platform-reqs --no-interaction
+
+      - name: Migrate and seed the database
+        run: |
+          php${{ matrix.php }} artisan migrate --force -n --database=testing
+          php${{ matrix.php }} artisan db:seed --force -n --database=testing
+
+      - name: Run PHP tests
+        run: php${{ matrix.php }} ./vendor/bin/phpunit

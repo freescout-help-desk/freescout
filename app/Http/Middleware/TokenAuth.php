@@ -17,9 +17,10 @@ class TokenAuth
      */
     public function handle($request, Closure $next)
     {
+        // This is needed to restore authentication when app session expires.
         if (!$request->user() && !empty($request->auth_token) && $request->cookie('in_app')) {
             try {
-                $user = User::where(\DB::raw('md5(CONCAT(id, "'.config('app.key').'"))') , $request->auth_token)
+                $user = User::where(\DB::raw('md5(CONCAT(id, created_at, "'.config('app.key').'"))'), $request->auth_token)
                     ->first();
             } catch (\Exception $e) {
                 \Helper::logException($e, '[TokenAuth]');

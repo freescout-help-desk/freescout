@@ -31,8 +31,8 @@
                     <h2>{{ __("New Conversation") }}</h2>
 
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default active" id="email-conv-switch" onclick="switchToNewEmailConversation({{ App\Conversation::TYPE_EMAIL }})"><i class="glyphicon glyphicon-envelope"></i></button>
-                        <button type="button" class="btn btn-default" id="phone-conv-switch" onclick="switchToNewPhoneConversation()"><i class="glyphicon glyphicon-earphone"></i></button>
+                        <button type="button" class="btn btn-default active" id="email-conv-switch"><i class="glyphicon glyphicon-envelope"></i></button>
+                        <button type="button" class="btn btn-default" id="phone-conv-switch"><i class="glyphicon glyphicon-earphone"></i></button>
                     </div>
                 </div>
 
@@ -129,7 +129,7 @@
                                 </div>
 
                                 <div class="col-sm-9 col-sm-offset-2 toggle-field phone-conv-fields" id="toggle-email">
-                                    <a href="javascript:void(0);">{{ __('Add Email') }}</a>
+                                    <a href="#">{{ __('Add Email') }}</a>
                                 </div>
                             </div>
 
@@ -202,7 +202,7 @@
                             </div>
 
                             <div class="col-sm-9 col-sm-offset-2 email-conv-fields toggle-field @if ($conversation->cc && $conversation->bcc) hidden @endif">
-                                <a href="javascript:void(0);" class="help-link" id="toggle-cc">Cc/Bcc</a>
+                                <a href="#" class="help-link" id="toggle-cc">Cc/Bcc</a>
                             </div>
 
                             <div class="form-group{{ $errors->has('subject') ? ' has-error' : '' }}">

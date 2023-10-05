@@ -308,12 +308,30 @@ $(document).ready(function(){
 		}, 100);
 	});
 
+	$('#logout-link').click(function(e) {
+		$('#logout-form').submit();
+		e.preventDefault();
+	});
+
+	//applyVoidLinks();
+	$('ul.customer-contacts a.contact-main').click(function(e) {
+		copyToClipboard($(this).text());
+		e.preventDefault();
+	});
+
 	// Dirty JS hack because there was no way found to expand outer container when sidebar grows.
 	if ($('#conv-layout-customer').length && $(window).outerWidth() >= 1100 && $('.conv-sidebar-block').length > 2) {
 		adjustCustomerSidebarHeight();
 		setTimeout(adjustCustomerSidebarHeight, 2000);
-	}
+	}                                                   
 });
+
+/*function applyVoidLinks()
+{
+	$('a.void-link').click(function(e) {
+		e.preventDefault();
+	});
+}*/
 
 function initMuteMailbox()
 {
@@ -606,11 +624,13 @@ function fsFixEditorCodeSaving($el)
 function permissionsInit()
 {
 	$(document).ready(function(){
-	    $('.sel-all').click(function(event) {
+	    $('.sel-all').click(function(e) {
 			$("#permissions-fields input").attr('checked', 'checked');
+			e.preventDefault();
 		});
-		$('.sel-none').click(function(event) {
+		$('.sel-none').click(function(e) {
 			$("#permissions-fields input").removeAttr('checked');
+			e.preventDefault();
 		});
 	});
 }
@@ -813,7 +833,7 @@ function logsInit()
 function multiInputInit()
 {
 	$(document).ready(function() {
-	    $('.multi-add').click(function() {
+	    $('.multi-add').click(function(e) {
 	    	var clone = $(this).parents('.multi-container:first').children('.multi-item:first').clone(true, true);
 	    	var index = parseInt($(this).parents('.multi-container:first').children('.block-help:last').attr('data-max-i'));
 	    	if (isNaN(index)) {
@@ -833,13 +853,16 @@ function multiInputInit()
 	    	clone.insertAfter($(this).parents('.multi-container:first').children('.multi-item:last'));
 
 	    	$(this).parents('.multi-container:first').children('.block-help:last').attr('data-max-i', index);
+
+	    	e.preventDefault();
 		});
-		$('.multi-remove').click(function() {
+		$('.multi-remove').click(function(e) {
 	    	if ($(this).parents('.multi-container:first').children('.multi-item').length > 1) {
 	    		$(this).parents('.multi-item:first').remove();
 	    	} else {
 	    		$(this).parents('.multi-item:first').children(':input').val('');
 	    	}
+	    	e.preventDefault();
 		});
 	} );
 }
@@ -1263,7 +1286,7 @@ function initConversation()
 }
 
 // Create new email conversation
-function switchToNewEmailConversation(type_email)
+function switchToNewEmailConversation()
 {
 	$('#email-conv-switch').addClass('active');
 	$('#phone-conv-switch').removeClass('active');
@@ -1276,7 +1299,7 @@ function switchToNewEmailConversation(type_email)
 	$('.conv-block:first').removeClass('conv-note-block').removeClass('conv-phone-block');
 	$('#form-create :input[name="is_note"]:first').val(0);
 	$('#form-create :input[name="is_phone"]:first').val(0);
-	$('#form-create :input[name="type"]:first').val(type_email);
+	$('#form-create :input[name="type"]:first').val(1);
 }
 
 // Create new phone conversation
@@ -1518,8 +1541,13 @@ function showAttachments(data)
 			attachments_container.prepend(input_html);
 
 			// Links
-			var attachment_html = '<li class="atachment-upload-'+attachment.id+' attachment-loaded"><a href="'+attachment.url+'" class="break-words" target="_blank">'+attachment.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(attachment.size)+')</span> <i class="glyphicon glyphicon-remove" onclick="removeAttachment(\''+attachment.id+'\')"></i></li>';
+			var attachment_html = '<li class="atachment-upload-'+attachment.id+' attachment-loaded"><a href="'+attachment.url+'" class="break-words" target="_blank">'+attachment.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(attachment.size)+')</span> <i class="glyphicon glyphicon-remove" data-attachment-id="'+attachment.id+'"></i></li>';
 			attachments_container.find('ul:first').append(attachment_html);
+
+			// Delete attachment
+			$('li.attachment-loaded .glyphicon-remove:first').click(function(e) {
+				removeAttachment($(this).attr('data-attachment-id'));
+			});
 
 			attachments_container.show();
         }
@@ -1734,8 +1762,14 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 
 	// Show loader
 	if (attach) {
-		var attachment_html = '<li class="atachment-upload-'+attachment_dummy_id+'"><img src="'+Vars.public_url+'/img/loader-tiny.gif" width="16" height="16"/> <a href="javascript:void(0);" class="break-words disabled" target="_blank">'+file.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(file.size)+')</span> <i class="glyphicon glyphicon-remove" onclick="removeAttachment(\''+attachment_dummy_id+'\')"></i></li>';
+		var attachment_html = '<li class="atachment-upload-'+attachment_dummy_id+'"><img src="'+Vars.public_url+'/img/loader-tiny.gif" width="16" height="16"/> <a href="#" class="break-words disabled" target="_blank">'+file.name+'<span class="ellipsis">…</span> </a> <span class="text-help">('+formatBytes(file.size)+')</span> <i class="glyphicon glyphicon-remove" data-attachment-id="'+attachment_dummy_id+'"></i></li>';
 		attachments_container.children('ul:first').append(attachment_html);
+
+		// Delete attachment
+		$('li.atachment-upload-'+attachment_dummy_id+' .glyphicon-remove:first').click(function(e) {
+			removeAttachment($(this).attr('data-attachment-id'));
+		});
+
 		attachments_container.show();
 	} else {
 		loaderShow();
@@ -1840,9 +1874,16 @@ function initNewConversation(is_phone)
     	if (typeof(is_phone) != "undefined") {
         	switchToNewPhoneConversation();
         }
-	    $('#toggle-email').click(function() {
+	    $('#toggle-email').click(function(e) {
 			$('#field-to_email').show();
 			$(this).hide();
+			e.preventDefault();
+		});
+		$('#email-conv-switch').click(function() {
+			switchToNewEmailConversation();
+		});
+		$('#phone-conv-switch').click(function() {
+			switchToNewPhoneConversation();
 		});
     });
 }
@@ -1951,10 +1992,11 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 		}
 
 		// Show CC
-	    $('#toggle-cc').click(function() {
+	    $('#toggle-cc').click(function(e) {
 			$('.field-cc').removeClass('hidden');
 			$(this).parent().remove();
 			initRecipientSelector();
+			e.preventDefault();
 		});
 
 		// After send
@@ -2043,7 +2085,12 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 				});
 
 			e.preventDefault();
-		})
+		});
+
+	    $('#conv-subject .switch-to-note').click(function(e) {
+			switchToNote();
+			e.preventDefault();
+		});
 	});
 }
 
@@ -2357,6 +2404,15 @@ function showAjaxError(response, no_autohide)
 	} else {
 		showFloatingAlert('error', Lang.get("messages.error_occurred"), no_autohide);
 	}
+}
+
+function initAfterSendModal(modal)
+{
+	$(document).ready(function() {
+		modal.children().find(".after-send-save:first").click(function(e) {
+			saveAfterSend(e.target);
+		});
+	});
 }
 
 // Save default redirect
@@ -4146,6 +4202,15 @@ function editThread(button)
 				thread_container.children().hide();
 				thread_container.prepend(response.html);
 				summernoteInit(thread_container.find('.thread-editor:first'));
+
+				thread_container.children().find('.thread-editor-cancel:first').click(function(e) {
+					cancelThreadEdit(e.target);
+					e.preventDefault();
+				});
+				thread_container.children().find('.thread-editor-save:first').click(function(e) {
+					saveThreadEdit(e.target);
+					e.preventDefault();
+				});
 			} else {
 				showAjaxError(response);
 			}
@@ -4971,6 +5036,14 @@ function inApp(topic, token)
 		if (!getCookie('in_app')) {
 			setCookie('in_app', '1');
 		}
+		$('#navbar-back').click(function(e) {
+			goBack();
+			e.preventDefault();
+		});
+		$('a.in-app-switcher').click(function(e) {
+			switchHelpdeskUrl();
+			e.preventDefault();
+		});
 	});
 }
 
@@ -5208,4 +5281,28 @@ function closeAllModals()
 
 function replaceAll(text, search, replacement) {
     return text.split(search).join(replacement);
+}
+
+function initLogsTable()
+{
+	$(document).ready(function () {
+      $('.table-container tr').on('click', function () {
+        $('#' + $(this).data('display')).toggle();
+      });
+      $('#table-log').DataTable({
+        "order": [$('#table-log').data('orderingIndex'), 'desc'],
+        "stateSave": true,
+        "stateSaveCallback": function (settings, data) {
+          window.localStorage.setItem("datatable", JSON.stringify(data));
+        },
+        "stateLoadCallback": function (settings) {
+          var data = JSON.parse(window.localStorage.getItem("datatable"));
+          if (data) data.start = 0;
+          return data;
+        }
+      });
+      $('#delete-log, #clean-log, #delete-all-log').click(function () {
+        return confirm('Are you sure?');
+      });
+    });
 }
