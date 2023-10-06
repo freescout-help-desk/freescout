@@ -980,13 +980,23 @@ class FetchEmails extends Command
             throw $e;
         }
 
+        $body_changed = false;
         $saved_attachments = $this->saveAttachments($attachments, $thread->id);
         if ($saved_attachments) {
             $thread->has_attachments = true;
 
             // After attachments saved to the disk we can replace cids in body (for PLAIN and HTML body)
             $thread->body = $this->replaceCidsWithAttachmentUrls($thread->body, $saved_attachments);
+            $body_changed = true;
+        }
 
+        $new_body = Thread::replaceBase64ImagesWithAttachments($thread->body);
+        if ($new_body != $thread->body) {
+            $thread->body = $new_body;
+            $body_changed = true;
+        }
+
+        if ($body_changed) {
             $thread->save();
         }
 
@@ -1102,13 +1112,23 @@ class FetchEmails extends Command
         $thread->updated_at = $now;
         $thread->save();
 
+        $body_changed = false;
         $saved_attachments = $this->saveAttachments($attachments, $thread->id);
         if ($saved_attachments) {
             $thread->has_attachments = true;
 
             // After attachments saved to the disk we can replace cids in body (for PLAIN and HTML body)
             $thread->body = $this->replaceCidsWithAttachmentUrls($thread->body, $saved_attachments);
+            $body_changed = true;
+        }
 
+        $new_body = Thread::replaceBase64ImagesWithAttachments($thread->body);
+        if ($new_body != $thread->body) {
+            $thread->body = $new_body;
+            $body_changed = true;
+        }
+
+        if ($body_changed) {
             $thread->save();
         }
 
