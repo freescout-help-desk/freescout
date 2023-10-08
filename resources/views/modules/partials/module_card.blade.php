@@ -41,7 +41,7 @@
 				@elseif (!empty($module['activated']))
 					<button type="submit" class="btn btn-primary activate-trigger" data-loading-text="{{ __('Activating') }}…">{{ __('Activate') }}</button>
 				@else
-					<form action="javascript:installModule('{{ $module['alias'] }}');">
+					<form action="" class="install-module-form" data-module-alias="{{ $module['alias'] }}">
 					<div class="input-group">
 						<input type="text" class="form-control license-key" placeholder="{{ __('License Key') }}" value="{{ App\Module::getLicense($module['alias']) }}" required="required">
 						<span class="input-group-btn">

@@ -4916,6 +4916,12 @@ function initModulesList()
 				}, true
 			);
 		});
+
+		$('.install-module-form').submit(function(e) {
+			installModule($(this).attr('data-module-alias'));
+			e.preventDefault();
+			return false;
+		});
 	});
 }
 

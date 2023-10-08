@@ -124,5 +124,12 @@
             $('div.success-remove-unpublished').slideDown();
         });
 
+        $('.form-download-trigger').click(function(e) {
+            if (confirm('This will publish translations and download them as ZIP archive.')) {
+                return true;
+            } else {
+                e.preventDefault();
+            }
+        });
     })
 @endsection
