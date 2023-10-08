@@ -918,9 +918,11 @@ class FetchEmails extends Command
             $conversation->created_at = $now;
         }
 
+        $prev_has_attachments = $conversation->has_attachments;
         // Update has_attachments only if email has attachments AND conversation hasn't has_attachments already set
         // Prevent to set has_attachments value back to 0 if the new reply doesn't have any attachment
         if (!$conversation->has_attachments && count($attachments)) {
+            // Later we will check which attachments are embedded.
             $conversation->has_attachments = true;
         }
 
@@ -980,13 +982,23 @@ class FetchEmails extends Command
             throw $e;
         }
 
+        $body_changed = false;
         $saved_attachments = $this->saveAttachments($attachments, $thread->id);
         if ($saved_attachments) {
             $thread->has_attachments = true;
 
             // After attachments saved to the disk we can replace cids in body (for PLAIN and HTML body)
-            $thread->body = $this->replaceCidsWithAttachmentUrls($thread->body, $saved_attachments);
+            $thread->body = $this->replaceCidsWithAttachmentUrls($thread->body, $saved_attachments, $conversation, $prev_has_attachments);
+            $body_changed = true;
+        }
 
+        $new_body = Thread::replaceBase64ImagesWithAttachments($thread->body);
+        if ($new_body != $thread->body) {
+            $thread->body = $new_body;
+            $body_changed = true;
+        }
+
+        if ($body_changed) {
             $thread->save();
         }
 
@@ -1053,6 +1065,12 @@ class FetchEmails extends Command
                 break;
         }
 
+        $prev_has_attachments = $conversation->has_attachments;
+        if (!$conversation->has_attachments && count($attachments)) {
+            // Later we will check which attachments are embedded.
+            $conversation->has_attachments = true;
+        }
+
         // Save extra recipients to CC
         $conv_cc = $conversation->getCcArray();
         $conversation->setCc(array_merge($cc, $to));
@@ -1102,13 +1120,23 @@ class FetchEmails extends Command
         $thread->updated_at = $now;
         $thread->save();
 
+        $body_changed = false;
         $saved_attachments = $this->saveAttachments($attachments, $thread->id);
         if ($saved_attachments) {
             $thread->has_attachments = true;
 
             // After attachments saved to the disk we can replace cids in body (for PLAIN and HTML body)
-            $thread->body = $this->replaceCidsWithAttachmentUrls($thread->body, $saved_attachments);
+            $thread->body = $this->replaceCidsWithAttachmentUrls($thread->body, $saved_attachments, $conversation, $prev_has_attachments);
+            $body_changed = true;
+        }
 
+        $new_body = Thread::replaceBase64ImagesWithAttachments($thread->body);
+        if ($new_body != $thread->body) {
+            $thread->body = $new_body;
+            $body_changed = true;
+        }
+
+        if ($body_changed) {
             $thread->save();
         }
 
@@ -1135,8 +1163,8 @@ class FetchEmails extends Command
                 $email_attachment->getMimeType(),
                 Attachment::typeNameToInt($email_attachment->getType()),
                 $email_attachment->getContent(),
-                '',
-                false,
+                $uploaded_file = '',
+                $embedded = false,
                 $thread_id
             );
             if ($created_attachment) {
@@ -1256,8 +1284,10 @@ class FetchEmails extends Command
         return $result;
     }
 
-    public function replaceCidsWithAttachmentUrls($body, $attachments)
+    public function replaceCidsWithAttachmentUrls($body, $attachments, $conversation, $prev_has_attachments)
     {
+        $only_embedded_attachments = true;
+
         foreach ($attachments as $attachment) {
             // webklex:
             // [type] => image
@@ -1286,8 +1316,27 @@ class FetchEmails extends Command
             // [img_src] =>
             // [size] => 2326
             if ($attachment['imap_attachment']->id && (isset($attachment['imap_attachment']->img_src) || strlen($attachment['imap_attachment']->content ?? ''))) {
-                $body = str_replace('cid:'.$attachment['imap_attachment']->id, $attachment['attachment']->url(), $body);
+                $cid = 'cid:'.$attachment['imap_attachment']->id;
+                if (strstr($body, $cid)) {
+                    $body = str_replace($cid, $attachment['attachment']->url(), $body);
+                    // Set embedded flag for the attachment.
+                    $attachment['attachment']->embedded = true;
+                    $attachment['attachment']->save();
+                } else {
+                    $only_embedded_attachments = false;
+                }
+            } else {
+                $only_embedded_attachments = false;
             }
+        }
+
+        if ($only_embedded_attachments 
+            && $conversation 
+            && $conversation->has_attachments
+            && !$prev_has_attachments
+        ) {
+            $conversation->has_attachments = false;
+            $conversation->save();
         }
 
         return $body;
