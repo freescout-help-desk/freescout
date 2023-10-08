@@ -2018,8 +2018,8 @@ class Helper
         $nonce = \Helper::cspNonce();
 
         return "<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'self' 'nonce-".$nonce."' "
-            .config('app.csp_script_src').' '.\Eventy::filter('csp.script_src', '')."\">
-            <meta property=\"csp-nonce\" id=\"csp-nonce\" content=\"".$nonce."\">";
+            .config('app.csp_script_src').' '.\Eventy::filter('csp.script_src', '')."\">";
+        //<meta property=\"csp-nonce\" id=\"csp-nonce\" content=\"".$nonce."\">";
     }
 
     public static function cspNonceAttr()

@@ -449,7 +449,7 @@ return [
     | Enable Content-Security-Policy meta tag to prevent possible XSS attacks.
     |-------------------------------------------------------------------------
     */
-    'csp_enabled'    => env('APP_CSP_ENABLED', false),
+    'csp_enabled'    => env('APP_CSP_ENABLED', true),
     'csp_script_src' => env('APP_CSP_SCRIPT_SRC', ''),
 
     /*
