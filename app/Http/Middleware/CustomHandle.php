@@ -16,6 +16,11 @@ class CustomHandle
      */
     public function handle($request, Closure $next)
     {
+        // Enable/disable chat mode
+        if ($request->exists('chat_mode')) {
+            \Helper::setChatMode((int)$request->chat_mode);
+        }
+
         // Hook.
         \Eventy::action('middleware.web.custom_handle', $request);
 

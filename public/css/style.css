@@ -4253,6 +4253,7 @@ a.disabled:focus {
     display: inline-block;
     overflow: hidden;
     word-wrap: normal;
+    text-overflow: ellipsis;
 }
 .mailbox-name .glyphicon {
     top: 2px;
@@ -4356,10 +4357,21 @@ a.disabled:focus {
     border-radius: 3px;
     background-color: #97a4b0;
 }
+.fs-tag-green {
+    background-color: #52ad67;
+}
 .conv-subject .fs-tag {
     margin-right: 6px;
     position: relative;
     top: 1px;
+}
+.fs-tag-btn {
+    margin-top: 8px;
+    margin-right: 8px;
+    line-height: 14px;
+    font-size: 15px;
+    padding: 4px 6px 4px 6px;
+    vertical-align: inherit;
 }
 .glyphicon-spin {
     -webkit-animation: spin 1000ms infinite linear;
@@ -4386,6 +4398,69 @@ a.disabled:focus {
     }
 }
 
+.chats {
+    height: calc(100vh - 125px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-right: -11px;
+}
+.chats.sidebar-menu > li:nth-child(n+2) > a {
+    padding-left: 22px;
+}
+.chat-mode .note-statusbar {
+    display: none;
+}
+.chat-mode .conv-note-block .note-statusbar {
+    display: block;
+}
+.chat-mode .conv-note-block .note-placeholder {
+    /*color: #fff;*/
+    display: none !important;
+}
+.conv-top-chat {
+    line-height: 21px;
+}
+.chats.sidebar-menu > li > a {
+    height: auto;
+    border-radius: 0;
+}
+.chats.sidebar-menu > li {
+    border-radius: 0;
+}
+.chat-preview {
+    color: #93a1af;
+    font-size: 13.4px;
+    display: inline-block;
+    padding-top: 1px;
+    max-width: 217px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: normal;
+}
+.chats li {
+    border-bottom: 1px solid #e3e8eb;
+}
+.chats li.active {
+    border-bottom: 0;
+}
+.chats li.new {
+    background-color: #f4f8fd;
+}
+.chat-tags .fs-tag-green {
+    opacity: 0.9;
+}
+.chats-load-more {
+    text-align: center;
+    height: 45px !important;
+    line-height: 35px !important;
+}
+.chats-load-more i {
+    font-size: 18px !important;
+    position: static !important;
+    top: 0 !important;
+}
+
 @media (max-width: 350px) {
     .conv-next-prev {
         display: none !important;
@@ -4398,6 +4473,10 @@ a.disabled:focus {
 @media (max-width:767px) {
     .descr-block {
         margin: 20px 0;
+    }
+    /* Chat placeholder is not needed on mobile as mobile devices don't have ENTER button */
+    .chat-mode .note-placeholder {
+        display: none !important;
     }
 }
 /**

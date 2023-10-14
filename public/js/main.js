@@ -22,6 +22,8 @@ var fs_filters = {};
 var fs_body_default = '<div><br></div>';
 var fs_prev_focus = true;
 
+var FS_STATUS_CLOSED = 3;
+
 // Ajax based notifications;
 var poly;
 // List of funcions preparin data for polycast receive request
@@ -1174,6 +1176,17 @@ function initConversation()
 			e.preventDefault();
 		});
 
+		// Chat mode
+		// Show details in chat mode
+		var conv_top_blocks = $('#conv-top-blocks');
+		var is_chat_mode = false;
+		if (conv_top_blocks.length) {
+			if (!conv_top_blocks.children('.conv-top-block:first').length) {
+				conv_top_blocks.prev().hide();
+			}
+			is_chat_mode = true;
+		}
+
 	    // Delete conversation
 	    jQuery(".conv-delete,.conv-delete-forever").click(function(e){
 	    	var confirm_html = '<div>'+
@@ -1282,6 +1295,102 @@ function initConversation()
 		maybeShowDraft();
 		processLinks();
 		initConvSettings();
+
+		// Show reply form in chat mode
+		if (is_chat_mode && !$('.conv-action.inactive:first').length) {
+			$(".conv-reply").click();
+		}
+		// Send reply on ENTER press in chat mode
+		if (is_chat_mode) {
+
+			// Accept chat - assign to yourself
+			$('button.chat-accept:visible').click(function(e) {
+				var button = $(this);
+				button.button('loading');
+
+				fsAjax(
+					{
+						action: 'conversation_change_user',
+						user_id: getGlobalAttr('auth_user_id'),
+						conversation_id: getGlobalAttr('conversation_id')
+					},
+					laroute.route('conversations.ajax'),
+					function(response) {
+						if (isAjaxSuccess(response)) {
+							window.location.href = '';
+						} else {
+							showAjaxResult(response);
+							button.button('reset');
+						}
+					}, true
+				);
+
+				e.preventDefault();
+			});
+
+			// End chat - close conversation
+			$('button.chat-end:visible').click(function(e) {
+				var button = $(this);
+				button.button('loading');
+
+				fsAjax(
+					{
+						action: 'conversation_change_status',
+						status: FS_STATUS_CLOSED,
+						conversation_id: getGlobalAttr('conversation_id'),
+						folder_id: getQueryParam('folder_id')
+					},
+					laroute.route('conversations.ajax'),
+					function(response) {
+						if (isAjaxSuccess(response)) {
+							window.location.href = '';
+						} else {
+							showAjaxResult(response);
+							button.button('reset');
+						}
+					}, true
+				);
+
+				e.preventDefault();
+			});
+
+			// Automatically refresh chat list
+			$(document).on('keydown', function(e) {
+				// Skip inputs and editable areas.
+				if (!e.target
+					|| e.which != 13
+					|| $(e.target).is(':input')
+					|| e.altKey
+					|| e.shiftKey
+					|| e.metaKey
+					|| $('.modal:visible').length
+					//|| $('#conv-status.open:first').length
+				) {
+					return;
+				}
+				
+				if (e.which == 13
+					&& !e.shiftKey
+					&& $(e.target).attr('contentEditable') == 'true'
+
+				) {
+					if (!$(':focus').hasClass('note-editable')) {
+						return;
+					}
+					var body = $('#body').val();
+					if (!body || body == '<div><br></div>') {
+						return;
+					}
+					var button = $('div.conv-block:not(.conv-note-block) div.conv-reply-body:visible .btn-reply-submit:first');
+					if (button.length) {
+						button.click();
+						// Does not work
+						e.preventDefault();
+						e.stopPropagation();
+					}
+				}
+			});
+		}
 	});
 }
 
@@ -1576,6 +1685,7 @@ function convEditorInit()
 	});
 
 	var options = {
+		placeholder: $('#body').attr('placeholder'),
 		minHeight: 120,
 		dialogsInBody: true,
 		dialogsFade: true,
@@ -1646,7 +1756,7 @@ function convEditorInit()
 function autosaveDraft()
 {
 	if (!isNote() || isPhone()) {
-		saveDraft(false, true);
+		saveDraft(false, true, true);
 	}
 	setTimeout(function(){ autosaveDraft() }, fs_draft_autosave_period*1000);
 }
@@ -1698,7 +1808,7 @@ function onReplyBlur()
 			// Save note
 			rememberNote();
 		} else {
-  			saveDraft(false, true);
+  			saveDraft(false, true, true);
   		}
 	  	//}
 	  }, 500);
@@ -2056,15 +2166,21 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 	    	data += '&action=send_reply';
 
 	    	button.button('loading');
+	    	var is_note = isNote();
+	    	var is_chat = isChatMode();
+	    	var disable_editor = isChatMode() && !is_note;
+	    	if (disable_editor) {
+	    		$('#body').summernote('disable');
+	    	}
 
 			fsAjax(data, laroute.route('conversations.ajax'), function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
 						// Forget note
-						if (isNote()) {
+						if (is_note) {
 							fs_autosave_note = false;
 							forgetNote(getGlobalAttr('conversation_id'));
 						}
-						if (typeof(response.redirect_url) != "undefined") {
+						if (typeof(response.redirect_url) != "undefined" && !is_chat) {
 							window.location.href = response.redirect_url;
 						} else {
 							window.location.href = '';
@@ -2072,6 +2188,9 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 					} else {
 						showAjaxError(response);
 						button.button('reset');
+						if (disable_editor) {
+							$('#body').summernote('enable');
+						}
 					}
 					loaderHide();
 					fs_processing_send_reply = false;
@@ -2081,6 +2200,9 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 					showFloatingAlert('error', Lang.get("messages.ajax_error"));
 					loaderHide();
 					button.button('reset');
+					if (disable_editor) {
+						$('#body').summernote('enable');
+					}
 					fs_processing_send_reply = false;
 				});
 
@@ -3513,10 +3635,10 @@ function polycastInit()
 	    });
 	}
 
-	// Refresh folders
+	// Refresh folders and conversations list
     var mailbox_id = getGlobalAttr('mailbox_id');
     var el_folders = $('#folders');
-    if (mailbox_id && el_folders.length) {
+    if (mailbox_id && el_folders.length && !isChatMode()) {
 	    var channel = poly.subscribe('mailbox.'+mailbox_id);
 
 	    channel.on('App\\Events\\RealtimeMailboxNewThread', function(data, event){
@@ -3549,11 +3671,67 @@ function polycastInit()
 	    });
 	}
 
+    var chats = $('#folders.chats:first');
+    if (mailbox_id && chats.length) {
+	    var channel = poly.subscribe('chat.'+mailbox_id);
+
+	    channel.on('App\\Events\\RealtimeChat', function(data, event){
+	        if (!data || typeof(data.mailbox_id) == "undefined" || data.mailbox_id != mailbox_id) {
+	        	return;
+		    }
+
+		    if (typeof(data.chats_html) != "undefined" && data.chats_html) {
+		    	var chat_id = chats.children('li.active:first').attr('data-chat_id');
+		    	var header_html = chats.children('li:first').prop('outerHTML');
+
+		    	chats.html(header_html+data.chats_html);
+		    	
+		    	var active_chat = chats.children('li[data-chat_id="'+chat_id+'"]');
+		    	active_chat.addClass('active');
+
+		    	initChats();
+		    }
+	    });
+
+	    initChats();
+	}
+
     // at any point you can disconnect
     //poly.disconnect();
 
     // and when you disconnect, you can again at any point reconnect
     //poly.reconnect();
+}
+
+function initChats()
+{
+	$('.chats-load-more').click(function(e) {
+		var button = $(this);
+
+		button.button('loading');
+
+		fsAjax(
+			{
+				action: 'chats_load_more',
+				mailbox_id: getGlobalAttr('mailbox_id'),
+				offset: $('#folders .chat-item').length - 1,
+			},
+			laroute.route('conversations.ajax'),
+			function(response) {
+				if (isAjaxSuccess(response)) {
+					button.parent().before(response.html);
+					button.parent().remove();
+					initChats();
+				} else {
+					showAjaxResult(response);
+				}
+				button.button('reset');
+			}, true
+		);
+
+		e.preventDefault();
+		e.stopPropagation();
+	});
 }
 
 function convIsChat()
@@ -3837,7 +4015,7 @@ function isNewConversation()
  * Save draft automatically, on reply change or on click.
  * Validation is not needed.
  */
-function saveDraft(reload_page, no_loader)
+function saveDraft(reload_page, no_loader, do_not_save_empty)
 {
 	if (!reload_page && fs_processing_save_draft) {
 		return;
@@ -3854,6 +4032,14 @@ function saveDraft(reload_page, no_loader)
 	if (!form || !form.length) {
 		finishSaveDraft();
 		return;
+	}
+
+	// Do not auto-save draft is there is no thread_id and body.
+	if (typeof(do_not_save_empty) != "undefined") {
+		if (!$('.form-reply:visible:first :input[name="thread_id"]:first').val() && !$('#body').val()) {
+			fs_processing_save_draft = false;
+			return;
+		}
 	}
 
 	var button = form.children().find('.note-actions .note-btn:first');
@@ -5311,4 +5497,9 @@ function initLogsTable()
         return confirm('Are you sure?');
       });
     });
+}
+
+function isChatMode()
+{
+	return $("body:first").hasClass('chat-mode');
 }
