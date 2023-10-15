@@ -130,6 +130,10 @@ sudo echo 'server {
 
     error_log '"$install_path"'/storage/logs/web-server.log;
 
+    # Max. attachment size.
+    # It must be also set in PHP.ini via "upload_max_filesize" and "post_max_size" directives.
+    client_max_body_size 20M;
+    
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }
