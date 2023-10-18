@@ -446,6 +446,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | By default X-Frame-Options header is enabled and set to SAMEORIGIN.
+    | Via this option you can disable it (APP_X_FRAME_OPTIONS=false) or set custom value:
+    | - DENY
+    | - ALLOW-FROM example.org
+    |-------------------------------------------------------------------------
+    */
+    'x_frame_options'    => env('APP_X_FRAME_OPTIONS', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Enable Content-Security-Policy meta tag to prevent possible XSS attacks.
     |-------------------------------------------------------------------------
     */
