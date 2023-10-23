@@ -890,6 +890,15 @@ class Request
      */
     public function getClientIps()
     {
+        // Fix for CloudFlare.
+        if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])
+            && $_SERVER['REMOTE_ADDR'] != $_SERVER["HTTP_CF_CONNECTING_IP"]
+            && config('app.cloudflare_is_used')
+        ) {
+            $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+            $this->server->set('REMOTE_ADDR', $_SERVER["HTTP_CF_CONNECTING_IP"]);
+        }
+
         $ip = $this->server->get('REMOTE_ADDR');
 
         if (!$this->isFromTrustedProxy()) {
