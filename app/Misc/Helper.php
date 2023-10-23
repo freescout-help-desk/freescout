@@ -9,6 +9,7 @@ namespace App\Misc;
 use Carbon\Carbon;
 use App\Option;
 use App\User;
+use App\CustomerChannel;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -1348,9 +1349,18 @@ class Helper
         foreach ((array)$protocols as $protocol) {
             switch ($protocol) {
                 case 'http':
-                case 'https':   $value = preg_replace_callback('~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { if ($match[1]) $protocol = $match[1]; $link = $match[2] ?: $match[3]; return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>'; }, $value) ?: $value;
+                case 'https':
+                    //$value = preg_replace_callback('~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { 
+                    $value = preg_replace_callback('%(\b(([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
+                            if ($match[3]) {
+                                $protocol = $match[3];
+                            }
+                            $link = $match[1];
+                            $link = substr($link, strlen($match[2]));
+                            return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
+                    }, $value) ?: $value;
                     break;
-                case 'mail':    $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:])~', function ($match) use (&$links, $attr) { return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>'; }, $value) ?: $value;
+                case 'mail':    $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:\)])~', function ($match) use (&$links, $attr) { return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>'; }, $value) ?: $value;
                     break;
                 default:        $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { return '<' . array_push($links, "<a $attr href=\"$protocol://{$match[1]}\">$protocol://{$match[1]}</a>") . '>'; }, $value) ?: $value;
                     break;
@@ -2029,5 +2039,24 @@ class Helper
         }
 
         return ' nonce="'.\Helper::cspNonce().'"';
+    }
+
+    public static function isChatModeAvailable()
+    {
+        return count(CustomerChannel::getChannels());
+    }
+
+    public static function isChatMode()
+    {
+        return (int)\Session::get('chat_mode', 0);
+    }
+
+    public static function setChatMode($is_on)
+    {
+        if ((int)$is_on) {
+            \Session::put('chat_mode', 1);
+        } else {
+            \Session::forget('chat_mode');
+        }
     }
 }

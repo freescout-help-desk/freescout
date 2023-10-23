@@ -1,11 +1,15 @@
 @extends('layouts.app')
 
+@php
+    $is_in_chat_mode = $conversation->isInChatMode();
+@endphp
+
 @section('title_full', '#'.$conversation->number.' '.$conversation->getSubject().($customer ? ' - '.$customer->getFullName(true) : ''))
 
 @if (app('request')->input('print'))
     @section('body_class', 'body-conv print')
 @else
-    @section('body_class', 'body-conv')
+    @section('body_class', 'body-conv'.($is_in_chat_mode ? ' chat-mode' : ''))
 @endif
 
 @section('body_attrs')@parent data-conversation_id="{{ $conversation->id }}"@endsection
@@ -136,7 +140,11 @@
                                 </span>
                             </div>
                         </div>
-                        @if ($conversation->isChat() && $conversation->getChannelName())<span class="conv-tags"><span class="fs-tag fs-tag-md"><a class="fs-tag-name" href="#"><small class="glyphicon glyphicon-phone"></small> {{ $conversation->getChannelName() }}</a></span></span>@endif
+                        @if ($conversation->isChat() && $conversation->getChannelName())
+                            <span class="conv-tags">
+                                @if (\Helper::isChatMode())<a class="btn btn-default fs-tag-btn" href="{{ request()->fullUrlWithQuery(['chat_mode' => '0']) }}" title="{{ __('Exit') }}" data-toggle="tooltip"><small class="glyphicon glyphicon-stop"></small> {{ __('Chat Mode') }}</a>@else<a class="btn btn-primary fs-tag-btn" href="{{ request()->fullUrlWithQuery(['chat_mode' => '1']) }}"><small class="glyphicon glyphicon-play"></small> {{ __('Chat Mode') }}</a>@endif<span class="fs-tag fs-tag-md"><a class="fs-tag-name" href="#"><small class="glyphicon glyphicon-phone"></small> {{ $conversation->getChannelName() }}</a></span>
+                            </span>
+                        @endif
                         @action('conversation.after_subject', $conversation, $mailbox)
                         <div class="conv-numnav">
                             <i class="glyphicon conv-star @if ($conversation->isStarredByUser()) glyphicon-star @else glyphicon-star-empty @endif" title="@if ($conversation->isStarredByUser()){{ __("Unstar Conversation") }}@else{{ __("Star Conversation") }}@endif"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>
@@ -150,7 +158,21 @@
                         </div>
                     </div>
                 </div>
-                @action('conversation.after_subject_block', $conversation, $mailbox)
+                @if ($is_in_chat_mode)
+                    <div class="conv-top-block conv-top-chat clearfix">
+                        @if ($conversation->user_id != Auth::user()->id)
+                            <button class="btn btn-success btn-xs pull-right chat-accept" data-loading-text="{{ __('Accept Chat') }}…">{{ __('Accept Chat') }}</button>
+                        @elseif (!$conversation->isClosed())
+                            <button class="btn btn-default btn-xs pull-right chat-end" data-loading-text="{{ __('End Chat') }}…">{{ __('End Chat') }}</button>
+                        @endif
+                        <a href="#conv-top-blocks" data-toggle="collapse">{{ __('Show Details') }} <b class="caret"></b></a>
+                    </div>
+                    <div class="collapse" id="conv-top-blocks">
+                @endif
+                    @action('conversation.after_subject_block', $conversation, $mailbox)
+                @if ($conversation->isInChatMode())
+                    </div>
+                @endif
                 <div class="conv-action-wrapper">
                     <div class="conv-block conv-reply-block conv-action-block hidden">
                         <div class="col-xs-12">
@@ -248,7 +270,7 @@
                                 </div>
 
                                 <div class="form-group{{ $errors->has('body') ? ' has-error' : '' }} conv-reply-body">
-                                    <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}">{{ old('body', $conversation->body) }}</textarea>
+                                    <textarea id="body" class="form-control" name="body" rows="13" data-parsley-required="true" data-parsley-required-message="{{ __('Please enter a message') }}" @if ($conversation->isInChatMode()) placeholder="{{ __('Use ENTER to send the message and SHIFT+ENTER for a new line') }}" @endif>{{ old('body', $conversation->body) }}</textarea>
                                     <div class="help-block has-error">
                                         @include('partials/field_error', ['field'=>'body'])
                                     </div>

@@ -1,3 +1,8 @@
+@if (\Helper::isChatModeAvailable() && $mailbox->id >= 0)
+    <li>
+        <a href="{{ route('conversations.chats', ['mailbox_id' => $mailbox->id, 'chat_mode' => '1']) }}" class="no-active"><i class="glyphicon glyphicon-phone"></i> <span class="folder-name">{{ __('Chats') }}</span></a>
+    </li>
+@endif
 @foreach ($folders as $folder_item)
     @if (
         $folder->type == $folder_item->type || (

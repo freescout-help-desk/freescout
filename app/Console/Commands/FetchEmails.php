@@ -561,10 +561,18 @@ class FetchEmails extends Command
             }
 
             // Make sure that prev_thread belongs to the current mailbox.
-            // It may happen when forwarding conversation for example.
-            if ($prev_thread) {
+            // Problems may arise when forwarding conversation for example.
+            //
+            // For replies to email notifications it's allowed to have prev_thread in
+            // another mailbox as conversation can be moved.
+            // https://github.com/freescout-helpdesk/freescout/issues/3455
+            if ($prev_thread && $message_from_customer) {
                 if ($prev_thread->conversation->mailbox_id != $mailbox->id) {
                     // https://github.com/freescout-helpdesk/freescout/issues/2807
+                    // Behaviour of email sent to multiple mailboxes:
+                    // If a user from either mailbox replies, then a new conversation is created
+                    // in the other mailbox with another new conversation ID.
+                    // 
                     // Try to get thread by generated message ID.
                     if ($in_reply_to) {
                         $prev_thread = Thread::where('message_id', \MailHelper::generateMessageId($in_reply_to, $mailbox->id.$in_reply_to))->first();
@@ -744,6 +752,15 @@ class FetchEmails extends Command
 
                     // Send "Unable to process your update email" to user
                     \App\Jobs\SendEmailReplyError::dispatch($from, $user, $mailbox)->onQueue('emails');
+
+                    return;
+                }
+
+                // Save user thread only if there prev_thread is set.
+                // https://github.com/freescout-helpdesk/freescout/issues/3455
+                if (!$prev_thread) {
+                    $this->logError("Support agent's reply to the email notification could not be processed as previous thread could not be determined.");
+                    $this->setSeen($message, $mailbox);
 
                     return;
                 }

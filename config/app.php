@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.104',
+    'version' => '1.8.105',
 
     /*
     |--------------------------------------------------------------------------
@@ -446,11 +446,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | By default X-Frame-Options header is enabled and set to SAMEORIGIN.
+    | Via this option you can disable it (APP_X_FRAME_OPTIONS=false) or set custom value:
+    | - DENY
+    | - ALLOW-FROM example.org
+    |-------------------------------------------------------------------------
+    */
+    'x_frame_options'    => env('APP_X_FRAME_OPTIONS', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Enable Content-Security-Policy meta tag to prevent possible XSS attacks.
     |-------------------------------------------------------------------------
     */
     'csp_enabled'    => env('APP_CSP_ENABLED', true),
     'csp_script_src' => env('APP_CSP_SCRIPT_SRC', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Let the application know that CloudFlare is used (for proper client IP detection).
+    |-------------------------------------------------------------------------
+    */
+    'cloudflare_is_used'    => env('APP_CLOUDFLARE_IS_USED', false),
 
     /*
     |--------------------------------------------------------------------------

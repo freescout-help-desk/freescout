@@ -41,6 +41,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\HttpsRedirect::class,
             \App\Http\Middleware\Localize::class,
             \App\Http\Middleware\LogoutIfDeleted::class,
+            \App\Http\Middleware\FrameGuard::class,
             \App\Http\Middleware\CustomHandle::class,
         ],
 

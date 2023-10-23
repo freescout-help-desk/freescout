@@ -2207,6 +2207,25 @@ class ConversationsController extends Controller
 
                 break;
 
+            case 'chats_load_more':
+                $mailbox = Mailbox::find($request->mailbox_id);
+
+                if (!$mailbox) {
+                    $response['msg'] = __('Mailbox not found');
+                } elseif (!$mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Action not authorized');
+                }
+
+                if (!$response['msg']) {
+                    $response['html'] = \View::make('mailboxes/partials/chat_list')->with([
+                            'mailbox' => $mailbox,
+                            'offset' => $request->offset,
+                        ])->render();
+                    $response['status'] = 'success';
+                }
+
+                break;
+
             default:
                 $response['msg'] = 'Unknown action';
                 break;
@@ -3055,5 +3074,32 @@ class ConversationsController extends Controller
             'customer' => $customer,
             'customer_email' => $customer_email,
         ];
+    }
+
+    /**
+     * View conversation.
+     */
+    public function chats(Request $request, $mailbox_id)
+    {
+        $user = auth()->user();
+
+        $mailbox = Mailbox::findOrFailWithSettings($mailbox_id, $user->id);
+        $this->authorize('viewCached', $mailbox);
+
+        // Redirect to the first available chat.
+        $chats = Conversation::getChats($mailbox_id, 0, 1);
+
+        if (count($chats)) {
+            if (!\Helper::isChatMode()) {
+                \Helper::setChatMode(true);
+            }
+
+            return redirect()->away($chats[0]->url());
+        }
+
+        return view('conversations/chats', [
+            'is_in_chat_mode'    => true,
+            'mailbox'            => $mailbox,
+        ]);
     }
 }

@@ -70,6 +70,7 @@ Route::get('/mailbox/{mailbox_id}/clone-ticket/{from_thread_id}', 'Conversations
 Route::get('/conversation/ajax-html/{action}', ['uses' => 'ConversationsController@ajaxHtml', 'laroute' => true])->name('conversations.ajax_html');
 Route::get('/search', 'ConversationsController@search')->name('conversations.search');
 Route::get('/conversation/undo-reply/{thread_id}', 'ConversationsController@undoReply')->name('conversations.undo');
+Route::get('/mailbox/{mailbox_id}/chats', 'ConversationsController@chats')->name('conversations.chats');
 
 // Mailboxes
 Route::get('/mailboxes', ['uses' => 'MailboxesController@mailboxes', 'laroute' => true])->name('mailboxes');
