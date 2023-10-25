@@ -4220,7 +4220,9 @@ function loadAttachments(is_forwarding)
 					attachments_container.addClass('forward-attachments-loaded');
 					showAttachments(response.data);
 					// Auto save draft to avoid multiplying attachments
-					saveDraft(false, true);
+					if (is_forwarding) {
+						saveDraft(false, true);
+					}
 				} else {
 					// Do nothing
 					//showAjaxError(response);
