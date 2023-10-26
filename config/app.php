@@ -304,6 +304,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Maximum size of the message which can be sent to the customer (MB).
+    |
+    |-------------------------------------------------------------------------
+    */
+    'max_message_size'    => env('APP_MAX_MESSAGE_SIZE', '20'),
+
+    /*
+    |--------------------------------------------------------------------------
     | none - send to the user only agent's reply in the email.
     |
     | last - send to the user the last message in the email.

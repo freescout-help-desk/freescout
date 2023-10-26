@@ -775,6 +775,29 @@ class ConversationsController extends Controller
                     }
                 }
 
+                // Check max. message size.
+                if (!$response['msg']) {
+                    $max_message_size = (int)config('app.max_message_size');
+                    if ($max_message_size) {
+                        // Todo: take into account conversation history.
+                        $message_size = mb_strlen($body, '8bit');
+
+                        // Calculate attachments size.
+                        $attachments_ids = array_merge($request->attachments ?? [], $request->embeds ?? []);
+
+                        if (count($attachments_ids)) {
+                            $attachments_to_check = Attachment::select('size')->whereIn('id', $attachments_ids)->get();
+                            foreach ($attachments_to_check as $attachment) {
+                                $message_size += (int)$attachment->size;
+                            }
+                        }
+
+                        if ($message_size > $max_message_size*1024*1024) {
+                            $response['msg'] = __('Message is too large — :info. Please shorten your message or remove some attachments.', ['info' => __('Max. Message Size').': '.$max_message_size.' MB']);
+                        }
+                    }
+                }
+
                 if (!$response['msg']) {
 
                     // Get attachments info
