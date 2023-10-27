@@ -116,6 +116,9 @@ class SettingsController extends Controller
                         'custom_number' => [
                             'env' => 'APP_CUSTOM_NUMBER',
                         ],
+                        'max_message_size' => [
+                            'env' => 'APP_MAX_MESSAGE_SIZE',
+                        ],
                         'email_conv_history' => [
                             'env' => 'APP_EMAIL_CONV_HISTORY',
                         ],
@@ -200,6 +203,7 @@ class SettingsController extends Controller
                     'email_branding'       => Option::get('email_branding'),
                     'open_tracking'        => Option::get('open_tracking'),
                     'email_conv_history'   => config('app.email_conv_history'),
+                    'max_message_size'     => config('app.max_message_size'),
                     'email_user_history'   => config('app.email_user_history'),
                     'enrich_customer_data' => Option::get('enrich_customer_data'),
                     'time_format'          => Option::get('time_format', User::TIME_FORMAT_24),

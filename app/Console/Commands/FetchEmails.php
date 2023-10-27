@@ -702,38 +702,41 @@ class FetchEmails extends Command
             $new_thread = null;
             if ($message_from_customer) {
 
-                if (!$data['prev_thread']) {
-                    // Maybe this email need to be imported also into other mailbox.
+                // We should import the message into other mailboxes even if previous thread is set.
+                // https://github.com/freescout-helpdesk/freescout/issues/3473
+                //if (!$data['prev_thread']) {
+                
+                // Maybe this email need to be imported also into other mailbox.
 
-                    $recipient_emails = array_unique($this->formatEmailList(array_merge(
-                        $this->attrToArray($message->getTo()), 
-                        $this->attrToArray($message->getCc()), 
-                        // It will always return an empty value as it's Bcc.
-                        $this->attrToArray($message->getBcc())
-                    )));
-                    
-                    if (count($mailboxes) && count($recipient_emails) > 1) {
-                        foreach ($mailboxes as $check_mailbox) {
-                            if ($check_mailbox->id == $mailbox->id) {
-                                continue;
-                            }
-                            if (!$check_mailbox->isInActive()) {
-                                continue;
-                            }
-                            foreach ($recipient_emails as $recipient_email) {
-                                // No need to check mailbox aliases.
-                                if (\App\Email::sanitizeEmail($check_mailbox->email) == $recipient_email) {
-                                    $this->extra_import[] = [
-                                        'mailbox'    => $check_mailbox,
-                                        'message'    => $message,
-                                        'message_id' => $message_id,
-                                    ];
-                                    break;
-                                }
+                $recipient_emails = array_unique($this->formatEmailList(array_merge(
+                    $this->attrToArray($message->getTo()), 
+                    $this->attrToArray($message->getCc()), 
+                    // It will always return an empty value as it's Bcc.
+                    $this->attrToArray($message->getBcc())
+                )));
+                
+                if (count($mailboxes) && count($recipient_emails) > 1) {
+                    foreach ($mailboxes as $check_mailbox) {
+                        if ($check_mailbox->id == $mailbox->id) {
+                            continue;
+                        }
+                        if (!$check_mailbox->isInActive()) {
+                            continue;
+                        }
+                        foreach ($recipient_emails as $recipient_email) {
+                            // No need to check mailbox aliases.
+                            if (\App\Email::sanitizeEmail($check_mailbox->email) == $recipient_email) {
+                                $this->extra_import[] = [
+                                    'mailbox'    => $check_mailbox,
+                                    'message'    => $message,
+                                    'message_id' => $message_id,
+                                ];
+                                break;
                             }
                         }
                     }
                 }
+                //}
 
                 if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
                     // SendAutoReply listener will check bounce flag and will not send an auto reply if this is an auto responder.

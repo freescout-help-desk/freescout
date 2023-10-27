@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.105',
+    'version' => '1.8.106',
 
     /*
     |--------------------------------------------------------------------------
@@ -267,7 +267,10 @@ return [
     | The list should be in sync with /storage/app/public/uploads/.htaccess and nginx config.
     |-------------------------------------------------------------------------
     */
-    'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS', ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'tif', 'tiff', 'webp', 'pdf', 'txt', 'diff', 'patch', 'json', 'mp3', 'wav', 'ogg', 'wma']),
+    'viewable_attachments'    => env('APP_VIEWABLE_ATTACHMENTS') 
+                                ? explode(',', env('APP_VIEWABLE_ATTACHMENTS'))
+                                : ['jpg', 'jpeg', 'jfif', 'pjpeg', 'pjp', 'apng', 'bmp', 'gif', 'ico', 'cur', 'png', 'tif', 'tiff', 'webp', 'pdf', 'txt', 'diff', 'patch', 'json', 'mp3', 'wav', 'ogg', 'wma'],
+
     // Additional restriction by mime type.
     // If HTML file is renamed into .txt for example it will be shown by the browser as HTML.
     // Regular expressions (#...#)
@@ -298,6 +301,14 @@ return [
     |-------------------------------------------------------------------------
     */
     'email_conv_history'    => env('APP_EMAIL_CONV_HISTORY', 'none'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Maximum size of the message which can be sent to the customer (MB).
+    |
+    |-------------------------------------------------------------------------
+    */
+    'max_message_size'    => env('APP_MAX_MESSAGE_SIZE', '20'),
 
     /*
     |--------------------------------------------------------------------------

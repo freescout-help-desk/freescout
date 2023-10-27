@@ -1654,7 +1654,7 @@ function showAttachments(data)
 			attachments_container.find('ul:first').append(attachment_html);
 
 			// Delete attachment
-			$('li.attachment-loaded .glyphicon-remove:first').click(function(e) {
+			$('li.attachment-loaded .glyphicon-remove').click(function(e) {
 				removeAttachment($(this).attr('data-attachment-id'));
 			});
 
@@ -4034,9 +4034,12 @@ function saveDraft(reload_page, no_loader, do_not_save_empty)
 		return;
 	}
 
-	// Do not auto-save draft is there is no thread_id and body.
+	// Do not auto-save draft is there is no thread_id, body and attachments.
 	if (typeof(do_not_save_empty) != "undefined") {
-		if (!$('.form-reply:visible:first :input[name="thread_id"]:first').val() && !$('#body').val()) {
+		if (!$('.form-reply:visible:first :input[name="thread_id"]:first').val() 
+			&& !$('#body').val()
+			&& !$('.form-reply:visible:first .thread-attachments li.attachment-loaded:first').length
+		) {
 			fs_processing_save_draft = false;
 			return;
 		}
@@ -4216,6 +4219,10 @@ function loadAttachments(is_forwarding)
 				) {
 					attachments_container.addClass('forward-attachments-loaded');
 					showAttachments(response.data);
+					// Auto save draft to avoid multiplying attachments
+					if (is_forwarding) {
+						saveDraft(false, true);
+					}
 				} else {
 					// Do nothing
 					//showAjaxError(response);

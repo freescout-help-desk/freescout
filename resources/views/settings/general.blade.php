@@ -105,6 +105,16 @@
         </div>
     </div>
 
+    <div class="form-group{{ $errors->has('settings[max_message_size]') ? ' has-error' : '' }}">
+        <label for="max_message_size" class="col-sm-2 control-label">{{ __('Max. Message Size') }} (MB)</label>
+
+        <div class="col-sm-6">
+            <input id="max_message_size" type="number" class="form-control input-sized" name="settings[max_message_size]" value="{{ old('settings[max_message_size]', $settings['max_message_size']) }}" />
+            
+            @include('partials/field_error', ['field'=>'settings.max_message_size'])
+        </div>
+    </div>
+
     <div class="form-group{{ $errors->has('settings[open_tracking]') ? ' has-error' : '' }}">
         <label for="open_tracking" class="col-sm-2 control-label">{{ __('Open Tracking') }}</label>
 
