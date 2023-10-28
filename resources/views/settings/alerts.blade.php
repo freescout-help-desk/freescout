@@ -35,7 +35,7 @@
         <div class="col-sm-6">
             <div class="controls">
                 <div class="onoffswitch-wrap">
-                    <div class="onoffswitch">
+                    <div class="onoffswitch" data-toggle="collapse" data-target="#alert_logs_wrap">
                         <input type="checkbox" name="settings[alert_logs]" value="1" id="alert_logs" class="onoffswitch-checkbox" @if (old('settings[alert_logs]', $settings['alert_logs']))checked="checked"@endif >
                         <label class="onoffswitch-label" for="alert_logs"></label>
                     </div>
@@ -44,7 +44,7 @@
             <p class="help-block">
                 {{ __('Send new log records by email.') }}
             </p>
-            <div class="controls @if (!$settings['alert_logs']) hidden @endif">
+            <div class="controls collapse @if ($settings['alert_logs']) in @endif" id="alert_logs_wrap">
                 <label class="control-label">{{ __('Logs to monitor') }}:</label> 
                 @foreach ($logs as $log)
                     <div class="control-group">
