@@ -309,7 +309,7 @@ class Thread extends Model
         // Change "background:" to "background-color:".
         // https://github.com/freescout-helpdesk/freescout/issues/2560
         // Keep in mind that with large texts preg_replace() may return null.
-        $body = preg_replace("/(<[^<>]+style=[\"'][^\"']*)background: *([^;() ]+;)/", '$1background-color:$2', $body) ?: $body;
+        $body = preg_replace("/(<[^<>]+style=[\"'][^\"']*)background: *([^;() ]+[;\"'])/", '$1background-color:$2', $body) ?: $body;
 
         // Cut out "collapse" class as it hides elements.
         $body = preg_replace("/(<[^<>\r\n]+class=([\"'][^\"']* |[\"']))(collapse|hidden)([\"' ])/", '$1$4', $body) ?: $body;
