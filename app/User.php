@@ -1206,4 +1206,24 @@ class User extends Authenticatable
     {
         return User::where('type', User::TYPE_ROBOT);
     }
+
+    // Truncate fields to their max lengths to avoid PostgreSQL error:
+    // SQLSTATE[22001]: String data, right truncated: 7 ERROR: value too long for type character varying(100).
+    // https://github.com/freescout-helpdesk/freescout/issues/3489
+    public function setFirstNameAttribute($first_name)
+    {
+        $this->attributes['first_name'] = mb_substr($first_name, 0, 20);
+    }
+    public function setLastNameAttribute($last_name)
+    {
+        $this->attributes['last_name'] = mb_substr($last_name, 0, 30);
+    }
+    public function setEmailAttribute($email)
+    {
+        $this->attributes['email'] = mb_substr($email, 0, 100);
+    }
+    public function setJobTitleAttribute($job_title)
+    {
+        $this->attributes['job_title'] = mb_substr($job_title, 0, 100);
+    }
 }
