@@ -122,6 +122,14 @@ class User extends Authenticatable
         'permissions' => 'array',
     ];
     
+    public function __construct(array $attributes = array())
+    {
+        $this->setRawAttributes(array_merge($this->attributes, array(
+            'timezone' => config('app.timezone') ?: User::DEFAULT_TIMEZONE
+        )), true);
+        parent::__construct($attributes);
+    }
+
     /**
      * For array_unique function.
      *
