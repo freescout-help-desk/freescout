@@ -1537,6 +1537,14 @@ class Helper
         return self::isPgSql() ? 'ilike' : 'like';
     }
 
+    // PostgreSQL truncates string if it contains \u0000 symbol starting from this symbol.
+    // https://stackoverflow.com/questions/31671634/handling-unicode-sequences-in-postgresql
+    // https://github.com/freescout-helpdesk/freescout/issues/3485
+    public static function sqlSanitizeString($string)
+    {
+        return str_replace(json_decode('"\u0000"'), "", $string);
+    }
+
     public static function humanFileSize($size, $unit="")
     {
         if ((!$unit && $size >= 1<<30) || $unit == "GB") {
