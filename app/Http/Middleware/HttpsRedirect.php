@@ -30,13 +30,8 @@ class HttpsRedirect {
     {
         if (\Helper::isHttps()) {
             //$request->setTrustedProxies( [ $request->getClientIp() ], array_keys($this->headers)); 
-
-            if (//!$request->secure()
-                !in_array(strtolower($_SERVER['X_FORWARDED_PROTO'] ?? ''), array('https', 'on', 'ssl', '1'), true)
-                && strtolower($_SERVER['HTTPS'] ?? '') != 'on' 
-                && ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') != 'https'
-                && ($_SERVER['HTTP_CF_VISITOR'] ?? '') != '{"scheme":"https"}'
-            ) {
+            //!$request->secure()
+            if (!\Helper::isCurrentUrlHttps()) {
                 return redirect()->secure($request->getRequestUri());
             }
         }

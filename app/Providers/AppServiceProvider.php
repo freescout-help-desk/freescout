@@ -41,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Forse HTTPS if using CloudFlare "Flexible SSL"
         // https://support.cloudflare.com/hc/en-us/articles/200170416-What-do-the-SSL-options-mean-
-        if (\Helper::getProtocol() == 'https') {
+        if (\Helper::isHttps()) {
             // $_SERVER['HTTPS'] = 'on';
             // $_SERVER['SERVER_PORT'] = '443';
             $this->app['url']->forceScheme('https');
