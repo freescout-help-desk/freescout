@@ -5,7 +5,7 @@
 
 install_path='/var/www/html'
 
-sudo apt-get install net-tools
+sudo apt-get -y -q install net-tools
 
 server_ip=`ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | head -n 1`
 
@@ -38,11 +38,13 @@ fi
 printf "\nEnter help desk domain name (without 'www'): "
 read domain_name;
 if [ -z "$domain_name" ]; then
-	echo "Domain name is required. Terminating installation"
+    echo "Domain name is required. Terminating installation"
     exit;
 fi
 
 mysql_pass=`date +%s | sha256sum | base64 | head -c 9 ; echo`
+
+is_debian=`cat /etc/issue | grep -E ^Debian | wc -l`
 
 #
 # Dependencies
@@ -52,10 +54,17 @@ sudo apt update
 export DEBIAN_FRONTEND=noninteractive
 
 sudo apt remove apache2 -y
-sudo apt install git nginx mysql-server libmysqlclient-dev
-sudo apt install php php-mysqli php-fpm php-mbstring php-xml php-imap php-zip php-gd php-curl php-intl
+sudo apt -q install git nginx 
+if [ "$is_debian" = '1' ]; then
+    # Debian
+    sudo apt -q install mariadb-server mariadb-client
+else
+    # Ubuntu
+    sudo apt -q install mysql-server libmysqlclient-dev
+fi
+sudo apt -q install php php-mysqli php-fpm php-mbstring php-xml php-imap php-zip php-gd php-curl php-intl
 # json extension may be already included in php-fpm
-sudo apt install php-json
+sudo apt -y -q install php-json
 
 php_version=`php -v | head -n 1 | cut -d " " -f 2 | cut -f1-2 -d"."`
 
@@ -84,21 +93,21 @@ fi
 
 
 if [ -f "$install_path" ]; then
-	echo "$install_path is not a directory. Terminating installation"
-	exit;
+    echo "$install_path is not a directory. Terminating installation"
+    exit;
 fi
 
 if [ -d "$install_path" ]; then
     install_path_check=`sudo ls -1qA $install_path`
 
-	if [ ! -z "$install_path_check" ]; then
-		printf "All files in $install_path will be removed. Continue? (Y/n) [n]:"
-		read confirm_clean;
-		if [ $confirm_clean != "Y" ]; then
-		    exit;
-		fi
-	    sudo rm -rf $install_path
-	fi
+    if [ ! -z "$install_path_check" ]; then
+        printf "All files in $install_path will be removed. Continue? (Y/n) [n]:"
+        read confirm_clean;
+        if [ $confirm_clean != "Y" ]; then
+            exit;
+        fi
+        sudo rm -rf $install_path
+    fi
 fi
 
 sudo mkdir -p $install_path
@@ -109,8 +118,8 @@ sudo find $install_path -type f -exec chmod 664 {} \;
 sudo find $install_path -type d -exec chmod 775 {} \;
 
 if [ ! -f "$install_path/artisan" ]; then
-	echo "Error occured installing FreeScout into $install_path. Terminating installation"
-	exit;
+    echo "Error occured installing FreeScout into $install_path. Terminating installation"
+    exit;
 fi
 echo "Application installed"
 
@@ -138,11 +147,11 @@ sudo echo 'server {
         try_files $uri $uri/ /index.php?$query_string;
     }
     location ~ \.php$ {
-		fastcgi_split_path_info ^(.+\.php)(/.+)$;
-		fastcgi_pass unix:/run/php/php'"$php_version"'-fpm.sock;
-		fastcgi_index index.php;
-		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-		include fastcgi_params;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/run/php/php'"$php_version"'-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
     }
     # Uncomment this location if you want to improve attachments downloading speed.
     # Also make sure to set APP_DOWNLOAD_ATTACHMENTS_VIA=nginx in the .env file.
@@ -164,7 +173,7 @@ sudo echo 'server {
     location ~* ^/storage/.*\.((?!(jpg|jpeg|jfif|pjpeg|pjp|apng|bmp|gif|ico|cur|png|tif|tiff|webp|pdf|txt|diff|patch|json|mp3|wav|ogg|wma)).)*$ {
         add_header Content-disposition "attachment; filename=$2";
         default_type application/octet-stream;
-    }	
+    }   
     location ~* ^/(?:css|fonts|img|installer|js|modules|[^\\\]+\..*)$ {
         expires 1M;
         access_log off;
@@ -176,19 +185,19 @@ sudo echo 'server {
 }' > /etc/nginx/sites-available/$domain_name
 
 if [ -f "/etc/nginx/sites-enabled/default" ]; then
-	sudo rm -f /etc/nginx/sites-enabled/default
+    sudo rm -f /etc/nginx/sites-enabled/default
 fi
 
 if [ -f "/etc/nginx/sites-enabled/$domain_name" ]; then
-	sudo rm -f "/etc/nginx/sites-enabled/$domain_name" 
+    sudo rm -f "/etc/nginx/sites-enabled/$domain_name" 
 fi
 sudo ln -s "/etc/nginx/sites-available/$domain_name" "/etc/nginx/sites-enabled/$domain_name"
 
 nginx_test=`sudo nginx -t 2>&1; echo $?`
 if [[ ! $nginx_test == *"test is successful"* ]]; then
-	echo "Nginx configuration error. Terminating installation"
-	sudo nginx -t
-	exit;
+    echo "Nginx configuration error. Terminating installation"
+    sudo nginx -t
+    exit;
 fi
 
 sudo service nginx reload
@@ -196,32 +205,37 @@ sudo service nginx reload
 #
 # HTTPS
 # 
-printf "\nWould you like to enable HTTPS? It is free and required for browser push notifications to work. (Y/n) [n]:"
+printf "\nWould you like to enable HTTPS? It is free and required for browser push notifications to work. (Y/n) [Y]:"
 read confirm_https;
-confirm_https=${confirm_https:-n}
+confirm_https=${confirm_https:-Y}
 if [ $confirm_https = "Y" ]; then
 
-	printf "\nAFTER certbot will finish activating HTTPS, press 'c' to continue installation.\nPress any key to continue..."
-	read confirm_redirect;
+    printf "\nAFTER certbot will finish activating HTTPS, press 'c' to continue installation.\nNow make sure your domain is pointed to the current server and press any key to continue..."
+    read confirm_redirect;
 
-	sudo apt-get remove certbot
-	sudo snap install --classic certbot
-	sudo ln -s /snap/bin/certbot /usr/bin/certbot
-	sudo certbot --nginx
+    sudo apt-get remove certbot
 
-	sudo certbot --nginx --register-unsafely-without-email
+    if [ "$is_debian" = '1' ]; then
+        sudo apt-get -y -q install snapd
+    fi
 
-	# Add certbot to root cron
-	echo "Adding certbot renewal command to root's crontab..."
-	sudo crontab -l > /tmp/rootcron;
-	certbot_cron=`more /tmp/rootcron | grep certbot`
-	if [ -z "$certbot_cron" ]; then
-		sudo echo '0 12 * * * /usr/bin/certbot renew --nginx --quiet' >> /tmp/rootcron
-		sudo crontab /tmp/rootcron
-	fi
-	if [ -f "/tmp/rootcron" ]; then
-		sudo rm -f /tmp/rootcron
-	fi
+    sudo snap install --classic certbot
+    sudo ln -s /snap/bin/certbot /usr/bin/certbot
+    sudo certbot --nginx
+
+    sudo certbot --nginx --register-unsafely-without-email
+
+    # Add certbot to root cron
+    echo "Adding certbot renewal command to root's crontab..."
+    sudo crontab -l > /tmp/rootcron;
+    certbot_cron=`more /tmp/rootcron | grep certbot`
+    if [ -z "$certbot_cron" ]; then
+        sudo echo '0 12 * * * /usr/bin/certbot renew --nginx --quiet' >> /tmp/rootcron
+        sudo crontab /tmp/rootcron
+    fi
+    if [ -f "/tmp/rootcron" ]; then
+        sudo rm -f /tmp/rootcron
+    fi
 fi
 
 #
@@ -237,25 +251,54 @@ echo "Configuring cron task for www-data..."
 sudo crontab -u www-data -l > /tmp/wwwdatacron;
 schedule_cron=`more /tmp/wwwdatacron | grep schedule`
 if [ -z "$schedule_cron" ]; then
-	sudo echo "* * * * * php $install_path/artisan schedule:run >> /dev/null 2>&1" >> /tmp/wwwdatacron
-	sudo crontab -u www-data /tmp/wwwdatacron
+    sudo echo "# Main cron job
+* * * * * php $install_path/artisan schedule:run >> /dev/null 2>&1
+
+# Cron job for automatic updates
+# Configure it to install updates automatically as required by modern cybersecurity standards:
+# https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#92-cron-job-for-automatic-updates
+#0 1 * * * $install_path/tools/update.sh --yes >> $install_path/storage/logs/update.log" >> /tmp/wwwdatacron
+    sudo crontab -u www-data /tmp/wwwdatacron
 fi
 if [ -f "/tmp/wwwdatacron" ]; then
-	sudo rm -f /tmp/wwwdatacron
+    sudo rm -f /tmp/wwwdatacron
 fi
+
+#
+# Fix permissions after freescout:check-requirements command above
+# 
+sudo chown -R www-data:www-data $install_path
 
 #
 # Finish
 #
 protocol='http'
 if [ $confirm_https = 'Y' ]; then
-	protocol='https'
+    protocol='https'
 fi
-echo ""
-echo "To complete installation please open in your browser help desk URL and follow instructions.
-You can skip setting up a cron task, as it has already been done for you.
 
-URL: $protocol://$domain_name/install
+echo "
+########################################################
+##  Congratulations! Installation is almost finished  ##
+########################################################
+
+To complete installation open the Helpdesk URL provided below in your browser
+and follow instructions (you can skip setting up the schedule:run cron job as it has
+already been done for you).
+
+After finishing installation in order to make sure your installation satisfies
+modern cybersecurity standards you may want to configure automatic updates
+as described in this instruction:
+https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#92-cron-job-for-automatic-updates
+
+Also read Final Configuration instructions:
+https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#10-final-configuration
+and FAQ:
+https://github.com/freescout-helpdesk/freescout/wiki/FAQ
+
+--------------------------------------------------------
+
+Helpdesk URL: $protocol://$domain_name/install
 
 Database Host: localhost
 Database Port: 3306

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container">
-    <div class="heading">{{ App\Option::getCompanyName() }} {{ __('Dashboard') }}</div>
+    <div class="heading">{{ App\Option::getCompanyName() }} {{ __('Dashboard') }}@action('dashboard.heading_append')</div>
     @filter('dashboard.before', '')
     @if (count($mailboxes))
         <div class="dash-cards margin-top">

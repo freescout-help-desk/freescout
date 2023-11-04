@@ -1537,6 +1537,14 @@ class Helper
         return self::isPgSql() ? 'ilike' : 'like';
     }
 
+    // PostgreSQL truncates string if it contains \u0000 symbol starting from this symbol.
+    // https://stackoverflow.com/questions/31671634/handling-unicode-sequences-in-postgresql
+    // https://github.com/freescout-helpdesk/freescout/issues/3485
+    public static function sqlSanitizeString($string)
+    {
+        return str_replace(json_decode('"\u0000"'), "", $string);
+    }
+
     public static function humanFileSize($size, $unit="")
     {
         if ((!$unit && $size >= 1<<30) || $unit == "GB") {
@@ -1765,7 +1773,33 @@ class Helper
 
     public static function isHttps($url = '')
     {
-        return self::getProtocol($url) == 'https';
+        if (\Helper::isInstaller()) {
+            // In the Installer we determine HTTPS from URL.
+            return self::isCurrentUrlHttps();
+        } else {
+            return self::getProtocol($url) == 'https';
+        }
+    }
+
+    public static function isInstaller()
+    {
+        $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+        $request_uri = preg_replace("#\?.*#", '', $request_uri);
+
+        return strstr($request_uri, '/install/') || preg_match("#/install$#", $request_uri);
+    }
+
+    public static function isCurrentUrlHttps()
+    {
+        if (in_array(strtolower($_SERVER['X_FORWARDED_PROTO'] ?? ''), array('https', 'on', 'ssl', '1'), true)
+            || strtolower($_SERVER['HTTPS'] ?? '') == 'on' 
+            || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') == 'https'
+            || ($_SERVER['HTTP_CF_VISITOR'] ?? '') == '{"scheme":"https"}'
+        ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static function fixProtocol($url)

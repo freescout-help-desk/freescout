@@ -669,7 +669,7 @@ class Conversation extends Model
      *
      * @return Conversation
      */
-    public function getNearby($mode = 'closest', $folder_id = null)
+    public function getNearby($mode = 'closest', $folder_id = null, $status = null, $prev_if_no_next = false)
     {
         $conversation = null;
 
@@ -684,21 +684,29 @@ class Conversation extends Model
 
         $query = \Eventy::filter('conversation.get_nearby_query', $query, $this, $mode, $folder);
 
+        if ($status) {
+            $query->where('status', $status);
+        }
+
         $order_bys = $folder->getOrderByArray();
 
         // Next.
         if ($mode != 'prev') {
             // Try to get next conversation
-            $query_next = $query;
+            $query_next = clone $query;
             foreach ($order_bys as $order_by) {
                 foreach ($order_by as $field => $sort_order) {
                     if (!$this->$field) {
                         continue;
                     }
+                    $field_value = $this->$field;
+                    if ($field == 'status' && $status !== null) {
+                        $field_value = $status;
+                    }
                     if ($sort_order == 'asc') {
-                        $query_next->where($field, '>=', $this->$field);
+                        $query_next->where($field, '>=', $field_value);
                     } else {
-                        $query_next->where($field, '<=', $this->$field);
+                        $query_next->where($field, '<=', $field_value);
                     }
                     $query_next->orderBy($field, $sort_order);
                 }
@@ -706,7 +714,7 @@ class Conversation extends Model
             $conversation = $query_next->first();
         }
 
-        if ($conversation || $mode == 'next') {
+        if ($conversation || ($mode == 'next' && !$prev_if_no_next)) {
             return $conversation;
         }
 
@@ -717,10 +725,14 @@ class Conversation extends Model
                 if (!$this->$field) {
                     continue;
                 }
+                $field_value = $this->$field;
+                if ($field == 'status' && $status !== null) {
+                    $field_value = $status;
+                }
                 if ($sort_order == 'asc') {
-                    $query_prev->where($field, '<=', $this->$field);
+                    $query_prev->where($field, '<=', $field_value);
                 } else {
-                    $query_prev->where($field, '>=', $this->$field);
+                    $query_prev->where($field, '>=', $field_value);
                 }
                 $query_prev->orderBy($field, $sort_order == 'asc' ? 'desc' : 'asc');
             }
@@ -732,9 +744,9 @@ class Conversation extends Model
     /**
      * Get URL of the next conversation.
      */
-    public function urlNext($folder_id = null)
+    public function urlNext($folder_id = null, $status = null, $prev_if_no_next = false)
     {
-        $next_conversation = $this->getNearby('next', $folder_id);
+        $next_conversation = $this->getNearby('next', $folder_id, $status, $prev_if_no_next = true);
         if ($next_conversation) {
             $url = $next_conversation->url();
         } else {

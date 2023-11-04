@@ -3196,6 +3196,8 @@ input[type=text] {
   border-bottom: 1px solid rgba(0, 0, 0, 0.12); }
   .list__item:first-letter {
     text-transform: uppercase; }
+  .list__item.list__item--permissions:first-letter {
+    text-transform: none; }
   .list__item:last-child {
     border-bottom: none; }
   .list__item .fa.row-icon:before {
