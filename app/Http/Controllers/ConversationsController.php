@@ -2821,7 +2821,6 @@ class ConversationsController extends Controller
                     ->orWhere('customers.last_name', $like_op, $like)
                     ->orWhere('customers.company', $like_op, $like)
                     ->orWhere('customers.job_title', $like_op, $like)
-                    ->orWhere('customers.phones', $like_op, '%"'.\Helper::phoneToNumeric($q).'"%')
                     ->orWhere('customers.websites', $like_op, $like)
                     ->orWhere('customers.social_profiles', $like_op, $like)
                     ->orWhere('customers.address', $like_op, $like)
@@ -2829,6 +2828,12 @@ class ConversationsController extends Controller
                     ->orWhere('customers.state', $like_op, $like)
                     ->orWhere('customers.zip', $like_op, $like)
                     ->orWhere('emails.email', $like_op, $like);
+
+                $phone_numeric = \Helper::phoneToNumeric($q);
+
+                if ($phone_numeric) {
+                    $query->orWhere('customers.phones', $like_op, '%"'.$phone_numeric.'"%');
+                }
             });
 
         if (!empty($filters['mailbox']) && in_array($filters['mailbox'], $mailbox_ids)) {
