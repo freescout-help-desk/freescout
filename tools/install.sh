@@ -278,9 +278,9 @@ if [ $confirm_https = 'Y' ]; then
 fi
 
 echo "
-######################################################
-## Congratulations! Installation is almost finished ##
-######################################################
+########################################################
+##  Congratulations! Installation is almost finished  ##
+########################################################
 
 To complete installation open the Helpdesk URL provided below in your browser
 and follow instructions (you can skip setting up the schedule:run cron job as it has
@@ -296,6 +296,7 @@ https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#10-final
 and FAQ:
 https://github.com/freescout-helpdesk/freescout/wiki/FAQ
 
+--------------------------------------------------------
 
 Helpdesk URL: $protocol://$domain_name/install
 
