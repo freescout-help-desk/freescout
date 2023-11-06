@@ -1212,18 +1212,18 @@ class User extends Authenticatable
     // https://github.com/freescout-helpdesk/freescout/issues/3489
     public function setFirstNameAttribute($first_name)
     {
-        $this->attributes['first_name'] = mb_substr($first_name, 0, 20);
+        $this->attributes['first_name'] = mb_substr($first_name ?? '', 0, 20);
     }
     public function setLastNameAttribute($last_name)
     {
-        $this->attributes['last_name'] = mb_substr($last_name, 0, 30);
+        $this->attributes['last_name'] = mb_substr($last_name ?? '', 0, 30);
     }
     public function setEmailAttribute($email)
     {
-        $this->attributes['email'] = mb_substr($email, 0, 100);
+        $this->attributes['email'] = mb_substr($email ?? '', 0, 100);
     }
     public function setJobTitleAttribute($job_title)
     {
-        $this->attributes['job_title'] = mb_substr($job_title, 0, 100);
+        $this->attributes['job_title'] = mb_substr($job_title ?? '', 0, 100);
     }
 }
