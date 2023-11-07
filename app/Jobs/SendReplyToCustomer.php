@@ -421,6 +421,9 @@ class SendReplyToCustomer implements ShouldQueue
                 }
 
                 try {
+                    // https://github.com/freescout-helpdesk/freescout/issues/3502
+                    $imap_sent_folder = mb_convert_encoding($imap_sent_folder, "UTF7-IMAP","UTF-8");
+
                     // https://github.com/Webklex/php-imap/issues/380
                     if (method_exists($client, 'getFolderByPath')) {
                         $folder = $client->getFolderByPath($imap_sent_folder);
@@ -431,18 +434,22 @@ class SendReplyToCustomer implements ShouldQueue
                     if ($folder) {
                         try {
                             $save_result = $this->saveEmailToFolder($client, $folder, $envelope, $parts, $bcc_array);
+
                             // Sometimes emails with attachments by some reason are not saved.
                             // https://github.com/freescout-helpdesk/freescout/issues/2749
                             if (!$save_result) {
                                 // Save without attachments.
-                                $this->saveEmailToFolder($client, $folder, $envelope, [$part_body], $bcc_array);
+                                $save_result = $this->saveEmailToFolder($client, $folder, $envelope, [$part_body], $bcc_array);
+                                if (!$save_result) {
+                                    \Log::error('Could not save outgoing reply to the IMAP folder (check folder name and make sure IMAP folder does not have spaces - folders with spaces do not work): '.$imap_sent_folder);
+                                }
                             }
                         } catch (\Exception $e) {
                             // Just log error and continue.
                             \Helper::logException($e, 'Could not save outgoing reply to the IMAP folder: ');
                         }
                     } else {
-                        \Log::error('Could not save outgoing reply to the IMAP folder (make sure IMAP folder does not have spaces - folders with spaces do not work): '.$imap_sent_folder);
+                        \Log::error('Could not save outgoing reply to the IMAP folder (check folder name and make sure IMAP folder does not have spaces - folders with spaces do not work): '.$imap_sent_folder);
                     }
                 } catch (\Exception $e) {
                     // Just log error and continue.
