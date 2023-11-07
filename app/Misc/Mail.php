@@ -896,6 +896,9 @@ class Mail
 
     public static function getImapFolder($client, $folder_name)
     {
+        // https://github.com/freescout-helpdesk/freescout/issues/3502
+        $folder_name = mb_convert_encoding($folder_name, "UTF7-IMAP","UTF-8");
+
         if (method_exists($client, 'getFolderByPath')) {
             return $client->getFolderByPath($folder_name);
         } else {
