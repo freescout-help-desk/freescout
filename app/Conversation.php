@@ -714,6 +714,7 @@ class Conversation extends Model
             $conversation = $query_next->first();
         }
 
+        // https://github.com/freescout-helpdesk/freescout/issues/3486
         if ($conversation || ($mode == 'next' && !$prev_if_no_next)) {
             return $conversation;
         }
@@ -746,7 +747,7 @@ class Conversation extends Model
      */
     public function urlNext($folder_id = null, $status = null, $prev_if_no_next = false)
     {
-        $next_conversation = $this->getNearby('next', $folder_id, $status, $prev_if_no_next = true);
+        $next_conversation = $this->getNearby('next', $folder_id, $status, $prev_if_no_next);
         if ($next_conversation) {
             $url = $next_conversation->url();
         } else {
