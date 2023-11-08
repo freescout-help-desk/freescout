@@ -135,7 +135,9 @@ class ImapProtocol extends Protocol {
      */
     protected function nextTaggedLine(&$tag): string {
         $line = $this->nextLine();
-        list($tag, $line) = explode(' ', $line, 2);
+        if (str_contains($line, ' ')) {
+            list($tag, $line) = explode(' ', $line, 2);
+        }
 
         return $line ?? '';
     }
@@ -282,7 +284,7 @@ class ImapProtocol extends Protocol {
         // last line has response code
         if ($tokens[0] == 'OK') {
             return $lines ? $lines : true;
-        } elseif ($tokens[0] == 'NO') {
+        } elseif ($tokens[0] == 'NO' || $tokens[0] == 'BAD' || $tokens[0] == 'BYE') {
             return false;
         }
 
