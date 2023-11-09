@@ -1285,6 +1285,30 @@ function initConversation()
 			);
 		});
 
+		// Retry failed thread
+	    jQuery("#conv-layout-main .btn-thread-retry").click(function(e){
+	    	var button = $(this);
+	    	button.button('loading');
+
+			fsAjax(
+				{
+					action: 'retry_send',
+					thread_id: button.parents('.thread:first').attr('data-thread_id')
+				},
+				laroute.route('conversations.ajax'),
+				function(response) {
+					if (isAjaxSuccess(response)) {
+						reloadPage();
+					} else {
+						showAjaxError(response);
+						button.button('reset');
+					}
+				}, true
+			);
+
+			e.preventDefault();
+		});
+
 		// Print
 		if (getQueryParam('print')) {
 			window.print();
@@ -5509,4 +5533,9 @@ function initLogsTable()
 function isChatMode()
 {
 	return $("body:first").hasClass('chat-mode');
+}
+
+function reloadPage()
+{
+	window.location.href = '';
 }

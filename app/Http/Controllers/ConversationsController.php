@@ -2246,6 +2246,29 @@ class ConversationsController extends Controller
                         ])->render();
                     $response['status'] = 'success';
                 }
+                break;
+
+            case 'retry_send':
+                $thread = Thread::find($request->thread_id);
+
+                if (!$thread) {
+                    $response['msg'] = __('Thread not found');
+                } elseif (!$user->can('view', $thread->conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    $job_id = $thread->getFailedJobId();
+
+                    if ($job_id) {
+                        \App\FailedJob::retry($job_id);
+                        $thread->send_status = SendLog::STATUS_ACCEPTED;
+                        $thread->updateSendStatusData(['msg' => '']);
+                        $thread->save();
+
+                        $response['status'] = 'success';
+                    }
+                }
 
                 break;
 

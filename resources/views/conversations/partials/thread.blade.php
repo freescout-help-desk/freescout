@@ -231,6 +231,10 @@
                             <div>
                                 <strong>{{ __('Message not sent to customer') }}</strong> (<a href="{{ route('conversations.ajax_html', array_merge(['action' =>
                         'send_log'], \Request::all(), ['thread_id' => $thread->id]) ) }}" data-trigger="modal" data-modal-title="{{ __("Outgoing Emails") }}" data-modal-size="lg">{{ __('View log') }}</a>)
+
+                                @if ($thread->canRetrySend())
+                                    &nbsp;<button class="btn btn-default btn-xs btn-thread-retry" data-loading-text="{{ __('Retry') }}…">{{ __('Retry') }}</button>
+                                @endif
                             </div>
 
                             @if (!empty($send_status_data['bounced_by_thread']) && !empty($send_status_data['bounced_by_conversation']))

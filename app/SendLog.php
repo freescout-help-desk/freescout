@@ -14,6 +14,7 @@ class SendLog extends Model
      * https://documentation.mailgun.com/en/latest/api-events.html#event-types.
      */
     const STATUS_ACCEPTED = 1; // accepted (for delivery)
+    const STATUS_SEND_INTERMEDIATE_ERROR = 10;
     const STATUS_SEND_ERROR = 2;
     const STATUS_DELIVERY_SUCCESS = 4;
     const STATUS_DELIVERY_ERROR = 5; // rejected, failed
@@ -42,6 +43,7 @@ class SendLog extends Model
      * @var [type]
      */
     public static $status_errors = [
+        self::STATUS_SEND_INTERMEDIATE_ERROR,
         self::STATUS_SEND_ERROR,
         self::STATUS_DELIVERY_ERROR,
     ];
