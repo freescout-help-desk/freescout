@@ -4,4 +4,11 @@
 		ForceType application/octet-stream
 		Header set Content-Disposition attachment
 	</FilesMatch>
+	# SVG image is the special case: it is an image but we can't
+	# let it open in the browser as it may content malicious code
+	# and it requires a special "image/svg+xml" content type to be set.
+	<FilesMatch "\.svg$">
+		ForceType image/svg+xml
+		Header set Content-Disposition attachment
+	</FilesMatch>
 </IfModule>
