@@ -1931,6 +1931,7 @@ class Helper
             'proc_open (PHP)'  => function_exists('proc_open'),
             'fpassthru (PHP)'  => function_exists('fpassthru'),
             'symlink (PHP)'    => function_exists('symlink'),
+            'pcntl_signal (PHP)'    => function_exists('pcntl_signal'),
             'ps (shell)' => function_exists('shell_exec') ? shell_exec('ps') : false,
         ];
     }
