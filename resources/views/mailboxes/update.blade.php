@@ -56,7 +56,7 @@
 
                             <div class="col-sm-6">
                                 <div class="flexy">
-                                    <input id="aliases" type="text" class="form-control input-sized" name="aliases" value="{{ old('aliases', $mailbox->aliases) }}" maxlength="255">
+                                    <input id="aliases" type="text" class="form-control input-sized" name="aliases" value="{{ old('aliases', $mailbox->aliases) }}">
 
                                     <i class="glyphicon glyphicon-info-sign icon-info" data-toggle="popover" data-trigger="hover" data-html="true" data-placement="left"  data-content="{{ __('Aliases are other email addresses that also forward to your mailbox address. Separate each email with a comma.') }}&lt;br&gt;&lt;br&gt;alias1@example.org, alias2@example.org({{ __('Mailbox Name') }}), alias3@exampl.org"></i>
                                 </div>
