@@ -492,7 +492,7 @@ class SendReplyToCustomer implements ShouldQueue
         }
 
         if (get_class($client) == 'Webklex\PHPIMAP\Client') {
-            return $folder->appendMessage($envelope_str, ['Seen'], now()->format('d-M-Y H:i:s O'));
+            return $folder->appendMessage($envelope_str, ['\Seen'], now()->format('d-M-Y H:i:s O'));
         } else {
             return $folder->appendMessage($envelope_str, '\Seen', now()->format('d-M-Y H:i:s O'));
         }
