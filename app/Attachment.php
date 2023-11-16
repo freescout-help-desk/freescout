@@ -248,7 +248,13 @@ class Attachment extends Model
      */
     public function url()
     {
-        return Storage::url($this->getStorageFilePath()).'?id='.$this->id.'&token='.$this->getToken();
+        $file_url = Storage::url($this->getStorageFilePath());
+
+        // Fix percents.
+        // https://github.com/freescout-helpdesk/freescout/issues/3530
+        $file_url = str_replace('%', '%25', $file_url);
+
+        return $file_url.'?id='.$this->id.'&token='.$this->getToken();
     }
 
     /**
