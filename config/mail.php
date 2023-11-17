@@ -127,6 +127,6 @@ return [
     |
     */
 
-    'timeout' => env('MAIL_TIMEOUT', 30),
+    'smtp_timeout' => env('MAIL_SMTP_TIMEOUT', 30),
 
 ];

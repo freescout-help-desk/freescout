@@ -54,7 +54,7 @@ class TransportManager extends Manager
         }
 
         // SMTP Timeout.
-        $transport->setTimeout(config('mail.timeout'));
+        $transport->setTimeout(config('mail.smtp_timeout'));
 
         return $transport;
     }
