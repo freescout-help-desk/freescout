@@ -45,6 +45,7 @@
             </div>
         </div>
         <div id="conv-layout-customer">
+            @include('conversations/partials/customer_sidebar')
             @action('conversation.new.customer_sidebar', $conversation, $mailbox)
         </div>
         <div id="conv-layout-main" class="conv-new-form">

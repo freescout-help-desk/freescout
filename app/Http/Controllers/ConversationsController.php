@@ -199,6 +199,25 @@ class ConversationsController extends Controller
             }
         }
 
+        $threads = $conversation->threads()->orderBy('created_at', 'desc')->get();
+
+        // Get To for new conversation.
+        $new_conv_to = [];
+        if (empty($threads[0]) || empty($threads[0]->to)) {
+            // Before new conversation To field was stored in $conversation->customer_email.
+            $emails = Conversation::sanitizeEmails($conversation->customer_email);
+            // Get customers info for emails.
+            if (count($emails)) {
+                $new_conv_to = Customer::emailsToCustomers($emails);
+            }
+        } else {
+            $new_conv_to = Customer::emailsToCustomers($threads[0]->getToArray());
+        }
+
+        if (empty($customer) && count($new_conv_to) == 1) {
+            $customer = Customer::getByEmail(array_key_first($new_conv_to));
+        }
+
         // Previous conversations
         $prev_conversations = [];
         if ($customer) {
@@ -282,8 +301,6 @@ class ConversationsController extends Controller
 
         \Eventy::action('conversation.view.start', $conversation, $request);
 
-        $threads = $conversation->threads()->orderBy('created_at', 'desc')->get();
-
         // Mailbox aliases.
         $from_aliases = $conversation->mailbox->getAliases(true, true);
         $from_alias = '';
@@ -322,19 +339,6 @@ class ConversationsController extends Controller
                     }
                 }
             }
-        }
-
-        // Get To for new conversation draft.
-        $new_conv_to = [];
-        if (empty($threads[0]) || empty($threads[0]->to)) {
-            // Before new conversation To field was stored in $conversation->customer_email.
-            $emails = Conversation::sanitizeEmails($conversation->customer_email);
-            // Get customers info for emails.
-            if (count($emails)) {
-                $new_conv_to = Customer::emailsToCustomers($emails);
-            }
-        } else {
-            $new_conv_to = Customer::emailsToCustomers($threads[0]->getToArray());
         }
 
         return view($template, [
