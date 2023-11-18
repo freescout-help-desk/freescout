@@ -36,6 +36,7 @@ body.user-is-guest {
 .content-full .container {
     padding: 0;
     width: 100% !important;
+    min-height: 415px;
 }
 .layout-2col {
     display: flex;
