@@ -2276,6 +2276,36 @@ class ConversationsController extends Controller
 
                 break;
 
+            case 'load_customer_info':
+                $customer = Customer::getByEmail($request->customer_email);
+
+                if ($customer) {
+                    // Previous conversations
+                    $prev_conversations = [];
+
+                    $mailbox = Mailbox::find($request->mailbox_id);
+
+                    if ($mailbox && $mailbox->userHasAccess($user->id)) {
+                        $conversation_id = (int)$request->conversation_id ?? 0;
+
+                        $prev_conversations = $mailbox->conversations()
+                            ->where('customer_id', $customer->id)
+                            ->where('id', '<>', $conversation_id)
+                            ->where('status', '!=', Conversation::STATUS_SPAM)
+                            ->where('state', Conversation::STATE_PUBLISHED)
+                            //->limit(self::PREV_CONVERSATIONS_LIMIT)
+                            ->orderBy('created_at', 'desc')
+                            ->paginate(self::PREV_CONVERSATIONS_LIMIT);
+                    }
+
+                    $response['html'] = \View::make('conversations/partials/customer_sidebar')->with([
+                            'customer' => $customer,
+                            'prev_conversations' => $prev_conversations,
+                        ])->render();
+                    $response['status'] = 'success';
+                }
+                break;
+
             default:
                 $response['msg'] = 'Unknown action';
                 break;

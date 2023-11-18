@@ -1764,6 +1764,36 @@ function convEditorInit()
 	}).blur(function(event) {
 	    onReplyBlur();
 	});
+
+	// New conversation: load customer info
+	$("#to").on('change', function(event) {
+		var to = $('#to').val()
+		//var clean_customer = true;
+		// Do not clean customer info if customer has not changed
+		/*if (Array.isArray(to) && to.length == 1 && typeof(to[0]) != "undefined") {
+			if (to[0] == $('#conv-layout-customer li.customer-email:first').text()) {
+				clean_customer = false;
+			}
+		}
+		if (clean_customer) {*/
+		$('#conv-layout-customer').html('');
+		// Load customer info
+		if (Array.isArray(to) && to.length == 1 && typeof(to[0]) != "undefined") {
+			fsAjax({
+				action: 'load_customer_info',
+				customer_email: to[0],
+				mailbox_id: getGlobalAttr('mailbox_id'),
+				conversation_id: getGlobalAttr('conversation_id')
+			}, laroute.route('conversations.ajax'), function(response) {
+				if (isAjaxSuccess(response) && typeof(response.html) != "undefined") {
+					$('#conv-layout-customer').html(response.html);
+				}
+			}, true, function() {
+				// Do nothing
+			});
+		}
+	});
+	
 	// select2 does not react on keyup or keypress
 	$(".recipient-select, .draft-changer").on('change', function(event) {
 		onReplyChange();
