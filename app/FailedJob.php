@@ -28,4 +28,9 @@ class FailedJob extends Model
     {
     	return \App\Job::getPayloadCommand($this->getPayloadDecoded());
     }
+
+    public static function retry($job_id)
+    {
+        \Artisan::call('queue:retry', ['id' => $job_id]);
+    }
 }

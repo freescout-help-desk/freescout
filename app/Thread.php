@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\SendLog;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
 use App\Events\UserAddedNote;
@@ -1516,5 +1517,25 @@ class Thread extends Model
     {
         $threads = self::sortThreads($threads);
         return $threads->first();
+    }
+
+    public function canRetrySend()
+    {
+        if (!in_array($this->send_status, [SendLog::STATUS_SEND_ERROR, SendLog::STATUS_DELIVERY_ERROR])) {
+            return false;
+        }
+        // Check if failed_job still exists.
+        if (!$this->getFailedJobId()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getFailedJobId()
+    {
+        return \App\FailedJob::where('queue', 'emails')
+            ->where('payload', 'like', '{"displayName":"App\\\\\\\\Jobs\\\\\\\\SendReplyToCustomer"%{i:0;i:'.$this->id.';%')
+            ->value('id');
     }
 }

@@ -36,7 +36,7 @@ return [
         'sqlite' => [
             'driver'   => 'sqlite',
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
-            'prefix'   => '',
+            'prefix'   => env('DB_TABLE_PREFIX', ''),
         ],
 
         'mysql' => [
@@ -49,7 +49,7 @@ return [
             'unix_socket' => env('DB_SOCKET', ''),
             'charset'     => env('DB_CHARSET', 'utf8mb4'),
             'collation'   => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
-            'prefix'      => '',
+            'prefix'      => env('DB_TABLE_PREFIX', ''),
             'strict'      => false,
             'engine'      => null,
             'options'     => extension_loaded('pdo_mysql') ? array_filter([
@@ -67,7 +67,7 @@ return [
             //'port'           => env('DB_TEST_PORT', '3306'),
             'charset'        => 'utf8mb4',
             'collation'      => 'utf8mb4_unicode_ci',
-            'prefix'         => '',
+            'prefix'         => env('DB_TABLE_PREFIX', ''),
             //'prefix_indexes' => true,
             'strict'         => false,
             'engine'      => null,
@@ -81,7 +81,7 @@ return [
             'username' => env('DB_TEST_USERNAME', 'freescout-test'),
             'password' => env('DB_TEST_PASSWORD', 'freescout-test'),
             'charset'  => 'utf8',
-            'prefix'   => '',
+            'prefix'   => env('DB_TABLE_PREFIX', ''),
             'schema'   => 'public',
             'sslmode'  => 'prefer',
         ],
@@ -94,7 +94,7 @@ return [
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'charset'  => 'utf8',
-            'prefix'   => '',
+            'prefix'   => env('DB_TABLE_PREFIX', ''),
             'schema'   => 'public',
             'sslmode'  => env('DB_PGSQL_SSLMODE', 'prefer'),
         ],
@@ -107,7 +107,7 @@ return [
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'charset'  => 'utf8',
-            'prefix'   => '',
+            'prefix'   => env('DB_TABLE_PREFIX', ''),
         ],
 
     ],

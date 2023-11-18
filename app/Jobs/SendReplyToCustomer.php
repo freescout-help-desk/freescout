@@ -317,7 +317,7 @@ class SendReplyToCustomer implements ShouldQueue
 
                 // If an email has not been sent after 1 hour - show an error message to support agent.
                 if ($this->attempts() >= 3 || $response_code >= 500) {
-                    $this->last_thread->send_status = SendLog::STATUS_SEND_ERROR;
+                    $this->last_thread->send_status = SendLog::STATUS_SEND_INTERMEDIATE_ERROR;
                     $this->last_thread->updateSendStatusData(['msg' => $error_message]);
                     $this->last_thread->save();
                 }
@@ -492,7 +492,7 @@ class SendReplyToCustomer implements ShouldQueue
         }
 
         if (get_class($client) == 'Webklex\PHPIMAP\Client') {
-            return $folder->appendMessage($envelope_str, ['Seen'], now()->format('d-M-Y H:i:s O'));
+            return $folder->appendMessage($envelope_str, ['\Seen'], now()->format('d-M-Y H:i:s O'));
         } else {
             return $folder->appendMessage($envelope_str, '\Seen', now()->format('d-M-Y H:i:s O'));
         }
