@@ -21,6 +21,7 @@ var fs_actions = {};
 var fs_filters = {};
 var fs_body_default = '<div><br></div>';
 var fs_prev_focus = true;
+var fs_checkbox_shift_last_checked = null;
 
 var FS_STATUS_CLOSED = 3;
 
@@ -4815,6 +4816,32 @@ function converstationBulkActionsInit()
 
 		$('.toggle-all:checkbox').on('click', function () {
 			$('.conv-checkbox:checkbox').prop('checked', this.checked).trigger('change');
+		});
+
+		$('.conv-cb label').on( 'click', function(e){
+
+		    var all_checkboxes = $('input.conv-checkbox');
+			var this_input = $( this ).parent('td').find('input.conv-checkbox' )[0];
+
+			// Remove the selection of text that happens.
+			document.getSelection().removeAllRanges();
+
+		    if (!fs_checkbox_shift_last_checked) {
+		        fs_checkbox_shift_last_checked = this_input;
+		        return;
+		    }
+
+		    if (e.shiftKey) {
+		        var start = all_checkboxes.index( this_input );
+		        var end = all_checkboxes.index(fs_checkbox_shift_last_checked);
+
+		        all_checkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', fs_checkbox_shift_last_checked.checked);
+
+				// When removing the selected text using getSelection(), the last click gets nullified. Let's re-do it.
+				$( this_input ).trigger('click');
+		    }
+
+		    fs_checkbox_shift_last_checked = this_input;
 		});
 	});
 }
