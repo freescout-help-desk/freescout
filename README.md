@@ -109,7 +109,7 @@ Images & one-click installs:
 
 Don't miss news, updates and new modules!
 
-[Email Newsletter](https://freescout.net/subscribe/) | [Facebook](https://freescout.net/facebook/) | [Twitter](https://freescout.net/twitter/) | [YouTube](https://freescout.net/youtube/) | [Telegram](https://t.me/FreeScout) | [RSS](https://freescout.net/feed/)
+[Email Newsletter](https://freescout.net/subscribe/) | [Facebook](https://freescout.net/facebook/) | [Twitter](https://freescout.net/twitter/) | [YouTube](https://freescout.net/youtube/) | [Telegram](https://freescout.net/telegram/) | [RSS](https://freescout.net/feed/)
 
 ## Contributing
 
