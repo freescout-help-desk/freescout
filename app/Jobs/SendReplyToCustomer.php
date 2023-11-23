@@ -441,25 +441,25 @@ class SendReplyToCustomer implements ShouldQueue
                                 // Save without attachments.
                                 $save_result = $this->saveEmailToFolder($client, $folder, $envelope, [$part_body], $bcc_array);
                                 if (!$save_result) {
-                                    \Log::error('Could not save outgoing reply to the IMAP folder (check folder name and make sure IMAP folder does not have spaces - folders with spaces do not work): '.$imap_sent_folder);
+                                    \Log::error($this->getImapSaveErrorPrefix($mailbox).'Could not save outgoing reply to the IMAP folder (check folder name and make sure IMAP folder does not have spaces - folders with spaces do not work): '.$imap_sent_folder);
                                 }
                             }
                         } catch (\Exception $e) {
                             // Just log error and continue.
-                            \Helper::logException($e, 'Could not save outgoing reply to the IMAP folder: ');
+                            \Helper::logException($e, $this->getImapSaveErrorPrefix($mailbox).'Could not save outgoing reply to the IMAP folder: ');
                         }
                     } else {
-                        \Log::error('Could not save outgoing reply to the IMAP folder (check folder name and make sure IMAP folder does not have spaces - folders with spaces do not work): '.$imap_sent_folder);
+                        \Log::error($this->getImapSaveErrorPrefix($mailbox).'Could not save outgoing reply to the IMAP folder (check folder name and make sure IMAP folder does not have spaces - folders with spaces do not work): '.$imap_sent_folder);
                     }
                 } catch (\Exception $e) {
                     // Just log error and continue.
-                    \Helper::logException($e, 'Could not save outgoing reply to the IMAP folder, IMAP folder not found: '.$imap_sent_folder.' - ');
+                    \Helper::logException($e, $this->getImapSaveErrorPrefix($mailbox).'Could not save outgoing reply to the IMAP folder, IMAP folder not found: '.$imap_sent_folder.' - ');
                     //$this->saveToSendLog('['.date('Y-m-d H:i:s').'] Could not save outgoing reply to the IMAP folder: '.$imap_sent_folder);
                 }
             } catch (\Exception $e) {
                 // Just log error and continue.
                 //$this->saveToSendLog('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$imap_sent_folder);
-                \Helper::logException($e, 'Could not save outgoing reply to the IMAP folder: '.$imap_sent_folder.' - ');
+                \Helper::logException($e, $this->getImapSaveErrorPrefix($mailbox).'Could not save outgoing reply to the IMAP folder: '.$imap_sent_folder.' - ');
             }
         }
 
@@ -473,6 +473,11 @@ class SendReplyToCustomer implements ShouldQueue
 
         // Save to send log
         $this->saveToSendLog('', $smtp_queue_id);
+    }
+
+    public function getImapSaveErrorPrefix($mailbox)
+    {
+        return '['.$mailbox->name.' » Connection Settings » Fetching Emails » IMAP Folder To Save Outgoing Replies] ';
     }
 
     // Save an email to IMAP folder.
