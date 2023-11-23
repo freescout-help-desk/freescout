@@ -1768,7 +1768,10 @@ function convEditorInit()
 
 	// New conversation: load customer info
 	$("#to").on('change', function(event) {
-		var to = $('#to').val()
+		// Autosave to be able to populate customer placeholders in the body
+		autosaveDraft();
+
+		var to = $('#to').val();
 		//var clean_customer = true;
 		// Do not clean customer info if customer has not changed
 		/*if (Array.isArray(to) && to.length == 1 && typeof(to[0]) != "undefined") {
@@ -4094,6 +4097,7 @@ function saveDraft(reload_page, no_loader, do_not_save_empty)
 		if (!$('.form-reply:visible:first :input[name="thread_id"]:first').val() 
 			&& !$('#body').val()
 			&& !$('.form-reply:visible:first .thread-attachments li.attachment-loaded:first').length
+			&& !$('#to').val()
 		) {
 			fs_processing_save_draft = false;
 			return;

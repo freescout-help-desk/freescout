@@ -2303,6 +2303,8 @@ class ConversationsController extends Controller
                             'prev_conversations' => $prev_conversations,
                         ])->render();
                     $response['status'] = 'success';
+                } else {
+                    $response['msg'] = 'Customer not found';
                 }
                 break;
 
