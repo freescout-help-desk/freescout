@@ -39,7 +39,7 @@
             @foreach ($prev_conversations as $prev_conversation)
                 <tr>
                     <td>
-                        <div class="radio"><input type="radio" class="conv-merge-id" name="conv_merge" value="{{ $prev_conversation->id }}" /><a href="{{ $prev_conversation->url() }}" target="_blank" data-toggle="tooltip" title="{{ __('Click to view') }}"><strong>#{{ $prev_conversation->number }}</strong> {{ $prev_conversation->getSubject() }}</a></div>
+                        <div class="checkbox"><input type="checkbox" class="conv-merge-id" value="{{ $prev_conversation->id }}" /><a href="{{ $prev_conversation->url() }}" target="_blank" data-toggle="tooltip" title="{{ __('Click to view') }}"><strong>#{{ $prev_conversation->number }}</strong> {{ $prev_conversation->getSubject() }}</a></div>
                     </td>
                 </tr>
             @endforeach
@@ -47,6 +47,10 @@
     </div>
 @endif
 
-<div class="form-group margin-top">
+<div class="form-group conv-merge-selected margin-top">
+
+</div>
+
+<div class="form-group margin-top-10">
 	<button class="btn btn-primary btn-merge-conv" data-loading-text="{{ __('Merge') }}…" type="submit" disabled>{{ __('Merge') }}</button>
 </div>

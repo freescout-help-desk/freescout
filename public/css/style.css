@@ -4325,10 +4325,14 @@ a.disabled:focus {
     max-height: 200px;
     overflow-y: auto;
 }
-.conv-merge-list .radio,
-.conv-merge-search-result .radio {
+.conv-merge-list .checkbox,
+.conv-merge-search-result .checkbox,
+.conv-merge-selected .checkbox {
     margin-top: 0;
     margin-bottom: 0;
+}
+.conv-merge-selected .alert {
+    margin-bottom: 10px;
 }
 .conv-tags {
     float: left;

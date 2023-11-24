@@ -2141,20 +2141,37 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
-                $merge_conversation = Conversation::find($request->merge_conversation_id);
+                if (!empty($request->merge_conversation_id) && is_array($request->merge_conversation_id)) {
+                    
+                    $sigle_conv = count($request->merge_conversation_id) == 1;
 
-                if (!$merge_conversation) {
-                    $response['msg'] = __('Conversation not found');
-                }
-                if (!$response['msg'] && !$user->can('view', $merge_conversation)) {
-                    $response['msg'] = __('Not enough permissions');
-                }
+                    foreach ($request->merge_conversation_id as $merge_conversation_id) {
+                        $merge_conversation = Conversation::find($merge_conversation_id);
 
-                if (!$response['msg']) {
-                    $conversation->mergeConversations($merge_conversation, $user);
+                        $response['msg'] = '';
 
-                    $response['status'] = 'success';
-                    \Session::flash('flash_success_floating', __('Conversations merged'));
+                        if (!$merge_conversation) {
+                            $response['msg'] = __('Conversation not found');
+                            if ($sigle_conv) {
+                                break;
+                            }
+                        }
+                        if (!$response['msg'] && !$user->can('view', $merge_conversation)) {
+                            $response['msg'] = __('Not enough permissions').': #'.$merge_conversation->number;
+                            if ($sigle_conv) {
+                                break;
+                            }
+                        }
+
+                        if (!$response['msg']) {
+                            $conversation->mergeConversations($merge_conversation, $user);
+
+                            if ($response['status'] != 'success') {
+                                \Session::flash('flash_success_floating', __('Conversations merged'));
+                            }
+                            $response['status'] = 'success';
+                        }
+                    }
                 }
 
                 break;

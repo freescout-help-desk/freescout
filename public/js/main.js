@@ -3040,9 +3040,18 @@ function initMergeConv()
 
 			button.button('loading');
 
+			var conv_ids = [];
+			$('.conv-merge-selected:visible:first .conv-merge-id:checked').each(function() {
+				conv_ids.push($(this).val());
+			});
+
+			if (!conv_ids.length) {
+				return;
+			}
+
 			fsAjax({
 					action: 'conversation_merge',
-					merge_conversation_id: $('.conv-merge-id:checked').val(),
+					merge_conversation_id: conv_ids,
 					conversation_id: getGlobalAttr('conversation_id')
 				},
 				laroute.route('conversations.ajax'),
@@ -3093,6 +3102,40 @@ function initMergeConvSelect()
 {
 	$('.conv-merge-id').click(function() {
 		$('.btn-merge-conv:visible:first').removeAttr('disabled');
+
+		var checkbox_container = $(this).parent();
+		var selected_list = $('.conv-merge-selected:visible:first');
+		var clicked_conv_id = parseInt($(this).val());
+
+		// Do not add same conversation twice
+		if (!isNaN(clicked_conv_id) && !selected_list.children().find('.conv-merge-id[value="'+parseInt($(this).val())+'"]').length) {
+
+			var html = '<div class="alert alert-narrow alert-info">'
+				+checkbox_container[0].outerHTML
+				+'</div>';
+
+			selected_list.append(html);
+
+			// Remove conv from selected list
+			selected_list.children().find('.conv-merge-id:last').attr('checked', 'checked').click(function(e){
+				$('.conv-merge-list:visible:first').children()
+					.find('.conv-merge-id[value="'+parseInt($(this).val())+'"]:first')
+					.parents('tr:first').show();
+				$(this).parent().parent().remove();
+
+				if (!selected_list.children().find('.conv-merge-id').length) {
+					$('.btn-merge-conv:visible:first').attr('disabled', 'disabled');
+				}
+			});
+		}
+
+		if ($(this).hasClass('conv-merge-searched')) {
+			$('.conv-merge-search-result:first').addClass('hidden');
+		} else {
+			checkbox_container.parents('tr:first').hide();
+		}
+
+		$(this).prop("checked", false);
 	});
 }
 
