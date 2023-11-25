@@ -628,11 +628,11 @@ function permissionsInit()
 {
 	$(document).ready(function(){
 	    $('.sel-all').click(function(e) {
-			$("#permissions-fields input").attr('checked', 'checked');
+			$("#permissions-fields input").prop('checked', true);
 			e.preventDefault();
 		});
 		$('.sel-none').click(function(e) {
-			$("#permissions-fields input").removeAttr('checked');
+			$("#permissions-fields input").prop('checked', false);
 			e.preventDefault();
 		});
 	});
