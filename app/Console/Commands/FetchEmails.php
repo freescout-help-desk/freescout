@@ -902,6 +902,7 @@ class FetchEmails extends Command
             $now = date('Y-m-d H:i:s');
         }
         $conv_cc = $cc;
+        $prev_conv_cc = $conv_cc;
 
         // Customers are created before with email and name
         $customer = Customer::create($from);
@@ -911,6 +912,7 @@ class FetchEmails extends Command
             // If reply came from another customer: change customer, add original as CC.
             // If FreeScout will not change the customer, the reply will be shown 
             // as coming from the original customer (not the real sender) and cause confusion.
+            // Below after events are fired we roll customer back.
             if ($conversation->customer_id != $customer->id) {
                 $prev_customer_id = $conversation->customer_id;
                 $prev_customer_email = $conversation->customer_email;
@@ -1043,8 +1045,16 @@ class FetchEmails extends Command
         }
 
         // Conversation customer changed
+        // if ($prev_customer_id) {
+        //     event(new ConversationCustomerChanged($conversation, $prev_customer_id, $prev_customer_email, null, $customer));
+        // }
+
+        // Return original customer back.
         if ($prev_customer_id) {
-            event(new ConversationCustomerChanged($conversation, $prev_customer_id, $prev_customer_email, null, $customer));
+            $conversation->customer_id = $prev_customer_id;
+            $conversation->customer_email = $prev_customer_email;
+            $conversation->setCc(array_merge($prev_conv_cc, array_diff($to, $mailbox->getEmails())));
+            $conversation->save();
         }
 
         return $thread;
