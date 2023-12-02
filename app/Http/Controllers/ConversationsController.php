@@ -199,6 +199,25 @@ class ConversationsController extends Controller
             }
         }
 
+        $threads = $conversation->threads()->orderBy('created_at', 'desc')->get();
+
+        // Get To for new conversation.
+        $new_conv_to = [];
+        if (empty($threads[0]) || empty($threads[0]->to)) {
+            // Before new conversation To field was stored in $conversation->customer_email.
+            $emails = Conversation::sanitizeEmails($conversation->customer_email);
+            // Get customers info for emails.
+            if (count($emails)) {
+                $new_conv_to = Customer::emailsToCustomers($emails);
+            }
+        } else {
+            $new_conv_to = Customer::emailsToCustomers($threads[0]->getToArray());
+        }
+
+        if (empty($customer) && count($new_conv_to) == 1) {
+            $customer = Customer::getByEmail(array_key_first($new_conv_to));
+        }
+
         // Previous conversations
         $prev_conversations = [];
         if ($customer) {
@@ -282,8 +301,6 @@ class ConversationsController extends Controller
 
         \Eventy::action('conversation.view.start', $conversation, $request);
 
-        $threads = $conversation->threads()->orderBy('created_at', 'desc')->get();
-
         // Mailbox aliases.
         $from_aliases = $conversation->mailbox->getAliases(true, true);
         $from_alias = '';
@@ -322,19 +339,6 @@ class ConversationsController extends Controller
                     }
                 }
             }
-        }
-
-        // Get To for new conversation draft.
-        $new_conv_to = [];
-        if (empty($threads[0]) || empty($threads[0]->to)) {
-            // Before new conversation To field was stored in $conversation->customer_email.
-            $emails = Conversation::sanitizeEmails($conversation->customer_email);
-            // Get customers info for emails.
-            if (count($emails)) {
-                $new_conv_to = Customer::emailsToCustomers($emails);
-            }
-        } else {
-            $new_conv_to = Customer::emailsToCustomers($threads[0]->getToArray());
         }
 
         return view($template, [
@@ -2137,20 +2141,37 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
-                $merge_conversation = Conversation::find($request->merge_conversation_id);
+                if (!empty($request->merge_conversation_id) && is_array($request->merge_conversation_id)) {
+                    
+                    $sigle_conv = count($request->merge_conversation_id) == 1;
 
-                if (!$merge_conversation) {
-                    $response['msg'] = __('Conversation not found');
-                }
-                if (!$response['msg'] && !$user->can('view', $merge_conversation)) {
-                    $response['msg'] = __('Not enough permissions');
-                }
+                    foreach ($request->merge_conversation_id as $merge_conversation_id) {
+                        $merge_conversation = Conversation::find($merge_conversation_id);
 
-                if (!$response['msg']) {
-                    $conversation->mergeConversations($merge_conversation, $user);
+                        $response['msg'] = '';
 
-                    $response['status'] = 'success';
-                    \Session::flash('flash_success_floating', __('Conversations merged'));
+                        if (!$merge_conversation) {
+                            $response['msg'] = __('Conversation not found');
+                            if ($sigle_conv) {
+                                break;
+                            }
+                        }
+                        if (!$response['msg'] && !$user->can('view', $merge_conversation)) {
+                            $response['msg'] = __('Not enough permissions').': #'.$merge_conversation->number;
+                            if ($sigle_conv) {
+                                break;
+                            }
+                        }
+
+                        if (!$response['msg']) {
+                            $conversation->mergeConversations($merge_conversation, $user);
+
+                            if ($response['status'] != 'success') {
+                                \Session::flash('flash_success_floating', __('Conversations merged'));
+                            }
+                            $response['status'] = 'success';
+                        }
+                    }
                 }
 
                 break;
@@ -2270,6 +2291,38 @@ class ConversationsController extends Controller
                     }
                 }
 
+                break;
+
+            case 'load_customer_info':
+                $customer = Customer::getByEmail($request->customer_email);
+
+                if ($customer) {
+                    // Previous conversations
+                    $prev_conversations = [];
+
+                    $mailbox = Mailbox::find($request->mailbox_id);
+
+                    if ($mailbox && $mailbox->userHasAccess($user->id)) {
+                        $conversation_id = (int)$request->conversation_id ?? 0;
+
+                        $prev_conversations = $mailbox->conversations()
+                            ->where('customer_id', $customer->id)
+                            ->where('id', '<>', $conversation_id)
+                            ->where('status', '!=', Conversation::STATUS_SPAM)
+                            ->where('state', Conversation::STATE_PUBLISHED)
+                            //->limit(self::PREV_CONVERSATIONS_LIMIT)
+                            ->orderBy('created_at', 'desc')
+                            ->paginate(self::PREV_CONVERSATIONS_LIMIT);
+                    }
+
+                    $response['html'] = \View::make('conversations/partials/customer_sidebar')->with([
+                            'customer' => $customer,
+                            'prev_conversations' => $prev_conversations,
+                        ])->render();
+                    $response['status'] = 'success';
+                } else {
+                    $response['msg'] = 'Customer not found';
+                }
                 break;
 
             default:

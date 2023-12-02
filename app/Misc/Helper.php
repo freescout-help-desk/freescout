@@ -1351,13 +1351,16 @@ class Helper
                 case 'http':
                 case 'https':
                     //$value = preg_replace_callback('~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { 
-                    $value = preg_replace_callback('%(\b(([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
-                            if ($match[3]) {
-                                $protocol = $match[3];
+                    //$value = preg_replace_callback('%(\b(([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
+                    // https://github.com/freescout-helpdesk/freescout/issues/3402
+                    $value = preg_replace_callback('%([>\r\n\s:; ]|^)((([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
+                            if ($match[4]) {
+                                $protocol = $match[4];
                             }
-                            $link = $match[1];
-                            $link = substr($link, strlen($match[2]));
-                            return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
+                            $link = $match[2];
+                            $link = substr($link, strlen($match[3]));
+                            //return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
+                            return $match[1].'<' . array_push($links, "<a $attr href=\"$protocol://$link\">".$match[2]."</a>") . '>';
                     }, $value) ?: $value;
                     break;
                 case 'mail':    $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:\)])~', function ($match) use (&$links, $attr) { return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>'; }, $value) ?: $value;
@@ -1367,7 +1370,7 @@ class Helper
             }
         }
 
-        // Insert all link
+        // Insert all links
         return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { return $links[$match[1] - 1]; }, $value ?? '') ?: $value;
     }
 
@@ -1931,7 +1934,7 @@ class Helper
             'proc_open (PHP)'  => function_exists('proc_open'),
             'fpassthru (PHP)'  => function_exists('fpassthru'),
             'symlink (PHP)'    => function_exists('symlink'),
-            'pcntl_signal (PHP)'    => function_exists('pcntl_signal'),
+            'pcntl_signal (console PHP)'    => (int)shell_exec('php -r "echo (int)function_exists(\'pcntl_signal\');"'),
             'ps (shell)' => function_exists('shell_exec') ? shell_exec('ps') : false,
         ];
     }

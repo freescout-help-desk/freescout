@@ -57,6 +57,7 @@ If you want to support the project feel free to **star this repository**. It hel
   * Open tracking.
   * Editing threads.
   * Search.
+  * And more…
 
 Need anything else? Suggest features [here](https://freescout.net/request-feature/).
 
@@ -108,7 +109,7 @@ Images & one-click installs:
 
 Don't miss news, updates and new modules!
 
-[Email Newsletter](https://freescout.net/subscribe/) | [Facebook](https://freescout.net/facebook/) | [Twitter](https://freescout.net/twitter/) | [YouTube](https://freescout.net/youtube/) | [RSS](https://freescout.net/feed/)
+[Email Newsletter](https://freescout.net/subscribe/) | [Facebook](https://freescout.net/facebook/) | [Twitter](https://freescout.net/twitter/) | [YouTube](https://freescout.net/youtube/) | [Telegram](https://freescout.net/telegram/) | [RSS](https://freescout.net/feed/)
 
 ## Contributing
 

@@ -21,6 +21,7 @@ var fs_actions = {};
 var fs_filters = {};
 var fs_body_default = '<div><br></div>';
 var fs_prev_focus = true;
+var fs_checkbox_shift_last_checked = null;
 
 var FS_STATUS_CLOSED = 3;
 
@@ -627,11 +628,11 @@ function permissionsInit()
 {
 	$(document).ready(function(){
 	    $('.sel-all').click(function(e) {
-			$("#permissions-fields input").attr('checked', 'checked');
+			$("#permissions-fields input").prop('checked', true);
 			e.preventDefault();
 		});
 		$('.sel-none').click(function(e) {
-			$("#permissions-fields input").removeAttr('checked');
+			$("#permissions-fields input").prop('checked', false);
 			e.preventDefault();
 		});
 	});
@@ -1764,6 +1765,39 @@ function convEditorInit()
 	}).blur(function(event) {
 	    onReplyBlur();
 	});
+
+	// New conversation: load customer info
+	$("#to").on('change', function(event) {
+		// Autosave to be able to populate customer placeholders in the body
+		autosaveDraft();
+
+		var to = $('#to').val();
+		//var clean_customer = true;
+		// Do not clean customer info if customer has not changed
+		/*if (Array.isArray(to) && to.length == 1 && typeof(to[0]) != "undefined") {
+			if (to[0] == $('#conv-layout-customer li.customer-email:first').text()) {
+				clean_customer = false;
+			}
+		}
+		if (clean_customer) {*/
+		$('#conv-layout-customer').html('');
+		// Load customer info
+		if (Array.isArray(to) && to.length == 1 && typeof(to[0]) != "undefined") {
+			fsAjax({
+				action: 'load_customer_info',
+				customer_email: to[0],
+				mailbox_id: getGlobalAttr('mailbox_id'),
+				conversation_id: getGlobalAttr('conversation_id')
+			}, laroute.route('conversations.ajax'), function(response) {
+				if (isAjaxSuccess(response) && typeof(response.html) != "undefined") {
+					$('#conv-layout-customer').html(response.html);
+				}
+			}, true, function() {
+				// Do nothing
+			});
+		}
+	});
+	
 	// select2 does not react on keyup or keypress
 	$(".recipient-select, .draft-changer").on('change', function(event) {
 		onReplyChange();
@@ -3006,9 +3040,18 @@ function initMergeConv()
 
 			button.button('loading');
 
+			var conv_ids = [];
+			$('.conv-merge-selected:visible:first .conv-merge-id:checked').each(function() {
+				conv_ids.push($(this).val());
+			});
+
+			if (!conv_ids.length) {
+				return;
+			}
+
 			fsAjax({
 					action: 'conversation_merge',
-					merge_conversation_id: $('.conv-merge-id:checked').val(),
+					merge_conversation_id: conv_ids,
 					conversation_id: getGlobalAttr('conversation_id')
 				},
 				laroute.route('conversations.ajax'),
@@ -3059,6 +3102,40 @@ function initMergeConvSelect()
 {
 	$('.conv-merge-id').click(function() {
 		$('.btn-merge-conv:visible:first').removeAttr('disabled');
+
+		var checkbox_container = $(this).parent();
+		var selected_list = $('.conv-merge-selected:visible:first');
+		var clicked_conv_id = parseInt($(this).val());
+
+		// Do not add same conversation twice
+		if (!isNaN(clicked_conv_id) && !selected_list.children().find('.conv-merge-id[value="'+parseInt($(this).val())+'"]').length) {
+
+			var html = '<div class="alert alert-narrow alert-info">'
+				+checkbox_container[0].outerHTML
+				+'</div>';
+
+			selected_list.append(html);
+
+			// Remove conv from selected list
+			selected_list.children().find('.conv-merge-id:last').attr('checked', 'checked').click(function(e){
+				$('.conv-merge-list:visible:first').children()
+					.find('.conv-merge-id[value="'+parseInt($(this).val())+'"]:first')
+					.parents('tr:first').show();
+				$(this).parent().parent().remove();
+
+				if (!selected_list.children().find('.conv-merge-id').length) {
+					$('.btn-merge-conv:visible:first').attr('disabled', 'disabled');
+				}
+			});
+		}
+
+		if ($(this).hasClass('conv-merge-searched')) {
+			$('.conv-merge-search-result:first').addClass('hidden');
+		} else {
+			checkbox_container.parents('tr:first').hide();
+		}
+
+		$(this).prop("checked", false);
 	});
 }
 
@@ -4063,6 +4140,7 @@ function saveDraft(reload_page, no_loader, do_not_save_empty)
 		if (!$('.form-reply:visible:first :input[name="thread_id"]:first').val() 
 			&& !$('#body').val()
 			&& !$('.form-reply:visible:first .thread-attachments li.attachment-loaded:first').length
+			&& !$('#to').val()
 		) {
 			fs_processing_save_draft = false;
 			return;
@@ -4785,6 +4863,32 @@ function converstationBulkActionsInit()
 
 		$('.toggle-all:checkbox').on('click', function () {
 			$('.conv-checkbox:checkbox').prop('checked', this.checked).trigger('change');
+		});
+
+		$('.conv-cb label').on( 'click', function(e){
+
+		    var all_checkboxes = $('input.conv-checkbox');
+			var this_input = $( this ).parent('td').find('input.conv-checkbox' )[0];
+
+			// Remove the selection of text that happens.
+			document.getSelection().removeAllRanges();
+
+		    if (!fs_checkbox_shift_last_checked) {
+		        fs_checkbox_shift_last_checked = this_input;
+		        return;
+		    }
+
+		    if (e.shiftKey) {
+		        var start = all_checkboxes.index( this_input );
+		        var end = all_checkboxes.index(fs_checkbox_shift_last_checked);
+
+		        all_checkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', fs_checkbox_shift_last_checked.checked);
+
+				// When removing the selected text using getSelection(), the last click gets nullified. Let's re-do it.
+				$( this_input ).trigger('click');
+		    }
+
+		    fs_checkbox_shift_last_checked = this_input;
 		});
 	});
 }
