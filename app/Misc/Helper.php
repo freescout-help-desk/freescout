@@ -1934,7 +1934,7 @@ class Helper
             'proc_open (PHP)'  => function_exists('proc_open'),
             'fpassthru (PHP)'  => function_exists('fpassthru'),
             'symlink (PHP)'    => function_exists('symlink'),
-            'pcntl_signal (console PHP)'    => (int)shell_exec('php -r "echo (int)function_exists(\'pcntl_signal\');"'),
+            'pcntl_signal (console PHP)'    => function_exists('shell_exec') ? (int)shell_exec('php -r "echo (int)function_exists(\'pcntl_signal\');"') : false,
             'ps (shell)' => function_exists('shell_exec') ? shell_exec('ps') : false,
         ];
     }
