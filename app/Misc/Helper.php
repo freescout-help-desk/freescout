@@ -1353,7 +1353,7 @@ class Helper
                     //$value = preg_replace_callback('~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { 
                     //$value = preg_replace_callback('%(\b(([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
                     // https://github.com/freescout-helpdesk/freescout/issues/3402
-                    $value = preg_replace_callback('%([>\r\n\s:; ]|^)((([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
+                    $value = preg_replace_callback('%([>\r\n\s:;\( ]|^)((([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
                             if ($match[4]) {
                                 $protocol = $match[4];
                             }
@@ -1934,7 +1934,7 @@ class Helper
             'proc_open (PHP)'  => function_exists('proc_open'),
             'fpassthru (PHP)'  => function_exists('fpassthru'),
             'symlink (PHP)'    => function_exists('symlink'),
-            'pcntl_signal (console PHP)'    => (int)shell_exec('php -r "echo (int)function_exists(\'pcntl_signal\');"'),
+            'pcntl_signal (console PHP)'    => function_exists('shell_exec') ? (int)shell_exec('php -r "echo (int)function_exists(\'pcntl_signal\');"') : false,
             'ps (shell)' => function_exists('shell_exec') ? shell_exec('ps') : false,
         ];
     }
