@@ -1163,7 +1163,9 @@ class ConversationsController extends Controller
                                 }
                             }
                         } else {
-                            Attachment::whereIn('id', $attachments_info['attachments'])->update(['thread_id' => $thread->id]);
+                            Attachment::whereIn('id', $attachments_info['attachments'])
+                                ->where('thread_id', null)
+                                ->update(['thread_id' => $thread->id]);
                         }
                     }
 
@@ -1525,7 +1527,9 @@ class ConversationsController extends Controller
 
                     // Set thread_id for uploaded attachments
                     if ($attachments_info['attachments']) {
-                        Attachment::whereIn('id', $attachments_info['attachments'])->update(['thread_id' => $thread->id]);
+                        Attachment::whereIn('id', $attachments_info['attachments'])
+                            ->where('thread_id', null)
+                            ->update(['thread_id' => $thread->id]);
                     }
 
                     // Update folder counter.
