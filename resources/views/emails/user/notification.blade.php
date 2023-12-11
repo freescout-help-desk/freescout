@@ -22,7 +22,7 @@
 	<![endif]-->
 </head>
 <body bgcolor="#f8f9f9" style="-webkit-text-size-adjust:none; margin: 0;">
-	<table bgcolor="#f8f9f9" cellspacing="0" border="0" cellpadding="0" width="100%">
+	<table bgcolor="#f8f9f9" cellspacing="0" border="0" cellpadding="0" width="100%" id="{{ \MailHelper::REPLY_SEPARATOR_NOTIFICATION }}" class="{{ \MailHelper::REPLY_SEPARATOR_NOTIFICATION }}" data-fs="{{ \MailHelper::REPLY_SEPARATOR_NOTIFICATION }}">
 		<tr>
 			<td>
 				<table class="content" width="100%" border="0" cellspacing="0" cellpadding="0">

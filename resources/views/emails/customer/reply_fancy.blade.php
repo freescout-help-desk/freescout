@@ -10,7 +10,7 @@
     </style>
 </head>
 <body style="-webkit-text-size-adjust:none;">
-	<div id="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" class="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" style="width:100%!important; margin:0; padding:0">
+	<div id="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" class="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" data-fs="{{ App\Misc\Mail::REPLY_SEPARATOR_HTML }}" style="width:100%!important; margin:0; padding:0">
 	    @php
 	    	$is_forwarded = !empty($threads[0]) ? $threads[0]->isForwarded() : false;
 	    @endphp

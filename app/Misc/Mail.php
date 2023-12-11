@@ -15,6 +15,7 @@ class Mail
      */
     const REPLY_SEPARATOR_HTML = 'fsReplyAbove';
     const REPLY_SEPARATOR_TEXT = '-- Please reply above this line --';
+    const REPLY_SEPARATOR_NOTIFICATION = 'fsNotificationReplyAbove';
 
     /**
      * Message-ID prefixes for outgoing emails.
