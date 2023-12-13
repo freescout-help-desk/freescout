@@ -2097,4 +2097,18 @@ class Helper
             \Session::forget('chat_mode');
         }
     }
+
+    public static function detectCloudFlare()
+    {
+        if (!empty($_SERVER['HTTP_CF_IPCOUNTRY'])
+            || !empty($_SERVER['HTTP_CF_CONNECTING_IP'])
+            || !empty($_SERVER['HTTP_CF_VISITOR'])
+            || !empty($_SERVER['HTTP_CF_RAY'])
+            || ($_SERVER['HTTP_CDN_LOOP'] ?? '') == 'cloudflare'
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
