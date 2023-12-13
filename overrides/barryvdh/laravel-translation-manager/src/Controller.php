@@ -31,15 +31,15 @@ class Controller extends BaseController
         $groups = [''=>'Choose a group'] + $groups;
 
         $selected_locale = request()->input('locale');
-        if ($selected_locale == 'en') {
-            $selected_locale = '';
-        }
+        // if ($selected_locale == 'en') {
+        //     $selected_locale = '';
+        // }
         if (!$selected_locale) {
             foreach ($locales as $locale) {
-                if ($locale != 'en') {
+                //if ($locale != 'en') {
                     $selected_locale = $locale;
                     break;
-                }
+                //}
             }
         }
 
