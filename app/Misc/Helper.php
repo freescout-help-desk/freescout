@@ -2097,4 +2097,26 @@ class Helper
             \Session::forget('chat_mode');
         }
     }
+
+    public static function detectCloudFlare()
+    {
+        if (!empty($_SERVER['HTTP_CF_IPCOUNTRY'])
+            || !empty($_SERVER['HTTP_CF_CONNECTING_IP'])
+            || !empty($_SERVER['HTTP_CF_VISITOR'])
+            || !empty($_SERVER['HTTP_CF_RAY'])
+            || ($_SERVER['HTTP_CDN_LOOP'] ?? '') == 'cloudflare'
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // Correct format: 2023-12-14 19:21
+    // Datepicker with enableTime option enabled
+    // may return value in different format on iOS Safari: 2023-12-14T11:25
+    public static function sanitizeDatepickerDatetime($datetime)
+    {
+        return str_replace('T', ' ', $datetime);
+    }
 }

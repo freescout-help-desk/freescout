@@ -593,12 +593,15 @@ class FetchEmails extends Command
                 // Get body and do not replace :cid with images base64
                 $html_body = $message->getHTMLBody(false);
             }
+            $is_html = true;
             if ($html_body) {
-                $body = $this->separateReply($html_body, true, $is_reply);
+                $body = $html_body;
             } else {
+                $is_html = false;
                 $body = $message->getTextBody();
-                $body = $this->separateReply($body, false, $is_reply);
             }
+            $body = $this->separateReply($body, $is_html, $is_reply, !$message_from_customer);
+
             // We have to fetch absolutely all emails, even with empty body.
             // if (!$body) {
             //     $this->logError('Message body is empty');
@@ -1230,7 +1233,7 @@ class FetchEmails extends Command
      *
      * @return string
      */
-    public function separateReply($body, $is_html, $is_reply)
+    public function separateReply($body, $is_html, $is_reply, $user_reply_to_notification = false)
     {
         $cmp_reply_length_desc = function ($a, $b) {
             if (mb_strlen($a) == mb_strlen($b)) {
@@ -1280,10 +1283,17 @@ class FetchEmails extends Command
         if ($is_reply) {
             // Check all separators and choose the shortest reply
             $reply_bodies = [];
+
             $reply_separators = Mail::$alternative_reply_separators;
 
             if (!empty($this->mailbox->before_reply)) {
                 $reply_separators[] = $this->mailbox->before_reply;
+            }
+
+            // If user replied to the email notification use only predefined reply separator.
+            // https://github.com/freescout-helpdesk/freescout/issues/3580
+            if ($user_reply_to_notification && strstr($result, \MailHelper::REPLY_SEPARATOR_NOTIFICATION)) {
+                $reply_separators = [\MailHelper::REPLY_SEPARATOR_NOTIFICATION];
             }
 
             foreach ($reply_separators as $reply_separator) {
@@ -1294,7 +1304,7 @@ class FetchEmails extends Command
                     $parts = explode($reply_separator, $result);
                 }
                 if (count($parts) > 1) {
-                    // Check if past contains any real text.
+                    // Check if part contains any real text.
                     $text = \Helper::htmlToText($parts[0]);
                     $text = trim($text);
                     $text = preg_replace('/^\s+/mu', '', $text);

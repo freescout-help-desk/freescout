@@ -82,9 +82,9 @@
                         <p>Language</p>
                         <select name="locale" id="locale" class="form-control group-locale-select" autocomplete="off">
                             <?php foreach($locales as $locale): ?>
-                                <?php if ($locale != 'en'): ?>
+                                <?php /*if ($locale != 'en'):*/ ?>
                                     <option value="<?php echo $locale ?>"<?php echo $locale == $selected_locale ? ' selected':'' ?>><?php echo \Helper::getLocaleData($locale, 'name') ?> (<?php echo \Helper::getLocaleData($locale, 'name_en') ?>)</option>
-                                <?php endif ?>
+                                <?php /*endif*/ ?>
                             <?php endforeach; ?>
                         </select>
                     </div>

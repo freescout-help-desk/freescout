@@ -197,7 +197,7 @@ class Attachment {
 
         // sanitize $name
         // order of '..' is important
-        $filename = str_replace(['\\', '/', chr(0), ':', '..'], '', $filename ?? '');
+        $filename = str_replace(['\\', '../', '/..', '/', chr(0), ':'], '', $filename ?? '');
 
         $path = substr($path, -1) == DIRECTORY_SEPARATOR ? $path : $path.DIRECTORY_SEPARATOR;
 
@@ -265,7 +265,7 @@ class Attachment {
 
             // sanitize $name
             // order of '..' is important
-            $name = str_replace(['\\', '/', chr(0), ':', '..'], '', $name);
+            $name = str_replace(['\\', '../', '/..', '/', chr(0), ':'], '', $name);
         }
 
         $this->name = $name;

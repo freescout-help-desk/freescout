@@ -54,6 +54,19 @@
                 <th>{{ __('Protocol') }}</th>
                 <td class="table-main-col" id="system-app-protocol"></td>
             </tr>
+            @if (\Helper::detectCloudFlare())
+                @php
+                    $cloudflare_is_used = config('app.cloudflare_is_used');
+                @endphp
+                <tr>
+                    <th>Proxy</th>
+                    <td class="table-main-col">
+                        <div @if (!$cloudflare_is_used) class="alert alert-warning alert-narrow margin-bottom-0" @endif>
+                            @if (!$cloudflare_is_used)<i class="glyphicon glyphicon-exclamation-sign"></i> @endif{{ 'CloudFlare' }} (<a href="https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#103-cloudflare" target="_blank">{{ __('read more') }}</a>)
+                        </div>
+                    </td>
+                </tr>
+            @endif
             {{--<tr>
                 <th>{{ __('.env file') }}</th>
                 <td class="table-main-col">
