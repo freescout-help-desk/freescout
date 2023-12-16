@@ -593,12 +593,15 @@ class FetchEmails extends Command
                 // Get body and do not replace :cid with images base64
                 $html_body = $message->getHTMLBody(false);
             }
+            
             $is_html = true;
+
             if ($html_body) {
                 $body = $html_body;
             } else {
                 $is_html = false;
-                $body = $message->getTextBody();
+                $body = $message->getTextBody() ?? '';
+                $body = htmlspecialchars($body);
             }
             $body = $this->separateReply($body, $is_html, $is_reply, !$message_from_customer);
 
