@@ -1643,7 +1643,7 @@ class Conversation extends Model
     }
 
     /**
-     * Get emails which are excluded from CC and BCC.
+     * Get emails which should be excluded from CC and BCC.
      */
     public function getExcludeArray($mailbox = null)
     {
