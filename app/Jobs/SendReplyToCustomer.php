@@ -266,6 +266,8 @@ class SendReplyToCustomer implements ShouldQueue
 
         $reply_mail = new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox, $subject, $threads_count);
 
+        $smtp_queue_id = null;
+        
         try {
             Mail::to($to)
                 ->cc($cc_array)
