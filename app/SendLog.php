@@ -108,7 +108,12 @@ class SendLog extends Model
         if ($smtp_queue_id) {
             $send_log->smtp_queue_id = $smtp_queue_id;
         }
-        $send_log->save();
+        try {
+            $send_log->save();
+        } catch (\Exception $e) {
+            \Helper::logException($e, 'Error occurred saving a record to `send_logs` table. ');
+            return false;
+        }
 
         return true;
     }

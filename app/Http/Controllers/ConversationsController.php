@@ -236,7 +236,24 @@ class ConversationsController extends Controller
             $template = 'conversations/create';
         }
 
+        // CC.
         $exclude_array = $conversation->getExcludeArray($mailbox);
+        $cc = $conversation->getCcArray($exclude_array);
+
+        // If last reply came from customer who was mentioned in CC before,
+        // we need to add this customer as CC.
+        // https://github.com/freescout-helpdesk/freescout/issues/3613
+        foreach ($threads as $thread) {
+            if ($thread->isUserMessage() && !$thread->isDraft()) {
+                break;
+            }
+            if ($thread->isCustomerMessage()) {
+                if ($thread->customer_id != $conversation->customer_id) {
+                    $cc[] = $thread->from;
+                }
+                break;
+            }
+        }
 
         // Get data for creating a phone conversation.
         $name = [];
@@ -352,7 +369,7 @@ class ConversationsController extends Controller
             'to'                 => $new_conv_to,
             'to_customers'       => $to_customers,
             'prev_conversations' => $prev_conversations,
-            'cc'                 => $conversation->getCcArray($exclude_array),
+            'cc'                 => $cc,
             'bcc'                => [], //$conversation->getBccArray($exclude_array),
             // Data for creating a phone conversation.
             'name'               => $name,
