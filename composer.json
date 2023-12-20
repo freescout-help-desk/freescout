@@ -124,6 +124,7 @@
             "Symfony\\Component\\HttpFoundation\\File\\MimeType\\": "overrides/symfony/http-foundation/File/MimeType/",
             "Chumper\\Zipper\\Repositories\\": "overrides/chumper/zipper/src/Chumper/Zipper/Repositories/",
             "Faker\\Provider\\": "overrides/fzaninotto/faker/src/Faker/Provider/",
+            "Illuminate\\Database\\": "overrides/laravel/framework/src/Illuminate/Database/",
 
             "Illuminate\\Support\\": "overrides/laravel/framework/src/Illuminate/Support/",
             "Illuminate\\Http\\": "overrides/laravel/framework/src/Illuminate/Http/",
@@ -219,6 +220,7 @@
             "vendor/chumper/zipper/src/Chumper/Zipper/Repositories/ZipRepository.php",
             "vendor/fzaninotto/faker/src/Faker/Provider/Base.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Host.php",
+            "vendor/laravel/framework/src/Illuminate/Database/DetectsLostConnections.php",
 
             "vendor/laravel/framework/src/Illuminate/Support/Collection.php",
             "vendor/laravel/framework/src/Illuminate/Http/Request.php",
