@@ -896,14 +896,14 @@ class Helper
         if (is_string($locale) && isset(self::$locales[$locale])) {
             $data = self::$locales[$locale];
         } else {
-            return;
+            return null;
         }
 
         if ($param) {
             if (isset(self::$locales[$locale])) {
                 return self::$locales[$locale][$param];
             } else {
-                return;
+                return null;
             }
         } else {
             return $data;
