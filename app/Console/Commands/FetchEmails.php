@@ -171,6 +171,8 @@ class FetchEmails extends Command
 
             if ($folder) {
                 $folders[] = $folder;
+            } else {
+                $this->line('['.date('Y-m-d H:i:s').'] Could not get folder: '.$folder_name);
             }
         }
         // try {
@@ -185,7 +187,7 @@ class FetchEmails extends Command
         }
 
         foreach ($folders as $folder) {
-            $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
+            $this->line('['.date('Y-m-d H:i:s').'] Folder: '.($folder->full_name ?? $folder->name));
 
             // Requesting emails by bunches allows to fetch large amounts of emails
             // without problems with memory.

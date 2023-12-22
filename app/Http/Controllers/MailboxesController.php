@@ -706,25 +706,10 @@ class MailboxesController extends Controller
 
                         $imap_folders = $client->getFolders();
 
+                        $response['folders'] = [];
+
                         if (count($imap_folders)) {
-                            foreach ($imap_folders as $imap_folder) {
-                                if (!empty($imap_folder->name)) {
-                                    $response['folders'][] = $imap_folder->name;
-                                }
-                                // Maybe we need a recursion here.
-                                if (!empty($imap_folder->children)) {
-                                    foreach ($imap_folder->children as $child_imap_folder) {
-                                        // Old library.
-                                        if (!empty($child_imap_folder->fullName)) {
-                                            $response['folders'][] = $child_imap_folder->fullName;
-                                        }
-                                        // New library.
-                                        if (!empty($child_imap_folder->full_name)) {
-                                            $response['folders'][] = $child_imap_folder->full_name;
-                                        }
-                                    }
-                                }
-                            }
+                            $response = $this->interateFolders($response, $imap_folders);
                         }
 
                         if (count($response['folders'])) {
@@ -811,6 +796,31 @@ class MailboxesController extends Controller
         }
 
         return \Response::json($response);
+    }
+
+    // Recursively interate over folders.
+    public function interateFolders($response, $imap_folders) {
+        foreach ($imap_folders as $imap_folder) {
+            if (!empty($imap_folder->name)) {
+                $response['folders'][] = $imap_folder->name;
+            }
+
+            // Check for children and recurse.
+            if (!empty($imap_folder->children)) {
+                $response = $this->interateFolders($response, $imap_folder->children);
+            }
+
+            // Old library.
+            if (!empty($imap_folder->fullName)) {
+                $response['folders'][] = $imap_folder->fullName;
+            }
+            // New library.
+            if (!empty($imap_folder->full_name)) {
+                $response['folders'][] = $imap_folder->full_name;
+            }
+        }
+
+        return $response;
     }
 
     public function oauth(Request $request)
