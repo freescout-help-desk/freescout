@@ -1353,7 +1353,8 @@ class Helper
                     //$value = preg_replace_callback('~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { 
                     //$value = preg_replace_callback('%(\b(([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
                     // https://github.com/freescout-helpdesk/freescout/issues/3402
-                    $value = preg_replace_callback('%([>\r\n\s:;\( ]|^)((([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
+                    $nbsp = html_entity_decode('&nbsp;');
+                    $value = preg_replace_callback('%([>\r\n\s:;\( '.$nbsp.']|^)((([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
                             if ($match[4]) {
                                 $protocol = $match[4];
                             }
