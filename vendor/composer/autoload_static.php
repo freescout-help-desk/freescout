@@ -151,6 +151,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Illuminate\\Filesystem\\' => 22,
             'Illuminate\\Database\\Eloquent\\Concerns\\' => 38,
             'Illuminate\\Database\\Eloquent\\' => 29,
+            'Illuminate\\Database\\' => 20,
             'Illuminate\\Cookie\\Middleware\\' => 29,
             'Illuminate\\Cookie\\' => 18,
             'Illuminate\\Container\\' => 21,
@@ -560,6 +561,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         array (
             0 => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Database/Eloquent',
         ),
+        'Illuminate\\Database\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Database',
+        ),
         'Illuminate\\Cookie\\Middleware\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Cookie/Middleware',
@@ -832,6 +837,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'App\\Events\\CustomerCreatedConversation' => __DIR__ . '/../..' . '/app/Events/CustomerCreatedConversation.php',
         'App\\Events\\CustomerReplied' => __DIR__ . '/../..' . '/app/Events/CustomerReplied.php',
         'App\\Events\\RealtimeBroadcastNotificationCreated' => __DIR__ . '/../..' . '/app/Events/RealtimeBroadcastNotificationCreated.php',
+        'App\\Events\\RealtimeChat' => __DIR__ . '/../..' . '/app/Events/RealtimeChat.php',
         'App\\Events\\RealtimeConvNewThread' => __DIR__ . '/../..' . '/app/Events/RealtimeConvNewThread.php',
         'App\\Events\\RealtimeConvView' => __DIR__ . '/../..' . '/app/Events/RealtimeConvView.php',
         'App\\Events\\RealtimeConvViewFinish' => __DIR__ . '/../..' . '/app/Events/RealtimeConvViewFinish.php',
@@ -865,6 +871,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'App\\Http\\Middleware\\CheckRole' => __DIR__ . '/../..' . '/app/Http/Middleware/CheckRole.php',
         'App\\Http\\Middleware\\CustomHandle' => __DIR__ . '/../..' . '/app/Http/Middleware/CustomHandle.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
+        'App\\Http\\Middleware\\FrameGuard' => __DIR__ . '/../..' . '/app/Http/Middleware/FrameGuard.php',
         'App\\Http\\Middleware\\HttpsRedirect' => __DIR__ . '/../..' . '/app/Http/Middleware/HttpsRedirect.php',
         'App\\Http\\Middleware\\Localize' => __DIR__ . '/../..' . '/app/Http/Middleware/Localize.php',
         'App\\Http\\Middleware\\LogoutIfDeleted' => __DIR__ . '/../..' . '/app/Http/Middleware/LogoutIfDeleted.php',
@@ -2034,7 +2041,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Illuminate\\Database\\DatabaseManager' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/DatabaseManager.php',
         'Illuminate\\Database\\DatabaseServiceProvider' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/DatabaseServiceProvider.php',
         'Illuminate\\Database\\DetectsDeadlocks' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/DetectsDeadlocks.php',
-        'Illuminate\\Database\\DetectsLostConnections' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/DetectsLostConnections.php',
+        'Illuminate\\Database\\DetectsLostConnections' => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Database/DetectsLostConnections.php',
         'Illuminate\\Database\\Eloquent\\Builder' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php',
         'Illuminate\\Database\\Eloquent\\Collection' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/Eloquent/Collection.php',
         'Illuminate\\Database\\Eloquent\\Concerns\\GuardsAttributes' => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/GuardsAttributes.php',

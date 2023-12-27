@@ -87,6 +87,7 @@ return array(
     'Illuminate\\Filesystem\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Filesystem'),
     'Illuminate\\Database\\Eloquent\\Concerns\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Database/Eloquent/Concerns'),
     'Illuminate\\Database\\Eloquent\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Database/Eloquent'),
+    'Illuminate\\Database\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Database'),
     'Illuminate\\Cookie\\Middleware\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Cookie/Middleware'),
     'Illuminate\\Cookie\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Cookie'),
     'Illuminate\\Container\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Container'),
