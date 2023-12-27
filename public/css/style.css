@@ -4387,6 +4387,9 @@ a.disabled:focus {
     padding: 4px 6px 4px 6px;
     vertical-align: inherit;
 }
+#send_test_log {
+    max-height: 200px;
+}
 .glyphicon-spin {
     -webkit-animation: spin 1000ms infinite linear;
     animation: spin 1000ms infinite linear;

@@ -656,6 +656,7 @@ function mailboxConnectionInit(out_method_smtp)
 	    $('#send-test-trigger').click(function(event) {
 	    	var button = $(this);
 	    	button.button('loading');
+	    	$('#send_test_log').addClass('hidden');
 	    	fsAjax(
 				{
 					action: 'send_test',
@@ -668,6 +669,9 @@ function mailboxConnectionInit(out_method_smtp)
 						showFloatingAlert('success', Lang.get("messages.email_sent"));
 					} else {
 						showAjaxError(response, true);
+						if (typeof(response.log) != "undefined" && response.log) {
+							$('#send_test_log').removeClass('hidden').text(response.log);
+						}
 					}
 					button.button('reset');
 				},
@@ -786,6 +790,7 @@ function mailSettingsInit()
 		$('#send-test-trigger').click(function(event) {
 	    	var button = $(this);
 	    	button.button('loading');
+	    	$('#send_test_log').addClass('hidden');
 	    	fsAjax(
 				{
 					action: 'send_test',
@@ -797,6 +802,9 @@ function mailSettingsInit()
 						showFloatingAlert('success', Lang.get("messages.email_sent"));
 					} else {
 						showAjaxError(response);
+						if (typeof(response.log) != "undefined" && response.log) {
+							$('#send_test_log').removeClass('hidden').text(response.log);
+						}
 					}
 					button.button('reset');
 				},

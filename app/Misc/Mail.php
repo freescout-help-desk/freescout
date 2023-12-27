@@ -282,14 +282,29 @@ class Mail
         return Option::get('mail_driver', 'mail');
     }
 
+    public static function registerSmtpLogger()
+    {
+        $logger = new \Swift_Plugins_Loggers_ArrayLogger();
+        \Mail::getSwiftMailer()->registerPlugin(new \Swift_Plugins_LoggerPlugin($logger));
+
+        return $logger;
+    }
+
     /**
      * Send test email from mailbox.
      */
     public static function sendTestMail($to, $mailbox = null)
     {
+        $result = [
+            'status' => 'success',
+            'msg' => '',
+            'log' => '',
+        ];
+
         if ($mailbox) {
             // Configure mail driver according to Mailbox settings
             \MailHelper::setMailDriver($mailbox);
+            $smtp_logger = self::registerSmtpLogger();
 
             $status_message = '';
 
@@ -302,6 +317,7 @@ class Mail
         } else {
             // System email
             \MailHelper::setSystemMailDriver();
+            $smtp_logger = self::registerSmtpLogger();
 
             $status_message = '';
 
@@ -317,15 +333,17 @@ class Mail
         if (\Mail::failures() || $status_message) {
             SendLog::log(null, null, $to, SendLog::MAIL_TYPE_TEST, SendLog::STATUS_SEND_ERROR, null, null, $status_message);
             if ($status_message) {
-                throw new \Exception($status_message, 1);
-            } else {
-                return false;
+                $result['msg'] = $status_message;
             }
+            $result['status'] = 'error';
+            $result['log'] = $smtp_logger->dump();
         } else {
             SendLog::log(null, null, $to, SendLog::MAIL_TYPE_TEST, SendLog::STATUS_ACCEPTED);
 
-            return true;
+            $result['status'] = 'success';
         }
+
+        return $result;
     }
 
     /**
