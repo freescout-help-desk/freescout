@@ -166,11 +166,13 @@ class FetchEmails extends Command
                 $folder = \MailHelper::getImapFolder($client, $folder_name);
             } catch (\Exception $e) {
                 // Just log error and continue.
-                $this->error('['.date('Y-m-d H:i:s').'] Could not get mailbox IMAP folder: '.$folder_name);
+                $this->error('['.date('Y-m-d H:i:s').'] IMAP folder not found on the mail server: '.$folder_name);
             }
 
             if ($folder) {
                 $folders[] = $folder;
+            } else {
+                $this->line('['.date('Y-m-d H:i:s').'] IMAP folder not found on the mail server: '.$folder_name);
             }
         }
         // try {
@@ -185,7 +187,7 @@ class FetchEmails extends Command
         }
 
         foreach ($folders as $folder) {
-            $this->line('['.date('Y-m-d H:i:s').'] Folder: '.$folder->name);
+            $this->line('['.date('Y-m-d H:i:s').'] Folder: '.($folder->full_name ?? $folder->name));
 
             // Requesting emails by bunches allows to fetch large amounts of emails
             // without problems with memory.

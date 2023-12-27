@@ -58,6 +58,9 @@ class Mailbox extends Model
     const OUT_ENCRYPTION_NONE = 1;
     const OUT_ENCRYPTION_SSL = 2;
     const OUT_ENCRYPTION_TLS = 3;
+    // StartTLS is already included in TLS:
+    // allow_self_signed = true
+    // verify_peer = false
 
     public static $out_encryptions = [
         self::OUT_ENCRYPTION_NONE => '',
@@ -82,11 +85,16 @@ class Mailbox extends Model
     const IN_ENCRYPTION_NONE = 1;
     const IN_ENCRYPTION_SSL = 2;
     const IN_ENCRYPTION_TLS = 3;
+    // For Webklex/laravel-imap this option is the same as 'none'.
+    // For Webklex/php-imap it works:
+    // https://github.com/Webklex/php-imap/pull/180
+    const IN_ENCRYPTION_STARTTLS = 4;
 
     public static $in_encryptions = [
         self::IN_ENCRYPTION_NONE => '',
         self::IN_ENCRYPTION_SSL  => 'ssl',
         self::IN_ENCRYPTION_TLS  => 'tls',
+        self::IN_ENCRYPTION_STARTTLS  => 'starttls',
     ];
 
     /**
