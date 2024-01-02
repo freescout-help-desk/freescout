@@ -1,9 +1,20 @@
-@if (count($conversations))
+@if (count($conversations) || (isset($params) && !empty($params['user_id'])))
     @php
+        if (is_array($conversations)) {
+            $conversations = collect($conversations);
+        }
         if (empty($folder)) {
             // Create dummy folder
             $folder = new App\Folder();
             $folder->type = App\Folder::TYPE_ASSIGNED;
+        }
+        // Clean filter.
+        if (!empty($conversations_filter)) {
+            foreach ($conversations_filter as $i => $filter_value) {
+                if (is_array($filter_value)) {
+                    unset($conversations_filter[$i]);
+                }
+            }
         }
 
         // Preload users and customers
@@ -20,6 +31,14 @@
 
         if (!isset($params)) {
             $params = [];
+        }
+
+        // For customer profile.
+        if (!empty($params['no_customer'])) {
+            $no_customer = true;
+        }
+        if (!empty($params['no_checkboxes'])) {
+            $no_checkboxes = true;
         }
 
         // Sorting.
@@ -83,8 +102,9 @@
                 </span>
             </th>
             @if ($show_assigned)
-                <th class="conv-owner">
-                    <span>{{ __("Assigned To") }}</span>
+                <th class="conv-owner fs-trigger-modal @if (!empty($params['user_id'])) filtered @endif" data-remote="{{ route('conversations.ajax_html', ['action' =>
+                        'assignee_filter', 'mailbox_id' => (\Helper::isRoute('mailboxes.view.folder') ? $folder->mailbox_id : ''), 'user_id' => ($params['user_id'] ?? '')]) }}" data-trigger="modal" data-modal-title="{{ __("Assigned To") }}" data-modal-no-footer="true" data-modal-on-show="initConvAssigneeFilter">
+                    <span>{{ __("Assigned To") }}<small class="glyphicon glyphicon-filter"></small></span>
                 </th>
                 {{--<th class="conv-owner dropdown">
                     <span {{--data-target="#"- -}} class="dropdown-toggle" data-toggle="dropdown">{{ __("Assigned To") }}</span>
@@ -190,28 +210,30 @@
                 @action('conversations_table.after_row', $conversation, $columns, $col_counter)
             @endforeach
         </tbody>
-        <tfoot>
-            <tr>
-                <td class="conv-totals" colspan="{{ $col_counter-3 }}">
-                    @if ($conversations->total())
-                        {!! __(':count conversations', ['count' => '<strong>'.$conversations->total().'</strong>']) !!}&nbsp;|&nbsp; 
-                    @endif
-                    @if (isset($folder->active_count) && !$folder->isIndirect())
-                        <strong>{{ $folder->getActiveCount() }}</strong> {{ __('active') }}&nbsp;|&nbsp; 
-                    @endif
-                    @if ($conversations)
-                        <strong>{{ $conversations->firstItem() }}</strong>-<strong>{{ $conversations->lastItem() }}</strong>
-                    @endif
-                </td>
-                <td colspan="3" class="conv-nav">
-                    <div class="table-pager">
-                        @if ($conversations)
-                            {{ $conversations->links('conversations/conversations_pagination') }}
+        @if (count($conversations))
+            <tfoot>
+                <tr>
+                    <td class="conv-totals" colspan="{{ $col_counter-3 }}">
+                        @if ($conversations->total())
+                            {!! __(':count conversations', ['count' => '<strong>'.$conversations->total().'</strong>']) !!}&nbsp;|&nbsp; 
                         @endif
-                    </div>
-                </td>
-            </tr>
-        </tfoot>
+                        @if (isset($folder->active_count) && !$folder->isIndirect())
+                            <strong>{{ $folder->getActiveCount() }}</strong> {{ __('active') }}&nbsp;|&nbsp; 
+                        @endif
+                        @if ($conversations)
+                            <strong>{{ $conversations->firstItem() }}</strong>-<strong>{{ $conversations->lastItem() }}</strong>
+                        @endif
+                    </td>
+                    <td colspan="3" class="conv-nav">
+                        <div class="table-pager">
+                            @if ($conversations)
+                                {{ $conversations->links('conversations/conversations_pagination') }}
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
+        @endif
     </table>
 @else
     @include('partials/empty', ['empty_text' => __('There are no conversations here')])

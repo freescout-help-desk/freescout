@@ -1369,7 +1369,8 @@ thead .conv-cb label {
     display: block;
     font-weight: bold;
 }
-.table-conversations th .conv-col-sort {
+.table-conversations th .conv-col-sort,
+.table-conversations th.conv-owner span {
     cursor: pointer;
 }
 .table.table-conversations tbody td {
@@ -1577,6 +1578,14 @@ table.table-conversations td.conv-attachment {
 /*.conv-subject-number {
     display: none;
 }*/
+.conv-owner .glyphicon {
+    margin-left: 3px;
+    display: none;
+}
+.conv-owner:hover .glyphicon,
+.conv-owner.filtered .glyphicon {
+    display: inline-block;
+}
 .conv-owner-mobile {
     display: none;
     font-weight: normal;
