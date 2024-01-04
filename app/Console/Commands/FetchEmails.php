@@ -1306,7 +1306,7 @@ class FetchEmails extends Command
             //     On Thu, Jan 4, 2024 at 8:41 AM John Doe | Demo <test@example.org> wrote:
             if (config('app.alternative_reply_separation')) {
                 if (!$user_reply_to_notification && $prev_message_id) {
-                    $hashed_reply_separator = \MailHelper::getHashedRelySeparator($prev_message_id);
+                    $hashed_reply_separator = \MailHelper::getHashedReplySeparator($prev_message_id);
                     if (strstr($result, $hashed_reply_separator)) {
                         $reply_separators = [$hashed_reply_separator];
                     }

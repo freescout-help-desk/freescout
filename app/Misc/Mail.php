@@ -1038,7 +1038,7 @@ class Mail
             || \Str::contains($subject_decoded, $invalid_utf_symbols);
     }
 
-    public static function getHashedRelySeparator($message_id) {
+    public static function getHashedReplySeparator($message_id) {
         $separator = \MailHelper::REPLY_SEPARATOR_HTML;
 
         if ($message_id) {
