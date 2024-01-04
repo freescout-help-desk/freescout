@@ -403,13 +403,14 @@ class ConversationsController extends Controller
 
         // Create conversation from thread
         $thread = null;
+        $attachments = [];
         if (!empty($request->from_thread_id)) {
             $orig_thread = Thread::find($request->from_thread_id);
             if ($orig_thread) {
                 $subject = $orig_thread->conversation->subject;
                 $subject = preg_replace('/^Fwd:/i', 'Re: ', $subject);
 
-                $thread = new \App\Thread();
+                $thread = new Thread();
                 $thread->body = $orig_thread->body;
                 // If this is a forwarded message, try to fetch From
                 preg_match_all("/From:[^<\n]+<([^<\n]+)>/m", html_entity_decode(strip_tags($thread->body)), $m);
@@ -420,6 +421,17 @@ class ConversationsController extends Controller
                             $thread->to = json_encode([$value]);
                             break;
                         }
+                    }
+                }
+
+                // Clone attachments.
+                $orig_attachments = Attachment::where('thread_id', $orig_thread->id)->get();
+
+                if (count($orig_attachments)) {
+                    $conversation->has_attachments = true;
+                    $thread->has_attachments = true;
+                    foreach ($orig_attachments as $attachment) {
+                        $attachments[] = $attachment->duplicate();
                     }
                 }
             }
@@ -443,6 +455,7 @@ class ConversationsController extends Controller
             'after_send'   => $after_send,
             'to'           => $to,
             'from_aliases' => $mailbox->getAliases(true, true),
+            'attachments'  => $attachments,
         ]);
     }
 
