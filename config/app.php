@@ -482,6 +482,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | When this option is enabled you may see an extra text below customer's replies, for example:
+    |     On Thu, Jan 4, 2024 at 8:41 AM John Doe | Demo <test@example.org> wrote:
+    |
+    | But overall reply separation in this case is more reliable.
+    |-------------------------------------------------------------------------
+    */
+    'alternative_reply_separation'    => env('APP_ALTERNATIVE_REPLY_SEPARATION', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |

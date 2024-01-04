@@ -1038,6 +1038,16 @@ class Mail
             || \Str::contains($subject_decoded, $invalid_utf_symbols);
     }
 
+    public static function getHashedRelySeparator($message_id) {
+        $separator = \MailHelper::REPLY_SEPARATOR_HTML;
+
+        if ($message_id) {
+            $separator .= substr(md5($message_id.config('app.key')), 0, 8);
+        }
+
+        return $separator;
+    }
+
     // public static function oauthGetProvider($provider_code, $params)
     // {
     //     $provider = null;

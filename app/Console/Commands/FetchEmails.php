@@ -605,7 +605,7 @@ class FetchEmails extends Command
                 $body = $message->getTextBody() ?? '';
                 $body = htmlspecialchars($body);
             }
-            $body = $this->separateReply($body, $is_html, $is_reply, !$message_from_customer);
+            $body = $this->separateReply($body, $is_html, $is_reply, !$message_from_customer, ($message_from_customer ? $prev_thread->getMessageId($mailbox) : ''));
 
             // We have to fetch absolutely all emails, even with empty body.
             // if (!$body) {
@@ -1238,7 +1238,7 @@ class FetchEmails extends Command
      *
      * @return string
      */
-    public function separateReply($body, $is_html, $is_reply, $user_reply_to_notification = false)
+    public function separateReply($body, $is_html, $is_reply, $user_reply_to_notification = false, $prev_message_id = '')
     {
         $cmp_reply_length_desc = function ($a, $b) {
             if (mb_strlen($a) == mb_strlen($b)) {
@@ -1299,6 +1299,18 @@ class FetchEmails extends Command
             // https://github.com/freescout-helpdesk/freescout/issues/3580
             if ($user_reply_to_notification && strstr($result, \MailHelper::REPLY_SEPARATOR_NOTIFICATION)) {
                 $reply_separators = [\MailHelper::REPLY_SEPARATOR_NOTIFICATION];
+            }
+
+            // Try to separate customer reply using hashed reply separator.
+            // In this case some extra text may appear below customer's reply:
+            //     On Thu, Jan 4, 2024 at 8:41 AM John Doe | Demo <test@example.org> wrote:
+            if (config('app.alternative_reply_separation')) {
+                if (!$user_reply_to_notification && $prev_message_id) {
+                    $hashed_reply_separator = \MailHelper::getHashedRelySeparator($prev_message_id);
+                    if (strstr($result, $hashed_reply_separator)) {
+                        $reply_separators = [$hashed_reply_separator];
+                    }
+                }
             }
 
             foreach ($reply_separators as $reply_separator) {
