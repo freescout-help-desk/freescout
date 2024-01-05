@@ -1413,7 +1413,7 @@ class Helper
         $pids = [];
 
         try {
-            $processes = preg_split("/[\r\n]/", shell_exec("ps aux | grep '".$search."'"));
+            $processes = preg_split("/[\r\n]/", \Helper::shellExec("ps aux | grep '".$search."'"));
             foreach ($processes as $process) {
                 $process = trim($process);
                 preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
@@ -1921,7 +1921,7 @@ class Helper
         if (self::isConsole() || !function_exists('shell_exec')) {
             $pcntl_enabled = extension_loaded('pcntl');
         } else {
-            $pcntl_enabled = preg_match("/enable/m", shell_exec("php -i | grep pcntl") ?? '');
+            $pcntl_enabled = preg_match("/enable/m", \Helper::shellExec("php -i | grep pcntl") ?? '');
         }
         $php_extensions['pcntl (console PHP)'] = $pcntl_enabled;
 
@@ -1935,8 +1935,8 @@ class Helper
             'proc_open (PHP)'  => function_exists('proc_open'),
             'fpassthru (PHP)'  => function_exists('fpassthru'),
             'symlink (PHP)'    => function_exists('symlink'),
-            'pcntl_signal (console PHP)'    => function_exists('shell_exec') ? (int)shell_exec('php -r "echo (int)function_exists(\'pcntl_signal\');"') : false,
-            'ps (shell)' => function_exists('shell_exec') ? shell_exec('ps') : false,
+            'pcntl_signal (console PHP)'    => function_exists('shell_exec') ? (int)\Helper::shellExec('php -r "echo (int)function_exists(\'pcntl_signal\');"') : false,
+            'ps (shell)' => function_exists('shell_exec') ? \Helper::shellExec('ps') : false,
         ];
     }
 
@@ -2119,5 +2119,18 @@ class Helper
     public static function sanitizeDatepickerDatetime($datetime)
     {
         return str_replace('T', ' ', $datetime);
+    }
+
+    // To catch possible exception:
+    // shell_exec(): Unable to execute
+    public static function shellExec($command)
+    {
+        try {
+            return shell_exec($command);
+        } catch (\Exception $e) {
+            self::logException($e, '\Helper::shellExec() - ');
+        }
+
+        return '';
     }
 }

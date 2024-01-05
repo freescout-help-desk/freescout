@@ -306,6 +306,7 @@ class User extends Authenticatable
 
         return $settings;
     }
+
     /**
      * Get IDs of mailboxes to which user has access.
      */

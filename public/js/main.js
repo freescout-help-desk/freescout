@@ -656,6 +656,7 @@ function mailboxConnectionInit(out_method_smtp)
 	    $('#send-test-trigger').click(function(event) {
 	    	var button = $(this);
 	    	button.button('loading');
+	    	$('#send_test_log').addClass('hidden');
 	    	fsAjax(
 				{
 					action: 'send_test',
@@ -668,6 +669,9 @@ function mailboxConnectionInit(out_method_smtp)
 						showFloatingAlert('success', Lang.get("messages.email_sent"));
 					} else {
 						showAjaxError(response, true);
+						if (typeof(response.log) != "undefined" && response.log) {
+							$('#send_test_log').removeClass('hidden').text(response.log);
+						}
 					}
 					button.button('reset');
 				},
@@ -786,6 +790,7 @@ function mailSettingsInit()
 		$('#send-test-trigger').click(function(event) {
 	    	var button = $(this);
 	    	button.button('loading');
+	    	$('#send_test_log').addClass('hidden');
 	    	fsAjax(
 				{
 					action: 'send_test',
@@ -797,6 +802,9 @@ function mailSettingsInit()
 						showFloatingAlert('success', Lang.get("messages.email_sent"));
 					} else {
 						showAjaxError(response);
+						if (typeof(response.log) != "undefined" && response.log) {
+							$('#send_test_log').removeClass('hidden').text(response.log);
+						}
 					}
 					button.button('reset');
 				},
@@ -2768,7 +2776,7 @@ function loadConversations(page, table, no_loader)
 		}
 	}
 
-	if (typeof(URL) != "undefined") {
+	if (typeof(URL) != "undefined" && getGlobalAttr('folder_id')) {
 		const url = new URL(window.location);
 		url.searchParams.set('page', page);
 		window.history.replaceState({}, '', url);
@@ -3094,6 +3102,32 @@ function initMergeConv()
 					ajaxFinish();
 				}
 			);
+		});
+	});
+}
+
+// Filter conversations by Assignee
+function initConvAssigneeFilter()
+{
+	$(document).ready(function() {
+
+		$(".conv-assignee-filter:visible:first").change(function(e){
+			var user_id = $(this).val();
+			var table = $('.table-conversations:first');
+			table.attr('data-param_user_id', user_id);
+
+			if (user_id) {
+				table.children().find('.conv-owner:first').addClass('filtered');
+			} else {
+				table.children().find('.conv-owner:first').removeClass('filtered');
+			}
+
+			loadConversations();
+			closeAllModals();
+		});
+
+		$(".conv-assignee-filter-reset:visible:first").click(function(e){
+			$(".conv-assignee-filter:visible:first").val('').change();
 		});
 	});
 }

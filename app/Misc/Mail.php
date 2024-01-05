@@ -282,14 +282,29 @@ class Mail
         return Option::get('mail_driver', 'mail');
     }
 
+    public static function registerSmtpLogger()
+    {
+        $logger = new \Swift_Plugins_Loggers_ArrayLogger();
+        \Mail::getSwiftMailer()->registerPlugin(new \Swift_Plugins_LoggerPlugin($logger));
+
+        return $logger;
+    }
+
     /**
      * Send test email from mailbox.
      */
     public static function sendTestMail($to, $mailbox = null)
     {
+        $result = [
+            'status' => 'success',
+            'msg' => '',
+            'log' => '',
+        ];
+
         if ($mailbox) {
             // Configure mail driver according to Mailbox settings
             \MailHelper::setMailDriver($mailbox);
+            $smtp_logger = self::registerSmtpLogger();
 
             $status_message = '';
 
@@ -302,6 +317,7 @@ class Mail
         } else {
             // System email
             \MailHelper::setSystemMailDriver();
+            $smtp_logger = self::registerSmtpLogger();
 
             $status_message = '';
 
@@ -317,15 +333,17 @@ class Mail
         if (\Mail::failures() || $status_message) {
             SendLog::log(null, null, $to, SendLog::MAIL_TYPE_TEST, SendLog::STATUS_SEND_ERROR, null, null, $status_message);
             if ($status_message) {
-                throw new \Exception($status_message, 1);
-            } else {
-                return false;
+                $result['msg'] = $status_message;
             }
+            $result['status'] = 'error';
+            $result['log'] = $smtp_logger->dump();
         } else {
             SendLog::log(null, null, $to, SendLog::MAIL_TYPE_TEST, SendLog::STATUS_ACCEPTED);
 
-            return true;
+            $result['status'] = 'success';
         }
+
+        return $result;
     }
 
     /**
@@ -1018,6 +1036,16 @@ class Mail
         return preg_match_all("/=\?[^\?]+\?[BQ]\?/i", $subject_decoded)
             || !mb_check_encoding($subject_decoded, 'UTF-8')
             || \Str::contains($subject_decoded, $invalid_utf_symbols);
+    }
+
+    public static function getHashedReplySeparator($message_id) {
+        $separator = \MailHelper::REPLY_SEPARATOR_HTML;
+
+        if ($message_id) {
+            $separator .= substr(md5($message_id.config('app.key')), 0, 8);
+        }
+
+        return $separator;
     }
 
     // public static function oauthGetProvider($provider_code, $params)

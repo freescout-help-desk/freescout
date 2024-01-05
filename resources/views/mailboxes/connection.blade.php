@@ -130,6 +130,7 @@
                                     </span>
                                 </div>
                                 <div class="form-help">{!! __("Make sure to save settings before testing.") !!}</div>
+                                <pre class="alert alert-warning hidden" id="send_test_log"></pre>
                             </div>
                         </div>
                         <hr/>

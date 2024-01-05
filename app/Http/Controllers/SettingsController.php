@@ -394,17 +394,22 @@ class SettingsController extends Controller
                 }
 
                 if (!$response['msg']) {
-                    $test_result = false;
+                    $test_result = [
+                        'status' => 'error'
+                    ];
 
                     try {
                         $test_result = \MailHelper::sendTestMail($request->to);
                     } catch (\Exception $e) {
-                        $response['msg'] = $e->getMessage();
+                        $test_result['msg'] = $e->getMessage();
                     }
 
-                    if (!$test_result && !$response['msg']) {
-                        $response['msg'] = __('Error occurred sending email. Please check your mail server logs for more details.');
+                    if ($test_result['status'] == 'error') {
+                        $response['msg'] = $test_result['msg']
+                            ?: __('Error occurred sending email. Please check your mail server logs for more details.');
                     }
+
+                    $response['log'] = $test_result['log'] ?? '';
                 }
 
                 if (!$response['msg']) {

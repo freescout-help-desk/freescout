@@ -403,13 +403,14 @@ class ConversationsController extends Controller
 
         // Create conversation from thread
         $thread = null;
+        $attachments = [];
         if (!empty($request->from_thread_id)) {
             $orig_thread = Thread::find($request->from_thread_id);
             if ($orig_thread) {
                 $subject = $orig_thread->conversation->subject;
                 $subject = preg_replace('/^Fwd:/i', 'Re: ', $subject);
 
-                $thread = new \App\Thread();
+                $thread = new Thread();
                 $thread->body = $orig_thread->body;
                 // If this is a forwarded message, try to fetch From
                 preg_match_all("/From:[^<\n]+<([^<\n]+)>/m", html_entity_decode(strip_tags($thread->body)), $m);
@@ -420,6 +421,17 @@ class ConversationsController extends Controller
                             $thread->to = json_encode([$value]);
                             break;
                         }
+                    }
+                }
+
+                // Clone attachments.
+                $orig_attachments = Attachment::where('thread_id', $orig_thread->id)->get();
+
+                if (count($orig_attachments)) {
+                    $conversation->has_attachments = true;
+                    $thread->has_attachments = true;
+                    foreach ($orig_attachments as $attachment) {
+                        $attachments[] = $attachment->duplicate();
                     }
                 }
             }
@@ -443,6 +455,7 @@ class ConversationsController extends Controller
             'after_send'   => $after_send,
             'to'           => $to,
             'from_aliases' => $mailbox->getAliases(true, true),
+            'attachments'  => $attachments,
         ]);
     }
 
@@ -1742,6 +1755,14 @@ class ConversationsController extends Controller
             // Conversations navigation
             case 'conversations_pagination':
                 if (!empty($request->filter)) {
+                    // Filter conversations by Assigned To column in Search.
+                    if (!empty($request->params['user_id']) && !empty($request->filter['f'])) {
+                        $filter = $request->filter ?? [];
+                        $filter['f']['assigned'] = (int)$request->params['user_id'];
+
+                        $request->merge(['filter' => $filter]);
+                    }
+
                     $response = $this->ajaxConversationsFilter($request, $response, $user);
                 } else {
                     $response = $this->ajaxConversationsPagination($request, $response, $user);
@@ -2374,6 +2395,8 @@ class ConversationsController extends Controller
                 return $this->ajaxHtmlMoveConv();
             case 'merge_conv':
                 return $this->ajaxHtmlMergeConv();
+            case 'assignee_filter':
+                return $this->ajaxAssigneeFilter();
             case 'default_redirect':
                 return $this->ajaxHtmlDefaultRedirect();
         }
@@ -2559,6 +2582,50 @@ class ConversationsController extends Controller
     }
 
     /**
+     * Filter conversations by assignee.
+     */
+    public function ajaxAssigneeFilter()
+    {
+        $users = collect([]);
+
+        $mailbox_id = Input::get('mailbox_id');
+        $user_id = Input::get('user_id');
+
+        $user = auth()->user();
+
+        if ($mailbox_id) {
+
+            $mailbox = Mailbox::find($mailbox_id);
+            if (!$mailbox) {
+                abort(404);
+            }
+            if (!$user->can('view', $mailbox)) {
+                \Helper::denyAccess();
+            }
+            // Show users having access to the mailbox.
+            $users = $mailbox->usersAssignable();
+        } else {
+            // Show users from all accessible mailboxes.
+            $mailboxes = $user->mailboxesCanView();
+            foreach ($mailboxes as $mailbox) {
+                $users = $users->merge($mailbox->usersAssignable())->unique('id');
+            }
+        }
+
+        if (!$users->contains('id', $user->id)) {
+            $users[] = $user;
+        }
+
+        // Sort by full name.
+        $users = User::sortUsers($users);
+
+        return view('conversations/ajax_html/assignee_filter', [
+            'users' => $users,
+            'user_id' => $user_id,
+        ]);
+    }
+
+    /**
      * Change default redirect for the mailbox.
      */
     public function ajaxHtmlDefaultRedirect()
@@ -2707,6 +2774,11 @@ class ConversationsController extends Controller
 
         if (!$response['msg']) {
             $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
+
+            if (!empty($request->params['user_id'])) {
+                $query_conversations->where('conversations.user_id', (int)$request->params['user_id']);
+            }
+
             $conversations = $folder->queryAddOrderBy($query_conversations)->paginate(Conversation::DEFAULT_LIST_SIZE, ['*'], 'page', $request->page);
         }
 
@@ -2715,6 +2787,7 @@ class ConversationsController extends Controller
         $response['html'] = view('conversations/conversations_table', [
             'folder'        => $folder,
             'conversations' => $conversations,
+            'params'        => $request->params ?? [],
         ])->render();
 
         return $response;
@@ -2977,6 +3050,7 @@ class ConversationsController extends Controller
         $response['html'] = view('conversations/conversations_table', [
             'conversations' => $conversations,
             'params' => $request->params ?? [],
+            'conversations_filter' => $request->filter['f'] ?? $request->filter ?? [],
         ])->render();
 
         return $response;
@@ -2999,6 +3073,10 @@ class ConversationsController extends Controller
                     $query_conversations->where('customer_id', $value);
                     break;
             }
+        }
+
+        if (!empty($request->params['user_id'])) {
+            $query_conversations->where('conversations.user_id', (int)$request->params['user_id']);
         }
 
         return $query_conversations->paginate(Conversation::DEFAULT_LIST_SIZE);
