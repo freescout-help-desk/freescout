@@ -39,7 +39,7 @@ class CleanTmp extends Command
      */
     public function handle()
     {
-        shell_exec('find '.\Helper::getTempDir().' -mtime +7 -type f -name '.\Helper::getTempFilePrefix().'* -exec rm -r -f {} \;');
+        \Helper::shellExec('find '.\Helper::getTempDir().' -mtime +7 -type f -name '.\Helper::getTempFilePrefix().'* -exec rm -r -f {} \;');
 
         $this->comment("Done");
     }
