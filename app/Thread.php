@@ -1393,6 +1393,12 @@ class Thread extends Model
     {
         $message = \MailHelper::fetchMessage($this->conversation->mailbox, $this->message_id, $this->getMailDate());
 
+        // Try without limiting by date.
+        // https://github.com/freescout-helpdesk/freescout/issues/3658
+        if (!$message) {
+            $message = \MailHelper::fetchMessage($this->conversation->mailbox, $this->message_id);
+        }
+
         if (!$message) {
             return '';
         }

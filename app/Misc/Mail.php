@@ -733,6 +733,11 @@ class Mail
         foreach ($imap_folders as $folder_name) {
             try {
                 $folder = self::getImapFolder($client, $folder_name);
+
+                if (!$folder) {
+                    \Log::error('('.$mailbox->name.') Show Original - folder not found: '.$folder_name);
+                    continue;
+                }
                 // Message-ID: <123@123.com>
                 $query = $folder->query()
                     ->text('<'.$message_id.'>')
@@ -763,7 +768,7 @@ class Mail
                     $query = $folder->query()->text('<'.$message_id.'>')->leaveUnread()->limit(1)->setCharset(null);
                     if ($message_date) {
                        $query->since($message_date->subDays(7));
-                       $query->before($message_date->addDays(7));
+                       $query->before($message_date->addDays(14));
                     }
                     $messages = $query->get();
                     $no_charset = true;
