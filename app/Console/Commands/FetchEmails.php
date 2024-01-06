@@ -605,7 +605,7 @@ class FetchEmails extends Command
                 $body = $message->getTextBody() ?? '';
                 $body = htmlspecialchars($body);
             }
-            $body = $this->separateReply($body, $is_html, $is_reply, !$message_from_customer, ($message_from_customer ? $prev_thread->getMessageId($mailbox) : ''));
+            $body = $this->separateReply($body, $is_html, $is_reply, !$message_from_customer, (($message_from_customer && $prev_thread) ? $prev_thread->getMessageId($mailbox) : ''));
 
             // We have to fetch absolutely all emails, even with empty body.
             // if (!$body) {
