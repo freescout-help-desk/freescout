@@ -9,7 +9,7 @@
         a { color: #346CC4; text-decoration:none; }
     </style>
 </head>
-<body style="-webkit-text-size-adjust:none;">@php $reply_separator = \MailHelper::getHashedRelySeparator($headers['Message-ID']); @endphp
+<body style="-webkit-text-size-adjust:none;">@php $reply_separator = \MailHelper::getHashedReplySeparator($headers['Message-ID']); @endphp
 	<div id="{{ $reply_separator }}" class="{{ $reply_separator }}" data-fs="{{ $reply_separator }}" style="width:100%!important; margin:0; padding:0">
 	    @php
 	    	$is_forwarded = !empty($threads[0]) ? $threads[0]->isForwarded() : false;
