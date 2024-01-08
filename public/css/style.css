@@ -929,6 +929,7 @@ a h4 {
     padding-right: 20px;
     margin: 0;
     display: block;
+    overflow: hidden;
 }
 .dash-card .waiting-since {
     color: #93a1af;
