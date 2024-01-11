@@ -24,11 +24,12 @@ return [
     'settings'      => [
         'default' => [
             'HTML.Doctype'             => 'HTML 4.01 Transitional',
-            'HTML.Allowed'             => 'div[style],b,strong,i,em,u,a[href|title],ul,ol,li,p[style],br,span[style],img[width|height|alt|src],table[width|class],tr[bgcolor],td[style|colspan|rowspan|width],th[style|colspan|rowspan],thead,tfoot,tbody,blockquote,pre,s,strike,font[style|color],h1,h2,h3,h4,h5,h6',
-            //'CSS.AllowedProperties'    => 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,color,background-color,text-align',
-            'CSS.AllowedProperties'    => 'font-weight,font-style,text-decoration,color,background-color,text-align,border,border-top,border-left,border-bottom,border-right',
+            'HTML.Allowed'             => 'div[style],b,strong,i,em,u,a[href|title|style],ul,ol,li,p[style],br,span[style],img[width|height|alt|src|style],table[style|border|bgcolor|cellspacing|cellpadding|border|width],tr[bgcolor],td[style|colspan|rowspan|width|bgcolor|border|valign|align],th[style|colspan|rowspan],thead,tfoot,tbody,blockquote,pre,s,strike,font[style|color],h1[style],h2[style],h3[style],h4[style],h5[style],h6',
+            'CSS.AllowedProperties'    => 'display,overflow,border-radius,letter-spacing,white-space,font-size,margin,background,text-transform,max-width,max-height,width,height,font,padding,font-family,border-color,font-weight,font-style,text-decoration,color,background-color,text-align,border,border-top,border-left,border-bottom,border-right',
             'AutoFormat.AutoParagraph' => true,
             'AutoFormat.RemoveEmpty'   => true,
+            'CSS.Proprietary' => true,
+            'CSS.AllowTricky' => true,
             'URI.AllowedSchemes'   => [
                 'http' => true,
                 'https' => true,
