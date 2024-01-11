@@ -33,9 +33,11 @@
             </ul>
         </div>
         @action('bulk_actions.before_delete', $mailbox ?? null)
-        <button type="button" class="btn btn-default conv-delete" title="{{ __("Delete") }}">
-            <span class="glyphicon glyphicon-trash"></span>
-        </button>
+        @if (Auth::user()->can('delete', new App\Conversation()))
+            <button type="button" class="btn btn-default conv-delete" title="{{ __("Delete") }}">
+                <span class="glyphicon glyphicon-trash"></span>
+            </button>
+        @endif
     </div>
 </div>
 
