@@ -3186,7 +3186,7 @@ return array(
     'Webklex\\IMAP\\Facades\\Client' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Facades/Client.php',
     'Webklex\\IMAP\\Folder' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Folder.php',
     'Webklex\\IMAP\\Message' => $baseDir . '/overrides/webklex/laravel-imap/src/IMAP/Message.php',
-    'Webklex\\IMAP\\Providers\\LaravelServiceProvider' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Providers/LaravelServiceProvider.php',
+    'Webklex\\IMAP\\Providers\\LaravelServiceProvider' => $baseDir . '/overrides/webklex/laravel-imap/src/IMAP/Providers/LaravelServiceProvider.php',
     'Webklex\\IMAP\\Query\\Query' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Query/Query.php',
     'Webklex\\IMAP\\Query\\WhereQuery' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Query/WhereQuery.php',
     'Webklex\\IMAP\\Support\\AttachmentCollection' => $vendorDir . '/webklex/laravel-imap/src/IMAP/Support/AttachmentCollection.php',

@@ -43,6 +43,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'W' => 
         array (
             'Webklex\\PHPIMAP\\' => 16,
+            'Webklex\\IMAP\\Providers\\' => 23,
             'Webklex\\IMAP\\' => 13,
             'Watson\\Rememberable\\' => 20,
         ),
@@ -235,6 +236,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         array (
             0 => __DIR__ . '/../..' . '/overrides/webklex/php-imap/src',
             1 => __DIR__ . '/..' . '/webklex/php-imap/src',
+        ),
+        'Webklex\\IMAP\\Providers\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/webklex/laravel-imap/src/IMAP/Providers',
         ),
         'Webklex\\IMAP\\' => 
         array (
@@ -3978,7 +3983,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Webklex\\IMAP\\Facades\\Client' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Facades/Client.php',
         'Webklex\\IMAP\\Folder' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Folder.php',
         'Webklex\\IMAP\\Message' => __DIR__ . '/../..' . '/overrides/webklex/laravel-imap/src/IMAP/Message.php',
-        'Webklex\\IMAP\\Providers\\LaravelServiceProvider' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Providers/LaravelServiceProvider.php',
+        'Webklex\\IMAP\\Providers\\LaravelServiceProvider' => __DIR__ . '/../..' . '/overrides/webklex/laravel-imap/src/IMAP/Providers/LaravelServiceProvider.php',
         'Webklex\\IMAP\\Query\\Query' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Query/Query.php',
         'Webklex\\IMAP\\Query\\WhereQuery' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Query/WhereQuery.php',
         'Webklex\\IMAP\\Support\\AttachmentCollection' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Support/AttachmentCollection.php',
