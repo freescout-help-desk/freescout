@@ -158,8 +158,8 @@ var dialog = renderer.create('<div class="modal" aria-hidden="false" tabindex="-
 });
 var popover = renderer.create([
     '<div class="note-popover popover in">',
-    '  <div class="arrow"/>',
-    '  <div class="popover-content note-children-container"/>',
+    '  <div class="arrow"></div>',
+    '  <div class="popover-content note-children-container"></div>',
     '</div>'
 ].join(''), function ($node, options) {
     var direction = typeof options.direction !== 'undefined' ? options.direction : 'bottom';

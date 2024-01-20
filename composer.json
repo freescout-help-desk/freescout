@@ -95,6 +95,7 @@
             "Modules\\": "Modules/",
             "Axn\\Laroute\\Routes\\": "overrides/axn/laravel-laroute/src/Routes/",
             "Webklex\\IMAP\\": "overrides/webklex/laravel-imap/src/IMAP/",
+            "Webklex\\IMAP\\Providers\\": "overrides/webklex/laravel-imap/src/IMAP/Providers/",
             "Webklex\\PHPIMAP\\": "overrides/webklex/php-imap/src/",
             "RachidLaasri\\LaravelInstaller\\Helpers\\": "overrides/rachidlaasri/laravel-installer/src/Helpers/",
             "RachidLaasri\\LaravelInstaller\\Middleware\\": "overrides/rachidlaasri/laravel-installer/src/Middleware/",
@@ -172,6 +173,7 @@
         },
         "exclude-from-classmap": [
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
+            "vendor/webklex/laravel-imap/src/IMAP/Providers/LaravelServiceProvider.php",
             "vendor/webklex/laravel-imap/src/IMAP/Message.php",
             "vendor/webklex/laravel-imap/src/IMAP/Attachment.php",
             "vendor/webklex/laravel-imap/src/IMAP/Client.php",
