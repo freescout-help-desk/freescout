@@ -87,6 +87,9 @@ echo "You may see a MySQL privileges error above. Don't worry - the script execu
 #
 printf "\nWhere would you like to install FreeScout? [$install_path]:"
 read confirm_path;
+if [ $confirm_path = "Y" ]; then
+    confirm_path=$install_path;
+fi    
 if [ ! -z "$confirm_path" ]; then
     install_path=`echo $confirm_path | sed 's:/*$::'`;
 fi
