@@ -274,6 +274,21 @@ let DragDropTouch;
         // ** utilities
         // ignore events that have been handled or that involve more than one touch
         DragDropTouch.prototype._shouldHandle = function (e) {
+            // Fix Bootstrap submenu.
+            // https://github.com/freescout-helpdesk/freescout/issues/3708
+            if (typeof(e.target) != "undefined") {
+                if (e.target.classList.contains('dropdown-toggle')) {
+                    return false;
+                }
+                if (e.target.tagName == 'A'
+                    && typeof(e.target.parentElement) != "undefined"
+                    && typeof(e.target.parentElement.parentElement) != "undefined"
+                    && e.target.parentElement.parentElement.classList.contains('dropdown-menu')
+                ) {
+                    return false;
+                }
+
+            }
             return e &&
                 !e.defaultPrevented &&
                 e.touches && e.touches.length < 2;
