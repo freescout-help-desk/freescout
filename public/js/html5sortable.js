@@ -287,7 +287,11 @@ let DragDropTouch;
                 ) {
                     return false;
                 }
-
+            }
+            // Conversations list fix
+            // https://github.com/freescout-helpdesk/freescout/issues/3724
+            if ($('table.table-conversations:first').length) {
+                return;
             }
             return e &&
                 !e.defaultPrevented &&
