@@ -880,6 +880,10 @@ class Carbon extends DateTime implements JsonSerializable
         // FreeScout fix for PostgreSQL timestamp fields.
         if ($format == 'Y-m-d H:i:s' && strstr($time, '+')) {
             $time = preg_replace("/\+.*/", '', $time);
+        }
+        // https://github.com/freescout-helpdesk/freescout/issues/3702
+        if ($format == 'Y-m-d H:i:s' && strlen($time) > 19) {
+            $time = substr($time, 0, 19);
         } 
         
         // First attempt to create an instance, so that error messages are based on the unmodified format.
