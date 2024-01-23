@@ -302,6 +302,7 @@
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrTransform/NameSync.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrValidator.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/ChildDef/List.php",
+            "vendor/ezyang/htmlpurifier/library/HTMLPurifier/Length.php",
             "vendor/javoscript/laravel-macroable-models/src/MacroableModels.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/EmbeddedFile.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php",
