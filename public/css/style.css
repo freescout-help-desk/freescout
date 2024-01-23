@@ -3357,11 +3357,11 @@ ul.sidebar-block-list {
     background-color: #f9fafa;
 }
 .web-notification.is-unread a {
-    background-color: #f1faff;
+    background-color: #ccedff;
 }
 .web-notification.is-unread a:hover,
 .web-notification.is-unread a:focus {
-    background-color: #e7f6ff;
+    background-color: #99dbff;
 }
 .web-notification-msg {
     line-height: 18px;
