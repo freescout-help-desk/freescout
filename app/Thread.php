@@ -944,6 +944,9 @@ class Thread extends Model
         if (!empty($data['action_type'])) {
             $thread->action_type = $data['action_type'];
         }
+        if (!empty($data['mailbox_phone_number_id'])) {
+            $thread->mailbox_phone_number_id = $data['mailbox_phone_number_id'];
+        }
         if (!empty($data['meta'])) {
             $thread->setMetas($data['meta']);
         }
@@ -1006,10 +1009,12 @@ class Thread extends Model
         $thread->state = $data['state'] ?? Thread::STATE_PUBLISHED;
         $thread->customer_id = $customer->id ?? $conversation->customer_id ?? null;
         $thread->body = $data['body'];
+        $thread->mailbox_phone_number_id = $data['mailbox_phone_number_id'] ?? null;
+
         if (!$is_customer) {
             $thread->setTo([$customer->getMainEmail()]);
         }
-        
+
         $cc = \MailHelper::sanitizeEmails($data['cc'] ?? []);
         $thread->setCc($cc);
 
@@ -1107,9 +1112,9 @@ class Thread extends Model
             $thread->has_attachments = $has_attachments;
             $conversation->has_attachments = $has_attachments;
         }
-        
+
         $thread->save();
-        
+
         if ($new) {
             if ($is_customer) {
                 $conversation->source_via = Conversation::PERSON_CUSTOMER;
@@ -1150,7 +1155,7 @@ class Thread extends Model
             } else {
                 $conversation->last_reply_from = Conversation::PERSON_USER;
                 $conversation->user_updated_at = $now;
-                
+
                 if (!empty($data['status'])) {
                     if ((int)$conversation->status != (int)$data['status']) {
                         $update_folder = true;
@@ -1165,7 +1170,7 @@ class Thread extends Model
                 }
             }
         }
-        
+
         // Reply from customer to deleted conversation should undelete it.
         if ($data['type'] == Thread::TYPE_CUSTOMER && $conversation->state == Conversation::STATE_DELETED) {
             $conversation->state = Conversation::STATE_PUBLISHED;
@@ -1208,7 +1213,7 @@ class Thread extends Model
         // if ($prev_customer_id) {
         //     event(new ConversationCustomerChanged($conversation, $prev_customer_id, $prev_customer_email, null, $customer));
         // }
-    
+
         if ($new) {
             if ($is_customer) {
                 event(new CustomerCreatedConversation($conversation, $thread));
@@ -1497,7 +1502,7 @@ class Thread extends Model
     }
 
     // Sorts threads in desc order by created_at and ID.
-    // 
+    //
     // Threads has to be sorted by created_at and not by id.
     // https://github.com/freescout-helpdesk/freescout/issues/2938
     // Sometimes thread.created_at may be the same,
@@ -1543,5 +1548,16 @@ class Thread extends Model
         return \App\FailedJob::where('queue', 'emails')
             ->where('payload', 'like', '{"displayName":"App\\\\\\\\Jobs\\\\\\\\SendReplyToCustomer"%{i:0;i:'.$this->id.';%')
             ->value('id');
+    }
+
+    public static function getLastThreadOfConversation($conversationId)
+    {
+        return Thread::where([
+            'conversation_id' => $conversationId,
+            'state' => Thread::STATE_PUBLISHED
+        ])
+            ->orderBy('id', 'desc')
+            ->first();
+
     }
 }
