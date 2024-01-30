@@ -159,7 +159,7 @@ class ConversationsController extends Controller
         // 1. Email has been received from a customer.
         // 2. Customer has been changed.
         // 3. Reply has been sent to the original customer email.
-        if ($conversation->customer_email 
+        if ($conversation->customer_email
             && count($customer_emails)
             && !in_array($conversation->customer_email, $customer_emails->pluck('email')->toArray())
         ) {
@@ -469,7 +469,7 @@ class ConversationsController extends Controller
 
         if (!empty($from_thread_id)) {
             $orig_thread = Thread::find($from_thread_id);
-            
+
             if ($orig_thread) {
                 $orign_conv = $orig_thread->conversation;
                 $this->authorize('view', $orign_conv);
@@ -504,7 +504,7 @@ class ConversationsController extends Controller
                 $conversation->updateFolder();
                 $conversation->save();
 
-                
+
                 $thread = Thread::createExtended([
                         'conversation_id' => $orig_thread->conversation_id,
                         'user_id' => $orig_thread->user_id,
@@ -524,10 +524,11 @@ class ConversationsController extends Controller
                         'source_type' => $orig_thread->source_type,
                         'customer_id' => $orig_thread->customer_id,
                         'created_by_customer_id' => $orig_thread->created_by_customer_id,
+                        'mailbox_phone_number_id' => $orig_thread->mailbox_phone_number_id,
                     ],
                     $conversation
                 );
-                
+
                 // Clone attachments.
                 $attachments = Attachment::where('thread_id', $orig_thread->id)->get();
                 foreach ($attachments as $attachment) {
@@ -906,7 +907,7 @@ class ConversationsController extends Controller
                         // Email or reply to a phone conversation.
                         if (!empty($to_array)) {
                             $customer_email = $to_array[0];
-                        } elseif (!$conversation->customer_email 
+                        } elseif (!$conversation->customer_email
                             && ($conversation->isEmail() || $conversation->isPhone())
                             && $conversation->customer_id
                             && $conversation->customer
@@ -1051,6 +1052,13 @@ class ConversationsController extends Controller
                     if ($new) {
                         $thread->first = true;
                     }
+
+                    /* Get phone number used for last thread. */
+                    $lastThread = Thread::getLastThreadOfConversation($conversation->id);
+                    if($lastThread){
+                        $thread->mailbox_phone_number_id = $lastThread->mailbox_phone_number_id;
+                    }
+
                     $thread->user_id = $conversation->user_id;
                     $thread->status = $request->status;
                     $thread->state = Thread::STATE_PUBLISHED;
@@ -1276,7 +1284,7 @@ class ConversationsController extends Controller
                             $thread_copy->customer_id = $customer_tmp->id;
                             $thread_copy->has_attachments = $conversation->has_attachments;
                             $thread_copy->setTo($customer_email);
-                            // Reload the conversation, otherwise Thread observer will be 
+                            // Reload the conversation, otherwise Thread observer will be
                             // increasing threads_count for the first conversation.
                             $thread_copy->load('conversation');
                             $thread_copy->push();
@@ -1437,7 +1445,7 @@ class ConversationsController extends Controller
                                     // In customer_email temporary store a list of customer emails.
                                     //$customer_email = implode(',', $to_array);
                                     $to = $to_array;
-                                    
+
                                     // Keep $customer as null.
                                     // When conversation will be sent, separate conversation
                                     // will be created for each customer.
@@ -1877,6 +1885,13 @@ class ConversationsController extends Controller
 
                     // Create lineitem thread
                     $thread = new Thread();
+
+                    /* Get phone number used for last thread. */
+                    $lastThread = Thread::getLastThreadOfConversation($conversation->id);
+                    if($lastThread){
+                        $thread->mailbox_phone_number_id = $lastThread->mailbox_phone_number_id;
+                    }
+
                     $thread->conversation_id = $conversation->id;
                     $thread->user_id = $conversation->user_id;
                     $thread->type = Thread::TYPE_LINEITEM;
@@ -2055,6 +2070,13 @@ class ConversationsController extends Controller
 
                         // Create lineitem thread
                         $thread = new Thread();
+
+                        /* Get phone number used for last thread. */
+                        $lastThread = Thread::getLastThreadOfConversation($conversation->id);
+                        if($lastThread){
+                            $thread->mailbox_phone_number_id = $lastThread->mailbox_phone_number_id;
+                        }
+
                         $thread->conversation_id = $conversation->id;
                         $thread->user_id = $conversation->user_id;
                         $thread->type = Thread::TYPE_LINEITEM;
@@ -2095,7 +2117,7 @@ class ConversationsController extends Controller
                     return \Response::json($response);
                 }
 
-                $response = \Eventy::filter('conversations.empty_folder', $response, 
+                $response = \Eventy::filter('conversations.empty_folder', $response,
                     $request->mailbox_id,
                     $request->folder_id
                 );
@@ -2184,7 +2206,7 @@ class ConversationsController extends Controller
                 }
 
                 if (!empty($request->merge_conversation_id) && is_array($request->merge_conversation_id)) {
-                    
+
                     $sigle_conv = count($request->merge_conversation_id) == 1;
 
                     foreach ($request->merge_conversation_id as $merge_conversation_id) {
@@ -2664,7 +2686,7 @@ class ConversationsController extends Controller
             $after_send = $conversation->mailbox->getUserSettings($user->id)->after_send;
         }
 
-        // When creating a new conversation. 
+        // When creating a new conversation.
         if (!empty($request->is_create) && $after_send != MailboxUser::AFTER_SEND_STAY) {
             return route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->folder_id]);
         }
@@ -2831,7 +2853,7 @@ class ConversationsController extends Controller
         }
 
         // Jump to the conversation if searching by conversation number.
-        if (count($conversations) == 1 
+        if (count($conversations) == 1
             && $conversations[0]->number == $q
             && empty($filters)
             && !$request->x_embed

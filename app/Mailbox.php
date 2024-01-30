@@ -6,6 +6,7 @@ use App\Email;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
+use Modules\SmsTickets\Models\MailboxPhoneNumber;
 use Watson\Rememberable\Rememberable;
 
 class Mailbox extends Model
@@ -199,7 +200,7 @@ class Mailbox extends Model
             $this->attributes['out_password'] = '';
         }
     }
-    
+
     /**
      * Automatically decrypt password on read.
      */
@@ -257,6 +258,12 @@ class Mailbox extends Model
     {
         return $this->hasMany('App\Folder');
     }
+
+    public function phoneNumbers()
+    {
+        return $this->hasMany(MailboxPhoneNumber::class);
+    }
+
 
     /**
      * Create personal folders for users.
@@ -340,7 +347,7 @@ class Mailbox extends Model
         if ($main_folders) {
             return $main_folders;
         }
-        
+
         return $this->folders()
             ->where(function ($query) {
                 $query->whereIn('type', [Folder::TYPE_UNASSIGNED, Folder::TYPE_ASSIGNED, Folder::TYPE_DRAFTS])

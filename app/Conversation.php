@@ -531,7 +531,7 @@ class Conversation extends Model
     {
         return $this->state == self::STATE_DRAFT;
     }
-    
+
     /**
      * Get status name.
      *
@@ -650,7 +650,7 @@ class Conversation extends Model
         $this->user_id = $user_id;
         $this->updateFolder();
         $this->user_updated_at = $now;
-		
+
         // If user was previously following the conversation then unfollow
         if (!is_null($user_id)) {
             $follower = Follower::where('conversation_id', $this->id)
@@ -1005,7 +1005,7 @@ class Conversation extends Model
 
         // Get ids of all the conversations starred by user and cache them
         if (!isset(self::$starred_conversation_ids[$mailbox_id])) {
-            
+
             self::$starred_conversation_ids[$mailbox_id] = self::getUserStarredConversationIds($mailbox_id, $user_id);
         }
 
@@ -1213,6 +1213,13 @@ class Conversation extends Model
         // Create line item thread
         if ($by_user) {
             $thread = new Thread();
+
+            /* Get phone number used for last thread. */
+            $lastThread = Thread::getLastThreadOfConversation($this->id);
+            if($lastThread){
+                $thread->mailbox_phone_number_id = $lastThread->mailbox_phone_number_id;
+            }
+
             $thread->conversation_id = $this->id;
             $thread->user_id = $this->user_id;
             $thread->type = Thread::TYPE_LINEITEM;
@@ -1526,7 +1533,7 @@ class Conversation extends Model
         //     'conversation_id' => $this->id,
         // ];
         // ConversationFolder::updateOrCreate($values, $values);
-        
+
         return true;
     }
 
@@ -1538,7 +1545,7 @@ class Conversation extends Model
         // Find folder
         $folder_query = Folder::where('mailbox_id', $this->mailbox_id)
                     ->where('type', $folder_type);
-        
+
         if ($user_id) {
             $folder_query->where('user_id', $user_id);
         }
@@ -1740,7 +1747,7 @@ class Conversation extends Model
         if (!array_key_exists($new_state, self::$states)) {
             return;
         }
-        
+
         $prev_state = $this->state;
 
         $this->state = $new_state;
@@ -1754,7 +1761,7 @@ class Conversation extends Model
         if (!array_key_exists($new_status, self::$statuses)) {
             return;
         }
-        
+
         $prev_status = $this->status;
 
         $this->setStatus($new_status, $user);
@@ -1763,6 +1770,13 @@ class Conversation extends Model
         // Create lineitem thread
         if ($create_thread) {
             $thread = new Thread();
+
+            /* Get phone number used for last thread. */
+            $lastThread = Thread::getLastThreadOfConversation($this->id);
+            if($lastThread){
+                $thread->mailbox_phone_number_id = $lastThread->mailbox_phone_number_id;
+            }
+
             $thread->conversation_id = $this->id;
             $thread->user_id = $this->user_id;
             $thread->type = Thread::TYPE_LINEITEM;
@@ -1791,6 +1805,13 @@ class Conversation extends Model
         if ($create_thread) {
             // Create lineitem thread
             $thread = new Thread();
+
+            /* Get phone number used for last thread. */
+            $lastThread = Thread::getLastThreadOfConversation($this->id);
+            if($lastThread){
+                $thread->mailbox_phone_number_id = $lastThread->mailbox_phone_number_id;
+            }
+
             $thread->conversation_id = $this->id;
             $thread->user_id = $this->user_id;
             $thread->type = Thread::TYPE_LINEITEM;
@@ -1854,7 +1875,7 @@ class Conversation extends Model
         \Eventy::action('conversations.before_delete_forever', $conversation_ids);
 
         //$conversation_ids = $conversations->pluck('id')->toArray();
-        for ($i=0; $i < ceil(count($conversation_ids) / \Helper::IN_LIMIT); $i++) { 
+        for ($i=0; $i < ceil(count($conversation_ids) / \Helper::IN_LIMIT); $i++) {
 
             $ids = array_slice($conversation_ids, $i*\Helper::IN_LIMIT, \Helper::IN_LIMIT);
 
@@ -1974,7 +1995,7 @@ class Conversation extends Model
 
             $has_attachments = false;
             foreach ($replies as $reply_thread) {
-                
+
                 $thread_has_attachments = false;
                 foreach ($reply_thread->attachments as $attachment) {
                     $new_attachment = $attachment->replicate();
@@ -2113,6 +2134,9 @@ class Conversation extends Model
             if (!empty($data['status'])) {
                 $thread['status'] = $data['status'];
             }
+            if (!empty($data['mailbox_phone_number_id'])) {
+                $thread['mailbox_phone_number_id'] = $data['mailbox_phone_number_id'];
+            }
 
             $thread_result = Thread::createExtended($thread, $conversation, $customer, false);
             if ($thread_result) {
@@ -2199,7 +2223,7 @@ class Conversation extends Model
         if (!$query_conversations) {
             $query_conversations = Conversation::select('conversations.*');
         }
-		
+
         // https://github.com/laravel/framework/issues/21242
         // https://github.com/laravel/framework/pull/27675
         $query_conversations->groupby('conversations.id');
@@ -2218,7 +2242,7 @@ class Conversation extends Model
         }
 
         $query_conversations->whereIn('conversations.mailbox_id', $mailbox_ids);
-        
+
         $like_op = 'like';
         if (\Helper::isPgSql()) {
             $like_op = 'ilike';

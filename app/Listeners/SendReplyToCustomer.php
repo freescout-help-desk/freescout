@@ -3,6 +3,8 @@
 namespace App\Listeners;
 
 use App\Conversation;
+use App\Thread;
+use Modules\SmsTickets\Models\MailboxPhoneNumber;
 
 class SendReplyToCustomer
 {
@@ -51,6 +53,15 @@ class SendReplyToCustomer
 
         // Chat conversation.
         if ($conversation->isChat()) {
+
+            $lastThread = Thread::getLastThreadOfConversation($conversation->id);
+
+            if($lastThread){
+                $thread->mailbox_phone_number_id = $lastThread->mailbox_phone_number_id;
+                $mailboxPhoneNumber = MailboxPhoneNumber::findOrFail($thread->mailbox_phone_number_id);
+                $conversation->replyTo = $mailboxPhoneNumber->number;
+            }
+
             \Helper::backgroundAction('chat_conversation.send_reply', [$conversation, $replies, $conversation->customer], now()->addSeconds(Conversation::UNDO_TIMOUT));
             return;
         }
