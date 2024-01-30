@@ -1549,7 +1549,7 @@ class Thread extends Model
             ->where('payload', 'like', '{"displayName":"App\\\\\\\\Jobs\\\\\\\\SendReplyToCustomer"%{i:0;i:'.$this->id.';%')
             ->value('id');
     }
-    
+
     public static function getLastThreadOfConversation($conversationId)
     {
         return Thread::where([
