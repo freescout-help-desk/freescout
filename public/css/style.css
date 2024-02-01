@@ -600,7 +600,8 @@ select.form-control {
 .btn-danger.btn-light:hover {
     background-color: #c9302c;
 }
-.has-error.help-block {
+.has-error.help-block,
+.parsley-required {
     color: #a94442;
 }
 .has-error .form-control.parsley-exclude {
