@@ -1,5 +1,8 @@
 // https://github.com/Bernardo-Castilho/dragdroptouch
-let DragDropTouch;
+//let DragDropTouch;
+if (typeof(DragDropTouch) == "undefined") {
+    DragDropTouch = {};
+}
 (function (DragDropTouch_1) {
     'use strict';
     /**

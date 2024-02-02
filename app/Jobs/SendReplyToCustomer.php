@@ -116,6 +116,17 @@ class SendReplyToCustomer implements ShouldQueue
             return;
         }
 
+        // After sending an email we are saving it into "IMAP Folder To Save Outgoing Replies".
+        // This process may stuck or make SendReplyToCustomer job die with
+        // "Allowed memory size of NNN bytes exhausted" error.
+        // https://github.com/freescout-helpdesk/freescout/issues/3632
+        if ($this->attempts() >= 1 && 
+            ($this->last_thread->send_status == SendLog::STATUS_ACCEPTED
+                || $this->last_thread->isSendStatusSuccess())
+        ) {
+            return;
+        }
+
         if (count($this->threads) == 1) {
             $new = true;
         }
@@ -273,6 +284,9 @@ class SendReplyToCustomer implements ShouldQueue
                 ->cc($cc_array)
                 ->bcc($bcc_array)
                 ->send($reply_mail);
+
+            $this->last_thread->send_status = SendLog::STATUS_ACCEPTED;
+            $this->last_thread->save();
 
             $smtp_queue_id = SwiftGetSmtpQueueId::$last_smtp_queue_id;
         } catch (\Exception $e) {

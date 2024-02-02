@@ -600,7 +600,8 @@ select.form-control {
 .btn-danger.btn-light:hover {
     background-color: #c9302c;
 }
-.has-error.help-block {
+.has-error.help-block,
+.parsley-required {
     color: #a94442;
 }
 .has-error .form-control.parsley-exclude {
@@ -3357,11 +3358,11 @@ ul.sidebar-block-list {
     background-color: #f9fafa;
 }
 .web-notification.is-unread a {
-    background-color: #f1faff;
+    background-color: #d5f0ff;
 }
 .web-notification.is-unread a:hover,
 .web-notification.is-unread a:focus {
-    background-color: #e7f6ff;
+    background-color: #bce7ff;
 }
 .web-notification-msg {
     line-height: 18px;
