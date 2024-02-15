@@ -332,7 +332,7 @@ class Thread extends Model
             $body = $this->body;
         }
 
-        $body = \Helper::linkify($this->getCleanBody($body));
+        //$body = \Helper::linkify($this->getCleanBody($body));
 
         // Add target="_blank" to links.
         $pattern = '/<a(.*?)?href=[\'"]?[\'"]?(.*?)?>/i';
