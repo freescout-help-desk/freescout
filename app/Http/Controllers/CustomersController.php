@@ -290,7 +290,11 @@ class CustomersController extends Controller
                 ->orWhere('last_name', 'like', '%'.$q.'%');
         }
         if ($request->search_by == 'phone') {
-            $customers_query->where('customers.phones', 'like', '%'.$q.'%');
+            $phone_numeric = \Helper::phoneToNumeric($q);
+            if (!$phone_numeric) {
+                $phone_numeric = $q;
+            }
+            $customers_query->where('customers.phones', 'like', '%'.$phone_numeric.'%');
         }
 
         $customers = $customers_query->paginate(20);
@@ -311,7 +315,8 @@ class CustomersController extends Controller
                         // Get phone which matches
                         $phones = $customer->getPhones();
                         foreach ($phones as $phone) {
-                            if (strstr($phone['value'], $q)) {
+                            $phone_numeric = \Helper::phoneToNumeric($q);
+                            if (strstr($phone['value'], $q) || strstr($phone['n'] ?? '', $phone_numeric)) {
                                 $text = $phone['value'];
                                 if ($customer->getFullName()) {
                                     $text .= ' — '.$customer->getFullName();
@@ -333,7 +338,7 @@ class CustomersController extends Controller
                 if (!empty($request->use_id)) {
                     $id = $customer->id;
                 } else {
-                    $id = $customer->email;
+                    $id = $customer->getMainEmail();
                 }
             }
             $response['results'][] = [
