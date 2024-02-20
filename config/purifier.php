@@ -30,6 +30,7 @@ return [
             'AutoFormat.RemoveEmpty'   => true,
             'CSS.Proprietary' => true,
             'CSS.AllowTricky' => true,
+            'CSS.MaxImgLength' => null,
             'URI.AllowedSchemes'   => [
                 'http' => true,
                 'https' => true,
