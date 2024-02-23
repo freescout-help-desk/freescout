@@ -182,7 +182,7 @@ class MailboxesController extends Controller
             $validator = Validator::make($request->all(), [
                 'name'             => 'required|string|max:40',
                 'email'            => 'required|string|email|max:128|unique:mailboxes,email,'.$id,
-                'aliases'          => 'nullable|string|max:255',
+                'aliases'          => 'nullable|string',
                 'from_name'        => 'required|integer',
                 'from_name_custom' => 'nullable|string|max:128',
                 'ticket_status'    => 'required|integer',
