@@ -41,7 +41,7 @@ return [
     */
 
     'css_build_path' => '/css/builds/',
-    'css_url_path'   => '/css/builds/',
+    'css_url_path'   => env('APP_URL').'/css/builds/',
 
     /*
     |--------------------------------------------------------------------------
@@ -56,7 +56,7 @@ return [
     */
 
     'js_build_path' => '/js/builds/',
-    'js_url_path'   => '/js/builds/',
+    'js_url_path'   => env('APP_URL').'/js/builds/',
 
     /*
     |--------------------------------------------------------------------------
