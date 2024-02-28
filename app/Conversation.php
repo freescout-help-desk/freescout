@@ -2226,10 +2226,15 @@ class Conversation extends Model
 
         if ($q) {
             $query_conversations->where(function ($query) use ($like, $filters, $q, $like_op) {
+
+                // It needs to be sanitized to avoid "Numeric value out of range" on PostgreSQL.
+                $q_int = (int)$q;
+                $q_int = $q_int > \Helper::DB_INT_MAX ? \Helper::DB_INT_MAX : $q_int;
+
                 $query->where('conversations.subject', $like_op, $like)
                     ->orWhere('conversations.customer_email', $like_op, $like)
-                    ->orWhere('conversations.'.self::numberFieldName(), (int)$q)
-                    ->orWhere('conversations.id', (int)$q)
+                    ->orWhere('conversations.'.self::numberFieldName(), $q_int)
+                    ->orWhere('conversations.id', $q_int)
 					->orWhere('customers.first_name', $like_op, $like)
                     ->orWhere('customers.last_name', $like_op, $like)
                     ->orWhere('threads.body', $like_op, $like)

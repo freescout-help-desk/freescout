@@ -40,6 +40,8 @@ class Helper
      */
     const DIR_PERMISSIONS = 0755;
 
+    const DB_INT_MAX = 2147483647;
+
     public static $csp_nonce = null;
 
     /**
