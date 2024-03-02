@@ -849,6 +849,9 @@ class ConversationsController extends Controller
                     $now = date('Y-m-d H:i:s');
                     $status_changed = false;
                     $user_changed = false;
+
+                    $request_status = (int)$request->status;
+
                     if ($new) {
                         // New conversation
                         $conversation = new Conversation();
@@ -861,7 +864,7 @@ class ConversationsController extends Controller
                         $conversation->source_type = Conversation::SOURCE_TYPE_WEB;
                     } else {
                         // Reply or note
-                        if ((int) $request->status != (int) $conversation->status) {
+                        if ($request_status && $request_status != (int)$conversation->status) {
                             $status_changed = true;
                         }
                         if (!empty($request->subject)) {
@@ -928,7 +931,7 @@ class ConversationsController extends Controller
 
                     $prev_status = $conversation->status;
 
-                    $conversation->status = $request->status;
+                    $conversation->status = $request_status ?: $conversation->status;
 
                     if (($prev_status != $conversation->status || $is_create)
                         && $conversation->status == Conversation::STATUS_CLOSED
@@ -1052,7 +1055,7 @@ class ConversationsController extends Controller
                         $thread->first = true;
                     }
                     $thread->user_id = $conversation->user_id;
-                    $thread->status = $request->status;
+                    $thread->status = $request_status ?? $conversation->status;
                     $thread->state = Thread::STATE_PUBLISHED;
                     $thread->customer_id = $customer->id;
                     $thread->created_by_user_id = auth()->user()->id;
