@@ -1134,7 +1134,12 @@ class Conversation extends Model
             if ($user->id == $user_id
                 && $user->hasManageMailboxPermission($folder->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)
             ) {
-                $query_conversations->where('user_id', '=', $user_id);
+                if ($folder->type != Folder::TYPE_DRAFTS) {
+                    $query_conversations->where('user_id', '=', $user_id);
+                } else {
+                    $query_conversations->where('user_id', '=', $user_id)
+                        ->orWhere('created_by_user_id', '=', $user_id);
+                }
             }
         }
 

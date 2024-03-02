@@ -1346,7 +1346,7 @@ class ConversationsController extends Controller
                 $new = true;
                 if (!$response['msg'] && !empty($request->conversation_id)) {
                     $conversation = Conversation::find($request->conversation_id);
-                    if ($conversation && !$user->can('view', $conversation)) {
+                    if ($conversation && !$user->can('view', $conversation) && !$user->hasManageMailboxPermission($request->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)) {
                         $response['msg'] = __('Not enough permissions');
                     } else {
                         $new = false;
