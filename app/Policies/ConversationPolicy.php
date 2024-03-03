@@ -27,7 +27,7 @@ class ConversationPolicy
             if ($conversation->mailbox->users->contains($user)) {
                 // Maybe user can see only assigned conversations.
                 if (!\Eventy::filter('conversation.is_user_assignee', $conversation->user_id == $user->id, $conversation, $user->id)
-                    && $user->hasManageMailboxPermission($conversation->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)
+                    && !$user->hasManageMailboxPermission($conversation->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)
                 ) {
                     return false;
                 } else {
