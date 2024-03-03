@@ -5,6 +5,7 @@
 
 namespace App;
 
+use App\Mailbox;
 use App\Notifications\BroadcastNotification;
 use App\Notifications\WebsiteNotification;
 use Illuminate\Database\Eloquent\Model;
@@ -282,6 +283,13 @@ class Subscription extends Model
                 }
             }
             //}
+            
+            // https://github.com/freescout-helpdesk/freescout/issues/3843#issuecomment-1974811457
+            if ($conversation->user_id != $subscription->user_id
+                && $subscription->user->canSeeOnlyAssignedConversations()
+            ) {
+                continue;
+            }
 
             if (\Eventy::filter('subscription.filter_out', false, $subscription, $thread)) {
                 continue;

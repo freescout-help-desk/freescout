@@ -1227,4 +1227,9 @@ class User extends Authenticatable
     {
         $this->attributes['job_title'] = mb_substr($job_title ?? '', 0, 100);
     }
+
+    public function canSeeOnlyAssignedConversations()
+    {
+        return $this->hasManageMailboxPermission(0, Mailbox::ACCESS_PERM_ASSIGNED);
+    }
 }
