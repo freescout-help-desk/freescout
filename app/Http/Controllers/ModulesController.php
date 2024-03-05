@@ -128,7 +128,7 @@ class ModulesController extends Controller
                 $modules_directory[$i_dir]['active'] = \App\Module::isActive($dir_module['alias']);
                 $modules_directory[$i_dir]['activated'] = false;
 
-                // Do not show third-party modules in Modules Derectory.
+                // Do not show third-party modules in Modules Directory.
                 if (\App\Module::isThirdParty($dir_module)) {
                     $third_party_modules[] = $modules_directory[$i_dir];
                     unset($modules_directory[$i_dir]);
