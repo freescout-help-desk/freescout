@@ -96,6 +96,9 @@ class SendLog extends Model
      */
     public static function log($thread_id, $message_id, $email, $mail_type, $status, $customer_id = null, $user_id = null, $status_message = null, $smtp_queue_id = null)
     {
+        // Sanitize status message - remove SMTP username and password.
+        $status_message = \MailHelper::sanitizeSmtpStatusMessage($status_message);
+
         $send_log = new self();
         $send_log->thread_id = $thread_id;
         $send_log->message_id = $message_id;

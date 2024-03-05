@@ -1053,6 +1053,14 @@ class Mail
         return $separator;
     }
 
+    // Sanitize status message - remove SMTP username and password.
+    public static function sanitizeSmtpStatusMessage($status_message) {
+        $status_message = preg_replace('#(username ")[^"]+(")#', '$1***$2', $status_message ?? '');
+        $status_message = preg_replace("#(Swift_Transport_Esmtp_Auth_LoginAuthenticator\->authenticate\(Object\(Swift_SmtpTransport\), ')[^\']+(', ')[^\']+('\))#", '$1***$2***$3', $status_message ?? '');
+
+        return $status_message;
+    }
+
     // public static function oauthGetProvider($provider_code, $params)
     // {
     //     $provider = null;
