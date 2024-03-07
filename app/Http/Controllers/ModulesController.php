@@ -141,40 +141,50 @@ class ModulesController extends Controller
             $modules_directory = [];
         }
 
+        // Loop through each installed module
         foreach ($installed_modules as $i_installed => $module) {
+            // Check if the module is an official one
             if (\App\Module::isOfficial($module['authorUrl'])) {
                 continue;
             }
 
+            // Get the URL for the latest version of the module
             $latest_version_number_url = $module['latestVersionNumberUrl'] ?? null;
             if (! $latest_version_number_url) {
                 continue;
             }
 
+            // Create a new Guzzle HTTP client
             $client = new \GuzzleHttp\Client();
 
             try {
+                // Send a GET request to the latest version URL
                 $response = $client->request('GET', $latest_version_number_url, \Helper::setGuzzleDefaultOptions());
 
+                // Get the latest version number from the response body
                 $latest_version = trim((string) $response->getBody());
 
                 if (empty($latest_version)) {
                     continue;
                 } else {
+                    // Get the current version of the module
                     $current_version = $module['version'];
                 }
             } catch (\Exception $e) {
+                // If there's an exception, skip to the next iteration
                 continue;
             }
 
+            // If the latest version is greater than the current version
             if (version_compare($latest_version, $current_version, '>')) {
+                // Update the installed module's version
                 $installed_modules[ $i_installed ]['new_version'] = $latest_version;
-                $updates_available                                = true;
+                // Set the flag to indicate that updates are available
+                $updates_available = true;
             }
         }
 
         // Check modules symlinks. Somestimes instead of symlinks folders with files appear.
-
         $invalid_symlinks = \App\Module::checkSymlinks(
             collect($installed_modules)->where('active', true)->pluck('alias')->toArray()
         );

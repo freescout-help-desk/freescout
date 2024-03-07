@@ -401,6 +401,7 @@ class Module extends Model
 
         // Download new version.
         if (!$result['msg']) {
+            // Check if the module's author is officially recognized
             if (self::isOfficial($module->author_url)) {
                 $params = [
                     'license'      => self::getLicense($alias),
@@ -416,6 +417,7 @@ class Module extends Model
                 } elseif (!empty($license_details['required_app_version']) && !\Helper::checkAppVersion($license_details['required_app_version'])) {
                     $result['msg'] = 'Module requires app version:'.' '.$license_details['required_app_version'];
                 } elseif (!empty($license_details['download_link'])) {
+                    // If a download link is available, proceed to update the module from the URL
                     self::updateFromUrl($module, $license_details['download_link'], $result);
                 } elseif ($license_details['status'] && $result['msg'] = self::getErrorMessage($license_details['status'])) {
                     //$result['msg'] = ;
@@ -423,11 +425,14 @@ class Module extends Model
                     $result['msg'] = __('Error occurred').': '.json_encode($license_details);
                 }
             } else {
+                // If the module's author is not officially recognized, check for a direct download link
                 $latest_version_zip_url = $module->latestVersionZipUrl ?? null;
 
-                if (! empty($latest_version_zip_url)) {
+                if (!empty($latest_version_zip_url)) {
+                    // Update the module from the provided ZIP URL
                     self::updateFromUrl($module, $module->latestVersionZipUrl, $result);
                 } else {
+                    // If no download link is available, set an error message indicating the module cannot be downloaded
                     $result['msg'] = __('Error occurred') . ': module not available for download';
                 }
             }
@@ -464,6 +469,15 @@ class Module extends Model
         return $result;
     }
 
+    /**
+     * Updates a module from a given URL.
+     *
+     * @param Module $module The module to be updated.
+     * @param string $url The URL where the new version of the module can be downloaded.
+     * @param array $result An associative array to store the result of the update operation.
+     *
+     * @return void
+     */
     private static function updateFromUrl($module, $url, &$result)
     {
         $alias = $module->alias;
