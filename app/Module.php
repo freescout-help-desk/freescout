@@ -401,7 +401,7 @@ class Module extends Model
 
         // Download new version.
         if (!$result['msg']) {
-            if ( self::isOfficial( $module->author_url ) ) {
+            if (self::isOfficial($module->author_url)) {
                 $params = [
                     'license'      => self::getLicense($alias),
                     'module_alias' => $alias,
@@ -416,7 +416,7 @@ class Module extends Model
                 } elseif (!empty($license_details['required_app_version']) && !\Helper::checkAppVersion($license_details['required_app_version'])) {
                     $result['msg'] = 'Module requires app version:'.' '.$license_details['required_app_version'];
                 } elseif (!empty($license_details['download_link'])) {
-                    self::updateFromUrl( $module, $license_details['download_link'], $result );
+                    self::updateFromUrl($module, $license_details['download_link'], $result);
                 } elseif ($license_details['status'] && $result['msg'] = self::getErrorMessage($license_details['status'])) {
                     //$result['msg'] = ;
                 } else {
@@ -425,17 +425,16 @@ class Module extends Model
             } else {
                 $latest_version_zip_url = $module->latestVersionZipUrl ?? null;
 
-                if ( ! empty( $latest_version_zip_url ) ) {
-                    self::updateFromUrl( $module, $module->latestVersionZipUrl, $result );
+                if (! empty($latest_version_zip_url)) {
+                    self::updateFromUrl($module, $module->latestVersionZipUrl, $result);
                 } else {
-                    $result['msg'] = __( 'Error occurred' ) . ': module not available for download';
+                    $result['msg'] = __('Error occurred') . ': module not available for download';
                 }
             }
         }
 
         // Run post-update instructions.
         if (!$result['msg'] && !$result['download_error']) {
-
             $output_log = new BufferedOutput();
             \Artisan::call('freescout:module-install', ['module_alias' => $alias], $output_log);
             $result['output'] = $output_log->fetch() ?: ' ';
@@ -465,18 +464,19 @@ class Module extends Model
         return $result;
     }
 
-    private static function updateFromUrl( $module, $url, &$result ) {
+    private static function updateFromUrl($module, $url, &$result)
+    {
         $alias = $module->alias;
         // Download module.
         $module_archive = \Module::getPath() . DIRECTORY_SEPARATOR . $alias . '.zip';
 
         try {
-            \Helper::downloadRemoteFile( $url, $module_archive );
-        } catch ( \Exception $e ) {
+            \Helper::downloadRemoteFile($url, $module_archive);
+        } catch (\Exception $e) {
             $result['msg'] = $e->getMessage();
         }
 
-        if ( ! file_exists( $module_archive ) ) {
+        if (! file_exists($module_archive)) {
             $result['download_error'] = true;
         } else {
             // Extract.
@@ -486,38 +486,37 @@ class Module extends Model
                 // https://github.com/freescout-helpdesk/freescout/issues/2709
                 $public_folder = $module->getPath() . DIRECTORY_SEPARATOR . 'Public';
                 try {
-                    if ( is_link( $public_folder ) ) {
-                        unlink( $public_folder );
+                    if (is_link($public_folder)) {
+                        unlink($public_folder);
                     }
-                } catch ( \Exception $e ) {
+                } catch (\Exception $e) {
                     // Do nothing.
                 }
 
-                \Helper::unzip( $module_archive, \Module::getPath() );
-            } catch ( \Exception $e ) {
+                \Helper::unzip($module_archive, \Module::getPath());
+            } catch (\Exception $e) {
                 $result['msg'] = $e->getMessage();
             }
             // Check if extracted module exists.
             \Module::clearCache();
-            $module = \Module::findByAlias( $alias );
-            if ( ! $module ) {
+            $module = \Module::findByAlias($alias);
+            if (! $module) {
                 $result['download_error'] = true;
             }
         }
 
         // Remove archive.
-        if ( file_exists( $module_archive ) ) {
-            \File::delete( $module_archive );
+        if (file_exists($module_archive)) {
+            \File::delete($module_archive);
         }
 
-        if ( $result['download_error'] ) {
-            $result['download_msg'] = __( 'Error occurred downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', [
+        if ($result['download_error']) {
+            $result['download_msg'] = __('Error occurred downloading the module. Please :%a_being%download:%a_end% module manually and extract into :folder', [
                 '%a_being%' => '<a href="' . $url . '" target="_blank">',
                 '%a_end%'   => '</a>',
                 'folder'    => '<strong>' . \Module::getPath() . '</strong>',
-            ] );
+            ]);
         }
-
     }
 
     public static function getErrorMessage($code, $result = null)

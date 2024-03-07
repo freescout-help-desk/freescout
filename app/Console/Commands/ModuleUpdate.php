@@ -5,8 +5,6 @@
 
 namespace App\Console\Commands;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Console\Command;
 
 class ModuleUpdate extends Command
@@ -90,55 +88,53 @@ class ModuleUpdate extends Command
                     if (trim($update_result['output'])) {
                         $this->line(preg_replace("#\n#", "\n> ", '> '.trim($update_result['output'])));
                     }
-                    
+
                     $counter++;
                 }
             }
         }
 
-        foreach ( $installed_modules as $module ) {
-            if ( \App\Module::isOfficial( $module->get( 'authorUrl' ) ) ) {
+        foreach ($installed_modules as $module) {
+            if (\App\Module::isOfficial($module->get('authorUrl'))) {
                 continue;
             }
 
-            $latest_version_number_url = $module->get( 'latestVersionUrl' );
-            if ( ! $latest_version_number_url ) {
+            $latest_version_number_url = $module->get('latestVersionUrl');
+            if (! $latest_version_number_url) {
                 continue;
             }
 
-            $client = new Client();
+            $client = new \GuzzleHttp\Client();
 
             try {
-                $response = $client->request( 'GET', $latest_version_number_url, [
-                    'timeout' => 2, // Timeout in seconds
-                ] );
+                $response = $client->request('GET', $latest_version_number_url, \Helper::setGuzzleDefaultOptions());
 
-                $latest_version = trim( (string) $response->getBody() );
+                $latest_version = trim((string) $response->getBody());
 
-                if ( empty( $latest_version ) ) {
+                if (empty($latest_version)) {
                     continue;
                 } else {
-                    $current_version = $module->get( 'version' );
+                    $current_version = $module->get('version');
                 }
-            } catch ( RequestException $e ) {
+            } catch (\Exception $e) {
                 continue;
             }
 
-            if ( version_compare( $latest_version, $current_version, '>' ) ) {
-                $update_result = \App\Module::updateModule( $module->getAlias() );
+            if (version_compare($latest_version, $current_version, '>')) {
+                $update_result = \App\Module::updateModule($module->getAlias());
 
-                $this->info( '[' . $update_result['module_name'] . ' Module' . ']' );
-                if ( $update_result['status'] == 'success' ) {
-                    $this->line( $update_result['msg_success'] );
+                $this->info('[' . $update_result['module_name'] . ' Module' . ']');
+                if ($update_result['status'] == 'success') {
+                    $this->line($update_result['msg_success']);
                 } else {
                     $msg = $update_result['msg'];
-                    if ( $update_result['download_msg'] ) {
+                    if ($update_result['download_msg']) {
                         $msg .= ' (' . $update_result['download_msg'] . ')';
                     }
-                    $this->error( 'ERROR: ' . $msg );
+                    $this->error('ERROR: ' . $msg);
                 }
-                if ( trim( $update_result['output'] ) ) {
-                    $this->line( preg_replace( "#\n#", "\n> ", '> ' . trim( $update_result['output'] ) ) );
+                if (trim($update_result['output'])) {
+                    $this->line(preg_replace("#\n#", "\n> ", '> ' . trim($update_result['output'])));
                 }
 
                 $counter ++;

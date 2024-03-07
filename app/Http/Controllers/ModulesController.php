@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Misc\WpApi;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 //use Nwidart\Modules\Traits\CanClearModulesCache;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -79,8 +77,8 @@ class ModulesController extends Controller
                 'activated'                    => \App\Module::isLicenseActivated($module->getAlias(), $module->get('authorUrl')),
                 'license'                      => \App\Module::getLicense($module->getAlias()),
                 // Update configuration for third party modules
-                'latestVersionNumberUrl'       => $module->get( 'latestVersionUrl' ),
-                'latestVersionZipUrl'          => $module->get( 'latestVersionZipUrl' ),
+                'latestVersionNumberUrl'       => $module->get('latestVersionUrl'),
+                'latestVersionZipUrl'          => $module->get('latestVersionZipUrl'),
                 // Determined later
                 'new_version'        => '',
             ];
@@ -143,42 +141,40 @@ class ModulesController extends Controller
             $modules_directory = [];
         }
 
-        foreach ( $installed_modules as $i_installed => $module ) {
-            if ( \App\Module::isOfficial( $module['authorUrl'] ) ) {
+        foreach ($installed_modules as $i_installed => $module) {
+            if (\App\Module::isOfficial($module['authorUrl'])) {
                 continue;
             }
 
             $latest_version_number_url = $module['latestVersionNumberUrl'] ?? null;
-            if ( ! $latest_version_number_url ) {
+            if (! $latest_version_number_url) {
                 continue;
             }
 
-            $client = new Client();
+            $client = new \GuzzleHttp\Client();
 
             try {
-                $response = $client->request( 'GET', $latest_version_number_url, [
-                    'timeout' => 2, // Timeout in seconds
-                ] );
+                $response = $client->request('GET', $latest_version_number_url, \Helper::setGuzzleDefaultOptions());
 
-                $latest_version = trim( (string) $response->getBody() );
+                $latest_version = trim((string) $response->getBody());
 
-                if ( empty( $latest_version ) ) {
+                if (empty($latest_version)) {
                     continue;
                 } else {
                     $current_version = $module['version'];
                 }
-            } catch ( RequestException $e ) {
+            } catch (\Exception $e) {
                 continue;
             }
 
-            if ( version_compare( $latest_version, $current_version, '>' ) ) {
+            if (version_compare($latest_version, $current_version, '>')) {
                 $installed_modules[ $i_installed ]['new_version'] = $latest_version;
                 $updates_available                                = true;
             }
         }
 
         // Check modules symlinks. Somestimes instead of symlinks folders with files appear.
-        
+
         $invalid_symlinks = \App\Module::checkSymlinks(
             collect($installed_modules)->where('active', true)->pluck('alias')->toArray()
         );
