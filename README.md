@@ -39,6 +39,7 @@ If you want to support the project feel free to **star this repository**. It hel
   * Multilingual: English, Chinese, Croatian, Czech, Danish, Dutch, Finnish, French, German, Italian, Japanese, Korean, Norwegian, Persian, Polish, Portuguese, Russian, Spanish, Slovak, Swedish, Turkish.
   * Seamless email integration.
   * Supports modern Microsoft Exchange authentication.
+  * Fully supports screen readers (for visually impaired).
   * Web installer & updater.
   * Starred conversations.
   * Forwarding conversations.
