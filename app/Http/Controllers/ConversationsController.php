@@ -849,6 +849,8 @@ class ConversationsController extends Controller
                     $now = date('Y-m-d H:i:s');
                     $status_changed = false;
                     $user_changed = false;
+                    // Chat conversations in chat mode can not be undone.
+                    $can_undo = true;
 
                     $request_status = (int)$request->status;
 
@@ -1209,13 +1211,17 @@ class ConversationsController extends Controller
                         $user->followConversation($conversation->id);
                     }
 
+                    if ($conversation->isChat() && \Helper::isChatMode()) {
+                        $can_undo = false;
+                    }
+
                     // When user creates a new conversation it may be saved as draft first.
                     if ($is_create) {
                         // New conversation.
                         event(new UserCreatedConversation($conversation, $thread));
                         \Eventy::action('conversation.created_by_user_can_undo', $conversation, $thread);
                         // After Conversation::UNDO_TIMOUT period trigger final event.
-                        \Helper::backgroundAction('conversation.created_by_user', [$conversation, $thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
+                        \Helper::backgroundAction('conversation.created_by_user', [$conversation, $thread], now()->addSeconds($this->getUndoTimeout($can_undo)));
                     } elseif ($is_forward) {
                         // Forward.
                         // Notifications to users not sent.
@@ -1238,7 +1244,7 @@ class ConversationsController extends Controller
                         event(new UserReplied($conversation, $thread));
                         \Eventy::action('conversation.user_replied_can_undo', $conversation, $thread);
                         // After Conversation::UNDO_TIMOUT period trigger final event.
-                        \Helper::backgroundAction('conversation.user_replied', [$conversation, $thread], now()->addSeconds(Conversation::UNDO_TIMOUT));
+                        \Helper::backgroundAction('conversation.user_replied', [$conversation, $thread], now()->addSeconds($this->getUndoTimeout($can_undo)));
                     }
 
                     // Send new conversation separately to each customer.
@@ -1297,7 +1303,7 @@ class ConversationsController extends Controller
                             event(new UserCreatedConversation($conversation_copy, $thread_copy));
                             \Eventy::action('conversation.created_by_user_can_undo', $conversation_copy, $thread_copy);
                             // After Conversation::UNDO_TIMOUT period trigger final event.
-                            \Helper::backgroundAction('conversation.created_by_user', [$conversation_copy, $thread_copy], now()->addSeconds(Conversation::UNDO_TIMOUT));
+                            \Helper::backgroundAction('conversation.created_by_user', [$conversation_copy, $thread_copy], now()->addSeconds($this->getUndoTimeout($can_undo)));
                         }
                     }
 
@@ -1332,7 +1338,9 @@ class ConversationsController extends Controller
                         }
                     }
 
-                    \Session::flash('flash_'.$flash_type.'_floating', $flash_text);
+                    if ($can_undo) {
+                        \Session::flash('flash_'.$flash_type.'_floating', $flash_text);
+                    }
                 }
                 break;
 
@@ -3308,5 +3316,14 @@ class ConversationsController extends Controller
             'is_in_chat_mode'    => true,
             'mailbox'            => $mailbox,
         ]);
+    }
+
+    public function getUndoTimeout($can_undo)
+    {
+        if ($can_undo) {
+            return Conversation::UNDO_TIMOUT;
+        } else {
+            return 1;
+        }
     }
 }
