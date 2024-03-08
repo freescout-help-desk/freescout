@@ -873,6 +873,9 @@ class Thread extends Model
             } else {
                 $send_status_data = $new_data;
             }
+            if (!empty($send_status_data['msg'])) {
+                $send_status_data['msg'] = \MailHelper::sanitizeSmtpStatusMessage($send_status_data['msg']);
+            }
             $this->send_status_data = \Helper::jsonEncodeUtf8($send_status_data);
         } else {
             $this->send_status_data = null;

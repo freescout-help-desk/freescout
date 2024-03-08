@@ -11,6 +11,13 @@
 	    </p>
 	    <div class="module-details">
 		    <span>{{ __('Version') }}: {{ $module['version'] }}</span>
+            @if (!empty($module['author']))
+                @if(!empty($module['authorUrl']))
+                    | <a href="{{ $module['authorUrl'] }}" target="_blank">{{$module['author']}}</a>
+                @else
+                    | {{$module['author']}}
+                @endif
+            @endif
 		    @if (!empty($module['detailsUrl']))
 		    	| <a href="{{ $module['detailsUrl'] }}" target="_blank">{{ __('View details') }}</a>
 		    @endif

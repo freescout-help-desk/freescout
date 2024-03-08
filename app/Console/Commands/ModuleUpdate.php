@@ -88,9 +88,71 @@ class ModuleUpdate extends Command
                     if (trim($update_result['output'])) {
                         $this->line(preg_replace("#\n#", "\n> ", '> '.trim($update_result['output'])));
                     }
-                    
+
                     $counter++;
                 }
+            }
+        }
+
+        // Loop through each installed module
+        foreach ($installed_modules as $module) {
+            // Skip if the module is an official one
+            if (\App\Module::isOfficial($module->get('authorUrl'))) {
+                continue;
+            }
+
+            // Get the URL for the latest version of the module
+            $latest_version_number_url = $module->get('latestVersionUrl');
+            if (! $latest_version_number_url) {
+                continue;
+            }
+
+            // Create a new Guzzle HTTP client
+            $client = new \GuzzleHttp\Client();
+
+            try {
+                // Send a GET request to the latest version URL
+                $response = $client->request('GET', $latest_version_number_url, \Helper::setGuzzleDefaultOptions());
+
+                // Get the latest version number from the response body
+                $latest_version = trim((string) $response->getBody());
+
+                if (empty($latest_version)) {
+                    continue;
+                } else {
+                    // Get the current version of the module
+                    $current_version = $module->get('version');
+                }
+            } catch (\Exception $e) {
+                // If there's an exception, skip to the next iteration
+                continue;
+            }
+
+            // If the latest version is greater than the current version
+            if (version_compare($latest_version, $current_version, '>')) {
+                // Update the module
+                $update_result = \App\Module::updateModule($module->getAlias());
+
+                // Print the module name and status
+                $this->info('[' . $update_result['module_name'] . ' Module' . ']');
+                if ($update_result['status'] == 'success') {
+                    // If the update was successful, print the success message
+                    $this->line($update_result['msg_success']);
+                } else {
+                    // If the update failed, print the error message
+                    $msg = $update_result['msg'];
+                    if ($update_result['download_msg']) {
+                        $msg .= ' (' . $update_result['download_msg'] . ')';
+                    }
+                    $this->error('ERROR: ' . $msg);
+                }
+                // If there's any output from the update, print it
+                if (trim($update_result['output'])) {
+                    $this->line(preg_replace("#\n#", "\n> ", '> ' . trim($update_result['output'])));
+                }
+
+                // Increment the counter
+                $counter ++;
             }
         }
 

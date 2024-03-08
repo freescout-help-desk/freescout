@@ -27,7 +27,8 @@ class ConversationPolicy
             if ($conversation->mailbox->users->contains($user)) {
                 // Maybe user can see only assigned conversations.
                 if (!\Eventy::filter('conversation.is_user_assignee', $conversation->user_id == $user->id, $conversation, $user->id)
-                    && $user->hasManageMailboxPermission($conversation->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)
+                    && $conversation->created_by_user_id != $user->id
+                    && $user->canSeeOnlyAssignedConversations()
                 ) {
                     return false;
                 } else {
@@ -54,7 +55,8 @@ class ConversationPolicy
             if ($conversation->mailbox->users_cached->contains($user)) {
                 // Maybe user can see only assigned conversations.
                 if (!\Eventy::filter('conversation.is_user_assignee', $conversation->user_id == $user->id, $conversation, $user->id)
-                    && $user->hasManageMailboxPermission($conversation->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)
+                    && $conversation->created_by_user_id != $user->id
+                    && $user->canSeeOnlyAssignedConversations()
                 ) {
                     return false;
                 } else {
