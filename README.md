@@ -40,6 +40,7 @@ If you want to support the project feel free to **star this repository**. It hel
   * Seamless email integration.
   * Supports modern Microsoft Exchange authentication.
   * Fully supports screen readers (for visually impaired).
+  * Built with strong focus on [security](https://freescout.net/security).
   * Web installer & updater.
   * Starred conversations.
   * Forwarding conversations.
