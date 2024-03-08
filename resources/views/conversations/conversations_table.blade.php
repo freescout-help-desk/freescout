@@ -204,7 +204,7 @@
                         <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty($params['target_blank'])) target="_blank" @endif><i>#</i>{{ $conversation->number }}</a>
                     </td>
                     <td class="conv-date">
-                        <a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED]))@php $conv_date_title = $conversation->getDateTitle(); $conv_waiting_since = $conversation->getWaitingSince($folder); @endphp aria-label="{{ $conv_waiting_since }}" aria-description="{{ $conv_date_title }}" data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conv_date_title }}"@else title="{{ __('View conversation') }}" @endif @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conv_waiting_since }}</a>
+                        @php $conv_waiting_since = $conversation->getWaitingSince($folder); @endphp<a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED]))@php $conv_date_title = $conversation->getDateTitle(); @endphp aria-label="{{ $conv_waiting_since }}" aria-description="{{ $conv_date_title }}" data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conv_date_title }}"@else title="{{ __('View conversation') }}" @endif @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conv_waiting_since }}</a>
                     </td>
                 </tr>
                 @action('conversations_table.after_row', $conversation, $columns, $col_counter)
