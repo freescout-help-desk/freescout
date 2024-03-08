@@ -402,7 +402,7 @@ class Module extends Model
         // Download new version.
         if (!$result['msg']) {
             // Check if the module's author is officially recognized
-            if (self::isOfficial($module->author_url)) {
+            if (self::isOfficial($module->authorUrl)) {
                 $params = [
                     'license'      => self::getLicense($alias),
                     'module_alias' => $alias,
@@ -418,7 +418,7 @@ class Module extends Model
                     $result['msg'] = 'Module requires app version:'.' '.$license_details['required_app_version'];
                 } elseif (!empty($license_details['download_link'])) {
                     // If a download link is available, proceed to update the module from the URL
-                    self::updateFromUrl($module, $license_details['download_link'], $result);
+                    $result = self::updateFromUrl($module, $license_details['download_link'], $result);
                 } elseif ($license_details['status'] && $result['msg'] = self::getErrorMessage($license_details['status'])) {
                     //$result['msg'] = ;
                 } else {
@@ -430,7 +430,7 @@ class Module extends Model
 
                 if (!empty($latest_version_zip_url)) {
                     // Update the module from the provided ZIP URL
-                    self::updateFromUrl($module, $module->latestVersionZipUrl, $result);
+                    $result = self::updateFromUrl($module, $module->latestVersionZipUrl, $result);
                 } else {
                     // If no download link is available, set an error message indicating the module cannot be downloaded
                     $result['msg'] = __('Error occurred') . ': module not available for download';
@@ -478,7 +478,7 @@ class Module extends Model
      *
      * @return void
      */
-    private static function updateFromUrl($module, $url, &$result)
+    private static function updateFromUrl($module, $url, $result)
     {
         $alias = $module->alias;
         // Download module.
@@ -490,7 +490,7 @@ class Module extends Model
             $result['msg'] = $e->getMessage();
         }
 
-        if (! file_exists($module_archive)) {
+        if (!file_exists($module_archive)) {
             $result['download_error'] = true;
         } else {
             // Extract.
@@ -514,7 +514,7 @@ class Module extends Model
             // Check if extracted module exists.
             \Module::clearCache();
             $module = \Module::findByAlias($alias);
-            if (! $module) {
+            if (!$module) {
                 $result['download_error'] = true;
             }
         }
@@ -531,6 +531,8 @@ class Module extends Model
                 'folder'    => '<strong>' . \Module::getPath() . '</strong>',
             ]);
         }
+
+        return $result;
     }
 
     public static function getErrorMessage($code, $result = null)
