@@ -315,6 +315,12 @@ class Thread extends Model
         // Cut out "collapse" class as it hides elements.
         $body = preg_replace("/(<[^<>\r\n]+class=([\"'][^\"']* |[\"']))(collapse|hidden)([\"' ])/", '$1$4', $body) ?: $body;
 
+        // Remove only the <!--[if !mso]><!--> and <!--<![endif]--> around the <a> tag
+        $body = preg_replace('/<!--\[if !mso\]><!-->(.*?)<!--<!\[endif\]-->/s', '$1', $body);
+        
+        // // Remove <!--[if !mso]><!--> and <!--<![endif]--> comments, preserving the data inside
+        // $body = preg_replace('/<!--\[if !?mso\]>|<!\[endif\]-->/s', '', $body);
+
         return \Helper::purifyHtml($body);
     }
 
