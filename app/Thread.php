@@ -319,6 +319,9 @@ class Thread extends Model
         // https://github.com/freescout-helpdesk/freescout/pull/3865#issuecomment-1990758149
         $body = preg_replace('/<!\-\-\[if !mso\]><!\-\->(.*?)<![ ]+\-\-<!\[endif\]\-\->/s', '$1', $body);
 
+        // // Remove <!--[if !mso]><!--> and <!--<![endif]--> comments, preserving the data inside
+        $body = preg_replace('/(<!\-\-\[if mso\]>|<!\[endif\]\-\->)/', '', $body);
+
         return \Helper::purifyHtml($body);
     }
 
