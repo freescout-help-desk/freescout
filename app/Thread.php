@@ -315,6 +315,10 @@ class Thread extends Model
         // Cut out "collapse" class as it hides elements.
         $body = preg_replace("/(<[^<>\r\n]+class=([\"'][^\"']* |[\"']))(collapse|hidden)([\"' ])/", '$1$4', $body) ?: $body;
 
+        // Remove only the <!--[if !mso]><!--> and <!--<![endif]--> around the elements.
+        // https://github.com/freescout-helpdesk/freescout/pull/3865#issuecomment-1990758149
+        $body = preg_replace('/<!\-\-\[if !mso\]><!\-\->(.*?)<![ ]+\-\-<!\[endif\]\-\->/s', '$1', $body);
+
         return \Helper::purifyHtml($body);
     }
 
