@@ -4530,7 +4530,9 @@ function editThread(button)
 				// Hide all elements in thread container.
 				thread_container.children().hide();
 				thread_container.prepend(response.html);
-				summernoteInit(thread_container.find('.thread-editor:first'));
+				summernoteInit(thread_container.find('.thread-editor:first'), {
+					toolbar: fs_conv_editor_toolbar
+				});
 
 				thread_container.children().find('.thread-editor-cancel:first').click(function(e) {
 					cancelThreadEdit(e.target);
