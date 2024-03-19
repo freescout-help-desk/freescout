@@ -550,6 +550,17 @@ class Helper
         return $text;
     }
 
+    public static function stripDangerousTags($html)
+    {
+        $tags = ['script', 'form', 'iframe'];
+
+        foreach ($tags as $tag) {
+            $html = preg_replace('#<'.$tag.'(.*?)>(.*?)</'.$tag.'>#is', '', $html ?? '');
+        }
+
+        return $html;
+    }
+
     /**
      * Get preview of the text in a plain form.
      */
