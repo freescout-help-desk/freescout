@@ -718,6 +718,24 @@ class MailboxesController extends Controller
                         }
 
                         if (count($response['folders'])) {
+
+                            // Exclude duplicate INBOX.Name and Name folders.
+                            $folder_excluded = false;
+                            foreach ($response['folders'] as $i => $folder_name) {
+                                if (\Str::startsWith($folder_name, 'INBOX.')) {
+                                    foreach ($response['folders'] as $folder_name2) {
+                                        if ($folder_name != $folder_name2 && $folder_name == 'INBOX.'.$folder_name2) {
+                                            unset($response['folders'][$i]);
+                                            $folder_excluded = true;
+                                            continue 2;
+                                        }
+                                    }
+                                }
+                            }
+                            if ($folder_excluded) {
+                                $response['folders'] = array_values($response['folders']);
+                            }
+
                             $response['msg_success'] = __('IMAP folders retrieved: '.implode(', ', $response['folders']));
                         } else {
                             $response['msg_success'] = __('Connected, but no IMAP folders found');

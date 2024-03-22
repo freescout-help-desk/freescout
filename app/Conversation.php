@@ -1152,9 +1152,12 @@ class Conversation extends Model
      */
     public function getSignatureProcessed($data = [], $escape = false)
     {
-        $replaced_text = $this->replaceTextVars( $this->mailbox->signature, $data, $escape );
+        $replaced_text = $this->replaceTextVars($this->mailbox->signature, $data, $escape);
 
-        return \Eventy::filter( 'conversation.signature_processed', $replaced_text, $this, $data, $escape );
+        // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-fffc-phh8-5h4v
+        $replaced_text = \Helper::stripDangerousTags($replaced_text);
+
+        return \Eventy::filter('conversation.signature_processed', $replaced_text, $this, $data, $escape);
     }
 
     /**

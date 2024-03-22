@@ -78,23 +78,33 @@ if (!empty($_POST)) {
 
     $php_path = 'php';
     if (!empty($_POST['php_path'])) {
-        $php_path = $_POST['php_path'];
+        $php_path = trim($_POST['php_path']);
+
+        // Sanitize path.
+        // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-7p9x-ch4c-vqj9
+        if (!file_exists($php_path)) {
+            $php_path = 'php';
+        }
+        $php_path = preg_replace("#[ ;\|]#", '', $php_path);
+        if (!$php_path) {
+            $php_path = 'php';
+        }
     }
 
     if (trim($app_key) != trim(getAppKey($root_dir))) {
         $errors['app_key'] = 'Invalid App Key';
     } else {
-        $cc_output = clearCache($root_dir, $php_path);
-        if ($_POST['action'] == 'cc') {
+        if (!function_exists('shell_exec')) {
             $alerts[] = [
-                'type' => 'success',
-                'text' => 'Cache cleared: <br/><pre>'.htmlspecialchars($cc_output).'</pre>',
+                'type' => 'danger',
+                'text' => '<code>shell_exec</code> function is unavailable. Can not run updating.',
             ];
         } else {
-            if (!function_exists('shell_exec')) {
+            $cc_output = clearCache($root_dir, $php_path);
+            if ($_POST['action'] == 'cc') {
                 $alerts[] = [
-                    'type' => 'danger',
-                    'text' => '<code>shell_exec</code> function is unavailable. Can not run updating.',
+                    'type' => 'success',
+                    'text' => 'Cache cleared: <br/><pre>'.htmlspecialchars($cc_output).'</pre>',
                 ];
             } else {
                 try {

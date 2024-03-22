@@ -272,9 +272,10 @@ class HTMLPurifier_Lexer
      */
     protected static function removeIEConditional($string)
     {
+        // https://github.com/freescout-helpdesk/freescout/issues/3894
         return preg_replace(
-            '#<!--\[if [^>]+\]>.*?<!\[endif\]-->#si', // probably should generalize for all strings
-            '',
+            '#<!--\[if [^>]+\]>(.*?)<!\[endif\]-->#si', // probably should generalize for all strings
+            '$1',
             $string
         );
     }

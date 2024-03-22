@@ -110,11 +110,15 @@ class Kernel extends ConsoleKernel
 
             // The name of the command here must be exactly the same as below!
             // Otherwise long fetching will be killed and won't run longer than 1 mintue.
-            $mutex_name = $schedule->command($fetch_command_name)
-                ->skip(function () {
-                    return true;
-                })
-                ->mutexName();
+            // $schedule->command() creates a new mutex, so we need to store mutex name in cache.
+            // $mutex_name = $schedule->command($fetch_command_name)
+            //     ->everyMinute() - this also need to be set
+            //     ->skip(function () {
+            //         return true;
+            //     })
+            //     ->mutexName();
+
+            $mutex_name = \Cache::get('fetch_mutex_name') ?? '';
 
             // If there is no cache mutext but there are running fetch commands 
             // it means the mutex had expired after self::FETCH_MAX_EXECUTION_TIME
@@ -166,6 +170,7 @@ class Kernel extends ConsoleKernel
                 $fetch_command->everyMinute();
                 break;
         }
+        \Cache::put('fetch_mutex_name', $fetch_command->mutexName(), self::FETCH_MAX_EXECUTION_TIME);
 
         $schedule = \Eventy::filter('schedule', $schedule);
 
