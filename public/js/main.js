@@ -4816,7 +4816,10 @@ function converstationBulkActionsInit()
 
 				var user_id = $(this).data('user_id');
 
-				var conv_ids = getSelectedConversations(checkboxes);
+				// We should pass empty "checkboxes" parameter
+				// to avoid selected conversations list being empty
+				// after sorting conversations.
+				var conv_ids = getSelectedConversations();
 
 				fsAjax(
 					{
@@ -4840,7 +4843,10 @@ function converstationBulkActionsInit()
 			$(".conv-status li > a", bulk_buttons).click(function(e) {
 				var status = $(this).data('status');
 
-				var conv_ids = getSelectedConversations(checkboxes);
+				// We should pass empty "checkboxes" parameter
+				// to avoid selected conversations list being empty
+				// after sorting conversations.
+				var conv_ids = getSelectedConversations();
 
 				fsAjax(
 					{
@@ -4868,7 +4874,10 @@ function converstationBulkActionsInit()
 						modal.children().find('.delete-conversation-ok:first').click(function(e) {
 							modal.modal('hide');
 
-							var conv_ids = getSelectedConversations(checkboxes);
+							// We should pass empty "checkboxes" parameter
+							// to avoid selected conversations list being empty
+							// after sorting conversations.
+							var conv_ids = getSelectedConversations();
 
 							fsAjax(
 								{
