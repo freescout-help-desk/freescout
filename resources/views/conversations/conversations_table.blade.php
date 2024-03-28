@@ -64,9 +64,9 @@
         $col_counter = 6;
     @endphp
 
-    @if (!request()->get('page'))
+    {{--@if (!request()->get('page'))--}}
         @include('/conversations/partials/bulk_actions')
-    @endif
+    {{--@endif--}}
 
     <table class="table-conversations table @if (!empty($params['show_mailbox']))show-mailbox @endif" data-page="{{ (int)request()->get('page', 1) }}" @foreach ($params as $param_name => $param_value) data-param_{{ $param_name }}="{{ $param_value }}" @endforeach @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif @foreach ($sorting as $sorting_name => $sorting_value) data-sorting_{{ $sorting_name }}="{{ $sorting_value }}" @endforeach >
         <colgroup>

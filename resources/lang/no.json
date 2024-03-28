@@ -39,7 +39,7 @@
     ":person marked as :status_name conversation #:conversation_number": ":person merket samtale #:conversation_number som :status_name",
     ":person merged into conversation #:conversation_number": ":person fusjonerte inn i samtale #:conversation_number",
     ":person merged with another conversation": ":person fusjonerte med en annen samtale",
-    ":person moved conversation from another mailbox": ":person flyttet samtale fra en annen innboks",  
+    ":person moved conversation from another mailbox": ":person flyttet samtale fra en annen innboks",
     ":person replied": ":person svarte",
     ":person replied to conversation": ":person svarte på samtalen",
     ":person replied to conversation #:conversation_number": ":person svarte på samtale #:conversation_number",

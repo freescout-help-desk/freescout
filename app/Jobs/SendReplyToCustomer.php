@@ -367,7 +367,13 @@ class SendReplyToCustomer implements ShouldQueue
                 
                 $client->connect();
 
-                $envelope['from'] = $mailbox->getMailFrom(null, $this->conversation)['address'];
+                $mail_from = $mailbox->getMailFrom(null, $this->conversation);
+
+                if (!empty($mail_from['name'])) {
+                    $envelope['from'] = '"'.$mail_from['name'].'" <'.$mail_from['address'].'>';
+                } else {
+                    $envelope['from'] = $mail_from['address'];
+                }
                 $envelope['to'] = $this->customer_email;
                 $envelope['subject'] = $subject;
                 $envelope['date'] = now()->toRfc2822String();

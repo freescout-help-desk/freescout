@@ -4807,95 +4807,108 @@ function converstationBulkActionsInit()
 			}
 		});
 
-		// Change conversation assignee
-		$(".conv-user li > a", bulk_buttons).click(function(e) {
-			if ($(this).hasClass('disabled')) {
-				return;
-			}
-
-			var user_id = $(this).data('user_id');
-
-			var conv_ids = getSelectedConversations(checkboxes);
-
-			fsAjax(
-				{
-					action: 'bulk_conversation_change_user',
-					conversation_id: conv_ids,
-					user_id: user_id
-				},
-				laroute.route('conversations.ajax'),
-				function(response) {
-					if (isAjaxSuccess(response)) {
-						location.reload();
-					} else {
-						showAjaxError(response);
-					}
-				}, true
-			);
-			e.preventDefault();
-		});
-
-		// Change conversation status
-		$(".conv-status li > a", bulk_buttons).click(function(e) {
-			var status = $(this).data('status');
-
-			var conv_ids = getSelectedConversations(checkboxes);
-
-			fsAjax(
-				{
-					action: 'bulk_conversation_change_status',
-					conversation_id: conv_ids,
-					status: status
-				},
-				laroute.route('conversations.ajax'),
-				function(response) {
-					if (isAjaxSuccess(response)) {
-						location.reload();
-					} else {
-						showAjaxError(response);
-					}
-				}, true
-			);
-			e.preventDefault();
-		});
-
-		// Delete conversation
-		$(".conv-delete", bulk_buttons).click(function(e) {
-
-			showModalDialog('#conversations-bulk-actions-delete-modal', {
-				on_show: function(modal) {
-					modal.children().find('.delete-conversation-ok:first').click(function(e) {
-						modal.modal('hide');
-
-						var conv_ids = getSelectedConversations(checkboxes);
-
-						fsAjax(
-							{
-								action: 'bulk_delete_conversation',
-								conversation_id: conv_ids,
-							},
-							laroute.route('conversations.ajax'),
-							function(response) {
-								if (isAjaxSuccess(response)) {
-									location.reload();
-								} else {
-									showAjaxError(response);
-								}
-							}, true
-						);
-						e.preventDefault();
-					});
+		if (!bulk_buttons.attr('data-initialized')) {
+			// Change conversation assignee
+			$(".conv-user li > a", bulk_buttons).click(function(e) {
+				if ($(this).hasClass('disabled')) {
+					return;
 				}
-			});
-			e.preventDefault();
-		});
 
-		$('.conv-checkbox-clear', bulk_buttons).click(function(e) {
-			$(checkboxes).trigger('change');
-			$(checkboxes).prop('checked', false);
-			$(checkboxes).trigger('change');
-			$('table.table-conversations tr').removeClass('selected');
-		});
+				var user_id = $(this).data('user_id');
+
+				// We should pass empty "checkboxes" parameter
+				// to avoid selected conversations list being empty
+				// after sorting conversations.
+				var conv_ids = getSelectedConversations();
+
+				fsAjax(
+					{
+						action: 'bulk_conversation_change_user',
+						conversation_id: conv_ids,
+						user_id: user_id
+					},
+					laroute.route('conversations.ajax'),
+					function(response) {
+						if (isAjaxSuccess(response)) {
+							location.reload();
+						} else {
+							showAjaxError(response);
+						}
+					}, true
+				);
+				e.preventDefault();
+			});
+
+			// Change conversation status
+			$(".conv-status li > a", bulk_buttons).click(function(e) {
+				var status = $(this).data('status');
+
+				// We should pass empty "checkboxes" parameter
+				// to avoid selected conversations list being empty
+				// after sorting conversations.
+				var conv_ids = getSelectedConversations();
+
+				fsAjax(
+					{
+						action: 'bulk_conversation_change_status',
+						conversation_id: conv_ids,
+						status: status
+					},
+					laroute.route('conversations.ajax'),
+					function(response) {
+						if (isAjaxSuccess(response)) {
+							location.reload();
+						} else {
+							showAjaxError(response);
+						}
+					}, true
+				);
+				e.preventDefault();
+			});
+
+			// Delete conversation
+			$(".conv-delete", bulk_buttons).click(function(e) {
+
+				showModalDialog('#conversations-bulk-actions-delete-modal', {
+					on_show: function(modal) {
+						modal.children().find('.delete-conversation-ok:first').click(function(e) {
+							modal.modal('hide');
+
+							// We should pass empty "checkboxes" parameter
+							// to avoid selected conversations list being empty
+							// after sorting conversations.
+							var conv_ids = getSelectedConversations();
+
+							fsAjax(
+								{
+									action: 'bulk_delete_conversation',
+									conversation_id: conv_ids,
+								},
+								laroute.route('conversations.ajax'),
+								function(response) {
+									if (isAjaxSuccess(response)) {
+										location.reload();
+									} else {
+										showAjaxError(response);
+									}
+								}, true
+							);
+							e.preventDefault();
+						});
+					}
+				});
+				e.preventDefault();
+			});
+
+			$('.conv-checkbox-clear', bulk_buttons).click(function(e) {
+				$(checkboxes).trigger('change');
+				$(checkboxes).prop('checked', false);
+				$(checkboxes).trigger('change');
+				$('table.table-conversations tr').removeClass('selected');
+			});
+
+			bulk_buttons.attr('data-initialized', '1');
+		}
 
 		$('.toggle-all:checkbox').on('click', function () {
 			$('.conv-checkbox:checkbox').prop('checked', this.checked).trigger('change');
