@@ -57,11 +57,13 @@ class Conversation extends Model
     const TYPE_EMAIL = 1;
     const TYPE_PHONE = 2;
     const TYPE_CHAT = 3;
+    const TYPE_CUSTOM = 4;
 
     public static $types = [
         self::TYPE_EMAIL => 'email',
         self::TYPE_PHONE => 'phone',
         self::TYPE_CHAT  => 'chat',
+        self::TYPE_CUSTOM => 'custom',
     ];
 
     /**
@@ -1680,6 +1682,14 @@ class Conversation extends Model
     public function isPhone()
     {
         return ($this->type == self::TYPE_PHONE);
+    }
+
+    /**
+     * Is it as custom conversation.
+     */
+    public function isCustom()
+    {
+        return ($this->type == self::TYPE_CUSTOM);
     }
 
     /**
