@@ -1430,10 +1430,11 @@ function initConversation()
 // Create new email conversation
 function switchToNewEmailConversation()
 {
+    $('.conv-switch-button').removeClass('active');
 	$('#email-conv-switch').addClass('active');
-	$('#phone-conv-switch').removeClass('active');
 	$('.email-conv-fields').show();
 	$('.phone-conv-fields').hide();
+    $('.custom-conv-fields').hide();
 	$('#field-to').show();
 	$('#name').addClass('parsley-exclude');
 	$('#to').removeClass('parsley-exclude');
@@ -1447,8 +1448,9 @@ function switchToNewEmailConversation()
 // Create new phone conversation
 function switchToNewPhoneConversation()
 {
-	$('#email-conv-switch').removeClass('active');
+    $('.conv-switch-button').removeClass('active');
 	$('#phone-conv-switch').addClass('active');
+    $('.custom-conv-fields').hide();
 	$('.email-conv-fields').hide();
 	$('.phone-conv-fields').show();
 

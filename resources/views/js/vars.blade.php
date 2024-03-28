@@ -12,6 +12,7 @@ var Vars = {
     public_url: '{{ config('app.url') }}',
     subtype_forward: '{{ \App\Thread::SUBTYPE_FORWARD }}',
     conv_type_phone: '{{ \App\Conversation::TYPE_PHONE }}'
+    conv_type_custom: '{{ \App\Conversation::TYPE_CUSTOM }}',
 };
 
 {{--

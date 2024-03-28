@@ -28,10 +28,12 @@
 
                 <div class="conv-actions">
                     {{-- There should be no spaces between buttons --}}
-                    @if (!$conversation->isPhone() || ($customer && $customer->getMainEmail()))
+                    @if ((!$conversation->isPhone() || ($customer && $customer->getMainEmail())) && Eventy::filter('conversation.reply_button.enabled', true, $conversation) )
                         <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}" aria-label="{{ __("Reply") }}" role="button"></span>
                     @endif
-                    <span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" aria-label="{{ __("Note") }}" role="button"></span>
+                    @if (Eventy::filter('conversation.note_button.enabled', true, $conversation))
+                        <span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" aria-label="{{ __("Note") }}" role="button"></span>
+                    @endif
                     @if (Auth::user()->can('delete', $conversation))
                         @if ($conversation->state != App\Conversation::STATE_DELETED)
                             <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete") }}" aria-label="{{ __("Delete") }}" role="button"></span>
@@ -288,9 +290,11 @@
 
         <div id="conv-layout-customer">
             @include('conversations/partials/customer_sidebar')
+            @action('conversation.after_customer_sidebar', $conversation)
         </div>
         <div id="conv-layout-main">
             @include('conversations/partials/threads')
+            @action('conversation.after_threads', $conversation)
         </div>
     </div>
 @endsection
