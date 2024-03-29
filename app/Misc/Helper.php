@@ -816,6 +816,21 @@ class Helper
         \Log::error($prefix.self::formatException($e));
     }
 
+    public static function encrypt($value, $password = null)
+    {
+        try {
+            if (!$password) {
+                $value = encrypt($value);
+            } else {
+                $value = (new \Illuminate\Encryption\Encrypter(md5($password)))->encrypt($value);
+            }
+        } catch (\Exception $e) {
+            // Do nothing.
+        }
+
+        return $value;
+    }
+
     /**
      * Safely decrypt.
      *
@@ -823,10 +838,14 @@ class Helper
      *
      * @return [type] [description]
      */
-    public static function decrypt($value)
+    public static function decrypt($value, $password = null)
     {
         try {
-            $value = decrypt($value);
+            if (!$password) {
+                $value = decrypt($value);
+            } else {
+                $value = (new \Illuminate\Encryption\Encrypter(md5($password)))->decrypt($value);
+            }
         } catch (\Exception $e) {
             // Do nothing.
         }
