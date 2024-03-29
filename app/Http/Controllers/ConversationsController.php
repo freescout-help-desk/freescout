@@ -3152,7 +3152,12 @@ class ConversationsController extends Controller
     public function decodeAttachmentsIds($attachments_list)
     {
         foreach ($attachments_list as $i => $attachment_id) {
-            $attachments_list[$i] = \Helper::decrypt($attachment_id);
+            $attachment_id_decrypted = \Helper::decrypt($attachment_id);
+            if ($attachment_id_decrypted == $attachment_id) {
+                unset($attachments_list[$i]);
+            } else {
+                $attachments_list[$i] = $attachment_id_decrypted;
+            }
         }
 
         return $attachments_list;
