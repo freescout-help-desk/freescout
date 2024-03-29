@@ -1697,7 +1697,7 @@ class ConversationsController extends Controller
                     $attachments = [];
                     foreach ($thread->attachments as $attachment) {
                         $attachments[] = [
-                            'id'   => $attachment->id,
+                            'id'   => encrypt($attachment->id),
                             'name' => $attachment->file_name,
                             'size' => $attachment->size,
                             'url'  => $attachment->url(),
@@ -2774,7 +2774,7 @@ class ConversationsController extends Controller
             if ($attachment) {
                 $response['status'] = 'success';
                 $response['url'] = $attachment->url();
-                $response['attachment_id'] = $attachment->id;
+                $response['attachment_id'] = encrypt($attachment->id);
             } else {
                 $response['msg'] = __('Error occurred uploading file');
             }
@@ -3126,17 +3126,20 @@ class ConversationsController extends Controller
         $attachments = [];
         if (!empty($request->attachments_all)) {
             $embeds = [];
+            $attachments_all = $this->decodeAttachmentsIds($request->attachments_all);
             if (!empty($request->attachments)) {
-                $attachments = $request->attachments;
+                $attachments = $this->decodeAttachmentsIds($request->attachments);
             }
             if (!empty($request->embeds)) {
-                $embeds = $request->embeds;
+                $embeds = $this->decodeAttachmentsIds($request->embeds);
             }
-            if (count($attachments) != count($embeds)) {
+            $attachments_to_remove = array_diff($attachments_all, $attachments);
+            $attachments_to_remove = array_diff($attachments_to_remove, $embeds);
+            if (count($attachments) 
+                && count($attachments) != count($embeds)
+            ) {
                 $has_attachments = true;
             }
-            $attachments_to_remove = array_diff($request->attachments_all, $attachments);
-            $attachments_to_remove = array_diff($attachments_to_remove, $embeds);
             Attachment::deleteByIds($attachments_to_remove);
         }
 
@@ -3144,6 +3147,15 @@ class ConversationsController extends Controller
             'has_attachments' => $has_attachments,
             'attachments'     => $attachments,
         ];
+    }
+
+    public function decodeAttachmentsIds($attachments_list)
+    {
+        foreach ($attachments_list as $i => $attachment_id) {
+            $attachments_list[$i] = \Helper::decrypt($attachment_id);
+        }
+
+        return $attachments_list;
     }
 
     /**
