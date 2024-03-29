@@ -1556,6 +1556,9 @@ table.table-conversations td.conv-attachment {
 .table-conversations .glyphicon-earphone {
     color: #93a1af;
 }
+.table-conversations .glyphicon-comment {
+    color: #93a1af;
+}
 .table-pager {
     float: right;
 }
@@ -2432,6 +2435,9 @@ button.conv-checkbox-clear {
     margin-bottom: 10px;
 }
 .phone-conv-fields {
+    display: none;
+}
+.custom-conv-fields{
     display: none;
 }
 .toggle-field {

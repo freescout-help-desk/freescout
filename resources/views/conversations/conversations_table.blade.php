@@ -184,6 +184,9 @@
                                 @if ($conversation->isPhone())
                                     <i class="glyphicon glyphicon-earphone"></i>
                                 @endif
+                                @if ($conversation->isCustom())
+                                    <i class="glyphicon glyphicon-comment"></i>
+                                @endif
                                 @include('conversations/partials/badges'){{ '' }}@if ($conversation->isChat() && $conversation->getChannelName())<span class="fs-tag pull-left"><span class="fs-tag-name"><small class="glyphicon glyphicon-phone"></small> {{ $conversation->getChannelName() }}</span></span>@endif{{ '' }}@action('conversations_table.before_subject', $conversation){{ $conversation->getSubject() }}@action('conversations_table.after_subject', $conversation)
                             </p>
                             <p class="conv-preview">@action('conversations_table.preview_prepend', $conversation)@if (!empty($params['show_mailbox']))[{{ $conversation->mailbox_cached->name }}]<br/>@endif{{ '' }}@if ($conversation->preview){{ $conversation->preview }}@else&nbsp;@endif</p>

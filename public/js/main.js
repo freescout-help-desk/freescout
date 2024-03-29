@@ -1430,10 +1430,11 @@ function initConversation()
 // Create new email conversation
 function switchToNewEmailConversation()
 {
+    $('.conv-switch-button').removeClass('active');
 	$('#email-conv-switch').addClass('active');
-	$('#phone-conv-switch').removeClass('active');
 	$('.email-conv-fields').show();
 	$('.phone-conv-fields').hide();
+    $('.custom-conv-fields').hide();
 	$('#field-to').show();
 	$('#name').addClass('parsley-exclude');
 	$('#to').removeClass('parsley-exclude');
@@ -1447,8 +1448,9 @@ function switchToNewEmailConversation()
 // Create new phone conversation
 function switchToNewPhoneConversation()
 {
-	$('#email-conv-switch').removeClass('active');
+    $('.conv-switch-button').removeClass('active');
 	$('#phone-conv-switch').addClass('active');
+    $('.custom-conv-fields').hide();
 	$('.email-conv-fields').hide();
 	$('.phone-conv-fields').show();
 
@@ -4816,7 +4818,10 @@ function converstationBulkActionsInit()
 
 				var user_id = $(this).data('user_id');
 
-				var conv_ids = getSelectedConversations(checkboxes);
+				// We should pass empty "checkboxes" parameter
+				// to avoid selected conversations list being empty
+				// after sorting conversations.
+				var conv_ids = getSelectedConversations();
 
 				fsAjax(
 					{
@@ -4840,7 +4845,10 @@ function converstationBulkActionsInit()
 			$(".conv-status li > a", bulk_buttons).click(function(e) {
 				var status = $(this).data('status');
 
-				var conv_ids = getSelectedConversations(checkboxes);
+				// We should pass empty "checkboxes" parameter
+				// to avoid selected conversations list being empty
+				// after sorting conversations.
+				var conv_ids = getSelectedConversations();
 
 				fsAjax(
 					{
@@ -4868,7 +4876,10 @@ function converstationBulkActionsInit()
 						modal.children().find('.delete-conversation-ok:first').click(function(e) {
 							modal.modal('hide');
 
-							var conv_ids = getSelectedConversations(checkboxes);
+							// We should pass empty "checkboxes" parameter
+							// to avoid selected conversations list being empty
+							// after sorting conversations.
+							var conv_ids = getSelectedConversations();
 
 							fsAjax(
 								{

@@ -716,6 +716,11 @@ class ConversationsController extends Controller
                     $is_phone = true;
                 }
 
+                $is_custom = false;
+                if ($type == Conversation::TYPE_CUSTOM) {
+                    $is_custom = true;
+                }
+
                 $is_create = false;
                 if (!empty($request->is_create)) {
                     //if ($new || ($from_draft && $conversation->threads_count == 1)) {
@@ -735,7 +740,7 @@ class ConversationsController extends Controller
                 // If reply is being created from draft, there is already thread created
                 $thread = null;
                 $from_draft = false;
-                if ((!$is_note || $is_phone) && !$response['msg'] && !empty($request->thread_id)) {
+                if (( ! $is_note || $is_phone || $is_custom ) && ! $response['msg'] && ! empty($request->thread_id)) {
                     $thread = Thread::find($request->thread_id);
                     if ($thread && (!$conversation || $thread->conversation_id != $conversation->id)) {
                         $response['msg'] = __('Incorrect thread');
@@ -761,7 +766,7 @@ class ConversationsController extends Controller
                                 'cc'       => 'nullable|array',
                                 'bcc'      => 'nullable|array',
                             ]);
-                        } else {
+                        } elseif ($type === Conversation::TYPE_PHONE) {
                             // Phone conversation.
                             $validator = Validator::make($request->all(), [
                                 'name'     => 'required|string',
@@ -770,6 +775,13 @@ class ConversationsController extends Controller
                                 'phone'    => 'nullable|string',
                                 'to_email' => 'nullable|string',
                             ]);
+                        } elseif ($type === Conversation::TYPE_CUSTOM) {
+                            $validation_rules = \Eventy::filter('conversation.custom.validation_rules', [
+                                'body' => 'required|string',
+                                'cc'   => 'nullable|array',
+                                'bcc'  => 'nullable|array',
+                            ], $request);
+                            $validator        = Validator::make($request->all(), $validation_rules);
                         }
                     } else {
                         $validator = Validator::make($request->all(), [
@@ -803,7 +815,7 @@ class ConversationsController extends Controller
                     $to_array = Conversation::sanitizeEmails($request->to);
                 }
                 // Check To
-                if (!$response['msg'] && $new && !$is_phone) {
+                if (! $response['msg'] && $new && ! $is_phone && ! $is_custom) {
                     if (!$to_array) {
                         $response['msg'] .= __('Incorrect recipients');
                     }
@@ -904,14 +916,16 @@ class ConversationsController extends Controller
 
                         $customer_email = $phone_customer_data['customer_email'];
                         $customer = $phone_customer_data['customer'];
-                        if (!$conversation->customer_id) {
+                        if (! $conversation->customer_id) {
                             $conversation->customer_id = $customer->id;
                         }
+                    } elseif ($is_custom) {
+                        // No customer for custom conversations.
                     } else {
                         // Email or reply to a phone conversation.
                         if (!empty($to_array)) {
                             $customer_email = $to_array[0];
-                        } elseif (!$conversation->customer_email 
+                        } elseif (!$conversation->customer_email
                             && ($conversation->isEmail() || $conversation->isPhone())
                             && $conversation->customer_id
                             && $conversation->customer
@@ -1059,7 +1073,9 @@ class ConversationsController extends Controller
                     $thread->user_id = $conversation->user_id;
                     $thread->status = $request_status ?? $conversation->status;
                     $thread->state = Thread::STATE_PUBLISHED;
-                    $thread->customer_id = $customer->id;
+                    if (!$is_custom) {
+                        $thread->customer_id = $customer->id;
+                    }
                     $thread->created_by_user_id = auth()->user()->id;
                     $thread->edited_by_user_id = null;
                     $thread->edited_at = null;
@@ -1321,6 +1337,14 @@ class ConversationsController extends Controller
                             $flash_text = __(':%tag_start%Conversation created:%tag_end% :%view_start%View:%a_end% or :%undo_start%Undo:%a_end%', $flash_vars);
                         } else {
                             $flash_text = '<strong>'.__('Conversation created').'</strong>';
+                        }
+                    } elseif ($is_custom) {
+                        $flash_type = 'warning';
+                        $identifier = \Eventy::filter('conversation.custom.identifier', __('Custom conversation'), $request);
+                        if ($show_view_link) {
+                            $flash_text = __(':%tag_start%' . $identifier . ' added:%tag_end% :%view_start%View:%a_end%', $flash_vars);
+                        } else {
+                            $flash_text = '<strong>'.__('%identifier% added',['%identifier%'=>$identifier]).'</strong>';
                         }
                     } elseif ($is_note) {
                         $flash_type = 'warning';
