@@ -31,7 +31,7 @@ class FetchEmails extends Command
      *
      * @var string
      */
-    protected $signature = 'freescout:fetch-emails {--days=3} {--unseen=1} {--identifier=dummy}';
+    protected $signature = 'freescout:fetch-emails {--days=3} {--unseen=1} {--identifier=dummy} {--mailboxes=0}';
 
     /**
      * The console command description.
@@ -97,8 +97,22 @@ class FetchEmails extends Command
         // Microseconds: 1 second = 1 000 000 microseconds.
         $sleep = 20000;
 
+        // Fetches specific mailboxes only, in case the corresponding id is greater than zero.
+        $mailboxIds = array_filter(
+            array_map(
+                'intval',
+                explode(',', $this->option('mailboxes'))
+            ),
+            function ($mailboxId) {
+                return $mailboxId > 0;
+            }
+        );
+
         foreach ($this->mailboxes as $mailbox) {
             if (!$mailbox->isInActive()) {
+                continue;
+            }
+            if ($mailboxIds !== [] && !in_array($mailbox->id, $mailboxIds, true)) {
                 continue;
             }
 
