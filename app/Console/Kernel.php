@@ -100,8 +100,11 @@ class Kernel extends ConsoleKernel
             }
         }
 
+        $fetch_unseen = (int)config('app.fetch_unseen');
         $fetch_command_identifier = \Helper::getWorkerIdentifier('freescout:fetch-emails');
-        $fetch_command_name = 'freescout:fetch-emails --identifier='.$fetch_command_identifier;
+        $fetch_command_name = 'freescout:fetch-emails'
+            . ' --identifier='.$fetch_command_identifier
+            . ' --unseen='.$fetch_unseen;
 
         // Kill fetch commands running for too long.
         // In shedule:run this code is executed every time $schedule->command() in this function is executed.
