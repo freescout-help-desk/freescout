@@ -406,7 +406,12 @@ class SendReplyToCustomer implements ShouldQueue
                 if ($this->last_thread->has_attachments) {
                     $multipart = [];
                     $multipart["type"] = TYPEMULTIPART;
-                    $multipart["subtype"] = "alternative";
+                    if ($this->last_thread->has_attachments) {
+                        // https://github.com/freescout-helpdesk/freescout/issues/3934
+                        $multipart["subtype"] = "mixed";
+                    } else {
+                        $multipart["subtype"] = "alternative";
+                    }
                     $parts[] = $multipart;
                 }
 
