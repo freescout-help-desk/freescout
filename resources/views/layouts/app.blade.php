@@ -87,6 +87,7 @@
                                     </ul>
                                 </li>
                             @endif
+                            @action('menu.after_mailboxes')
                             @if (Auth::user()->isAdmin()
                                 || Auth::user()->hasPermission(App\User::PERM_EDIT_USERS)
                                 || Auth::user()->can('viewMailboxMenu', Auth::user())
