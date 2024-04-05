@@ -367,14 +367,18 @@ class SendReplyToCustomer implements ShouldQueue
                 
                 $client->connect();
 
-                $mail_from = $mailbox->getMailFrom(null, $this->conversation);
+                $mail_from = $mailbox->getMailFrom($this->last_thread->created_by_user ?? null, $this->conversation);
 
                 if (!empty($mail_from['name'])) {
                     $envelope['from'] = '"'.$mail_from['name'].'" <'.$mail_from['address'].'>';
                 } else {
                     $envelope['from'] = $mail_from['address'];
                 }
-                $envelope['to'] = $this->customer_email;
+                if (is_array($to) && !empty($to[0]) && !empty($to[0]['name']) && !empty($to[0]['email'])) {
+                    $envelope['to'] = '"'.$to[0]['name'].'" <'.$to[0]['email'].'>';
+                } else {
+                    $envelope['to'] = $this->customer_email;
+                }
                 $envelope['subject'] = $subject;
                 $envelope['date'] = now()->toRfc2822String();
                 $envelope['message_id'] = $this->message_id;
@@ -402,7 +406,9 @@ class SendReplyToCustomer implements ShouldQueue
                 if ($this->last_thread->has_attachments) {
                     $multipart = [];
                     $multipart["type"] = TYPEMULTIPART;
-                    $multipart["subtype"] = "alternative";
+                    $multipart["subtype"] = "mixed";
+                    // https://github.com/freescout-helpdesk/freescout/issues/3934
+                    //$multipart["subtype"] = "alternative";
                     $parts[] = $multipart;
                 }
 

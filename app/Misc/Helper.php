@@ -2070,7 +2070,7 @@ class Helper
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, config('app.curl_ssl_verifypeer'));        
     }
 
-    public static function setGuzzleDefaultOptions($params)
+    public static function setGuzzleDefaultOptions($params = [])
     {
         $default_params = [
             'timeout' => config('app.curl_timeout'),

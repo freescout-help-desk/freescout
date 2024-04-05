@@ -823,6 +823,7 @@ class ConversationsController extends Controller
 
                 // Check max. message size.
                 if (!$response['msg']) {
+
                     $max_message_size = (int)config('app.max_message_size');
                     if ($max_message_size) {
                         // Todo: take into account conversation history.
@@ -830,6 +831,7 @@ class ConversationsController extends Controller
 
                         // Calculate attachments size.
                         $attachments_ids = array_merge($request->attachments ?? [], $request->embeds ?? []);
+                        $attachments_ids = $this->decodeAttachmentsIds($attachments_ids);
 
                         if (count($attachments_ids)) {
                             $attachments_to_check = Attachment::select('size')->whereIn('id', $attachments_ids)->get();
@@ -3152,7 +3154,12 @@ class ConversationsController extends Controller
     public function decodeAttachmentsIds($attachments_list)
     {
         foreach ($attachments_list as $i => $attachment_id) {
-            $attachments_list[$i] = \Helper::decrypt($attachment_id);
+            $attachment_id_decrypted = \Helper::decrypt($attachment_id);
+            if ($attachment_id_decrypted == $attachment_id) {
+                unset($attachments_list[$i]);
+            } else {
+                $attachments_list[$i] = $attachment_id_decrypted;
+            }
         }
 
         return $attachments_list;

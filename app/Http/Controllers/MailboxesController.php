@@ -719,22 +719,23 @@ class MailboxesController extends Controller
 
                         if (count($response['folders'])) {
 
+                            // https://github.com/freescout-helpdesk/freescout/issues/3933
                             // Exclude duplicate INBOX.Name and Name folders.
-                            $folder_excluded = false;
-                            foreach ($response['folders'] as $i => $folder_name) {
-                                if (\Str::startsWith($folder_name, 'INBOX.')) {
-                                    foreach ($response['folders'] as $folder_name2) {
-                                        if ($folder_name != $folder_name2 && $folder_name == 'INBOX.'.$folder_name2) {
-                                            unset($response['folders'][$i]);
-                                            $folder_excluded = true;
-                                            continue 2;
-                                        }
-                                    }
-                                }
-                            }
-                            if ($folder_excluded) {
-                                $response['folders'] = array_values($response['folders']);
-                            }
+                            // $folder_excluded = false;
+                            // foreach ($response['folders'] as $i => $folder_name) {
+                            //     if (\Str::startsWith($folder_name, 'INBOX.')) {
+                            //         foreach ($response['folders'] as $folder_name2) {
+                            //             if ($folder_name != $folder_name2 && $folder_name == 'INBOX.'.$folder_name2) {
+                            //                 unset($response['folders'][$i]);
+                            //                 $folder_excluded = true;
+                            //                 continue 2;
+                            //             }
+                            //         }
+                            //     }
+                            // }
+                            // if ($folder_excluded) {
+                            //     $response['folders'] = array_values($response['folders']);
+                            // }
 
                             $response['msg_success'] = __('IMAP folders retrieved: '.implode(', ', $response['folders']));
                         } else {
@@ -822,15 +823,15 @@ class MailboxesController extends Controller
     }
 
     // Recursively interate over folders.
-    public function interateFolders($response, $imap_folders) {
+    public function interateFolders($response, $imap_folders, $subfolder = false) {
         foreach ($imap_folders as $imap_folder) {
-            if (!empty($imap_folder->name)) {
+            if (!empty($imap_folder->name) && !$subfolder) {
                 $response['folders'][] = $imap_folder->name;
             }
 
             // Check for children and recurse.
             if (!empty($imap_folder->children)) {
-                $response = $this->interateFolders($response, $imap_folder->children);
+                $response = $this->interateFolders($response, $imap_folder->children, true);
             }
 
             // Old library.
