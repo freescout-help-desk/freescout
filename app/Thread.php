@@ -562,7 +562,7 @@ class Thread extends Model
     /**
      * Get user or customer who created the thead.
      */
-    public function getCreatedBy($dummy_if_empty = false)
+    public function getCreatedBy()
     {
         if (!empty($this->created_by_user_id)) {
             // User can be deleted
@@ -572,10 +572,11 @@ class Thread extends Model
                 return \App\User::getDeletedUser();
             }
         } else {
-            if ($this->created_by_customer || !$dummy_if_empty) {
+            // In some cases the created_by_customer can be empty.
+            if ($this->created_by_customer) {
                 return $this->created_by_customer;
             } else {
-                return (new \App\Customer());
+                return \App\Customer::getDummyCustomer();
             }
         }
     }

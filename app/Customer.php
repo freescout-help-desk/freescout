@@ -1537,5 +1537,17 @@ class Customer extends Model
             return $customers;
         }
     }
+
+    /**
+     * Get dummy customer.
+     */
+    public static function getDummyCustomer()
+    {
+        $customer = new self();
+        $customer->first_name = __('Customer');
+        $customer->last_name = '';
+
+        return $customer;
+    }
 }
 
