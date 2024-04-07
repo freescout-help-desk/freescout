@@ -68,14 +68,14 @@
 							            		{{ __('Received a new conversation') }}
 							            	@else
 								            	@if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED)
-			                                        {!! __(":person marked as :status conversation", ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>', 'status' => $thread->getStatusName()]) !!}
+			                                        {!! __(":person marked as :status conversation", ['person' => '<strong>'.$thread->getCreatedBy(true)->getFullName(true).'</strong>', 'status' => $thread->getStatusName()]) !!}
 			                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
 				                                    <strong>@include('emails/user/thread_by')</strong>  
 													{{ __("assigned to :person conversation", ['person' => $thread->getAssigneeName(false, $user)]) }}
 			                                    @elseif ($thread->type == App\Thread::TYPE_NOTE)
-			                                    	{!! __(":person added a note to conversation", ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>']) !!}
+			                                    	{!! __(":person added a note to conversation", ['person' => '<strong>'.$thread->getCreatedBy(true)->getFullName(true).'</strong>']) !!}
 			                                    @else
-			                                    	{!! __(":person replied to conversation", ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>']) !!}
+			                                    	{!! __(":person replied to conversation", ['person' => '<strong>'.$thread->getCreatedBy(true)->getFullName(true).'</strong>']) !!}
 			                                    @endif
 			                                @endif
 							            	<a href="{{ \Eventy::filter('email_notification.conv_url', $conversation->url(), $user) }}" style="color:#3f8abf; text-decoration:none;">#{{ $conversation->number }}</a></p>
@@ -97,7 +97,7 @@
 							                    <td height="10" bgcolor="{{ $conversation->getStatusColor() }}" style="color:#ffffff; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; line-height:12px; font-size:12px; margin-top: 3px;border-radius: 2px; {{--@if ($conversation->status == App\Conversation::STATUS_PENDING)border: 1px solid #ccc; color: #727d87;@endif--}}">{{ strtoupper($conversation->getStatusName()) }}</td>
 							                </tr>
 							            </table>
-							            @if ($conversation->user_id)
+							            @if ($conversation->user_id && $conversation->user)
 								            <table border="0" cellspacing="0" cellpadding="0">
 								                <tr>
 								                    <td style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; line-height:16px; font-size:12px; padding-top: 8px;text-align:right;">
@@ -152,7 +152,7 @@
 									                        <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; font-size:17px; line-height:22px; margin:0 0 2px 0; font-weight:normal;">
 																@if ($thread->type == App\Thread::TYPE_NOTE)
 																	<span style="color:#e6b216">
-																		{!! __(':person added a note', ['person' => '<strong style="color:#000000;">'.$thread->getCreatedBy()->getFullName(true).'</strong>']) !!}
+																		{!! __(':person added a note', ['person' => '<strong style="color:#000000;">'.$thread->getCreatedBy(true)->getFullName(true).'</strong>']) !!}
 																	</span>
 																@else
 																	@if ($thread->type == App\Thread::TYPE_MESSAGE)
@@ -173,7 +173,7 @@
 																			@php $trans_text = __(':person replied') @endphp
 																		@endif
 																		@php
-																			$trans_params = ['person' => '<strong style="color:#000000;">'.$thread->getCreatedBy()->getFullName(true).'</strong>'];
+																			$trans_params = ['person' => '<strong style="color:#000000;">'.$thread->getCreatedBy(true)->getFullName(true).'</strong>'];
 																			if ($thread->isForwarded()) {
 																				$trans_params['forward_parent_conversation_number'] = '<a href="'.route('conversations.view', ['id' => $thread->getMetaFw(App\Thread::META_FORWARD_PARENT_CONVERSATION_ID)]).'#thread-'.$thread->getMetaFw(App\Thread::META_FORWARD_PARENT_THREAD_ID).'">#'.$thread->getMetaFw(App\Thread::META_FORWARD_PARENT_CONVERSATION_NUMBER).'</a>';
 																			}
