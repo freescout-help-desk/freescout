@@ -274,8 +274,11 @@ class HTMLPurifier_Lexer
     {
         // https://github.com/freescout-helpdesk/freescout/issues/3894
         return preg_replace(
-            '#<!--\[if [^>]+\]>(.*?)<!\[endif\]-->#si', // probably should generalize for all strings
-            '$1',
+            // This change caused: https://github.com/freescout-helpdesk/freescout/issues/3907#issuecomment-2043126228
+            // '#<!--\[if [^>]+\]>(.*?)<!\[endif\]-->#si', // probably should generalize for all strings
+            // '$1',
+            '#<!--\[if [^>]+\]>.*?<!\[endif\]-->#si', // probably should generalize for all strings
+            '',
             $string
         );
     }
