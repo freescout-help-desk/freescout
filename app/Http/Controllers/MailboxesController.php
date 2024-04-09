@@ -715,6 +715,7 @@ class MailboxesController extends Controller
 
                         if (count($imap_folders)) {
                             $response = $this->interateFolders($response, $imap_folders);
+                            $response['folders'] = array_unique($response['folders']);
                         }
 
                         if (count($response['folders'])) {
@@ -837,9 +838,8 @@ class MailboxesController extends Controller
             // Old library.
             if (!empty($imap_folder->fullName)) {
                 $response['folders'][] = $imap_folder->fullName;
-            }
-            // New library.
-            if (!empty($imap_folder->full_name)) {
+            } elseif (!empty($imap_folder->full_name)) {
+                // New library.
                 $response['folders'][] = $imap_folder->full_name;
             }
         }

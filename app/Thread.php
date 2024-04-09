@@ -572,7 +572,12 @@ class Thread extends Model
                 return \App\User::getDeletedUser();
             }
         } else {
-            return $this->created_by_customer;
+            // In some cases the created_by_customer can be empty.
+            if ($this->created_by_customer) {
+                return $this->created_by_customer;
+            } else {
+                return \App\Customer::getDummyCustomer();
+            }
         }
     }
 
