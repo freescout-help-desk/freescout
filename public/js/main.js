@@ -2026,7 +2026,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 
 function removeAttachment(attachment_id)
 {
-	$('.atachment-upload-'+attachment_id).remove();
+	$('.atachment-upload-'+$.escapeSelector(attachment_id)).remove();
 	//attachment.parent().parent().children(":input[value='"+attachment_id+"']");
 }
 
