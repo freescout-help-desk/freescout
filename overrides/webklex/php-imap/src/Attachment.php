@@ -73,11 +73,14 @@ class Attachment {
      */
     protected $attributes = [
         'content' => null,
+        'hash' => null,
         'type' => null,
         'part_number' => 0,
         'content_type' => null,
         'id' => null,
         'name' => null,
+        'filename' => null,
+        'description'  => null,
         'disposition' => null,
         'img_src' => null,
         'size' => null,
@@ -211,27 +214,76 @@ class Attachment {
         $this->content_type = $this->part->content_type;
         $this->content = $this->oMessage->decodeString($content, $this->part->encoding);
 
+        // Create a hash of the raw part - this can be used to identify the attachment in the message context. However,
+        // it is not guaranteed to be unique and collisions are possible.
+        // Some additional online resources:
+        // - https://en.wikipedia.org/wiki/Hash_collision
+        // - https://www.php.net/manual/en/function.hash.php
+        // - https://php.watch/articles/php-hash-benchmark
+        // Benchmark speeds:
+        // -xxh3    ~15.19(GB/s) (requires php-xxhash extension or >= php8.1)
+        // -crc32c  ~14.12(GB/s)
+        // -sha256  ~0.25(GB/s)
+        // xxh3 would be nice to use, because of its extra speed and 32 instead of 8 bytes, but it is not compatible with
+        // php < 8.1. crc32c is the next fastest and is compatible with php >= 5.1. sha256 is the slowest, but is compatible
+        // with php >= 5.1 and is the most likely to be unique. crc32c is the best compromise between speed and uniqueness.
+        // Unique enough for our purposes, but not so slow that it could be a bottleneck.
+        $this->hash = hash("crc32c", $this->part->getHeader()->raw."\r\n\r\n".$this->part->content);
+
         if (($id = $this->part->id) !== null) {
             $this->id = str_replace(['<', '>'], '', $id);
+        }else{
+            $this->id = $this->hash;
         }
 
         $this->size = $this->part->bytes;
         $this->disposition = $this->part->disposition;
 
         if (($filename = $this->part->filename) !== null) {
-            $this->setName($filename);
-        } elseif (($name = $this->part->name) !== null) {
-            $this->setName($name);
-        }else {
-            $this->setName("undefined");
+            $this->filename = $this->decodeName($filename);
         }
 
+        if (($description = $this->part->description) !== null) {
+            $this->description = $this->part->getHeader()->decode($description);
+        }
+
+        if (($name = $this->part->name) !== null) {
+            $this->name = $this->decodeName($name);
+        }
+
+        // if (($filename = $this->part->filename) !== null) {
+        //     $this->setName($filename);
+        // } elseif (($name = $this->part->name) !== null) {
+        //     $this->setName($name);
+        // }else {
+        //     $this->setName("undefined");
+        // }
+
+        // if (IMAP::ATTACHMENT_TYPE_MESSAGE == $this->part->type) {
+        //     if ($this->part->ifdescription) {
+        //         $this->setName($this->part->description);
+        //     } else {
+        //         $this->setName($this->part->subtype);
+        //     }
+        // }
+        
         if (IMAP::ATTACHMENT_TYPE_MESSAGE == $this->part->type) {
             if ($this->part->ifdescription) {
-                $this->setName($this->part->description);
-            } else {
-                $this->setName($this->part->subtype);
+                if (!$this->name) {
+                    $this->name = $this->part->description;
+                }
+            } else if (!$this->name) {
+                $this->name = $this->part->subtype;
             }
+        }
+        $this->attributes = array_merge($this->part->getHeader()->getAttributes(), $this->attributes);
+
+        if (!$this->filename) {
+            $this->filename = $this->hash;
+        }
+
+        if (!$this->name && $this->filename != "") {
+            $this->name = $this->filename;
         }
     }
 
@@ -243,7 +295,8 @@ class Attachment {
      * @return boolean
      */
     public function save(string $path, $filename = null): bool {
-        $filename = $filename ?: $this->getName();
+        //$filename = $filename ?: $this->getName();
+        $filename = $filename ? $this->decodeName($filename) : $this->filename;
         
         // sanitize $name
         // order of '..' is important
@@ -251,7 +304,7 @@ class Attachment {
         // https://github.com/Webklex/php-imap/issues/461
         $filename = str_replace(['\\', '../', '/..', '/', chr(0), ':'], '', $filename ?? '');
 
-        return file_put_contents($path.$filename, $this->getContent()) !== false;
+        return file_put_contents($path.DIRECTORY_SEPARATOR.$filename, $this->getContent()) !== false;
     }
 
     /**
@@ -259,6 +312,10 @@ class Attachment {
      * @param $name
      */
     public function setName($name) {
+        $this->name = $this->decodeName($name);
+    }
+
+    public function decodeName($name) {
         // $decoder = $this->config['decoder']['attachment'];
         // if ($name !== null) {
         //     if($decoder === 'utf-8' && extension_loaded('imap')) {
@@ -297,7 +354,7 @@ class Attachment {
             // order of '..' is important
             $name = str_replace(['\\', '../', '/..', '/', chr(0), ':'], '', $name);
         }
-        $this->name = $name;
+        return $name;
     }
 
     /**
@@ -315,20 +372,29 @@ class Attachment {
      * @return string|null
      */
     public function getExtension(){
+        $extension = null;
         $guesser = "\Symfony\Component\Mime\MimeTypes";
         if (class_exists($guesser) !== false) {
             /** @var Symfony\Component\Mime\MimeTypes $guesser */
             $extensions = $guesser::getDefault()->getExtensions($this->getMimeType());
-            return $extensions[0] ?? null;
+            $extension = $extensions[0] ?? null;
         }
-
-        $deprecated_guesser = "\Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser";
-        if (class_exists($deprecated_guesser) !== false){
-            /** @var \Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser $deprecated_guesser */
-            return $deprecated_guesser::getInstance()->guess($this->getMimeType());
+        if ($extension === null) {
+            $deprecated_guesser = "\Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser";
+            if (class_exists($deprecated_guesser) !== false) {
+                /** @var \Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser $deprecated_guesser */
+                $extension = $deprecated_guesser::getInstance()->guess($this->getMimeType());
+            }
         }
-
-        return null;
+        if ($extension === null) {
+            $parts = explode(".", $this->filename);
+            $extension = count($parts) > 1 ? end($parts) : null;
+        }
+        if ($extension === null) {
+            $parts = explode(".", $this->name);
+            $extension = count($parts) > 1 ? end($parts) : null;
+        }
+        return $extension;
     }
 
     /**

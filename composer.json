@@ -304,6 +304,7 @@
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/ChildDef/List.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/Length.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/Encoder.php",
+            "vendor/ezyang/htmlpurifier/library/HTMLPurifier/Lexer.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/Lexer/DOMLex.php",
             "vendor/javoscript/laravel-macroable-models/src/MacroableModels.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/EmbeddedFile.php",
@@ -313,6 +314,7 @@
             "vendor/webklex/php-imap/src/Structure.php",
             "vendor/webklex/php-imap/src/Message.php",
             "vendor/webklex/php-imap/src/Attachment.php",
+            "vendor/webklex/php-imap/src/Part.php",
             "vendor/webklex/php-imap/src/Connection/Protocols/ImapProtocol.php"
         ]
     },
