@@ -1747,7 +1747,7 @@ class ConversationsController extends Controller
                                     }
 
                                     $attachments[] = [
-                                        'id'   => $attachment_copy->id,
+                                        'id'   => encrypt($attachment_copy->id),
                                         'name' => $attachment_copy->file_name,
                                         'size' => $attachment_copy->size,
                                         'url'  => $attachment_copy->url(),
