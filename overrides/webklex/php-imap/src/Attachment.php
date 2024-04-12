@@ -243,9 +243,9 @@ class Attachment {
             $this->filename = $this->decodeName($filename);
         }
 
-        if (($description = $this->part->description) !== null) {
-            $this->description = $this->part->getHeader()->decode($description);
-        }
+        // if (($description = $this->part->description) !== null) {
+        //     $this->description = $this->part->getHeader()->decode($description);
+        // }
 
         if (($name = $this->part->name) !== null) {
             $this->name = $this->decodeName($name);
@@ -270,10 +270,10 @@ class Attachment {
         if (IMAP::ATTACHMENT_TYPE_MESSAGE == $this->part->type) {
             if ($this->part->ifdescription) {
                 if (!$this->name) {
-                    $this->name = $this->part->description;
+                    $this->name = $this->decodeName($this->part->description);
                 }
             } else if (!$this->name) {
-                $this->name = $this->part->subtype;
+                $this->name = $this->decodeName(($this->part->subtype);
             }
         }
         $this->attributes = array_merge($this->part->getHeader()->getAttributes(), $this->attributes);
