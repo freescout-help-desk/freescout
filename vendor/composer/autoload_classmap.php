@@ -3237,7 +3237,7 @@ return array(
     'Webklex\\PHPIMAP\\Header' => $baseDir . '/overrides/webklex/php-imap/src/Header.php',
     'Webklex\\PHPIMAP\\IMAP' => $vendorDir . '/webklex/php-imap/src/IMAP.php',
     'Webklex\\PHPIMAP\\Message' => $baseDir . '/overrides/webklex/php-imap/src/Message.php',
-    'Webklex\\PHPIMAP\\Part' => $vendorDir . '/webklex/php-imap/src/Part.php',
+    'Webklex\\PHPIMAP\\Part' => $baseDir . '/overrides/webklex/php-imap/src/Part.php',
     'Webklex\\PHPIMAP\\Query\\Query' => $vendorDir . '/webklex/php-imap/src/Query/Query.php',
     'Webklex\\PHPIMAP\\Query\\WhereQuery' => $vendorDir . '/webklex/php-imap/src/Query/WhereQuery.php',
     'Webklex\\PHPIMAP\\Structure' => $baseDir . '/overrides/webklex/php-imap/src/Structure.php',
