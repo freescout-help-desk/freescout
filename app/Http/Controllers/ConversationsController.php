@@ -1395,6 +1395,12 @@ class ConversationsController extends Controller
                     $is_create = true;
                 }
 
+                // If new conversation draft has been discarded (by some other user for example).
+                // https://github.com/freescout-helpdesk/freescout/issues/3951
+                if (!$response['msg'] && $is_create && !$conversation) {
+                    $new = true;
+                }
+
                 $thread = null;
                 $new_thread = true;
                 if (!$response['msg'] && !empty($request->thread_id)) {
