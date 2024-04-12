@@ -289,7 +289,7 @@ class Header {
         foreach ($headers as $key => $values) {
             if (isset($imap_headers[$key])) continue;
             $value = null;
-            switch ($key) {
+            switch ((string)$key) {
                 case 'from':
                 case 'to':
                 case 'cc':
@@ -489,8 +489,8 @@ class Header {
                         }
                     }
                 }
-            } elseif ($decoder === 'iconv' && $is_utf8_base) {
-                $value = iconv_mime_decode($value);
+            } elseif ($decoder === 'iconv') {
+                $value = iconv_mime_decode($value, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
             } elseif ($is_utf8_base) {
                 $value = mb_decode_mimeheader($value);
             }
@@ -768,15 +768,52 @@ class Header {
                 if(strpos($date, '&nbsp;') !== false){
                     $date = str_replace('&nbsp;', ' ', $date);
                 }
+                if (str_contains($date, ' UT ')) {
+                    $date = str_replace(' UT ', ' UTC ', $date);
+                }
                 $parsed_date = Carbon::parse($date);
             } catch (\Exception $e) {
                 switch (true) {
                     case preg_match('/([0-9]{4}\.[0-9]{1,2}\.[0-9]{1,2}\-[0-9]{1,2}\.[0-9]{1,2}.[0-9]{1,2})+$/i', $date) > 0:
                         $date = Carbon::createFromFormat("Y.m.d-H.i.s", $date);
                         break;
+                    case preg_match('/([0-9]{2} [A-Z]{3} [0-9]{4} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2} [+-][0-9]{1,4} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2} [+-][0-9]{1,4})+$/i', $date) > 0:
+                        $parts = explode(' ', $date);
+                        array_splice($parts, -2);
+                        $date = implode(' ', $parts);
+                        break;
+                    case preg_match('/([A-Z]{2,4}\,\ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ [\-|\+][0-9]{4})+$/i', $date) > 0:
+                        $array = explode(',', $date);
+                        array_shift($array);
+                        $date = Carbon::createFromFormat("d M Y H:i:s O", trim(implode(',', $array)));
+                        break;
                     case preg_match('/([0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ UT)+$/i', $date) > 0:
                     case preg_match('/([A-Z]{2,3}\,\ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ UT)+$/i', $date) > 0:
                         $date .= 'C';
+                        break;
+                    case preg_match('/([A-Z]{2,3}\,\ [0-9]{1,2}[\,]\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ [\-|\+][0-9]{4})+$/i', $date) > 0:
+                        $date = str_replace(',', '', $date);
+                        break;
+                    // match case for: Di., 15 Feb. 2022 06:52:44 +0100 (MEZ)/Di., 15 Feb. 2022 06:52:44 +0100 (MEZ)
+                    case preg_match('/([A-Z]{2,3}\.\,\ [0-9]{1,2}\ [A-Z]{2,3}\.\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ [\-|\+][0-9]{4}\ \([A-Z]{3,4}\))\/([A-Z]{2,3}\.\,\ [0-9]{1,2}\ [A-Z]{2,3}\.\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ [\-|\+][0-9]{4}\ \([A-Z]{3,4}\))+$/i', $date) > 0:
+                        $dates = explode('/', $date);
+                        $date = array_shift($dates);
+                        $array = explode(',', $date);
+                        array_shift($array);
+                        $date = trim(implode(',', $array));
+                        $array = explode(' ', $date);
+                        array_pop($array);
+                        $date = trim(implode(' ', $array));
+                        $date = Carbon::createFromFormat("d M. Y H:i:s O", $date);
+                        break;
+                    // match case for: fr., 25 nov. 2022 06:27:14 +0100/fr., 25 nov. 2022 06:27:14 +0100
+                    case preg_match('/([A-Z]{2,3}\.\,\ [0-9]{1,2}\ [A-Z]{2,3}\.\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ [\-|\+][0-9]{4})\/([A-Z]{2,3}\.\,\ [0-9]{1,2}\ [A-Z]{2,3}\.\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ [\-|\+][0-9]{4})+$/i', $date) > 0:
+                        $dates = explode('/', $date);
+                        $date = array_shift($dates);
+                        $array = explode(',', $date);
+                        array_shift($array);
+                        $date = trim(implode(',', $array));
+                        $date = Carbon::createFromFormat("d M. Y H:i:s O", $date);
                         break;
                     case preg_match('/([A-Z]{2,3}\,\ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ \+[0-9]{2,4}\ \(\+[0-9]{1,2}\))+$/i', $date) > 0:
                     case preg_match('/([A-Z]{2,3}[\,|\ \,]\ [0-9]{1,2}\ [A-Z]{2,3}\ [0-9]{4}\ [0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}.*)+$/i', $date) > 0:

@@ -2026,7 +2026,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 
 function removeAttachment(attachment_id)
 {
-	$('.atachment-upload-'+attachment_id).remove();
+	$('.atachment-upload-'+$.escapeSelector(attachment_id)).remove();
 	//attachment.parent().parent().children(":input[value='"+attachment_id+"']");
 }
 
@@ -4380,7 +4380,7 @@ function showForwardForm(data, reply_block)
 	reply_block.children().find(":input[name='to']:first").addClass('hidden');
 	reply_block.children().find("#cc").val('').trigger('change');
 	reply_block.children().find("#bcc").val('').trigger('change');
-	reply_block.children().find(":input[name='to_email']:first").removeClass('hidden').removeClass('parsley-exclude').next('.select2:first').show();
+	reply_block.children().find(":input[name='to_email[]']:first").removeClass('hidden').removeClass('parsley-exclude').next('.select2:first').show();
 	reply_block.addClass('inactive');
 	reply_block.addClass('conv-forward-block');
 	$(".conv-actions .conv-reply:first").addClass('inactive');

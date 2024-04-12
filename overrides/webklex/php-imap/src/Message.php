@@ -355,7 +355,7 @@ class Message {
      * @return bool
      */
     public function hasTextBody(): bool {
-        return isset($this->bodies['text']);
+        return isset($this->bodies['text']) && $this->bodies['text'] !== "";
     }
 
     /**
@@ -377,7 +377,7 @@ class Message {
      * @return bool
      */
     public function hasHTMLBody(): bool {
-        return isset($this->bodies['html']);
+        return isset($this->bodies['html']) && $this->bodies['html'] !== "";
     }
 
     /**
@@ -889,6 +889,9 @@ class Message {
 
         if (isset($status["uidnext"])) {
             $next_uid = $status["uidnext"];
+            if ((int)$next_uid <= 0) {
+                return null;
+            }
 
             /** @var Folder $folder */
             $folder = $this->client->getFolderByPath($folder_path);
@@ -924,7 +927,10 @@ class Message {
 
         if (isset($status["uidnext"])) {
             $next_uid = $status["uidnext"];
-
+            if ((int)$next_uid <= 0) {
+                return null;
+            }
+            
             /** @var Folder $folder */
             $folder = $this->client->getFolderByPath($folder_path);
 
@@ -1245,7 +1251,7 @@ class Message {
         return $this->uid == $message->uid
             && $this->message_id->first() == $message->message_id->first()
             && $this->subject->first() == $message->subject->first()
-            && $this->date->toDate()->eq($message->date);
+            && $this->date->toDate()->eq($message->date->toDate());
     }
 
     /**

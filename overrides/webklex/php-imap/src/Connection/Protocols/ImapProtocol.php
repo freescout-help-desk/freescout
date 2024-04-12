@@ -108,7 +108,7 @@ class ImapProtocol extends Protocol {
         while (($next_char = fread($this->stream, 1)) !== false && !in_array($next_char, ["","\n"])) {
             $line .= $next_char;
         }
-        if ($line === "" && $next_char === false) {
+        if ($line === "" && ($next_char === false || $next_char === "")) {
             throw new RuntimeException('empty response');
         }
         if ($this->debug) echo "<< ".$line."\n";
@@ -278,7 +278,7 @@ class ImapProtocol extends Protocol {
 
         if ($dontParse) {
             // First two chars are still needed for the response code
-            $tokens = [substr($tokens, 0, 2)];
+            $tokens = [trim(substr($tokens, 0, 3))];
         }
 
         // last line has response code
@@ -683,7 +683,7 @@ class ImapProtocol extends Protocol {
      * @throws RuntimeException
      */
     public function content($uids, string $rfc = "RFC822", $uid = IMAP::ST_UID): array {
-        $result = $this->fetch(["$rfc.TEXT"], $uids, null, $uid);
+        $result = $this->fetch(["$rfc.TEXT"], is_array($uids)?$uids:[$uids], null, $uid);
         return is_array($result) ? $result : [];
     }
 
@@ -698,7 +698,7 @@ class ImapProtocol extends Protocol {
      * @throws RuntimeException
      */
     public function headers($uids, string $rfc = "RFC822", $uid = IMAP::ST_UID): array{
-        $result = $this->fetch(["$rfc.HEADER"], $uids, null, $uid);
+        $result = $this->fetch(["$rfc.HEADER"], is_array($uids)?$uids:[$uids], null, $uid);
         return $result === "" ? [] : $result;
     }
 

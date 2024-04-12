@@ -1395,6 +1395,12 @@ class ConversationsController extends Controller
                     $is_create = true;
                 }
 
+                // If new conversation draft has been discarded (by some other user for example).
+                // https://github.com/freescout-helpdesk/freescout/issues/3951
+                if (!$response['msg'] && $is_create && !$conversation) {
+                    $new = true;
+                }
+
                 $thread = null;
                 $new_thread = true;
                 if (!$response['msg'] && !empty($request->thread_id)) {
@@ -1738,16 +1744,16 @@ class ConversationsController extends Controller
 
                     if ($conversation->has_attachments) {
                         foreach ($conversation->threads as $thread) {
-                            if ($thread->has_attachments) {
+                            if ($thread->has_attachments && !$thread->isDraft()) {
                                 foreach ($thread->attachments as $attachment) {
                                     if ($request->is_forwarding == 'true') {
-                                        $attachment_copy = $attachment->duplicate($thread->id);
+                                        $attachment_copy = $attachment->duplicate();
                                     } else {
                                         $attachment_copy = $attachment;
                                     }
 
                                     $attachments[] = [
-                                        'id'   => $attachment_copy->id,
+                                        'id'   => encrypt($attachment_copy->id),
                                         'name' => $attachment_copy->file_name,
                                         'size' => $attachment_copy->size,
                                         'url'  => $attachment_copy->url(),
