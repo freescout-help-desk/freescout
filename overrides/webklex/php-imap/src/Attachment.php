@@ -273,7 +273,7 @@ class Attachment {
                     $this->name = $this->decodeName($this->part->description);
                 }
             } else if (!$this->name) {
-                $this->name = $this->decodeName(($this->part->subtype);
+                $this->name = $this->decodeName($this->part->subtype);
             }
         }
         $this->attributes = array_merge($this->part->getHeader()->getAttributes(), $this->attributes);
