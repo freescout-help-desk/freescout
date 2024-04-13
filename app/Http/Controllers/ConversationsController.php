@@ -1744,7 +1744,7 @@ class ConversationsController extends Controller
 
                     if ($conversation->has_attachments) {
                         foreach ($conversation->threads as $thread) {
-                            if ($thread->has_attachments && !$thread->isDraft()) {
+                            if ($thread->has_attachments && (!$thread->isDraft() || count($conversation->threads) == 1)) {
                                 foreach ($thread->attachments as $attachment) {
                                     if ($request->is_forwarding == 'true') {
                                         $attachment_copy = $attachment->duplicate();
