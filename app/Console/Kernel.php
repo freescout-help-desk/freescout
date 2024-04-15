@@ -32,7 +32,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // Keep in mind that this function is also called on clearing cache.
+        // https://github.com/freescout-helpdesk/freescout/issues/3970
+        if (!$this->isScheduleRun()) {
+            return;
+        }
 
         // Remove failed jobs
         $schedule->command('queue:flush')
@@ -108,7 +111,7 @@ class Kernel extends ConsoleKernel
 
         // Kill fetch commands running for too long.
         // In shedule:run this code is executed every time $schedule->command() in this function is executed.
-        if ($this->isScheduleRun() && function_exists('shell_exec')) {
+        if (function_exists('shell_exec')) {
             $fetch_command_pids = \Helper::getRunningProcesses($fetch_command_identifier);
 
             // The name of the command here must be exactly the same as below!
@@ -198,7 +201,7 @@ class Kernel extends ConsoleKernel
         // and the second 'queue:work' command is launched by cron. When `artisan schedule:run` is executed it sees 
         // that there are two 'queue:work' processes running and kills them.
         // After one minute 'queue:work' is executed by cron via `artisan schedule:run` and works in the background.
-        if ($this->isScheduleRun() && function_exists('shell_exec')) {
+        if (function_exists('shell_exec')) {
             $running_commands = \Helper::getRunningProcesses();
 
             if (count($running_commands) > 1) {
@@ -253,7 +256,7 @@ class Kernel extends ConsoleKernel
      */
     public function isScheduleRun()
     {
-        if (!\Helper::isConsole()) {
+        if (\Helper::isConsole()) {
             return true;
         } else {
             return !empty($_SERVER['argv']) && in_array('schedule:run', $_SERVER['argv']);
