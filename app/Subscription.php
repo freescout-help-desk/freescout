@@ -408,11 +408,12 @@ class Subscription extends Model
                 $thread_id = self::chooseThread($notify_info['threads'])->id;
 
                 foreach ($notify_info['users'] as $user) {
+                    $broadcast_id = $thread_id.'_'.$user->id;
                     $mediums = [$medium];
-                    if (!empty($broadcasts[$thread_id]['mediums'])) {
-                        $mediums = array_unique(array_merge($mediums, $broadcasts[$thread_id]['mediums']));
+                    if (!empty($broadcasts[$broadcast_id]['mediums'])) {
+                        $mediums = array_unique(array_merge($mediums, $broadcasts[$broadcast_id]['mediums']));
                     }
-                    $broadcasts[$thread_id] = [
+                    $broadcasts[$broadcast_id] = [
                         'user'         => $user,
                         'conversation' => $notify_info['conversation'],
                         'threads'      => $notify_info['threads'],
@@ -422,7 +423,7 @@ class Subscription extends Model
             }
         }
         // \Notification::sendNow($notify_info['users'], new BroadcastNotification($notify_info['conversation'], $notify_info['threads'][0]));
-        foreach ($broadcasts as $thread_id => $to_broadcast) {
+        foreach ($broadcasts as $broadcast_id => $to_broadcast) {
             $broadcast_notification = new BroadcastNotification($to_broadcast['conversation'], self::chooseThread($to_broadcast['threads']), $to_broadcast['mediums']);
             $broadcast_notification->delay($delay);
             $to_broadcast['user']->notify($broadcast_notification);
