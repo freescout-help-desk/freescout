@@ -44,10 +44,10 @@
             </tr>
             <tr>
                 <th>{{ __('Date & Time') }}</th>
-                <td class="table-main-col">{{ App\User::dateFormat(new Illuminate\Support\Carbon()) }}</td>
+                <td class="table-main-col">{{ App\User::dateFormat(new Illuminate\Support\Carbon(), 'M j, Y H:i', null, true, false) }}</td>
             </tr>
             <tr>
-                <th>{{ __('Timezone') }}</th>
+                <th>{{ __('Timezone') }} (.env)</th>
                 <td class="table-main-col">{{ \Config::get('app.timezone') }} (GMT{{ date('O') }})</td>
             </tr>
             <tr>
