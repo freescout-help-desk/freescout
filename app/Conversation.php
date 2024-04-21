@@ -686,7 +686,9 @@ class Conversation extends Model
 
         $query = \Eventy::filter('conversation.get_nearby_query', $query, $this, $mode, $folder);
 
-        if ($status) {
+        $status_applied = \Eventy::filter('conversation.get_nearby_status', false, $query, $status, $this, $folder);
+
+        if (!$status_applied && $status) {
             $query->where('status', $status);
         }
 
