@@ -686,7 +686,9 @@ class Conversation extends Model
 
         $query = \Eventy::filter('conversation.get_nearby_query', $query, $this, $mode, $folder);
 
-        if ($status) {
+        $status_applied = \Eventy::filter('conversation.get_nearby_status', false, $query, $status, $this, $folder);
+
+        if (!$status_applied && $status) {
             $query->where('status', $status);
         }
 
@@ -1092,10 +1094,12 @@ class Conversation extends Model
     {
         // Get conversations from personal folder
         if ($folder->type == Folder::TYPE_MINE) {
-            $query_conversations = self::where('user_id', $user_id)
-                ->where('mailbox_id', $folder->mailbox_id)
+            $query_conversations = self::where('mailbox_id', $folder->mailbox_id)
                 ->whereIn('status', [self::STATUS_ACTIVE, self::STATUS_PENDING])
                 ->where('state', self::STATE_PUBLISHED);
+
+                // Applied below.
+                //where('user_id', $user_id)
 
         // Assigned - do not show my conversations.
         } elseif ($folder->type == Folder::TYPE_ASSIGNED) {
@@ -1128,21 +1132,29 @@ class Conversation extends Model
             $query_conversations = $folder->conversations()->where('state', self::STATE_PUBLISHED);
         }
 
+        $assignee_condition_applied = false;
+
         // If show only assigned to the current user conversations.
         if (!\Helper::isConsole()
             && $user_id
             && $user = auth()->user()
         ) {
-            if ($user->id == $user_id
-                && $user->hasManageMailboxPermission($folder->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)
-            ) {
+            if ($user->id == $user_id && $user->canSeeOnlyAssignedConversations()) {
                 if ($folder->type != Folder::TYPE_DRAFTS) {
-                    $query_conversations->where('user_id', '=', $user_id);
+                    $assignee_condition_applied = \Eventy::filter('folder.only_assigned_condition', false, $query_conversations, $user_id);
+                    if (!$assignee_condition_applied) {
+                        $query_conversations->where('user_id', '=', $user_id);
+                        $assignee_condition_applied = true;
+                    }
                 } else {
                     $query_conversations->where('user_id', '=', $user_id)
                         ->orWhere('created_by_user_id', '=', $user_id);
                 }
             }
+        }
+
+        if ($folder->type == Folder::TYPE_MINE && !$assignee_condition_applied) {
+            $query_conversations->where('user_id', $user_id);
         }
 
         return \Eventy::filter('folder.conversations_query', $query_conversations, $folder, $user_id);

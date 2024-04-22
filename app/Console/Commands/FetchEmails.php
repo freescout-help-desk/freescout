@@ -82,8 +82,6 @@ class FetchEmails extends Command
 
         $this->line('['.date('Y-m-d H:i:s').'] Fetching '.($this->option('unseen') ? 'UNREAD' : 'ALL').' emails for the last '.$this->option('days').' days.');
 
-        $this->extra_import = [];
-
         if (Mailbox::getInProtocols() === Mailbox::$in_protocols) {
             $this->mailboxes = Mailbox::get();
         } else {
@@ -124,7 +122,8 @@ class FetchEmails extends Command
             $this->info('['.date('Y-m-d H:i:s').'] Mailbox: '.$mailbox->name);
 
             $this->mailbox = $mailbox;
-
+            $this->extra_import = [];
+            
             try {
                 $this->fetch($mailbox);
             } catch (\Exception $e) {
@@ -132,16 +131,16 @@ class FetchEmails extends Command
                 $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
             }
 
-            usleep($sleep);
-        }
-
-        // Import emails sent to several mailboxes at once.
-        if (count($this->extra_import)) {
-            $this->line('['.date('Y-m-d H:i:s').'] Importing emails sent to several mailboxes at once: '.count($this->extra_import));
-            foreach ($this->extra_import as $i => $extra_import) {
-                $this->line('['.date('Y-m-d H:i:s').'] '.($i+1).') '.$extra_import['message']->getSubject());
-                $this->processMessage($extra_import['message'], $extra_import['message_id'], $extra_import['mailbox'], [], true);
+            // Import emails sent to several mailboxes at once.
+            if (count($this->extra_import)) {
+                $this->line('['.date('Y-m-d H:i:s').'] Importing emails sent to several mailboxes at once: '.count($this->extra_import));
+                foreach ($this->extra_import as $i => $extra_import) {
+                    $this->line('['.date('Y-m-d H:i:s').'] '.($i+1).') '.$extra_import['message']->getSubject());
+                    $this->processMessage($extra_import['message'], $extra_import['message_id'], $extra_import['mailbox'], [], true);
+                }
             }
+
+            usleep($sleep);
         }
 
         if ($successfully && count($this->mailboxes)) {

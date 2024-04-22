@@ -228,12 +228,13 @@ class Attachment {
         // php < 8.1. crc32c is the next fastest and is compatible with php >= 5.1. sha256 is the slowest, but is compatible
         // with php >= 5.1 and is the most likely to be unique. crc32c is the best compromise between speed and uniqueness.
         // Unique enough for our purposes, but not so slow that it could be a bottleneck.
-        $this->hash = hash("crc32c", $this->part->getHeader()->raw."\r\n\r\n".$this->part->content);
+        //$this->hash = hash("crc32c", $this->part->getHeader()->raw."\r\n\r\n".$this->part->content);
+        // https://github.com/freescout-helpdesk/freescout/issues/3991
 
         if (($id = $this->part->id) !== null) {
             $this->id = str_replace(['<', '>'], '', $id);
         }else{
-            $this->id = $this->hash;
+            $this->id = $this->getHash();
         }
 
         $this->size = $this->part->bytes;
@@ -279,12 +280,21 @@ class Attachment {
         $this->attributes = array_merge($this->part->getHeader()->getAttributes(), $this->attributes);
 
         if (!$this->filename) {
-            $this->filename = $this->hash;
+            $this->filename = $this->getHash();
         }
 
         if (!$this->name && $this->filename != "") {
             $this->name = $this->filename;
         }
+    }
+
+    public function getHash()
+    {
+        if (!$this->hash) {
+            $this->hash = substr(md5($this->part->getHeader()->raw."\r\n\r\n".$this->part->content), 0, 8);
+        }
+
+        return $this->hash;
     }
 
     /**
