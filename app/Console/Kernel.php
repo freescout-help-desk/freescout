@@ -33,7 +33,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // https://github.com/freescout-helpdesk/freescout/issues/3970
-        if (!$this->isScheduleRun()) {
+        if (!$this->isScheduleRun() && !\Helper::isRoute('system.cron')) {
             return;
         }
 
