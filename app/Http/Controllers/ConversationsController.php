@@ -503,7 +503,6 @@ class ConversationsController extends Controller
                 $conversation->user_id = $orign_conv->user_id;
                 $conversation->updateFolder();
                 $conversation->save();
-
                 
                 $thread = Thread::createExtended([
                         'conversation_id' => $orig_thread->conversation_id,
@@ -515,8 +514,8 @@ class ConversationsController extends Controller
                         'headers' => $orig_thread->headers,
                         'from' => $orig_thread->from,
                         'to' => $orig_thread->to,
-                        'cc' => $orig_thread->cc,
-                        'bcc' => $orig_thread->bcc,
+                        'cc' => $orig_thread->getCcArray(),
+                        'bcc' => $orig_thread->getBccArray(),
                         //'attachments' => $attachments,
                         'has_attachments' => $orig_thread->has_attachments,
                         'message_id' => "clone".crc32(microtime()).'-'.$orig_thread->message_id,
