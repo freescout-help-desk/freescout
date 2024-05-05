@@ -1960,6 +1960,7 @@ class ConversationsController extends Controller
                         'thread' => $thread
                     ];
                     $response['html'] = \View::make('conversations/partials/edit_thread')->with($data)->render();
+                    $response['html'] = \Helper::stripDangerousTags($response['html']);
 
                     $response['status'] = 'success';
                 }
