@@ -1955,11 +1955,12 @@ class ConversationsController extends Controller
                 }
 
                 if (!$response['msg']) {
+                    $thread->body = \Helper::stripDangerousTags($thread->body);
+
                     $data = [
                         'thread' => $thread
                     ];
                     $response['html'] = \View::make('conversations/partials/edit_thread')->with($data)->render();
-                    $response['html'] = \Helper::stripDangerousTags($response['html']);
 
                     $response['status'] = 'success';
                 }
