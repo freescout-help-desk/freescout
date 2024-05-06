@@ -562,6 +562,7 @@ class MailboxesController extends Controller
         }
 
         $mailbox->fill($request->all());
+        $mailbox->auto_reply_message = \Helper::stripDangerousTags($mailbox->auto_reply_message);
 
         $mailbox->save();
 
