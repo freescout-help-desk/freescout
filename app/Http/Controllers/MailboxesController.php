@@ -220,6 +220,7 @@ class MailboxesController extends Controller
         \Eventy::action('mailbox.settings_before_save', $mailbox, $request);
 
         $mailbox->fill($request->all());
+        $mailbox->signature = \Helper::stripDangerousTags($mailbox->signature);
 
         $mailbox->save();
 
