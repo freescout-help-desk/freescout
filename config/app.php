@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.138',
+    'version' => '1.8.139',
 
     /*
     |--------------------------------------------------------------------------
@@ -473,6 +473,7 @@ return [
     */
     'csp_enabled'    => env('APP_CSP_ENABLED', true),
     'csp_script_src' => env('APP_CSP_SCRIPT_SRC', ''),
+    'csp_custom'     => env('APP_CSP_CUSTOM', ''),
 
     /*
     |--------------------------------------------------------------------------
