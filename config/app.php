@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.139',
+    'version' => '1.8.140',
 
     /*
     |--------------------------------------------------------------------------
@@ -398,7 +398,7 @@ return [
     | Library used to fetch emails: webklex/laravel-imap, webklex/php-imap
     |-------------------------------------------------------------------------
     */
-    'new_fetching_library'    => env('APP_NEW_FETCHING_LIBRARY', false),
+    'new_fetching_library'    => env('APP_NEW_FETCHING_LIBRARY', true),
 
     /*
     |--------------------------------------------------------------------------

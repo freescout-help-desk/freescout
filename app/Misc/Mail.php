@@ -619,7 +619,8 @@ class Mail
         $oauth = $mailbox->oauthEnabled();
         $new_library = config('app.new_fetching_library');
 
-        if (!$oauth && !$new_library) {
+        if (!$new_library) {
+            // Old.
             return new \Webklex\IMAP\Client([
                 'host'          => $mailbox->in_server,
                 'port'          => $mailbox->in_port,
@@ -630,7 +631,7 @@ class Mail
                 'protocol'      => $mailbox->getInProtocolName(),
             ]);
         } else {
-
+            // New
             if ($oauth) {
                 \Config::set('imap.accounts.default', [
                     'host'          => $mailbox->in_server,
