@@ -382,7 +382,7 @@ class FetchEmails extends Command
             $user_id = null;
             $user = null; // for user reply only
             $message_from_customer = true;
-            $in_reply_to = $message->getInReplyTo();
+            $in_reply_to = trim($message->getInReplyTo() ?? '', '<>');
             $references = $message->getReferences();
             $attachments = $message->getAttachments();
             $html_body = '';
@@ -391,19 +391,21 @@ class FetchEmails extends Command
             $is_bounce = false;
 
             // Determine previous Message-ID
-            $prev_message_id = '';
+            $prev_message_ids = array();
+
+            if ($references && !is_array($references)) {
+                $references = array_filter(preg_split('/[, <>]/', $references));
+            }
+
             if ($in_reply_to) {
-                $prev_message_id = trim($in_reply_to, '<>');
-            } elseif ($references) {
-                if (!is_array($references)) {
-                    $references = array_filter(preg_split('/[, <>]/', $references));
-                }
-                // Find first non-empty reference
+                $prev_message_ids[] = $in_reply_to;
+            }
+            if ($references) {
+                // Find non-empty references
                 if (is_array($references)) {
                     foreach ($references as $reference) {
                         if (!empty(trim($reference))) {
-                            $prev_message_id = trim($reference);
-                            break;
+                            $prev_message_ids[] = trim($reference);
                         }
                     }
                 }
@@ -418,13 +420,10 @@ class FetchEmails extends Command
             ];
 
             // Try to get previous message ID from marker in body.
-            if (!$prev_message_id || !preg_match('/^('.implode('|', $reply_prefixes).')\-(\d+)\-/', $prev_message_id)) {
-                $html_body = $message->getHTMLBody(false);
-                $marker_message_id = \MailHelper::fetchMessageMarkerValue($html_body);
-
-                if ($marker_message_id) {
-                    $prev_message_id = $marker_message_id;
-                }
+            $html_body = $message->getHTMLBody(false);
+            $marker_message_id = \MailHelper::fetchMessageMarkerValue($html_body);
+            if ($marker_message_id) {
+                $prev_message_ids[] = $marker_message_id;
             }
 
             // Bounce detection.
@@ -493,51 +492,38 @@ class FetchEmails extends Command
                 }
             }
 
-            // Is it a message from Customer or User replied to the notification
-            preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $prev_message_id, $m);
+            # Try to get the thread traversing the possible prev_message_ids
+            foreach ($prev_message_ids as $prev_message_id) {
+                // Is it a message from Customer or User replied to the notification
+                preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $prev_message_id, $m);
 
-            if (!$is_bounce && !empty($m[1]) && !empty($m[2])) {
-                // Reply from User to the notification
-                $prev_thread = Thread::find($m[1]);
-                $user_id = $m[2];
-                $user = User::find($user_id);
-                $message_from_customer = false;
-                $is_reply = true;
+                if (!$is_bounce && !empty($m[1]) && !empty($m[2])) {
+                    // Reply from User to the notification
+                    $prev_thread = Thread::find($m[1]);
+                    $user_id = $m[2];
+                    $user = User::find($user_id);
+                    $message_from_customer = false;
+                    $is_reply = true;
 
-                if (!$user) {
-                    $this->logError('User not found: '.$user_id);
-                    $this->setSeen($message, $mailbox);
-                    return;
-                }
-                $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
-            } else {
-                // Message from Customer or User replied to his reply to notification
-                $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
+                    if (!$user) {
+                        $this->logError('User not found: '.$user_id);
+                        $this->setSeen($message, $mailbox);
+                        return;
+                    }
+                    $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
+                } else {
+                    // Message from Customer or User replied to his reply to notification
+                    $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
 
-                if (!$is_bounce) {
-                    if ($prev_message_id) {
-                        $prev_thread_id = '';
+                    if (!$is_bounce) {
+                        if ($prev_message_id) {
+                            $prev_thread_id = '';
 
-                        // Customer replied to the email from user
-                        preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
-                        // Simply checking thread_id from message_id was causing an issue when 
-                        // customer was sending a message from FreeScout - the message was 
-                        // connected to the wrong conversation.
-                        if (!empty($m[1]) && !empty($m[2])) {
-                            $message_id_hash = $m[2];
-                            if (strlen($message_id_hash) == 16) {
-                                if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
-                                    $prev_thread_id = $m[1];
-                                }
-                            } else {
-                                // Backward compatibility.
-                                $prev_thread_id = $m[1];
-                            }
-                        }
-
-                        // Customer replied to the auto reply
-                        if (!$prev_thread_id) {
-                            preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
+                            // Customer replied to the email from user
+                            preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
+                            // Simply checking thread_id from message_id was causing an issue when 
+                            // customer was sending a message from FreeScout - the message was 
+                            // connected to the wrong conversation.
                             if (!empty($m[1]) && !empty($m[2])) {
                                 $message_id_hash = $m[2];
                                 if (strlen($message_id_hash) == 16) {
@@ -549,29 +535,48 @@ class FetchEmails extends Command
                                     $prev_thread_id = $m[1];
                                 }
                             }
-                        }
 
-                        if ($prev_thread_id) {
-                            $prev_thread = Thread::find($prev_thread_id);
-                        } else {
-                            // Customer replied to his own message
-                            $prev_thread = Thread::where('message_id', $prev_message_id)->first();
-                        }
+                            // Customer replied to the auto reply
+                            if (!$prev_thread_id) {
+                                preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
+                                if (!empty($m[1]) && !empty($m[2])) {
+                                    $message_id_hash = $m[2];
+                                    if (strlen($message_id_hash) == 16) {
+                                        if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
+                                            $prev_thread_id = $m[1];
+                                        }
+                                    } else {
+                                        // Backward compatibility.
+                                        $prev_thread_id = $m[1];
+                                    }
+                                }
+                            }
 
-                        // Reply from user to his reply to the notification
-                        if (!$prev_thread
-                            && ($prev_thread = Thread::where('message_id', $prev_message_id)->first())
-                            && $prev_thread->created_by_user_id
-                            && $prev_thread->created_by_user->hasEmail($from)
-                        ) {
-                            $user_id = $user->id;
-                            $message_from_customer = false;
-                            $is_reply = true;
+                            if ($prev_thread_id) {
+                                $prev_thread = Thread::find($prev_thread_id);
+                            } else {
+                                // Customer replied to his own message
+                                $prev_thread = Thread::where('message_id', $prev_message_id)->first();
+                            }
+
+                            // Reply from user to his reply to the notification
+                            if (!$prev_thread
+                                && ($prev_thread = Thread::where('message_id', $prev_message_id)->first())
+                                && $prev_thread->created_by_user_id
+                                && $prev_thread->created_by_user->hasEmail($from)
+                            ) {
+                                $user_id = $user->id;
+                                $message_from_customer = false;
+                                $is_reply = true;
+                            }
                         }
                     }
-                    if (!empty($prev_thread)) {
-                        $is_reply = true;
-                    }
+                }
+
+                # If a thread is found, we keep it and break
+                if (!empty($prev_thread)) {
+                    $is_reply = true;
+                    break;
                 }
             }
 
