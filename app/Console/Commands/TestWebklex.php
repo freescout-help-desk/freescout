@@ -84,6 +84,10 @@ class TestWebklex extends Command
         $this->info($message->getHeader()->raw);
         $this->line('From: ');
         $this->info(json_encode($message->getFrom()[0] ?? [], JSON_UNESCAPED_UNICODE));
+        $this->line('In-Reply-To: ');
+        $this->info($message->getInReplyTo());
+        $this->line('References: ');
+        $this->info(json_encode(array_values(array_filter(preg_split('/[, <>]/', $message->getReferences() ?? []))), JSON_UNESCAPED_UNICODE));
         $this->line('Subject: ');
         $this->info($message->getSubject());
         $this->line('Text Body: ');
