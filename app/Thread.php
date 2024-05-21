@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Mailbox;
 use App\SendLog;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
@@ -1407,12 +1408,22 @@ class Thread extends Model
      */
     public function fetchBody()
     {
-        $message = \MailHelper::fetchMessage($this->conversation->mailbox, $this->message_id, $this->getMailDate());
+        $mailbox = null;
+
+        // The conversation may has been moved from another mailbox.
+        if (!empty($this->conversation->meta['orig_mailbox_id'])) {
+            $mailbox = Mailbox::find($this->conversation->meta['orig_mailbox_id']);
+        }
+
+        if (!$mailbox) {
+            $mailbox = $this->conversation->mailbox;
+        }
+        $message = \MailHelper::fetchMessage($mailbox, $this->message_id, $this->getMailDate());
 
         // Try without limiting by date.
         // https://github.com/freescout-helpdesk/freescout/issues/3658
         if (!$message) {
-            $message = \MailHelper::fetchMessage($this->conversation->mailbox, $this->message_id);
+            $message = \MailHelper::fetchMessage($mailbox, $this->message_id);
         }
 
         if (!$message) {
