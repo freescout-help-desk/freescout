@@ -623,7 +623,6 @@ class FetchEmails extends Command
                 $body = $message->getTextBody() ?? '';
                 $body = htmlspecialchars($body);
             }
-            $body = $this->separateReply($body, $is_html, $is_reply, !$message_from_customer, (($message_from_customer && $prev_thread) ? $prev_thread->getMessageId($mailbox) : ''));
 
             // We have to fetch absolutely all emails, even with empty body.
             // if (!$body) {
@@ -646,7 +645,7 @@ class FetchEmails extends Command
 
             // It will always return an empty value as it's Bcc.
             $bcc = $this->formatEmailList($message->getBcc());
-            
+
             // If existing user forwarded customer's email to the mailbox
             // we are creating a new conversation as if it was sent by the customer.
             if ($in_reply_to
@@ -682,6 +681,12 @@ class FetchEmails extends Command
                     }
                 }
             }
+
+            // separateReply() function may distort original HTML if email 
+            // is mentioned as <test@example.org> and it will interpret it as a tag.
+            // https://github.com/freescout-helpdesk/freescout/issues/4036
+
+            $body = $this->separateReply($body, $is_html, $is_reply, !$message_from_customer, (($message_from_customer && $prev_thread) ? $prev_thread->getMessageId($mailbox) : ''));
 
             // Create customers
             $emails = array_merge(
@@ -839,6 +844,7 @@ class FetchEmails extends Command
         $email = $b[1] ?? '';
         // https://github.com/freescout-helpdesk/freescout/issues/2517
         $email = preg_replace("#.*&lt(.*)&gt.*#", "$1", $email);
+
         return Email::sanitizeEmail($email);
     }
 
