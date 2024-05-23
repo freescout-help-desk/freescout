@@ -717,7 +717,7 @@ class MailboxesController extends Controller
 
                         if (count($imap_folders)) {
                             $response = $this->interateFolders($response, $imap_folders);
-                            $response['folders'] = array_unique($response['folders']);
+                            $response['folders'] = array_values(array_unique($response['folders']));
                         }
 
                         if (count($response['folders'])) {
