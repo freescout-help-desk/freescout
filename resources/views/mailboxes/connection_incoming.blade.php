@@ -22,7 +22,7 @@
     <div class="container form-container">
         <div class="row">
             <div class="col-xs-12">
-                <form class="form-horizontal" method="POST" action="">
+                <form class="form-horizontal" method="POST" action="" id="form-fetching">
                     {{ csrf_field() }}
 
                     <div class="descr-block">
