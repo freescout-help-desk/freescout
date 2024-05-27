@@ -510,6 +510,13 @@ class FetchEmails extends Command
                         $this->setSeen($message, $mailbox);
                         return;
                     }
+                    // Skip auto-replies sent to the email notification on behalf of a user.
+                    // https://github.com/freescout-helpdesk/freescout/issues/4035
+                    if (\MailHelper::isAutoResponder($message_header)) {
+                        $this->logError('Skipping an auto-reply to the email notification');
+                        $this->setSeen($message, $mailbox);
+                        return;
+                    }
                     $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
                 } else {
                     // Message from Customer or User replied to his reply to notification
