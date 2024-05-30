@@ -1273,6 +1273,8 @@ class Conversation extends Model
             }
         }
 
+        // Remember original mailbox ID.
+        $this->setMeta('orig_mailbox_id', $this->mailbox_id);
         // We don't know how to replace $this->mailbox object.
         $this->mailbox_id = $mailbox->id;
         // Check assignee.

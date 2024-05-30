@@ -767,6 +767,13 @@ function mailboxConnectionIncomingInit()
 		});
 
 		$("#in_imap_folders").select2(fs_select2_config);
+
+		$('#form-fetching :input').on('change keyup', function(e) {
+			var btn = $('#check-connection');
+			if (!btn.attr('disabled')) {
+            	btn.attr('disabled', 'disabled');
+            }
+        });
 	});
 }
 
