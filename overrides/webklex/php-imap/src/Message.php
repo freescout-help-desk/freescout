@@ -722,13 +722,16 @@ class Message {
         if (strtolower($from ?? '') == 'us-ascii' && $to == 'UTF-8') {
             return $str;
         }
+        if (!$str) {
+            return $str;
+        }
 
         $result = '';
 
         if (strtolower($from) == 'iso-2022-jp'){
            $from = 'iso-2022-jp-ms';
         }
-        
+
         // Try iconv.
         if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7' && $from != 'iso-2022-jp-ms') {
             try {
@@ -742,7 +745,7 @@ class Message {
         // Detected an illegal character in input string.
         // https://github.com/freescout-helpdesk/freescout/issues/3089
 
-        // Use try...catch to avoid:
+        // Use try...catch to avoid
         // mb_convert_encoding(): Argument #3 ($from_encoding) contains invalid encoding "windows-1257"
         // https://github.com/freescout-helpdesk/freescout/issues/4051
         try {
@@ -754,7 +757,7 @@ class Message {
             } else {
                 return $result;
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $str;
         }
     }
