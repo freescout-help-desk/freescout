@@ -1969,6 +1969,7 @@ class Helper
             'proc_open (PHP)'  => function_exists('proc_open'),
             'fpassthru (PHP)'  => function_exists('fpassthru'),
             'symlink (PHP)'    => function_exists('symlink'),
+            'iconv (PHP)'      => function_exists('iconv'),
             'pcntl_signal (console PHP)'    => function_exists('shell_exec') ? (int)\Helper::shellExec('php -r "echo (int)function_exists(\'pcntl_signal\');"') : false,
             'ps (shell)' => function_exists('shell_exec') ? \Helper::shellExec('ps') : false,
         ];

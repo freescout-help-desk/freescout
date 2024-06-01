@@ -741,13 +741,21 @@ class Message {
         // In some cases iconv can't decode the string and returns:
         // Detected an illegal character in input string.
         // https://github.com/freescout-helpdesk/freescout/issues/3089
-        if (!$result) {
-            if (!$from) {
-                return mb_convert_encoding($str, $to);
+
+        // Use try...catch to avoid:
+        // mb_convert_encoding(): Argument #3 ($from_encoding) contains invalid encoding "windows-1257"
+        // https://github.com/freescout-helpdesk/freescout/issues/4051
+        try {
+            if (!$result) {
+                if (!$from) {
+                    return mb_convert_encoding($str, $to);
+                }
+                return mb_convert_encoding($str, $to, $from);
+            } else {
+                return $result;
             }
-            return mb_convert_encoding($str, $to, $from);
-        } else {
-            return $result;
+        } catch (\Exception $e) {
+            return $str;
         }
     }
 
