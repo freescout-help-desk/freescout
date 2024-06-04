@@ -189,6 +189,9 @@ class ModulesController extends Controller
             collect($installed_modules)->where('active', true)->pluck('alias')->toArray()
         );
 
+        // Sort all modules.
+        asort($all_modules);
+
         return view('modules/modules', [
             'installed_modules' => $installed_modules,
             'modules_directory' => $modules_directory,
