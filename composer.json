@@ -266,6 +266,7 @@
             "vendor/symfony/finder/Iterator/DepthRangeFilterIterator.php",
             "vendor/symfony/finder/Iterator/DateRangeFilterIterator.php",
             "vendor/symfony/console/Helper/HelperSet.php",
+            "vendor/symfony/console/Helper/Table.php",
             "vendor/maximebf/debugbar/src/DebugBar/DebugBar.php",
             "vendor/maximebf/debugbar/src/DebugBar/JavascriptRenderer.php",
             "vendor/maximebf/debugbar/src/DebugBar/DataFormatter/DataFormatter.php",
