@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Mail\ReplyToCustomer;
+use App\Customer;
 use App\SendLog;
 use App\Thread;
 use App\Misc\SwiftGetSmtpQueueId;
@@ -228,6 +229,12 @@ class SendReplyToCustomer implements ShouldQueue
             if (!$this->customer_email) {
                 return;
             }
+        }
+
+        // Try to get customer by email
+        if (!$this->customer) {
+            $this->customer = Customer::getByEmail($this->customer_email);
+            return;
         }
 
         $to_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getToArray());

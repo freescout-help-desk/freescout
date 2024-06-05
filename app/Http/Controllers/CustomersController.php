@@ -338,7 +338,8 @@ class CustomersController extends Controller
                 if (!empty($request->use_id)) {
                     $id = $customer->id;
                 } else {
-                    $id = $customer->getMainEmail();
+                    // https://github.com/freescout-helpdesk/freescout/issues/4057
+                    $id = $customer->email ?? $customer->getMainEmail();
                 }
             }
             $response['results'][] = [
