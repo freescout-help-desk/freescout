@@ -164,8 +164,21 @@ class FetchEmails extends Command
 
         $client = \MailHelper::getMailboxClient($mailbox);
 
-        // Connect to the Server
-        $client->connect();
+        // Connect to the Server.
+        try {
+            $client->connect();
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
+
+            // POP3 uses LegacyProtocol.php
+            // https://github.com/freescout-helpdesk/freescout/issues/4060
+            if ($error && \Str::startsWith($error, 'Mailbox is empty')) {
+                $this->line('['.date('Y-m-d H:i:s').'] Fetched: 0');
+                return;
+            } else {
+                throw $e;
+            }
+        }
 
         $folders = [];
 
