@@ -104,7 +104,9 @@
                     @if ($thread->type != App\Thread::TYPE_NOTE || $thread->isForward())
                         <div class="thread-recipients">
                             @action('thread.before_recipients', $thread, $loop, $threads, $conversation, $mailbox)
-                            @if ($thread->isUserMessage() && $thread->from && array_key_exists($thread->from, $mailbox->getAliases()))
+                            @if (($thread->isUserMessage() && $thread->from && array_key_exists($thread->from, $mailbox->getAliases()))
+                                || ($thread->isCustomerMessage() && count($customer->emails) > 1)
+                            )
                                 <div>
                                     <strong>
                                         {{ __("From") }}:

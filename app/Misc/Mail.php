@@ -61,7 +61,9 @@ class Mail
         self::REPLY_SEPARATOR_TEXT, // Our plain text separator
 
         // Email service providers specific separators.
+        // <div class="gmail_quote" style="font-family:sans-serif;">
         '<div class="gmail_quote">', // Gmail
+        '<div class="gmail_quote" ', // Gmail
         '<div id="appendonsend"></div>', // Outlook / Live / Hotmail / Microsoft
         '<div name="quote" ',
         'yahoo_quoted_', // Yahoo, full: <div id=3D"ydp6h4f5c59yahoo_quoted_2937493705"
