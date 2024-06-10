@@ -1064,6 +1064,22 @@ class Mail
         return $status_message;
     }
 
+    public static function parseEml($content, $mailbox) {
+        if (!str_contains($content, "\r\n")){
+            $content = str_replace("\n", "\r\n", $content);
+        }
+
+        $raw_header = substr($content, 0, strpos($content, "\r\n\r\n"));
+        $raw_body = substr($content, strlen($raw_header)+8);
+
+        \Config::set('app.new_fetching_library', 'true');
+
+        $client = \MailHelper::getMailboxClient($mailbox);
+        $client->openFolder("INBOX");
+        
+        return \Webklex\PHPIMAP\Message::make(null, null, $client, $raw_header, $raw_body, [], \Webklex\PHPIMAP\IMAP::ST_UID);
+    }
+
     // public static function oauthGetProvider($provider_code, $params)
     // {
     //     $provider = null;
