@@ -105,7 +105,7 @@
                         <div class="thread-recipients">
                             @action('thread.before_recipients', $thread, $loop, $threads, $conversation, $mailbox)
                             @if (($thread->isUserMessage() && $thread->from && array_key_exists($thread->from, $mailbox->getAliases()))
-                                || ($thread->isCustomerMessage() && count($customer->emails) > 1)
+                                || ($thread->isCustomerMessage() && isset($customer) && count($customer->emails) > 1)
                             )
                                 <div>
                                     <strong>
@@ -118,7 +118,7 @@
                                 || $loop->last
                                 || ($thread->type == App\Thread::TYPE_CUSTOMER && count($thread->getToArray($mailbox->getEmails())))
                                 || ($thread->type == App\Thread::TYPE_MESSAGE && !in_array($conversation->customer_email, $thread->getToArray()))
-                                || ($thread->type == App\Thread::TYPE_MESSAGE && count($customer->emails) > 1)
+                                || ($thread->type == App\Thread::TYPE_MESSAGE && isset($customer) && count($customer->emails) > 1)
                                 || \Helper::isPrint())
                                 && $thread->getToArray()
                             )
