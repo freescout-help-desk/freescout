@@ -78,7 +78,7 @@ class TestWebklex extends Command
         $client = \MailHelper::getMailboxClient($mailbox);
         $client->openFolder("INBOX");
 
-        $message = Message::make($this->option('uid'), null, $client, $raw_header, $raw_body, [0 => "\\Seen"], IMAP::ST_UID);
+        $message = Message::make(/*$this->option('uid')*/null, null, $client, $raw_header, $raw_body, [/*0 => "\\Seen"*/], IMAP::ST_UID);
 
         $this->line('Headers: ');
         $this->info($message->getHeader()->raw);
