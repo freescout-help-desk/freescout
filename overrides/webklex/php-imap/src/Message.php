@@ -246,7 +246,7 @@ class Message {
      * @throws Exceptions\RuntimeException
      * @throws Exceptions\MessageNotFoundException
      */
-    public static function make(int $uid, $msglist, Client $client, string $raw_header, string $raw_body, array $raw_flags, $fetch_options = null, $sequence = null): Message {
+    public static function make(/*int*/ $uid, $msglist, Client $client, string $raw_header, string $raw_body, array $raw_flags, $fetch_options = null, $sequence = null): Message {
         $reflection = new ReflectionClass(self::class);
         /** @var self $instance */
         $instance = $reflection->newInstanceWithoutConstructor();
@@ -265,7 +265,9 @@ class Message {
         $instance->setFetchOption($fetch_options);
 
         $instance->setClient($client);
-        $instance->setSequenceId($uid, $msglist);
+        if ($uid !== null) {
+            $instance->setSequenceId($uid, $msglist);
+        }
 
         $instance->parseRawHeader($raw_header);
         $instance->parseRawFlags($raw_flags);

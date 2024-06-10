@@ -8,24 +8,23 @@ use Webklex\PHPIMAP\Message;
 use Illuminate\Console\Command;
 
 
-class TestWebklex extends Command
+class ParseEml extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * --mailbox Any mailbox able to connect via IMAP to its mail server.
-     * --uid Pass any UID from the Webklex/PHP-IMAP fetching output.
      *
      * @var string
      */
-    protected $signature = 'freescout:test-webklex {--mailbox=2} {--uid=914}';
+    protected $signature = 'freescout:parse-eml {--mailbox=2}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Test Webklex/php-imap library';
+    protected $description = 'Parse EML file';
 
     /**
      * Current mailbox.
@@ -63,7 +62,7 @@ class TestWebklex extends Command
      */
     public function handle()
     {
-        $email = file_get_contents(storage_path('logs/test_webklex.eml'));
+        $email = file_get_contents(storage_path('logs/email.eml'));
 
         if (!str_contains($email, "\r\n")){
             $email = str_replace("\n", "\r\n", $email);
@@ -78,7 +77,7 @@ class TestWebklex extends Command
         $client = \MailHelper::getMailboxClient($mailbox);
         $client->openFolder("INBOX");
 
-        $message = Message::make($this->option('uid'), null, $client, $raw_header, $raw_body, [0 => "\\Seen"], IMAP::ST_UID);
+        $message = Message::make(/*$this->option('uid')*/null, null, $client, $raw_header, $raw_body, [/*0 => "\\Seen"*/], IMAP::ST_UID);
 
         $this->line('Headers: ');
         $this->info($message->getHeader()->raw);
