@@ -109,10 +109,10 @@
                                     <small @if ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT) class="text-success" @endif>Microsoft Exchange</small> 
                                     @if (!$mailbox->oauthEnabled())
                                         @if ($mailbox->in_username && $mailbox->in_password && !strstr($mailbox->in_username, '@'))
-                                             – <a href="{{ route('mailboxes.oauth', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT]) }}" target="_blank">{{ __('Connect') }}</a>
+                                             – <a href="{{ route('mailboxes.oauth', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'in']) }}" target="_blank">{{ __('Connect') }}</a>
                                         @endif
                                     @elseif ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT)
-                                         – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT]) }}">{{ __('Disconnect') }}</a>
+                                         – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'in']) }}">{{ __('Disconnect') }}</a>
                                     @endif
                                     <small>(<a href="https://github.com/freescout-helpdesk/freescout/wiki/Connect-FreeScout-to-Microsoft-365-Exchange-via-oAuth" target="_blank">{{ __('Help') }}</a>)</small>
                                 </p>

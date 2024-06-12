@@ -100,20 +100,52 @@ class Mail
     public static function setMailDriver($mailbox = null, $user_from = null, $conversation = null)
     {
         if ($mailbox) {
-            // Configure mail driver according to Mailbox settings
+            // Configure mail driver according to Mailbox settings.
+            $oauth = $mailbox->oauthEnabled();
+
+            // Refresh Access Token.
+            if ($oauth) {
+                if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
+                    // Try to get an access token (using the authorization code grant)
+                    $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
+                        'client_id' => $mailbox->out_username,
+                        'client_secret' => $mailbox->out_password,
+                        'refresh_token' => $mailbox->oauthGetParam('r_token'),
+                    ]);
+
+                    if (!empty($token_data['a_token'])) {
+                        $mailbox->setMetaParam('oauth', $token_data, true);
+                    } elseif (!empty($token_data['error'])) {
+                        $error_message = 'Error occurred refreshing oAuth Access Token: '.$token_data['error'];
+                        \Helper::log(\App\ActivityLog::NAME_EMAILS_SENDING, 
+                            \App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER, [
+                            'error'   => $error_message,
+                            'mailbox' => $mailbox->name,
+                        ]);
+                        //throw new \Exception($error_message, 1);
+                    }
+                }
+            }
+
             \Config::set('mail.driver', $mailbox->getMailDriverName());
             \Config::set('mail.from', $mailbox->getMailFrom($user_from, $conversation));
 
-            // SMTP
+            // SMTP.
             if ($mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
                 \Config::set('mail.host', $mailbox->out_server);
                 \Config::set('mail.port', $mailbox->out_port);
-                if (!$mailbox->out_username) {
-                    \Config::set('mail.username', null);
-                    \Config::set('mail.password', null);
+                if ($oauth) {
+                    \Config::set('mail.auth_mode', 'XOAUTH2');
+                    \Config::set('mail.username', $mailbox->email);
+                    \Config::set('mail.password', $mailbox->oauthGetParam('a_token'));
                 } else {
-                    \Config::set('mail.username', $mailbox->out_username);
-                    \Config::set('mail.password', $mailbox->out_password);
+                    if (!$mailbox->out_username) {
+                        \Config::set('mail.username', null);
+                        \Config::set('mail.password', null);
+                    } else {
+                        \Config::set('mail.username', $mailbox->out_username);
+                        \Config::set('mail.password', $mailbox->out_password);
+                    }
                 }
                 \Config::set('mail.encryption', $mailbox->getOutEncryptionName());
             }
