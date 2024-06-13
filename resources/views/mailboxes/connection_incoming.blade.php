@@ -88,12 +88,14 @@
                                 {{--@include('partials/field_error', ['field'=>'in_port'])--}}
                             </div>
                         </div>
-
+                        @php
+                            $oauth_fully_enabled = ($mailbox->oauthEnabled() && strstr($mailbox->in_username, '@'));
+                        @endphp
                         <div class="form-group{{ $errors->has('in_username') ? ' has-error' : '' }}">
                             <label for="in_username" class="col-sm-2 control-label">{{ __('Username') }}</label>
 
                             <div class="col-sm-6">
-                                <input id="in_username" type="text" class="form-control input-sized @if ($mailbox->oauthEnabled()) disabled @endif" name="in_username" value="{{ old('in_username', $mailbox->in_username) }}" maxlength="100" {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password" @if ($mailbox->oauthEnabled()) readonly @endif >
+                                <input id="in_username" type="text" class="form-control input-sized @if ($oauth_fully_enabled) disabled @endif" name="in_username" value="{{ old('in_username', $mailbox->in_username) }}" maxlength="100" {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password" @if ($oauth_fully_enabled) readonly @endif >
 
                                 {{--@include('partials/field_error', ['field'=>'in_username'])--}}
                             </div>
@@ -103,7 +105,7 @@
                             <label for="in_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
                             <div class="col-sm-6">
-                                <input id="in_password" type="password" class="form-control input-sized @if ($mailbox->oauthEnabled()) disabled @endif" name="in_password" value="{{ old('in_password', $mailbox->inPasswordSafe()) }}" maxlength="255" {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password" @if ($mailbox->oauthEnabled()) readonly @endif>
+                                <input id="in_password" type="password" class="form-control input-sized @if ($oauth_fully_enabled) disabled @endif" name="in_password" value="{{ old('in_password', $mailbox->inPasswordSafe()) }}" maxlength="255" {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password" @if ($oauth_fully_enabled) readonly @endif>
 
                                 <p class="form-help">
                                     <small @if ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT) class="text-success" @endif>Microsoft Exchange</small> 
@@ -111,7 +113,7 @@
                                         @if ($mailbox->in_username && $mailbox->in_password && !strstr($mailbox->in_username, '@'))
                                              – <a href="{{ route('mailboxes.oauth', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'in']) }}" target="_blank">{{ __('Connect') }}</a>
                                         @endif
-                                    @elseif ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT)
+                                    @elseif ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT && $oauth_fully_enabled)
                                          – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'in']) }}">{{ __('Disconnect') }}</a>
                                     @endif
                                     <small>(<a href="https://github.com/freescout-helpdesk/freescout/wiki/Connect-FreeScout-to-Microsoft-365-Exchange-via-oAuth" target="_blank">{{ __('Help') }}</a>)</small>
