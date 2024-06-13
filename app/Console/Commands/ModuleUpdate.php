@@ -69,10 +69,11 @@ class ModuleUpdate extends Command
 
             // Detect if new version is available.
             foreach ($installed_modules as $module) {
-                if ($module->getAlias() != $dir_module['alias'] || !$module->active()) {
+                if ($module->getAlias() != $dir_module['alias'] /*|| !$module->active()*/) {
                     continue;
                 }
                 if (!empty($dir_module['version']) && version_compare($dir_module['version'], $module->get('version'), '>')) {
+
                     $update_result = \App\Module::updateModule($dir_module['alias']);
 
                     $this->info('['.$update_result['module_name'].' Module'.']');
@@ -94,7 +95,8 @@ class ModuleUpdate extends Command
             }
         }
 
-        // Loop through each installed module
+        // Update custom modules.
+        // Loop through each installed module.
         foreach ($installed_modules as $module) {
             // Skip if the module is an official one
             if (\App\Module::isOfficial($module->get('authorUrl'))) {
