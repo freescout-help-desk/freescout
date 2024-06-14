@@ -170,10 +170,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | FreeScout eepository
+    | FreeScout repository
     |-------------------------------------------------------------------------
     */
-    'freescout_repo' => 'https://github.com/freescout-helpdesk/freescout',
+    'freescout_repo' => 'https://freescout.net/github',
 
     /*
     |--------------------------------------------------------------------------
