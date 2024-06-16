@@ -43,7 +43,10 @@
             &nbsp;
             <input type="radio" value="1" name="unseen" @if ((int)old('unseen', 1)) checked @endif /> {{ __('Unread') }}   
             &nbsp;
-            <input type="radio" value="0" name="unseen" @if (!(int)old('unseen', 1)) checked @endif /> {{ __('All') }}   
+            <input type="radio" value="0" name="unseen" @if (!(int)old('unseen', 1)) checked @endif /> {{ __('All') }}
+
+            &nbsp;
+            <input type="checkbox" value="1" name="debug" @if ((int)old('debug')) checked @endif /> {{ __('Debug') }}   
             
         </div>
             

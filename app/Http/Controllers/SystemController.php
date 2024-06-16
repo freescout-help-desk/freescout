@@ -290,6 +290,7 @@ class SystemController extends Controller
                 $params = [];
                 $params['--days'] = (int)$request->days;
                 $params['--unseen'] = (int)$request->unseen;
+                $params['--debug'] = (int)$request->debug;
                 \Artisan::call('freescout:fetch-emails', $params, $outputLog);
                 break;
 

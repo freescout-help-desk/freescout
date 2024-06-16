@@ -31,7 +31,7 @@ class FetchEmails extends Command
      *
      * @var string
      */
-    protected $signature = 'freescout:fetch-emails {--days=3} {--unseen=1} {--identifier=dummy} {--mailboxes=0}';
+    protected $signature = 'freescout:fetch-emails {--days=3} {--unseen=1} {--debug=0} {--identifier=dummy} {--mailboxes=0}';
 
     /**
      * The console command description.
@@ -78,7 +78,12 @@ class FetchEmails extends Command
     {
         $now = time();
         $successfully = true;
+        $debug = $this->option('debug');
         Option::set('fetch_emails_last_run', $now);
+
+        if ($debug) {
+            \Config::set('imap.options.debug', true);
+        }
 
         $this->line('['.date('Y-m-d H:i:s').'] Fetching '.($this->option('unseen') ? 'UNREAD' : 'ALL').' emails for the last '.$this->option('days').' days.');
 
@@ -123,12 +128,27 @@ class FetchEmails extends Command
 
             $this->mailbox = $mailbox;
             $this->extra_import = [];
+
+            $debug_log = '';
             
             try {
+                if ($debug) {
+                    ob_start();
+                }
+                
                 $this->fetch($mailbox);
+
+                if ($debug) {
+                    $debug_log = ob_get_contents();
+                    ob_end_clean();
+                }
             } catch (\Exception $e) {
                 $successfully = false;
                 $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
+            }
+
+            if ($debug && $debug_log) {
+                $this->line($debug_log);
             }
 
             // Import emails sent to several mailboxes at once.
