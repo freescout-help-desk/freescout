@@ -677,13 +677,14 @@ class MailboxesController extends Controller
                 if (!$response['msg'] && !$tested) {
                     $test_result = false;
 
-                    try {
-                        $test_result = \MailHelper::fetchTest($mailbox);
-                    } catch (\Exception $e) {
-                        $response['msg'] = $e->getMessage();
-                    }
+                    $test_result = \MailHelper::fetchTest($mailbox);
 
-                    if (!$test_result && !$response['msg']) {
+                    $response['log'] = $test_result['log'] ?? '';
+
+                    if ($test_result['result'] != 'success' && $test_result['msg']) {
+                        $response['msg'] = $test_result['msg'];
+                    }
+                    if ($test_result['result'] != 'success' && !$response['msg']) {
                         $response['msg'] = __('Error occurred connecting to the server');
                     }
                 }

@@ -385,41 +385,65 @@ class Mail
      */
     public static function fetchTest($mailbox)
     {
-        $client = \MailHelper::getMailboxClient($mailbox);
+        $result = [
+            'result' => 'success',
+            'msg' => '',
+            'log' => '',
+        ];
 
-        // Connect to the Server
-        $client->connect();
+        $client = null;
 
-        // Get folder
-        $folder = $client->getFolder('INBOX');
+        try {
+            \Config::set('imap.options.debug', true);
+            \Webklex\PHPIMAP\Connection\Protocols\ImapProtocol::$output_debug_log = false;
 
-        if (!$folder) {
-            throw new \Exception('Could not get mailbox folder: INBOX', 1);
-        }
-        // Get unseen messages for a period
-        $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
+            $client = \MailHelper::getMailboxClient($mailbox);
 
-        $last_error = '';
-        if (method_exists($client, 'getLastError')) {
-            $last_error = $client->getLastError();
-        }
-        
-        if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
-            // Solution for MS mailboxes.
-            // https://github.com/freescout-helpdesk/freescout/issues/176
-            $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->setCharset(null)->get();
-            if (count($client->getErrors()) > 1) {
-                $last_error = $client->getLastError();
-            } else {
-                $last_error = null;
+            // Connect to the Server
+            $client->connect();
+
+            // Get folder
+            $folder = $client->getFolder('INBOX');
+
+            if (!$folder) {
+                $result['result'] = 'error';
+                $result['msg'] = 'Could not get mailbox folder: INBOX';
+                //throw new \Exception('Could not get mailbox folder: INBOX', 1);
             }
+            // Get unseen messages for a period
+            $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
+
+            $last_error = '';
+            if (method_exists($client, 'getLastError')) {
+                $last_error = $client->getLastError();
+            }
+            
+            if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
+                // Solution for MS mailboxes.
+                // https://github.com/freescout-helpdesk/freescout/issues/176
+                $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->setCharset(null)->get();
+                if (count($client->getErrors()) > 1) {
+                    $last_error = $client->getLastError();
+                } else {
+                    $last_error = null;
+                }
+            }
+
+            if ($last_error) {
+                //throw new \Exception($last_error, 1);
+                $result['result'] = 'error';
+                $result['msg'] = $last_error;
+            }
+        } catch (\Exception $e) {
+            $result['result'] = 'error';
+            $result['msg'] = $e->getMessage();
         }
 
-        if ($last_error) {
-            throw new \Exception($last_error, 1);
-        } else {
-            return true;
+        if ($result['result'] == 'error') {
+            $result['log'] = \Webklex\PHPIMAP\Connection\Protocols\ImapProtocol::getDebugLog();
         }
+
+        return $result;
     }
 
     /**

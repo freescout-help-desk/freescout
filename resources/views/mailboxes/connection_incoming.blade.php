@@ -195,6 +195,8 @@
 
                     <div class="form-group margin-top-2">
                         <div class="col-sm-6 col-sm-offset-2">
+                            <pre class="alert alert-warning hidden" id="fetch_test_log"></pre>
+                            
                             <button type="submit" class="btn btn-primary">
                                 {{ __('Save Settings') }}
                             </button>

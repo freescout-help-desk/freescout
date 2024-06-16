@@ -708,6 +708,7 @@ function mailboxConnectionIncomingInit()
 	    $('#check-connection').click(function(event) {
 	    	var button = $(this);
 	    	button.button('loading');
+	    	$('#fetch_test_log').addClass('hidden');
 	    	fsAjax(
 				{
 					action: 'fetch_test',
@@ -719,6 +720,9 @@ function mailboxConnectionIncomingInit()
 						showFloatingAlert('success', Lang.get("messages.connection_established"), true);
 					} else {
 						showAjaxError(response, true);
+						if (typeof(response.log) != "undefined" && response.log) {
+							$('#fetch_test_log').removeClass('hidden').text(response.log);
+						}
 					}
 					button.button('reset');
 				},
