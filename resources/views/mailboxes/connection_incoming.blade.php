@@ -133,7 +133,7 @@
                                     <option value="{{ App\Mailbox::IN_ENCRYPTION_SSL }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_SSL)selected="selected"@endif>SSL</option>
                                     <option value="{{ App\Mailbox::IN_ENCRYPTION_TLS }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_TLS)selected="selected"@endif>{{ 'TLS' }}@if (!$new_fetching_library) &nbsp;(+StartTLS)@endif</option>
                                     @if ($new_fetching_library)
-                                        <option value="{{ App\Mailbox::IN_ENCRYPTION_STARTTLS }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_STARTTLS)selected="selected"@endif>STARTTLS</option>
+                                        <option value="{{ App\Mailbox::IN_ENCRYPTION_STARTTLS }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_STARTTLS)selected="selected"@endif>TLS &nbsp;(+StartTLS)</option>
                                     @endif
                                 </select>
 
