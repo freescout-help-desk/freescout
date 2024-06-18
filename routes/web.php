@@ -89,9 +89,9 @@ Route::post('/mailbox/connection-settings/{id}/incoming', 'MailboxesController@c
 Route::get('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReply')->name('mailboxes.auto_reply');
 Route::post('/mailbox/settings/{id}/auto-reply', 'MailboxesController@autoReplySave')->name('mailboxes.auto_reply.save');
 Route::post('/mailbox/ajax', ['uses' => 'MailboxesController@ajax', 'laroute' => true])->name('mailboxes.ajax');
-Route::get('/mailbox/oauth/{id}/{provider}', ['uses' => 'MailboxesController@oauth'])->name('mailboxes.oauth');
+Route::get('/mailbox/oauth/{id}/{in_out}/{provider}', ['uses' => 'MailboxesController@oauth'])->name('mailboxes.oauth');
 Route::get('/mailbox/oauth', ['uses' => 'MailboxesController@oauth'])->name('mailboxes.oauth_callback');
-Route::get('/mailbox/oauth-disconnect/{id}/{provider}', ['uses' => 'MailboxesController@oauthDisconnect'])->name('mailboxes.oauth_disconnect');
+Route::get('/mailbox/oauth-disconnect/{id}/{in_out}/{provider}', ['uses' => 'MailboxesController@oauthDisconnect'])->name('mailboxes.oauth_disconnect');
 
 // Customers
 Route::get('/customers/{id}/edit', 'CustomersController@update')->name('customers.update');

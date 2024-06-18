@@ -26,14 +26,14 @@
                     {{ csrf_field() }}
 
                     <div class="descr-block">
-                        {!! __("You can read more about sending emails :%a_begin%here:%a_end%.", ['%a_begin%' => '<a href="https://github.com/freescout-helpdesk/freescout/wiki/Sending-emails" target="_blank">', '%a_end%' =>'</a>']) !!}
+                        {!! __("You can read more about sending emails :%a_begin%here:%a_end%.", ['%a_begin%' => '<a href="'.config('app.freescout_repo').'/wiki/Sending-emails" target="_blank">', '%a_end%' =>'</a>']) !!}
 
                         {!! __("To send system emails via webmail providers (Gmail, Yahoo, etc) use only SMTP method and make sure that SMTP username is equal to the mailbox email address (:%mailbox_email%), otherwise webmail provider won't send emails.", ['%mailbox_email%' => $mailbox->email]) !!}
                     </div>
                     <hr/>
 
                     <div class="form-group margin-top">
-                        <label for="email" class="col-sm-2 control-label">{{ __('Method') }} {{--<a href="https://github.com/freescout-helpdesk/freescout/wiki/Sending-emails" target="blank" class="glyphicon glyphicon-info-sign help-icon" data-toggle="tooltip" title="{{ __("Click to read more about sending methods") }}"></a>--}}</label>
+                        <label for="email" class="col-sm-2 control-label">{{ __('Method') }} {{--<a href="{{ config('app.freescout_repo') }}/wiki/Sending-emails" target="blank" class="glyphicon glyphicon-info-sign help-icon" data-toggle="tooltip" title="{{ __("Click to read more about sending methods") }}"></a>--}}</label>
 
                         <div class="col-sm-6">
                             <div class="control-group">
@@ -68,7 +68,7 @@
 
                                 @if (strstr($mailbox->out_server ?? '', '.gmail.'))
                                     <div class="form-help">
-                                        {!! __("How to :%link_start%connect Gmail:%link_end% to FreeScout.", ['%link_start%' => '<a href="https://github.com/freescout-helpdesk/freescout/wiki/Connect-Gmail-to-FreeScout" target="_blank">', '%link_end%' => '</a>']) !!}
+                                        {!! __("How to :%link_start%connect Gmail:%link_end% to FreeScout.", ['%link_start%' => '<a href="'.config('app.freescout_repo').'/wiki/Connect-Gmail-to-FreeScout" target="_blank">', '%link_end%' => '</a>']) !!}
                                     </div>
                                 @endif
 
@@ -84,11 +84,14 @@
                                 @include('partials/field_error', ['field'=>'out_port'])
                             </div>
                         </div>
+                        @php
+                            $oauth_fully_enabled = ($mailbox->oauthEnabled() && strstr($mailbox->out_username, '@'));
+                        @endphp
                         <div class="form-group{{ $errors->has('out_username') ? ' has-error' : '' }}">
                             <label for="out_username" class="col-sm-2 control-label">{{ __('Username') }}</label>
 
                             <div class="col-sm-6">
-                                <input id="out_username" type="text" class="form-control input-sized" name="out_username" value="{{ old('out_username', $mailbox->out_username) }}" maxlength="100" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
+                                <input id="out_username" type="text" class="form-control input-sized @if ($oauth_fully_enabled) disabled @endif" name="out_username" value="{{ old('out_username', $mailbox->out_username) }}" maxlength="100" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password" @if ($oauth_fully_enabled) readonly @endif>
 
                                 @include('partials/field_error', ['field'=>'out_username'])
                             </div>
@@ -97,9 +100,19 @@
                             <label for="out_password" class="col-sm-2 control-label">{{ __('Password') }}</label>
 
                             <div class="col-sm-6">
-                                <input id="out_password" type="password" class="form-control input-sized" name="out_password" value="{{ old('out_password', $mailbox->outPasswordSafe()) }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password">
+                                <input id="out_password" type="password" class="form-control input-sized @if ($oauth_fully_enabled) disabled @endif" name="out_password" value="{{ old('out_password', $mailbox->outPasswordSafe()) }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password" @if ($oauth_fully_enabled) readonly @endif>
 
-                                @include('partials/field_error', ['field'=>'out_password'])
+                                <p class="form-help">
+                                    <small @if ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT) class="text-success" @endif>Microsoft Exchange</small> 
+                                    @if (!$mailbox->oauthEnabled())
+                                        @if ($mailbox->out_username && $mailbox->out_password && !strstr($mailbox->out_username, '@'))
+                                             – <a href="{{ route('mailboxes.oauth', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'out']) }}" target="_blank">{{ __('Connect') }}</a>
+                                        @endif
+                                    @elseif ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT && $oauth_fully_enabled)
+                                         – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'out']) }}">{{ __('Disconnect') }}</a>
+                                    @endif
+                                    <small>(<a href="{{ config('app.freescout_repo') }}/wiki/Connect-FreeScout-to-Microsoft-365-Exchange-via-oAuth" target="_blank">{{ __('Help') }}</a>)</small>
+                                </p>
                             </div>
                         </div>
                         <div class="form-group{{ $errors->has('out_encryption') ? ' has-error' : '' }}">

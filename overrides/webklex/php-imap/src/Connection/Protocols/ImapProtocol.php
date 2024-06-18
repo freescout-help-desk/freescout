@@ -34,6 +34,9 @@ class ImapProtocol extends Protocol {
      */
     protected $noun = 0;
 
+    public static $output_debug_log = true;
+    public static $debug_log = '';
+
     /**
      * Imap constructor.
      * @param bool $cert_validation set to false to skip SSL certificate validation
@@ -79,7 +82,7 @@ class ImapProtocol extends Protocol {
                 $this->enableStartTls();
             }
         } catch (Exception $e) {
-            throw new ConnectionFailedException('connection failed', 0, $e);
+            throw new ConnectionFailedException('connection failed - '.$e->getMessage(), 0, $e);
         }
     }
 
@@ -111,8 +114,19 @@ class ImapProtocol extends Protocol {
         if ($line === "" && ($next_char === false || $next_char === "")) {
             throw new RuntimeException('empty response');
         }
-        if ($this->debug) echo "<< ".$line."\n";
+        if ($this->debug) $this->debug("<< ".$line."\n");
         return $line . "\n";
+    }
+
+    public function debug($line) {
+        if (self::$output_debug_log) {
+            echo $line;
+        }
+        self::$debug_log .= $line;
+    }
+
+    public static function getDebugLog() {
+        return self::$debug_log;
     }
 
     /**
@@ -328,7 +342,7 @@ class ImapProtocol extends Protocol {
      * @throws RuntimeException
      */
     public function write(string $data) {
-        if ($this->debug) echo ">> ".$data ."\n";
+        if ($this->debug) $this->debug(">> ".$data ."\n");
 
         if (fwrite($this->stream, $data . "\r\n") === false) {
             throw new RuntimeException('failed to write - connection closed?');

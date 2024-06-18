@@ -677,13 +677,14 @@ class MailboxesController extends Controller
                 if (!$response['msg'] && !$tested) {
                     $test_result = false;
 
-                    try {
-                        $test_result = \MailHelper::fetchTest($mailbox);
-                    } catch (\Exception $e) {
-                        $response['msg'] = $e->getMessage();
-                    }
+                    $test_result = \MailHelper::fetchTest($mailbox);
 
-                    if (!$test_result && !$response['msg']) {
+                    $response['log'] = $test_result['log'] ?? '';
+
+                    if ($test_result['result'] != 'success' && $test_result['msg']) {
+                        $response['msg'] = $test_result['msg'];
+                    }
+                    if ($test_result['result'] != 'success' && !$response['msg']) {
                         $response['msg'] = __('Error occurred connecting to the server');
                     }
                 }
@@ -853,6 +854,7 @@ class MailboxesController extends Controller
     {
         $mailbox_id = $request->id ?? '';
         $provider = $request->provider ?? '';
+        $in_out = $request->in_out ?? 'in';
         
         $state_data = [];
         if (!empty($request->state)) {
@@ -862,6 +864,9 @@ class MailboxesController extends Controller
             }
             if (!empty($state_data['provider'])) {
                 $provider = $state_data['provider'];
+            }
+            if (!empty($state_data['in_out'])) {
+                $in_out = $state_data['in_out'];
             }
         }
 
@@ -880,10 +885,17 @@ class MailboxesController extends Controller
         if (empty($mailbox)) {
             return __('Mailbox not found').': '.$mailbox_id;
         }
-        if (empty($mailbox->in_username)) {
+        if ($in_out == 'in') {
+            $username = $mailbox->in_username;
+            $password = $mailbox->in_password;
+        } else {
+            $username = $mailbox->out_username;
+            $password = $mailbox->out_password;
+        }
+        if (empty($username)) {
             return 'Enter oAuth Client ID as Username and save mailbox settings';
         }
-        if (empty($mailbox->in_password)) {
+        if (empty($password)) {
             return 'Enter oAuth Client Secret as Password and save mailbox settings';
         }
 
@@ -893,14 +905,16 @@ class MailboxesController extends Controller
         }
 
         if (empty($request->code)) {
+            // Start.
             $state = [
                 'provider' => $provider,
                 'mailbox_id' => $mailbox_id,
-                'state' => crc32($mailbox->in_username.$mailbox->in_password),
+                'in_out' => $in_out,
+                'state' => crc32($username.$password),
             ];
             $url = \MailHelper::oauthGetAuthorizationUrl(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
                 'state' => json_encode($state),
-                'client_id' => $mailbox->in_username,
+                'client_id' => $username,
             ]);
             if ($url) {
                 \Session::put('mailbox_oauth_'.$provider.'_'.$mailbox_id, $state);
@@ -921,21 +935,35 @@ class MailboxesController extends Controller
             return 'Invalid oAuth state';
 
         } else {
-
+            // state is set.
             // Try to get an access token (using the authorization code grant)
             $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
-                'client_id' => $mailbox->in_username,
-                'client_secret' => $mailbox->in_password,
+                'client_id' => $username,
+                'client_secret' => $password,
                 'code' => $request->code,
             ]);
 
             if (!empty($token_data['a_token'])) {
+                // Set username and password for the oppozite in_out.
+                if ($in_out == 'in') {
+                    $mailbox->out_username = $username;
+                    $mailbox->out_password = $password;
+                    //$mailbox->out_method = Mailbox::OUT_METHOD_SMTP;
+                } else {
+                    $mailbox->in_username = $username;
+                    $mailbox->in_password = $password;
+                }
                 $mailbox->setMetaParam('oauth', $token_data, true);
             } elseif (!empty($token_data['error'])) {
                 return __('Error occurred').': '.htmlspecialchars($token_data['error']);
             }
 
-            return redirect()->route('mailboxes.connection.incoming', ['id' => $mailbox_id]);
+            if ($in_out == 'in') {
+                $route = 'mailboxes.connection.incoming';
+            } else {
+                $route = 'mailboxes.connection';
+            }
+            return redirect()->route($route, ['id' => $mailbox_id]);
         }
     }
 
@@ -943,12 +971,20 @@ class MailboxesController extends Controller
     {
         $mailbox_id = $request->id ?? '';
         $provider = $request->provider ?? '';
+        $in_out = $request->in_out ?? 'in';
 
         $mailbox = Mailbox::findOrFail($mailbox_id);
         $this->authorize('admin', $mailbox);
         
         // oAuth Disconnect.
         $mailbox->removeMetaParam('oauth', true);
-        return \MailHelper::oauthDisconnect($provider, route('mailboxes.connection.incoming', ['id' => $mailbox_id]));
+
+        if ($in_out == 'in') {
+            $route = 'mailboxes.connection.incoming';
+        } else {
+            $route = 'mailboxes.connection';
+        }
+
+        return \MailHelper::oauthDisconnect($provider, route($route, ['id' => $mailbox_id]));
     }
 }

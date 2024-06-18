@@ -100,20 +100,52 @@ class Mail
     public static function setMailDriver($mailbox = null, $user_from = null, $conversation = null)
     {
         if ($mailbox) {
-            // Configure mail driver according to Mailbox settings
+            // Configure mail driver according to Mailbox settings.
+            $oauth = $mailbox->oauthEnabled();
+
+            // Refresh Access Token.
+            if ($oauth && !strstr($mailbox->out_username, '@')) {
+                if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
+                    // Try to get an access token (using the authorization code grant)
+                    $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
+                        'client_id' => $mailbox->out_username,
+                        'client_secret' => $mailbox->out_password,
+                        'refresh_token' => $mailbox->oauthGetParam('r_token'),
+                    ]);
+
+                    if (!empty($token_data['a_token'])) {
+                        $mailbox->setMetaParam('oauth', $token_data, true);
+                    } elseif (!empty($token_data['error'])) {
+                        $error_message = 'Error occurred refreshing oAuth Access Token: '.$token_data['error'];
+                        \Helper::log(\App\ActivityLog::NAME_EMAILS_SENDING, 
+                            \App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER, [
+                            'error'   => $error_message,
+                            'mailbox' => $mailbox->name,
+                        ]);
+                        //throw new \Exception($error_message, 1);
+                    }
+                }
+            }
+
             \Config::set('mail.driver', $mailbox->getMailDriverName());
             \Config::set('mail.from', $mailbox->getMailFrom($user_from, $conversation));
 
-            // SMTP
+            // SMTP.
             if ($mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
                 \Config::set('mail.host', $mailbox->out_server);
                 \Config::set('mail.port', $mailbox->out_port);
-                if (!$mailbox->out_username) {
-                    \Config::set('mail.username', null);
-                    \Config::set('mail.password', null);
+                if ($oauth && !strstr($mailbox->out_username, '@')) {
+                    \Config::set('mail.auth_mode', 'XOAUTH2');
+                    \Config::set('mail.username', $mailbox->email);
+                    \Config::set('mail.password', $mailbox->oauthGetParam('a_token'));
                 } else {
-                    \Config::set('mail.username', $mailbox->out_username);
-                    \Config::set('mail.password', $mailbox->out_password);
+                    if (!$mailbox->out_username) {
+                        \Config::set('mail.username', null);
+                        \Config::set('mail.password', null);
+                    } else {
+                        \Config::set('mail.username', $mailbox->out_username);
+                        \Config::set('mail.password', $mailbox->out_password);
+                    }
                 }
                 \Config::set('mail.encryption', $mailbox->getOutEncryptionName());
             }
@@ -353,41 +385,65 @@ class Mail
      */
     public static function fetchTest($mailbox)
     {
-        $client = \MailHelper::getMailboxClient($mailbox);
+        $result = [
+            'result' => 'success',
+            'msg' => '',
+            'log' => '',
+        ];
 
-        // Connect to the Server
-        $client->connect();
+        $client = null;
 
-        // Get folder
-        $folder = $client->getFolder('INBOX');
+        try {
+            \Config::set('imap.options.debug', true);
+            \Webklex\PHPIMAP\Connection\Protocols\ImapProtocol::$output_debug_log = false;
 
-        if (!$folder) {
-            throw new \Exception('Could not get mailbox folder: INBOX', 1);
-        }
-        // Get unseen messages for a period
-        $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
+            $client = \MailHelper::getMailboxClient($mailbox);
 
-        $last_error = '';
-        if (method_exists($client, 'getLastError')) {
-            $last_error = $client->getLastError();
-        }
-        
-        if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
-            // Solution for MS mailboxes.
-            // https://github.com/freescout-helpdesk/freescout/issues/176
-            $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->setCharset(null)->get();
-            if (count($client->getErrors()) > 1) {
-                $last_error = $client->getLastError();
-            } else {
-                $last_error = null;
+            // Connect to the Server
+            $client->connect();
+
+            // Get folder
+            $folder = $client->getFolder('INBOX');
+
+            if (!$folder) {
+                $result['result'] = 'error';
+                $result['msg'] = 'Could not get mailbox folder: INBOX';
+                //throw new \Exception('Could not get mailbox folder: INBOX', 1);
             }
+            // Get unseen messages for a period
+            $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
+
+            $last_error = '';
+            if (method_exists($client, 'getLastError')) {
+                $last_error = $client->getLastError();
+            }
+            
+            if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
+                // Solution for MS mailboxes.
+                // https://github.com/freescout-helpdesk/freescout/issues/176
+                $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->setCharset(null)->get();
+                if (count($client->getErrors()) > 1) {
+                    $last_error = $client->getLastError();
+                } else {
+                    $last_error = null;
+                }
+            }
+
+            if ($last_error) {
+                //throw new \Exception($last_error, 1);
+                $result['result'] = 'error';
+                $result['msg'] = $last_error;
+            }
+        } catch (\Exception $e) {
+            $result['result'] = 'error';
+            $result['msg'] = $e->getMessage();
         }
 
-        if ($last_error) {
-            throw new \Exception($last_error, 1);
-        } else {
-            return true;
+        if ($result['result'] == 'error') {
+            $result['log'] = \Webklex\PHPIMAP\Connection\Protocols\ImapProtocol::getDebugLog();
         }
+
+        return $result;
     }
 
     /**

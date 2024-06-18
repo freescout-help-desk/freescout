@@ -62,7 +62,7 @@
                     <th>Proxy</th>
                     <td class="table-main-col">
                         <div @if (!$cloudflare_is_used) class="alert alert-warning alert-narrow margin-bottom-0" @endif>
-                            @if (!$cloudflare_is_used)<i class="glyphicon glyphicon-exclamation-sign"></i> @endif{{ 'CloudFlare' }} (<a href="https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#103-cloudflare" target="_blank">{{ __('read more') }}</a>)
+                            @if (!$cloudflare_is_used)<i class="glyphicon glyphicon-exclamation-sign"></i> @endif{{ 'CloudFlare' }} (<a href="{{ config('app.freescout_repo') }}/wiki/Installation-Guide#103-cloudflare" target="_blank">{{ __('read more') }}</a>)
                         </div>
                     </td>
                 </tr>
@@ -143,7 +143,7 @@
     </table>
 
     <h3 id="permissions">{{ __('Permissions') }}</h3>
-    {!! __('These folders must be writable by web server user (:user).', ['user' => '<strong>'.get_current_user().'</strong>']) !!} {{ __('Recommended permissions') }}: <strong>775</strong>
+    {!! __('These folders must be writable by web server user (:user).', ['user' => '<strong>'.(function_exists('get_current_user') ? get_current_user() : '').'</strong>']) !!} {{ __('Recommended permissions') }}: <strong>775</strong>
     <table class="table table-dark-header table-bordered table-responsive table-narrow">
         <tbody>
             @foreach ($permissions as $perm_path => $perm)
@@ -156,7 +156,7 @@
                                 <br/>
                                 <span class="text-danger">{{ $non_writable_cache_file }}</span>
                                 <br/><br/>
-                                {{ __('Run the following command') }} (<a href="https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#6-configuring-web-server" target="_blank">{{ __('read more') }}</a>):<br/>
+                                {{ __('Run the following command') }} (<a href="{{ config('app.freescout_repo') }}/wiki/Installation-Guide#6-configuring-web-server" target="_blank">{{ __('read more') }}</a>):<br/>
                                 <code>sudo chown -R www-data:www-data {{ base_path() }}</code>
                             @elseif (!$perm['status'])
                                 <strong class="text-danger">{{ __('Not writable') }} @if ($perm['value'])({{ $perm['value'] }})@endif</strong>
@@ -170,7 +170,7 @@
                                 <strong class="text-danger">{{ __('Not writable') }} @if ($perm['value'])({{ $perm['value'] }})@endif</strong>
 
                                 <br/><br/>
-                                {{ __('Run the following command') }} (<a href="https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#6-configuring-web-server" target="_blank">{{ __('read more') }}</a>):<br/>
+                                {{ __('Run the following command') }} (<a href="{{ config('app.freescout_repo') }}/wiki/Installation-Guide#6-configuring-web-server" target="_blank">{{ __('read more') }}</a>):<br/>
                                 <code>sudo chown -R www-data:www-data {{ base_path() }}</code>
                             @endif
                         @endif

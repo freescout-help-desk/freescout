@@ -300,9 +300,15 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
             throw new \Exception('No repository specified. Please enter a valid Github repository owner and name in your config.');
         }
 
+        if (!empty($this->config['github_api_url'])) {
+            $github_api_url = $this->config['github_api_url'];
+        } else {
+            $github_api_url = self::GITHUB_API_URL.'/repos/'.$this->config['repository_vendor'].'/'.$this->config['repository_name'];
+        }
+
         return $this->client->request(
             'GET',
-            self::GITHUB_API_URL.'/repos/'.$this->config['repository_vendor'].'/'.$this->config['repository_name'].'/tags', [
+            $github_api_url.'/tags', [
                 'timeout' => config('app.curl_timeout'),
                 'connect_timeout' => config('app.curl_connect_timeout'),
                 'proxy' => config('app.proxy'),
