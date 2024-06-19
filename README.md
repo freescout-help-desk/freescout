@@ -2,10 +2,10 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/freescout-helpdesk/freescout/master/public/img/logo-300.png" width="180" height="180" />
+<img src="https://raw.githubusercontent.com/freescout-help-desk/freescout/master/public/img/logo-300.png" width="180" height="180" />
 <br/><br/>
 
-[![PHP version](https://freescout-helpdesk.github.io/img/badges/PHP-7.1%2B-blue.svg)](https://github.com/freescout-helpdesk/freescout#requirements) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Ffreescout-helpdesk%2Ffreescout&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+[![PHP version](https://freescout-helpdesk.github.io/img/badges/PHP-7.1%2B-blue.svg)](https://github.com/freescout-help-desk/freescout#requirements) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Ffreescout-helpdesk%2Ffreescout&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 </div>
 
@@ -81,7 +81,7 @@ There are no minimum system requirements (CPU / RAM) – FreeScout will run on a
 
 ## Installation
 
-[Installation Guide](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide)
+[Installation Guide](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide)
 
 Images & one-click installs:
 
@@ -89,7 +89,7 @@ Images & one-click installs:
 * [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
 * [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
-* [Ubuntu](https://github.com/freescout-helpdesk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) (bash script)
+* [Ubuntu](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) (bash script)
 
 ## Cloud Hosted
 
@@ -115,10 +115,10 @@ Don't miss news, updates and new modules!
 
 ## Contributing
 
-* [Support the project by leaving a feedback](https://github.com/freescout-helpdesk/freescout/issues/288)
-* [Development Guide](https://github.com/freescout-helpdesk/freescout/wiki/Development-Guide)
-* [Todo list](https://github.com/freescout-helpdesk/freescout/labels/help%20wanted)
-* [Translate](https://github.com/freescout-helpdesk/freescout/wiki/Translate)
+* [Support the project by leaving a feedback](https://github.com/freescout-help-desk/freescout/issues/288)
+* [Development Guide](https://github.com/freescout-help-desk/freescout/wiki/Development-Guide)
+* [Todo list](https://github.com/freescout-help-desk/freescout/labels/help%20wanted)
+* [Translate](https://github.com/freescout-help-desk/freescout/wiki/Translate)
 
 ## Screenshots
 

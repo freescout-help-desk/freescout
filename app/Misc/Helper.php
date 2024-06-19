@@ -1970,6 +1970,10 @@ class Helper
             'fpassthru (PHP)'  => function_exists('fpassthru'),
             'symlink (PHP)'    => function_exists('symlink'),
             'iconv (PHP)'      => function_exists('iconv'),
+            // If posix_isatty() function is not enabled on the server the question in the
+            // console command makes it wait infinitely and be aborted.
+            // Commands should avoid using interctive functions or use special flags.
+            //'posix_isatty (PHP)'  => function_exists('posix_isatty'),
             'pcntl_signal (console PHP)'    => function_exists('shell_exec') ? (int)\Helper::shellExec('php -r "echo (int)function_exists(\'pcntl_signal\');"') : false,
             'ps (shell)' => function_exists('shell_exec') ? \Helper::shellExec('ps') : false,
         ];
