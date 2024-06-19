@@ -101,10 +101,10 @@ class Mail
     {
         if ($mailbox) {
             // Configure mail driver according to Mailbox settings.
-            $oauth = $mailbox->oauthEnabled();
+            $oauth = $mailbox->outOauthEnabled();
 
             // Refresh Access Token.
-            if ($oauth && !strstr($mailbox->out_username, '@')) {
+            if ($oauth) {
                 if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
                     // Try to get an access token (using the authorization code grant)
                     $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
@@ -134,7 +134,7 @@ class Mail
             if ($mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
                 \Config::set('mail.host', $mailbox->out_server);
                 \Config::set('mail.port', $mailbox->out_port);
-                if ($oauth && !strstr($mailbox->out_username, '@')) {
+                if ($oauth) {
                     \Config::set('mail.auth_mode', 'XOAUTH2');
                     \Config::set('mail.username', $mailbox->email);
                     \Config::set('mail.password', $mailbox->oauthGetParam('a_token'));
