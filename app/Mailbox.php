@@ -980,8 +980,8 @@ class Mailbox extends Model
     public function outOauthEnabled()
     {
         return $this->oauthEnabled() 
-                && !strstr($this->out_username, '@')
-                && stristr($this->out_server, '.office365.com');
+            && $this->out_username !== null && !strstr($this->out_username, '@')
+            && $this->out_server !== null && stristr($this->out_server, '.office365.com');
     }
 
     public function setEmailAttribute($value)
