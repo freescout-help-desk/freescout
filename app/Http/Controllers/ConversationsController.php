@@ -998,13 +998,18 @@ class ConversationsController extends Controller
 
                     if (!$is_note && !$is_forward) {
                         // Save extra recipients to CC
+                        $cc = Conversation::sanitizeEmails($request->cc);
                         if ($is_create && !$is_multiple && count($to_array) > 1) {
-                            $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), $to_array));
+                            // First recipient becomes To, others - go to CC.
+                            $remaining_to = array_diff($to_array, [$to]);
+                            $cc = array_diff($cc, [$to]);
+                            $cc = array_merge($cc, $remaining_to);
+                            $conversation->setCc($cc);
                         } else {
                             if (!$is_multiple) {
-                                $conversation->setCc(array_merge(Conversation::sanitizeEmails($request->cc), [$to]));
+                                $conversation->setCc(array_diff($cc, [$to]));
                             } else {
-                                $conversation->setCc(Conversation::sanitizeEmails($request->cc));
+                                $conversation->setCc($cc);
                             }
                         }
                         $conversation->setBcc($request->bcc);
