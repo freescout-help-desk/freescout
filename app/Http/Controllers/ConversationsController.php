@@ -3230,6 +3230,10 @@ class ConversationsController extends Controller
         if ($thread->first) {
             // This was a new conversation, move it to drafts
             $conversation->state = Thread::STATE_DRAFT;
+
+            // Add a record to the conversation_folder table.
+            $conversation->addToFolder(Folder::TYPE_DRAFTS);
+
             $conversation->updateFolder();
             $conversation->mailbox->updateFoldersCounters();
             $folder_id = null;
