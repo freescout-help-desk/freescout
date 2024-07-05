@@ -869,6 +869,10 @@ class User extends Authenticatable
         if (!is_string($uploaded_file)) {
             $real_path = $uploaded_file->getRealPath();
             $mime_type = $uploaded_file->getMimeType();
+
+            if (!$real_path) {
+                $real_path = $uploaded_file->getPathname();
+            }
         }
 
         $photo_size = config('app.user_photo_size');

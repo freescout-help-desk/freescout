@@ -77,7 +77,7 @@ class CustomersController extends Controller
         // Photo
         $validator->after(function ($validator) use ($customer, $request) {
             if ($request->hasFile('photo_url')) {
-                $path_url = $customer->savePhoto($request->file('photo_url')->getRealPath(), $request->file('photo_url')->getMimeType());
+                $path_url = $customer->savePhoto($request->file('photo_url')->getRealPath() ?: $request->file('photo_url')->getPathname(), $request->file('photo_url')->getMimeType());
 
                 if ($path_url) {
                     $customer->photo_url = $path_url;
