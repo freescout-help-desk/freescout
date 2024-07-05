@@ -252,7 +252,12 @@ class Attachment extends Model
      */
     public function url()
     {
-        $file_url = Storage::url($this->getStorageFilePath());
+        $file_path = $this->getStorageFilePath();
+
+        // URL must contain only forward slashes.
+        $file_path = str_replace(DIRECTORY_SEPARATOR, '/', $file_path);
+
+        $file_url = Storage::url($file_path);
 
         // Fix percents.
         // https://github.com/freescout-helpdesk/freescout/issues/3530
