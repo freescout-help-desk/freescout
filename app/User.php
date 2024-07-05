@@ -867,12 +867,10 @@ class User extends Authenticatable
     {
         $real_path = $uploaded_file;
         if (!is_string($uploaded_file)) {
-            $real_path = $uploaded_file->getRealPath();
+            // Fallback to getPathname() for Windows.
+            // https://github.com/freescout-help-desk/freescout/issues/4105
+            $real_path = $uploaded_file->getRealPath() ?: $uploaded_file->getPathname();
             $mime_type = $uploaded_file->getMimeType();
-
-            if (!$real_path) {
-                $real_path = $uploaded_file->getPathname();
-            }
         }
 
         $photo_size = config('app.user_photo_size');
