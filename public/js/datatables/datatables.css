@@ -54,7 +54,7 @@ table.dataTable thead .sorting_desc_disabled {
   background-repeat: no-repeat;
   background-position: center right;
 }
-table.dataTable thead .sorting {
+/*table.dataTable thead .sorting {
   background-image: url("DataTables-1.10.18/images/sort_both.png");
 }
 table.dataTable thead .sorting_asc {
@@ -68,7 +68,7 @@ table.dataTable thead .sorting_asc_disabled {
 }
 table.dataTable thead .sorting_desc_disabled {
   background-image: url("DataTables-1.10.18/images/sort_desc_disabled.png");
-}
+}*/
 table.dataTable tbody tr {
   background-color: #ffffff;
 }

@@ -1732,7 +1732,7 @@ class Helper
         } elseif ($ext == 'pdf') {
             // Rename PDF to avoid running embedded JavaScript.
             if ($uploaded_file && !$contents) {
-                $contents = file_get_contents($uploaded_file->getRealPath());
+                $contents = file_get_contents($uploaded_file->getRealPath() ?: $uploaded_file->getPathname());
             }
             if ($contents && strstr($contents, '/JavaScript')) {
                 $file_name = $file_name.'_';
