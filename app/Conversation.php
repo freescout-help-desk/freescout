@@ -1767,6 +1767,16 @@ class Conversation extends Model
         return $viewers;
     }
 
+    public function changeSubject($new_subject, $user = null)
+    {
+        $prev_subject = $this->subject;
+
+        $this->subject = $new_subject;
+        $this->save();
+
+        \Eventy::action('conversation.subject_changed', $this, $user, $prev_subject);
+    }
+
     public function changeState($new_state, $user = null)
     {
         if (!array_key_exists($new_state, self::$states)) {
