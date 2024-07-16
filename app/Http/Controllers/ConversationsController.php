@@ -2315,8 +2315,7 @@ class ConversationsController extends Controller
                 $subject = trim($subject);
 
                 if (!$response['msg'] && $subject) {
-                    $conversation->subject = $subject;
-                    $conversation->save();
+                    $conversation->changeSubject($subject, $user);
 
                     $response['status'] = 'success';
                 }
