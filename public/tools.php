@@ -84,7 +84,7 @@ if (!empty($_POST)) {
         if (!$php_path) {
             $php_path = 'php';
         }
-        
+
         // Sanitize path.
         // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-7p9x-ch4c-vqj9
         if (!file_exists($php_path)) {
@@ -92,7 +92,7 @@ if (!empty($_POST)) {
         }
     }
 
-    if (trim($app_key) != trim(getAppKey($root_dir))) {
+    if (trim($app_key) !== trim(getAppKey($root_dir))) {
         $errors['app_key'] = 'Invalid App Key';
     } else {
         if (!function_exists('shell_exec')) {
