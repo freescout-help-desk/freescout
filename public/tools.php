@@ -85,7 +85,7 @@ if (!empty($_POST)) {
         if (!file_exists($php_path)) {
             $php_path = 'php';
         }
-        $php_path = preg_replace("#[ ;\|]#", '', $php_path);
+        $php_path = preg_replace("#[ ;&\|]#", '', $php_path);
         if (!$php_path) {
             $php_path = 'php';
         }
