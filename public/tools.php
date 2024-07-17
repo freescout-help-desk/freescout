@@ -80,13 +80,14 @@ if (!empty($_POST)) {
     if (!empty($_POST['php_path'])) {
         $php_path = trim($_POST['php_path']);
 
+        $php_path = preg_replace("#[ ;\$<>:&\|]#", '', $php_path);
+        if (!$php_path) {
+            $php_path = 'php';
+        }
+        
         // Sanitize path.
         // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-7p9x-ch4c-vqj9
         if (!file_exists($php_path)) {
-            $php_path = 'php';
-        }
-        $php_path = preg_replace("#[ ;&\|]#", '', $php_path);
-        if (!$php_path) {
             $php_path = 'php';
         }
     }
