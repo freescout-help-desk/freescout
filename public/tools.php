@@ -80,18 +80,19 @@ if (!empty($_POST)) {
     if (!empty($_POST['php_path'])) {
         $php_path = trim($_POST['php_path']);
 
+        $php_path = preg_replace("#[ ;\$<>:&\|]#", '', $php_path);
+        if (!$php_path) {
+            $php_path = 'php';
+        }
+
         // Sanitize path.
         // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-7p9x-ch4c-vqj9
         if (!file_exists($php_path)) {
             $php_path = 'php';
         }
-        $php_path = preg_replace("#[ ;\|]#", '', $php_path);
-        if (!$php_path) {
-            $php_path = 'php';
-        }
     }
 
-    if (trim($app_key) != trim(getAppKey($root_dir))) {
+    if (trim($app_key) !== trim(getAppKey($root_dir))) {
         $errors['app_key'] = 'Invalid App Key';
     } else {
         if (!function_exists('shell_exec')) {
@@ -100,52 +101,63 @@ if (!empty($_POST)) {
                 'text' => '<code>shell_exec</code> function is unavailable. Can not run updating.',
             ];
         } else {
-            $cc_output = clearCache($root_dir, $php_path);
-            if ($_POST['action'] == 'cc') {
+            
+            // Make sure that it's actually $php_path points to PHP executable and not something else.
+            $version_output = shell_exec($php_path.' -r "echo phpversion();"');
+
+            if ($php_path != 'php' && !preg_match("#^\d+\.\d+\.\d+$#", $version_output)) {
                 $alerts[] = [
-                    'type' => 'success',
-                    'text' => 'Cache cleared: <br/><pre>'.htmlspecialchars($cc_output).'</pre>',
+                    'type' => 'danger',
+                    'text' => 'Invalid Path to PHP: '.$php_path,
                 ];
-            } else {
-                try {
+            }
 
-                    // First check PHP version
-                    $version_output = shell_exec($php_path.' -r "echo phpversion();"');
+            if (!count($alerts)) {
+                if ($_POST['action'] == 'cc') {
+                    $cc_output = clearCache($root_dir, $php_path);
 
-                    if (!version_compare($version_output, '7.1', '>=')) {
-                        $alerts[] = [
-                            'type' => 'danger',
-                            'text' => 'Incorrect PHP version (7.1+ is required):<br/><br/><pre>'.htmlspecialchars($version_output).'</pre>',
-                        ];
-                    } else {
-                        if ($_POST['action'] == 'update') {
-                            // Update Now
-                            $output = shell_exec($php_path.' '.$root_dir.'artisan freescout:update --force');
-                            if (strstr($output, 'Broadcasting queue restart signal')) {
+                    $alerts[] = [
+                        'type' => 'success',
+                        'text' => 'Cache cleared: <br/><pre>'.htmlspecialchars($cc_output).'</pre>',
+                    ];
+                } else {
+                    try {
+                        // First check PHP version.
+                        if (!version_compare($version_output, '7.1', '>=')) {
+                            $alerts[] = [
+                                'type' => 'danger',
+                                'text' => 'Incorrect PHP version (7.1+ is required):<br/><br/><pre>'.htmlspecialchars($version_output).'</pre>',
+                            ];
+                        } else {
+                            if ($_POST['action'] == 'update') {
+                                // Update Now
+                                $output = shell_exec($php_path.' '.$root_dir.'artisan freescout:update --force');
+                                if (strstr($output, 'Broadcasting queue restart signal')) {
+                                    $alerts[] = [
+                                        'type' => 'success',
+                                        'text' => 'Updating finished:<br/><pre>'.htmlspecialchars($output).'</pre>',
+                                    ];
+                                } else {
+                                    $alerts[] = [
+                                        'type' => 'danger',
+                                        'text' => 'Something went wrong... Please <strong><a href="https://freescout.net/download/" target="_blank">download</a></strong> the latest version and extract it into your application folder replacing existing files. After that click "Migrate DB" button.<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
+                                    ];
+                                }
+                            } else {
+                                // Migreate DB
+                                $output = shell_exec($php_path.' '.$root_dir.'artisan migrate --force');
                                 $alerts[] = [
                                     'type' => 'success',
-                                    'text' => 'Updating finished:<br/><pre>'.htmlspecialchars($output).'</pre>',
-                                ];
-                            } else {
-                                $alerts[] = [
-                                    'type' => 'danger',
-                                    'text' => 'Something went wrong... Please <strong><a href="https://freescout.net/download/" target="_blank">download</a></strong> the latest version and extract it into your application folder replacing existing files. After that click "Migrate DB" button.<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
+                                    'text' => 'Migrating finished:<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
                                 ];
                             }
-                        } else {
-                            // Migreate DB
-                            $output = shell_exec($php_path.' '.$root_dir.'artisan migrate --force');
-                            $alerts[] = [
-                                'type' => 'success',
-                                'text' => 'Migrating finished:<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
-                            ];
                         }
+                    } catch (\Exception $e) {
+                        $alerts[] = [
+                            'type' => 'danger',
+                            'text' => 'Error occurred: '.htmlspecialchars($e->getMessage()),
+                        ];
                     }
-                } catch (\Exception $e) {
-                    $alerts[] = [
-                        'type' => 'danger',
-                        'text' => 'Error occurred: '.htmlspecialchars($e->getMessage()),
-                    ];
                 }
             }
         }

@@ -977,6 +977,12 @@ class Mailbox extends Model
         return $this->meta['oauth'][$param] ?? '';
     }
 
+    public function inOauthEnabled()
+    {
+        return $this->oauthEnabled() 
+            && $this->in_username !== null && !strstr($this->in_username, '@');
+    }
+
     public function outOauthEnabled()
     {
         return $this->oauthEnabled() 
