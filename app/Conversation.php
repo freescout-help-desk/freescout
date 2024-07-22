@@ -1851,9 +1851,9 @@ class Conversation extends Model
         \Eventy::action('conversation.user_changed', $this, $user, $prev_user_id);
     }
 
-    public function deleteToFolder($user)
+    public function deleteToFolder($user, $update_folders_counters = true)
     {
-        $folder_id = $this->getCurrentFolder();
+        //$folder_id = $this->getCurrentFolder();
 
         $prev_state = $this->state;
         $this->state = Conversation::STATE_DELETED;
@@ -1879,8 +1879,10 @@ class Conversation extends Model
         // Remove conversation from drafts folder.
         $this->removeFromFolder(Folder::TYPE_DRAFTS);
 
-        // Recalculate only old and new folders
-        $this->mailbox->updateFoldersCounters();
+        // Recalculate only old and new folders.
+        if ($update_folders_counters) {
+            $this->mailbox->updateFoldersCounters();
+        }
 
         \Eventy::action('conversation.deleted', $this, $user);
         \Eventy::action('conversation.state_changed', $this, $user, $prev_state);
