@@ -1661,7 +1661,8 @@ class Helper
 
             // 307 - Temporary Redirect.
             if (!preg_match("/(200|301|302|307)/", $headers[0])) {
-                return false;
+                throw new \Exception('HTTP Status Code: '.$headers[0], 1);
+                //return false;
             }
 
             $ch = curl_init();
@@ -1671,14 +1672,19 @@ class Helper
             curl_setopt($ch, CURLOPT_TIMEOUT, 180);
             $contents = curl_exec($ch);
 
-            if (curl_errno($ch)) {
-                throw new \Exception(curl_errno($ch).' '.curl_error($ch), 1);
+            $curl_errno = curl_errno($ch);
+
+            if ($curl_errno) {
+                throw new \Exception('Curl Error Number: '.$curl_errno, 1);
             }
 
-            curl_close($ch);
-
-            if (!$contents) {
-                return false;
+            if ($contents == '') {
+                $https_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+                throw new \Exception('Empty Response. Curl Error Number: '.$curl_errno.'. Response Status Code: '.$https_status, 1);
+                //return false;
+            } else {
+                curl_close($ch);
             }
 
             return $contents;
