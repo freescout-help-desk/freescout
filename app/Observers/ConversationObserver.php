@@ -42,6 +42,16 @@ class ConversationObserver
         \Eventy::action('conversation.deleting', $conversation);
     }
 
+    /**
+     * After conversation deleted from database.
+     *
+     * @param Conversation $conversation
+     */
+    public function deleted(Conversation $conversation)
+    {
+        \Eventy::action('conversation.deleted_forever', $conversation);
+    }
+
     public function updated(Conversation $conversation)
     {
         \Eventy::action('conversation.updated', $conversation);

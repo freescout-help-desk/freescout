@@ -1943,6 +1943,7 @@ class ConversationsController extends Controller
                     if ($prev_state != $conversation->state) {
                         \Eventy::action('conversation.state_changed', $conversation, $user, $prev_state);
                     }
+                    \Eventy::action('conversation.restored', $conversation, $user);
 
                     $response['status'] = 'success';
 
