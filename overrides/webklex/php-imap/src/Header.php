@@ -857,7 +857,12 @@ class Header {
                     $parsed_date = Carbon::parse($date);
                 } catch (\Exception $_e) {
                     if (!isset($this->config["fallback_date"])) {
-                        throw new InvalidMessageDateException("Invalid message date. ID:" . $this->get("message_id") . " Date:" . $header->date . "/" . $date, 1100, $e);
+                        // Simply use current date.
+                        // https://github.com/freescout-help-desk/freescout/issues/4159
+                        $parsed_date = Carbon::now();
+                        \Helper::logException(new InvalidMessageDateException("Invalid message date. ID:" . $this->get("message_id") . " Date:" . $header->date . "/" . $date, 1100, $e));
+
+                        //throw new InvalidMessageDateException("Invalid message date. ID:" . $this->get("message_id") . " Date:" . $header->date . "/" . $date, 1100, $e);
                     } else {
                         $parsed_date = Carbon::parse($this->config["fallback_date"]);
                     }
