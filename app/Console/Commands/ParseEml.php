@@ -83,6 +83,8 @@ class ParseEml extends Command
         $this->info($message->getHeader()->raw);
         $this->line('From: ');
         $this->info(json_encode($message->getFrom()[0] ?? [], JSON_UNESCAPED_UNICODE));
+        $this->line('Reply-To: ');
+        $this->info(json_encode($message->getReplyTo()[0] ?? [], JSON_UNESCAPED_UNICODE));
         $this->line('In-Reply-To: ');
         $this->info($message->getInReplyTo());
         $this->line('References: ');
