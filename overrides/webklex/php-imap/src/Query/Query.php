@@ -339,23 +339,32 @@ class Query {
         $raw_messages = $this->fetch($available_messages);
 
         $msglist = 0;
-        $exception = null;
+        $last_exception = null;
         foreach ($raw_messages["headers"] as $uid => $header) {
             $content = $raw_messages["contents"][$uid] ?? "";
             $flag = $raw_messages["flags"][$uid] ?? [];
             $extensions = $raw_messages["extensions"][$uid] ?? [];
 
-            // When emails are fetched they are always marked as "read".
+            // When emails are fetched by this library they are always marked as "read".
             // So if an error occures during creating a Message, we should not stop 
-            // the whole process as other emails may need to be marked as "unread"
-            // in Message->peek().
+            // the whole process as other emails need to be marked as "unread" in Message->peek().
             // https://github.com/freescout-help-desk/freescout/issues/4159
             // https://github.com/Webklex/php-imap/issues/507
             try {
+                // First create Message instance without parsing the body (to avoid "Allowed memory size" fatal error)
+                // and mark the message as "unread" if leaveUnread() is set.
                 $message = $this->make($uid, $msglist, $header, $content, $flag);
             } catch (\Exception $e) {
-                $exception = $e;
-                continue;
+                $last_exception = $e;
+                
+                \Helper::logException($e);
+
+                // Skip the email only if some serious error occurred.
+                if (!($e instanceof MessageFlagException) 
+                    && !($e instanceof InvalidMessageDateException) 
+                ) {
+                    continue;
+                }
             }
             foreach($extensions as $key => $extension) {
                 $message->getHeader()->set($key, $extension);
@@ -365,10 +374,36 @@ class Query {
                 $messages->put("$key", $message);
             }
             $msglist++;
+
+            // Clean memory.
+            if (isset($raw_messages["contents"][$uid])) {
+                unset($raw_messages["contents"][$uid]);
+            }
         }
 
-        if ($exception) {
-            throw $exception;
+        // Now parse messages body.
+        foreach ($messages as $i => $message) {
+            try {
+                $message->parseRawBody($message->tmp_raw_body);
+                $message->tmp_raw_body = null;
+            } catch (\Exception $e) {
+                $last_exception = $e;
+                \Helper::logException($e);
+
+                // Try to mark the message as read not to fetch it again.
+                try {
+                    $message->markAsRead();
+                } catch (\Exception $e) {
+                    // Do nothing.
+                }
+                
+                // The body of the message could not be parsed - remove message from the list.
+                $messages->forget($i);
+            }
+        }
+
+        if ($last_exception) {
+            throw $last_exception;
         }
 
         return $messages;
