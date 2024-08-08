@@ -49,6 +49,7 @@ class Mail
     const FETCH_SCHEDULE_HOURLY = 60;
 
     const OAUTH_PROVIDER_MICROSOFT = 'ms';
+    const OAUTH_MICROSOFT_SMTP = 'outlook.office365.com';
 
     /**
      * If reply is not extracted properly from the incoming email, add here a new separator.

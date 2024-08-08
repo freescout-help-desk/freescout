@@ -946,7 +946,9 @@ class MailboxesController extends Controller
             if (!empty($token_data['a_token'])) {
                 // Set username and password for the oppozite in_out.
                 if ($in_out == 'in') {
-                    if (empty($mailbox->out_server) || stristr($mailbox->out_server, '.office365.com') ) {
+                    if (empty($mailbox->out_server) 
+                        || trim($mailbox->out_server) == \MailHelper::OAUTH_MICROSOFT_SMTP
+                    ) {
                         $mailbox->out_username = $username;
                         $mailbox->out_password = $password;
                     }

@@ -987,7 +987,7 @@ class Mailbox extends Model
     {
         return $this->oauthEnabled() 
             && $this->out_username !== null && !strstr($this->out_username, '@')
-            && $this->out_server !== null && stristr($this->out_server, '.office365.com');
+            && $this->out_server !== null && trim($this->out_server) == \MailHelper::OAUTH_MICROSOFT_SMTP;
     }
 
     public function setEmailAttribute($value)
