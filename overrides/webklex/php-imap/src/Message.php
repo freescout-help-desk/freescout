@@ -162,6 +162,8 @@ class Message {
     /** @var FlagCollection $flags */
     public $flags;
 
+    public $tmp_raw_body;
+
     /**
      * A list of all available and supported flags
      *
@@ -271,7 +273,11 @@ class Message {
 
         $instance->parseRawHeader($raw_header);
         $instance->parseRawFlags($raw_flags);
-        $instance->parseRawBody($raw_body);
+        // Parsing body may lead to "Allowed memory size" fatal error.
+        // https://github.com/freescout-help-desk/freescout/issues/4089
+        //$instance->parseRawBody($raw_body);
+        $instance->tmp_raw_body = $raw_body;
+
         $instance->peek();
 
         return $instance;
@@ -511,6 +517,10 @@ class Message {
         }elseif ($this->getFlags()->get("seen") != null) {
             $this->setFlag("Seen");
         }
+    }
+
+    public function markAsRead(){
+        $this->setFlag("Seen");
     }
 
     /**

@@ -1851,9 +1851,9 @@ class Conversation extends Model
         \Eventy::action('conversation.user_changed', $this, $user, $prev_user_id);
     }
 
-    public function deleteToFolder($user)
+    public function deleteToFolder($user, $update_folders_counters = true)
     {
-        $folder_id = $this->getCurrentFolder();
+        //$folder_id = $this->getCurrentFolder();
 
         $prev_state = $this->state;
         $this->state = Conversation::STATE_DELETED;
@@ -1879,8 +1879,10 @@ class Conversation extends Model
         // Remove conversation from drafts folder.
         $this->removeFromFolder(Folder::TYPE_DRAFTS);
 
-        // Recalculate only old and new folders
-        $this->mailbox->updateFoldersCounters();
+        // Recalculate only old and new folders.
+        if ($update_folders_counters) {
+            $this->mailbox->updateFoldersCounters();
+        }
 
         \Eventy::action('conversation.deleted', $this, $user);
         \Eventy::action('conversation.state_changed', $this, $user, $prev_state);
@@ -2231,7 +2233,7 @@ class Conversation extends Model
         return $result;
     }
 
-    public static function search($q, $filters, $user = null, $query_conversations = null)
+    public static function search($q, $filters, $user = null, $query_conversations = null, $group_by = [])
     {
         $mailbox_ids = [];
 
@@ -2244,7 +2246,7 @@ class Conversation extends Model
 		
         // https://github.com/laravel/framework/issues/21242
         // https://github.com/laravel/framework/pull/27675
-        $query_conversations->groupby('conversations.id');
+        $query_conversations->groupBy(array_merge(['conversations.id'], $group_by));
 
         if (!empty($filters['mailbox'])) {
             // Check if the user has access to the mailbox.
@@ -2353,15 +2355,15 @@ class Conversation extends Model
             $query_conversations->where('conversations.created_at', '<=', date('Y-m-d 23:59:59', strtotime($filters['before'])));
         }
 
-        // Join tables if needed
+        // Join tables if needed.
         $query_sql = $query_conversations->toSql();
-        if (!strstr($query_sql, '`threads`.`conversation_id`')) {
+        if (!self::queryContainsStr($query_sql, '`threads`.`conversation_id`')) {
             $query_conversations->join('threads', function ($join) {
                 $join->on('conversations.id', '=', 'threads.conversation_id');
             });
         }
 
-        if (!strstr($query_sql, '`customers`.`id`')) {
+        if (!self::queryContainsStr($query_sql, '`customers`.`id`')) {
             $query_conversations->leftJoin('customers', 'conversations.customer_id', '=' ,'customers.id');
         }
 
@@ -2467,5 +2469,13 @@ class Conversation extends Model
         }
 
         return $chats;
+    }
+
+    public static function queryContainsStr($query_str, $substr)
+    {
+        $regex = preg_quote($substr);
+        $regex = str_replace('`', '[`"]', $regex);
+
+        return preg_match('#'.$regex.'#', $query_str);
     }
 }

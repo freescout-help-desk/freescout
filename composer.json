@@ -317,7 +317,8 @@
             "vendor/webklex/php-imap/src/Attachment.php",
             "vendor/webklex/php-imap/src/Part.php",
             "vendor/webklex/php-imap/src/Client.php",
-            "vendor/webklex/php-imap/src/Connection/Protocols/ImapProtocol.php"
+            "vendor/webklex/php-imap/src/Connection/Protocols/ImapProtocol.php",
+            "vendor/webklex/php-imap/src/Query/Query.php"
         ]
     },
     "autoload-dev": {
