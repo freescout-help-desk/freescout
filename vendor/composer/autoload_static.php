@@ -4035,7 +4035,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Webklex\\PHPIMAP\\IMAP' => __DIR__ . '/..' . '/webklex/php-imap/src/IMAP.php',
         'Webklex\\PHPIMAP\\Message' => __DIR__ . '/../..' . '/overrides/webklex/php-imap/src/Message.php',
         'Webklex\\PHPIMAP\\Part' => __DIR__ . '/../..' . '/overrides/webklex/php-imap/src/Part.php',
-        'Webklex\\PHPIMAP\\Query\\Query' => __DIR__ . '/..' . '/webklex/php-imap/src/Query/Query.php',
+        'Webklex\\PHPIMAP\\Query\\Query' => __DIR__ . '/../..' . '/overrides/webklex/php-imap/src/Query/Query.php',
         'Webklex\\PHPIMAP\\Query\\WhereQuery' => __DIR__ . '/..' . '/webklex/php-imap/src/Query/WhereQuery.php',
         'Webklex\\PHPIMAP\\Structure' => __DIR__ . '/../..' . '/overrides/webklex/php-imap/src/Structure.php',
         'Webklex\\PHPIMAP\\Support\\AttachmentCollection' => __DIR__ . '/..' . '/webklex/php-imap/src/Support/AttachmentCollection.php',
