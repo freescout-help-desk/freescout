@@ -821,7 +821,14 @@ class Thread extends Model
         $name = $mailbox->name;
 
         if ($mailbox->from_name == Mailbox::FROM_NAME_CUSTOM && $mailbox->from_name_custom) {
-            $name = $mailbox->from_name_custom;
+            $data = [
+                'mailbox' => $mailbox,
+                'mailbox_from_name' => '', // To avoid recursion.
+                'conversation' => $this->conversation,
+                // If we reach here it means the thread has been created by user.
+                'user' => $this->getCreatedBy(),
+            ];
+            $name = \MailHelper::replaceMailVars($mailbox->from_name_custom, $data, false, true);
         } elseif ($mailbox->from_name == Mailbox::FROM_NAME_USER && $this->getCreatedBy()) {
             $name = $this->getCreatedBy()->getFirstName(true);
         }
