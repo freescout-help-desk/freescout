@@ -127,10 +127,37 @@ class Structure {
      * @throws InvalidMessageDateException
      */
     private function detectParts(string $boundary, string $context, int $part_number = 0): array {
-        $base_parts = explode( $boundary, $context);
+        // Below we get rid of exlode() as it consumes extra memory.
+        // https://github.com/freescout-help-desk/freescout/issues/3956#issuecomment-2284592925
+        //$base_parts = explode( $boundary, $context);
+
         $final_parts = [];
-        foreach($base_parts as $ctx) {
-            $ctx = substr($ctx, 2);
+        //foreach($base_parts as $ctx) {
+        
+        $boundary_len = strlen($boundary);
+        $last_pos = 0;
+        $positions = [];
+        while (($last_pos = strpos($context, $boundary, $last_pos)) !== false) {
+            $positions[] = $last_pos;
+            $last_pos = $last_pos + $boundary_len;
+        }
+        if (!count($positions) || $positions[0] != 0) {
+            array_unshift($positions, 0);
+        }
+        
+        foreach ($positions as $pos_i => $pos) {
+            if ($pos == 0) {
+                // First.
+                $ctx = substr($context, 0+2, $positions[$pos_i+1]-2);
+            } elseif ($pos_i == count($positions)-1) {
+                // Last.
+                $ctx = substr($context, $pos+$boundary_len+2);
+            } else {
+                $ctx = substr($context, $pos+$boundary_len+2, $positions[$pos_i+1]-$pos-$boundary_len-2);
+            }
+
+            //$ctx = substr($ctx, 2);
+
             if ($ctx !== "--" && $ctx != "" && $ctx != "\r\n") {
                 $parts = $this->parsePart($ctx, $part_number);
                 foreach ($parts as $part) {
@@ -140,6 +167,7 @@ class Structure {
                 $part_number++;
             }
         }
+
         return $final_parts;
     }
 
