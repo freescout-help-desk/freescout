@@ -372,6 +372,9 @@ class Message {
      * @return mixed
      */
     public function getTextBody() {
+        if (!$this->structure) {
+            $this->parseRawBody($this->tmp_raw_body);
+        }
         if (!isset($this->bodies['text'])) {
             return null;
         }
@@ -385,6 +388,9 @@ class Message {
      * @return bool
      */
     public function hasHTMLBody(): bool {
+        if (!$this->structure) {
+            $this->parseRawBody($this->tmp_raw_body);
+        }
         return isset($this->bodies['html']) && $this->bodies['html'] !== "";
     }
 
@@ -394,6 +400,9 @@ class Message {
      * @return string|null
      */
     public function getHTMLBody() {
+        if (!$this->structure) {
+            $this->parseRawBody($this->tmp_raw_body);
+        }
         if (!isset($this->bodies['html'])) {
             return null;
         }
