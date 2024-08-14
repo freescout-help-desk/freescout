@@ -947,7 +947,8 @@ class MailboxesController extends Controller
                 // Set username and password for the oppozite in_out.
                 if ($in_out == 'in') {
                     if (empty($mailbox->out_server) 
-                        || trim($mailbox->out_server) == \MailHelper::OAUTH_MICROSOFT_SMTP
+                        || (trim($mailbox->out_server) == \MailHelper::OAUTH_MICROSOFT_SMTP 
+                            && (!$mailbox->out_username || $mailbox->out_username == $username))
                     ) {
                         $mailbox->out_username = $username;
                         $mailbox->out_password = $password;
