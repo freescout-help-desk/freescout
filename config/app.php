@@ -339,6 +339,15 @@ return [
     */
     'use_mail_date_on_fetching'    => env('APP_USE_MAIL_DATE_ON_FETCHING', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Don't add quotes around date in the SINCE IMAP instruction on fetching.
+    | https://github.com/freescout-help-desk/freescout/issues/4175
+    |
+    |-------------------------------------------------------------------------
+    */
+    'since_without_quotes_on_fetching'    => env('APP_SINCE_WITHOUT_QUOTES_ON_FETCHING', false),
+
      /*
     |--------------------------------------------------------------------------
     | Dashboard path.
