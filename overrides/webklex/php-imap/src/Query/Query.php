@@ -162,7 +162,10 @@ class Query {
                 } else {
                     if (is_numeric($statement[1])) {
                         $query .= $statement[0] . ' ' . $statement[1];
-                    } else if ($statement[0] == 'SINCE' && preg_match("#^[0-9]\-[a-zA-Z]\-[0-9]$#", $statement[1])) {
+                    } else if ($statement[0] == 'SINCE' 
+                        //&& preg_match("#^[0-9]\-[a-zA-Z]\-[0-9]$#", $statement[1])
+                        && config('app.since_without_quotes_on_fetching')
+                    ) {
                         // https://github.com/freescout-help-desk/freescout/issues/4175
                         $query .= $statement[0] . ' ' . $statement[1];
                     } else {
