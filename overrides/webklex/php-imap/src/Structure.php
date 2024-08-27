@@ -152,7 +152,12 @@ class Structure {
         foreach ($positions as $pos_i => $pos) {
             if ($pos == 0) {
                 // First.
-                $ctx = substr($context, 0+2, $positions[$pos_i+1]-2);
+                if (isset($positions[$pos_i+1])) {
+                    $ctx = substr($context, 0+2, $positions[$pos_i+1]-2);
+                } else {
+                    // First and last.
+                    $ctx = substr($context, 0+2);
+                }
             } elseif ($pos_i == count($positions)-1) {
                 // Last.
                 $ctx = substr($context, $pos+$boundary_len+2);
