@@ -148,6 +148,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Illuminate\\Http\\' => 16,
             'Illuminate\\Foundation\\Testing\\' => 30,
             'Illuminate\\Foundation\\Http\\Middleware\\' => 38,
+            'Illuminate\\Foundation\\Bootstrap\\' => 32,
             'Illuminate\\Foundation\\' => 22,
             'Illuminate\\Filesystem\\' => 22,
             'Illuminate\\Database\\Eloquent\\Concerns\\' => 38,
@@ -549,6 +550,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Illuminate\\Foundation\\Http\\Middleware\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Foundation/Http/Middleware',
+        ),
+        'Illuminate\\Foundation\\Bootstrap\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Foundation/Bootstrap',
         ),
         'Illuminate\\Foundation\\' => 
         array (
@@ -2152,7 +2157,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Illuminate\\Foundation\\Auth\\ThrottlesLogins' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Auth/ThrottlesLogins.php',
         'Illuminate\\Foundation\\Auth\\User' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Auth/User.php',
         'Illuminate\\Foundation\\Bootstrap\\BootProviders' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php',
-        'Illuminate\\Foundation\\Bootstrap\\HandleExceptions' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php',
+        'Illuminate\\Foundation\\Bootstrap\\HandleExceptions' => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php',
         'Illuminate\\Foundation\\Bootstrap\\LoadConfiguration' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php',
         'Illuminate\\Foundation\\Bootstrap\\LoadEnvironmentVariables' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadEnvironmentVariables.php',
         'Illuminate\\Foundation\\Bootstrap\\RegisterFacades' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterFacades.php',

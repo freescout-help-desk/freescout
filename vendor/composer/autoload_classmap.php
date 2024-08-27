@@ -1355,7 +1355,7 @@ return array(
     'Illuminate\\Foundation\\Auth\\ThrottlesLogins' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/Auth/ThrottlesLogins.php',
     'Illuminate\\Foundation\\Auth\\User' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/Auth/User.php',
     'Illuminate\\Foundation\\Bootstrap\\BootProviders' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/Bootstrap/BootProviders.php',
-    'Illuminate\\Foundation\\Bootstrap\\HandleExceptions' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php',
+    'Illuminate\\Foundation\\Bootstrap\\HandleExceptions' => $baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php',
     'Illuminate\\Foundation\\Bootstrap\\LoadConfiguration' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php',
     'Illuminate\\Foundation\\Bootstrap\\LoadEnvironmentVariables' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadEnvironmentVariables.php',
     'Illuminate\\Foundation\\Bootstrap\\RegisterFacades' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterFacades.php',

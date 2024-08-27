@@ -84,6 +84,7 @@ return array(
     'Illuminate\\Http\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Http'),
     'Illuminate\\Foundation\\Testing\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation/Testing'),
     'Illuminate\\Foundation\\Http\\Middleware\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation/Http/Middleware'),
+    'Illuminate\\Foundation\\Bootstrap\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation/Bootstrap'),
     'Illuminate\\Foundation\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation'),
     'Illuminate\\Filesystem\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Filesystem'),
     'Illuminate\\Database\\Eloquent\\Concerns\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Database/Eloquent/Concerns'),
