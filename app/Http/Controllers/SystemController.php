@@ -80,8 +80,8 @@ class SystemController extends Controller
         $env_is_writable = is_writable(base_path('.env'));
 
         // Jobs
-        $queued_jobs = \App\Job::orderBy('created_at', 'desc')->get();
-        $failed_jobs = \App\FailedJob::orderBy('failed_at', 'desc')->get();
+        $queued_jobs = \App\Job::orderBy('created_at', 'desc')->limit(100)->get();
+        $failed_jobs = \App\FailedJob::orderBy('failed_at', 'desc')->limit(100)->get();
         $failed_queues = $failed_jobs->pluck('queue')->unique();
 
         // Commands

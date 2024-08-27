@@ -113,7 +113,12 @@ class Structure {
 
         $headers = new Header($headers);
         if (($boundary = $headers->getBoundary()) !== null) {
-            return $this->detectParts($boundary, $body, $part_number);
+            //return $this->detectParts($boundary, $body, $part_number);
+            $parts = $this->detectParts($boundary, $body, $part_number);
+
+            if (count($parts) > 1) {
+                return $parts;
+            }
         }
         return [new Part($body, $headers, $part_number)];
     }
@@ -130,7 +135,6 @@ class Structure {
         // Below we get rid of exlode() as it consumes extra memory.
         // https://github.com/freescout-help-desk/freescout/issues/3956#issuecomment-2284592925
         //$base_parts = explode( $boundary, $context);
-
         $final_parts = [];
         //foreach($base_parts as $ctx) {
         
@@ -148,7 +152,12 @@ class Structure {
         foreach ($positions as $pos_i => $pos) {
             if ($pos == 0) {
                 // First.
-                $ctx = substr($context, 0+2, $positions[$pos_i+1]-2);
+                if (isset($positions[$pos_i+1])) {
+                    $ctx = substr($context, 0+2, $positions[$pos_i+1]-2);
+                } else {
+                    // First and last.
+                    $ctx = substr($context, 0+2);
+                }
             } elseif ($pos_i == count($positions)-1) {
                 // Last.
                 $ctx = substr($context, $pos+$boundary_len+2);
@@ -185,9 +194,19 @@ class Structure {
             }
 
             return $this->detectParts($boundary, $this->raw);
+        } else {
+            // For non-multipart emails we still need to remove headers from the raw message.
+            // https://github.com/freescout-help-desk/freescout/issues/4181#issuecomment-2308142260
+            $body = $this->raw;
+            while (($pos = strpos($body, "\r\n")) > 0) {
+                $body = substr($body, $pos + 2);
+            }
+            $body = substr($body, 0, -2);
+
+            return [new Part($body, $this->header)];
         }
 
-        return [new Part($this->raw, $this->header)];
+        //return [new Part($this->raw, $this->header)];
     }
 
     /**
