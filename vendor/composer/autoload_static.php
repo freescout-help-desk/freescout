@@ -4002,7 +4002,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Webklex\\PHPIMAP\\Client' => __DIR__ . '/../..' . '/overrides/webklex/php-imap/src/Client.php',
         'Webklex\\PHPIMAP\\ClientManager' => __DIR__ . '/..' . '/webklex/php-imap/src/ClientManager.php',
         'Webklex\\PHPIMAP\\Connection\\Protocols\\ImapProtocol' => __DIR__ . '/../..' . '/overrides/webklex/php-imap/src/Connection/Protocols/ImapProtocol.php',
-        'Webklex\\PHPIMAP\\Connection\\Protocols\\LegacyProtocol' => __DIR__ . '/..' . '/webklex/php-imap/src/Connection/Protocols/LegacyProtocol.php',
+        'Webklex\\PHPIMAP\\Connection\\Protocols\\LegacyProtocol' => __DIR__ . '/../..' . '/overrides/webklex/php-imap/src/Connection/Protocols/LegacyProtocol.php',
         'Webklex\\PHPIMAP\\Connection\\Protocols\\Protocol' => __DIR__ . '/..' . '/webklex/php-imap/src/Connection/Protocols/Protocol.php',
         'Webklex\\PHPIMAP\\Connection\\Protocols\\ProtocolInterface' => __DIR__ . '/..' . '/webklex/php-imap/src/Connection/Protocols/ProtocolInterface.php',
         'Webklex\\PHPIMAP\\EncodingAliases' => __DIR__ . '/..' . '/webklex/php-imap/src/EncodingAliases.php',

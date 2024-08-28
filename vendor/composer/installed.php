@@ -3,7 +3,7 @@
         'name' => 'freescout-helpdesk/freescout',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'f326b14776dd20fb66b7dad1512a6b1fa6a4f88c',
+        'reference' => 'a2979a4406b5d5950537162e89f7af15d7fb68fa',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -175,7 +175,7 @@
         'freescout-helpdesk/freescout' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'f326b14776dd20fb66b7dad1512a6b1fa6a4f88c',
+            'reference' => 'a2979a4406b5d5950537162e89f7af15d7fb68fa',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

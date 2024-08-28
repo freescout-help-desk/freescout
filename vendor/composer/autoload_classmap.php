@@ -3200,7 +3200,7 @@ return array(
     'Webklex\\PHPIMAP\\Client' => $baseDir . '/overrides/webklex/php-imap/src/Client.php',
     'Webklex\\PHPIMAP\\ClientManager' => $vendorDir . '/webklex/php-imap/src/ClientManager.php',
     'Webklex\\PHPIMAP\\Connection\\Protocols\\ImapProtocol' => $baseDir . '/overrides/webklex/php-imap/src/Connection/Protocols/ImapProtocol.php',
-    'Webklex\\PHPIMAP\\Connection\\Protocols\\LegacyProtocol' => $vendorDir . '/webklex/php-imap/src/Connection/Protocols/LegacyProtocol.php',
+    'Webklex\\PHPIMAP\\Connection\\Protocols\\LegacyProtocol' => $baseDir . '/overrides/webklex/php-imap/src/Connection/Protocols/LegacyProtocol.php',
     'Webklex\\PHPIMAP\\Connection\\Protocols\\Protocol' => $vendorDir . '/webklex/php-imap/src/Connection/Protocols/Protocol.php',
     'Webklex\\PHPIMAP\\Connection\\Protocols\\ProtocolInterface' => $vendorDir . '/webklex/php-imap/src/Connection/Protocols/ProtocolInterface.php',
     'Webklex\\PHPIMAP\\EncodingAliases' => $vendorDir . '/webklex/php-imap/src/EncodingAliases.php',
