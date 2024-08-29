@@ -34,6 +34,12 @@ class ImapProtocol extends Protocol {
      */
     protected $noun = 0;
 
+    /**
+     * Host is stored just to check which instruction to use
+     * when fetching body: BODY[TEXT] or RFC822.TEXT.
+     */
+    public $host = '';
+
     public static $output_debug_log = true;
     public static $debug_log = '';
 
@@ -64,6 +70,9 @@ class ImapProtocol extends Protocol {
     public function connect(string $host, $port = null) {
         $transport = 'tcp';
         $encryption = '';
+
+        // Remember host.
+        $this->host = $host;
 
         if ($this->encryption) {
             $encryption = strtolower($this->encryption);
@@ -697,7 +706,15 @@ class ImapProtocol extends Protocol {
      * @throws RuntimeException
      */
     public function content($uids, string $rfc = "RFC822", $uid = IMAP::ST_UID): array {
-        $result = $this->fetch(["$rfc.TEXT"], is_array($uids)?$uids:[$uids], null, $uid);
+        // iCloud requires BODY[TEXT] instead of RFC822.TEXT.
+        // https://github.com/freescout-help-desk/freescout/issues/4202#issuecomment-2315369990
+        if (strtolower(trim($this->host)) == 'imap.mail.me.com') {
+            $item = "BODY[TEXT]";
+        } else {
+            $item = "$rfc.TEXT";
+        }
+        
+        $result = $this->fetch([$item], is_array($uids)?$uids:[$uids], null, $uid);
         return is_array($result) ? $result : [];
     }
 
