@@ -6,12 +6,10 @@ php:
   - 7.4
   - 8.0
 
-install:
-    - composer install
-
 before_script:
   - cp .env.travis .env
   - mysql -e 'create database homestead_test;'
 
-script:
-  - vendor/bin/phpunit
+# phpunit testing is disabled as dist vendor is cleared by removing unneeded files
+#script:
+#  - vendor/bin/phpunit
