@@ -320,6 +320,10 @@ class Thread extends Model
         // https://github.com/freescout-helpdesk/freescout/pull/3865#issuecomment-1990758149
         $body = preg_replace('/<!\-\-\[if [^>]+\]><!\-\->(.*?)<![ ]+\-\-<!\[endif\]\-\->/s', '$1', $body);
 
+        // Remove only the <![if !supportLists]> or <![if !vml]> and <![endif]> around the elements.
+        // https://github.com/freescout-help-desk/freescout/issues/3853
+        $body = preg_replace('/&lt;!\[if !(supportLists|vml)\]&gt;(.*?)&lt;!\[endif\]&gt;/', '$2', $body);
+        
         // https://github.com/freescout-helpdesk/freescout/issues/3894
         // Remove <!--[if !mso]><!--> and <!--<![endif]--> comments, preserving the data inside
         //$body = preg_replace('/(<!\-\-\[if [^>]+\]>|<!\[endif\]\-\->)/', '', $body);
