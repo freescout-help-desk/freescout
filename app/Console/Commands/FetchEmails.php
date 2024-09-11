@@ -701,7 +701,7 @@ class FetchEmails extends Command
                 && !$user_id && !$is_reply && !$prev_thread
                 // Only if the email has been sent to one mailbox.
                 && count($to) == 1 && count($cc) == 0
-                && preg_match("/^[\s]*".self::FWD_AS_CUSTOMER_COMMAND."/su", trim(strip_tags($body)))
+                && preg_match("/^[\s]*".self::FWD_AS_CUSTOMER_COMMAND."/su", strtolower(trim(strip_tags($body))))
             ) {
                 // Try to get "From:" from body.
                 $original_sender = $this->getOriginalSenderFromFwd($body);
@@ -871,7 +871,7 @@ class FetchEmails extends Command
         // https://github.com/freescout-helpdesk/freescout/issues/2672
         $body = preg_replace("/[\"']cid:/", '!', $body);
         // Cut out the command, otherwise it will be recognized as an email.
-        $body = preg_replace("/".self::FWD_AS_CUSTOMER_COMMAND."([\s<]+)/su", '$1', $body);
+        $body = preg_replace("/".self::FWD_AS_CUSTOMER_COMMAND."([\s<]+)/isu", '$1', $body);
 
         // Looks like email texts may appear in attributes:
         // https://github.com/freescout-helpdesk/freescout/issues/276
