@@ -24,6 +24,8 @@ class FetchEmails extends Command
 {
     const FWD_AS_CUSTOMER_COMMAND = '@fwd';
 
+    const MAX_SLEEP = 500000;
+
     /**
      * The name and signature of the console command.
      *
@@ -120,8 +122,8 @@ class FetchEmails extends Command
             }
 
             $sleep += 20000;
-            if ($sleep > 500000) {
-                $sleep = 500000;
+            if ($sleep > self::MAX_SLEEP) {
+                $sleep = self::MAX_SLEEP;
             }
 
             $this->info('['.date('Y-m-d H:i:s').'] Mailbox: '.$mailbox->name);
@@ -132,19 +134,27 @@ class FetchEmails extends Command
             $debug_log = '';
             
             try {
-                if ($debug) {
-                    ob_start();
-                }
-                
-                $this->fetch($mailbox);
-
-                if ($debug) {
-                    $debug_log = ob_get_contents();
-                    ob_end_clean();
-                }
+                $debug_log = $this->executeFetch($mailbox, $debug);
             } catch (\Exception $e) {
-                $successfully = false;
-                $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
+                // If mail server starts to block the connection
+                // (when there are many mailboxes for example),
+                // we increase connection sleep time and retry after sleep.
+                // https://github.com/freescout-help-desk/freescout/issues/4227
+                if (strstr($e->getMessage(), 'connection setup failed')) {
+                    $sleep += 200000;
+
+                    usleep(self::MAX_SLEEP);
+                    
+                    try {
+                        $debug_log = $this->executeFetch($mailbox, $debug);
+                    } catch (\Exception $e) {
+                        $successfully = false;
+                        $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
+                    }
+                } else {
+                    $successfully = false;
+                    $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
+                }
             }
 
             if ($debug && $debug_log) {
@@ -176,6 +186,24 @@ class FetchEmails extends Command
         $this->extra_import = [];
         $this->mailbox = null;
         $this->mailboxes = [];
+    }
+
+    public function executeFetch($mailbox, $debug)
+    {
+        $debug_log = '';
+
+        if ($debug) {
+            ob_start();
+        }
+        
+        $this->fetch($mailbox);
+
+        if ($debug) {
+            $debug_log = ob_get_contents();
+            ob_end_clean();
+        }
+
+        return $debug_log;
     }
 
     public function fetch($mailbox)
