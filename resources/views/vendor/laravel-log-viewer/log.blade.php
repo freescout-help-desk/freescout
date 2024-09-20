@@ -181,7 +181,7 @@
             </a>
             @if(count($files) > 1)
               -
-              <a id="delete-all-log" href="?delall=true{{ ($current_folder) ? '&f=' . \Illuminate\Support\Facades\Crypt::encrypt($current_folder) : '' }}">
+              <a id="delete-all-log" href="?delall=true&amp;_token={{ csrf_token() }} {{ ($current_folder) ? '&f=' . \Illuminate\Support\Facades\Crypt::encrypt($current_folder) : '' }}">
                 <span class="fa fa-trash-alt"></span> Delete all files
               </a>
             @endif
