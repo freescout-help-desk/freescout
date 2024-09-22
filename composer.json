@@ -297,6 +297,7 @@
             "vendor/laravel/framework/src/Illuminate/Routing/Router.php",
             "vendor/laravel/framework/src/Illuminate/Filesystem/Filesystem.php",
             "vendor/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/LaravelLogViewer.php",
+            "vendor/rap2hpoutre/laravel-log-viewer/src/controllers/LogViewerController.php",
             "vendor/symfony/console/Descriptor/TextDescriptor.php",
             "vendor/symfony/console/Helper/Helper.php",
             "vendor/symfony/finder/Iterator/SortableIterator.php",

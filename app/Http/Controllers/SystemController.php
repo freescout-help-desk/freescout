@@ -97,7 +97,7 @@ class SystemController extends Controller
                 $running_commands = 0;
 
                 try {
-                    $processes = preg_split("/[\r\n]/", \Helper::shellExec("ps aux | grep '{$command_identifier}'"));
+                    $processes = preg_split("/[\r\n]/", \Helper::shellExec("ps auxww | grep '{$command_identifier}'"));
                     $pids = [];
                     foreach ($processes as $process) {
                         $process = trim($process);
