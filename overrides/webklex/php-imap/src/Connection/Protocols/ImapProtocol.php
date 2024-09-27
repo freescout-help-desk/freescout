@@ -790,9 +790,11 @@ class ImapProtocol extends Protocol {
      */
     public function getMessageNumber(string $id): int {
         $ids = $this->getUid();
-        foreach ($ids as $k => $v) {
-            if ($v == $id) {
-                return (int)$k;
+        if ($ids) {
+            foreach ($ids as $k => $v) {
+                if ($v == $id) {
+                    return (int)$k;
+                }
             }
         }
 
