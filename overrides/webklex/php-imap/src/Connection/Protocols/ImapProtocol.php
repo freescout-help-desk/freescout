@@ -798,7 +798,7 @@ class ImapProtocol extends Protocol {
             }
         }
 
-        throw new MessageNotFoundException('message number not found');
+        throw new MessageNotFoundException('message number not found: ' . $id);
     }
 
     /**
