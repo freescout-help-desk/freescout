@@ -258,6 +258,10 @@ class UsersController extends Controller
 
         $user = User::findOrFail($id);
 
+        if ($user->isDeleted()) {
+            abort(404);
+        }
+
         $mailboxes = Mailbox::all();
 
         $users = $this->getUsersForSidebar($id);
@@ -316,6 +320,10 @@ class UsersController extends Controller
         $user = User::findOrFail($id);
         $this->authorize('update', $user);
 
+        if ($user->isDeleted()) {
+            abort(404);
+        }
+        
         $subscriptions = $user->subscriptions()->select('medium', 'event')->get();
 
         $person = '';
