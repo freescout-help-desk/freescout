@@ -826,7 +826,7 @@ class Mail
                 if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
                     // Solution for MS mailboxes.
                     // https://github.com/freescout-helpdesk/freescout/issues/176
-                    $query = $folder->query()->text('<'.$message_id.'>')->leaveUnread()->limit(1)->setCharset(null);
+                    $query = $folder->query()->whereMessageId('"<'.addcslashes($message_id, '\"').'>"')->leaveUnread()->limit(1)->setCharset(null);
                     if ($message_date) {
                        $query->since($message_date->subDays(7));
                        $query->before($message_date->addDays(14));
