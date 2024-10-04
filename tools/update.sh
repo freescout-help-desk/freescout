@@ -6,15 +6,38 @@
 # 
 # Available flags:
 # --yes - answer yes to everything
+# --php - set path to php binary
 
 DATE_TIME=`date +%Y-%m-%d_%H:%M:%S`
 echo -e "Starting updating process: \e[32m${DATE_TIME}\e[0m";
 
+# Get flags
+yes=false;
+PHP_BIN="php"
+while test $# -gt 0; do
+  case "$1" in
+    --yes)
+      yes=true
+      shift
+      break
+      ;;
+    --php)
+      shift
+      PHP_BIN=$1
+      shift
+      break
+      ;;
+    *)
+	  shift
+      ;;
+  esac
+done
+
 # Check PHP version
-php_v=`php -v | grep 'PHP [78]' | wc -l`
+php_v=`$PHP_BIN -v | grep 'PHP [78]' | wc -l`
 if [ $php_v != 1 ]; then
 	echo -e "\e[32mChecking PHP version...\e[0m";
-	php -v
+	$PHP_BIN -v
 	echo -e "\e[31mInvalid PHP version (PHP 7/8 is required)\e[0m";
 	exit;
 fi
@@ -42,21 +65,6 @@ fi
 #	gitcommit=`more "${PROJECT_ROOT}/.gitcommit"`
 #	echo -e "Last commit: \e[32m${gitcommit}\e[0m";
 #fi
-
-# Get flags
-yes=false;
-while test $# -gt 0; do
-  case "$1" in
-    --yes)
-      yes=true
-      shift
-      break
-      ;;
-    *)
-	  shift
-      ;;
-  esac
-done
 
 # Check if git is installed
 git_installed=`command -v git`;
@@ -193,8 +201,8 @@ fi
 
 
 printf "\nClearing cache:\n"
-php artisan freescout:clear-cache
-#php artisan package:discover
+$PHP_BIN artisan freescout:clear-cache
+#$PHP_BIN artisan package:discover
 
 printf "Run DB migration and continue? (Y/n) [n]:"
 if [ $yes = true ]; then
@@ -207,12 +215,12 @@ if [ $confirm_migrate != "Y" ]; then
     exit;
 fi
 if [ $yes = true ]; then
-	php artisan migrate --force
+	$PHP_BIN artisan migrate --force
 else
-	php artisan migrate
+	$PHP_BIN artisan migrate
 fi
 
-php artisan queue:restart
+$PHP_BIN artisan queue:restart
 
 printf "\nWould you like to update modules? (Y/n) [n]:"
 if [ $yes = true ]; then
@@ -225,7 +233,7 @@ if [ $confirm_modules != "Y" ]; then
     exit;
 fi
 
-php artisan freescout:module-update
+$PHP_BIN artisan freescout:module-update
 
 if [ -f "${TOOLS_DIR}/post_update.sh" ]; then
 	echo "Including post_update.sh"
