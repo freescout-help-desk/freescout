@@ -801,7 +801,7 @@ class Mail
                 }
                 // Message-ID: <123@123.com>
                 $query = $folder->query()
-                    ->whereMessageId('"<'.$message_id .'>"')
+                    ->whereMessageId('"<'.addcslashes($message_id, '\"').'>"')
                     ->leaveUnread()
                     ->limit(1);
 
