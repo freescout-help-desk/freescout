@@ -93,11 +93,12 @@ return [
     | Auth mode
     |--------------------------------------------------------------------------
     |
-    | 'login' or 'XOAUTH2'
+    | This option have an effect when set to 'XOAUTH2' only.
+    | In other cases Swiftmailer chooses auth mode automatically.
     |
     */
 
-    'auth_mode' => env('MAIL_AUTH_MODE', 'login'),
+    'auth_mode' => env('MAIL_AUTH_MODE', ''),
 
     /*
     |--------------------------------------------------------------------------
