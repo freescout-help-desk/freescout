@@ -581,6 +581,7 @@ class Mail
             'x-autorespond'  => '',
             'x-autoresponder'  => '',
             'auto-submitted' => '', // this can be auto-replied, auto-generated, etc.
+            'delivered-to' => ['autoresponder'],
             'precedence' => ['auto_reply', 'bulk', 'junk'],
             'x-precedence' => ['auto_reply', 'bulk', 'junk'],
         ];
