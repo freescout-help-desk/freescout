@@ -72,6 +72,7 @@
                 </div>
 
                 <ul class="conv-info">
+                    @action('conversation.convinfo.prepend', $conversation, $mailbox)
                     @if ($conversation->state != App\Conversation::STATE_DELETED)
                         <li>
                             <div class="btn-group" id="conv-assignee" data-toggle="tooltip" title="{{ __("Assignee") }}: {{ $conversation->getAssigneeName(true) }}">
@@ -121,7 +122,7 @@
                                 </ul>
                             @endif
                         </div>
-                    </li><li class="conv-next-prev">
+                    </li>@action('conversation.convinfo.before_nav', $conversation, $mailbox)<li class="conv-next-prev">
                         <a href="{{ $conversation->urlPrev(App\Conversation::getFolderParam()) }}" class="glyphicon glyphicon-menu-left" data-toggle="tooltip" title="{{ __("Newer") }}"></a>
                         <a href="{{ $conversation->urlNext(App\Conversation::getFolderParam()) }}" class="glyphicon glyphicon-menu-right" data-toggle="tooltip" title="{{ __("Older") }}"></a>
                     </li>
