@@ -1451,6 +1451,17 @@ class Thread extends Model
         return \MailHelper::parseHeaders($this->headers);
     }
 
+    public function getHeader($header_name)
+    {
+        return getHeader($this->headers, $header_name);
+    }
+
+    public function getFromHeader()
+    {
+        preg_match("#From:\s*.*[^\s]*\s*<\s*(.*[^\s])\s*>\s*\n#", $this->headers, $m);
+        return $m[1] ?? '';
+    }
+
     public function getMailDate()
     {
         $data = $this->parseHeaders();
