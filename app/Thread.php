@@ -1458,7 +1458,10 @@ class Thread extends Model
 
     public function getFromHeader()
     {
-        preg_match("#From:\s*.*[^\s]*\s*<\s*(.*[^\s])\s*>\s*\n#", $this->headers, $m);
+        if (empty($this->headers)) {
+            return '';
+        }
+        preg_match("#From:\s*.*[^\s]*\s*<\s*(.*[^\s])\s*>\s*\n#", $this->headers ?? '', $m);
         return $m[1] ?? '';
     }
 
