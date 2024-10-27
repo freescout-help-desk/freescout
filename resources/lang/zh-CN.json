@@ -146,7 +146,7 @@
     "Close": "关闭",
     "Closed": "已关闭",
     "Comma separated emails of extra recipients.": "额外收件人的电子邮件以逗号分隔。",
-    "Comma separated list off email addresses from which user can reply to email notifications in addition to user's main Email": "逗号分隔的电子邮件地址列表，除了用户的主电子邮件之外，用户还可以从中回复电子邮件通知",
+    "Comma separated list of email addresses from which user can reply to email notifications in addition to user's main Email": "逗号分隔的电子邮件地址列表，除了用户的主电子邮件之外，用户还可以从中回复电子邮件通知",
     "Company": "公司",
     "Company Name": "公司名称",
     "Configure": "确认密码",

@@ -144,7 +144,7 @@
     "Close": "Закрыть",
     "Closed": "Закрыт",
     "Comma separated emails of extra recipients.": "Разделенные запятыми адреса эл. почты дополнительных получателей.",
-    "Comma separated list off email addresses from which user can reply to email notifications in addition to user's main Email": "Разделенный запятыми список адресов эл. почты, с которых пользователь может отвечать на уведомления по эл. почте в дополнение к своему основному адресу эл. почты",
+    "Comma separated list of email addresses from which user can reply to email notifications in addition to user's main Email": "Разделенный запятыми список адресов эл. почты, с которых пользователь может отвечать на уведомления по эл. почте в дополнение к своему основному адресу эл. почты",
     "Company": "Компания",
     "Company Name": "Название компании",
     "Configure": "Настроить",

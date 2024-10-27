@@ -149,7 +149,7 @@
     "Close": "Kapat",
     "Closed": "Kapatıldı",
     "Comma separated emails of extra recipients.": "Fazladan alıcıların e-postaları virgülle ayrılmış.",
-    "Comma separated list off email addresses from which user can reply to email notifications in addition to user's main Email": "Kullanıcının ana E-postasına ek olarak e-posta bildirimlerine yanıt verebileceği e-posta adreslerinin virgülle ayrılmış listesi",
+    "Comma separated list of email addresses from which user can reply to email notifications in addition to user's main Email": "Kullanıcının ana E-postasına ek olarak e-posta bildirimlerine yanıt verebileceği e-posta adreslerinin virgülle ayrılmış listesi",
     "Company": "Şirket",
     "Company Name": "Şirket Adı",
     "Configure": "Yapılandır",

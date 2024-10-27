@@ -146,7 +146,7 @@
     "Close": "Zavřít",
     "Closed": "Uzavřeno",
     "Comma separated emails of extra recipients.": "E-maily dalších příjemců oddělené čárkou.",
-    "Comma separated list off email addresses from which user can reply to email notifications in addition to user's main Email": "Seznam e-mailových adres oddělených čárkou, ze kterých může uživatel odpovídat na e-mailová oznámení kromě hlavního e-mailu uživatele",
+    "Comma separated list of email addresses from which user can reply to email notifications in addition to user's main Email": "Seznam e-mailových adres oddělených čárkou, ze kterých může uživatel odpovídat na e-mailová oznámení kromě hlavního e-mailu uživatele",
     "Company": "Společnost",
     "Company Name": "Název společnosti",
     "Configure": "Konfigurace",
