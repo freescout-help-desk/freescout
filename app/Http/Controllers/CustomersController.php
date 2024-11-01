@@ -257,6 +257,9 @@ class CustomersController extends Controller
 
         $q = $request->q;
 
+        $user = auth()->user();
+        $limitedVisibility = config('app.limit_user_customer_visibility') && !$user->isAdmin();
+
         $join_emails = false;
         if ($request->search_by == 'all' || $request->search_by == 'email' || $request->exclude_email) {
             $join_emails = true;
@@ -279,22 +282,41 @@ class CustomersController extends Controller
             }
         }
 
-        if ($request->search_by == 'all' || $request->search_by == 'email') {
-            $customers_query->where('emails.email', 'like', '%'.$q.'%');
-        }
-        if ($request->exclude_email) {
-            $customers_query->where('emails.email', '<>', $request->exclude_email);
-        }
-        if ($request->search_by == 'all' || $request->search_by == 'name') {
-            $customers_query->orWhere('first_name', 'like', '%'.$q.'%')
-                ->orWhere('last_name', 'like', '%'.$q.'%');
-        }
-        if ($request->search_by == 'phone') {
-            $phone_numeric = \Helper::phoneToNumeric($q);
-            if (!$phone_numeric) {
-                $phone_numeric = $q;
+        $customers_query->where(function ($query) use ($q, $request) {
+            if ($request->search_by == 'all' || $request->search_by == 'email') {
+                $query->where('emails.email', 'like', '%'.$q.'%');
             }
-            $customers_query->where('customers.phones', 'like', '%'.$phone_numeric.'%');
+            if ($request->exclude_email) {
+                $query->where('emails.email', '<>', $request->exclude_email);
+            }
+            if ($request->search_by == 'all' || $request->search_by == 'name') {
+                $query->orWhere('first_name', 'like', '%'.$q.'%')
+                    ->orWhere('last_name', 'like', '%'.$q.'%');
+            }
+            if ($request->search_by == 'phone') {
+                $phone_numeric = \Helper::phoneToNumeric($q);
+                if (!$phone_numeric) {
+                    $phone_numeric = $q;
+                }
+                $query->where('customers.phones', 'like', '%'.$phone_numeric.'%');
+            }
+        });
+
+        if ($limitedVisibility) {
+            $customers_query->where(function ($query) use ($user) {
+                $query->whereIn('customers.id', function ($subQuery) use ($user) {
+                    $subQuery->select('conversations.customer_id')
+                        ->from('conversations')
+                        ->join('mailbox_user', 'conversations.mailbox_id', '=', 'mailbox_user.mailbox_id')
+                        ->where('mailbox_user.user_id', $user->id);
+                });
+            });
+
+            // always return the customer if the email is an exact match to avoid creating duplicates
+            if ($request->search_by == 'all' || $request->search_by == 'email') {
+                // if the email record already exists and is an exact match. return it.
+                $customers_query->orWhere('emails.email', '=', $q);
+            }
         }
 
         $customers = $customers_query->paginate(20);
