@@ -2991,6 +2991,8 @@ class ConversationsController extends Controller
      */
     public function searchCustomers($request, $user)
     {
+        $limited_visibility = config('app.limit_user_customer_visibility') && !$user->isAdmin();
+
         // Get IDs of mailboxes to which user has access
         $mailbox_ids = $user->mailboxesIdsCanView();
 
@@ -3040,6 +3042,12 @@ class ConversationsController extends Controller
                 //$join->on('conversations.mailbox_id', '=', $filters['mailbox']);
             });
             $query_customers->where('conversations.mailbox_id', '=', $filters['mailbox']);
+        } elseif ($limited_visibility) {
+            // Force only mailboxes the user has access to.
+            $query_customers->join('conversations', function ($join) use ($filters) {
+                $join->on('conversations.customer_id', '=', 'customers.id');
+            });
+            $query_customers->whereIn('conversations.mailbox_id', $mailbox_ids);
         }
 
         $query_customers = \Eventy::filter('search.customers.apply_filters', $query_customers, $filters, $q);

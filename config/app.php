@@ -467,6 +467,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Limit non-admin users to only see customers with conversations
+    | in mailboxes they are assigned to. This option does not affect admin users.
+    |-------------------------------------------------------------------------
+    */
+    'limit_user_customer_visibility'    => env('APP_LIMIT_USER_CUSTOMER_VISIBILITY', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | By default X-Frame-Options header is enabled and set to SAMEORIGIN.
     | Via this option you can disable it (APP_X_FRAME_OPTIONS=false) or set custom value:
     | - DENY
