@@ -304,12 +304,13 @@ class CustomersController extends Controller
 
         if ($limitedVisibility) {
             $customers_query->where(function ($query) use ($user) {
-                $query->whereIn('customers.id', function ($subQuery) use ($user) {
-                    $subQuery->select('conversations.customer_id')
-                        ->from('conversations')
-                        ->join('mailbox_user', 'conversations.mailbox_id', '=', 'mailbox_user.mailbox_id')
-                        ->where('mailbox_user.user_id', $user->id);
-                });
+                $query->whereRaw('EXISTS (
+                    SELECT 1
+                    FROM conversations JOIN mailbox_user ON conversations.mailbox_id = mailbox_user.mailbox_id
+                    WHERE conversations.customer_id = customers.id
+                    AND mailbox_user.user_id = ?
+                    LIMIT 1
+                )', [$user->id]);
             });
 
             // always return the customer if the email is an exact match to avoid creating duplicates
