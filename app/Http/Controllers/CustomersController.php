@@ -380,14 +380,21 @@ class CustomersController extends Controller
 
         switch ($request->action) {
 
-            // Change conversation user
+            // Change conversation customer.
             case 'create':
-                // First name or email must be specified
-                $validator = Validator::make($request->all(), [
+                $validator_config = [
                     'first_name' => 'required|string|max:255',
                     'last_name'  => 'nullable|string|max:255',
                     'email'      => 'required|email|unique:emails,email',
-                ]);
+                ];
+
+                $limited_visibility = config('app.limit_user_customer_visibility') && !$user->isAdmin();
+                if ($limited_visibility) {
+                    $validator_config['email'] = 'required|email';
+                }
+
+                // First name or email must be specified.
+                $validator = Validator::make($request->all(), $validator_config);
 
                 if ($validator->fails()) {
                     foreach ($validator->errors()->getMessages()as $errors) {
