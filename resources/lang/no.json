@@ -147,7 +147,7 @@
     "Close": "Lukk",
     "Closed": "Lukket",
     "Comma separated emails of extra recipients.": "E-postadresser til ekstra mottakere, separert med komma.",
-    "Comma separated list off email addresses from which user can reply to email notifications in addition to user's main Email": "Kommaseparert liste over e-postadresser som brukeren kan svare på e-postvarsler fra i tillegg til hoved-e-postadressen.",
+    "Comma separated list of email addresses from which user can reply to email notifications in addition to user's main Email": "Kommaseparert liste over e-postadresser som brukeren kan svare på e-postvarsler fra i tillegg til hoved-e-postadressen.",
     "Company": "Firma",
     "Company Name": "Firmanavn",
     "Configure": "Konfigurer",

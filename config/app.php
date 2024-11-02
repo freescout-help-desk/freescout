@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.154',
+    'version' => '1.8.155',
 
     /*
     |--------------------------------------------------------------------------
@@ -464,6 +464,14 @@ return [
     |-------------------------------------------------------------------------
     */
     'show_only_assigned_conversations'    => env('APP_SHOW_ONLY_ASSIGNED_CONVERSATIONS', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Limit non-admin users to only see customers with conversations
+    | in mailboxes they are assigned to. This option does not affect admin users.
+    |-------------------------------------------------------------------------
+    */
+    'limit_user_customer_visibility'    => env('APP_LIMIT_USER_CUSTOMER_VISIBILITY', false),
 
     /*
     |--------------------------------------------------------------------------

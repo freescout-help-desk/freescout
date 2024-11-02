@@ -502,6 +502,14 @@ class Customer extends Model
     }
 
     /**
+     * Check if the customer has an email address among his emails.
+     */
+    public function hasEmail($email_address)
+    {
+        return $this->emails_cached()->where('email', Email::sanitizeEmail($email_address))->exists();
+    }
+
+    /**
      * Get customer full name.
      *
      * @return string

@@ -431,9 +431,7 @@ class Header {
             return $str;
         }
 
-        if (strtolower($from) == 'iso-2022-jp'){
-           $from = 'iso-2022-jp-ms';
-        }
+        $from = \MailHelper::substituteEncoding($from);
 
         try {
             if (function_exists('iconv') && $from != 'UTF-7' && $to != 'UTF-7') {

@@ -82,6 +82,15 @@ class Mail
     ];
 
     /**
+     * Used to substitue encoding during mail body decoding.
+     * https://github.com/freescout-help-desk/freescout/issues/4282
+     */
+    public static $encoding_substitution = [
+        'iso-2022-jp' => 'iso-2022-jp-ms',
+        'gb2312' => 'gb18030',
+    ];
+
+    /**
      * md5 of the last applied mail config.
      */
     public static $last_mail_config_hash = '';
@@ -581,6 +590,7 @@ class Mail
             'x-autorespond'  => '',
             'x-autoresponder'  => '',
             'auto-submitted' => '', // this can be auto-replied, auto-generated, etc.
+            'delivered-to' => ['autoresponder'],
             'precedence' => ['auto_reply', 'bulk', 'junk'],
             'x-precedence' => ['auto_reply', 'bulk', 'junk'],
         ];
@@ -1139,6 +1149,19 @@ class Mail
         $client->openFolder("INBOX");
         
         return \Webklex\PHPIMAP\Message::make(null, null, $client, $raw_header, $raw_body, [], \Webklex\PHPIMAP\IMAP::ST_UID);
+    }
+
+    // Substitue encoding during mail body decoding.
+    // https://github.com/freescout-help-desk/freescout/issues/4282
+    public static function substituteEncoding($encoding)
+    {
+        $encoding = strtolower($encoding);
+
+        if (!empty(self::$encoding_substitution[$encoding])) {
+            return self::$encoding_substitution[$encoding];
+        } else {
+            return $encoding;
+        }
     }
 
     // public static function oauthGetProvider($provider_code, $params)
