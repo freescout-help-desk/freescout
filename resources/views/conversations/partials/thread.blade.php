@@ -106,7 +106,7 @@
                             @action('thread.before_recipients', $thread, $loop, $threads, $conversation, $mailbox)
                             @if (($thread->isUserMessage() && $thread->from && array_key_exists($thread->from, $mailbox->getAliases()))
                                 || ($thread->isCustomerMessage() && isset($customer) && count($customer->emails) > 1)
-                                || ($thread->isCustomerMessage() && ($from_header = $thread->getFromHeader()) && !$customer->hasEmail($from_header) )
+                                || ($thread->isCustomerMessage() && ($from_header = $thread->getFromHeader()) && isset($customer) && !$customer->hasEmail($from_header) )
                             )
                                 <div>
                                     <strong>
