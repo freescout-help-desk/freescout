@@ -943,7 +943,27 @@ class ImapProtocol extends Protocol {
         $set = $this->buildSet($from, $to);
         $command = $this->buildUIDCommand("MOVE", $uid);
 
-        return (bool)$this->requestAndResponse($command, [$set, $this->escapeString($folder)], true);
+        //return (bool)$this->requestAndResponse($command, [$set, $this->escapeString($folder)], true);
+        $result = (bool)$this->requestAndResponse($command, [$set, $this->escapeString($folder)], true);
+
+        // Fallback to COPY, STORE and EXPUNGE.
+        // https://github.com/freescout-help-desk/freescout/issues/4313
+        if (!$result) {
+            $result = $this->copyMessage($folder, $from, $to);
+            if (!$result) {
+                return false;
+            }
+            $result = $this->store(['\Deleted'], $from, $to);
+            if (!$result) {
+                return false;
+            }
+            
+            $this->expunge();
+
+            return true;
+        }
+
+        return $result;
     }
 
     /**
