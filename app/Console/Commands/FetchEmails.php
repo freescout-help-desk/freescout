@@ -729,7 +729,9 @@ class FetchEmails extends Command
                 && !$user_id && !$is_reply && !$prev_thread
                 // Only if the email has been sent to one mailbox.
                 && count($to) == 1 && count($cc) == 0
-                && preg_match("/^[\s]*".self::FWD_AS_CUSTOMER_COMMAND."/su", strtolower(trim(strip_tags($body))))
+                // We need to replace any potential <style></style> tags, as these will not be stripped
+                // by strip_tags https://github.com/freescout-help-desk/freescout/issues/4333
+                && preg_match("/^[\s]*".self::FWD_AS_CUSTOMER_COMMAND."/su", strtolower(trim(strip_tags(preg_replace('/<style.*?<\/style>/is', '', $body))))))
             ) {
                 // Try to get "From:" from body.
                 $original_sender = $this->getOriginalSenderFromFwd($body);
