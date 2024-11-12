@@ -2221,6 +2221,8 @@ class Conversation extends Model
             'order' => 'desc',
         ];
 
+        $result = \Eventy::filter('conversations.default.sorting', $result);
+
         if (
             !empty($request->sorting['sort_by']) && !empty($request->sorting['order']) &&
             in_array($request->sorting['sort_by'], ['subject', 'number', 'date']) &&
