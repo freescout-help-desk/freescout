@@ -348,6 +348,17 @@ return [
     */
     'since_without_quotes_on_fetching'    => env('APP_SINCE_WITHOUT_QUOTES_ON_FETCHING', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Emails are fetched in bunches. The larger the bunch's size the more chances
+    | to face "Allowed memory size exhausted" error. The smaller its size the more
+    | connections are made to the mail server and the more time fetching takes.
+    | https://github.com/freescout-help-desk/freescout/issues/4343
+    |
+    |-------------------------------------------------------------------------
+    */
+    'fetching_bunch_size'    => env('APP_FETCHING_BUNCH_SIZE', 100),
+
      /*
     |--------------------------------------------------------------------------
     | Dashboard path.

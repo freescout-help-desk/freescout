@@ -260,6 +260,7 @@ class FetchEmails extends Command
             $this->line('['.date('Y-m-d H:i:s').'] Fetching: '.($unseen ? 'UNREAD' : 'ALL'));
         }
 
+        $page_size = (int)config('app.fetching_bunch_size');
         foreach ($folders as $folder) {
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.($folder->full_name ?? $folder->name));
 
@@ -279,7 +280,7 @@ class FetchEmails extends Command
                     if ($no_charset) {
                         $messages_query->setCharset(null);
                     }
-                    $messages_query->limit(self::PAGE_SIZE, $page);
+                    $messages_query->limit($page_size, $page);
 
                     $messages = $messages_query->get();
 
@@ -332,7 +333,7 @@ class FetchEmails extends Command
                     $this->processMessage($message, $message_id, $dest_mailbox, $this->mailboxes);
                 }
                 $page++;
-            } while (count($messages) == self::PAGE_SIZE);
+            } while (count($messages) == $page_size);
         }
 
         $client->disconnect();
