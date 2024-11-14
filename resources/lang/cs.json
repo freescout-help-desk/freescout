@@ -678,7 +678,7 @@
     "This may take several minutes": "Toto může trvat několik minut",
     "This number is not visible to customers. It is only used to track conversations within :app_name": "Toto číslo není pro zákazníky viditelné. Používá se pouze ke sledování konverzací v rámci :app_name",
     "This password is incorrect.": "Toto heslo je nesprávné.",
-    "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "Tato odpověď bude zaslána zákazníkovi. :%switch_start%Přepněte na poznámku:switch_end, pokud odpovídáte na :person_name.",
+    "This reply will go to the customer. :%switch_start%Switch to a note:%switch_end% if you are replying to :user_name.": "Tato odpověď bude zaslána zákazníkovi. :%switch_start%Přepněte na poznámku:%switch_end%, pokud odpovídáte na :person_name.",
     "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "Toto nastavení ovlivňuje, jaká stránka se načte po provedení akce (odeslání odpovědi, přidání poznámky, změna stavu konverzace nebo přiřazení).",
     "This text will be added to the beginning of each email reply sent to a customer.": "Tento text bude přidán na začátek každé e-mailové odpovědi zaslané zákazníkovi.",
     "Thread is not in a draft state": "Vlákno není ve stavu konceptu",

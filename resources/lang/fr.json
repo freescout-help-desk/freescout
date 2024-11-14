@@ -672,7 +672,7 @@
     "This may take several minutes": "Cela peut prendre plusieurs minutes",
     "This number is not visible to customers. It is only used to track conversations within :app_name": "Ce numéro n'est pas visible pour les clients. Il est uniquement utilisé pour suivre les conversations dans :app_name",
     "This password is incorrect.": "Ce mot de passe est incorrect.",
-    "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "Cette réponse ira au client. :%switch_start%Passez à une note:switch_end si vous répondez à :user_name.",
+    "This reply will go to the customer. :%switch_start%Switch to a note:%switch_end% if you are replying to :user_name.": "Cette réponse ira au client. :%switch_start%Passez à une note:%switch_end% si vous répondez à :user_name.",
     "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "Ce paramètre vous permet de contrôler la page qui se charge après avoir effectué une action (envoyer une réponse, ajouter une note, etc.).",
     "This text will be added to the beginning of each email reply sent to a customer.": "Ce texte sera ajouté au début de chaque réponse par e-mail envoyée à un client.",
     "Thread is not in a draft state": "Le fil n'est pas à l'état de brouillon",

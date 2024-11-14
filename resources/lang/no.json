@@ -674,7 +674,7 @@
     "This may take several minutes": "Dette kan ta flere minutter.",
     "This number is not visible to customers. It is only used to track conversations within :app_name": "Dette nummeret er ikke synlig for kunder. Det brukes kun for å spore samtaler innenfor :app_name.",
     "This password is incorrect.": "Dette passordet er feil.",
-    "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "Dette svaret vil bli sendt til kunden. :%switch_start%Bytt til en notat:switch_end hvis du svarer til :user_name.",
+    "This reply will go to the customer. :%switch_start%Switch to a note:%switch_end% if you are replying to :user_name.": "Dette svaret vil bli sendt til kunden. :%switch_start%Bytt til en notat:%switch_end% hvis du svarer til :user_name.",
     "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "Denne innstillingen gir deg kontroll over hvilken side som lastes etter at du utfører en handling (sender et svar, legger til en kommentar, endrer samtalestatus eller tildeling).",
     "This text will be added to the beginning of each email reply sent to a customer.": "Denne teksten vil bli lagt til i begynnelsen av hvert e-post svar sendt til en kunde.",
     "Thread is not in a draft state": "Tråden er ikke i utkaststilstand.",

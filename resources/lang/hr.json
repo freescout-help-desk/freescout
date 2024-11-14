@@ -689,7 +689,7 @@
     "This may take several minutes": "Ovo može potrajati nekoliko minuta",
     "This number is not visible to customers. It is only used to track conversations within :app_name": "Ovaj broj nije vidljiv kupcima. Koristi se samo za praćenje razgovora unutar :app_name",
     "This password is incorrect.": "Ova lozinka nije ispravna.",
-    "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "Ovaj odgovor će ići kupcu. :%switch_start%Prebaci na bilješku:switch_end ako odgovarate :user_name.",
+    "This reply will go to the customer. :%switch_start%Switch to a note:%switch_end% if you are replying to :user_name.": "Ovaj odgovor će ići kupcu. :%switch_start%Prebaci na bilješku:%switch_end% ako odgovarate :user_name.",
     "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "Ova postavka vam daje kontrolu nad time koja se stranica učitava nakon što izvršite radnju (pošaljete odgovor, dodate bilješku, promijenite status razgovora ili dodijelite).",
     "This text will be added to the beginning of each email reply sent to a customer.": "Ovaj tekst će biti dodan na početak svakog e-mail odgovora poslanog kupcu.",
     "Thread is not in a draft state": "Nit nije u stanju skice",

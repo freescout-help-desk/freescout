@@ -672,7 +672,7 @@
     "This may take several minutes": "Tämä saattaa kestää useita minuutteja",
     "This number is not visible to customers. It is only used to track conversations within :app_name": "Tämä numero ei näy asiakkaille. Sitä käytetään vain :app_name :n sisällä käytyjen keskustelujen seurantaan.",
     "This password is incorrect.": "Tämä salasana on virheellinen.",
-    "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "Tämä vastaus menee asiakkaalle. :%switch_start%Vaihda huomautukseen:switch_end jos vastaat :user_name.",
+    "This reply will go to the customer. :%switch_start%Switch to a note:%switch_end% if you are replying to :user_name.": "Tämä vastaus menee asiakkaalle. :%switch_start%Vaihda huomautukseen:%switch_end% jos vastaat :user_name.",
     "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "Tämän asetuksen avulla voit hallita sitä, mikä sivu latautuu toiminnon suorittamisen jälkeen (vastauksen lähettäminen, huomautuksen lisääminen, keskustelun tilan tai vastaanottajan muuttaminen).",
     "This text will be added to the beginning of each email reply sent to a customer.": "Tämä teksti lisätään jokaisen asiakkaalle lähetettävän sähköpostivastauksen alkuun.",
     "Thread is not in a draft state": "Keskustelu ei ole luonnostilassa",
