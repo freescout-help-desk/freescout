@@ -73,7 +73,7 @@ class ParseEml extends Command
 
         $mailbox = Mailbox::find($this->option('mailbox'));
 
-        \Config::set('app.new_fetching_library', 'true');
+        //\Config::set('app.new_fetching_library', 'true');
         $client = \MailHelper::getMailboxClient($mailbox);
         $client->openFolder("INBOX");
 

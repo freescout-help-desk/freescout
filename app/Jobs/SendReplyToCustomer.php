@@ -13,7 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Mail;
-use Webklex\IMAP\Client;
+//use Webklex\IMAP\Client;
 
 class SendReplyToCustomer implements ShouldQueue
 {

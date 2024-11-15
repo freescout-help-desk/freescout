@@ -18,7 +18,7 @@ use App\Subscription;
 use App\Thread;
 use App\User;
 use Illuminate\Console\Command;
-use Webklex\IMAP\Client;
+//use Webklex\IMAP\Client;
 
 class FetchEmails extends Command
 {
