@@ -686,7 +686,7 @@
     "This may take several minutes": "Bu işlem birkaç dakika sürebilir",
     "This number is not visible to customers. It is only used to track conversations within :app_name": "Bu numara müşteriler tarafından görülemez. Yalnızca içindeki konuşmaları izlemek için kullanılır: app_name",
     "This password is incorrect.": "Bu şifre yanlış.",
-    "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "Bu cevap müşteriye gidecektir. :%switch_start% Bir not geçin :switch_end :user_name 'e yanıt veriyorsanız.",
+    "This reply will go to the customer. :%switch_start%Switch to a note:%switch_end% if you are replying to :user_name.": "Bu cevap müşteriye gidecektir. :%switch_start% Bir not geçin :%switch_end% :user_name 'e yanıt veriyorsanız.",
     "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "Bu ayar, bir eylemi gerçekleştirdikten sonra (yanıt gönderme, not ekleme, görüşme durumunu veya atanan kişiyi değiştirme) hangi sayfanın yükleneceğini kontrol etmenizi sağlar.",
     "This text will be added to the beginning of each email reply sent to a customer.": "Bu metin, müşteriye gönderilen her e-posta yanıtının başına eklenecektir.",
     "Thread is not in a draft state": "Konu taslak durumunda değil",

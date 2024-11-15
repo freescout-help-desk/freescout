@@ -20,6 +20,13 @@ class MailboxUser extends Model
 
     public $timestamps = false;
 
+    public static $pivot_settings = [
+        'after_send',
+        'hide',
+        'mute',
+        'access',
+    ];
+
     // Does not work as we receive it via pivot
     // protected $casts = [
     //     'access' => 'array',

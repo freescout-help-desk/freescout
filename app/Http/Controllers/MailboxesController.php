@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Conversation;
 use App\Folder;
 use App\Mailbox;
+use App\MailboxUser;
 use App\Thread;
 use App\User;
 use Illuminate\Http\Request;
@@ -269,8 +270,24 @@ class MailboxesController extends Controller
         $this->authorize('updatePermissions', $mailbox);
 
         $user = auth()->user();
+        $user_ids = \Eventy::filter('mailbox.permission_users', $request->users ?? [], $id);
 
-        $mailbox->users()->sync(\Eventy::filter('mailbox.permission_users', $request->users, $id) ?: []);
+        // Get pivot data from mailbox_user to pass to sync() not to loose values.
+        // https://github.com/freescout-help-desk/freescout/issues/4339
+        $users_with_settings = [];
+        $mailbox_users = MailboxUser::where('mailbox_id', $id)
+            //->whereIn('user_id', $user_ids)
+            ->get()
+            ->keyBy('user_id')
+            ->toArray();
+        foreach ($user_ids as $user_id) {
+            $users_with_settings[$user_id] = $mailbox_users[$user_id] ?? [];
+        }
+
+        // Settings for admins are being reset here.
+        // So we restore them below.
+        $mailbox->users()->sync($users_with_settings);
+
         $mailbox->syncPersonalFolders($request->users);
 
         // Save admins settings.
@@ -281,6 +298,15 @@ class MailboxesController extends Controller
                 // Admin may not be connected to the mailbox yet
                 $admin->mailboxes()->attach($id);
                 $mailbox_user = $admin->mailboxesWithSettings()->where('mailbox_id', $id)->first();
+            }
+            // Restore settings for admins.
+            if (!empty($mailbox_users[$admin->id])) {
+                $admin_settings = $mailbox_users[$admin->id];
+                foreach (MailboxUser::$pivot_settings as $pivot_parameter) {
+                    if (isset($admin_settings[$pivot_parameter])) {
+                        $mailbox_user->settings->$pivot_parameter = $admin_settings[$pivot_parameter];
+                    }
+                }
             }
             $mailbox_user->settings->hide = (isset($request->managers[$admin->id]['hide']) ? (int)$request->managers[$admin->id]['hide'] : false);
             $mailbox_user->settings->save();

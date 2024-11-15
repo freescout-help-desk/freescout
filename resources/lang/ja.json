@@ -689,7 +689,7 @@
     "This may take several minutes": "これには数分かかる場合があります",
     "This number is not visible to customers. It is only used to track conversations within :app_name": "この番号は顧客には表示されません。これは、:app_name 内の会話を追跡するためにのみ使用されます。",
     "This password is incorrect.": "このパスワードは間違っています。",
-    "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "この返信は顧客に送られます。 :%switch_start% :user_name に返信している場合は、ノート :switch_end に切り替えます。",
+    "This reply will go to the customer. :%switch_start%Switch to a note:%switch_end% if you are replying to :user_name.": "この返信は顧客に送られます。 :%switch_start% :user_name に返信している場合は、ノート :%switch_end% に切り替えます。",
     "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "この設定では、アクション（返信の送信、メモの追加など）を実行した後にどのページが読み込まれるかを制御できます。",
     "This text will be added to the beginning of each email reply sent to a customer.": "このテキストは、お客様に送信された各メールの返信の冒頭に追加されます。",
     "Thread is not in a draft state": "スレッドは下書き状態ではありません",

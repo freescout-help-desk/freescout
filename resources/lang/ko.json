@@ -646,7 +646,7 @@
     "This may take several minutes": "이 작업은 몇 분 정도 걸릴 수 있습니다.",
     "This number is not visible to customers. It is only used to track conversations within :app_name": "이 번호는 고객에게 표시되지 않습니다これは、:app_name에서 대화를 추적하는 데만 사용됩니다.",
     "This password is incorrect.": "이 비밀번호는 올바르지 않습니다.",
-    "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "이 답변은 고객에게 전달됩니다. :%switch_start% :user_name에 답변하는 경우 노트:switch_end로 전환합니다.",
+    "This reply will go to the customer. :%switch_start%Switch to a note:%switch_end% if you are replying to :user_name.": "이 답변은 고객에게 전달됩니다. :%switch_start% :user_name에 답변하는 경우 노트:%switch_end%로 전환합니다.",
     "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "이 설정을 사용하여 조치(답변 보내기, 노트 추가, 대화 상태 또는 담당자 변경) 한 뒤에 로드할 페이지를 제어할 수 있습니다.",
     "This text will be added to the beginning of each email reply sent to a customer.": "이 텍스트는 고객에게 보내는 메일 답변의 시작 부분에 추가됩니다.",
     "Thread is not in a draft state": "스레드가 초안 상태가 아닙니다.",

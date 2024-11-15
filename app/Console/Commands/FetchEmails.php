@@ -260,6 +260,7 @@ class FetchEmails extends Command
             $this->line('['.date('Y-m-d H:i:s').'] Fetching: '.($unseen ? 'UNREAD' : 'ALL'));
         }
 
+        $page_size = (int)config('app.fetching_bunch_size');
         foreach ($folders as $folder) {
             $this->line('['.date('Y-m-d H:i:s').'] Folder: '.($folder->full_name ?? $folder->name));
 
@@ -279,7 +280,7 @@ class FetchEmails extends Command
                     if ($no_charset) {
                         $messages_query->setCharset(null);
                     }
-                    $messages_query->limit(self::PAGE_SIZE, $page);
+                    $messages_query->limit($page_size, $page);
 
                     $messages = $messages_query->get();
 
@@ -332,7 +333,7 @@ class FetchEmails extends Command
                     $this->processMessage($message, $message_id, $dest_mailbox, $this->mailboxes);
                 }
                 $page++;
-            } while (count($messages) == self::PAGE_SIZE);
+            } while (count($messages) == $page_size);
         }
 
         $client->disconnect();
@@ -729,7 +730,8 @@ class FetchEmails extends Command
                 && !$user_id && !$is_reply && !$prev_thread
                 // Only if the email has been sent to one mailbox.
                 && count($to) == 1 && count($cc) == 0
-                && preg_match("/^[\s]*".self::FWD_AS_CUSTOMER_COMMAND."/su", strtolower(trim(strip_tags($body))))
+                // We need to replace also any potential <style></style> tags.
+                && preg_match("/^[\s]*".self::FWD_AS_CUSTOMER_COMMAND."/su", strtolower(trim(\Helper::stripTags($body))))
             ) {
                 // Try to get "From:" from body.
                 $original_sender = $this->getOriginalSenderFromFwd($body);

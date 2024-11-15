@@ -676,7 +676,7 @@
     "This may take several minutes": "这可能会需要几分钟",
     "This number is not visible to customers. It is only used to track conversations within :app_name": "该号码对客户不可见。它仅用于跟踪:app_name 内的对话",
     "This password is incorrect.": "该密码不正确。",
-    "This reply will go to the customer. :%switch_start%Switch to a note:switch_end if you are replying to :user_name.": "该回复将发送给客户。:%switch_start%如果您要回复:user_name，请切换到 note:switch_end。",
+    "This reply will go to the customer. :%switch_start%Switch to a note:%switch_end% if you are replying to :user_name.": "该回复将发送给客户。:%switch_start%如果您要回复:user_name，请切换到 note:%switch_end%。",
     "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "通过此设置，您可以控制执行操作（发送回复、添加注释、更改对话状态或受托人）后加载的页面。",
     "This text will be added to the beginning of each email reply sent to a customer.": "此文本将添加到发送给客户的每封电子邮件回复的开头。",
     "Thread is not in a draft state": "线程不处于草稿状态",

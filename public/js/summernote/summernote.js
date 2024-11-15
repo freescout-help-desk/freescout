@@ -5426,9 +5426,9 @@ var Buttons = /** @class */ (function () {
                     className: 'note-table',
                     items: [
                         '<div class="note-dimension-picker">',
-                        '  <div class="note-dimension-picker-mousecatcher" data-event="insertTable" data-value="1x1"/>',
-                        '  <div class="note-dimension-picker-highlighted"/>',
-                        '  <div class="note-dimension-picker-unhighlighted"/>',
+                        '  <div class="note-dimension-picker-mousecatcher" data-event="insertTable" data-value="1x1"></div>',
+                        '  <div class="note-dimension-picker-highlighted"></div>',
+                        '  <div class="note-dimension-picker-unhighlighted"></div>',
                         '</div>',
                         '<div class="note-dimension-display">1 x 1</div>'
                     ].join('')
