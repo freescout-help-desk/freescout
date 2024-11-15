@@ -717,11 +717,13 @@ class FetchEmails extends Command
 
             // If existing user forwarded customer's email to the mailbox
             // we are creating a new conversation as if it was sent by the customer.
-            if ($in_reply_to
+            if (// Some mail clients to not add "In-Reply-To" header when forwarding emails.
+                // https://github.com/freescout-help-desk/freescout/issues/4348
+                //$in_reply_to
                 // We should use body here, as entire HTML may contain
                 // email looking things.
                 //&& ($fwd_body = $html_body ?: $message->getTextBody())
-                && $body
+                $body
                 //&& preg_match("/^(".implode('|', \MailHelper::$fwd_prefixes)."):(.*)/i", $subject, $m) 
                 // F:, FW:, FWD:, WG:, De:
                 && preg_match("/^[[:alpha:]]{1,3}:(.*)/i", $subject, $m) 
