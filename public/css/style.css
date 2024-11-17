@@ -1003,6 +1003,15 @@ a h4 {
 .summernote-inservar {
     max-width: 200px;
 }
+/* 
+This is needed to avoid an issue with the SPAN tag being added
+https://github.com/freescout-help-desk/freescout/issues/4354
+*/
+.note-editor .note-editable * {
+    background-color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+}
 .note-editor.note-frame {
     border-color: #dee4e9 !important;
 }
