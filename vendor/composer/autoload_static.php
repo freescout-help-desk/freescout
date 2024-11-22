@@ -13,18 +13,17 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
-        '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
-        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
-        '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+        '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
+        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
+        'e91d0dc994644828154ae2387ede1ca8' => __DIR__ . '/..' . '/spatie/string/src/string_functions.php',
+        '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
-        '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
-        'e91d0dc994644828154ae2387ede1ca8' => __DIR__ . '/..' . '/spatie/string/src/string_functions.php',
         'cb61d74ad51d00867155534456b38b23' => __DIR__ . '/..' . '/mews/purifier/src/helpers.php',
         '9f394da3192a168c4633675768d80428' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/helpers.php',
         'd7354eb4c8441fbf08eec280b61c7c73' => __DIR__ . '/..' . '/rachidlaasri/laravel-installer/src/Helpers/functions.php',
@@ -58,7 +57,6 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         ),
         'S' => 
         array (
-            'Symfony\\Polyfill\\Php72\\' => 23,
             'Symfony\\Polyfill\\Php70\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
@@ -245,7 +243,6 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Webklex\\IMAP\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/webklex/laravel-imap/src/IMAP',
-            1 => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP',
         ),
         'Watson\\Rememberable\\' => 
         array (
@@ -264,10 +261,6 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'TijsVerkoyen\\CssToInlineStyles\\' => 
         array (
             0 => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src',
-        ),
-        'Symfony\\Polyfill\\Php72\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php72',
         ),
         'Symfony\\Polyfill\\Php70\\' => 
         array (
@@ -3941,7 +3934,6 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Polyfill\\Intl\\Normalizer\\Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Normalizer.php',
         'Symfony\\Polyfill\\Mbstring\\Mbstring' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/Mbstring.php',
         'Symfony\\Polyfill\\Php70\\Php70' => __DIR__ . '/..' . '/symfony/polyfill-php70/Php70.php',
-        'Symfony\\Polyfill\\Php72\\Php72' => __DIR__ . '/..' . '/symfony/polyfill-php72/Php72.php',
         'TijsVerkoyen\\CssToInlineStyles\\CssToInlineStyles' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/CssToInlineStyles.php',
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Processor' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Processor.php',
         'TijsVerkoyen\\CssToInlineStyles\\Css\\Property\\Processor' => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles/src/Css/Property/Processor.php',
@@ -3975,26 +3967,6 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'UsersTableSeeder' => __DIR__ . '/../..' . '/database/seeds/UsersTableSeeder.php',
         'Watson\\Rememberable\\Query\\Builder' => __DIR__ . '/..' . '/watson/rememberable/src/Query/Builder.php',
         'Watson\\Rememberable\\Rememberable' => __DIR__ . '/..' . '/watson/rememberable/src/Rememberable.php',
-        'Webklex\\IMAP\\Attachment' => __DIR__ . '/../..' . '/overrides/webklex/laravel-imap/src/IMAP/Attachment.php',
-        'Webklex\\IMAP\\Client' => __DIR__ . '/../..' . '/overrides/webklex/laravel-imap/src/IMAP/Client.php',
-        'Webklex\\IMAP\\ClientManager' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/ClientManager.php',
-        'Webklex\\IMAP\\EncodingAliases' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/EncodingAliases.php',
-        'Webklex\\IMAP\\Exceptions\\ConnectionFailedException' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Exceptions/ConnectionFailedException.php',
-        'Webklex\\IMAP\\Exceptions\\GetMessagesFailedException' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Exceptions/GetMessagesFailedException.php',
-        'Webklex\\IMAP\\Exceptions\\InvalidWhereQueryCriteriaException' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Exceptions/InvalidWhereQueryCriteriaException.php',
-        'Webklex\\IMAP\\Exceptions\\MessageSearchValidationException' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Exceptions/MessageSearchValidationException.php',
-        'Webklex\\IMAP\\Exceptions\\MethodNotFoundException' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Exceptions/MethodNotFoundException.php',
-        'Webklex\\IMAP\\Facades\\Client' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Facades/Client.php',
-        'Webklex\\IMAP\\Folder' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Folder.php',
-        'Webklex\\IMAP\\Message' => __DIR__ . '/../..' . '/overrides/webklex/laravel-imap/src/IMAP/Message.php',
-        'Webklex\\IMAP\\Providers\\LaravelServiceProvider' => __DIR__ . '/../..' . '/overrides/webklex/laravel-imap/src/IMAP/Providers/LaravelServiceProvider.php',
-        'Webklex\\IMAP\\Query\\Query' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Query/Query.php',
-        'Webklex\\IMAP\\Query\\WhereQuery' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Query/WhereQuery.php',
-        'Webklex\\IMAP\\Support\\AttachmentCollection' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Support/AttachmentCollection.php',
-        'Webklex\\IMAP\\Support\\FlagCollection' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Support/FlagCollection.php',
-        'Webklex\\IMAP\\Support\\FolderCollection' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Support/FolderCollection.php',
-        'Webklex\\IMAP\\Support\\MessageCollection' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Support/MessageCollection.php',
-        'Webklex\\IMAP\\Support\\PaginatedCollection' => __DIR__ . '/..' . '/webklex/laravel-imap/src/IMAP/Support/PaginatedCollection.php',
         'Webklex\\PHPIMAP\\Address' => __DIR__ . '/..' . '/webklex/php-imap/src/Address.php',
         'Webklex\\PHPIMAP\\Attachment' => __DIR__ . '/../..' . '/overrides/webklex/php-imap/src/Attachment.php',
         'Webklex\\PHPIMAP\\Attribute' => __DIR__ . '/..' . '/webklex/php-imap/src/Attribute.php',
