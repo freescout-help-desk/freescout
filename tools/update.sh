@@ -193,6 +193,16 @@ fi
 
 
 printf "\nClearing cache:\n"
+
+# First clear cache manually to avoid such issues:
+# https://github.com/freescout-help-desk/freescout/issues/4366
+rm -f $PROJECT_ROOT/bootstrap/cache/config.php
+rm -rf $PROJECT_ROOT/storage/framework/cache/data/*
+rm -f $PROJECT_ROOT/storage/framework/views/*
+rm -f $PROJECT_ROOT/storage/framework/sessions/*
+rm -f $PROJECT_ROOT/public/js/builds/*
+rm -f $PROJECT_ROOT/public/css/builds/*
+
 php artisan freescout:clear-cache
 #php artisan package:discover
 
