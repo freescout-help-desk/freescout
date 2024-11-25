@@ -1010,7 +1010,8 @@ https://github.com/freescout-help-desk/freescout/issues/4354
 .note-editor .note-editable * {
     background-color: inherit;
     font-size: inherit;
-    font-weight: inherit;
+    /* https://github.com/freescout-help-desk/freescout/issues/4367 */
+    /*font-weight: inherit;*/
 }
 .note-editor.note-frame {
     border-color: #dee4e9 !important;
