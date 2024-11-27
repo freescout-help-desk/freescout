@@ -288,7 +288,7 @@ class FetchEmails extends Command
                         $last_error = $client->getLastError();
                     }
                 } catch (\Exception $e) {
-                    $last_error = $e->getMessage();
+                    $last_error = $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
                 }
 
                 if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
