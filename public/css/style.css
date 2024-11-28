@@ -1008,7 +1008,7 @@ This is needed to avoid an issue with the SPAN tag being added
 https://github.com/freescout-help-desk/freescout/issues/4354
 */
 .note-editor .note-editable * {
-    background-color: inherit;
+    /*background-color: inherit;*/
     font-size: inherit;
     /* https://github.com/freescout-help-desk/freescout/issues/4367 */
     /*font-weight: inherit;*/
