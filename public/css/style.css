@@ -1007,7 +1007,8 @@ a h4 {
 This is needed to avoid an issue with the SPAN tag being added
 https://github.com/freescout-help-desk/freescout/issues/4354
 */
-.note-editor .note-editable * {
+.note-editor .note-editable span,
+.note-editor .note-editable div {
     /*background-color: inherit;*/
     font-size: inherit;
     /* https://github.com/freescout-help-desk/freescout/issues/4367 */
