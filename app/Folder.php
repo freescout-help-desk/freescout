@@ -224,7 +224,9 @@ class Folder extends Model
     public function updateCounters()
     {
         if (config('app.update_folder_counters_in_background')) {
-            \App\Jobs\UpdateFolderCounters::dispatch($this);
+            if(!\Illuminate\Support\Facades\Cache::has("folder_update_lock_{$this->id}")) {
+                \App\Jobs\UpdateFolderCounters::dispatch($this);
+            }
         } else {
             $this->updateCountersNow();
         }

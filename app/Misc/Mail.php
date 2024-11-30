@@ -591,8 +591,8 @@ class Mail
             'x-autoresponder'  => '',
             'auto-submitted' => '', // this can be auto-replied, auto-generated, etc.
             'delivered-to' => ['autoresponder'],
-            'precedence' => ['auto_reply', 'bulk', 'junk'],
-            'x-precedence' => ['auto_reply', 'bulk', 'junk'],
+            'precedence' => ['auto_reply', 'bulk', 'junk', 'list'],
+            'x-precedence' => ['auto_reply', 'bulk', 'junk', 'list'],
         ];
         $headers = explode("\n", $headers_str ?? '');
 

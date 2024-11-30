@@ -647,7 +647,7 @@ class ImapProtocol extends Protocol {
             if (count($items) == 1) {
                 if ($tokens[2][0] == $items[0]) {
                     $data = $tokens[2][1];
-                } elseif ($uid && $tokens[2][2] == $items[0]) {
+                } elseif ($uid === IMAP::ST_UID && isset($tokens[2][2]) && $tokens[2][2] == $items[0]) {
                     $data = $tokens[2][3];
                 } else {
                     $expectedResponse = 0;
