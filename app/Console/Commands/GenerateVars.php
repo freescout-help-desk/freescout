@@ -53,8 +53,17 @@ class GenerateVars extends Command
 
             $content = view('js/vars', $params)->render();
 
-            //$filesystem->put($file_path, $content);
-            // Save vars only if content changed
+            // Escape quotes in json values.
+            // https://github.com/freescout-help-desk/freescout/issues/4369
+            $content = preg_replace_callback(
+                "#(:[ ]*\")(.*)(\"[,\r\n])#",
+                function($v) {
+                    return $v[1].str_replace('"', '\"', $v[2]).$v[3];
+                },
+                $content
+            );
+
+            // Save vars only if content has changed.
             try {
                 if (\Storage::exists('js/vars.js')) {
                     $old_content = \Storage::get('js/vars.js');
