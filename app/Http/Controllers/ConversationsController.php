@@ -2563,9 +2563,11 @@ class ConversationsController extends Controller
             abort(403);
         }
 
+        $mailboxes = \Eventy::filter( 'conversations.move_conv.mailboxes', $user->mailboxesCanView() );
+
         return view('conversations/ajax_html/move_conv', [
             'conversation' => $conversation,
-            'mailboxes'    => $user->mailboxesCanView(),
+            'mailboxes'    => $mailboxes,
         ]);
     }
 
