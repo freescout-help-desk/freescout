@@ -28,19 +28,28 @@
 
                 <div class="conv-actions">
                     @php
-                        $actions = \App\Helpers\ConversationActions::getActions($conversation, Auth::user(), $mailbox);
-                        $toolbar_actions = \App\Helpers\ConversationActions::getActionsByLocation($actions, \App\Helpers\ConversationActions::LOCATION_TOOLBAR);
-                        $dropdown_actions = \App\Helpers\ConversationActions::getActionsByLocation($actions, \App\Helpers\ConversationActions::LOCATION_DROPDOWN);
+                        $actions = \App\Helpers\ConversationActionButtons::getActions($conversation, Auth::user(), $mailbox);
+                        $toolbar_actions = \App\Helpers\ConversationActionButtons::getActionsByLocation($actions, \App\Helpers\ConversationActionButtons::LOCATION_TOOLBAR);
+                        $dropdown_actions = \App\Helpers\ConversationActionButtons::getActionsByLocation($actions, \App\Helpers\ConversationActionButtons::LOCATION_DROPDOWN);
                     @endphp
 
                     {{-- There should be no spaces between buttons --}}
                     @foreach ($toolbar_actions as $action_key => $action)
-                        @if (!empty($action['url']))
+                        @if ($action_key === 'delete')
+                            {{-- Special handling for delete button --}}
+                            <span class="hidden-xs {{ $action['class'] }} conv-action glyphicon {{ $action['icon'] }}"
+                                  data-toggle="tooltip"
+                                  data-placement="bottom"
+                                  title="{{ $action['label'] }}"
+                                  aria-label="{{ $action['label'] }}"
+                                  role="button"></span>
+                        @elseif (!empty($action['url']))
                             {{-- Action with URL (like move, merge) --}}
                             <a href="{{ $action['url']($conversation) }}"
                                class="{{ $action['class'] }} conv-action"
                                role="button"
-                               @if (!empty($action['mobile_only']))class="hidden-xs"@endif
+                               @if (!empty($action['mobile_only']))class="hidden-xs"
+                        @endif
                         @if (!empty($action['attrs']))
                             @foreach ($action['attrs'] as $attr_key => $attr_value)
                                 {{ $attr_key }}="{{ $attr_value }}"
@@ -82,28 +91,36 @@
                         <ul class="dropdown-menu dropdown-with-icons">
                             @action('conversation.prepend_action_buttons', $conversation, $mailbox)
                             @foreach ($dropdown_actions as $action_key => $action)
-                                <li>
-                                    @if (!empty($action['has_opposite']))
-                                        <a href="#" class="{{ $action['class'] }} @if ($is_following) hidden @endif" data-follow-action="follow" role="button">
+                                @if ($action_key === 'delete_mobile')
+                                    <li class="hidden-lg hidden-md hidden-sm">
+                                        <a href="#" class="{{ $action['class'] }}" role="button">
                                             <i class="glyphicon {{ $action['icon'] }}"></i> {{ $action['label'] }}
                                         </a>
-                                        <a href="#" class="{{ $action['opposite']['class'] }} @if (!$is_following) hidden @endif" data-follow-action="unfollow" role="button">
-                                            <i class="glyphicon {{ $action['icon'] }}"></i> {{ $action['opposite']['label'] }}
-                                        </a>
-                                    @else
-                                        <a href="{{ !empty($action['url']) ? $action['url']($conversation) : '#' }}"
-                                           class="{{ $action['class'] }}"
-                                           role="button"
-                                        @if (!empty($action['attrs']))
-                                            @foreach ($action['attrs'] as $attr_key => $attr_value)
-                                                {{ $attr_key }}="{{ $attr_value }}"
-                                            @endforeach
+                                    </li>
+                                @else
+                                    <li>
+                                        @if (!empty($action['has_opposite']))
+                                            <a href="#" class="{{ $action['class'] }} @if ($is_following) hidden @endif" data-follow-action="follow" role="button">
+                                                <i class="glyphicon {{ $action['icon'] }}"></i> {{ $action['label'] }}
+                                            </a>
+                                            <a href="#" class="{{ $action['opposite']['class'] }} @if (!$is_following) hidden @endif" data-follow-action="unfollow" role="button">
+                                                <i class="glyphicon {{ $action['icon'] }}"></i> {{ $action['opposite']['label'] }}
+                                            </a>
+                                        @else
+                                            <a href="{{ !empty($action['url']) ? $action['url']($conversation) : '#' }}"
+                                               class="{{ $action['class'] }}"
+                                               role="button"
+                                            @if (!empty($action['attrs']))
+                                                @foreach ($action['attrs'] as $attr_key => $attr_value)
+                                                    {{ $attr_key }}="{{ $attr_value }}"
+                                                @endforeach
+                                            @endif
+                                            >
+                                            <i class="glyphicon {{ $action['icon'] }}"></i> {{ $action['label'] }}
+                                            </a>
                                         @endif
-                                        >
-                                        <i class="glyphicon {{ $action['icon'] }}"></i> {{ $action['label'] }}
-                                        </a>
-                                    @endif
-                                </li>
+                                    </li>
+                                @endif
                             @endforeach
                             @action('conversation.append_action_buttons', $conversation, $mailbox)
                         </ul>
