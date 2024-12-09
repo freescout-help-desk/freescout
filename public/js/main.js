@@ -5711,3 +5711,8 @@ function reloadPage()
 {
 	window.location.href = '';
 }
+
+function getLocale()
+{
+	return $('html:first').attr('lang');
+}
