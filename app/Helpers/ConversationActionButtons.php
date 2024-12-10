@@ -2,8 +2,6 @@
 
 namespace App\Helpers;
 
-use Eventy;
-
 class ConversationActionButtons
 {
         // Location constants
@@ -145,7 +143,7 @@ class ConversationActionButtons
             ];
 
             // Allow overriding default actions while preserving backwards compatibility
-            $actions = Eventy::filter('conversation.action_buttons', $actions, $conversation, $user, $mailbox);
+            $actions = \Eventy::filter('conversation.get_action_buttons', $actions, $conversation, $user, $mailbox);
 
             // Filter actions based on permissions
             foreach ($actions as $key => $action) {
