@@ -93,55 +93,37 @@ class SystemController extends Controller
             $status_texts = [];
 
             // Check if command is running now
-            if (function_exists('shell_exec')) {
-                $running_commands = 0;
+            $running_commands = 0;
+            $pids = \Helper::getRunningProcesses($command_identifier);
+            $running_commands = count($pids);
 
-                try {
-                    $processes = preg_split("/[\r\n]/", \Helper::shellExec("ps auxww | grep '{$command_identifier}'"));
-                    $pids = [];
-                    foreach ($processes as $process) {
-                        $process = trim($process);
-                        preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
-                        if (empty($m)) {
-                            // Another format (used in Docker image).
-                            // 1713 nginx     0:00 /usr/bin/php82...
-                            preg_match("/^([\d]+)\s+[\S]+\s+/", $process, $m);
-                        }
-                        if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {
-                            $running_commands++;
-                            $pids[] = $m[1];
-                        }
-                    }
-                } catch (\Exception $e) {
-                    // Do nothing
-                }
-                if ($running_commands == 1) {
+            if ($running_commands == 1) {
+                $commands[] = [
+                    'name'        => $command_name,
+                    'status'      => 'success',
+                    'status_text' => __('Running'),
+                ];
+                continue;
+            } elseif ($running_commands > 1) {
+                // queue:work command is stopped by settings a cache key
+                if ($command_name == 'queue:work') {
+                    \Helper::queueWorkerRestart();
                     $commands[] = [
                         'name'        => $command_name,
-                        'status'      => 'success',
-                        'status_text' => __('Running'),
+                        'status'      => 'error',
+                        'status_text' => __(':number commands were running at the same time. Commands have been restarted', ['number' => $running_commands]),
                     ];
-                    continue;
-                } elseif ($running_commands > 1) {
-                    // queue:work command is stopped by settings a cache key
-                    if ($command_name == 'queue:work') {
-                        \Helper::queueWorkerRestart();
-                        $commands[] = [
-                            'name'        => $command_name,
-                            'status'      => 'error',
-                            'status_text' => __(':number commands were running at the same time. Commands have been restarted', ['number' => $running_commands]),
-                        ];
-                    } else {
-                        unset($pids[0]);
-                        $commands[] = [
-                            'name'        => $command_name,
-                            'status'      => 'error',
-                            'status_text' => __(':number commands are running at the same time. Please stop extra commands by executing the following console command:', ['number' => $running_commands]).' kill '.implode(' | kill ', $pids),
-                        ];
-                    }
-                    continue;
+                } else {
+                    array_shift($pids); // Remove first PID
+                    $commands[] = [
+                        'name'        => $command_name,
+                        'status'      => 'error',
+                        'status_text' => __(':number commands are running at the same time. Please stop extra commands by executing the following console command:', ['number' => $running_commands]).' kill '.implode(' | kill ', $pids),
+                    ];
                 }
+                continue;
             }
+
             // Check last run
             $option_name = str_replace('freescout_', '', preg_replace('/[^a-zA-Z0-9]/', '_', $command_name));
 
@@ -170,8 +152,6 @@ class SystemController extends Controller
             // If queue:work is not running, clear cache to let it start if something is wrong with the mutex
             if ($command_name == 'queue:work' && !$last_successful_run) {
                 $status_texts[] = __('Try to :%a_start%clear cache:%a_end% to force command to start.', ['%a_start%' => '<a href="'.route('system.tools').'" target="_blank">', '%a_end%' => '</a>']);
-                // This sometimes makes Status page open as non logged in user.
-                //\Artisan::call('freescout:clear-cache', ['--doNotGenerateVars' => true]);
             }
 
             $commands[] = [
@@ -406,7 +386,7 @@ class SystemController extends Controller
                 if (!empty($payload['data']['command'])) {
                     $html .= '<pre>'.print_r(unserialize($payload['data']['command']), 1).'</pre>';
                 }
-                
+
                 $html .= '<pre>'.$job->exception.'</pre>';
 
                 return response($html);

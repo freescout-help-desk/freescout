@@ -1440,6 +1440,7 @@ class Helper
 
     /**
      * Get pids of the specified processes.
+     * Uses PHP native functions instead of 'ps aux'.
      */
     public static function getRunningProcesses($search = '')
     {
@@ -1449,23 +1450,74 @@ class Helper
 
         $pids = [];
 
+        // Get the current PID to avoid checking the PHP process running this code
+        $current_pid = getmypid();
+
         try {
-            $processes = preg_split("/[\r\n]/", \Helper::shellExec("ps aux | grep '".$search."'"));
-            foreach ($processes as $process) {
-                $process = trim($process);
-                preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
-                if (empty($m)) {
-                    // Another format (used in Docker image).
-                    // 1713 nginx     0:00 /usr/bin/php82...
-                    preg_match("/^([\d]+)\s+[\S]+\s+/", $process, $m);
+            // Directory containing process information
+            $proc_dir = '/proc';
+
+            // If /proc directory doesn't exist (e.g., on Windows), fallback to shell_exec
+            if (!is_dir($proc_dir)) {
+                // Try shell_exec as fallback
+                $processes = preg_split("/[\r\n]/", \Helper::shellExec("ps aux | grep '".$search."'") ?? '');
+                foreach ($processes as $process) {
+                    $process = trim($process);
+                    preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
+                    if (empty($m)) {
+                        // Another format (used in Docker image).
+                        // 1713 nginx     0:00 /usr/bin/php82...
+                        preg_match("/^([\d]+)\s+[\S]+\s+/", $process, $m);
+                    }
+                    if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {
+                        $pids[] = $m[1];
+                    }
                 }
-                if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {
-                    $pids[] = $m[1];
+                return $pids;
+            }
+
+            // Scan the /proc directory for process directories
+            $process_dirs = scandir($proc_dir);
+            foreach ($process_dirs as $pid) {
+                // Only look at directories that are numeric (PIDs)
+                if (!is_numeric($pid)) {
+                    continue;
+                }
+
+                // Skip the current process
+                if ($pid == $current_pid) {
+                    continue;
+                }
+
+                // Check if process is still running (directory exists)
+                $cmdline_file = "/proc/{$pid}/cmdline";
+                if (!file_exists($cmdline_file)) {
+                    continue;
+                }
+
+                // Read the command line for the process
+                $cmdline = file_get_contents($cmdline_file);
+                if ($cmdline === false) {
+                    continue;
+                }
+
+                // Replace null bytes with spaces to make the string readable
+                $cmdline = str_replace("\0", ' ', $cmdline);
+
+                // Skip if the command contains "sh -c"
+                if (strpos($cmdline, 'sh -c') !== false) {
+                    continue;
+                }
+
+                // If the search string is found in the command line, add the PID
+                if (strpos($cmdline, $search) !== false) {
+                    $pids[] = $pid;
                 }
             }
         } catch (\Exception $e) {
-            // Do nothing
+            \Log::error('Error getting running processes: ' . $e->getMessage());
         }
+
         return $pids;
     }
 
@@ -1972,21 +2024,60 @@ class Helper
         return $php_extensions;
     }
 
+    /**
+     * Check functions required by the application.
+     */
     public static function checkRequiredFunctions()
     {
-        return [
-            'shell_exec (PHP)' => function_exists('shell_exec'),
-            'proc_open (PHP)'  => function_exists('proc_open'),
-            'fpassthru (PHP)'  => function_exists('fpassthru'),
-            'symlink (PHP)'    => function_exists('symlink'),
-            'iconv (PHP)'      => function_exists('iconv'),
-            // If posix_isatty() function is not enabled on the server the question in the
-            // console command makes it wait infinitely and be aborted.
-            // Commands should avoid using interctive functions or use special flags.
-            //'posix_isatty (PHP)'  => function_exists('posix_isatty'),
-            'pcntl_signal (console PHP)'    => function_exists('shell_exec') ? (int)\Helper::shellExec('php -r "echo (int)function_exists(\'pcntl_signal\');"') : false,
-            'ps (shell)' => function_exists('shell_exec') ? \Helper::shellExec('ps') : false,
-        ];
+        $functions = [];
+
+        // Check PHP functions
+        $functions['shell_exec (PHP)'] = function_exists('shell_exec');
+        $functions['proc_open (PHP)'] = function_exists('proc_open');
+        $functions['fpassthru (PHP)'] = function_exists('fpassthru');
+        $functions['symlink (PHP)'] = function_exists('symlink');
+        $functions['iconv (PHP)'] = function_exists('iconv');
+
+        // Check console PHP function
+        // We still need to check this as it's used in console commands
+        if (function_exists('shell_exec')) {
+            $functions['pcntl_signal (console PHP)'] = (int)\Helper::shellExec('php -r "echo (int)function_exists(\'pcntl_signal\');"');
+        } else {
+            // If shell_exec is not available, we can try to check directly
+            // although this might not reflect the console PHP configuration
+            $functions['pcntl_signal (console PHP)'] = function_exists('pcntl_signal');
+        }
+
+        // Check process functions availability
+        // This replaces the ps check with native PHP process handling capabilities
+        $functions['Process Management'] = self::checkProcessFunctions();
+
+        return $functions;
+    }
+
+    /**
+     * Check if the system has necessary process management capabilities.
+     */
+    private static function checkProcessFunctions()
+    {
+        // First check if we're on a Unix-like system
+        if (DIRECTORY_SEPARATOR === '/') {
+            // Check if /proc filesystem is available
+            if (is_dir('/proc')) {
+                // Try to read a process directory to confirm access
+                $test_read = @scandir('/proc');
+                if ($test_read !== false) {
+                    return true;
+                }
+            }
+        }
+
+        // If we have shell_exec, we can still manage processes
+        if (function_exists('shell_exec')) {
+            return true;
+        }
+
+        return false;
     }
 
     public static function isInstalled()
