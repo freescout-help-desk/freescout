@@ -28,9 +28,9 @@
 
                 <div class="conv-actions">
                     @php
-                        $actions = \App\Helpers\ConversationActionButtons::getActions($conversation, Auth::user(), $mailbox);
-                        $toolbar_actions = \App\Helpers\ConversationActionButtons::getActionsByLocation($actions, \App\Helpers\ConversationActionButtons::LOCATION_TOOLBAR);
-                        $dropdown_actions = \App\Helpers\ConversationActionButtons::getActionsByLocation($actions, \App\Helpers\ConversationActionButtons::LOCATION_DROPDOWN);
+                        $actions = \App\Misc\ConversationActionButtons::getActions($conversation, Auth::user(), $mailbox);
+                        $toolbar_actions = \App\Misc\ConversationActionButtons::getActionsByLocation($actions, \App\Misc\ConversationActionButtons::LOCATION_TOOLBAR);
+                        $dropdown_actions = \App\Misc\ConversationActionButtons::getActionsByLocation($actions, \App\Misc\ConversationActionButtons::LOCATION_DROPDOWN);
                     @endphp
 
                     {{-- There should be no spaces between buttons --}}

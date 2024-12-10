@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Misc;
 
 class ConversationActionButtons
 {
-        // Location constants
-        const LOCATION_TOOLBAR = 'toolbar';
-        const LOCATION_DROPDOWN = 'dropdown';
-        const LOCATION_BOTH = 'both';
+    // Location constants
+    const LOCATION_TOOLBAR = 'toolbar';
+    const LOCATION_DROPDOWN = 'dropdown';
+    const LOCATION_BOTH = 'both';
 
-        /**
-         * Get all available conversation actions
-         */
+    /**
+     * Get all available conversation actions
+     */
     public static function getActions($conversation, $user, $mailbox)
     {
             $actions = [
@@ -46,7 +46,6 @@ class ConversationActionButtons
                             },
                             'class'          => $conversation->state != \App\Conversation::STATE_DELETED ? 'conv-delete' : 'conv-delete-forever',
                             'fixed_location' => true,
-                            'show_in_both'   => true,
                     ],
                     'delete_mobile' => [
                             'icon'           => 'glyphicon-trash',
@@ -160,20 +159,20 @@ class ConversationActionButtons
          */
     public static function getActionsByLocation($actions, $location)
     {
-            return array_filter($actions, function ($action) use ($location) {
-                if (! empty($action['fixed_location'])) {
-                        // Modified logic for responsive display
-                    if ($location === self::LOCATION_TOOLBAR) {
-                        // Show in toolbar if it's a toolbar action
-                        return $action['location'] === self::LOCATION_TOOLBAR;
-                    } elseif ($location === self::LOCATION_DROPDOWN) {
-                            // Show in dropdown if explicitly flagged or if it's a dropdown action
-                            return $action['location'] === self::LOCATION_DROPDOWN ||
-                                   ( ! empty($action['show_in_dropdown']) && $action['location'] === self::LOCATION_TOOLBAR );
-                    }
+        return array_filter($actions, function ($action) use ($location) {
+            if (! empty($action['fixed_location'])) {
+                    // Modified logic for responsive display
+                if ($location === self::LOCATION_TOOLBAR) {
+                    // Show in toolbar if it's a toolbar action
+                    return $action['location'] === self::LOCATION_TOOLBAR;
+                } elseif ($location === self::LOCATION_DROPDOWN) {
+                        // Show in dropdown if explicitly flagged or if it's a dropdown action
+                        return $action['location'] === self::LOCATION_DROPDOWN ||
+                               ( ! empty($action['show_in_dropdown']) && $action['location'] === self::LOCATION_TOOLBAR );
                 }
+            }
 
-                    return $action['location'] === $location;
-            });
+                return $action['location'] === $location;
+        });
     }
 }
