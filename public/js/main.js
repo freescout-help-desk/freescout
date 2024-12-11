@@ -197,7 +197,7 @@ var EditorInsertVarButton = function (context) {
 
 	vars = fsApplyFilter('editor.vars', vars);
 
-	var contents = '<select class="form-control summernote-inservar" tabindex="-1">'+
+	var contents = '<select class="form-control summernote-inservar">'+
 		    '<option value="">'+Lang.get("messages.insert_var")+' ...</option>';
     for (var entity_name in vars) {
     	contents += '<optgroup label="'+Lang.get("messages."+entity_name)+'">';
