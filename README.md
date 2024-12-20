@@ -69,9 +69,11 @@ Mobile apps support the same functionality and modules as the web version of you
 
 <a href="https://freescout.net/android-app/" target="_blank" rel="nofollow"><img alt="Android App" src="https://freescout-helpdesk.github.io/img/apps/android.png" width="200px" /></a> <a href="https://freescout.net/ios-app/" target="_blank" rel="nofollow"><img alt="iOS App" src="https://freescout-helpdesk.github.io/img/apps/ios.png?v=1" width="200px" /></a>
 
+[MacOS Menu Bar App](https://github.com/jonalaniz/scouter)
+
 ## Requirements
 
-FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a [shared hosting](https://2ly.link/20rhd).
+FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a [shared hosting](https://github.com/freescout-help-desk/freescout/wiki/Choosing-a-Server).
 
   * Nginx / Apache / IIS
   * PHP 7.1 - 8.x

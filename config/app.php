@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.159',
+    'version' => '1.8.160',
 
     /*
     |--------------------------------------------------------------------------
@@ -289,7 +289,7 @@ return [
     |
     |-------------------------------------------------------------------------
     */
-    'no_retry_mail_errors'    => env('APP_NO_RETRY_MAIL_ERRORS', '(no valid recipients|does not comply with RFC|message file too big)'),
+    'no_retry_mail_errors'    => env('APP_NO_RETRY_MAIL_ERRORS', '(no valid recipients|does not comply with RFC|message file too big|malformed address)'),
 
     /*
     |--------------------------------------------------------------------------

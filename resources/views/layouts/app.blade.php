@@ -131,7 +131,7 @@
                                     @php
                                         $web_notifications_info = Auth::user()->getWebsiteNotificationsInfo();
                                     @endphp
-                                    <a href="#" class="dropdown-toggle dropdown-toggle-icon @if ($web_notifications_info['unread_count']) @if ($web_notifications_info['unread_count']) has-unread @endif @endif" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre title="{{ __('Notifications') }}">
+                                    <a href="#" class="dropdown-toggle dropdown-toggle-icon @if ($web_notifications_info['unread_count']) @if ($web_notifications_info['unread_count']) has-unread @endif @endif" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" aria-label="{{ __('Notifications') }}" v-pre title="{{ __('Notifications') }}">
                                         <i class="glyphicon glyphicon-bell"></i>
                                     </a>
 

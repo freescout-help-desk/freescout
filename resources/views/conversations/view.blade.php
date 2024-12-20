@@ -27,45 +27,101 @@
             <div id="conv-toolbar">
 
                 <div class="conv-actions">
+                    @php
+                        $actions = \App\Misc\ConversationActionButtons::getActions($conversation, Auth::user(), $mailbox);
+                        $toolbar_actions = \App\Misc\ConversationActionButtons::getActionsByLocation($actions, \App\Misc\ConversationActionButtons::LOCATION_TOOLBAR);
+                        $dropdown_actions = \App\Misc\ConversationActionButtons::getActionsByLocation($actions, \App\Misc\ConversationActionButtons::LOCATION_DROPDOWN);
+                    @endphp
+
                     {{-- There should be no spaces between buttons --}}
-                    @if ((!$conversation->isPhone() || ($customer && $customer->getMainEmail())) && Eventy::filter('conversation.reply_button.enabled', true, $conversation) )
-                        <span class="conv-reply conv-action glyphicon glyphicon-share-alt" data-toggle="tooltip" data-placement="bottom" title="{{ __("Reply") }}" aria-label="{{ __("Reply") }}" role="button"></span>
-                    @endif
-                    @if (Eventy::filter('conversation.note_button.enabled', true, $conversation))
-                        <span class="conv-add-note conv-action glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" title="{{ __("Note") }}" aria-label="{{ __("Note") }}" role="button"></span>
-                    @endif
-                    @if (Auth::user()->can('delete', $conversation))
-                        @if ($conversation->state != App\Conversation::STATE_DELETED)
-                            <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete") }}" aria-label="{{ __("Delete") }}" role="button"></span>
-                        @else
-                            <span class="hidden-xs conv-action glyphicon glyphicon-trash conv-delete-forever" data-toggle="tooltip" data-placement="bottom" title="{{ __("Delete Forever") }}" aria-label="{{ __("Delete Forever") }}" role="button"></span>
+                    @foreach ($toolbar_actions as $action_key => $action)
+                        @if ($action_key === 'delete')
+                            {{-- Special handling for delete button --}}
+                            <span class="hidden-xs {{ $action['class'] }} conv-action glyphicon {{ $action['icon'] }}"
+                                  data-toggle="tooltip"
+                                  data-placement="bottom"
+                                  title="{{ $action['label'] }}"
+                                  aria-label="{{ $action['label'] }}"
+                                  role="button"></span>
+                        @elseif (!empty($action['url']))
+                            {{-- Action with URL (like move, merge) --}}
+                            <a href="{{ $action['url']($conversation) }}"
+                               class="{{ $action['class'] }} conv-action"
+                               role="button"
+                               @if (!empty($action['mobile_only']))class="hidden-xs"
                         @endif
-                    @endif
+                        @if (!empty($action['attrs']))
+                            @foreach ($action['attrs'] as $attr_key => $attr_value)
+                                {{ $attr_key }}="{{ $attr_value }}"
+                            @endforeach
+                        @endif
+                        data-toggle="tooltip"
+                        data-placement="bottom"
+                        title="{{ $action['label'] }}"
+                        aria-label="{{ $action['label'] }}">
+                        <i class="glyphicon {{ $action['icon'] }}"></i>
+                        </a>
+                        @else
+                            {{-- Simple button action --}}
+                            <span class="@if (!empty($action['mobile_only']))hidden-xs @endif {{ $action['class'] }} conv-action glyphicon {{ $action['icon'] }}"
+                                  data-toggle="tooltip"
+                                  data-placement="bottom"
+                                  title="{{ $action['label'] }}"
+                                  aria-label="{{ $action['label'] }}"
+                                  role="button"
+                            @if (!empty($action['attrs']))
+                                @foreach ($action['attrs'] as $attr_key => $attr_value)
+                                    {{ $attr_key }}="{{ $attr_value }}"
+                                @endforeach
+                            @endif
+                            ></span>
+                        @endif
+                    @endforeach
+
                     @action('conversation.action_buttons', $conversation, $mailbox)
 
-                    <div class="dropdown conv-action" data-toggle="tooltip" title="{{ __("More Actions") }}">
-                        <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" aria-label="{{ __("More Actions") }}"></span>
+                    {{-- More Actions Dropdown --}}
+                    <div class="dropdown conv-action" data-toggle="tooltip" title="{{ __('More Actions') }}">
+        <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle"
+              data-toggle="dropdown"
+              role="button"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-label="{{ __('More Actions') }}"></span>
                         <ul class="dropdown-menu dropdown-with-icons">
                             @action('conversation.prepend_action_buttons', $conversation, $mailbox)
-                            <li>
-                                <a href="#" class="conv-follow @if ($is_following) hidden @endif" data-follow-action="follow" role="button"><i class="glyphicon glyphicon-bell"></i> {{ __("Follow") }}</a>
-                                <a href="#" class="conv-follow @if (!$is_following) hidden @endif" data-follow-action="unfollow" role="button"><i class="glyphicon glyphicon-bell"></i> {{ __("Unfollow") }}</a>
-                            </li>
-                            <li><a href="#" class="conv-forward" role="button"><i class="glyphicon glyphicon-arrow-right"></i> {{ __("Forward") }}</a></li>
-                            @if (!$conversation->isChat())
-                                <li><a href="{{ route('conversations.ajax_html', array_merge(['action' =>
-                        'merge_conv'], \Request::all(), ['conversation_id' => $conversation->id]) ) }}" data-trigger="modal" data-modal-title="{{ __("Merge Conversations") }}" data-modal-no-footer="true" data-modal-on-show="initMergeConv" role="button"><i class="glyphicon glyphicon-indent-left"></i> {{ __("Merge") }}</a></li>
-                            @endif
-                            @if (Auth::user()->can('move', App\Conversation::class))
-                                <li><a href="{{ route('conversations.ajax_html', array_merge(['action' =>
-                        'move_conv'], \Request::all(), ['conversation_id' => $conversation->id]) ) }}" data-trigger="modal" data-modal-title="{{ __("Move Conversation") }}" data-modal-no-footer="true" data-modal-on-show="initMoveConv" role="button"><i class="glyphicon glyphicon-log-out"></i> {{ __("Move") }}</a></li>
-                            @endif
-                            @if ($conversation->state != App\Conversation::STATE_DELETED)
-                                <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete" role="button"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete") }}</a></li>
-                            @else
-                                <li class="hidden-lg hidden-md hidden-sm"><a href="#" class="conv-delete-forever" role="button"><i class="glyphicon glyphicon-trash"></i> {{ __("Delete Forever") }}</a></li>
-                            @endif
-                            <li><a href="{{ \Request::getRequestUri() }}&amp;print=1" target="_blank" role="button"><i class="glyphicon glyphicon-print"></i> {{ __("Print") }}</a></li>
+                            @foreach ($dropdown_actions as $action_key => $action)
+                                @if ($action_key === 'delete_mobile')
+                                    <li class="hidden-lg hidden-md hidden-sm">
+                                        <a href="#" class="{{ $action['class'] }}" role="button">
+                                            <i class="glyphicon {{ $action['icon'] }}"></i> {{ $action['label'] }}
+                                        </a>
+                                    </li>
+                                @else
+                                    <li>
+                                        @if (!empty($action['has_opposite']))
+                                            <a href="#" class="{{ $action['class'] }} @if ($is_following) hidden @endif" data-follow-action="follow" role="button">
+                                                <i class="glyphicon {{ $action['icon'] }}"></i> {{ $action['label'] }}
+                                            </a>
+                                            <a href="#" class="{{ $action['opposite']['class'] }} @if (!$is_following) hidden @endif" data-follow-action="unfollow" role="button">
+                                                <i class="glyphicon {{ $action['icon'] }}"></i> {{ $action['opposite']['label'] }}
+                                            </a>
+                                        @else
+                                            <a href="{{ !empty($action['url']) ? $action['url']($conversation) : '#' }}"
+                                               class="{{ $action['class'] }}"
+                                               role="button"
+                                            @if (!empty($action['attrs']))
+                                                @foreach ($action['attrs'] as $attr_key => $attr_value)
+                                                    {{ $attr_key }}="{{ $attr_value }}"
+                                                @endforeach
+                                            @endif
+                                            >
+                                            <i class="glyphicon {{ $action['icon'] }}"></i> {{ $action['label'] }}
+                                            </a>
+                                        @endif
+                                    </li>
+                                @endif
+                            @endforeach
                             @action('conversation.append_action_buttons', $conversation, $mailbox)
                         </ul>
                     </div>

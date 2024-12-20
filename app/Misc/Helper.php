@@ -1220,7 +1220,19 @@ class Helper
      */
     public static function strSplitKeepWords($str, $max_length = 75)
     {
-        $array_words = explode(' ', $str);
+        $space = html_entity_decode('&nbsp;');
+
+        $str = strtr($str, [
+            '、' => '、'.$space,
+            '。' => '。'.$space,
+            // '.' => '.'.$space,
+            // ',' => ','.$space,
+            //':' => ':'.$space,
+            // '—' => '—'.$space,
+            // '।' => '।'.$space,
+        ]);
+
+        $array_words = explode($space, $str);
 
         $currentLength = 0;
 

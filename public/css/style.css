@@ -3176,7 +3176,8 @@ ul.sidebar-block-list {
     top: -2px;
 }
 .onoffswitch-checkbox {
-    display: none;
+    position: absolute;
+    left:-9999px;
 }
 .onoffswitch-label {
     display: block; overflow: hidden; cursor: pointer;
