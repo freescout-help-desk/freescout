@@ -2352,7 +2352,8 @@ var WrappedRange = /** @class */ (function () {
         inlineSiblings = inlineSiblings.concat(dom.listNext(topAncestor.nextSibling, dom.isParaInline));
         // wrap with paragraph
         if (inlineSiblings.length) {
-            var para = dom.wrap(lists.head(inlineSiblings), 'p');
+            //var para = dom.wrap(lists.head(inlineSiblings), 'p');
+            var para = dom.wrap(lists.head(inlineSiblings), 'div');
             dom.appendChildNodes(para, lists.tail(inlineSiblings));
         }
         return this.normalize();
@@ -3066,7 +3067,8 @@ var Bullet = /** @class */ (function () {
             // LI to P
             if (isEscapseToBody || !dom.isList(headList.parentNode)) {
                 paras = paras.map(function (para) {
-                    return dom.replace(para, 'P');
+                    //return dom.replace(para, 'P');
+                    return dom.replace(para, 'DIV');
                 });
             }
             $$1.each(lists.from(paras).reverse(), function (idx, para) {
@@ -3149,7 +3151,8 @@ var Typing = /** @class */ (function () {
                 });
                 // replace empty heading, pre or custom-made styleTag with P tag
                 if ((dom.isHeading(nextPara) || dom.isPre(nextPara) || dom.isCustomStyleTag(nextPara)) && dom.isEmpty(nextPara)) {
-                    nextPara = dom.replace(nextPara, 'p');
+                    //nextPara = dom.replace(nextPara, 'p');
+                    nextPara = dom.replace(nextPara, 'div');
                 }
             }
             // no paragraph: insert empty paragraph
@@ -4329,7 +4332,8 @@ var Editor = /** @class */ (function () {
         }
     };
     Editor.prototype.formatPara = function () {
-        this.formatBlock('P');
+        //this.formatBlock('P');
+        this.formatBlock('DIV');
     };
     Editor.prototype.fontStyling = function (target, value) {
         var rng = this.createRange();
@@ -7218,6 +7222,7 @@ $$1.summernote = $$1.extend($$1.summernote, {
                 // freescout
                 // https://github.com/summernote/summernote/issues/546#issuecomment-341518461
                 //'ENTER': 'insertParagraph',
+                'SHIFT+ENTER': 'insertParagraph',
                 'CTRL+Z': 'undo',
                 'CTRL+Y': 'redo',
                 'TAB': 'tab',
@@ -7249,6 +7254,7 @@ $$1.summernote = $$1.extend($$1.summernote, {
                 // freescout
                 // https://github.com/summernote/summernote/issues/546#issuecomment-341518461
                 //'ENTER': 'insertParagraph',
+                'SHIFT+ENTER': 'insertParagraph',
                 'CMD+Z': 'undo',
                 'CMD+SHIFT+Z': 'redo',
                 'TAB': 'tab',
