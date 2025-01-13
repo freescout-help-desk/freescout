@@ -102,6 +102,7 @@ return array(
     'Html2Text\\' => array($vendorDir . '/html2text/html2text/src', $vendorDir . '/html2text/html2text/test'),
     'GuzzleHttp\\Psr7\\' => array($baseDir . '/overrides/guzzlehttp/psr7/src', $vendorDir . '/guzzlehttp/psr7/src'),
     'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
+    'GuzzleHttp\\Handler\\' => array($baseDir . '/overrides/guzzlehttp/guzzle/src/Handler'),
     'GuzzleHttp\\Cookie\\' => array($baseDir . '/overrides/guzzlehttp/guzzle/src/Cookie'),
     'GuzzleHttp\\' => array($baseDir . '/overrides/guzzlehttp/guzzle/src', $vendorDir . '/guzzlehttp/guzzle/src'),
     'Fideloper\\Proxy\\' => array($vendorDir . '/fideloper/proxy/src'),
