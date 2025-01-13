@@ -3271,7 +3271,9 @@ class ConversationsController extends Controller
             if (!empty($name_parts[1])) {
                 $customer_data['last_name'] = $name_parts[1];
             }
-            $customer_data['phones'] = [$request_phone];
+            if ($request_phone) {
+                $customer_data['phones'] = [$request_phone];
+            }
         }
 
         // Check if name field contains ID of the customer.
