@@ -2074,6 +2074,10 @@ function initNewConversation(is_phone)
 		$('#phone-conv-switch').click(function() {
 			switchToNewPhoneConversation();
 		});
+		// Delete attachments
+		$('li.attachment-loaded .glyphicon-remove').click(function(e) {
+			removeAttachment($(this).attr('data-attachment-id'));
+		});
     });
 }
 

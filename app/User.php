@@ -552,6 +552,8 @@ class User extends Authenticatable
                 's' => 'ss',
                 'l' => 'cccc',
                 'O' => 'xx',
+                // https://stackoverflow.com/questions/59682843/php-intldateformatter-returns-incorrect-year
+                'Y' => 'y',
             ]);
 
             // Remove dot from month name.

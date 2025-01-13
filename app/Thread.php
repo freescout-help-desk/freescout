@@ -664,7 +664,7 @@ class Thread extends Model
                 }
             } elseif ($this->action_type == self::ACTION_TYPE_CUSTOMER_CHANGED) {
                 if ($conversation_number) {
-                    $did_this = __(':person changed the customer to :customer in conversation #:conversation_number', ['customer' => $this->customer->getFullName(true), 'conversation_number' => $conversation_number]);
+                    $did_this = __(':person changed the customer to :customer in conversation #:conversation_number', ['customer' => ($this->customer_cached ? $this->customer_cached->getFullName(true) : ''), 'conversation_number' => $conversation_number]);
                 } else {
                     $customer_name = '';
                     if ($this->customer_cached) {
