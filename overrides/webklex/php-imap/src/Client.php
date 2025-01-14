@@ -468,7 +468,7 @@ class Client {
      * @throws FolderFetchingException
      * @throws Exceptions\RuntimeException
      */
-    public function getFolders(bool $hierarchical = true, string $parent_folder = null): FolderCollection {
+    public function getFolders(bool $hierarchical = true, ?string $parent_folder = null): FolderCollection {
         $this->checkConnection();
         $folders = FolderCollection::make([]);
 
@@ -507,7 +507,7 @@ class Client {
      * @throws FolderFetchingException
      * @throws Exceptions\RuntimeException
      */
-    public function getFoldersWithStatus(bool $hierarchical = true, string $parent_folder = null): FolderCollection {
+    public function getFoldersWithStatus(bool $hierarchical = true, ?string $parent_folder = null): FolderCollection {
         $this->checkConnection();
         $folders = FolderCollection::make([]);
 
@@ -611,7 +611,7 @@ class Client {
      * @throws ConnectionFailedException
      * @throws Exceptions\RuntimeException
      */
-    public function Id(array $ids = null) {
+    public function Id(?array $ids = null) {
         $this->checkConnection();
         return $this->connection->ID($ids);
     }

@@ -141,7 +141,7 @@ class Process implements \IteratorAggregate
      *
      * @throws RuntimeException When proc_open is not installed
      */
-    public function __construct($commandline, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = null)
+    public function __construct($commandline, $cwd = null, ?array $env = null, $input = null, $timeout = 60, ?array $options = null)
     {
         if (!\function_exists('proc_open')) {
             throw new RuntimeException('The Process class relies on proc_open, which is not available on your PHP installation.');
@@ -228,7 +228,7 @@ class Process implements \IteratorAggregate
      *
      * @final since version 3.3
      */
-    public function mustRun(callable $callback = null/*, array $env = array()*/)
+    public function mustRun(?callable $callback = null/*, array $env = array()*/)
     {
         if (!$this->enhanceSigchildCompatibility && $this->isSigchildEnabled()) {
             throw new RuntimeException('This PHP has been compiled with --enable-sigchild. You must use setEnhanceSigchildCompatibility() to use this method.');
@@ -262,7 +262,7 @@ class Process implements \IteratorAggregate
      * @throws RuntimeException When process is already running
      * @throws LogicException   In case a callback is provided and output has been disabled
      */
-    public function start(callable $callback = null/*, array $env = array()*/)
+    public function start(?callable $callback = null/*, array $env = array()*/)
     {
         if ($this->isRunning()) {
             throw new RuntimeException('Process is already running');
@@ -378,7 +378,7 @@ class Process implements \IteratorAggregate
      *
      * @final since version 3.3
      */
-    public function restart(callable $callback = null/*, array $env = array()*/)
+    public function restart(?callable $callback = null/*, array $env = array()*/)
     {
         if ($this->isRunning()) {
             throw new RuntimeException('Process is already running');
@@ -406,7 +406,7 @@ class Process implements \IteratorAggregate
      * @throws RuntimeException When process stopped after receiving signal
      * @throws LogicException   When process is not yet started
      */
-    public function wait(callable $callback = null)
+    public function wait(?callable $callback = null)
     {
         $this->requireProcessIsStarted(__FUNCTION__);
 
@@ -1391,7 +1391,7 @@ class Process implements \IteratorAggregate
      *
      * @return \Closure A PHP closure
      */
-    protected function buildCallback(callable $callback = null)
+    protected function buildCallback(?callable $callback = null)
     {
         if ($this->outputDisabled) {
             return function ($type, $data) use ($callback) {

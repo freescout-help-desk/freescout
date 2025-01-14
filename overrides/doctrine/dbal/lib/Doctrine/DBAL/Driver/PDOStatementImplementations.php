@@ -20,6 +20,7 @@ if (PHP_VERSION_ID >= 80000) {
          *
          * @return bool
          */
+        #[\ReturnTypeWillChange]
         public function setFetchMode($mode, ...$args)
         {
             return $this->doSetFetchMode($mode, ...$args);

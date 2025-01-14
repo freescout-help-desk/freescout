@@ -240,7 +240,7 @@ class FetchEmails extends Command
                 $folder = \MailHelper::getImapFolder($client, $folder_name);
             } catch (\Exception $e) {
                 // Just log error and continue.
-                $this->error('['.date('Y-m-d H:i:s').'] IMAP folder not found on the mail server: '.$folder_name);
+                $this->error('['.date('Y-m-d H:i:s').'] IMAP folder ('.$folder_name.') not found on the mail server: '.$e->getMessage());
             }
 
             if ($folder) {

@@ -322,7 +322,7 @@ class ImapProtocol extends Protocol {
      *
      * @throws RuntimeException
      */
-    public function sendRequest(string $command, array $tokens = [], string &$tag = null) {
+    public function sendRequest(string $command, array $tokens = [], ?string &$tag = null) {
         if (!$tag) {
             $this->noun++;
             $tag = 'TAG' . $this->noun;

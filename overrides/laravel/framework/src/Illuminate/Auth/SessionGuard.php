@@ -97,7 +97,7 @@ class SessionGuard implements StatefulGuard, SupportsBasicAuth
     public function __construct($name,
                                 UserProvider $provider,
                                 Session $session,
-                                Request $request = null)
+                                ?Request $request = null)
     {
         $this->name = $name;
         $this->session = $session;

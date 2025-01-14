@@ -210,7 +210,7 @@ class HeaderBag implements \IteratorAggregate, \Countable
      *
      * @throws \RuntimeException When the HTTP header is not parseable
      */
-    public function getDate($key, \DateTime $default = null)
+    public function getDate($key, ?\DateTime $default = null)
     {
         if (null === $value = $this->get($key)) {
             return $default;

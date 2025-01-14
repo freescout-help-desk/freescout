@@ -954,6 +954,7 @@ class Carbon extends DateTime implements JsonSerializable
      *
      * @return static
      */
+    #[\ReturnTypeWillChange]
     public static function createFromTimestamp($timestamp, $tz = null)
     {
         return static::today($tz)->setTimestamp($timestamp);

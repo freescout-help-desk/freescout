@@ -83,7 +83,7 @@ class HelperSet implements \IteratorAggregate
         return $this->helpers[$name];
     }
 
-    public function setCommand(Command $command = null)
+    public function setCommand(?Command $command = null)
     {
         $this->command = $command;
     }

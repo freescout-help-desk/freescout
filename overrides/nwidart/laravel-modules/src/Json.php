@@ -34,7 +34,7 @@ class Json
      * @param mixed                             $path
      * @param \Illuminate\Filesystem\Filesystem $filesystem
      */
-    public function __construct($path, Filesystem $filesystem = null, array $data = [])
+    public function __construct($path, ?Filesystem $filesystem = null, array $data = [])
     {
         $this->path = (string) $path;
         $this->filesystem = $filesystem ?: new Filesystem();
@@ -103,7 +103,7 @@ class Json
      *
      * @return static
      */
-    public static function make($path, Filesystem $filesystem = null)
+    public static function make($path, ?Filesystem $filesystem = null)
     {
         return new static($path, $filesystem);
     }
@@ -158,7 +158,7 @@ class Json
      *
      * @return string
      */
-    public function toJsonPretty(array $data = null)
+    public function toJsonPretty(?array $data = null)
     {
         return json_encode($data ?: $this->attributes, JSON_PRETTY_PRINT);
     }
