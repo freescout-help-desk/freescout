@@ -188,7 +188,7 @@
             "Symfony\\Component\\Translation\\": "overrides/symfony/translation/",
             "Javoscript\\MacroableModels\\": "overrides/javoscript/laravel-macroable-models/src/",
             "League\\Flysystem\\": "overrides/league/flysystem/src/",
-            "Whoops\\Run\\": "overrides/filp/whoops/src/Whoops/",
+            "Whoops\\": "overrides/filp/whoops/src/Whoops/",
             "Mews\\Purifier\\": "overrides/mews/purifier/src/",
             "Cron\\": "overrides/mtdowling/cron-expression/src/Cron/"
         },
@@ -316,6 +316,11 @@
             "vendor/symfony/process/Process.php",
             "vendor/symfony/http-kernel/UriSigner.php",
             "vendor/symfony/http-kernel/Exception/HttpException.php",
+            "vendor/symfony/http-kernel/Exception/AccessDeniedHttpException.php",
+            "vendor/symfony/http-kernel/Exception/MethodNotAllowedHttpException.php",
+            "vendor/symfony/http-kernel/Exception/NotFoundHttpException.php",
+            "vendor/symfony/http-kernel/Exception/ServiceUnavailableHttpException.php",
+            "vendor/symfony/http-kernel/Exception/UnauthorizedHttpException.php",
             "vendor/symfony/http-kernel/HttpCache/Store.php",
             "vendor/barryvdh/laravel-debugbar/src/JavascriptRenderer.php",
             "vendor/spatie/string/src/Str.php",
@@ -397,6 +402,7 @@
             "vendor/laravel/framework/src/Illuminate/Notifications/RoutesNotifications.php",
             "vendor/laravel/framework/src/Illuminate/Notifications/SendQueuedNotifications.php",
             "vendor/laravel/framework/src/Illuminate/Notifications/ChannelManager.php",
+            "vendor/laravel/framework/src/Illuminate/Notifications/NotificationSender.php",
             "vendor/laravel/framework/src/Illuminate/Auth/Access/Gate.php",
             "vendor/laravel/framework/src/Illuminate/Broadcasting/BroadcastManager.php",
             "vendor/laravel/framework/src/Illuminate/Bus/Dispatcher.php",
@@ -405,7 +411,8 @@
             "vendor/league/flysystem/src/FilesystemInterface.php",
             "vendor/mews/purifier/src/Purifier.php",
             "vendor/mtdowling/cron-expression/src/Cron/CronExpression.php",
-            "vendor/laravel/framework/src/Illuminate/Mail/Mailer.php"
+            "vendor/laravel/framework/src/Illuminate/Mail/Mailer.php",
+            "vendor/filp/whoops/src/Whoops/Run.php"
         ]
     },
     "autoload-dev": {

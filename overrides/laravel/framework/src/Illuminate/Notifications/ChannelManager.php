@@ -43,7 +43,7 @@ class ChannelManager extends Manager implements DispatcherContract, FactoryContr
      * @param  array|null  $channels
      * @return void
      */
-    public function sendNow($notifiables, $notification, array $channels = null)
+    public function sendNow($notifiables, $notification, ?array $channels = null)
     {
         return (new NotificationSender(
             $this, $this->app->make(Bus::class), $this->app->make(Dispatcher::class))
