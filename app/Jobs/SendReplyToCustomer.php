@@ -412,7 +412,7 @@ class SendReplyToCustomer implements ShouldQueue
                 // Multipart flag.
                 if ($this->last_thread->has_attachments) {
                     $multipart = [];
-                    $multipart["type"] = TYPEMULTIPART;
+                    $multipart["type"] = \Webklex\PHPIMAP\IMAP::TYPEMULTIPART;
                     $multipart["subtype"] = "mixed";
                     // https://github.com/freescout-helpdesk/freescout/issues/3934
                     //$multipart["subtype"] = "alternative";
@@ -420,7 +420,7 @@ class SendReplyToCustomer implements ShouldQueue
                 }
 
                 // Body.
-                $part_body['type'] = TYPETEXT;
+                $part_body['type'] = \Webklex\PHPIMAP\IMAP::TYPETEXT;
                 $part_body['subtype'] = 'html';
                 $part_body['contents.data'] = $reply_mail->render();
                 $part_body['charset'] = 'utf-8';
@@ -439,7 +439,7 @@ class SendReplyToCustomer implements ShouldQueue
                         if ($attachment->fileExists()) {
                             $part = [];
                             $part["type"] = 'APPLICATION';
-                            $part["encoding"] = ENCBASE64;
+                            $part["encoding"] = \Webklex\PHPIMAP\IMAP::ENCBASE64;
                             $part["subtype"] = "octet-stream";
                             $part["description"] = $attachment->file_name;
                             $part['disposition.type'] = 'attachment';
