@@ -81,6 +81,8 @@ class ReplyToCustomer extends Mailable
         if (!empty($new_headers) || $from_alias) {
             $mailbox = $this->mailbox;
             $this->withSwiftMessage(function ($swiftmessage) use ($new_headers, $from_alias, $mailbox, $thread) {
+                \MailHelper::$smtp_mime_message = '';
+
                 if (!empty($new_headers)) {
                     if (!empty($new_headers['Message-ID'])) {
                         $swiftmessage->setId($new_headers['Message-ID']);
@@ -123,6 +125,10 @@ class ReplyToCustomer extends Mailable
                             ]);
                         }
                     }
+                }
+
+                if ($mailbox->imap_sent_folder) {
+                    \MailHelper::$smtp_mime_message = $swiftmessage->toString();
                 }
 
                 return $swiftmessage;

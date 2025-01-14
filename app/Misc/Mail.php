@@ -99,6 +99,11 @@ class Mail
      * Used to get SMTP queue id when sending emails to customers.
      */
     public static $smtp_queue_id_plugin_registered = false;
+    
+    /**
+     * Used to store the last sent email message.
+     */
+    public static $smtp_mime_message = '';
 
     /**
      * Configure mail sending parameters.
