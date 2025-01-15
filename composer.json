@@ -330,6 +330,7 @@
             "vendor/guzzlehttp/guzzle/src/HandlerStack.php",
             "vendor/guzzlehttp/psr7/src/LazyOpenStream.php",
             "vendor/ramsey/uuid/src/Uuid.php",
+            "vendor/ramsey/uuid/src/UuidFactory.php",
             "vendor/laravel/framework/src/Illuminate/Routing/Router.php",
             "vendor/laravel/framework/src/Illuminate/Filesystem/Filesystem.php",
             "vendor/laravel/framework/src/Illuminate/Console/Application.php",
