@@ -470,7 +470,7 @@ class SendReplyToCustomer implements ShouldQueue
                     if ($folder) {
                         try {
                             //$save_result = $this->saveEmailToFolder($client, $folder, $envelope, $parts, $bcc_array);
-                            $save_result = $this->saveEmailToFolder($folder, \MailHelper::$smtp_mime_message, $bcc_array);
+                            $save_result = $this->saveEmailToFolder($folder, \MailHelper::$smtp_mime_message);
                             \MailHelper::$smtp_mime_message = '';
 
                             // Sometimes emails with attachments by some reason are not saved.
@@ -519,19 +519,8 @@ class SendReplyToCustomer implements ShouldQueue
     }
 
     // Save an email to IMAP folder.
-    public function saveEmailToFolder($folder, $message_str, $bcc = [])
+    public function saveEmailToFolder($folder, $message_str)
     {
-        // Add BCC.
-        // https://stackoverflow.com/questions/47353938/php-imap-append-with-bcc
-        if (!empty($bcc)) {
-            // There will be a "To:" parameter for sure.
-            $to_pos = strpos($message_str , "To:");
-            if ($to_pos !== false) {
-                $bcc_str = "Bcc: " . implode(',', $bcc) . "\r\n";
-                $message_str = substr_replace($message_str , $bcc_str, $to_pos, 0);
-            }
-        }
-
         return $folder->appendMessage($message_str, ['\Seen'], now()->format('d-M-Y H:i:s O'));
     }
 
