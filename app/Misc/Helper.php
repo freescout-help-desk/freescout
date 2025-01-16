@@ -645,7 +645,7 @@ class Helper
     /**
      * Resize image without using Intervention package.
      */
-    public static function resizeImage($file, $mime_type, $thumb_width, $thumb_height)
+    public static function resizeImage($file, $mime_type, $thumb_width, $thumb_height, $transparency = false)
     {
         list($width, $height) = getimagesize($file);
         if (!$width) {
@@ -655,8 +655,10 @@ class Helper
         if (preg_match('/png/i', $mime_type)) {
             $src = imagecreatefrompng($file);
 
-            $kek = imagecolorallocate($src, 255, 255, 255);
-            imagefill($src, 0, 0, $kek);
+            if (!$transparency) {
+                $kek = imagecolorallocate($src, 255, 255, 255);
+                imagefill($src, 0, 0, $kek);
+            }
         } elseif (preg_match('/gif/i', $mime_type)) {
             $src = imagecreatefromgif($file);
 
@@ -684,6 +686,10 @@ class Helper
         }
 
         $thumb = imagecreatetruecolor($thumb_width, $thumb_height);
+        if ($transparency && preg_match('/png/i', $mime_type)) {
+            imagealphablending($thumb, false);
+            imagesavealpha($thumb, true);
+        }
         // Resize and crop
         imagecopyresampled($thumb,
                            $src,
