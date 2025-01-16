@@ -135,11 +135,14 @@ class ReplyToCustomer extends Mailable
             });
         }
 
+        $template_html = \Eventy::filter('email.reply_to_customer.template_html','emails/customer/reply_fancy');
+        $template_text = \Eventy::filter('email.reply_to_customer.template_text','emails/customer/reply_fancy_text');
+
         // from($this->from) Sets only email, name stays empty.
         // So we set from in Mail::setMailDriver
         $message = $this->subject($this->subject)
-                    ->view('emails/customer/reply_fancy')
-                    ->text('emails/customer/reply_fancy_text');
+                    ->view($template_html)
+                    ->text($template_text);
 
         if ($thread->has_attachments) {
             foreach ($thread->attachments as $attachment) {
