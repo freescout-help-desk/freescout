@@ -14,7 +14,7 @@ namespace Webklex\PHPIMAP;
 
 use ErrorException;
 use Webklex\PHPIMAP\Connection\Protocols\ImapProtocol;
-use Webklex\PHPIMAP\Connection\Protocols\LegacyProtocol;
+use Webklex\PHPIMAP\Connection\Protocols\PopProtocol;
 use Webklex\PHPIMAP\Connection\Protocols\Protocol;
 use Webklex\PHPIMAP\Connection\Protocols\ProtocolInterface;
 use Webklex\PHPIMAP\Exceptions\AuthFailedException;
@@ -344,13 +344,17 @@ class Client {
             $this->connection->setProxy($this->proxy);
         }else{
             if (extension_loaded('imap') === false) {
-                throw new ConnectionFailedException("connection setup failed: imap extension not found", 0, new ProtocolNotSupportedException($protocol." is an unsupported protocol"));
+                $this->connection = new PopProtocol($this->validate_cert, $this->encryption);
+            } else {
+                $this->connection = new \Webklex\PHPIMAP\Connection\Protocols\LegacyProtocol($this->validate_cert, $this->encryption);
+                if (strpos($protocol, "legacy-") === 0) {
+                    $protocol = substr($protocol, 7);
+                }
+                $this->connection->setProtocol($protocol);
             }
-            $this->connection = new LegacyProtocol($this->validate_cert, $this->encryption);
-            if (strpos($protocol, "legacy-") === 0) {
-                $protocol = substr($protocol, 7);
-            }
-            $this->connection->setProtocol($protocol);
+
+            $this->connection->setConnectionTimeout($this->timeout);
+            $this->connection->setProxy($this->proxy);
         }
 
         if (ClientManager::get('options.debug')) {
