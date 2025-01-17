@@ -146,7 +146,7 @@ class DebugBar implements ArrayAccess
      * @param StorageInterface $storage
      * @return $this
      */
-    public function setStorage(StorageInterface $storage = null)
+    public function setStorage(?StorageInterface $storage = null)
     {
         $this->storage = $storage;
         return $this;

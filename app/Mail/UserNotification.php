@@ -91,15 +91,20 @@ class UserNotification extends Mailable
             });
         }
 
-        $subject = '[#'.$this->conversation->number.'] '.$this->conversation->subject;
+        $subject = \Eventy::filter('email.user_notification.subject','[#'.isset($this->conversation->number)?$this->conversation->number:''.'] '.$this->conversation->subject);
 
         $customer = $this->conversation->customer;
 
         $thread = $this->threads->first();
 
+        $template_html = \Eventy::filter('email.user_notification.template_name_html', 'emails/user/notification');
+        $template_text = \Eventy::filter('email.user_notification.template_name_text', 'emails/user/notification_text');
+        $template_fields = \Eventy::filter('email.user_notification.template_fields', ['customer' => $customer, 'thread' => $thread, 'mailbox' => $this->mailbox]);
+
         return $this->subject($subject)
             ->from($this->from['address'], $this->from['name'])
-            ->view('emails/user/notification', ['customer' => $customer, 'thread' => $thread, 'mailbox' => $this->mailbox])
-            ->text('emails/user/notification_text', ['customer' => $customer, 'thread' => $thread, 'mailbox' => $this->mailbox]);
+            ->view($template_html, $template_fields)
+            ->text($template_text, $template_fields);
     }
 }
+

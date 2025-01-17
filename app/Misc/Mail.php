@@ -99,6 +99,11 @@ class Mail
      * Used to get SMTP queue id when sending emails to customers.
      */
     public static $smtp_queue_id_plugin_registered = false;
+    
+    /**
+     * Used to store the last sent email message.
+     */
+    public static $smtp_mime_message = '';
 
     /**
      * Configure mail sending parameters.
@@ -653,11 +658,18 @@ class Mail
      */
     public static function parseHeaders($headers_str)
     {
-        try {
-            return imap_rfc822_parse_headers($headers_str);
-        } catch (\Exception $e) {
-            return;
-        }
+        //try {
+        //return imap_rfc822_parse_headers($headers_str);
+        return (new \Webklex\PHPIMAP\Header(''))->rfc822_parse_headers($headers_str);
+        // } catch (\Exception $e) {
+        //     return;
+        // }
+    }
+
+    // Replacement for https://www.php.net/manual/en/function.imap-utf8.php
+    public static function imapUtf8($mime_encoded_text)
+    {
+        return iconv_mime_decode($mime_encoded_text, 0, "UTF-8");
     }
 
     public static function getHeader($headers_str, $header)
@@ -1067,7 +1079,7 @@ class Mail
 
                     // Try imap_utf8().
                     // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQ?= =?iso-2022-jp?B?C4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
-                    $subject_decoded = \imap_utf8($joined_parts);
+                    $subject_decoded = self::imapUtf8($joined_parts);
 
                     if ($subject_decoded 
                         && trim($subject_decoded) != trim($joined_parts)
@@ -1090,7 +1102,7 @@ class Mail
         // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
         // =?iso-2022-jp?B?GyRCQGlNVTtZRTkhIT4uTlMbKEI=?=
         if (self::isNotYetFullyDecoded($subject_decoded)) {
-            $subject_decoded = \imap_utf8($subject);
+            $subject_decoded = self::imapUtf8($subject);
         }
 
         // All previous functions could not decode text.

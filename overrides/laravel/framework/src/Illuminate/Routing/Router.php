@@ -121,7 +121,7 @@ class Router implements RegistrarContract, BindingRegistrar
      * @param  \Illuminate\Container\Container  $container
      * @return void
      */
-    public function __construct(Dispatcher $events, Container $container = null)
+    public function __construct(Dispatcher $events, ?Container $container = null)
     {
         $this->events = $events;
         $this->routes = new RouteCollection;
@@ -906,7 +906,7 @@ class Router implements RegistrarContract, BindingRegistrar
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function model($key, $class, Closure $callback = null)
+    public function model($key, $class, ?Closure $callback = null)
     {
         $this->bind($key, RouteBinding::forModel($this->container, $class, $callback));
     }

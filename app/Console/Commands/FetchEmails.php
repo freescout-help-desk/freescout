@@ -240,7 +240,7 @@ class FetchEmails extends Command
                 $folder = \MailHelper::getImapFolder($client, $folder_name);
             } catch (\Exception $e) {
                 // Just log error and continue.
-                $this->error('['.date('Y-m-d H:i:s').'] IMAP folder not found on the mail server: '.$folder_name);
+                $this->error('['.date('Y-m-d H:i:s').'] IMAP folder ('.$folder_name.') not found on the mail server: '.$e->getMessage());
             }
 
             if ($folder) {
@@ -1328,7 +1328,7 @@ class FetchEmails extends Command
         // Fix for Webklex/laravel-imap.
         // https://github.com/freescout-helpdesk/freescout/issues/2782
         if (\Str::startsWith($name, '=?')) {
-            $name_decoded = \imap_utf8($name);
+            $name_decoded = \MailHelper::imapUtf8($name);
 
             if ($name_decoded) {
                 return $name_decoded;

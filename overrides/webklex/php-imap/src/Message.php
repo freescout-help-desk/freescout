@@ -190,7 +190,7 @@ class Message {
      * @throws MessageFlagException
      * @throws Exceptions\MessageNotFoundException
      */
-    public function __construct(int $uid, $msglist, Client $client, int $fetch_options = null, bool $fetch_body = false, bool $fetch_flags = false, int $sequence = null) {
+    public function __construct(int $uid, $msglist, Client $client, ?int $fetch_options = null, bool $fetch_body = false, bool $fetch_flags = false, ?int $sequence = null) {
         $this->boot();
 
         $default_mask = $client->getDefaultMessageMask();
@@ -827,7 +827,7 @@ class Message {
      * @throws Exceptions\GetMessagesFailedException
      * @throws Exceptions\RuntimeException
      */
-    public function thread(Folder $sent_folder = null, MessageCollection &$thread = null, Folder $folder = null): MessageCollection {
+    public function thread(?Folder $sent_folder = null, ?MessageCollection &$thread = null, ?Folder $folder = null): MessageCollection {
         $thread = $thread ?: MessageCollection::make([]);
         $folder = $folder ?:  $this->getFolder();
         $sent_folder = $sent_folder ?: $this->client->getFolderByPath(ClientManager::get("options.common_folders.sent", "INBOX/Sent"));
@@ -1025,7 +1025,7 @@ class Message {
      * @throws MessageFlagException
      * @throws MessageHeaderFetchingException
      */
-    public function delete(bool $expunge = true, string $trash_path = null, bool $force_move = false) {
+    public function delete(bool $expunge = true, ?string $trash_path = null, bool $force_move = false) {
         $status = $this->setFlag("Deleted");
         if($force_move) {
             $trash_path = $trash_path === null ? $this->config["common_folders"]["trash"]: $trash_path;
@@ -1273,7 +1273,7 @@ class Message {
      * @param  null|Message $message
      * @return boolean
      */
-    public function is(Message $message = null): bool {
+    public function is(?Message $message = null): bool {
         if (is_null($message)) {
             return false;
         }
@@ -1441,7 +1441,7 @@ class Message {
      * @throws Exceptions\MessageNotFoundException
      * @throws Exceptions\ConnectionFailedException
      */
-    public function setMsgn(int $msgn, int $msglist = null): Message {
+    public function setMsgn(int $msgn, ?int $msglist = null): Message {
         $this->msgn = $msgn;
         $this->msglist = $msglist;
         $this->uid = $this->client->getConnection()->getUid($this->msgn);
@@ -1475,7 +1475,7 @@ class Message {
      * @throws Exceptions\ConnectionFailedException
      * @throws Exceptions\MessageNotFoundException
      */
-    public function setSequenceId($uid, int $msglist = null){
+    public function setSequenceId($uid, ?int $msglist = null){
         if ($this->getSequence() === IMAP::ST_UID) {
             $this->setUid($uid);
             $this->setMsglist($msglist);

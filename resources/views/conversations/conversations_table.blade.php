@@ -149,7 +149,7 @@
                                 @if ($conversation->customer_id && $conversation->customer){{ $conversation->customer->getFullName(true)}}@endif&nbsp;@if ($conversation->threads_count > 1)<span class="conv-counter">{{ $conversation->threads_count }}</span>@endif
                                 @if ($conversation->user_id)
                                     <small class="conv-owner-mobile text-help">
-                                        {{ $conversation->user->getFullName() }} <small class="glyphicon glyphicon-user"></small>
+                                        {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }} <small class="glyphicon glyphicon-user"></small>
                                     </small>
                                 @endif
                             </a>
@@ -160,7 +160,7 @@
                             <a href="{{ $conversation->url() }}" class="help-link" @if (!empty($params['target_blank'])) target="_blank" @endif>
                                 <small class="glyphicon glyphicon-envelope"></small> 
                                 @if ($conversation->user_id)
-                                     <small>&nbsp;<i class="glyphicon glyphicon-user"></i> {{ $conversation->user->getFullName() }}</small> 
+                                     <small>&nbsp;<i class="glyphicon glyphicon-user"></i> {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }}</small> 
                                 @endif
                             </a>
                         </td>
@@ -199,7 +199,7 @@
                     </td>
                     @if ($show_assigned)
                         <td class="conv-owner">
-                            @if ($conversation->user_id)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty($params['target_blank'])) target="_blank" @endif> {{ $conversation->user->getFullName() }} </a>@else &nbsp;@endif
+                            @if ($conversation->user_id)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty($params['target_blank'])) target="_blank" @endif> {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }} </a>@else &nbsp;@endif
                         </td>
                     @endif
                     @action('conversations_table.td_before_conv_number', $conversation)

@@ -116,15 +116,24 @@ class ImapProtocol extends Protocol {
      * @throws RuntimeException
      */
     public function nextLine(): string {
-        $line = "";
-        while (($next_char = fread($this->stream, 1)) !== false && !in_array($next_char, ["","\n"])) {
-            $line .= $next_char;
+        
+        // https://github.com/stevebauman/php-imap/commit/9f661abf7a284871f53ec93984ca48851be7728d#diff-fa4f22d9f79d3e4dd1e5352f5e967291c02a7b3a39e32a0282d9b7d85c707c5aL123
+        $line = fgets($this->stream);
+        if ($line === false) {
+            throw new RuntimeException('no response');
         }
-        if ($line === "" && ($next_char === false || $next_char === "")) {
-            throw new RuntimeException('empty response');
-        }
-        if ($this->debug) $this->debug("<< ".$line."\n");
-        return $line . "\n";
+
+        // $line = "";
+        // while (($next_char = fread($this->stream, 1)) !== false && !in_array($next_char, ["","\n"])) {
+        //     $line .= $next_char;
+        // }
+        // if ($line === "" && ($next_char === false || $next_char === "")) {
+        //     throw new RuntimeException('empty response');
+        // }
+        
+        if ($this->debug) $this->debug("<< ".$line/*(."\n"*/);
+
+        return $line /*. "\n"*/;
     }
 
     public function debug($line) {
@@ -322,7 +331,7 @@ class ImapProtocol extends Protocol {
      *
      * @throws RuntimeException
      */
-    public function sendRequest(string $command, array $tokens = [], string &$tag = null) {
+    public function sendRequest(string $command, array $tokens = [], ?string &$tag = null) {
         if (!$tag) {
             $this->noun++;
             $tag = 'TAG' . $this->noun;

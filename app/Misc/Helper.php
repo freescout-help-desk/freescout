@@ -645,7 +645,7 @@ class Helper
     /**
      * Resize image without using Intervention package.
      */
-    public static function resizeImage($file, $mime_type, $thumb_width, $thumb_height)
+    public static function resizeImage($file, $mime_type, $thumb_width, $thumb_height, $transparency = false)
     {
         list($width, $height) = getimagesize($file);
         if (!$width) {
@@ -655,8 +655,10 @@ class Helper
         if (preg_match('/png/i', $mime_type)) {
             $src = imagecreatefrompng($file);
 
-            $kek = imagecolorallocate($src, 255, 255, 255);
-            imagefill($src, 0, 0, $kek);
+            if (!$transparency) {
+                $kek = imagecolorallocate($src, 255, 255, 255);
+                imagefill($src, 0, 0, $kek);
+            }
         } elseif (preg_match('/gif/i', $mime_type)) {
             $src = imagecreatefromgif($file);
 
@@ -684,6 +686,10 @@ class Helper
         }
 
         $thumb = imagecreatetruecolor($thumb_width, $thumb_height);
+        if ($transparency && preg_match('/png/i', $mime_type)) {
+            imagealphablending($thumb, false);
+            imagesavealpha($thumb, true);
+        }
         // Resize and crop
         imagecopyresampled($thumb,
                            $src,
@@ -1289,46 +1295,63 @@ class Helper
     }
 
     /**
-     * It looks like this is not used anywhere.
      * Json encode to avoid "Unable to JSON encode payload. Error code: 5"
      */
-    // public static function jsonEncodeSafe($value, $options = 0, $depth = 512, $utfErrorFlag = false)
-    // {
-    //     $encoded = json_encode($value, $options, $depth);
-    //     switch (json_last_error()) {
-    //         case JSON_ERROR_NONE:
-    //             return $encoded;
-    //         // case JSON_ERROR_DEPTH:
-    //         //     return 'Maximum stack depth exceeded'; // or trigger_error() or throw new Exception()
-    //         // case JSON_ERROR_STATE_MISMATCH:
-    //         //     return 'Underflow or the modes mismatch'; // or trigger_error() or throw new Exception()
-    //         // case JSON_ERROR_CTRL_CHAR:
-    //         //     return 'Unexpected control character found';
-    //         // case JSON_ERROR_SYNTAX:
-    //         //     return 'Syntax error, malformed JSON'; // or trigger_error() or throw new Exception()
-    //         case JSON_ERROR_UTF8:
-    //             $clean = self::utf8ize($value);
-    //             if ($utfErrorFlag) {
-    //                 //return 'UTF8 encoding error'; // or trigger_error() or throw new Exception()
-    //             }
-    //             return self::jsonEncodeSafe($clean, $options, $depth, true);
-    //         // default:
-    //         //     return 'Unknown error'; // or trigger_error() or throw new Exception()
+    public static function jsonEncodeSafe($value, $options = 0, $depth = 512, $attempt = 1)
+    {
+        $msg = '';
+        
+        $encoded = json_encode($value, $options, $depth);
 
-    //     }
-    // }
+        switch (json_last_error()) {
+            case JSON_ERROR_NONE:
+                return $encoded;
+            case JSON_ERROR_DEPTH:
+                $msg = 'Maximum stack depth exceeded';
+                break;
+            case JSON_ERROR_STATE_MISMATCH:
+                $msg = 'Underflow or the modes mismatch';
+                break;
+            case JSON_ERROR_CTRL_CHAR:
+                $msg = 'Unexpected control character found';
+                break;
+            case JSON_ERROR_SYNTAX:
+                $msg = 'Syntax error, malformed JSON';
+                break;
+            case JSON_ERROR_UTF8:
+                $clean = self::utf8ize($value);
+                if ($attempt > 1) {
+                    $msg = 'UTF8 encoding error';
+                } else {
+                    return self::jsonEncodeSafe($clean, $options, $depth, 2);
+                }
+                break;
+            // default:
+            //     return '';
+        }
+        throw new \Exception("Could not encode JSON: ".$msg, 1);
+        //return '';
+    }
 
-    // public static function utf8ize($mixed)
-    // {
-    //     if (is_array($mixed)) {
-    //         foreach ($mixed as $key => $value) {
-    //             $mixed[$key] = self::utf8ize($value);
-    //         }
-    //     } else if (is_string ($mixed)) {
-    //         return utf8_encode($mixed);
-    //     }
-    //     return $mixed;
-    // }
+    public static function utf8ize($mixed)
+    {
+        if (is_array($mixed)) {
+            foreach ($mixed as $key => $value) {
+                $mixed[$key] = self::utf8ize($value);
+            }
+        } else if (is_string($mixed)) {
+            return self::utf8Encode($mixed);
+        }
+        return $mixed;
+    }
+
+    /**
+     * Replacement for utf8_encode().
+     */
+    public static function utf8Encode($string)
+    {
+        return mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+    }
 
     /**
      * Check if host is available on the port specified.

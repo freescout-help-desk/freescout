@@ -147,7 +147,7 @@ class Part {
      *
      * @throws InvalidMessageDateException
      */
-    public function __construct($raw_part, Header $header = null, int $part_number = 0) {
+    public function __construct($raw_part, ?Header $header = null, int $part_number = 0) {
         $this->raw = $raw_part;
         $this->header = $header;
         $this->part_number = $part_number;
