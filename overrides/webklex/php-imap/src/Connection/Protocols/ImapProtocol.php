@@ -500,7 +500,16 @@ class ImapProtocol extends Protocol {
      * @return bool
      */
     public function connected(): bool {
-        return (boolean) $this->stream;
+        if ((bool)$this->stream) {
+            $response = $this->requestAndResponse('NOOP');
+            // https://github.com/Webklex/php-imap/pull/449
+            if ($response === false) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
