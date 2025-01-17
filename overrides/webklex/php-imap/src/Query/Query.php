@@ -438,8 +438,14 @@ class Query {
      * @throws RuntimeException
      */
     public function chunked(callable $callback, int $chunk_size = 10, int $start_chunk = 1) {
+        $start_chunk = max($start_chunk,1);
+        $chunk_size = max($chunk_size,1);
+        $skipped_messages_count = $chunk_size * ($start_chunk-1);
+
         $available_messages = $this->search();
-        if (($available_messages_count = $available_messages->count()) > 0) {
+        $available_messages_count = max($available_messages->count() - $skipped_messages_count,0);
+
+        if ($available_messages_count > 0) {
             $old_limit = $this->limit;
             $old_page = $this->page;
 
