@@ -59,7 +59,7 @@ class Translator extends Translation\Translator
             return true;
         }
 
-        if (file_exists($filename = __DIR__.'/Lang/'.$locale.'.php')) {
+        if (file_exists($filename = __DIR__.'/../../../../../vendor/nesbot/carbon/src/Carbon/Lang/'.$locale.'.php')) {
             static::$messages[$locale] = require $filename;
             $this->addResource('array', static::$messages[$locale], $locale);
 

@@ -249,7 +249,7 @@ class Header {
     public function rfc822_parse_headers($raw_headers) {
         $headers = [];
         $imap_headers = [];
-        if (extension_loaded('imap') && $this->config["rfc822"]) {
+        if (extension_loaded('imap') && isset($this->config) && $this->config["rfc822"]) {
             $raw_imap_headers = (array)\imap_rfc822_parse_headers($raw_headers);
             foreach ($raw_imap_headers as $key => $values) {
                 $key = str_replace("-", "_", $key);
