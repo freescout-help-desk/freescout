@@ -660,7 +660,8 @@ class Mail
     {
         //try {
         //return imap_rfc822_parse_headers($headers_str);
-        return (new \Webklex\PHPIMAP\Header(''))->rfc822_parse_headers($headers_str);
+        //return (new \Webklex\PHPIMAP\Header(''))->rfc822_parse_headers($headers_str);
+        return \Webklex\PHPIMAP\Header::rfc822_parse_headers($headers_str);
         // } catch (\Exception $e) {
         //     return;
         // }

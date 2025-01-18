@@ -211,7 +211,7 @@ class Header {
      * @throws InvalidMessageDateException
      */
     protected function parse() {
-        $header = $this->rfc822_parse_headers($this->raw);
+        $header = self::rfc822_parse_headers($this->raw);
 
         $this->extractAddresses($header);
 
@@ -246,14 +246,15 @@ class Header {
      *
      * @return object
      */
-    public function rfc822_parse_headers($raw_headers) {
+    public static function rfc822_parse_headers($raw_headers) {
         $headers = [];
         $imap_headers = [];
-        if (extension_loaded('imap') && isset($this->config) && $this->config["rfc822"]) {
+        // Consider rfc822 option to be always 'true'.
+        if (extension_loaded('imap') /*&& isset($this->config) && $this->config["rfc822"]*/) {
             $raw_imap_headers = (array)\imap_rfc822_parse_headers($raw_headers);
             foreach ($raw_imap_headers as $key => $values) {
                 $key = str_replace("-", "_", $key);
-                $values = $this->sanitizeHeaderValue($values);
+                $values = self::sanitizeHeaderValue($values);
                 if (!is_array($values) || (is_array($values) && count($values))) {
                     $imap_headers[$key] = $values;
                 }
@@ -311,7 +312,7 @@ class Header {
                 case 'bcc':
                 case 'reply_to':
                 case 'sender':
-                    $value = $this->decodeAddresses($values);
+                    $value = self::decodeAddresses($values);
                     $headers[$key . "address"] = implode(", ", $values);
                     break;
                 case 'subject':
@@ -337,7 +338,7 @@ class Header {
                     }
                     break;
             }
-            $value = $this->sanitizeHeaderValue($value);
+            $value = self::sanitizeHeaderValue($value);
             if (!is_array($value) || (is_array($value) && count($value))) {
                 $headers[$key] = $value;
             } elseif (is_array($value) && !count($value) && isset($headers[$key])) {
@@ -349,7 +350,7 @@ class Header {
     }
 
     // https://github.com/freescout-help-desk/freescout/issues/4158
-    public function sanitizeHeaderValue($value)
+    public static function sanitizeHeaderValue($value)
     {
         if (is_array($value)) {
             foreach ($value as $i => $v) {
@@ -593,10 +594,11 @@ class Header {
      *
      * @return array
      */
-    private function decodeAddresses($values): array {
+    private static function decodeAddresses($values): array {
         $addresses = [];
 
-        if (extension_loaded('mailparse') && $this->config["rfc822"]) {
+        // Consider rfc822 option to be always 'true'.
+        if (extension_loaded('mailparse') /*&& $this->config["rfc822"]*/) {
             foreach ($values as $address) {
                 foreach (\mailparse_rfc822_parse_addresses($address) as $parsed_address) {
                     if (isset($parsed_address['address'])) {
