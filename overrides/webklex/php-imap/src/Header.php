@@ -752,13 +752,23 @@ class Header {
             }
             // Only parse strings and don't parse any attributes like the user-agent
             // https://github.com/Webklex/php-imap/issues/401
-            if (($key == "user_agent") === false && ($key == "subject") === false) {
-                if (($pos = strpos($value, ";")) !== false) {
+            // https://github.com/Webklex/php-imap/commit/e5ad66267382f319f385131cefe5336692a54486
+           if (!in_array($key, ["user-agent", "subject", "received"])) {
+                if (str_contains($value, ";") && str_contains($value, "=")) {
+                    $pos = strpos($value, ";");
                     $original = substr($value, 0, $pos);
                     $this->set($key, trim(rtrim($original)), true);
 
                     // Get all potential extensions
-                    $extensions = explode(";", substr($value, $pos + 1));
+                    // https://github.com/Webklex/php-imap/commit/e5ad66267382f319f385131cefe5336692a54486
+                    $extensions = [];
+                    preg_match_all("#;([^=]+[^\\\]=\"[^\"]+\")#", ';'.substr($value, $pos + 1), $m);
+                    if (!empty($m[1])) {
+                        $extensions = $m[1];
+                    }
+                    if (empty($extensions)) {
+                        $extensions = explode(";", substr($value, $pos + 1));
+                    }
 
                     $previousKey = null;
                     $previousValue = '';
