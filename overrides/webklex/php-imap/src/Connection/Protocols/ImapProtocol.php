@@ -42,6 +42,7 @@ class ImapProtocol extends Protocol {
 
     public static $output_debug_log = true;
     public static $debug_log = '';
+    public static $last_connected_check = 0;
 
     /**
      * Imap constructor.
@@ -501,11 +502,18 @@ class ImapProtocol extends Protocol {
      */
     public function connected(): bool {
         if ((bool)$this->stream) {
-            $response = $this->requestAndResponse('NOOP');
-            // https://github.com/Webklex/php-imap/pull/449
-            if ($response === false) {
-                return false;
+            $time = time();
+            if (self::$last_connected_check+1 < $time) {
+                $response = $this->requestAndResponse('NOOP');
+                // https://github.com/Webklex/php-imap/pull/449
+                if ($response === false) {
+                    return false;
+                } else {
+                    self::$last_connected_check = $time;
+                    return true;
+                }
             } else {
+                self::$last_connected_check = $time;
                 return true;
             }
         }
