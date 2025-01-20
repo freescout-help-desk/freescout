@@ -710,18 +710,25 @@ class Header {
             if (!property_exists($address, 'personal')) {
                 $address->personal = false;
             } else {
-                $personalParts = $this->mime_header_decode($address->personal);
+                $personal_slices = explode(" ", $address->personal);
+                $address->personal = "";
+                foreach ($personal_slices as $slice) {
+                    $personalParts = $this->mime_header_decode($slice);
 
-                if (is_array($personalParts)) {
-                    $address->personal = '';
-                    foreach ($personalParts as $p) {
-                        $address->personal .= $this->convertEncoding($p->text, $this->getEncoding($p));
+                    if (is_array($personalParts)) {
+                        $personal = '';
+                        foreach ($personalParts as $p) {
+                            $personal .= $this->convertEncoding($p->text, $this->getEncoding($p));
+                        }
                     }
-                }
 
-                if (strpos($address->personal, "'") === 0) {
-                    $address->personal = str_replace("'", "", $address->personal);
+                    if (str_starts_with($personal, "'")) {
+                        $personal = str_replace("'", "", $personal);
+                    }
+                    $personal = \MailHelper::decodeSubject($personal);
+                    $address->personal .= $personal . " ";
                 }
+                $address->personal = trim(rtrim($address->personal));
             }
 
             $address->mail = ($address->mailbox && $address->host) ? $address->mailbox . '@' . $address->host : false;
