@@ -27,7 +27,7 @@ abstract class FixtureWebklexMessage extends TestCase {
      * Client manager
      * @var ClientManager $manager
      */
-    protected static ClientManager $manager;
+    protected static $manager;
 
     /**
      * FixtureTestCase constructor.
