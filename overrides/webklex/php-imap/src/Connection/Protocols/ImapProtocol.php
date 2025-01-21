@@ -504,6 +504,10 @@ class ImapProtocol extends Protocol {
         if ((bool)$this->stream) {
             $time = time();
             if (self::$last_connected_check+1 < $time) {
+                if (!self::$last_connected_check) {
+                    self::$last_connected_check = $time;
+                    return true;
+                }
                 $response = $this->requestAndResponse('NOOP');
                 // https://github.com/Webklex/php-imap/pull/449
                 if ($response === false) {
