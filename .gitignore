@@ -34,3 +34,4 @@ Thumbs.db
 .well-known
 /resources/lang/module.*
 .phpunit.result.cache
+/.phpunit.cache
