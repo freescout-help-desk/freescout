@@ -734,7 +734,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         ),
         'Doctrine\\Deprecations\\' => 
         array (
-            0 => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations',
+            0 => __DIR__ . '/..' . '/doctrine/deprecations/src',
         ),
         'Doctrine\\DBAL\\Schema\\' => 
         array (
@@ -1510,8 +1510,8 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Doctrine\\DBAL\\Types\\VarDateTimeType' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/Types/VarDateTimeType.php',
         'Doctrine\\DBAL\\Version' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/Version.php',
         'Doctrine\\DBAL\\VersionAwarePlatformDriver' => __DIR__ . '/..' . '/doctrine/dbal/lib/Doctrine/DBAL/VersionAwarePlatformDriver.php',
-        'Doctrine\\Deprecations\\Deprecation' => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations/Deprecation.php',
-        'Doctrine\\Deprecations\\PHPUnit\\VerifyDeprecations' => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations/PHPUnit/VerifyDeprecations.php',
+        'Doctrine\\Deprecations\\Deprecation' => __DIR__ . '/..' . '/doctrine/deprecations/src/Deprecation.php',
+        'Doctrine\\Deprecations\\PHPUnit\\VerifyDeprecations' => __DIR__ . '/..' . '/doctrine/deprecations/src/PHPUnit/VerifyDeprecations.php',
         'Dotenv\\Dotenv' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Dotenv.php',
         'Dotenv\\Exception\\ExceptionInterface' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Exception/ExceptionInterface.php',
         'Dotenv\\Exception\\InvalidCallbackException' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Exception/InvalidCallbackException.php',
@@ -2199,7 +2199,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Illuminate\\Database\\Query\\Processors\\SQLiteProcessor' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/Query/Processors/SQLiteProcessor.php',
         'Illuminate\\Database\\Query\\Processors\\SqlServerProcessor' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/Query/Processors/SqlServerProcessor.php',
         'Illuminate\\Database\\SQLiteConnection' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/SQLiteConnection.php',
-        'Illuminate\\Database\\Schema\\Blueprint' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php',
+        'Illuminate\\Database\\Schema\\Blueprint' => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php',
         'Illuminate\\Database\\Schema\\Builder' => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Database/Schema/Builder.php',
         'Illuminate\\Database\\Schema\\Grammars\\ChangeColumn' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/Schema/Grammars/ChangeColumn.php',
         'Illuminate\\Database\\Schema\\Grammars\\Grammar' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Database/Schema/Grammars/Grammar.php',

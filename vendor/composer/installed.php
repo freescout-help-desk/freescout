@@ -3,7 +3,7 @@
         'name' => 'freescout-helpdesk/freescout',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '7efa8f5a1cd821f8d6ab93bafa20191d1f14213e',
+        'reference' => '736e931529c3900d460393d3ae6b14d7d6595458',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -92,9 +92,9 @@
             'dev_requirement' => false,
         ),
         'doctrine/deprecations' => array(
-            'pretty_version' => '1.1.3',
-            'version' => '1.1.3.0',
-            'reference' => 'dfbaa3c2d2e9a9df1118213f3b8b0c597bb99fab',
+            'pretty_version' => '1.1.4',
+            'version' => '1.1.4.0',
+            'reference' => '31610dbb31faa98e6b5447b62340826f54fbc4e9',
             'type' => 'library',
             'install_path' => __DIR__ . '/../doctrine/deprecations',
             'aliases' => array(),
@@ -175,7 +175,7 @@
         'freescout-helpdesk/freescout' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '7efa8f5a1cd821f8d6ab93bafa20191d1f14213e',
+            'reference' => '736e931529c3900d460393d3ae6b14d7d6595458',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -574,8 +574,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0.0',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '1.0.0',
             ),
         ),
         'psr/simple-cache' => array(

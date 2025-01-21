@@ -124,7 +124,7 @@ return array(
     'Faker\\Provider\\' => array($baseDir . '/overrides/fzaninotto/faker/src/Faker/Provider'),
     'Egulias\\EmailValidator\\' => array($vendorDir . '/egulias/email-validator/EmailValidator'),
     'Dotenv\\' => array($baseDir . '/overrides/vlucas/phpdotenv/src', $vendorDir . '/vlucas/phpdotenv/src'),
-    'Doctrine\\Deprecations\\' => array($vendorDir . '/doctrine/deprecations/lib/Doctrine/Deprecations'),
+    'Doctrine\\Deprecations\\' => array($vendorDir . '/doctrine/deprecations/src'),
     'Doctrine\\DBAL\\Schema\\' => array($baseDir . '/overrides/doctrine/dbal/lib/Doctrine/DBAL/Schema'),
     'Doctrine\\DBAL\\Platforms\\' => array($baseDir . '/overrides/doctrine/dbal/lib/Doctrine/DBAL/Platforms'),
     'Doctrine\\DBAL\\Driver\\' => array($baseDir . '/overrides/doctrine/dbal/lib/Doctrine/DBAL/Driver'),

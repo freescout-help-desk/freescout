@@ -173,9 +173,7 @@ class Deprecation
         self::delegateTriggerToBackend($message, $backtrace, $link, $package);
     }
 
-    /**
-     * @param list<array{function: string, line?: int, file?: string, class?: class-string, type?: string, args?: mixed[], object?: object}> $backtrace
-     */
+    /** @param list<array{function: string, line?: int, file?: string, class?: class-string, type?: string, args?: mixed[], object?: object}> $backtrace */
     private static function delegateTriggerToBackend(string $message, array $backtrace, string $link, string $package): void
     {
         $type = self::$type ?? self::getTypeFromEnv();
@@ -226,19 +224,19 @@ class Deprecation
 
     public static function enableTrackingDeprecations(): void
     {
-        self::$type  = self::$type ?? 0;
+        self::$type  = self::$type ?? self::getTypeFromEnv();
         self::$type |= self::TYPE_TRACK_DEPRECATIONS;
     }
 
     public static function enableWithTriggerError(): void
     {
-        self::$type  = self::$type ?? 0;
+        self::$type  = self::$type ?? self::getTypeFromEnv();
         self::$type |= self::TYPE_TRIGGER_ERROR;
     }
 
     public static function enableWithPsrLogger(LoggerInterface $logger): void
     {
-        self::$type   = self::$type ?? 0;
+        self::$type   = self::$type ?? self::getTypeFromEnv();
         self::$type  |= self::TYPE_PSR_LOGGER;
         self::$logger = $logger;
     }
@@ -289,9 +287,7 @@ class Deprecation
         return self::$triggeredDeprecations;
     }
 
-    /**
-     * @return int-mask-of<self::TYPE_*>
-     */
+    /** @return int-mask-of<self::TYPE_*> */
     private static function getTypeFromEnv(): int
     {
         switch ($_SERVER['DOCTRINE_DEPRECATIONS'] ?? $_ENV['DOCTRINE_DEPRECATIONS'] ?? null) {
