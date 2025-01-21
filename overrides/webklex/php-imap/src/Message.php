@@ -74,7 +74,7 @@ class Message {
      *
      * @var Client
      */
-    private $client = Client::class;
+    private $client;
 
     /**
      * Default mask
@@ -282,6 +282,77 @@ class Message {
 
         return $instance;
     }
+
+   /**
+     * Create a new message instance by reading and loading a file or remote location
+     * @param string $filename
+     * @param ?Config $config
+     *
+     * @return Message
+     * @throws AuthFailedException
+     * @throws ConnectionFailedException
+     * @throws ImapBadRequestException
+     * @throws ImapServerErrorException
+     * @throws InvalidMessageDateException
+     * @throws MaskNotFoundException
+     * @throws MessageContentFetchingException
+     * @throws ReflectionException
+     * @throws ResponseException
+     * @throws RuntimeException
+     */
+    public static function fromFile(string $filename, ?Config $config = null): Message {
+        $blob = file_get_contents($filename);
+        if ($blob === false) {
+            throw new RuntimeException("Unable to read file");
+        }
+        return self::fromString($blob, $config);
+    }
+
+    /**
+     * Create a new message instance by reading and loading a string
+     * @param string $blob
+     * @param ?Config $config
+     *
+     * @return Message
+     * @throws AuthFailedException
+     * @throws ConnectionFailedException
+     * @throws ImapBadRequestException
+     * @throws ImapServerErrorException
+     * @throws InvalidMessageDateException
+     * @throws MaskNotFoundException
+     * @throws MessageContentFetchingException
+     * @throws ReflectionException
+     * @throws ResponseException
+     * @throws RuntimeException
+     */
+    public static function fromString(string $blob, ?Config $config = null): Message {
+        $reflection = new ReflectionClass(self::class);
+        /** @var Message $instance */
+        $instance = $reflection->newInstanceWithoutConstructor();
+        $instance->boot($config);
+
+        //$default_mask  = $instance->getConfig()->getMask("message");
+        $default_mask = MessageMask::class;
+        if($default_mask != ""){
+            $instance->setMask($default_mask);
+        }else{
+            throw new MaskNotFoundException("Unknown message mask provided");
+        }
+
+        if(!str_contains($blob, "\r\n")){
+            $blob = str_replace("\n", "\r\n", $blob);
+        }
+        $raw_header = substr($blob, 0, strpos($blob, "\r\n\r\n"));
+        $raw_body = substr($blob, strlen($raw_header)+4);
+
+        $instance->parseRawHeader($raw_header);
+        $instance->parseRawBody($raw_body);
+
+        $instance->setUid(0);
+
+        return $instance;
+    }
+
 
     /**
      * Boot a new instance
@@ -557,7 +628,9 @@ class Message {
      * @throws Exceptions\RuntimeException
      */
     private function fetchStructure(Structure $structure) {
-        $this->client->openFolder($this->folder_path);
+        if ($this->client) {
+            $this->client->openFolder($this->folder_path);
+        }
 
         foreach ($structure->parts as $part) {
             $this->fetchPart($part);
@@ -1198,9 +1271,9 @@ class Message {
     /**
      * Get the current client
      *
-     * @return Client
+     * @return ?Client
      */
-    public function getClient(): Client {
+    public function getClient(): ?Client {
         return $this->client;
     }
 
@@ -1426,7 +1499,7 @@ class Message {
      */
     public function setUid(int $uid): Message {
         $this->uid = $uid;
-        $this->msgn = $this->client->getConnection()->getMessageNumber($this->uid);
+        $this->msgn = null; //$this->client->getConnection()->getMessageNumber($this->uid);
         $this->msglist = null;
 
         return $this;

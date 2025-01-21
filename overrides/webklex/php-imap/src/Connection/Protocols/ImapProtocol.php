@@ -42,6 +42,7 @@ class ImapProtocol extends Protocol {
 
     public static $output_debug_log = true;
     public static $debug_log = '';
+    public static $last_connected_check = 0;
 
     /**
      * Imap constructor.
@@ -501,11 +502,22 @@ class ImapProtocol extends Protocol {
      */
     public function connected(): bool {
         if ((bool)$this->stream) {
-            $response = $this->requestAndResponse('NOOP');
-            // https://github.com/Webklex/php-imap/pull/449
-            if ($response === false) {
-                return false;
+            $time = time();
+            if (self::$last_connected_check+1 < $time) {
+                if (!self::$last_connected_check) {
+                    self::$last_connected_check = $time;
+                    return true;
+                }
+                $response = $this->requestAndResponse('NOOP');
+                // https://github.com/Webklex/php-imap/pull/449
+                if ($response === false) {
+                    return false;
+                } else {
+                    self::$last_connected_check = $time;
+                    return true;
+                }
             } else {
+                self::$last_connected_check = $time;
                 return true;
             }
         }
@@ -726,6 +738,7 @@ class ImapProtocol extends Protocol {
     public function content($uids, string $rfc = "RFC822", $uid = IMAP::ST_UID): array {
         // iCloud requires BODY[TEXT] instead of RFC822.TEXT.
         // https://github.com/freescout-help-desk/freescout/issues/4202#issuecomment-2315369990
+        // https://github.com/Webklex/php-imap/commit/d4df579fbbe22bb5eca10b7bb3c0192b1f9a5bf7
         if (strtolower(trim($this->host)) == 'imap.mail.me.com') {
             $item = "BODY[TEXT]";
         } else {

@@ -203,7 +203,14 @@ class PopProtocol extends Protocol {
      * @throws RuntimeException
      */
     public function write(string $data) {
-        if ($this->debug) $this->debug(">> ".$data ."\n");
+        if ($this->debug) {
+            $debug_line = $data;
+            // Replace password with asterists.
+            if (preg_match('#^PASS #', $debug_line)) {
+                $debug_line = str_pad('PASS ', strlen($debug_line), '*');
+            }
+            $this->debug(">> ".$debug_line ."\n");
+        }
 
         if (fwrite($this->stream, $data . "\r\n") === false) {
             throw new RuntimeException('failed to write - connection closed?');

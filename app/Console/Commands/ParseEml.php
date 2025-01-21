@@ -13,11 +13,9 @@ class ParseEml extends Command
     /**
      * The name and signature of the console command.
      *
-     * --mailbox Any mailbox able to connect via IMAP to its mail server.
-     *
      * @var string
      */
-    protected $signature = 'freescout:parse-eml {--mailbox=2}';
+    protected $signature = 'freescout:parse-eml';
 
     /**
      * The console command description.
@@ -68,16 +66,34 @@ class ParseEml extends Command
             $email = str_replace("\n", "\r\n", $email);
         }
 
-        $raw_header = substr($email, 0, strpos($email, "\r\n\r\n"));
-        $raw_body = substr($email, strlen($raw_header)+4);
+        // $raw_header = substr($email, 0, strpos($email, "\r\n\r\n"));
+        // $raw_body = substr($email, strlen($raw_header)+4);
 
-        $mailbox = Mailbox::find($this->option('mailbox'));
+        // $mailbox = Mailbox::find($this->option('mailbox'));
 
-        //\Config::set('app.new_fetching_library', 'true');
-        $client = \MailHelper::getMailboxClient($mailbox);
-        $client->openFolder("INBOX");
+        // //\Config::set('app.new_fetching_library', 'true');
+        // $client = \MailHelper::getMailboxClient($mailbox);
+        // $client->openFolder("INBOX");
 
-        $message = Message::make(/*$this->option('uid')*/null, null, $client, $raw_header, $raw_body, [/*0 => "\\Seen"*/], IMAP::ST_UID);
+        // $message = Message::make(/*$this->option('uid')*/null, null, $client, $raw_header, $raw_body, [/*0 => "\\Seen"*/], IMAP::ST_UID);
+
+        $manager = new \Webklex\PHPIMAP\ClientManager([
+            // 'options' => [
+            //     "debug" => $_ENV["LIVE_MAILBOX_DEBUG"] ?? false,
+            // ],
+            // 'accounts' => [
+            //     'default' => [
+            //         'host'          => getenv("LIVE_MAILBOX_HOST"),
+            //         'port'          => getenv("LIVE_MAILBOX_PORT"),
+            //         'encryption'    => getenv("LIVE_MAILBOX_ENCRYPTION"),
+            //         'validate_cert' => getenv("LIVE_MAILBOX_VALIDATE_CERT"),
+            //         'username'      => getenv("LIVE_MAILBOX_USERNAME"),
+            //         'password'      => getenv("LIVE_MAILBOX_PASSWORD"),
+            //         'protocol'      => 'imap', //might also use imap, [pop3 or nntp (untested)]
+            //     ],
+            // ],
+        ]);
+        $message = \Webklex\PHPIMAP\Message::fromString($email);
 
         $this->line('Headers: ');
         $this->info($message->getHeader()->raw);

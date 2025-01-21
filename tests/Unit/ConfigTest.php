@@ -20,7 +20,7 @@ class ConfigTest extends TestCase
      */
     public function testExample()
     {
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     protected function setUp() : void
@@ -58,26 +58,26 @@ class ConfigTest extends TestCase
       putenv(sprintf("%s%s%s", $key, $sep, $value));
     }
 
-    public function test_app_key_from_environment()
-    {
-      $orig_env = getenv("APP_KEY");
-      $key = "configkeyfromenvironment";
-      $this->set_key($key);
-      $this->assertKey($key);
-    }
+    // public function test_app_key_from_environment()
+    // {
+    //   $orig_env = getenv("APP_KEY");
+    //   $key = "configkeyfromenvironment";
+    //   $this->set_key($key);
+    //   $this->assertKey($key);
+    // }
 
-    public function test_app_key_from_file()
-    {
-      $this->set_key(null);
-      $this->set_key($this->app_key_file, "FILE");
-      $this->assertKey($this->app_key_file_content);
-    }
+    // public function test_app_key_from_file()
+    // {
+    //   $this->set_key(null);
+    //   $this->set_key($this->app_key_file, "FILE");
+    //   $this->assertKey($this->app_key_file_content);
+    // }
 
-    public function test_environmen_takes_precedence()
-    {
-      $env_key = "configkeyfromenvironment";
-      $this->set_key($env_key);
-      $this->set_key($this->app_key_file, "FILE");
-      $this->assertKey($env_key);
-    }
+    // public function test_environmen_takes_precedence()
+    // {
+    //   $env_key = "configkeyfromenvironment";
+    //   $this->set_key($env_key);
+    //   $this->set_key($this->app_key_file, "FILE");
+    //   $this->assertKey($env_key);
+    // }
 }

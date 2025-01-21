@@ -138,6 +138,11 @@ class Structure {
         $final_parts = [];
         //foreach($base_parts as $ctx) {
         
+        // https://github.com/Webklex/php-imap/commit/0a9b263eb4e29c2822cf7d68bec27a9af33ced2f
+        if (strstr($context, '--'.$boundary)) {
+            $boundary = '--'.$boundary;
+        }
+
         $boundary_len = strlen($boundary);
         $last_pos = 0;
         $positions = [];

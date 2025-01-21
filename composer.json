@@ -257,6 +257,7 @@
             "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/QueriesRelationships.php",
             "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Relations/Relation.php",
             "vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php",
+            "vendor/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php",
             "vendor/laravel/framework/src/Illuminate/Pagination/AbstractPaginator.php",
             "vendor/laravel/framework/src/Illuminate/Pagination/Paginator.php",
             "vendor/laravel/framework/src/Illuminate/Pagination/LengthAwarePaginator.php",
@@ -436,7 +437,11 @@
         "post-create-project-cmd": [
             "@php artisan key:generate"
         ],
+        "pre-update-cmd": [
+            "@php -r \"@rename('Modules', 'Modules_');\""
+        ],
         "pre-install-cmd": [
+            "@php -r \"@rename('Modules', 'Modules_');\"",
             "@php -r \"@mkdir('vendor/natxet/cssmin/src', 775);\""
         ],
         "post-autoload-dump": [
@@ -445,6 +450,7 @@
             "@php -r \"file_put_contents('vendor/webklex/php-imap/src/config/imap.php', preg_replace('/, \\\\'inline\\\\'],/s', '/*, \\\\'inline\\\\'*/],', file_get_contents('vendor/webklex/php-imap/src/config/imap.php')));\"",
             "@php -r \"copy('vendor/nesbot/carbon/src/Carbon/Lang/pt.php', 'vendor/nesbot/carbon/src/Carbon/Lang/pt_PT.php');\"",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php -r \"@rename('Modules_', 'Modules');\"",
             "@php artisan package:discover"
         ]
     },

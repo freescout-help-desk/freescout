@@ -74,7 +74,7 @@ class Mail
         'regex:/<div style="border:none;border\-top:solid \#[A-Z0-9]{6} 1\.0pt;padding:3\.0pt 0in 0in 0in">[^<]*<p class="MsoNormal"><b>/', // MS Outlook
 
         // General separators.
-        'regex:/<blockquote((?!quote)[^>])*>/', // General sepator. Should skip Gmail's <blockquote class="gmail_quote">.
+        //'regex:/<blockquote((?!quote)[^>])*>/', // General sepator. Should skip Gmail's <blockquote class="gmail_quote">.
         '<!-- originalMessage -->',
         '‐‐‐‐‐‐‐ Original Message ‐‐‐‐‐‐‐',
         '--------------- Original Message ---------------',
@@ -82,12 +82,22 @@ class Mail
     ];
 
     /**
-     * Used to substitue encoding during mail body decoding.
+     * Used to substitue encoding during mail body decoding
+     * via iconv() or mb_convert_encoding().
      * https://github.com/freescout-help-desk/freescout/issues/4282
      */
     public static $encoding_substitution = [
         'iso-2022-jp' => 'iso-2022-jp-ms',
         'gb2312' => 'gb18030',
+    ];
+
+    /**
+     * Used when decoding mime strings.
+     */
+    public static $mime_encoding_substitution = [
+        'iso-2022-jp' => 'iso-2022-jp-ms',
+        'ks_c_5601-1987' => 'cp949',
+        //'gb2312' => 'gb18030',
     ];
 
     /**
@@ -670,7 +680,11 @@ class Mail
     // Replacement for https://www.php.net/manual/en/function.imap-utf8.php
     public static function imapUtf8($mime_encoded_text)
     {
-        return iconv_mime_decode($mime_encoded_text, 0, "UTF-8");
+        if (function_exists('imap_utf8')) {
+            return imap_utf8($mime_encoded_text);
+        } else {
+            return iconv_mime_decode($mime_encoded_text, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+        }
     }
 
     public static function getHeader($headers_str, $header)
@@ -1027,7 +1041,8 @@ class Mail
         //  249143
         $subject = preg_replace("/[\r\n]/", '', $subject);
         // https://github.com/freescout-helpdesk/freescout/issues/3185
-        $subject = str_ireplace('=?iso-2022-jp?', '=?iso-2022-jp-ms?', $subject);
+        //$subject = str_ireplace('=?iso-2022-jp?', '=?iso-2022-jp-ms?', $subject);
+        $subject = self::substituteMimeEncoding($subject);
 
         // Sometimes imap_utf8() can't decode the subject, for example:
         // =?iso-2022-jp?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?=
@@ -1175,6 +1190,14 @@ class Mail
         } else {
             return $encoding;
         }
+    }
+
+    public static function substituteMimeEncoding($string)
+    {
+        foreach (self::$mime_encoding_substitution as $from => $into) {
+            $string = str_ireplace('=?'.$from.'?', '=?'.$into.'?', $string);
+        }
+        return $string;
     }
 
     // public static function oauthGetProvider($provider_code, $params)

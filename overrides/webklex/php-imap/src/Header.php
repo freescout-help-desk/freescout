@@ -666,7 +666,36 @@ class Header {
         $addresses = [];
 
         if (is_array($list) === false) {
-            return $addresses;
+            // https://github.com/Webklex/php-imap/commit/916e273d102c6e4b8f10363a500d8caa6ab94111
+            if (is_string($list)) {
+                // $list = "<noreply@github.com>"
+                if (preg_match(
+                    '/^(?:(?P<name>.+)\s)?(?(name)<|<?)(?P<email>[^\s]+?)(?(name)>|>?)$/',
+                    $list,
+                    $matches
+                )) {
+                    $name = trim(rtrim($matches["name"]));
+                    $email = trim(rtrim($matches["email"]));
+                    list($mailbox, $host) = array_pad(explode("@", $email), 2, null);
+                    if ($mailbox === ">") { // Fix trailing ">" in malformed mailboxes
+                        $mailbox = "";
+                    }
+                    if ($name === "" && $mailbox === "" && $host === "") {
+                        return $addresses;
+                    }
+                    $list = [
+                        (object)[
+                            "personal" => $name,
+                            "mailbox"  => $mailbox,
+                            "host"     => $host,
+                        ]
+                    ];
+                } else {
+                    return $addresses;
+                }
+            } else {
+                return $addresses;
+            }
         }
 
         foreach ($list as $item) {
@@ -681,18 +710,25 @@ class Header {
             if (!property_exists($address, 'personal')) {
                 $address->personal = false;
             } else {
-                $personalParts = $this->mime_header_decode($address->personal);
+                $personal_slices = explode(" ", $address->personal);
+                $address->personal = "";
+                foreach ($personal_slices as $slice) {
+                    $personalParts = $this->mime_header_decode($slice);
 
-                if (is_array($personalParts)) {
-                    $address->personal = '';
-                    foreach ($personalParts as $p) {
-                        $address->personal .= $this->convertEncoding($p->text, $this->getEncoding($p));
+                    if (is_array($personalParts)) {
+                        $personal = '';
+                        foreach ($personalParts as $p) {
+                            $personal .= $this->convertEncoding($p->text, $this->getEncoding($p));
+                        }
                     }
-                }
 
-                if (strpos($address->personal, "'") === 0) {
-                    $address->personal = str_replace("'", "", $address->personal);
+                    if (str_starts_with($personal, "'")) {
+                        $personal = str_replace("'", "", $personal);
+                    }
+                    $personal = \MailHelper::decodeSubject($personal);
+                    $address->personal .= $personal . " ";
                 }
+                $address->personal = trim(rtrim($address->personal));
             }
 
             $address->mail = ($address->mailbox && $address->host) ? $address->mailbox . '@' . $address->host : false;
@@ -716,13 +752,23 @@ class Header {
             }
             // Only parse strings and don't parse any attributes like the user-agent
             // https://github.com/Webklex/php-imap/issues/401
-            if (($key == "user_agent") === false && ($key == "subject") === false) {
-                if (($pos = strpos($value, ";")) !== false) {
+            // https://github.com/Webklex/php-imap/commit/e5ad66267382f319f385131cefe5336692a54486
+           if (!in_array($key, ["user-agent", "subject", "received"])) {
+                if (str_contains($value, ";") && str_contains($value, "=")) {
+                    $pos = strpos($value, ";");
                     $original = substr($value, 0, $pos);
                     $this->set($key, trim(rtrim($original)), true);
 
                     // Get all potential extensions
-                    $extensions = explode(";", substr($value, $pos + 1));
+                    // https://github.com/Webklex/php-imap/commit/e5ad66267382f319f385131cefe5336692a54486
+                    $extensions = [];
+                    preg_match_all("#;([^=]+[^\\\]=\"[^\"]+\")#", ';'.substr($value, $pos + 1), $m);
+                    if (!empty($m[1])) {
+                        $extensions = $m[1];
+                    }
+                    if (empty($extensions)) {
+                        $extensions = explode(";", substr($value, $pos + 1));
+                    }
 
                     $previousKey = null;
                     $previousValue = '';
