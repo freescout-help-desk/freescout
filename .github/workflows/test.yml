@@ -42,6 +42,5 @@ jobs:
           php${{ matrix.php }} artisan db:seed --force -n --database=testing
 
       - name: Run PHP tests
-        with:
-          php-version: 8.2
+        if: ${{ matrix.php >= 8.2 }}
         run: php${{ matrix.php }} ./vendor/bin/phpunit
