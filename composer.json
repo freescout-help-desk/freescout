@@ -329,6 +329,7 @@
             "vendor/guzzlehttp/guzzle/src/Client.php",
             "vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php",
             "vendor/guzzlehttp/guzzle/src/Handler/CurlMultiHandler.php",
+            "vendor/guzzlehttp/guzzle/src/Handler/StreamHandler.php",
             "vendor/guzzlehttp/guzzle/src/HandlerStack.php",
             "vendor/guzzlehttp/psr7/src/LazyOpenStream.php",
             "vendor/ramsey/uuid/src/Uuid.php",
@@ -417,7 +418,8 @@
             "vendor/laravel/framework/src/Illuminate/Mail/Mailer.php",
             "vendor/filp/whoops/src/Whoops/Run.php",
             "vendor/laravel/framework/src/Illuminate/Validation/Factory.php",
-            "vendor/laravel/framework/src/Illuminate/Validation/ValidationRuleParser.php"
+            "vendor/laravel/framework/src/Illuminate/Validation/ValidationRuleParser.php",
+            "vendor/laravel/framework/src/Illuminate/Foundation/Validation/ValidatesRequests.php"
         ]
     },
     "autoload-dev": {
