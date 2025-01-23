@@ -722,7 +722,7 @@ class Header {
                         }
                     }
 
-                    if (str_starts_with($personal, "'")) {
+                    if (\Str::startsWith($personal, "'")) {
                         $personal = str_replace("'", "", $personal);
                     }
                     $personal = \MailHelper::decodeSubject($personal);
