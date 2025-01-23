@@ -193,6 +193,7 @@
             "Cron\\": "overrides/mtdowling/cron-expression/src/Cron/"
         },
         "exclude-from-classmap": [
+            "Modules/",
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/RequirementsChecker.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/PermissionsChecker.php",
@@ -328,6 +329,7 @@
             "vendor/guzzlehttp/guzzle/src/Client.php",
             "vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php",
             "vendor/guzzlehttp/guzzle/src/Handler/CurlMultiHandler.php",
+            "vendor/guzzlehttp/guzzle/src/Handler/StreamHandler.php",
             "vendor/guzzlehttp/guzzle/src/HandlerStack.php",
             "vendor/guzzlehttp/psr7/src/LazyOpenStream.php",
             "vendor/ramsey/uuid/src/Uuid.php",
@@ -416,7 +418,8 @@
             "vendor/laravel/framework/src/Illuminate/Mail/Mailer.php",
             "vendor/filp/whoops/src/Whoops/Run.php",
             "vendor/laravel/framework/src/Illuminate/Validation/Factory.php",
-            "vendor/laravel/framework/src/Illuminate/Validation/ValidationRuleParser.php"
+            "vendor/laravel/framework/src/Illuminate/Validation/ValidationRuleParser.php",
+            "vendor/laravel/framework/src/Illuminate/Foundation/Validation/ValidatesRequests.php"
         ]
     },
     "autoload-dev": {
@@ -437,11 +440,7 @@
         "post-create-project-cmd": [
             "@php artisan key:generate"
         ],
-        "pre-update-cmd": [
-            "@php -r \"@rename('Modules', 'Modules_');\""
-        ],
         "pre-install-cmd": [
-            "@php -r \"@rename('Modules', 'Modules_');\"",
             "@php -r \"@mkdir('vendor/natxet/cssmin/src', 775);\""
         ],
         "post-autoload-dump": [
@@ -450,7 +449,6 @@
             "@php -r \"file_put_contents('vendor/webklex/php-imap/src/config/imap.php', preg_replace('/, \\\\'inline\\\\'],/s', '/*, \\\\'inline\\\\'*/],', file_get_contents('vendor/webklex/php-imap/src/config/imap.php')));\"",
             "@php -r \"copy('vendor/nesbot/carbon/src/Carbon/Lang/pt.php', 'vendor/nesbot/carbon/src/Carbon/Lang/pt_PT.php');\"",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php -r \"@rename('Modules_', 'Modules');\"",
             "@php artisan package:discover"
         ]
     },
