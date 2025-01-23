@@ -847,7 +847,7 @@ class Header {
 
             try {
                 $parsed_date = self::doParseDate($date);
-            } catch (\Exception $_e) {
+            } catch (\Exception $e) {
                 if (!isset($this->config["fallback_date"])) {
                     // Simply use current date.
                     // https://github.com/freescout-help-desk/freescout/issues/4159
