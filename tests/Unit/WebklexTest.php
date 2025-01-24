@@ -101,4 +101,22 @@ class WebklexMessage1Test extends FixtureWebklexMessage {
         // self::assertSame("Checkliste 10.,DAVIDGASSE 76-80;2;2.pdf", $attachment->name);
         self::assertSame("Checkliste 10.,DAVIDGASSE 76-80;2;2.pdf", $attachment->filename);
     }
+
+    // https://github.com/Webklex/php-imap/commit/0a9b263eb4e29c2822cf7d68bec27a9af33ced2f
+    public function testMessageParts() {
+        $message = $this->getFixture("message-2.eml");
+
+        self::assertSame("Test bad boundary", (string)$message->subject);
+
+        $attachments = $message->getAttachments();
+        self::assertSame(1, $attachments->count());
+
+        
+        $attachment = $attachments->first();
+        //self::assertSame("file.pdf", $attachment->name);
+        self::assertSame("file.pdf", $attachment->filename);
+        self::assertStringStartsWith("%PDF-1.4", $attachment->content);
+        self::assertStringEndsWith("%%EOF\n", $attachment->content);
+        self::assertSame(14938, $attachment->size);
+    }
 }
