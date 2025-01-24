@@ -39,6 +39,7 @@ return array(
     'Symfony\\Component\\Debug\\' => array($baseDir . '/overrides/symfony/debug', $vendorDir . '/symfony/debug'),
     'Symfony\\Component\\CssSelector\\XPath\\Extension\\' => array($baseDir . '/overrides/symfony/css-selector/XPath/Extension'),
     'Symfony\\Component\\CssSelector\\' => array($vendorDir . '/symfony/css-selector'),
+    'Symfony\\Component\\Console\\Output\\' => array($baseDir . '/overrides/symfony/console/Output'),
     'Symfony\\Component\\Console\\Input\\' => array($baseDir . '/overrides/symfony/console/Input'),
     'Symfony\\Component\\Console\\Helper\\' => array($baseDir . '/overrides/symfony/console/Helper'),
     'Symfony\\Component\\Console\\Descriptor\\' => array($baseDir . '/overrides/symfony/console/Descriptor'),

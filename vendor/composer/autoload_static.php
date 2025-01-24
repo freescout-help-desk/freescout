@@ -81,6 +81,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Symfony\\Component\\Debug\\' => 24,
             'Symfony\\Component\\CssSelector\\XPath\\Extension\\' => 46,
             'Symfony\\Component\\CssSelector\\' => 30,
+            'Symfony\\Component\\Console\\Output\\' => 33,
             'Symfony\\Component\\Console\\Input\\' => 32,
             'Symfony\\Component\\Console\\Helper\\' => 33,
             'Symfony\\Component\\Console\\Descriptor\\' => 37,
@@ -380,6 +381,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Component\\CssSelector\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/css-selector',
+        ),
+        'Symfony\\Component\\Console\\Output\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/symfony/console/Output',
         ),
         'Symfony\\Component\\Console\\Input\\' => 
         array (
@@ -3535,7 +3540,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Component\\Console\\Output\\ConsoleOutput' => __DIR__ . '/..' . '/symfony/console/Output/ConsoleOutput.php',
         'Symfony\\Component\\Console\\Output\\ConsoleOutputInterface' => __DIR__ . '/..' . '/symfony/console/Output/ConsoleOutputInterface.php',
         'Symfony\\Component\\Console\\Output\\NullOutput' => __DIR__ . '/..' . '/symfony/console/Output/NullOutput.php',
-        'Symfony\\Component\\Console\\Output\\Output' => __DIR__ . '/..' . '/symfony/console/Output/Output.php',
+        'Symfony\\Component\\Console\\Output\\Output' => __DIR__ . '/../..' . '/overrides/symfony/console/Output/Output.php',
         'Symfony\\Component\\Console\\Output\\OutputInterface' => __DIR__ . '/..' . '/symfony/console/Output/OutputInterface.php',
         'Symfony\\Component\\Console\\Output\\StreamOutput' => __DIR__ . '/..' . '/symfony/console/Output/StreamOutput.php',
         'Symfony\\Component\\Console\\Question\\ChoiceQuestion' => __DIR__ . '/..' . '/symfony/console/Question/ChoiceQuestion.php',
