@@ -1036,6 +1036,12 @@ class Mail
      */
     public static function decodeSubject($subject)
     {
+        // Sometimes trying to decode non-encoded strings leads
+        // to loosing accents.
+        // https://github.com/freescout-help-desk/freescout/issues/4506
+        if (!strstr($subject, '=?')) {
+            return $subject;
+        }
         // Remove new lines as iconv_mime_decode() may loose a part separated by new line:
         // =?utf-8?Q?Gesch=C3=A4ftskonto?= erstellen =?utf-8?Q?f=C3=BCr?=
         //  249143

@@ -710,6 +710,19 @@ class Header {
             if (!property_exists($address, 'personal')) {
                 $address->personal = false;
             } else {
+                // $personalParts = $this->mime_header_decode($address->personal);
+
+                // if (is_array($personalParts)) {
+                //     $address->personal = '';
+                //     foreach ($personalParts as $p) {
+                //         $address->personal .= $this->convertEncoding($p->text, $this->getEncoding($p));
+                //     }
+                // }
+
+                // if (strpos($address->personal, "'") === 0) {
+                //     $address->personal = str_replace("'", "", $address->personal);
+                // }
+
                 $personal_slices = explode(" ", $address->personal);
                 $address->personal = "";
                 foreach ($personal_slices as $slice) {

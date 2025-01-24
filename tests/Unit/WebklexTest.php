@@ -42,6 +42,11 @@ class WebklexMessage1Test extends FixtureWebklexMessage {
         $attachment = $attachments->first();
         self::assertSame("☆第132号　「ガーデン&エクステリア」専門店のためのＱ&Ａサロン　【月刊エクステリア・ワーク】", $attachment->filename);
         self::assertSame("☆第132号　「ガーデン&エクステリア」専門店のためのＱ&Ａサロン　【月刊エクステリア・ワーク】", $attachment->name);
+
+        // https://github.com/freescout-help-desk/freescout/issues/4506
+        $from = $message->getFrom();
+        self::assertSame(1, count($from->get()));
+        self::assertSame('Análisis EC Madrid', $from[0]->personal);
     }
 
     /**
@@ -96,5 +101,4 @@ class WebklexMessage1Test extends FixtureWebklexMessage {
         // self::assertSame("Checkliste 10.,DAVIDGASSE 76-80;2;2.pdf", $attachment->name);
         self::assertSame("Checkliste 10.,DAVIDGASSE 76-80;2;2.pdf", $attachment->filename);
     }
-
 }
