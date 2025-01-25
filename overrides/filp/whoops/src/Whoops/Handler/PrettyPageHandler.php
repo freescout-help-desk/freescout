@@ -147,7 +147,8 @@ class PrettyPageHandler extends Handler
         }
 
         // Add the default, local resource search path:
-        $this->searchPaths[] = __DIR__ . "/../Resources";
+        //$this->searchPaths[] = __DIR__ . "/../Resources";
+        $this->searchPaths[] = __DIR__ . "/../../../../../../vendor/filp/whoops/src/Whoops/Resources";
 
         // blacklist php provided auth based values
         $this->blacklist('_SERVER', 'PHP_AUTH_PW');
