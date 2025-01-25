@@ -16,7 +16,7 @@ use Webklex\PHPIMAP\Exceptions\ResponseException;
 use Webklex\PHPIMAP\Exceptions\RuntimeException;
 use Webklex\PHPIMAP\Message;
 
-class WebklexMessage1Test extends FixtureWebklexMessage {
+class WebklexTest extends FixtureWebklexMessage {
 
     /**
      * @throws RuntimeException
