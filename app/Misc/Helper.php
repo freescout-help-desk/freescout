@@ -2217,4 +2217,9 @@ class Helper
 
         return '';
     }
+
+    public static function startsiWith($text, $string)
+    {
+        return (stripos($text, $string) === 0);
+    }
 }
