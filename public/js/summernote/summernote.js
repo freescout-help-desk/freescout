@@ -7222,7 +7222,7 @@ $$1.summernote = $$1.extend($$1.summernote, {
                 // freescout
                 // https://github.com/summernote/summernote/issues/546#issuecomment-341518461
                 //'ENTER': 'insertParagraph',
-                'SHIFT+ENTER': 'insertParagraph',
+                //'SHIFT+ENTER': 'insertParagraph',
                 'CTRL+Z': 'undo',
                 'CTRL+Y': 'redo',
                 'TAB': 'tab',
@@ -7254,7 +7254,7 @@ $$1.summernote = $$1.extend($$1.summernote, {
                 // freescout
                 // https://github.com/summernote/summernote/issues/546#issuecomment-341518461
                 //'ENTER': 'insertParagraph',
-                'SHIFT+ENTER': 'insertParagraph',
+                //'SHIFT+ENTER': 'insertParagraph',
                 'CMD+Z': 'undo',
                 'CMD+SHIFT+Z': 'redo',
                 'TAB': 'tab',
