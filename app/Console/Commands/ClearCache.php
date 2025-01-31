@@ -39,6 +39,13 @@ class ClearCache extends Command
     {
         $this->call('clear-compiled');
         $this->call('cache:clear');
+
+        // Remove files from /bootstrap/cache folder.
+        // https://github.com/freescout-help-desk/freescout/issues/4536
+        $files = new \Illuminate\Filesystem\Filesystem;
+        $files->delete($this->laravel->getCachedServicesPath());
+        $files->delete($this->laravel->getCachedPackagesPath());
+
         $this->call('view:clear');
         if ($this->option('doNotCacheConfig')) {
             $this->call('config:clear');

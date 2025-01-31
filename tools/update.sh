@@ -197,6 +197,9 @@ printf "\nClearing cache:\n"
 # First clear cache manually to avoid such issues:
 # https://github.com/freescout-help-desk/freescout/issues/4366
 rm -f $PROJECT_ROOT/bootstrap/cache/config.php
+# https://github.com/freescout-help-desk/freescout/issues/4536#issuecomment-2626860295
+rm -f $PROJECT_ROOT/bootstrap/cache/services.php
+rm -f $PROJECT_ROOT/bootstrap/cache/packages.php
 rm -rf $PROJECT_ROOT/storage/framework/cache/data/*
 rm -f $PROJECT_ROOT/storage/framework/views/*
 rm -f $PROJECT_ROOT/storage/framework/sessions/*
