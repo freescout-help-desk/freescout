@@ -1082,8 +1082,10 @@ class Conversation extends Model
             } else {
                 return __('me');
             }
-        } else {
+        } elseif ($this->user) {
             return $this->user->getFullName();
+        } else {
+            return '';
         }
     }
 
