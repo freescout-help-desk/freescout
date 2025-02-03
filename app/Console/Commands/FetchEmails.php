@@ -1359,6 +1359,15 @@ class FetchEmails extends Command
 
         if ($is_html) {
             // Extract body content from HTML
+            
+            // Proton has it's own unique way of placing replies:
+            // https://github.com/freescout-help-desk/freescout/issues/4537#issuecomment-2629836738
+            if ($is_reply
+                && mb_strpos($body, '<div class="protonmail_quote">') < mb_strpos($body, '<html')
+            ) {
+                $body = mb_substr($body, 0, mb_strpos($body, '<div class="protonmail_quote">'));
+            }
+
             // Split by <html>
             $htmls = [];
             preg_match_all("/<html[^>]*>(.*?)<\/html>/is", $body, $htmls);

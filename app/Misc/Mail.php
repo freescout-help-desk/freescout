@@ -65,6 +65,7 @@ class Mail
         // <div class="gmail_quote" style="font-family:sans-serif;">
         '<div class="gmail_quote">', // Gmail
         '<div class="gmail_quote" ', // Gmail
+        '<div class="protonmail_quote">', // https://github.com/freescout-help-desk/freescout/issues/4537
         '<div id="appendonsend"></div>', // Outlook / Live / Hotmail / Microsoft
         '<div name="quote" ',
         'yahoo_quoted_', // Yahoo, full: <div id=3D"ydp6h4f5c59yahoo_quoted_2937493705"
