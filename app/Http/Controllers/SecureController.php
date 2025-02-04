@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\ActivityLog;
+use App\Notifications\BroadcastNotification;
+use Carbon\Carbon;
+use Illuminate\Broadcasting\BroadcastManager;
+use Illuminate\Contracts\Broadcasting\Factory as BroadcastingFactory;
 use App\Misc\Helper;
 use App\SendLog;
 use App\Thread;
@@ -232,5 +236,65 @@ class SecureController extends Controller
         }
 
         return \Response::json($response);
+    }
+
+    public function polycastRouteConnect(Request $request)
+    {
+        return ['status' => 'success', 'time' => Carbon::now()->toDateTimeString()];
+    }
+
+    public function polycastRouteReceive(Request $request)
+    {
+        \Broadcast::auth($request);
+
+        $query = \DB::table('polycast_events')
+            ->select('*');
+
+        $channels = $request->get('channels', []);
+
+        foreach ($channels as $channel => $events) {
+            foreach ($events as $event) {
+                // No need to add index to DB for this query.
+                $query->orWhere(function ($query) use ($channel, $event, $request) {
+                    $query->where('channels', 'like', '%"'.$channel.'"%')
+                        ->where('event', '=', $event)
+                        // Recors are fetched starting from opening the page or from the last event.
+                        ->where('created_at', '>=', $request->get('time'));
+                });
+            }
+        }
+
+        $collection = collect($query->get());
+
+        $payload = $collection->map(function ($item, $key) use ($request) {
+            $created = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item->created_at);
+            $requested = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $request->get('time'));
+            $item->channels = json_decode($item->channels, false);
+            $item->payload = json_decode($item->payload, false);
+            // Add extra data to the payload
+            // This works only if payload has medius and thread_id
+            $item->data = BroadcastNotification::fetchPayloadData($item->payload);
+
+            $event_class = '\\'.$item->event;
+            if (method_exists($event_class, "processPayload")) {
+                // If user is not allowed to access this event, data will be sent to empty array.
+                $item->payload = $event_class::processPayload($item->payload);
+            }
+
+            $item->delay = $requested->diffInSeconds($created);
+            $item->requested_at = $requested->toDateTimeString();
+
+            return $item;
+        });
+
+        // Reflash session data - otherwise on reply flash alert is not displayed
+        // https://stackoverflow.com/questions/37019294/laravel-ajax-call-deletes-session-flash-data
+        \Session::reflash();
+
+        \App\Providers\PolycastServiceProvider::processConvView($request);
+
+        \Eventy::action('polycast.receive', $request, $collection, $payload);
+
+        return ['status' => 'success', 'time' => Carbon::now()->toDateTimeString(), 'payloads' => $payload];
     }
 }

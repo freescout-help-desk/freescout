@@ -57,6 +57,13 @@ class ClearCache extends Command
                 opcache_invalidate(app()->getCachedConfigPath());
             }
         }
+
+        try {
+            $this->call('route:cache');
+        } catch (\Exception $e) {
+            // Do nothing.
+        }
+
         // Regenerate vars to get new data from .env
         if (!$this->option('doNotGenerateVars')) {
             $this->call('freescout:generate-vars');

@@ -73,6 +73,9 @@ function clearCache($root_dir, $php_path)
     if (file_exists($root_dir.'bootstrap/cache/packages.php')) {
         unlink($root_dir.'bootstrap/cache/packages.php');
     }
+    if (file_exists($root_dir.'bootstrap/cache/routes.php')) {
+        unlink($root_dir.'bootstrap/cache/routes.php');
+    }
     return shell_exec($php_path.' '.$root_dir.'artisan freescout:clear-cache');
 }
 
