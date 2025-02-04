@@ -46,20 +46,74 @@ class PolycastServiceProvider extends ServiceProvider
         //     __DIR__.'/../migrations/' => database_path('migrations')
         // ], 'migrations');
 
-        $this->app['router']->group(['middleware' => ['web'], 'prefix' => \Helper::getSubdirectory(), 'namespace' => 'App\Http\Controllers'], function ($router) {
+        $this->app['router']->group(['middleware' => ['web'], 'prefix' => \Helper::getSubdirectory()], function ($router) {
 
             // establish connection and send current time
-            $this->app['router']->post('polycast/connect', 'SecureController@polycastRouteConnect');
+            $this->app['router']->post('polycast/connect', function (Request $request) {
+                return ['status' => 'success', 'time' => Carbon::now()->toDateTimeString()];
+            });
 
             // send payloads to requested browser
-            $this->app['router']->post('polycast/receive', 'SecureController@polycastRouteReceive');
+            $this->app['router']->post('polycast/receive', function (Request $request) {
+                \Broadcast::auth($request);
+
+                $query = \DB::table('polycast_events')
+                    ->select('*');
+
+                $channels = $request->get('channels', []);
+
+                foreach ($channels as $channel => $events) {
+                    foreach ($events as $event) {
+                        // No need to add index to DB for this query.
+                        $query->orWhere(function ($query) use ($channel, $event, $request) {
+                            $query->where('channels', 'like', '%"'.$channel.'"%')
+                                ->where('event', '=', $event)
+                                // Recors are fetched starting from opening the page or from the last event.
+                                ->where('created_at', '>=', $request->get('time'));
+                        });
+                    }
+                }
+
+                $collection = collect($query->get());
+
+                $payload = $collection->map(function ($item, $key) use ($request) {
+                    $created = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item->created_at);
+                    $requested = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $request->get('time'));
+                    $item->channels = json_decode($item->channels, false);
+                    $item->payload = json_decode($item->payload, false);
+                    // Add extra data to the payload
+                    // This works only if payload has medius and thread_id
+                    $item->data = BroadcastNotification::fetchPayloadData($item->payload);
+
+                    $event_class = '\\'.$item->event;
+                    if (method_exists($event_class, "processPayload")) {
+                        // If user is not allowed to access this event, data will be sent to empty array.
+                        $item->payload = $event_class::processPayload($item->payload);
+                    }
+
+                    $item->delay = $requested->diffInSeconds($created);
+                    $item->requested_at = $requested->toDateTimeString();
+
+                    return $item;
+                });
+
+                // Reflash session data - otherwise on reply flash alert is not displayed
+                // https://stackoverflow.com/questions/37019294/laravel-ajax-call-deletes-session-flash-data
+                \Session::reflash();
+
+                $this->processConvView($request);
+
+                \Eventy::action('polycast.receive', $request, $collection, $payload);
+
+                return ['status' => 'success', 'time' => Carbon::now()->toDateTimeString(), 'payloads' => $payload];
+            });
         });
     }
 
     /**
      * Process conversation viewers.
      */
-    public static function processConvView($request)
+    public function processConvView($request)
     {
         // Periodically save info indicating that user is still viewing the conversation.
         $viewing_conversation_id = null;

@@ -58,11 +58,14 @@ class ClearCache extends Command
             }
         }
 
-        try {
-            $this->call('route:cache');
-        } catch (\Exception $e) {
-            // Do nothing.
-        }
+        // In FreeScout routes caching does not increase performance
+        // but it increases memory consumption and may lead to problems
+        // during application updating or installing/updating modules.
+        // try {
+        //     $this->call('route:cache');
+        // } catch (\Exception $e) {
+        //     // Do nothing.
+        // }
 
         // Regenerate vars to get new data from .env
         if (!$this->option('doNotGenerateVars')) {
