@@ -39,6 +39,13 @@ class ClearCache extends Command
     {
         $this->call('clear-compiled');
         $this->call('cache:clear');
+
+        // Remove files from /bootstrap/cache folder.
+        // https://github.com/freescout-help-desk/freescout/issues/4536
+        $files = new \Illuminate\Filesystem\Filesystem;
+        $files->delete($this->laravel->getCachedServicesPath());
+        $files->delete($this->laravel->getCachedPackagesPath());
+
         $this->call('view:clear');
         if ($this->option('doNotCacheConfig')) {
             $this->call('config:clear');
@@ -50,6 +57,16 @@ class ClearCache extends Command
                 opcache_invalidate(app()->getCachedConfigPath());
             }
         }
+
+        // In FreeScout routes caching does not increase performance
+        // but it increases memory consumption and may lead to problems
+        // during application updating or installing/updating modules.
+        // try {
+        //     $this->call('route:cache');
+        // } catch (\Exception $e) {
+        //     // Do nothing.
+        // }
+
         // Regenerate vars to get new data from .env
         if (!$this->option('doNotGenerateVars')) {
             $this->call('freescout:generate-vars');
