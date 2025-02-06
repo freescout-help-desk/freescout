@@ -73,7 +73,7 @@ class MailTest extends TestCase
      *
      * @return string
      */
-    protected static function fakeMailText(): string
+    protected static function fakeMailText(bool $withFb = false): string
     {
         $text = [
             '<p>Hello {%customer.fullName%},</p>',
@@ -93,11 +93,40 @@ class MailTest extends TestCase
             '<a href="mailto:{%user.email%}">{%user.fullName%}</a><br>',
             '<a href="tel:{%user.phone%}">{%user.phone%}</a><br>',
             '{%user.jobTitle%} - {%mailbox.name%}<br>',
-            '{%user.photoUrl%}<br>',
+            '<img src="{%user.photoUrl%}"><br>',
             '<a href="mailto:{%mailbox.email%}">{%mailbox.name%}</a><br>',
         ];
 
-        return implode(PHP_EOL, $text);
+        $text = implode(PHP_EOL, $text);
+
+        if ($withFb) {
+            $fallbacks = [
+                '{%subject%}'             => 'Re: Neque numquam velit consectetur!',
+                '{%conversation.number%}' => '0001234',
+                '{%customer.email%}'      => '', // No fallback, remove it.
+                '{%mailbox.email%}'       => 'noreply@example.com',
+                '{%mailbox.name%}'        => 'No Reply',
+                '{%mailbox.fromName%}'    => 'Support Team',
+                '{%customer.fullName%}'   => 'there',
+                '{%customer.firstName%}'  => 'buddy',
+                '{%customer.lastName%}'   => '', // No fallback, remove it.
+                '{%customer.company%}'    => 'A Business Company Ltd.',
+                '{%user.fullName%}'       => 'Your Team',
+                '{%user.firstName%}'      => 'friend',
+                '{%user.phone%}'          => '(123) 456-7890',
+                '{%user.email%}'          => 'noreply@example.com',
+                '{%user.jobTitle%}'       => 'Support Engineer',
+                '{%user.lastName%}'       => '', // No fallback, remove it.
+                '{%user.photoUrl%}'       => 'https://place.dog/200/200',
+            ];
+
+            foreach ($fallbacks as $var => $fallback) {
+                $baseVar = str_replace(['{%', '%}'], '', $var);
+                $text = str_replace($var, "{%{$baseVar},fallback={$fallback}%}", $text);
+            }
+        }
+
+        return $text;
     }
 
     /**
@@ -119,9 +148,6 @@ class MailTest extends TestCase
         bool $removeNonReplaced = false
     ): void {
         $actual = Mail::replaceMailVars($inputText, $data, $escape, $removeNonReplaced);
-        if ('partial data' === $this->dataName()) {
-            var_dump($actual);
-        }
         $this->assertEquals(
             is_array($expectedText) ? implode(PHP_EOL, $expectedText) : $expectedText,
             $actual
@@ -135,9 +161,10 @@ class MailTest extends TestCase
      */
     public static function providerReplaceMailVars(): Generator
     {
-        $noVars   = '<p>test</p>';
-        $withVars = self::fakeMailText();
-        $allData  = self::fakeMailData();
+        $noVars            = '<p>test</p>';
+        $textNoFallback    = self::fakeMailText();
+        $textWithFallbacks = self::fakeMailText(true);
+        $allData           = self::fakeMailData();
 
         yield 'no vars in string' => [
             $noVars,
@@ -145,15 +172,20 @@ class MailTest extends TestCase
         ];
 
         yield 'no data' => [
-            $withVars,
-            $withVars,
+            $textNoFallback,
+            $textNoFallback,
+        ];
+
+        yield 'invalid variables' => [
+            '<p>{%invalid.mergeVar%}</p>',
+            '<p>{%invalid.mergeVar%}</p>',
         ];
 
         yield 'no data (remove_non_replaced)' => [
             [
                 '<p>Hello ,</p>',
                 '<p>Etincidunt magnam tempora adipisci amet ipsum consectetur. Tempora dolore sed neque velit ut sit.</p>',
-                '<p>Subject: {%subject%}</p>', // Technically this is a bug but probably not in real situations, the regex doesn't accommodate merge codes without a dot.
+                '<p>Subject: </p>',
                 '<p>Conversation Number: </p>',
                 '<p>Customer Email: </p>',
                 '<p>Mailbox FromName: </p>',
@@ -168,39 +200,63 @@ class MailTest extends TestCase
                 '<a href="mailto:"></a><br>',
                 '<a href="tel:"></a><br>',
                 ' - <br>',
-                '<br>',
+                '<img src=""><br>',
                 '<a href="mailto:"></a><br>',
             ],
-            $withVars,
+            $textNoFallback,
             [],
             false,
             true,
         ];
 
-        yield 'all data' => [
+        $expectedWithAllData = [
+            '<p>Hello Jeffrey Lebowski,</p>',
+            '<p>Etincidunt magnam tempora adipisci amet ipsum consectetur. Tempora dolore sed neque velit ut sit.</p>',
+            '<p>Subject: Re: Neque numquam velit consectetur!</p>',
+            '<p>Conversation Number: 123456</p>',
+            '<p>Customer Email: customer.email@example.com</p>',
+            '<p>Mailbox FromName: Priority Support Requests</p>',
+            '<p>Customer FirstName: Jeffrey</p>',
+            '<p>Customer LastName: Lebowski</p>',
+            '<p>Customer Company: Unemployed</p>',
+            '<p>User FirstName: Walter</p>',
+            '<p>User LastName: Sobchak</p>',
+            '<p>Amet est adipisci ut. Numquam ipsum quaerat ipsum dolore velit porro non. Ut velit eius consectetur.</p>',
+            '<br>---<br>',
+            'Gratitude,<br>',
+            '<a href="mailto:walter.sobchak@example.com">Walter Sobchak</a><br>',
+            '<a href="tel:(818) 123-456-7890">(818) 123-456-7890</a><br>',
+            'Proprietor - Priority Support Requests<br>',
+            '<img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"><br>',
+            '<a href="mailto:mailbox.email@example.com">Priority Support Requests</a><br>',
+        ];
+        yield 'all data' => [$expectedWithAllData, $textNoFallback, $allData];
+
+        yield 'all data with fallbacks' => [$expectedWithAllData, $textWithFallbacks, $allData];
+
+        yield 'show all fallbacks' => [
             [
-                '<p>Hello Jeffrey Lebowski,</p>',
+                '<p>Hello there,</p>',
                 '<p>Etincidunt magnam tempora adipisci amet ipsum consectetur. Tempora dolore sed neque velit ut sit.</p>',
                 '<p>Subject: Re: Neque numquam velit consectetur!</p>',
-                '<p>Conversation Number: 123456</p>',
-                '<p>Customer Email: customer.email@example.com</p>',
-                '<p>Mailbox FromName: Priority Support Requests</p>',
-                '<p>Customer FirstName: Jeffrey</p>',
-                '<p>Customer LastName: Lebowski</p>',
-                '<p>Customer Company: Unemployed</p>',
-                '<p>User FirstName: Walter</p>',
-                '<p>User LastName: Sobchak</p>',
+                '<p>Conversation Number: 0001234</p>',
+                '<p>Customer Email: </p>',
+                '<p>Mailbox FromName: Support Team</p>',
+                '<p>Customer FirstName: buddy</p>',
+                '<p>Customer LastName: </p>',
+                '<p>Customer Company: A Business Company Ltd.</p>',
+                '<p>User FirstName: friend</p>',
+                '<p>User LastName: </p>',
                 '<p>Amet est adipisci ut. Numquam ipsum quaerat ipsum dolore velit porro non. Ut velit eius consectetur.</p>',
                 '<br>---<br>',
                 'Gratitude,<br>',
-                '<a href="mailto:walter.sobchak@example.com">Walter Sobchak</a><br>',
-                '<a href="tel:(818) 123-456-7890">(818) 123-456-7890</a><br>',
-                'Proprietor - Priority Support Requests<br>',
-                'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y<br>',
-                '<a href="mailto:mailbox.email@example.com">Priority Support Requests</a><br>',
+                '<a href="mailto:noreply@example.com">Your Team</a><br>',
+                '<a href="tel:(123) 456-7890">(123) 456-7890</a><br>',
+                'Support Engineer - No Reply<br>',
+                '<img src="https://place.dog/200/200"><br>',
+                '<a href="mailto:noreply@example.com">No Reply</a><br>',
             ],
-            $withVars,
-            $allData,
+            $textWithFallbacks
         ];
 
         yield 'all data (escaped)' => [
@@ -222,10 +278,10 @@ class MailTest extends TestCase
                 '<a href="mailto:walter.sobchak@example.com">Walter Sobchak</a><br>',
                 '<a href="tel:(818) 123-456-7890">(818) 123-456-7890</a><br>',
                 'Proprietor - Priority Support Requests<br>',
-                'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&amp;f=y<br>',
+                '<img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&amp;f=y"><br>',
                 '<a href="mailto:mailbox.email@example.com">Priority Support Requests</a><br>',
             ],
-            $withVars,
+            $textNoFallback,
             $allData,
             true,
         ];
@@ -249,10 +305,10 @@ class MailTest extends TestCase
                 '<a href="mailto:walter.sobchak@example.com">Walter Sobchak</a><br>',
                 '<a href="tel:(818) 123-456-7890">(818) 123-456-7890</a><br>',
                 'Proprietor - {%mailbox.name%}<br>',
-                'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y<br>',
+                '<img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"><br>',
                 '<a href="mailto:{%mailbox.email%}">{%mailbox.name%}</a><br>',
             ],
-            $withVars,
+            $textNoFallback,
             [
                 'user'     => $allData['user'],
                 'customer' => $allData['customer'],
@@ -278,10 +334,10 @@ class MailTest extends TestCase
                 '<a href="mailto:"></a><br>',
                 '<a href="tel:"></a><br>',
                 ' - Priority Support Requests<br>',
-                '<br>',
+                '<img src=""><br>',
                 '<a href="mailto:mailbox.email@example.com">Priority Support Requests</a><br>',
             ],
-            $withVars,
+            $textNoFallback,
             [
                 'conversation' => $allData['conversation'],
                 'mailbox'     => $allData['mailbox'],
@@ -289,5 +345,59 @@ class MailTest extends TestCase
             false,
             true,
         ];
+
+        yield 'partial data with fallbacks' => [
+            [
+                '<p>Hello there,</p>',
+                '<p>Etincidunt magnam tempora adipisci amet ipsum consectetur. Tempora dolore sed neque velit ut sit.</p>',
+                '<p>Subject: Re: Neque numquam velit consectetur!</p>',
+                '<p>Conversation Number: 123456</p>',
+                '<p>Customer Email: customer.email@example.com</p>',
+                '<p>Mailbox FromName: Priority Support Requests</p>',
+                '<p>Customer FirstName: buddy</p>',
+                '<p>Customer LastName: </p>',
+                '<p>Customer Company: A Business Company Ltd.</p>',
+                '<p>User FirstName: friend</p>',
+                '<p>User LastName: </p>',
+                '<p>Amet est adipisci ut. Numquam ipsum quaerat ipsum dolore velit porro non. Ut velit eius consectetur.</p>',
+                '<br>---<br>',
+                'Gratitude,<br>',
+                '<a href="mailto:noreply@example.com">Your Team</a><br>',
+                '<a href="tel:(123) 456-7890">(123) 456-7890</a><br>',
+                'Support Engineer - Priority Support Requests<br>',
+                '<img src="https://place.dog/200/200"><br>',
+                '<a href="mailto:mailbox.email@example.com">Priority Support Requests</a><br>',
+            ],
+            $textWithFallbacks,
+            [
+                'conversation' => $allData['conversation'],
+                'mailbox'     => $allData['mailbox'],
+            ],
+        ];
+    }
+
+    /**
+     * Tests {@see \App\Misc\Mail::replaceMailVars()} with custom mail vars added via variables.
+     */
+    public function testReplaceMailVarsCustomVars(): void
+    {
+        $addVars = function(array $vars) {
+            $vars[] = 'custom.currentYear';
+            return $vars;
+        };
+        \Eventy::addFilter('mail_vars.vars', $addVars);
+
+        // Use fallback if no replacement value is available.
+        $this->assertEquals('2021', Mail::replaceMailVars('{%custom.currentYear,fallback=2021%}', [], false, false));
+
+        $addReplacements = function($false) {
+            return '2025';
+        };
+        \Eventy::addFilter('mail_vars.replacement.custom.currentYear', $addReplacements);
+
+        $this->assertEquals('2025', Mail::replaceMailVars('{%custom.currentYear%}', [], false, false));
+
+        \Eventy::removeFilter('mail_vars.vars', $addVars);
+        \Eventy::removeFilter('mail_vars.replacement.custom.currentYear', $addReplacements);
     }
 }
