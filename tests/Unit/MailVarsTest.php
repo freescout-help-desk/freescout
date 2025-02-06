@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Unit\Misc;
+namespace Tests\Unit;
 
 use App\Misc\Mail;
 use Generator;
 use Tests\TestCase;
 
-class MailTest extends TestCase
+class MailVarsTest extends TestCase
 {
     /**
      * Retrieves an array of mocked data that can be passed to the {@see \App\Misc\Mail::replaceMailVars()} method's $data parameter.
@@ -23,8 +23,8 @@ class MailTest extends TestCase
             ],
             'mailbox' => new class
             {
-                public string $email = 'mailbox.email@example.com';
-                public string $name = 'Priority Support Requests';
+                public $email = 'mailbox.email@example.com';
+                public $name = 'Priority Support Requests';
                 public function getMailFrom($fromUser): array
                 {
                     return [
@@ -36,8 +36,8 @@ class MailTest extends TestCase
             'mailbox_from_name' => 'Priority Support Requests',
             'customer' => new class
             {
-                public string $last_name = 'Lebowski';
-                public string $company = 'Unemployed';
+                public $last_name = 'Lebowski';
+                public $company = 'Unemployed';
                 public function getFullName(): string
                 {
                     return 'Jeffrey Lebowski';
@@ -48,10 +48,10 @@ class MailTest extends TestCase
                 }
             },
             'user' => new class {
-                public string $phone = '(818) 123-456-7890';
-                public string $email = 'walter.sobchak@example.com';
-                public string $job_title = 'Proprietor';
-                public string $last_name = 'Sobchak';
+                public $phone = '(818) 123-456-7890';
+                public $email = 'walter.sobchak@example.com';
+                public $job_title = 'Proprietor';
+                public $last_name = 'Sobchak';
                 public function getFullName(): string
                 {
                     return 'Walter Sobchak';
