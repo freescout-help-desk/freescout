@@ -244,6 +244,127 @@ class Mail
     }
 
     /**
+     * Retrieves a list of available mail variables.
+     *
+     * @return string[]
+     */
+    public static function getMailVars($data = [])
+    {
+        /**
+         * Filters the list of available mail variables.
+         *
+         * Use this array to add custom or remove default mail vars.
+         *
+         * @param string[] $vars The list of available mail variables.
+         * @param array    $data An array of data objects which can be used to retrieve the replacement value.
+         */
+        return \Eventy::filter(
+            'mail_vars.vars',
+            [
+                'subject',
+                'conversation.number',
+                'customer.email',
+                'mailbox.email',
+                'mailbox.name',
+                'mailbox.fromName',
+                'mailbox.fromName',
+                'customer.fullName',
+                'customer.firstName',
+                'customer.lastName',
+                'customer.company',
+                'user.fullName',
+                'user.firstName',
+                'user.phone',
+                'user.email',
+                'user.jobTitle',
+                'user.lastName',
+                'user.photoUrl',
+            ],
+            $data
+        );
+    }
+
+    /**
+     * Retrieves the replacement value for a given mail var with an optional fallback.
+     *
+     * @param string      $var      The variable to retrieve, eg 'customer.email'.
+     * @param array       $data     Array of data objects which can be used to retrieve the replacement value.
+     * @param null|string $fallback The fallback value to dues if no replacement value is avaialable in the $data objects.
+     *
+     * @return null|string
+     */
+    protected static function getMailVarReplacement($var, $data, $fallback = null)
+    {
+        $fallback = null === $fallback ? null : (string) $fallback; // Fallback must be a string if provided.
+
+        /**
+         * Returning a non-false value will short-circuit the method and return that value.
+         *
+         * This allows developers to override the default replacement value, dispable one
+         * completely (by returning null) or provide logic for retrieving the value of
+         * a custom merge var.
+         *
+         * The dynamic portion of this filter, '{$var}', is the var name, eg 'customer.email'.
+         *
+         * @param mixed       $value    The replacement value.
+         * @param array       $data     Array of data objects which can be used to retrieve the replacement value.
+         * @param null|string $fallback The fallback value to dues if no replacement value is avaialable in the $data objects.
+         */
+        $filtered = \Eventy::filter("mail_vars.replacement.{$var}", false, $data, $fallback);
+        if (false !== $filtered) {
+            return $filtered;
+        }
+
+        $dataPath    = null;
+        $replacement = false;
+
+        // Handle exceptions.
+        switch($var) {
+            case 'subject':
+                $dataPath = ['conversation', 'subject'];
+                break;
+
+            case 'customer.email':
+                $dataPath = ['conversation', 'customer_email'];
+                break;
+
+            case 'mailbox.fromName':
+                if (isset($data['mailbox_from_name'])) {
+                    $replacement = $data['mailbox_from_name'];
+                } elseif (!empty($data['mailbox'])) {
+                    $replacement = $data['mailbox']->getMailFrom(!empty($data['user']) ? $data['user'] : null)['name'];
+                }
+                break;
+
+            case 'customer.fullName':
+            case 'customer.firstName':
+                $method      = 'get' . ucfirst(explode('.', $var)[1]);
+                $replacement = !empty($data['customer']) ? $data['customer']->$method(true) : false;
+                break;
+
+            case 'user.fullName':
+            case 'user.firstName':
+            case 'user.photoUrl':
+                $method      = 'get' . ucfirst(explode('.', $var)[1]);
+                $replacement = !empty($data['user']) ? $data['user']->$method() : false;
+                break;
+
+            default:
+                $dataPath    = explode('.', $var);
+                if (isset($dataPath[1])) {
+                    $dataPath[1] = snake_case($dataPath[1]);
+                }
+        };
+
+        // Retrieve the value from the data object's property, eg: conversation.number = $data['conversation']->number or mailbox.email = $data['mailbox']->email.
+        if ($dataPath && ! empty($data[$dataPath[0]]) && property_exists($data[$dataPath[0]], $dataPath[1])) {
+            $replacement = $data[$dataPath[0]]->{$dataPath[1]};
+        }
+
+        return false === $replacement ? $fallback : (string) $replacement;
+    }
+
+    /**
      * Replace mail vars in the text.
      */
     public static function replaceMailVars($text, $data = [], $escape = false, $remove_non_replaced = false)
@@ -251,35 +372,37 @@ class Mail
         // Available variables to insert into email in UI.
         $vars = [];
 
-        if (!empty($data['conversation'])) {
-            $vars['{%subject%}'] = $data['conversation']->subject;
-            $vars['{%conversation.number%}'] = $data['conversation']->number;
-            $vars['{%customer.email%}'] = $data['conversation']->customer_email;
-        }
-        if (!empty($data['mailbox'])) {
-            $vars['{%mailbox.email%}'] = $data['mailbox']->email;
-            $vars['{%mailbox.name%}'] = $data['mailbox']->name;
-            // To avoid recursion.
-            if (isset($data['mailbox_from_name'])) {
-                $vars['{%mailbox.fromName%}'] = $data['mailbox_from_name'];
-            } else {
-                $vars['{%mailbox.fromName%}'] = $data['mailbox']->getMailFrom(!empty($data['user']) ? $data['user'] : null)['name'];
+        $validVars = self::getMailVars();
+
+        /**
+         * Retrieves all mail var codes from the text.
+         *
+         * @link https://regex101.com/r/icWukp/1
+         */
+        preg_match_all(
+            '#\{%(?<var>[a-zA-Z.]+)(,fallback=(?<fallback>[^}]*))?%\}#',
+            $text,
+            $matches
+        );
+
+        foreach (array_intersect($matches['var'], $validVars) as $i => $var) {
+            $fullMatch   = $matches[0][$i];
+            $hasFallback = false !== strpos($fullMatch, ',fallback=');
+            $replacement = self::getMailVarReplacement(
+                $var,
+                $data,
+                /**
+                 * If the full match contains a fallback, supply the fallback value.
+                 * Checking this way allows users to supply an empty fallback value which
+                 * will result in the merge code being removed regardless of whether or not
+                 * $remove_non_replaced is set to true while preserving backwards
+                 * compatibility for merge var behavior prior to the introduction of fallbacks.
+                 */
+                $hasFallback ? $matches['fallback'][$i] ?? null : null
+            );
+            if (null !== $replacement || true === $remove_non_replaced) {
+                $vars[$fullMatch] = $replacement;
             }
-        }
-        if (!empty($data['customer'])) {
-            $vars['{%customer.fullName%}'] = $data['customer']->getFullName(true);
-            $vars['{%customer.firstName%}'] = $data['customer']->getFirstName(true);
-            $vars['{%customer.lastName%}'] = $data['customer']->last_name;
-            $vars['{%customer.company%}'] = $data['customer']->company;
-        }
-        if (!empty($data['user'])) {
-            $vars['{%user.fullName%}'] = $data['user']->getFullName();
-            $vars['{%user.firstName%}'] = $data['user']->getFirstName();
-            $vars['{%user.phone%}'] = $data['user']->phone;
-            $vars['{%user.email%}'] = $data['user']->email;
-            $vars['{%user.jobTitle%}'] = $data['user']->job_title;
-            $vars['{%user.lastName%}'] = $data['user']->last_name;
-            $vars['{%user.photoUrl%}'] = $data['user']->getPhotoUrl();
         }
 
         $vars = \Eventy::filter('mail_vars.replace', $vars, $data);
@@ -299,7 +422,6 @@ class Mail
 
         // Remove non-replaced placeholders.
         if ($remove_non_replaced) {
-            $result = preg_replace('#\{%[^\.%\}]+\.[^%\}]+%\}#', '', $result ?? '');
             $result = trim($result);
         }
 
