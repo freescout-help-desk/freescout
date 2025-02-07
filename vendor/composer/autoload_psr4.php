@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'enshrined\\svgSanitize\\' => array($vendorDir . '/enshrined/svg-sanitize/src'),
     'XdgBaseDir\\' => array($vendorDir . '/dnoegel/php-xdg-base-dir/src'),
+    'Whoops\\Handler\\' => array($baseDir . '/overrides/filp/whoops/src/Whoops/Handler'),
     'Whoops\\' => array($baseDir . '/overrides/filp/whoops/src/Whoops'),
     'Webklex\\PHPIMAP\\' => array($baseDir . '/overrides/webklex/php-imap/src', $vendorDir . '/webklex/php-imap/src'),
     'Watson\\Rememberable\\' => array($vendorDir . '/watson/rememberable/src'),
@@ -42,6 +43,8 @@ return array(
     'Symfony\\Component\\Console\\Output\\' => array($baseDir . '/overrides/symfony/console/Output'),
     'Symfony\\Component\\Console\\Input\\' => array($baseDir . '/overrides/symfony/console/Input'),
     'Symfony\\Component\\Console\\Helper\\' => array($baseDir . '/overrides/symfony/console/Helper'),
+    'Symfony\\Component\\Console\\Formatter\\' => array($baseDir . '/overrides/symfony/console/Formatter'),
+    'Symfony\\Component\\Console\\Exception\\' => array($baseDir . '/overrides/symfony/console/Exception'),
     'Symfony\\Component\\Console\\Descriptor\\' => array($baseDir . '/overrides/symfony/console/Descriptor'),
     'Symfony\\Component\\Console\\Command\\' => array($baseDir . '/overrides/symfony/console/Command'),
     'Symfony\\Component\\Console\\' => array($baseDir . '/overrides/symfony/console', $vendorDir . '/symfony/console'),

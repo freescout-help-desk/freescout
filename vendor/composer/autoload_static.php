@@ -41,6 +41,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         ),
         'W' => 
         array (
+            'Whoops\\Handler\\' => 15,
             'Whoops\\' => 7,
             'Webklex\\PHPIMAP\\' => 16,
             'Watson\\Rememberable\\' => 20,
@@ -84,6 +85,8 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Symfony\\Component\\Console\\Output\\' => 33,
             'Symfony\\Component\\Console\\Input\\' => 32,
             'Symfony\\Component\\Console\\Helper\\' => 33,
+            'Symfony\\Component\\Console\\Formatter\\' => 36,
+            'Symfony\\Component\\Console\\Exception\\' => 36,
             'Symfony\\Component\\Console\\Descriptor\\' => 37,
             'Symfony\\Component\\Console\\Command\\' => 34,
             'Symfony\\Component\\Console\\' => 26,
@@ -248,6 +251,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         array (
             0 => __DIR__ . '/..' . '/dnoegel/php-xdg-base-dir/src',
         ),
+        'Whoops\\Handler\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/filp/whoops/src/Whoops/Handler',
+        ),
         'Whoops\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/filp/whoops/src/Whoops',
@@ -393,6 +400,14 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Component\\Console\\Helper\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/symfony/console/Helper',
+        ),
+        'Symfony\\Component\\Console\\Formatter\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/symfony/console/Formatter',
+        ),
+        'Symfony\\Component\\Console\\Exception\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/symfony/console/Exception',
         ),
         'Symfony\\Component\\Console\\Descriptor\\' => 
         array (
@@ -3498,7 +3513,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Component\\Console\\Event\\ConsoleEvent' => __DIR__ . '/..' . '/symfony/console/Event/ConsoleEvent.php',
         'Symfony\\Component\\Console\\Event\\ConsoleExceptionEvent' => __DIR__ . '/..' . '/symfony/console/Event/ConsoleExceptionEvent.php',
         'Symfony\\Component\\Console\\Event\\ConsoleTerminateEvent' => __DIR__ . '/..' . '/symfony/console/Event/ConsoleTerminateEvent.php',
-        'Symfony\\Component\\Console\\Exception\\CommandNotFoundException' => __DIR__ . '/..' . '/symfony/console/Exception/CommandNotFoundException.php',
+        'Symfony\\Component\\Console\\Exception\\CommandNotFoundException' => __DIR__ . '/../..' . '/overrides/symfony/console/Exception/CommandNotFoundException.php',
         'Symfony\\Component\\Console\\Exception\\ExceptionInterface' => __DIR__ . '/..' . '/symfony/console/Exception/ExceptionInterface.php',
         'Symfony\\Component\\Console\\Exception\\InvalidArgumentException' => __DIR__ . '/..' . '/symfony/console/Exception/InvalidArgumentException.php',
         'Symfony\\Component\\Console\\Exception\\InvalidOptionException' => __DIR__ . '/..' . '/symfony/console/Exception/InvalidOptionException.php',
@@ -3508,7 +3523,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Component\\Console\\Formatter\\OutputFormatterInterface' => __DIR__ . '/..' . '/symfony/console/Formatter/OutputFormatterInterface.php',
         'Symfony\\Component\\Console\\Formatter\\OutputFormatterStyle' => __DIR__ . '/..' . '/symfony/console/Formatter/OutputFormatterStyle.php',
         'Symfony\\Component\\Console\\Formatter\\OutputFormatterStyleInterface' => __DIR__ . '/..' . '/symfony/console/Formatter/OutputFormatterStyleInterface.php',
-        'Symfony\\Component\\Console\\Formatter\\OutputFormatterStyleStack' => __DIR__ . '/..' . '/symfony/console/Formatter/OutputFormatterStyleStack.php',
+        'Symfony\\Component\\Console\\Formatter\\OutputFormatterStyleStack' => __DIR__ . '/../..' . '/overrides/symfony/console/Formatter/OutputFormatterStyleStack.php',
         'Symfony\\Component\\Console\\Helper\\DebugFormatterHelper' => __DIR__ . '/..' . '/symfony/console/Helper/DebugFormatterHelper.php',
         'Symfony\\Component\\Console\\Helper\\DescriptorHelper' => __DIR__ . '/..' . '/symfony/console/Helper/DescriptorHelper.php',
         'Symfony\\Component\\Console\\Helper\\FormatterHelper' => __DIR__ . '/..' . '/symfony/console/Helper/FormatterHelper.php',
@@ -4127,6 +4142,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Webklex\\PHPIMAP\\Support\\MessageCollection' => __DIR__ . '/..' . '/webklex/php-imap/src/Support/MessageCollection.php',
         'Webklex\\PHPIMAP\\Support\\PaginatedCollection' => __DIR__ . '/..' . '/webklex/php-imap/src/Support/PaginatedCollection.php',
         'Webklex\\PHPIMAP\\Traits\\HasEvents' => __DIR__ . '/..' . '/webklex/php-imap/src/Traits/HasEvents.php',
+        'Whoops\\Handler\\PrettyPageHandler' => __DIR__ . '/../..' . '/overrides/filp/whoops/src/Whoops/Handler/PrettyPageHandler.php',
         'Whoops\\Run' => __DIR__ . '/../..' . '/overrides/filp/whoops/src/Whoops/Run.php',
         'XdgBaseDir\\Xdg' => __DIR__ . '/..' . '/dnoegel/php-xdg-base-dir/src/Xdg.php',
         'aCssAtBlockEndToken' => __DIR__ . '/../..' . '/overrides/natxet/cssmin/src/CssMin.php',
