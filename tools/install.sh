@@ -62,7 +62,7 @@ else
     # Ubuntu
     sudo apt -q install mysql-server libmysqlclient-dev
 fi
-sudo apt -q install php php-mysqli php-fpm php-mbstring php-xml php-imap php-zip php-gd php-curl php-intl
+sudo apt -q install php-fpm php php-mysqli php-mbstring php-xml php-imap php-zip php-gd php-curl php-intl
 # json extension may be already included in php-fpm
 sudo apt -y -q install php-json
 

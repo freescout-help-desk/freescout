@@ -226,13 +226,14 @@
                             @endphp
                             <div class="thread-attachments attachments-upload" @if (count($attachments)) style="display: block" @endif>
                                 @foreach ($attachments as $attachment)
-                                    <input type="hidden" name="attachments_all[]" value="{{ encrypt($attachment->id) }}">
-                                    <input type="hidden" name="attachments[]" value="{{ encrypt($attachment->id) }}" class="atachment-upload-{{ encrypt($attachment->id) }}">
+                                    @php $attachment->encrypted_id = encrypt($attachment->id); @endphp
+                                    <input type="hidden" name="attachments_all[]" value="{{ $attachment->encrypted_id }}">
+                                    <input type="hidden" name="attachments[]" value="{{ $attachment->encrypted_id }}" class="atachment-upload-{{ $attachment->encrypted_id }}">
                                 @endforeach
                                 <ul>
                                     @foreach ($attachments as $attachment)
-                                        <li class="atachment-upload-{{ encrypt($attachment->id) }} attachment-loaded">
-                                            <img src="{{ asset('img/loader-tiny.gif') }}" width="16" height="16"> <a href="{{ $attachment->url() }}" class="break-words" target="_blank">{{ $attachment->file_name }}<span class="ellipsis">…</span> </a> <span class="text-help">({{ $attachment->getSizeName() }})</span> <i class="glyphicon glyphicon-remove" data-attachment-id="{{ encrypt($attachment->id) }}"></i>
+                                        <li class="atachment-upload-{{ $attachment->encrypted_id }} attachment-loaded">
+                                            <img src="{{ asset('img/loader-tiny.gif') }}" width="16" height="16"> <a href="{{ $attachment->url() }}" class="break-words" target="_blank">{{ $attachment->file_name }}<span class="ellipsis">…</span> </a> <span class="text-help">({{ $attachment->getSizeName() }})</span> <i class="glyphicon glyphicon-remove" data-attachment-id="{{ $attachment->encrypted_id }}"></i>
                                         </li>
                                     @endforeach
                                 </ul>

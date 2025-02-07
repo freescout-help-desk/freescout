@@ -380,7 +380,7 @@ class Header {
     public function mime_header_decode(string $text): array {
 
         // imap_mime_header_decode() can't decode some headers: =?iso-2022-jp?B?...?=
-        if (\Str::startsWith($text, '=?iso-2022-jp?')) {
+        if (\Helper::startsiWith($text, '=?iso-2022-jp?')) {
             return [(object)[
                 "charset" => 'iso-2022-jp',
                 "text"    => \MailHelper::decodeSubject($text)
