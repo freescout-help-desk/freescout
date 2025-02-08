@@ -3021,7 +3021,7 @@ class ConversationsController extends Controller
 
                 $query->where('customers.first_name', $like_op, $like)
                     ->orWhere('customers.last_name', $like_op, $like)
-                    ->orWhere(\DB::raw('CONCAT(customers.first_name, " ", customers.last_name)'), $like_op, $like)
+                    ->orWhere(\Helper::isPgSql() ? \DB::raw('(customers.first_name || \' \' || customers.last_name)') : \DB::raw('CONCAT(customers.first_name, " ", customers.last_name)'), $like_op, $like)
                     ->orWhere('customers.company', $like_op, $like)
                     ->orWhere('customers.job_title', $like_op, $like)
                     ->orWhere('customers.websites', $like_op, $like)
