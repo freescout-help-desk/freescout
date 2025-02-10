@@ -55,6 +55,7 @@ return [
             'options'     => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('DB_MYSQL_ATTR_SSL_CA'),
                 PDO::MYSQL_ATTR_SSL_CERT => env('DB_MYSQL_ATTR_SSL_CERT'),
+                PDO::ATTR_PERSISTENT => env('DB_ATTR_PERSISTENT'),
             ]) : [],
         ],
 
@@ -100,6 +101,7 @@ return [
             'sslmode'  => env('DB_PGSQL_SSLMODE', 'prefer'),
             'options'  => extension_loaded('pdo_pgsql') ? array_filter([
                 PDO::PGSQL_ATTR_DISABLE_PREPARES => env('DB_PGSQL_ATTR_DISABLE_PREPARES'),
+                PDO::ATTR_PERSISTENT => env('DB_ATTR_PERSISTENT'),
             ]) : [],
         ],
 
