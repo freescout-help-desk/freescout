@@ -99,7 +99,7 @@ return [
             'schema'   => 'public',
             'sslmode'  => env('DB_PGSQL_SSLMODE', 'prefer'),
             'options'  => extension_loaded('pdo_pgsql') ? array_filter([
-                PDO::PGSQL_ATTR_DISABLE_PREPARES => env('DB_PGSQL_ATTR_DISABLE_PREPARES'),
+                PDO::PGSQL_ATTR_DISABLE_PREPARES => env('DB_PGSQL_DISABLE_PREPARES'),
             ]) : [],
         ],
 
