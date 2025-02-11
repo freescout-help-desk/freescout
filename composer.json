@@ -125,6 +125,7 @@
             "Faker\\Provider\\": "overrides/fzaninotto/faker/src/Faker/Provider/",
             "Illuminate\\Database\\": "overrides/laravel/framework/src/Illuminate/Database/",
 
+            "Chumper\\Zipper\\": "overrides/chumper/zipper/src/Chumper/Zipper/",
             "Illuminate\\Support\\": "overrides/laravel/framework/src/Illuminate/Support/",
             "Illuminate\\Http\\": "overrides/laravel/framework/src/Illuminate/Http/",
             "Illuminate\\Database\\Eloquent\\": "overrides/laravel/framework/src/Illuminate/Database/Eloquent/",
@@ -349,6 +350,9 @@
             "vendor/guzzlehttp/psr7/src/Uri.php",
             "vendor/guzzlehttp/promises/src/RejectedPromise.php",
             "vendor/guzzlehttp/promises/src/PromiseInterface.php",
+            "vendor/guzzlehttp/promises/src/FulfilledPromise.php",
+            "vendor/guzzlehttp/promises/src/Utils.php",
+            "vendor/guzzlehttp/promises/src/Promise.php",
             "vendor/ramsey/uuid/src/Uuid.php",
             "vendor/ramsey/uuid/src/UuidFactory.php",
             "vendor/laravel/framework/src/Illuminate/Routing/Router.php",
@@ -441,7 +445,8 @@
             "vendor/filp/whoops/src/Whoops/Util/TemplateHelper.php",
             "vendor/laravel/framework/src/Illuminate/Validation/Factory.php",
             "vendor/laravel/framework/src/Illuminate/Validation/ValidationRuleParser.php",
-            "vendor/laravel/framework/src/Illuminate/Foundation/Validation/ValidatesRequests.php"
+            "vendor/laravel/framework/src/Illuminate/Foundation/Validation/ValidatesRequests.php",
+            "vendor/chumper/zipper/src/Chumper/Zipper/Zipper.php"
         ]
     },
     "autoload-dev": {

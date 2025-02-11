@@ -58,7 +58,7 @@ abstract class BaseProvider implements Countable
     /**
      * @param null $publicPath
      */
-    public function __construct($publicPath = null, $config = null, Filesystem $file = null)
+    public function __construct($publicPath = null, $config = null, ?Filesystem $file = null)
     {
         $this->file = $file ?: new Filesystem;
 
