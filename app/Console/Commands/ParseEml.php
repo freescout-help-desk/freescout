@@ -112,13 +112,14 @@ class ParseEml extends Command
         $this->line('Text Body: ');
         $this->info($message->getTextBody());
         $this->line('HTML Body: ');
-        $this->info($message->getHTMLBody(false));
+        $html_body = $message->getHTMLBody(false);
+        $this->info($html_body);
 
         $attachments = $message->getAttachments();
         if (count($attachments)) {
             $this->line('Attachments: ');
             foreach ($attachments as $attachment) {
-                $this->info($attachment->getName());
+                $this->info('— '.$attachment->getName().(strstr($html_body, 'cid:'.$attachment->id) ? ' (embedded)' : ''));
             }
         }
     }
