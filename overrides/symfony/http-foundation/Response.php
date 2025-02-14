@@ -752,7 +752,7 @@ class Response
      *
      * @final since version 3.2
      */
-    public function setExpires(\DateTime $date = null)
+    public function setExpires(?\DateTime $date = null)
     {
         if (null === $date) {
             $this->headers->remove('Expires');
@@ -908,7 +908,7 @@ class Response
      *
      * @final since version 3.2
      */
-    public function setLastModified(\DateTime $date = null)
+    public function setLastModified(?\DateTime $date = null)
     {
         if (null === $date) {
             $this->headers->remove('Last-Modified');

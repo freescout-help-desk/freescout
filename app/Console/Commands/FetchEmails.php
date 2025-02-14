@@ -1363,8 +1363,8 @@ class FetchEmails extends Command
             // Proton has it's own unique way of placing replies:
             // https://github.com/freescout-help-desk/freescout/issues/4537#issuecomment-2629836738
             if ($is_reply
-                && $protonmail_quote_pos = mb_strpos($body, '<div class="protonmail_quote">') 
-                && $html_pos = mb_strpos($body, '<html')
+                && ($protonmail_quote_pos = mb_strpos($body, '<div class="protonmail_quote">'))
+                && ($html_pos = mb_strpos($body, '<html'))
                 && $protonmail_quote_pos < $html_pos
             ) {
                 $body = mb_substr($body, 0, $protonmail_quote_pos);
