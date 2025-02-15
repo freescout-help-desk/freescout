@@ -437,6 +437,7 @@
             "vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php",
             "vendor/league/flysystem/src/Filesystem.php",
             "vendor/league/flysystem/src/FilesystemInterface.php",
+            "vendor/league/flysystem/src/FileNotFoundException.php",
             "vendor/mews/purifier/src/Purifier.php",
             "vendor/mtdowling/cron-expression/src/Cron/CronExpression.php",
             "vendor/laravel/framework/src/Illuminate/Mail/Mailer.php",
