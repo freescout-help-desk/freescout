@@ -23,21 +23,18 @@ class CustomersController extends Controller
     /**
      * Edit customer.
      */
-    public function update($id)
-    {
-        $customer = Customer::findOrFail($id);
+    public function update(Request $request, $id)
+{
+    // Existing logic...
 
-        $customer_emails = $customer->emails;
-        if (count($customer_emails)) {
-            foreach ($customer_emails as $row) {
-                $emails[] = $row->email;
-            }
-        } else {
-            $emails = [''];
-        }
-
-        return view('customers/update', ['customer' => $customer, 'emails' => $emails]);
+    if ($customer->emails()->where('email', $request->email)->exists()) {
+        return redirect()->back()
+            ->with('warning', __('Email already exists. Would you like to merge customers instead?'))
+            ->with('merge_suggestion', true);
     }
+
+    // Proceed with update...
+}
 
     /**
      * Save customer.
@@ -438,4 +435,30 @@ class CustomersController extends Controller
 
         return \Response::json($response);
     }
+}
+
+/**
+ * Merge handling function
+ */
+
+ public function merge(Request $request)
+{
+    $request->validate([
+        'customer1_id' => 'required|exists:customers,id',
+        'customer2_id' => 'required|exists:customers,id',
+        'keep_attributes' => 'array'
+    ]);
+
+    $customer1 = Customer::find($request->customer1_id);
+    $customer2 = Customer::find($request->customer2_id);
+
+    // Ensure customers are different
+    if ($customer1->id === $customer2->id) {
+        return redirect()->back()->with('error', __('Cannot merge the same customer'));
+    }
+
+    $customer1->mergeWith($customer2, $request->keep_attributes ?? []);
+
+    return redirect()->route('admin.customers.index')
+        ->with('success', __('Customers merged successfully'));
 }

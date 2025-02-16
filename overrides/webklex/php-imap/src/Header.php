@@ -167,33 +167,89 @@ class Header {
         return null;
     }
 
-    /**
-     * Try to find a boundary if possible
-     *
-     * @return string|null
-     */
-    public function getBoundary() {
-        // Finding boundary via regex is not 100% reliable as boundary
-        // may be mentioned in other headers.
-        $boundary = null;
-        if (is_object($this->boundary)) {
-            $values = $this->boundary->get();
-            if (!empty($values[0])) {
-                $boundary = $values[0];
-            }
+    /** 
+ * Try to find a boundary if possible
+ *
+ * @return string|null
+ */
+public function getBoundary() {
+    // Finding boundary via regex is not 100% reliable as boundary
+    // may be mentioned in other headers.
+    $boundary = null;
+    if (is_object($this->boundary)) {
+        $values = $this->boundary->get();
+        if (!empty($values[0])) {
+            $boundary = $values[0];
         }
+    }
 
+    if (!$boundary) {
+        // Check for split boundary (RFC 2231)
+        $boundary = $this->getSplitBoundary();
         if (!$boundary) {
+            // Fallback to regex-based boundary extraction
             $regex = $this->config["boundary"] ?? "/boundary=(.*?(?=;)|(.*))/i";
             $boundary = $this->find($regex);
         }
-
-        if ($boundary === null) {
-            return null;
-        }
-
-        return $this->clearBoundaryString($boundary);
     }
+
+    if ($boundary === null) {
+        return null;
+    }
+
+    return $this->clearBoundaryString($boundary);
+}
+
+/**
+ * Handle split boundary parameters (RFC 2231)
+ *
+ * @return string|null
+ */
+protected function getSplitBoundary() {
+    $boundaryParts = [];
+    $boundaryKey = 'boundary';
+
+    // Look for split boundary parts (e.g., boundary*0, boundary*1)
+    foreach ($this->attributes as $key => $value) {
+        if (strpos($key, $boundaryKey) === 0) {
+            if (preg_match('/^' . preg_quote($boundaryKey, '/') . '\*(\d+)$/', $key, $matches)) {
+                $partNumber = (int)$matches[1];
+                $boundaryParts[$partNumber] = $value;
+            }
+        }
+    }
+
+    if (empty($boundaryParts)) {
+        return null;
+    }
+
+    // Sort parts by their part number
+    ksort($boundaryParts);
+
+    // Concatenate the parts to form the complete boundary
+    $boundary = '';
+    foreach ($boundaryParts as $part) {
+        $boundary .= $part;
+    }
+
+    // Decode the boundary if necessary (RFC 2231 encoding)
+    if (strpos($boundary, "'") !== false) {
+        $parts = explode("'", $boundary, 3);
+        if (count($parts) === 3) {
+            $charset = $parts[0] ?? 'us-ascii';
+            $language = $parts[1] ?? '';
+            $encodedValue = $parts[2] ?? '';
+            $boundary = rawurldecode($encodedValue);
+
+            // Convert charset if necessary
+            if (function_exists('mb_convert_encoding') && strtolower($charset) !== 'utf-8') {
+                $boundary = mb_convert_encoding($boundary, 'UTF-8', $charset);
+            }
+        }
+    }
+
+    return $boundary;
+}
 
     /**
      * Remove all unwanted chars from a given boundary

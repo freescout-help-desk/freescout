@@ -1288,6 +1288,37 @@ class Customer extends Model
     }
 
     /**
+     * Merge customer function
+     */
+     public function mergeWith(Customer $customerToMerge, $keepAttributes = [])
+{
+    DB::transaction(function () use ($customerToMerge, $keepAttributes) {
+        // Transfer relationships
+        $customerToMerge->conversations()->update(['customer_id' => $this->id]);
+        $customerToMerge->tickets()->update(['customer_id' => $this->id]);
+        $customerToMerge->notes()->update(['customer_id' => $this->id]);
+        
+        // Merge attributes (e.g., phone, emails)
+        if (in_array('phone', $keepAttributes) && !$this->phone) {
+            $this->phone = $customerToMerge->phone;
+        }
+        
+        // Handle emails (merge all unique emails)
+        $mergedEmails = array_unique(array_merge(
+            $this->emails->pluck('email')->toArray(),
+            $customerToMerge->emails->pluck('email')->toArray()
+        ));
+        $this->emails()->delete();
+        foreach ($mergedEmails as $email) {
+            $this->emails()->create(['email' => $email]);
+        }
+
+        $this->save();
+        $customerToMerge->delete();
+    });
+}
+
+    /**
      * Resize and save photo.
      */
     public function savePhoto($real_path, $mime_type)
