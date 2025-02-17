@@ -112,7 +112,7 @@ class ParseEml extends Command
         $this->line('Text Body: ');
         $this->info($message->getTextBody());
         $this->line('HTML Body: ');
-        $html_body = $message->getHTMLBody(false);
+        $html_body = $message->getHTMLBody(false) ?? '';
         $this->info($html_body);
 
         $attachments = $message->getAttachments();
