@@ -289,6 +289,9 @@ class CustomersController extends Controller
             if ($request->exclude_email) {
                 $query->where('emails.email', '<>', $request->exclude_email);
             }
+            if ($request->exclude_id) {
+                $query->where('customers.id', '<>', $request->exclude_id);
+            }
             if ($request->search_by == 'all' || $request->search_by == 'name') {
                 $query->orWhere('first_name', 'like', '%'.$q.'%')
                     ->orWhere('last_name', 'like', '%'.$q.'%')
