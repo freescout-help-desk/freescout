@@ -200,7 +200,14 @@
             "Whoops\\Handler\\": "overrides/filp/whoops/src/Whoops/Handler/",
             "Whoops\\Util\\": "overrides/filp/whoops/src/Whoops/Util/",
             "Mews\\Purifier\\": "overrides/mews/purifier/src/",
-            "Cron\\": "overrides/mtdowling/cron-expression/src/Cron/"
+            "Cron\\": "overrides/mtdowling/cron-expression/src/Cron/",
+            "Psy\\": "overrides/psy/psysh/src/",
+            "Psy\\Input\\": "overrides/psy/psysh/src/Input/",
+            "Psy\\Output\\": "overrides/psy/psysh/src/Output/",
+            "Psy\\Command\\": "overrides/psy/psysh/src/Command/",
+            "Psy\\TimeitCommand\\": "overrides/psy/psysh/src/TimeitCommand/",
+            "Psy\\Command\\ListCommand\\": "overrides/psy/psysh/src/Command/ListCommand/",
+            "Psy\\Exception\\": "overrides/psy/psysh/src/ErrorException/"
         },
         "exclude-from-classmap": [
             "Modules/",
@@ -362,6 +369,7 @@
             "vendor/rap2hpoutre/laravel-log-viewer/src/controllers/LogViewerController.php",
             "vendor/symfony/console/Descriptor/TextDescriptor.php",
             "vendor/symfony/console/Input/ArrayInput.php",
+            "vendor/symfony/console/Input/StringInput.php",
             "vendor/symfony/console/Input/Input.php",
             "vendor/symfony/console/Helper/Helper.php",
             "vendor/symfony/console/Helper/ProcessHelper.php",
@@ -447,7 +455,22 @@
             "vendor/laravel/framework/src/Illuminate/Validation/Factory.php",
             "vendor/laravel/framework/src/Illuminate/Validation/ValidationRuleParser.php",
             "vendor/laravel/framework/src/Illuminate/Foundation/Validation/ValidatesRequests.php",
-            "vendor/chumper/zipper/src/Chumper/Zipper/Zipper.php"
+            "vendor/chumper/zipper/src/Chumper/Zipper/Zipper.php",
+            "vendor/psy/psysh/src/Shell.php",
+            "vendor/psy/psysh/src/CodeCleaner.php",
+            "vendor/psy/psysh/src/Input/FilterOptions.php",
+            "vendor/psy/psysh/src/Input/ShellInput.php",
+            "vendor/psy/psysh/src/Output/ShellOutput.php",
+            "vendor/psy/psysh/src/Command/Command.php",
+            "vendor/psy/psysh/src/Command/ListCommand.php",
+            "vendor/psy/psysh/src/Command/TimeitCommand/TimeitVisitor.php",
+            "vendor/psy/psysh/src/Command/ListCommand/ClassConstantEnumerator.php",
+            "vendor/psy/psysh/src/Command/ListCommand/Enumerator.php",
+            "vendor/psy/psysh/src/Command/ListCommand/ClassEnumerator.php",
+            "vendor/psy/psysh/src/Command/ListCommand/ConstantEnumerator.php",
+            "vendor/psy/psysh/src/Command/ListCommand/FunctionEnumerator.php",
+            "vendor/psy/psysh/src/Exception/ErrorException.php",
+            "vendor/psy/psysh/src/Exception/BreakException.php"
         ]
     },
     "autoload-dev": {
