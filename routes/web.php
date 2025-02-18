@@ -99,6 +99,8 @@ Route::post('/customers/{id}/edit', 'CustomersController@updateSave');
 Route::get('/customers/{id}/', 'CustomersController@conversations')->name('customers.conversations');
 Route::get('/customers/ajax-search', ['uses' => 'CustomersController@ajaxSearch', 'laroute' => true])->name('customers.ajax_search');
 Route::post('/customers/ajax', ['uses' => 'CustomersController@ajax', 'laroute' => true])->name('customers.ajax');
+Route::get('/customers/{id}/merge', 'CustomersController@merge')->name('customers.merge');
+Route::post('/customers/{id}/merge', 'CustomersController@mergeSave');
 
 // Translate
 Route::post('/translations/send', ['uses' => 'TranslateController@postSend', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('translations.send');

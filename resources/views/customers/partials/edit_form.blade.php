@@ -268,7 +268,8 @@
                             @else
                                 {{ __('Save Profile') }}
                             @endif
-                        </button>
+                        </button> 
+                        <a href="{{ route('customers.merge', ['id' => $customer->id]) }}" class="btn btn-link">{{ __('Merge') }}</a>
                     </div>
                 </div>
             </form>

@@ -5720,3 +5720,10 @@ function getLocale()
 {
 	return $('html:first').attr('lang');
 }
+
+function initMergeCustomers()
+{
+	$(document).ready(function(){
+		$('#merge_customer2_id').select2();
+	});
+}
