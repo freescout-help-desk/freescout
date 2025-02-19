@@ -446,12 +446,12 @@ class CustomersController extends Controller
     {
         $customer = Customer::findOrFail($id);
 
-        $customers = Customer::where('id', '!=', $id)
-            ->orderBy('first_name')
-            ->orderBy('last_name')
-            ->get();
+        // $customers = Customer::where('id', '!=', $id)
+        //     ->orderBy('first_name')
+        //     ->orderBy('last_name')
+        //     ->get();
 
-        return view('customers/merge', ['customer' => $customer, 'customers' => $customers]);
+        return view('customers/merge', ['customer' => $customer]);
     }
 
     /**

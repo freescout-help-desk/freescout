@@ -25,7 +25,7 @@
                 <div class="form-group{{ $errors->has('customer2_id') ? ' has-error' : '' }}">
                     <label class="col-sm-2 control-label">{{ __('Merge With') }}</label>
                     <div class="col-sm-6">
-                        <select type="text" name="customer2_id" class="form-control input-sized" id="merge_customer2_id" placeholder="{{ __('Search for a customer by name or email') }}…" autocomplete="off" required></select>
+                        <select type="text" name="customer2_id" class="form-control" id="merge_customer2_id" placeholder="{{ __('Search for a customer by name or email') }}…" autocomplete="off" required></select>
                         @include('partials/field_error', ['field'=>'customer2_id'])
                     </div>
                 </div>
