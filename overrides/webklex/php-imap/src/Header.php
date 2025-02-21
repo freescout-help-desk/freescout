@@ -801,12 +801,13 @@ class Header {
            if (!in_array($key, ["user-agent", "subject", "received"])) {
                 if (str_contains($value, ";") && str_contains($value, "=")) {
                     $_attributes = $this->read_attribute($value);
-                    if (count($_attributes)) {
-                        unset($this->attributes[$key]);
-                    }
                     foreach($_attributes as $_key => $_value) {
-                        if($_value === "") {
+                        if ($_value === "") {
                             // Remove existing value.
+                            if (isset($this->attributes[$key])) {
+                                unset($this->attributes[$key]);
+                            }
+                            // Set value.
                             $this->set($key, $_key);
                         }
                         if (!isset($this->attributes[$_key])) {
