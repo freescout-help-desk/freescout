@@ -34,6 +34,7 @@ class WebklexTest extends FixtureWebklexMessage {
         $message = $this->getFixture("message-1.eml");
 
         self::assertSame("☆第132号　「ガーデン&エクステリア」専門店のためのＱ&Ａサロン　【月刊エクステリア・ワーク】", (string)$message->subject);
+        self::assertSame("------------B832AF745285AEEC6D5AEE42", $message->header->getBoundary());
 
         $attachments = $message->getAttachments();
 
@@ -107,6 +108,7 @@ class WebklexTest extends FixtureWebklexMessage {
         $message = $this->getFixture("message-2.eml");
 
         self::assertSame("Test bad boundary", (string)$message->subject);
+        self::assertSame("-", $message->header->getBoundary());
 
         $attachments = $message->getAttachments();
         self::assertSame(1, $attachments->count());
@@ -118,5 +120,20 @@ class WebklexTest extends FixtureWebklexMessage {
         self::assertStringStartsWith("%PDF-1.4", $attachment->content);
         self::assertStringEndsWith("%%EOF\n", $attachment->content);
         self::assertSame(14938, $attachment->size);
+    }
+
+    // https://github.com/freescout-help-desk/freescout/issues/4567
+    public function testIssue4567() {
+        $message = $this->getFixture("issue-4567.eml");
+
+        self::assertSame("------3f0eb27c226a6efc44713e1b8f40befd34d8d3c9199e2ad04dab9839cbbd3524", $message->header->getBoundary());
+    }
+
+    public function testRegularEmail() {
+        $message = $this->getFixture("message-3.eml");
+
+        self::assertSame("1", (string)$message->getSubject());
+        self::assertSame("1\n", $message->getTextBody());
+        self::assertSame('<div dir="ltr"><div>1</div></div>', $message->getHtmlBody());
     }
 }

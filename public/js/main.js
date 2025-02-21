@@ -5720,3 +5720,30 @@ function getLocale()
 {
 	return $('html:first').attr('lang');
 }
+
+function initMergeCustomers()
+{
+	$(document).ready(function(){
+		var input = $('#merge_customer2_id');
+		initCustomerSelector(input, {
+			placeholder: input.attr('placeholder'),
+			multiple: true,
+			maximumSelectionLength: 1,
+			ajax: {
+				url: laroute.route('customers.ajax_search'),
+				dataType: 'json',
+				delay: 250,
+				cache: true,
+				data: function (params) {
+					return {
+						q: params.term,
+						exclude_id: getGlobalAttr('customer_id'),
+						search_by: 'all',
+						use_id: true,
+						page: params.page
+					};
+				}
+			}
+		});
+	});
+}

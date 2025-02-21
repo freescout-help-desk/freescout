@@ -173,9 +173,10 @@ class Header {
      * @return string|null
      */
     public function getBoundary() {
+        $boundary = '';
+
         // Finding boundary via regex is not 100% reliable as boundary
         // may be mentioned in other headers.
-        $boundary = null;
         if (is_object($this->boundary)) {
             $values = $this->boundary->get();
             if (!empty($values[0])) {
@@ -184,8 +185,13 @@ class Header {
         }
 
         if (!$boundary) {
+            // Regex-based boundary extraction
             $regex = $this->config["boundary"] ?? "/boundary=(.*?(?=;)|(.*))/i";
             $boundary = $this->find($regex);
+        }
+
+        if ($boundary) {
+            $boundary = $this->decodeBoundary($boundary);
         }
 
         if ($boundary === null) {
@@ -193,6 +199,32 @@ class Header {
         }
 
         return $this->clearBoundaryString($boundary);
+    }
+
+    /**
+     * // Decode the boundary if necessary (RFC 2231 encoding)
+     * https://github.com/freescout-help-desk/freescout/issues/4567
+     *
+     * @return string|null
+     */
+    protected function decodeBoundary($boundary) {
+        
+        if (strpos($boundary, "'") !== false) {
+            $parts = explode("'", $boundary, 3);
+            if (count($parts) === 3) {
+                $charset = $parts[0] ?? 'us-ascii';
+                $language = $parts[1] ?? '';
+                $encodedValue = $parts[2] ?? '';
+                $boundary = rawurldecode($encodedValue);
+
+                // Convert charset if necessary
+                if (function_exists('mb_convert_encoding') && strtolower($charset) !== 'utf-8') {
+                    $boundary = mb_convert_encoding($boundary, 'UTF-8', $charset);
+                }
+            }
+        }
+
+        return $boundary;
     }
 
     /**
@@ -768,70 +800,98 @@ class Header {
             // https://github.com/Webklex/php-imap/commit/e5ad66267382f319f385131cefe5336692a54486
            if (!in_array($key, ["user-agent", "subject", "received"])) {
                 if (str_contains($value, ";") && str_contains($value, "=")) {
-                    $pos = strpos($value, ";");
-                    $original = substr($value, 0, $pos);
-                    $this->set($key, trim(rtrim($original)), true);
-
-                    // Get all potential extensions
-                    // https://github.com/Webklex/php-imap/commit/e5ad66267382f319f385131cefe5336692a54486
-                    $extensions = [];
-                    preg_match_all("#;([^=]+[^\\\]=\"[^\"]+\")#", ';'.substr($value, $pos + 1), $m);
-                    if (!empty($m[1])) {
-                        $extensions = $m[1];
-                    }
-                    if (empty($extensions)) {
-                        $extensions = explode(";", substr($value, $pos + 1));
-                    }
-
-                    $previousKey = null;
-                    $previousValue = '';
-
-                    foreach ($extensions as $extension) {
-                        if (($pos = strpos($extension, "=")) !== false) {
-                            $key = substr($extension, 0, $pos);
-                            $key = trim(rtrim(strtolower($key)));
-
-                            $matches = [];
-
-                            if (preg_match('/^(?P<key_name>\w+)\*/', $key, $matches) !== 0) {
-                                $key = $matches['key_name'];
-                                $previousKey = $key;
-
-                                $value = substr($extension, $pos + 1);
-                                $value = str_replace('"', "", $value);
-                                $previousValue .= trim(rtrim($value));
-
-                                continue;
+                    $_attributes = $this->read_attribute($value);
+                    foreach($_attributes as $_key => $_value) {
+                        if ($_value === "") {
+                            // Remove existing value.
+                            if (isset($this->attributes[$key])) {
+                                unset($this->attributes[$key]);
                             }
-
-                            if (
-                                $previousKey !== null
-                                && $previousKey !== $key
-                                && isset($this->attributes[$previousKey]) === false
-                            ) {
-                                $this->set($previousKey, $previousValue);
-
-                                $previousValue = '';
-                            }
-
-                            if (isset($this->attributes[$key]) === false) {
-                                $value = substr($extension, $pos + 1);
-                                $value = str_replace('"', "", $value);
-                                $value = trim(rtrim($value));
-
-                                $this->set($key, $value);
-                            }
-
-                            $previousKey = $key;
+                            // Set value.
+                            $this->set($key, $_key);
                         }
-                    }
-
-                    if ($previousValue !== '') {
-                        $this->set($previousKey, $previousValue);
+                        if (!isset($this->attributes[$_key])) {
+                            $this->set($_key, $_value);
+                        }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Read a given attribute string
+     * - this isn't pretty, but it works - feel free to improve :)
+     * @param string $raw_attribute
+     * @return array
+     */
+    private function read_attribute(string $raw_attribute): array {
+        $attributes = [];
+        $key = '';
+        $value = '';
+        $inside_word = false;
+        $inside_key = true;
+        $escaped = false;
+        foreach (str_split($raw_attribute) as $char) {
+            if($escaped) {
+                $escaped = false;
+                continue;
+            }
+            if($inside_word) {
+                if($char === '\\') {
+                    $escaped = true;
+                }elseif($char === "\"" && $value !== "") {
+                    $inside_word = false;
+                }else{
+                    $value .= $char;
+                }
+            }else{
+                if($inside_key) {
+                    if($char === '"') {
+                        $inside_word = true;
+                    }elseif($char === ';'){
+                        $attributes[$key] = $value;
+                        $key = '';
+                        $value = '';
+                        $inside_key = true;
+                    }elseif($char === '=') {
+                        $inside_key = false;
+                    }else{
+                        $key .= $char;
+                    }
+                }else{
+                    if($char === '"' && $value === "") {
+                        $inside_word = true;
+                    }elseif($char === ';'){
+                        $attributes[$key] = $value;
+                        $key = '';
+                        $value = '';
+                        $inside_key = true;
+                    }else{
+                        $value .= $char;
+                    }
+                }
+            }
+        }
+        $attributes[$key] = $value;
+        $result = [];
+
+        foreach($attributes as $key => $value) {
+            if (($pos = strpos($key, "*")) !== false) {
+                $key = substr($key, 0, $pos);
+            }
+            $key = trim(rtrim(strtolower($key)));
+
+            if(!isset($result[$key])) {
+                $result[$key] = "";
+            }
+            $value = trim(rtrim(str_replace(["\r", "\n"], "", $value)));
+            if (\Str::startsWith($value, "\"") && \Str::endsWith($value, "\"")) {
+                $value = substr($value, 1, -1);
+            }
+            $result[$key] .= $value;
+        }
+        return $result;
     }
 
     /**

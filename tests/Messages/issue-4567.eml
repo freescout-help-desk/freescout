@@ -1,0 +1,21 @@
+From: =?UTF-8?Q?An=C3=A1lisis_EC_Madrid?= <analisismadrid@xxx.org>
+To: to@here.com
+Subject: =?ISO-2022-JP?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?=
+Date: Wed, 13 Sep 2017 13:05:45 +0200
+MIME-Version: 1.0
+Content-Type: multipart/signed; protocol="application/pgp-signature";
+ micalg="pgp-sha256";
+ boundary*0*=us-ascii''------3f0eb27c226a6efc44713e1b8f40befd34d8d3c9199e2ad0;
+ boundary*1*=4dab9839cbbd3524; charset="utf-8"
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+
+
+Hi
+--------3f0eb27c226a6efc44713e1b8f40befd34d8d3c9199e2ad04dab9839cbbd3524
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="=?ISO-2022-JP?B?GyRCIXlCaBsoQjEzMhskQjlmISEhViUsITwlRyVzGyhCJhskQiUoJS8lOSVGJWolIiFXQGxMZ0U5JE4kPyRhJE4jURsoQiYbJEIjQSU1JW0lcyEhIVo3bjQpJSglLyU5JUYlaiUiISYlbyE8JS8hWxsoQg==?="
+
+SGkh
+--------3f0eb27c226a6efc44713e1b8f40befd34d8d3c9199e2ad04dab9839cbbd3524--

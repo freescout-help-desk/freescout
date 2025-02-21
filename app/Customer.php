@@ -454,7 +454,7 @@ class Customer extends Model
      *
      * @var [type]
      */
-    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url', 'age', 'gender', 'notes', 'channel', 'channel_id', 'social_profiles'];
+    protected $fillable = ['first_name', 'last_name', 'company', 'job_title', 'address', 'city', 'state', 'zip', 'country', 'photo_url', 'notes', 'channel', 'channel_id', 'social_profiles'];
 
     /**
      * Fields stored as JSON.
@@ -1285,6 +1285,84 @@ class Customer extends Model
     public static function getPhotoUrlByFileName($file_name)
     {
         return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
+    }
+
+    /**
+     * Merge customerю
+     */
+    public function mergeWith(Customer $customer2)
+    {
+        $user = auth()->user();
+
+        $customer2->conversations()->update(['customer_id' => $this->id]);
+
+        // do {
+        //     $conversations = $customer2->conversations()->limit(1000);
+        //     foreach ($conversations as $conversation) {
+        //         $conversation->changeCustomer($customer_email, $this, $user);
+        //     }
+        // } while (count($conversations) > 0);
+
+        // Move emails.
+        $customer2->emails()->update(['customer_id' => $this->id]);
+
+        // Merge attributes
+        // if (in_array('phone', $keepAttributes) && !$this->phone) {
+        //     $this->phone = $customerToMerge->phone;
+        // }
+        foreach ($this->fillable as $attr_name) {
+            // Skip some attribues.
+            if (in_array($attr_name, ['channel', 'channel_id'])) {
+                continue;
+            }
+            if (!$this->$attr_name) {
+                $this->$attr_name = $customer2->$attr_name;
+            }
+        }
+
+        // Merge Phones.
+        $phones = self::mergeTypeValueLists($this->getPhones(), $customer2->getPhones());
+        if (count($phones) != count($this->getPhones())) {
+            $this->setPhones($phones);
+        }
+
+        // Merge websites.
+        $websites = array_merge($this->getWebsites(), $customer2->getWebsites());
+        $this->setWebsites(array_unique($websites));
+
+        // Merge social profiles.
+        $social = self::mergeTypeValueLists($this->getSocialProfiles(), $customer2->getSocialProfiles());
+        if (count($social) != count($this->getSocialProfiles())) {
+            $this->setSocialProfiles($social);
+        }
+
+        $this->save();
+
+        \Eventy::action('customer.merged', $this, $customer2, $user);
+
+        $customer2->delete();
+    }
+
+    public static function mergeTypeValueLists($list1, $list2)
+    {
+        foreach ($list2 as $data2) {
+            if (empty($data2['type']) || empty($data2['value'])) {
+                continue;
+            }
+            $exists = false;
+            foreach ($list1 as $data) {
+                if (!empty($data['type']) && !empty($data['value'])
+                    && $data['type'] == $data2['type'] && $data['value'] == $data2['value']
+                ) {
+                    $exists = true;
+                    break;
+                }
+            }
+            if (!$exists) {
+                $list1[] = $data2;
+            }
+        }
+        return $list1;
     }
 
     /**

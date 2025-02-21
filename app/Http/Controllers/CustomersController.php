@@ -23,7 +23,7 @@ class CustomersController extends Controller
     /**
      * Edit customer.
      */
-    public function update($id)
+    public function update(Request $request, $id)
     {
         $customer = Customer::findOrFail($id);
 
@@ -289,6 +289,9 @@ class CustomersController extends Controller
             if ($request->exclude_email) {
                 $query->where('emails.email', '<>', $request->exclude_email);
             }
+            if ($request->exclude_id) {
+                $query->where('customers.id', '<>', $request->exclude_id);
+            }
             if ($request->search_by == 'all' || $request->search_by == 'name') {
                 $query->orWhere('first_name', 'like', '%'.$q.'%')
                     ->orWhere('last_name', 'like', '%'.$q.'%')
@@ -437,5 +440,42 @@ class CustomersController extends Controller
         }
 
         return \Response::json($response);
+    }
+
+    public function merge(Request $request, $id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        // $customers = Customer::where('id', '!=', $id)
+        //     ->orderBy('first_name')
+        //     ->orderBy('last_name')
+        //     ->get();
+
+        return view('customers/merge', ['customer' => $customer]);
+    }
+
+    /**
+     * Merge handling function.
+     */
+    public function mergeSave(Request $request, $id)
+    {
+        $request->validate([
+            'customer2_id' => 'required|exists:customers,id',
+            //'keep_attributes' => 'array'
+        ]);
+
+        $customer = Customer::findOrFail($id);
+        $customer2 = Customer::find($request->customer2_id);
+
+        // Ensure customers are different
+        if ($id === $customer2->id) {
+            return redirect()->back()->with('error', __('Cannot merge the same customer'));
+        }
+
+        $customer->mergeWith($customer2/*, $request->keep_attributes ?? []*/);
+
+        \Session::flash('flash_success_floating', __('Customers merged successfully'));
+
+        return redirect()->route('customers.update', ['id' => $id]);
     }
 }
