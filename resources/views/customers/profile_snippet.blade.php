@@ -48,12 +48,12 @@
 			@php
 				$location = array_filter([$customer->city, $customer->state, $customer->getCountryName()]);
 			@endphp
-			@if ($customer->company || $customer->job_title || $location || $customer->address)
+			@if ($customer->company || $customer->job_title || $location || $customer->address || $customer->zip)
 				<div class="customer-section">
 					@if ($customer->company)<div>{{ $customer->company }}</div>@endif
 					@if ($customer->job_title)<div>{{ $customer->job_title }}</div>@endif
 					@if ($location)<div>{{ implode(', ', $location) }}</div>@endif
-					@if ($customer->address)<div>{{ $customer->address }}</div>@endif
+					@if ($customer->address || $customer->zip)<div>{{ $customer->address }}@if ($customer->address && $customer->zip), @endif{{ $customer->zip }}</div>@endif
 				</div>
 			@endif
 			@if ($customer->notes)
