@@ -1610,6 +1610,7 @@ var dom = {
     /** @property {String} blank */
     blank: blankHTML,
     /** @property {String} emptyPara */
+    // Freescout uses div instead of p to searate paragraphs
     //emptyPara: "<p>" + blankHTML + "</p>",
     emptyPara: "<div>" + blankHTML + "</div>",
     makePredByNodeName: makePredByNodeName,
@@ -2352,6 +2353,7 @@ var WrappedRange = /** @class */ (function () {
         inlineSiblings = inlineSiblings.concat(dom.listNext(topAncestor.nextSibling, dom.isParaInline));
         // wrap with paragraph
         if (inlineSiblings.length) {
+            // Freescout uses div instead of p to searate paragraphs
             //var para = dom.wrap(lists.head(inlineSiblings), 'p');
             var para = dom.wrap(lists.head(inlineSiblings), 'div');
             dom.appendChildNodes(para, lists.tail(inlineSiblings));
@@ -3067,6 +3069,7 @@ var Bullet = /** @class */ (function () {
             // LI to P
             if (isEscapseToBody || !dom.isList(headList.parentNode)) {
                 paras = paras.map(function (para) {
+                    // Freescout uses div instead of p to searate paragraphs
                     //return dom.replace(para, 'P');
                     return dom.replace(para, 'DIV');
                 });
@@ -3151,6 +3154,7 @@ var Typing = /** @class */ (function () {
                 });
                 // replace empty heading, pre or custom-made styleTag with P tag
                 if ((dom.isHeading(nextPara) || dom.isPre(nextPara) || dom.isCustomStyleTag(nextPara)) && dom.isEmpty(nextPara)) {
+                    // Freescout uses div instead of p to searate paragraphs
                     //nextPara = dom.replace(nextPara, 'p');
                     nextPara = dom.replace(nextPara, 'div');
                 }
@@ -3987,9 +3991,6 @@ var Editor = /** @class */ (function () {
         // bind custom events
         this.$editable.on('keydown', function (event) {
             if (event.keyCode === key.code.ENTER) {
-                // freescout
-                // https://github.com/summernote/summernote/issues/546#issuecomment-341518461
-                event.shiftKey = true;
                 _this.context.triggerEvent('enter', event);
             }
             _this.context.triggerEvent('keydown', event);
@@ -4332,6 +4333,7 @@ var Editor = /** @class */ (function () {
         }
     };
     Editor.prototype.formatPara = function () {
+        // Freescout uses div instead of p to searate paragraphs
         //this.formatBlock('P');
         this.formatBlock('DIV');
     };
@@ -7219,10 +7221,7 @@ $$1.summernote = $$1.extend($$1.summernote, {
         },
         keyMap: {
             pc: {
-                // freescout
-                // https://github.com/summernote/summernote/issues/546#issuecomment-341518461
-                //'ENTER': 'insertParagraph',
-                //'SHIFT+ENTER': 'insertParagraph',
+                'ENTER': 'insertParagraph',
                 'CTRL+Z': 'undo',
                 'CTRL+Y': 'redo',
                 'TAB': 'tab',
@@ -7251,10 +7250,7 @@ $$1.summernote = $$1.extend($$1.summernote, {
                 'CTRL+K': 'linkDialog.show'
             },
             mac: {
-                // freescout
-                // https://github.com/summernote/summernote/issues/546#issuecomment-341518461
-                //'ENTER': 'insertParagraph',
-                //'SHIFT+ENTER': 'insertParagraph',
+                'ENTER': 'insertParagraph',
                 'CMD+Z': 'undo',
                 'CMD+SHIFT+Z': 'redo',
                 'TAB': 'tab',
