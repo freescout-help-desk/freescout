@@ -495,10 +495,12 @@ class Module extends Model
         } else {
             // Extract.
             try {
+                $module_path = $module->getPath();
+
                 // Sometimes by some reason Public folder becomes a symlink leading to itself.
                 // It causes an error during updating process.
                 // https://github.com/freescout-helpdesk/freescout/issues/2709
-                $public_folder = $module->getPath() . DIRECTORY_SEPARATOR . 'Public';
+                $public_folder = $module_path.DIRECTORY_SEPARATOR.'Public';
                 try {
                     if (is_link($public_folder)) {
                         unlink($public_folder);
@@ -508,6 +510,15 @@ class Module extends Model
                 }
 
                 \Helper::unzip($module_archive, \Module::getPath());
+
+                // Rename the folder if the archive has been downloaded from GitHub:
+                // SomeModule-master >> SomeModule.
+                // https://github.com/freescout-help-desk/freescout/issues/4611
+                $basename = basename($url, '.zip');
+
+                if (file_exists($module_path.'-'.$basename)) {
+                    \File::moveDirectory($module_path.'-'.$basename, $module_path, true);
+                }
             } catch (\Exception $e) {
                 $result['msg'] = $e->getMessage();
             }
