@@ -166,10 +166,16 @@ class ModulesController extends Controller
 
                 if (empty($latest_version)) {
                     continue;
-                } else {
-                    // Get the current version of the module
-                    $current_version = $module['version'];
                 }
+
+                // If it is the module.json file - try to parse the body.
+                preg_match('#"version":[^"]*"([\d\.]+)"#', $latest_version, $m);
+                if (!empty($m[1])) {
+                    $latest_version = $m[1];
+                }
+
+                // Get the current version of the module
+                $current_version = $module['version'];
             } catch (\Exception $e) {
                 // If there's an exception, skip to the next iteration
                 continue;
