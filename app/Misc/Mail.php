@@ -435,7 +435,7 @@ class Mail
             if (!$folder) {
                 $result['result'] = 'error';
                 $result['msg'] = 'Could not get mailbox folder: INBOX';
-                //throw new \Exception('Could not get mailbox folder: INBOX', 1);
+                throw new \Exception('Could not get mailbox folder: INBOX', 1);
             }
             // Get unseen messages for a period
             $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
