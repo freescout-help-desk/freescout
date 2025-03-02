@@ -1310,6 +1310,9 @@ class ConversationsController extends Controller
                             // Reload the conversation, otherwise Thread observer will be 
                             // increasing threads_count for the first conversation.
                             $thread_copy->load('conversation');
+
+                            \Eventy::action('thread.before_save_from_request', $thread_copy, $request);
+
                             $thread_copy->push();
 
                             // Copy attachments.
