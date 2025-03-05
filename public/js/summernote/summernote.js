@@ -5920,7 +5920,7 @@ var LinkDialog = /** @class */ (function () {
             '</div>',
             '<div class="form-group note-form-group">',
             "<label class=\"note-form-label\">" + this.lang.link.url + "</label>",
-            '<input class="note-link-url form-control note-form-control note-input" type="text" value="http://" />',
+            '<input class="note-link-url form-control note-form-control note-input" type="text" value="" />',
             '</div>',
             !this.options.disableLinkTarget
                 ? $$1('<div/>').append(this.ui.checkbox({

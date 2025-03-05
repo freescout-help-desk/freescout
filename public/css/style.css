@@ -3117,6 +3117,11 @@ ul.sidebar-block-list {
     width: 100%;
     height: calc(100vh - 151px);
 }
+.modal.link-dialog.fade {
+    -webkit-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+}
 @media (max-width:767px) {
     .modal-iframe {
         height: calc(100vh - 112px);
