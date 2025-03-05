@@ -5974,8 +5974,12 @@ var LinkDialog = /** @class */ (function () {
             _this.ui.onDialogShown(_this.$dialog, function () {
                 _this.context.triggerEvent('dialog.shown');
                 // if no url was given, copy text to url
-                if (!linkInfo.url) {
+                /*if (!linkInfo.url) {
                     linkInfo.url = linkInfo.text;
+                }*/
+                // If no url was given and given text is valid URL then copy that into URL Field
+                if (!linkInfo.url && _this.isValidUrl(linkInfo.text)) {
+                    linkInfo.url = _this.checkLinkUrl(linkInfo.text);
                 }
                 $linkText.val(linkInfo.text);
                 var handleLinkTextUpdate = function () {
@@ -6029,6 +6033,20 @@ var LinkDialog = /** @class */ (function () {
             });
             _this.ui.showDialog(_this.$dialog);
         }).promise();
+    };
+    LinkDialog.prototype.isValidUrl = function (url) {
+        const expression = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi;
+        return expression.test(url);
+    };
+    LinkDialog.prototype.checkLinkUrl = function (linkUrl) {
+        if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(linkUrl)) {
+            return 'mailto://' + linkUrl;
+        } else if (/^(\+?\d{1,3}[\s-]?)?(\d{1,4})[\s-]?(\d{1,4})[\s-]?(\d{1,4})$/.test(linkUrl)) {
+            return 'tel://' + linkUrl;
+        } else if (!/^([A-Za-z][A-Za-z0-9+-.]*\:|#|\/)/.test(linkUrl)) {
+            return 'http://' + linkUrl;
+        }
+        return linkUrl;
     };
     /**
      * @param {Object} layoutInfo
