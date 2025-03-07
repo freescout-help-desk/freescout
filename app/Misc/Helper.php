@@ -32,8 +32,10 @@ class Helper
 
     /**
      * Limit for IN queries.
+     * MariaDB may not work with more than 999 elements in IN clause.
+     * https://github.com/freescout-help-desk/freescout/issues/4623
      */
-    const IN_LIMIT = 1000;
+    const IN_LIMIT = 999;
 
     /**
      * Permissions for directories.
