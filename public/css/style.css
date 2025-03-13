@@ -1233,9 +1233,7 @@ https://github.com/freescout-help-desk/freescout/issues/4354
     margin: 0 0 4px 0;
 }
 .customer-social-profiles {
-    position: absolute;
-    top: 0;
-    left: 92px;
+    margin: 15px 0;
 }
 .customer-social-profiles a {
     font-size: 17px;
@@ -1247,9 +1245,6 @@ https://github.com/freescout-help-desk/freescout/issues/4354
 }
 .profile-preview {
     position: relative;
-}
-.profile-preview .customer-social-profiles {
-    top: 61px;
 }
 .profile-preview .customer-photo {
     max-width: 100%;
@@ -2871,13 +2866,6 @@ ul.sidebar-block-list {
     }
     .customer-phone:last-child:after {
         content: '';
-    }
-    .customer-social-profiles {
-        position: static;
-    }
-    .profile-preview .customer-social-profiles {
-        position: absolute;
-        top: 43px;
     }
     .conv-sidebar-block .panel-heading {
         display: none;
