@@ -40,7 +40,7 @@
 <option value="Asia/Kabul" @if ($current_timezone == 'Asia/Kabul')selected="selected"@endif>(GMT+04:30) Kabul</option>
 <option value="Asia/Karachi" @if ($current_timezone == 'Asia/Karachi')selected="selected"@endif>(GMT+05:00) Pakistan Standard Time (Karachi)</option>
 <option value="Asia/Colombo" @if ($current_timezone == 'Asia/Colombo')selected="selected"@endif>(GMT+05:30) Sri Jayawardenepura, Colombo</option>
-<option value="Asia/Calcutta" @if ($current_timezone == 'Asia/Calcutta')selected="selected"@endif>(GMT+05:30) India</option>
+<option value="Asia/Kolkata" @if ($current_timezone == 'Asia/Kolkata')selected="selected"@endif>(GMT+05:30) India</option>
 <option value="Asia/Kathmandu" @if ($current_timezone == 'Asia/Kathmandu')selected="selected"@endif>(GMT+05:45) Kathmandu</option>
 <option value="Asia/Dhaka" @if ($current_timezone == 'Asia/Dhaka')selected="selected"@endif>(GMT+06:00) Bangladesh Standard Time</option>
 <option value="Asia/Yangon" @if ($current_timezone == 'Asia/Yangon')selected="selected"@endif>(GMT+06:30) Yangon, Rangoon</option>
