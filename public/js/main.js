@@ -4624,7 +4624,8 @@ function saveThreadEdit(trigger)
 			button.button('reset');
 			if (typeof(response.status) != "undefined" && response.status == 'success') {
 				// Show new body
-				thread_container.find('.thread-body:first').html(response.body);
+				thread_container.find('.thread-body .thread-content:first').html(response.body);
+				thread_container.find('.thread-body .thread-meta:first').remove();
 				cancelThreadEdit(trigger, thread_container);
 			} else {
 				showAjaxError(response);
