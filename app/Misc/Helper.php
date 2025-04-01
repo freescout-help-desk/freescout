@@ -1815,6 +1815,9 @@ class Helper
         $file_name = mb_convert_encoding($file_name, 'UTF-8', 'UTF-8');
         $file_name = preg_replace('/[' . $escaped_regex . ']/', '_', $file_name);
         $file_name = preg_replace("/[\t\r\n]/", '', $file_name);
+        // Remove unprintable characters and invalid unicode characters.
+        // https://github.com/freescout-help-desk/freescout/issues/4681
+        $file_name = preg_replace("#\p{C}+#u", '', $file_name);
 
         return $file_name;
     }
