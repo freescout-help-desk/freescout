@@ -747,7 +747,7 @@ function mailboxConnectionIncomingInit()
 					if (typeof(response.folders) != "undefined" && response.folders.length) {
 						for (i in response.folders) {
 							var imap_folder = response.folders[i];
-							if (select.find("option[value='"+imap_folder+"']").length) {
+							if (select.find('option[value="'+imap_folder+'"]').length) {
 								continue;
 							}
 							options_html += '<option value="'+imap_folder+'" selected="selected">'+imap_folder+'</option>'
