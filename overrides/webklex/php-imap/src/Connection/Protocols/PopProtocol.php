@@ -778,7 +778,7 @@ class PopProtocol extends Protocol {
         $search_query = $params[0] ?? '';
 
         // Filter by SINCE date.
-        preg_match("#SINCE ([^ $]+)[ $]#", $search_query, $m);
+        preg_match("#SINCE ([^ $]+)( |$)#", $search_query, $m);
         $since_date = $m[1] ?? '';
         $since_date = str_replace([' ', '"', "'"], '', $since_date);
 
