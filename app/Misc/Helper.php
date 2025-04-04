@@ -32,8 +32,10 @@ class Helper
 
     /**
      * Limit for IN queries.
+     * MariaDB may not work with more than 999 elements in IN clause.
+     * https://github.com/freescout-help-desk/freescout/issues/4623
      */
-    const IN_LIMIT = 1000;
+    const IN_LIMIT = 999;
 
     /**
      * Permissions for directories.
@@ -1813,6 +1815,11 @@ class Helper
         $file_name = mb_convert_encoding($file_name, 'UTF-8', 'UTF-8');
         $file_name = preg_replace('/[' . $escaped_regex . ']/', '_', $file_name);
         $file_name = preg_replace("/[\t\r\n]/", '', $file_name);
+        // Remove unprintable characters and invalid unicode characters.
+        // https://github.com/freescout-help-desk/freescout/issues/4681
+        $file_name = preg_replace("#\p{C}+#u", '', $file_name);
+        // https://github.com/freescout-help-desk/freescout/issues/2123#issuecomment-2775392740
+        $file_name = preg_replace("#\p{Cf}+#u", '', $file_name);
 
         return $file_name;
     }

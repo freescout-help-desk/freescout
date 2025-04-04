@@ -423,6 +423,7 @@ class Mail
         try {
             \Config::set('imap.options.debug', true);
             \Webklex\PHPIMAP\Connection\Protocols\ImapProtocol::$output_debug_log = false;
+            \Webklex\PHPIMAP\Connection\Protocols\PopProtocol::$output_debug_log = false;
 
             $client = \MailHelper::getMailboxClient($mailbox);
 
@@ -433,9 +434,7 @@ class Mail
             $folder = $client->getFolder('INBOX');
 
             if (!$folder) {
-                $result['result'] = 'error';
-                $result['msg'] = 'Could not get mailbox folder: INBOX';
-                //throw new \Exception('Could not get mailbox folder: INBOX', 1);
+                throw new \Exception('Could not get mailbox folder: INBOX', 1);
             }
             // Get unseen messages for a period
             $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();

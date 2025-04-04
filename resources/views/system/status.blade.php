@@ -251,70 +251,72 @@
                             @php
                                 $payload = $job->getPayloadDecoded();
                             @endphp
-                            <table class="table">
-                                <tbody>
-                                    <tr>
-                                        <th>{{ $loop->index+1 }}. {{ $payload['displayName'] }}</th>
-                                        <th>
-                                            <form action="{{ route('system.action') }}" method="POST" class="text-right">
-                                                {{ csrf_field() }}
+                            @if ($payload)
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th>{{ $loop->index+1 }}. {{ $payload['displayName'] }}</th>
+                                            <th>
+                                                <form action="{{ route('system.action') }}" method="POST" class="text-right">
+                                                    {{ csrf_field() }}
 
-                                                <input type="hidden" name="job_id" value="{{ $job->id }}" />
+                                                    <input type="hidden" name="job_id" value="{{ $job->id }}" />
 
-                                                <button type="submit" name="action" value="cancel_job" class="btn btn-default btn-xs margin-left-10">{{ __('Cancel') }}</button>
+                                                    <button type="submit" name="action" value="cancel_job" class="btn btn-default btn-xs margin-left-10">{{ __('Cancel') }}</button>
+                                                    @if ($job->attempts > 0)
+                                                        <button type="submit" name="action" value="retry_job" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-repeat"></i> {{ __('Retry') }}</button>
+                                                    @endif
+                                                </form>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ __('Queue') }}</td>
+                                            <td>{{ $job->queue }}</td>
+                                        </tr>
+                                        @if (\Str::startsWith($payload['displayName'], 'App\Jobs\Send'))
+                                            @php
+                                                $command = $job->getCommand();
+                                                $last_thread = null;
+                                                if ($command
+                                                    && !empty($command->conversation)
+                                                    && !empty($command->threads)
+                                                ) {
+                                                    $last_thread = \App\Thread::getLastThread($command->threads);
+                                                }
+                                            @endphp
+                                            @if (!empty($last_thread))
+                                                <tr>
+                                                    <td>{{ __('Message') }}</td>
+                                                    <td><a href="{{ route('conversations.view', ['id' => $last_thread->conversation_id]) }}#thread-{{ $last_thread->id }}" target="_blank">#{{ $command->conversation->number }}</a></td>
+                                                </tr>
+                                            @endif
+                                        @endif
+                                        <tr>
+                                            <td>{{ __('Attempts') }}</td>
+                                            <td>
+                                                @if ($job->attempts > 0)<strong class="text-danger">@endif
+                                                    {{ $job->attempts }}
                                                 @if ($job->attempts > 0)
-                                                    <button type="submit" name="action" value="retry_job" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-repeat"></i> {{ __('Retry') }}</button>
+                                                    </strong>
                                                 @endif
-                                            </form>
-                                        </th>
-                                    </tr>
-                                    <tr>
-                                        <td>{{ __('Queue') }}</td>
-                                        <td>{{ $job->queue }}</td>
-                                    </tr>
-                                    @if (\Str::startsWith($payload['displayName'], 'App\Jobs\Send'))
-                                        @php
-                                            $command = $job->getCommand();
-                                            $last_thread = null;
-                                            if ($command
-                                                && !empty($command->conversation)
-                                                && !empty($command->threads)
-                                            ) {
-                                                $last_thread = \App\Thread::getLastThread($command->threads);
-                                            }
-                                        @endphp
-                                        @if (!empty($last_thread))
+                                                @if ($job->attempts > 0 && !empty($last_thread))
+                                                     &nbsp;<small>(<a href="{{ route('logs', ['name' => 'out_emails', 'thread_id' => $last_thread->id]) }}" target="_blank">{{ __('View log') }}</a>)</small>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ __('Created At') }}</td>
+                                            <td>{{  App\User::dateFormat($job->created_at) }}</td>
+                                        </tr>
+                                        @if ($job->attempts > 0)
                                             <tr>
-                                                <td>{{ __('Message') }}</td>
-                                                <td><a href="{{ route('conversations.view', ['id' => $last_thread->conversation_id]) }}#thread-{{ $last_thread->id }}" target="_blank">#{{ $command->conversation->number }}</a></td>
+                                                <td>{{ __('Next Attempt') }}</td>
+                                                <td>{{  App\User::dateFormat($job->available_at) }}</td>
                                             </tr>
                                         @endif
-                                    @endif
-                                    <tr>
-                                        <td>{{ __('Attempts') }}</td>
-                                        <td>
-                                            @if ($job->attempts > 0)<strong class="text-danger">@endif
-                                                {{ $job->attempts }}
-                                            @if ($job->attempts > 0)
-                                                </strong>
-                                            @endif
-                                            @if ($job->attempts > 0 && !empty($last_thread))
-                                                 &nbsp;<small>(<a href="{{ route('logs', ['name' => 'out_emails', 'thread_id' => $last_thread->id]) }}" target="_blank">{{ __('View log') }}</a>)</small>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>{{ __('Created At') }}</td>
-                                        <td>{{  App\User::dateFormat($job->created_at) }}</td>
-                                    </tr>
-                                    @if ($job->attempts > 0)
-                                        <tr>
-                                            <td>{{ __('Next Attempt') }}</td>
-                                            <td>{{  App\User::dateFormat($job->available_at) }}</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            @endif
                         @endforeach
                     </div>
                 </td>
