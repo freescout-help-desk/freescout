@@ -83,6 +83,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Symfony\\Component\\Debug\\' => 24,
             'Symfony\\Component\\CssSelector\\XPath\\Extension\\' => 46,
             'Symfony\\Component\\CssSelector\\' => 30,
+            'Symfony\\Component\\Console\\Question\\' => 35,
             'Symfony\\Component\\Console\\Output\\' => 33,
             'Symfony\\Component\\Console\\Input\\' => 32,
             'Symfony\\Component\\Console\\Helper\\' => 33,
@@ -402,6 +403,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Component\\CssSelector\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/css-selector',
+        ),
+        'Symfony\\Component\\Console\\Question\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/symfony/console',
         ),
         'Symfony\\Component\\Console\\Output\\' => 
         array (
@@ -3615,7 +3620,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Component\\Console\\Output\\StreamOutput' => __DIR__ . '/..' . '/symfony/console/Output/StreamOutput.php',
         'Symfony\\Component\\Console\\Question\\ChoiceQuestion' => __DIR__ . '/..' . '/symfony/console/Question/ChoiceQuestion.php',
         'Symfony\\Component\\Console\\Question\\ConfirmationQuestion' => __DIR__ . '/..' . '/symfony/console/Question/ConfirmationQuestion.php',
-        'Symfony\\Component\\Console\\Question\\Question' => __DIR__ . '/..' . '/symfony/console/Question/Question.php',
+        'Symfony\\Component\\Console\\Question\\Question' => __DIR__ . '/../..' . '/overrides/symfony/console/Question/Question.php',
         'Symfony\\Component\\Console\\Style\\OutputStyle' => __DIR__ . '/..' . '/symfony/console/Style/OutputStyle.php',
         'Symfony\\Component\\Console\\Style\\StyleInterface' => __DIR__ . '/..' . '/symfony/console/Style/StyleInterface.php',
         'Symfony\\Component\\Console\\Style\\SymfonyStyle' => __DIR__ . '/..' . '/symfony/console/Style/SymfonyStyle.php',
