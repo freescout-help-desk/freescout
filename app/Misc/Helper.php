@@ -1818,6 +1818,8 @@ class Helper
         // Remove unprintable characters and invalid unicode characters.
         // https://github.com/freescout-help-desk/freescout/issues/4681
         $file_name = preg_replace("#\p{C}+#u", '', $file_name);
+        // https://github.com/freescout-help-desk/freescout/issues/2123#issuecomment-2775392740
+        $file_name = preg_replace("#\p{Cf}+#u", '', $file_name);
 
         return $file_name;
     }
