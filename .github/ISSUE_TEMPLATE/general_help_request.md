@@ -21,5 +21,5 @@ Still here? Well clean this out and go ahead :)
 PHP version: 
 FreeScout version: 
 Database: MySQL / PostgreSQL
-Are you using CloudFlare: Yes / No
+Are you using Cloudflare: Yes / No
 Are you using non-official modules: Yes / No

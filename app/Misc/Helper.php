@@ -2083,8 +2083,8 @@ class Helper
      */
     public static function getClientIp()
     {
-        // Fix for CloudFlare: https://laracasts.com/discuss/channels/laravel/cloudflare-and-user-ip
-        // But if CloudFlare is not used any value can be set to "Cf-Connecting-Ip" header.
+        // Fix for Cloudflare: https://laracasts.com/discuss/channels/laravel/cloudflare-and-user-ip
+        // But if Cloudflare is not used any value can be set to "Cf-Connecting-Ip" header.
         // if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
         //     $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
         // }
@@ -2190,7 +2190,7 @@ class Helper
         }
     }
 
-    public static function detectCloudFlare()
+    public static function detectCloudflare()
     {
         if (!empty($_SERVER['HTTP_CF_IPCOUNTRY'])
             || !empty($_SERVER['HTTP_CF_CONNECTING_IP'])

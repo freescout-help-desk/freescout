@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // Forse HTTPS if using CloudFlare "Flexible SSL"
+        // Force HTTPS if using Cloudflare "Flexible SSL"
         // https://support.cloudflare.com/hc/en-us/articles/200170416-What-do-the-SSL-options-mean-
         if (\Helper::isHttps()) {
             // $_SERVER['HTTPS'] = 'on';

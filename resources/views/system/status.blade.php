@@ -54,7 +54,7 @@
                 <th>{{ __('Protocol') }}</th>
                 <td class="table-main-col" id="system-app-protocol"></td>
             </tr>
-            @if (\Helper::detectCloudFlare())
+            @if (\Helper::detectCloudflare())
                 @php
                     $cloudflare_is_used = config('app.cloudflare_is_used');
                 @endphp
@@ -62,7 +62,7 @@
                     <th>Proxy</th>
                     <td class="table-main-col">
                         <div @if (!$cloudflare_is_used) class="alert alert-warning alert-narrow margin-bottom-0" @endif>
-                            @if (!$cloudflare_is_used)<i class="glyphicon glyphicon-exclamation-sign"></i> @endif{{ 'CloudFlare' }} (<a href="{{ config('app.freescout_repo') }}/wiki/Installation-Guide#103-cloudflare" target="_blank">{{ __('read more') }}</a>)
+                            @if (!$cloudflare_is_used)<i class="glyphicon glyphicon-exclamation-sign"></i> @endif{{ 'Cloudflare' }} (<a href="{{ config('app.freescout_repo') }}/wiki/Installation-Guide#103-cloudflare" target="_blank">{{ __('read more') }}</a>)
                         </div>
                     </td>
                 </tr>
