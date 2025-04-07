@@ -629,7 +629,7 @@ class User extends Authenticatable
         }
 
         if (stripos($dateForHuman, 'just') === false) {
-            return __(':date @ :time', ['date' => $dateForHuman, 'time' => $date->format('H:i')]);
+            return __(':date @ :time', ['date' => $dateForHuman, 'time' => self::dateFormat($date, 'H:i')]);
         } else {
             return $dateForHuman;
         }

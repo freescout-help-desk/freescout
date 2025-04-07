@@ -72,15 +72,15 @@ var renderer = {
 
 var editor = renderer.create('<div class="note-editor note-frame panel"/>');
 var toolbar = renderer.create('<div class="note-toolbar-wrapper panel-default"><div class="note-toolbar panel-heading"></div></div>');
-var editingArea = renderer.create('<div class="note-editing-area"/>');
-var codable = renderer.create('<textarea class="note-codable"/>');
-var editable = renderer.create('<div class="note-editable" dir="auto" contentEditable="true"/>');
+var editingArea = renderer.create('<div class="note-editing-area"></div>');
+var codable = renderer.create('<textarea class="note-codable"></textarea>');
+var editable = renderer.create('<div class="note-editable" dir="auto" contentEditable="true"></div>');
 var statusbar = renderer.create([
     '<div class="note-statusbar">',
     '  <div class="note-resizebar">',
-    '    <div class="note-icon-bar"/>',
-    '    <div class="note-icon-bar"/>',
-    '    <div class="note-icon-bar"/>',
+    '    <div class="note-icon-bar"></div>',
+    '    <div class="note-icon-bar"></div>',
+    '    <div class="note-icon-bar"></div>',
     '  </div>',
     '</div>'
 ].join(''));

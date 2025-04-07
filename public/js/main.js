@@ -747,7 +747,7 @@ function mailboxConnectionIncomingInit()
 					if (typeof(response.folders) != "undefined" && response.folders.length) {
 						for (i in response.folders) {
 							var imap_folder = response.folders[i];
-							if (select.find("option[value='"+imap_folder+"']").length) {
+							if (select.find("option[value='"+imap_folder.replaceAll("'", "\\'")+"']").length) {
 								continue;
 							}
 							options_html += '<option value="'+imap_folder+'" selected="selected">'+imap_folder+'</option>'
@@ -4624,7 +4624,8 @@ function saveThreadEdit(trigger)
 			button.button('reset');
 			if (typeof(response.status) != "undefined" && response.status == 'success') {
 				// Show new body
-				thread_container.find('.thread-body:first').html(response.body);
+				thread_container.find('.thread-body .thread-content:first').html(response.body);
+				thread_container.find('.thread-body .thread-meta:first').remove();
 				cancelThreadEdit(trigger, thread_container);
 			} else {
 				showAjaxError(response);
