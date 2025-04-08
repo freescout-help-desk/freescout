@@ -284,6 +284,33 @@ class Mail
 
         $vars = \Eventy::filter('mail_vars.replace', $vars, $data);
 
+        /**
+         * Retrieves all mail var codes from the text, including fallback values.
+         *
+         * @link https://regex101.com/r/icWukp/1
+         */
+        preg_match_all(
+            '#\{%(?<var>[a-zA-Z.]+)(,fallback=(?<fallback>[^}]*))?%\}#',
+            $text,
+            $matches
+        );
+
+        // Add fallback values to the $vars array, if present.
+        foreach($matches['var'] as $i => $var) {
+            $merge_code   = "{%{$var}%}";
+            $full_match   = $matches[0][$i];
+            $has_fallback = false !== strpos($full_match, ',fallback=');
+            $fallback_val = $has_fallback ? $matches['fallback'][$i] ?? null : null;
+            $merge_val    = isset($vars[$merge_code]) ? $vars[$merge_code] : $fallback_val;
+
+            if (null !== $merge_val || true === $remove_non_replaced) {
+                $vars[$full_match] = $merge_val;
+                $vars[$merge_code] = $merge_val;
+            }
+        }
+
+        $vars = \Eventy::filter('mail_vars.replace_after_fallback', $vars, $data);
+
         if ($escape) {
             foreach ($vars as $i => $var) {
                 $vars[$i] = htmlspecialchars($var ?? '');
