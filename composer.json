@@ -208,7 +208,8 @@
             "Psy\\Command\\": "overrides/psy/psysh/src/Command/",
             "Psy\\TimeitCommand\\": "overrides/psy/psysh/src/TimeitCommand/",
             "Psy\\Command\\ListCommand\\": "overrides/psy/psysh/src/Command/ListCommand/",
-            "Psy\\Exception\\": "overrides/psy/psysh/src/ErrorException/"
+            "Psy\\Exception\\": "overrides/psy/psysh/src/ErrorException/",
+            "Psy\\VarDumper\\": "overrides/psy/psysh/src/VarDumper/"
         },
         "exclude-from-classmap": [
             "Modules/",
@@ -472,7 +473,8 @@
             "vendor/psy/psysh/src/Command/ListCommand/ConstantEnumerator.php",
             "vendor/psy/psysh/src/Command/ListCommand/FunctionEnumerator.php",
             "vendor/psy/psysh/src/Exception/ErrorException.php",
-            "vendor/psy/psysh/src/Exception/BreakException.php"
+            "vendor/psy/psysh/src/Exception/BreakException.php",
+            "vendor/psy/psysh/src/VarDumper/Dumper.php"
         ]
     },
     "autoload-dev": {
