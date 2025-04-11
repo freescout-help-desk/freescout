@@ -846,6 +846,7 @@ class User extends Authenticatable
     public function clearWebsiteNotificationsCache()
     {
         \Cache::forget('user_web_notifications_'.$this->id);
+		    \Event::dispatch('user.notifications_cache_cleared', [$this->id]);
     }
 
     public function getPhotoUrl($default_if_empty = true)
@@ -860,6 +861,11 @@ class User extends Authenticatable
             return asset('/img/default-avatar.png');
         }
     }
+
+		public function getUnreadNotificationsCount()
+		{
+				return $this->unreadNotifications()->count();
+		}
 
     /**
      * Resize and save user photo.
