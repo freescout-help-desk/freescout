@@ -506,6 +506,44 @@ class UsersController extends Controller
                 }
                 break;
 
+		        case 'mark_notifications_as_unread':
+				        if (!$auth_user) {
+						        $response['msg'] = __('You are not logged in');
+				        }
+				        if (!$response['msg']) {
+						        // Get the notification IDs to mark as unread
+						        $notification_ids = $request->notification_ids ?? [];
+
+						        if (empty($notification_ids)) {
+								        // Mark all read notifications as unread (within a reasonable timeframe, e.g., last month)
+								        $auth_user->notifications()
+								                  ->whereNotNull('read_at')
+								                  ->where('created_at', '>', now()->subDays(30))
+								                  ->update(['read_at' => null]);
+						        } else {
+								        // Mark only specific notifications as unread
+								        $auth_user->notifications()
+								                  ->whereIn('id', $notification_ids)
+								                  ->update(['read_at' => null]);
+						        }
+
+						        $auth_user->clearWebsiteNotificationsCache();
+
+						        $response['status'] = 'success';
+						        $response['unread_count'] = $auth_user->unreadNotifications()->count();
+				        }
+				        break;
+
+		        case 'get_unread_count':
+				        if (!$auth_user) {
+						        $response['msg'] = __('You are not logged in');
+				        }
+				        if (!$response['msg']) {
+						        $response['status'] = 'success';
+						        $response['count'] = $auth_user->unreadNotifications()->count();
+				        }
+				        break;
+
             default:
                 $response['msg'] = 'Unknown action';
                 break;

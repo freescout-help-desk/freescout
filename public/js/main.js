@@ -326,7 +326,10 @@ $(document).ready(function(){
 	if ($('#conv-layout-customer').length && $(window).outerWidth() >= 1100 && $('.conv-sidebar-block').length > 2) {
 		adjustCustomerSidebarHeight();
 		setTimeout(adjustCustomerSidebarHeight, 2000);
-	}                                                   
+	}
+
+	setInterval(refreshNotificationCounter, 120000);
+
 });
 
 /*function applyVoidLinks()
@@ -335,6 +338,24 @@ $(document).ready(function(){
 		e.preventDefault();
 	});
 }*/
+
+function refreshNotificationCounter() {
+	// Only refresh if user hasn't interacted with notifications dropdown recently
+	if (!$('.web-notifications').hasClass('open')) {
+		fsAjax(
+			{
+				action: 'get_unread_count'
+			},
+			laroute.route('users.ajax'),
+			function(response) {
+				if (isAjaxSuccess(response) && typeof response.count !== 'undefined') {
+					updateNotificationCounter(response.count);
+				}
+			},
+			true
+		);
+	}
+}
 
 function initMuteMailbox()
 {
@@ -5747,4 +5768,44 @@ function initMergeCustomers()
 			}
 		});
 	});
+}
+
+$(document).on('click', '.web-notification-mark-unread', function(e) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	var notificationId = $(this).data('notification-id');
+	var notificationElement = $(this).closest('.web-notification');
+
+	fsAjax(
+		{
+			action: 'mark_notifications_as_unread',
+			notification_ids: [notificationId]
+		},
+		laroute.route('users.ajax'),
+		function(response) {
+			if (isAjaxSuccess(response)) {
+				notificationElement.addClass('is-unread');
+				notificationElement.find('span.web-notification-mark-unread').remove();
+				updateNotificationCounter(response.unread_count);
+				$('.web-notifications .dropdown-toggle:first').addClass('has-unread');
+			} else {
+				showAjaxError(response);
+			}
+		},
+		true
+	);
+});
+
+function updateNotificationCounter(count) {
+	var counter = $('.web-notifications-count:first');
+	if (counter) {
+		if (count > 0) {
+			counter.text(count).removeClass('hidden');
+			$('.web-notifications-mark-read:first').removeClass('hidden');
+		} else {
+			counter.addClass('hidden');
+			$('.web-notifications-mark-read:first').addClass('hidden');
+		}
+	}
 }

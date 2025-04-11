@@ -31,6 +31,13 @@
                 <div class="web-notification-msg-preview">
                     {{ App\Misc\Helper::textPreview($web_notification_data['last_thread_body']) }}
                 </div>
+                @if ($web_notification_data['notification']->read_at)
+                    <span class="web-notification-mark-unread"
+                       data-notification-id="{{ $web_notification_data['notification']->id }}"
+                       title="{{ __('Mark as unread') }}">
+                        Mark as unread
+                    </span>
+                @endif
             </div>
         </a>
     </li>
