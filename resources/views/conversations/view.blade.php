@@ -348,6 +348,9 @@
         <div id="conv-layout-customer">
             @include('conversations/partials/customer_sidebar')
             @action('conversation.after_customer_sidebar', $conversation)
+            IP:{{$conversation->ip}}<br>
+            Source:{{$conversation->source}}<br>
+            Path:{{$conversation->path}}<br>
         </div>
         <div id="conv-layout-main">
             @include('conversations/partials/threads')
