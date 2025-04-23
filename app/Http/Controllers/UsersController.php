@@ -508,6 +508,7 @@ class UsersController extends Controller
 
             default:
                 $response['msg'] = 'Unknown action';
+		        $response = \Eventy::filter('users.ajax.response', $response, $request);
                 break;
         }
 

@@ -31,6 +31,7 @@
                 <div class="web-notification-msg-preview">
                     {{ App\Misc\Helper::textPreview($web_notification_data['last_thread_body']) }}
                 </div>
+                @action('web_notification.after_body', $web_notification_data)
             </div>
         </a>
     </li>
