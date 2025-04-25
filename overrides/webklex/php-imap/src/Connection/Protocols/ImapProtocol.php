@@ -629,14 +629,17 @@ class ImapProtocol extends Protocol {
      * @throws RuntimeException
      */
     public function fetch($items, $from, $to = null, $uid = IMAP::ST_UID) {
-        if (is_array($from)) {
+        if (is_array($from) && count($from) > 1) {
             $set = implode(',', $from);
+        } elseif (is_array($from) && count($from) === 1) {
+            $from = array_values($from);
+            $set = $from[0] . ':' . $from[0];
         } elseif ($to === null) {
-            $set = (int)$from;
-        } elseif ($to === INF) {
-            $set = (int)$from . ':*';
+            $set = $from . ':' . $from;
+        } elseif ($to == INF) {
+            $set = $from . ':*';
         } else {
-            $set = (int)$from . ':' . (int)$to;
+            $set = $from . ':' . (int)$to;
         }
 
         $items = (array)$items;
