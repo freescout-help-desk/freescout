@@ -223,8 +223,8 @@ class Folder {
      * @param $attributes
      */
     protected function parseAttributes($attributes) {
-        $this->no_inferiors = in_array('\NoInferiors', $attributes);
-        $this->no_select    = in_array('\NoSelect', $attributes);
+        $this->no_inferiors = in_array('\NoInferiors', $attributes, true) || in_array('\Noinferiors', $attributes, true);
+        $this->no_select    = in_array('\NoSelect', $attributes, true) || in_array('\Noselect', $attributes, true);
         $this->marked       = in_array('\Marked', $attributes);
         $this->referral     = in_array('\Referral', $attributes);
         $this->has_children = in_array('\HasChildren', $attributes);
