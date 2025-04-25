@@ -484,7 +484,7 @@ class Client {
                 $folder = new Folder($this, $folder_name, $item["delimiter"], $item["flags"]);
 
                 if ($hierarchical && $folder->hasChildren()) {
-                    $pattern = $folder->full_name.$folder->delimiter.'%';
+                    $pattern = $folder->path.$folder->delimiter.'%';
 
                     $children = $this->getFolders(true, $pattern);
                     $folder->setChildren($children);
@@ -523,7 +523,7 @@ class Client {
                 $folder = new Folder($this, $folder_name, $item["delimiter"], $item["flags"]);
 
                 if ($hierarchical && $folder->hasChildren()) {
-                    $pattern = $folder->full_name.$folder->delimiter.'%';
+                    $pattern = $folder->path.$folder->delimiter.'%';
 
                     $children = $this->getFoldersWithStatus(true, $pattern);
                     $folder->setChildren($children);
