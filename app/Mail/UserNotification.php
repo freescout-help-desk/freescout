@@ -91,7 +91,7 @@ class UserNotification extends Mailable
             });
         }
 
-        $subject = \Eventy::filter('email.user_notification.subject','[#'.(isset($this->conversation->number)?$this->conversation->number:'').'] '.$this->conversation->subject);
+        $subject = \Eventy::filter('email.user_notification.subject', '[#' . (isset($this->conversation->number) ? $this->conversation->number : '') . '] ' . $this->conversation->subject, $this->conversation);
 
         $customer = $this->conversation->customer;
 
