@@ -2470,7 +2470,7 @@ return array(
     'Psy\\Util\\Mirror' => $vendorDir . '/psy/psysh/src/Util/Mirror.php',
     'Psy\\Util\\Str' => $vendorDir . '/psy/psysh/src/Util/Str.php',
     'Psy\\VarDumper\\Cloner' => $vendorDir . '/psy/psysh/src/VarDumper/Cloner.php',
-    'Psy\\VarDumper\\Dumper' => $vendorDir . '/psy/psysh/src/VarDumper/Dumper.php',
+    'Psy\\VarDumper\\Dumper' => $baseDir . '/overrides/psy/psysh/src/VarDumper/Dumper.php',
     'Psy\\VarDumper\\Presenter' => $vendorDir . '/psy/psysh/src/VarDumper/Presenter.php',
     'Psy\\VarDumper\\PresenterAware' => $vendorDir . '/psy/psysh/src/VarDumper/PresenterAware.php',
     'Psy\\VersionUpdater\\Checker' => $vendorDir . '/psy/psysh/src/VersionUpdater/Checker.php',

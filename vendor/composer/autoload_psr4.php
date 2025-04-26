@@ -60,6 +60,7 @@ return array(
     'RachidLaasri\\LaravelInstaller\\Events\\' => array($baseDir . '/overrides/rachidlaasri/laravel-installer/src/Events'),
     'RachidLaasri\\LaravelInstaller\\Controllers\\' => array($baseDir . '/overrides/rachidlaasri/laravel-installer/src/Controllers'),
     'RachidLaasri\\LaravelInstaller\\' => array($vendorDir . '/rachidlaasri/laravel-installer/src'),
+    'Psy\\VarDumper\\' => array($baseDir . '/overrides/psy/psysh/src/VarDumper'),
     'Psy\\TimeitCommand\\' => array($baseDir . '/overrides/psy/psysh/src/TimeitCommand'),
     'Psy\\Output\\' => array($baseDir . '/overrides/psy/psysh/src/Output'),
     'Psy\\Input\\' => array($baseDir . '/overrides/psy/psysh/src/Input'),

@@ -108,6 +108,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         ),
         'P' => 
         array (
+            'Psy\\VarDumper\\' => 14,
             'Psy\\TimeitCommand\\' => 18,
             'Psy\\Output\\' => 11,
             'Psy\\Input\\' => 10,
@@ -482,6 +483,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'RachidLaasri\\LaravelInstaller\\' => 
         array (
             0 => __DIR__ . '/..' . '/rachidlaasri/laravel-installer/src',
+        ),
+        'Psy\\VarDumper\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/psy/psysh/src/VarDumper',
         ),
         'Psy\\TimeitCommand\\' => 
         array (
@@ -3428,7 +3433,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Psy\\Util\\Mirror' => __DIR__ . '/..' . '/psy/psysh/src/Util/Mirror.php',
         'Psy\\Util\\Str' => __DIR__ . '/..' . '/psy/psysh/src/Util/Str.php',
         'Psy\\VarDumper\\Cloner' => __DIR__ . '/..' . '/psy/psysh/src/VarDumper/Cloner.php',
-        'Psy\\VarDumper\\Dumper' => __DIR__ . '/..' . '/psy/psysh/src/VarDumper/Dumper.php',
+        'Psy\\VarDumper\\Dumper' => __DIR__ . '/../..' . '/overrides/psy/psysh/src/VarDumper/Dumper.php',
         'Psy\\VarDumper\\Presenter' => __DIR__ . '/..' . '/psy/psysh/src/VarDumper/Presenter.php',
         'Psy\\VarDumper\\PresenterAware' => __DIR__ . '/..' . '/psy/psysh/src/VarDumper/PresenterAware.php',
         'Psy\\VersionUpdater\\Checker' => __DIR__ . '/..' . '/psy/psysh/src/VersionUpdater/Checker.php',
