@@ -4,4 +4,5 @@
     @if (!empty($extra_tab))
     	<li class="active"><a href="#">{{ $extra_tab }}</a></li>
     @endif
+    @action('customers.profile_tabs.append')
 </ul>
