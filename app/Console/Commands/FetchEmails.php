@@ -726,7 +726,7 @@ class FetchEmails extends Command
                 $body
                 //&& preg_match("/^(".implode('|', \MailHelper::$fwd_prefixes)."):(.*)/i", $subject, $m) 
                 // F:, FW:, FWD:, WG:, De:
-                && preg_match("/^[[:alpha:]]{1,3}:(.*)/i", $subject, $m) 
+                && preg_match("/^[[:alpha:]]{1,3}\s+:\s+(.*)/i", $subject, $m)
                 // It can be just "Fwd:"
                 //&& !empty($m[1])
                 && !$user_id && !$is_reply && !$prev_thread
