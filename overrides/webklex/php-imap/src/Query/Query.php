@@ -377,6 +377,22 @@ class Query {
             }
             if ($message !== null) {
                 $key = $this->getMessageKey($message_key, $msglist, $message);
+                // Generate artificial Message-ID if it's missing in the email headers.
+                // https://github.com/freescout-help-desk/freescout/issues/4740
+                if (!$key) {
+                    $from = $message->getFrom();
+                    if ($from) {
+                        $from = $from->get();
+                        if (is_array($from) && !empty($from[0])) {
+                            $from = \App\Email::sanitizeEmail($from[0]->mail ?? '');
+                        } else {
+                            $from = '';
+                        }
+                    }
+                    if ($from) {
+                        $key = \MailHelper::generateMessageId($from, $message->tmp_raw_body.$uid);
+                    }
+                }
                 $messages->put("$key", $message);
             }
             $msglist++;
