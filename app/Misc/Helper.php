@@ -2157,7 +2157,7 @@ class Helper
 
         $nonce = \Helper::cspNonce();
 
-        return "<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'self' 'nonce-".$nonce."' "
+        return "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; img-src 'self' data:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'nonce-".$nonce."' "
             .config('app.csp_script_src').' '.\Eventy::filter('csp.script_src', '').";"
             .config('app.csp_custom').\Eventy::filter('csp.custom', '')."\">";
     }
