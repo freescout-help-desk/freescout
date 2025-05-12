@@ -74,9 +74,13 @@ class Mail
         '------------------ Original ------------------', // QQ English
         '<div id=3D"divRplyFwdMsg" dir=', // Outlook
         'regex:/<div style="border:none;border\-top:solid \#[A-Z0-9]{6} 1\.0pt;padding:3\.0pt 0in 0in 0in">[^<]*<p class="MsoNormal"><b>/', // MS Outlook
+        // https://github.com/freescout-help-desk/freescout/issues/4629#issuecomment-2870297514
+        'regex:/<div style="border:none;border\-top:solid \#[A-Z0-9]{6} 1\.0pt;padding:3\.0pt 0cm 0cm 0cm">[^<]*<p class="MsoNormal"><b>/', // MS Outlook
 
         // General separators.
         //'regex:/<blockquote((?!quote)[^>])*>/', // General sepator. Should skip Gmail's <blockquote class="gmail_quote">.
+        // https://github.com/freescout-help-desk/freescout/issues/4629#issuecomment-2870299221
+        '<blockquote type="cite"',
         '<!-- originalMessage -->',
         '‐‐‐‐‐‐‐ Original Message ‐‐‐‐‐‐‐',
         '--------------- Original Message ---------------',
