@@ -82,6 +82,8 @@ class Mail
         // https://github.com/freescout-help-desk/freescout/issues/4629#issuecomment-2870299221
         '<blockquote type="cite"',
         '<blockquote class="gmail_quote"',
+        // https://github.com/freescout-help-desk/freescout/issues/4629#issuecomment-2874816496
+        '<div dir="auto" id="mail-editor-reference-message-container">',
         '<!-- originalMessage -->',
         '‐‐‐‐‐‐‐ Original Message ‐‐‐‐‐‐‐',
         '--------------- Original Message ---------------',
