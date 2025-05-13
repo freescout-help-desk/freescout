@@ -2157,7 +2157,9 @@ class Helper
 
         $nonce = \Helper::cspNonce();
 
-        return "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; img-src 'self' data:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; form-action 'self'; script-src 'self' 'nonce-".$nonce."' "
+        // default-src 'self'; img-src 'self' data:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; form-action 'self'; frame-src https://recaptcha.net; connect-src https://recaptcha.net;
+
+        return "<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'self' 'nonce-".$nonce."' "
             .config('app.csp_script_src').' '.\Eventy::filter('csp.script_src', '').";"
             .config('app.csp_custom').\Eventy::filter('csp.custom', '')."\">";
     }
