@@ -973,6 +973,8 @@ class Helper
         $env_path = app()->environmentFilePath();
         $contents = file_get_contents($env_path);
 
+        $value = preg_replace("#[\r\n\t]#", '', $value);
+
         if (strstr($value, '"')) {
             // Escape quotes.
             $value = '"'.str_replace('"', '\"', $value).'"';
