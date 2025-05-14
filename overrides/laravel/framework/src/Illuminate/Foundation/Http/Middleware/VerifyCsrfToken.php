@@ -64,7 +64,10 @@ class VerifyCsrfToken
             $this->inExceptArray($request) ||
             $this->tokensMatch($request)
         ) {
-            return $this->addCookieToResponse($request, $next($request));
+            // Do not send XSRF-TOKEN as it's not needed.
+            // https://github.com/laravel/ideas/issues/873
+            //return $this->addCookieToResponse($request, $next($request));
+            return $next($request);
         }
 
         throw new TokenMismatchException;
