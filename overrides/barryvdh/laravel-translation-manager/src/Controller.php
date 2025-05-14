@@ -213,7 +213,10 @@ class Controller extends BaseController
     {
         $locales = $this->manager->getLocales();
         $newLocale = str_replace([], '-', trim($request->input('new-locale')));
-        if (!$newLocale || in_array($newLocale, $locales)) {
+        if (!$newLocale 
+            || in_array($newLocale, $locales)
+            || !in_array($newLocale, array_keys(\Helper::$locales))
+        ) {
             return redirect()->back();
         }
         $this->manager->addLocale($newLocale);
