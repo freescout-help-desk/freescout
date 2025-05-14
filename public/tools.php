@@ -89,7 +89,7 @@ if (!empty($_POST)) {
     if (!empty($_POST['php_path'])) {
         $php_path = trim($_POST['php_path']);
 
-        $php_path = preg_replace("#[ ;\$<>:&\|]#", '', $php_path);
+        $php_path = preg_replace("#[ ;\$<>:&\|`\t\r\n]#", '', $php_path);
         if (!$php_path) {
             $php_path = 'php';
         }
