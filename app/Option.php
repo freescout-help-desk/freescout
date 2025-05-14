@@ -235,9 +235,12 @@ class Option extends Model
 
         if (is_string($original) && !empty($original[0]) && $original[0] == '{') {
             try {
-                return json_decode($original, true);
+                $result = json_decode($original, true);
+                if (is_array($result)) {
+                    return $result;
+                }
             } catch (\Exception $e) {
-
+                // Do nothing.
             }
         }
 
