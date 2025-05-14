@@ -205,8 +205,12 @@ class Option extends Model
      */
     public static function maybeSerialize($data)
     {
-        if (is_array($data) || is_object($data)) {
-            return serialize($data);
+        // if (is_array($data) || is_object($data)) {
+        //     return serialize($data);
+        // }
+        // We don't use serialize() function as it is not safe.
+        if (is_array($data)) {
+            return json_encode($data);
         }
 
         return $data;
@@ -217,6 +221,8 @@ class Option extends Model
      */
     public static function maybeUnserialize($original)
     {
+        // This is kept jsut for backward compatibility.
+        // Options are not seralized using serialize() anymore.
         if (self::isSerialized($original)) {
             try {
                 $original = unserialize($original);
@@ -225,6 +231,14 @@ class Option extends Model
             }
 
             return $original;
+        }
+
+        if (is_string($original) && !empty($original[0]) && $original[0] == '{') {
+            try {
+                return json_decode($original, true);
+            } catch (\Exception $e) {
+
+            }
         }
 
         return $original;
