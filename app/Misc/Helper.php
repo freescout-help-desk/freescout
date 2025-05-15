@@ -973,6 +973,8 @@ class Helper
         $env_path = app()->environmentFilePath();
         $contents = file_get_contents($env_path);
 
+        $value = preg_replace("#[\r\n\t]#", '', $value);
+
         if (strstr($value, '"')) {
             // Escape quotes.
             $value = '"'.str_replace('"', '\"', $value).'"';
@@ -2157,10 +2159,27 @@ class Helper
 
         $nonce = \Helper::cspNonce();
 
-        // default-src 'self'; img-src 'self' data:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; form-action 'self'; frame-src https://recaptcha.net; connect-src https://recaptcha.net;
+        $script_src = config('app.csp_script_src').' '.\Eventy::filter('csp.script_src', '');
 
-        return "<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'self' 'nonce-".$nonce."' "
-            .config('app.csp_script_src').' '.\Eventy::filter('csp.script_src', '').";"
+        $script_domains = '';
+        $scripts = explode(' ', $script_src);
+
+        foreach ($scripts as $url) {
+            $url = trim($url);
+            if (!preg_match("#^(http|//)#", $url)) {
+                $url = '//'.$url;
+            }
+            $parts = parse_url($url);
+            if (!empty($parts['host'])) {
+                $domain = preg_replace("#['\"; \r\n]#", '', $parts['host']);
+                $script_domains .= ' '.$domain;
+            }
+        }
+
+        //  frame-src https://recaptcha.net; connect-src https://recaptcha.net;
+
+        return "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' ".$script_domains."; img-src 'self' data:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; form-action 'self'; script-src 'self' 'nonce-".$nonce."' "
+            .$script_src.";"
             .config('app.csp_custom').\Eventy::filter('csp.custom', '')."\">";
     }
 

@@ -5449,7 +5449,7 @@ function inApp(topic, token)
 
 function setCookie(name, value, props)
 {
-    props = props || {path:"/", SameSite:'Lax'};
+    props = props || {path:"/", SameSite:'None'};
 
     if (!props.expires) {
     	// Max expiration date
