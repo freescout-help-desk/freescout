@@ -190,8 +190,11 @@ return [
     |
     | Supported: "lax", "strict", "none"
     |
+    | When set to "lax" for example the SSO auth does not work: 
+    | https://github.com/freescout-help-desk/freescout/issues/4750
+    |
     */
 
-    'same_site' => env('SESSION_SAME_SITE', 'lax'),
+    'same_site' => env('SESSION_SAME_SITE', 'none'),
 
 ];
