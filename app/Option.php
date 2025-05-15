@@ -237,7 +237,9 @@ class Option extends Model
             return $original;
         }
 
-        if (is_string($original) && !empty($original[0]) && $original[0] == '{') {
+        if (is_string($original) && !empty($original[0]) 
+            && ($original[0] == '{' || $original[0] == '[')
+        ) {
             try {
                 $result = json_decode($original, true);
                 if (is_array($result)) {
