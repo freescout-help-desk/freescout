@@ -210,7 +210,11 @@ class Option extends Model
         // }
         // We don't use serialize() function as it is not safe.
         if (is_array($data)) {
-            return json_encode($data);
+            try {
+                return \Helper::jsonEncodeSafe($data);
+            } catch (\Exception $e) {
+                // Don nothing.
+            }
         }
 
         return $data;
