@@ -63,6 +63,8 @@ class Helper
         'php.*',
         'sh',
         'pl',
+        'phtml',
+        'phar',
     ];
 
     /**
