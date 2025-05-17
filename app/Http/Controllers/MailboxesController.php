@@ -819,17 +819,23 @@ class MailboxesController extends Controller
 
             // Mute notifications
             case 'mute':
+                if (!$user) {
+                    \Helper::denyAccess();
+                }
+
                 $mailbox = Mailbox::find($request->mailbox_id);
 
                 if (!$mailbox) {
                     $response['msg'] = __('Mailbox not found');
+                } elseif (!$user->can('view', $mailbox)) {
+                    $response['msg'] = __('Not enough permissions');
                 }
 
                 if (!$response['msg']) {
 
                     $mailbox_user = $user->mailboxesWithSettings()->where('mailbox_id', $mailbox->id)->first();
-                    if (!$mailbox_user) {
-                        // User may not be connected to the mailbox yet
+                    if (!$mailbox_user && $user->isAdmin()) {
+                        // Admin may not be connected to the mailbox yet
                         $user->mailboxes()->attach($mailbox->id);
                         $mailbox_user = $user->mailboxesWithSettings()->where('mailbox_id', $mailbox->id)->first();
                     }
