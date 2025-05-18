@@ -1347,7 +1347,7 @@ return array(
     'Illuminate\\Filesystem\\FilesystemManager' => $vendorDir . '/laravel/framework/src/Illuminate/Filesystem/FilesystemManager.php',
     'Illuminate\\Filesystem\\FilesystemServiceProvider' => $vendorDir . '/laravel/framework/src/Illuminate/Filesystem/FilesystemServiceProvider.php',
     'Illuminate\\Foundation\\AliasLoader' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/AliasLoader.php',
-    'Illuminate\\Foundation\\Application' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/Application.php',
+    'Illuminate\\Foundation\\Application' => $baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation/Application.php',
     'Illuminate\\Foundation\\Auth\\Access\\Authorizable' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/Auth/Access/Authorizable.php',
     'Illuminate\\Foundation\\Auth\\Access\\AuthorizesRequests' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/Auth/Access/AuthorizesRequests.php',
     'Illuminate\\Foundation\\Auth\\AuthenticatesUsers' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php',
