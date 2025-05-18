@@ -27,6 +27,8 @@ class CustomersController extends Controller
     {
         $customer = Customer::findOrFail($id);
 
+        $this->checkLimitVisibility($customer);
+
         $customer_emails = $customer->emails;
         if (count($customer_emails)) {
             foreach ($customer_emails as $row) {
@@ -55,6 +57,8 @@ class CustomersController extends Controller
 
         $customer = Customer::findOrFail($id);
         $flash_message = '';
+
+        $this->checkLimitVisibility($customer);
 
         // First name or email must be specified
         $validator = Validator::make($request->all(), [
@@ -191,6 +195,24 @@ class CustomersController extends Controller
         \Session::flash('customer.updated', 1);
 
         return redirect()->route('customers.update', ['id' => $id]);
+    }
+
+    public function checkLimitVisibility($customer)
+    {
+        $user = auth()->user();
+        $limited_visibility = config('app.limit_user_customer_visibility') && !$user->isAdmin();
+
+        if ($limited_visibility) {
+            $mailbox_ids = $user->mailboxesIdsCanView();
+            
+            $accesible = Conversation::where('customer_id', $customer->id)
+                ->whereIn('conversations.mailbox_id', $mailbox_ids)
+                ->exists();
+
+            if (!$accesible) {
+                \Helper::denyAccess();
+            }
+        }
     }
 
     /**
