@@ -2258,7 +2258,7 @@ class ConversationsController extends Controller
                 if (!$conversation) {
                     $response['msg'] = __('Conversation not found');
                 }
-                if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
+                if (!$response['msg'] && !$user->can('view', $conversation)) {
                     $response['msg'] = __('Not enough permissions');
                 }
 
