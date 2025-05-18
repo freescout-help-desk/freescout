@@ -233,11 +233,18 @@ class CustomersController extends Controller
     {
         $customer = Customer::findOrFail($id);
 
-        $conversations = $customer->conversations()
+        $query = $customer->conversations()
             ->where('customer_id', $customer->id)
             ->whereIn('mailbox_id', auth()->user()->mailboxesIdsCanView())
-            ->orderBy('created_at', 'desc')
-            ->paginate(Conversation::DEFAULT_LIST_SIZE);
+            ->orderBy('created_at', 'desc');
+
+        $user = auth()->user();
+
+        if ($user->canSeeOnlyAssignedConversations()) {
+            $query->where('user_id', '=', $user->id);
+        }
+
+        $conversations = $query->paginate(Conversation::DEFAULT_LIST_SIZE);
 
         return view('customers/conversations', [
             'customer'      => $customer,
