@@ -406,7 +406,7 @@ class ConversationsController extends Controller
         $attachments = [];
         if (!empty($request->from_thread_id)) {
             $orig_thread = Thread::find($request->from_thread_id);
-            if ($orig_thread) {
+            if ($orig_thread && auth()->user()->can('view', $orig_thread->conversation)) {
                 $subject = $orig_thread->conversation->subject;
                 $subject = preg_replace('/^Fwd:/i', 'Re: ', $subject);
 
