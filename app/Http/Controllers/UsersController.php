@@ -250,6 +250,7 @@ class UsersController extends Controller
         $admin_fields = [
             'role',
             'status',
+            'email',
         ];
         $nonfillable_fields = [
             'type',
