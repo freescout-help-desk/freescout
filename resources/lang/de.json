@@ -775,7 +775,7 @@
     "You can adjust alert settings :%a_begin%here:%a_end%": "Sie können die Benachrichtigungs-Einstellungen :%a_begin%hier:%a_end% anpassen",
     "You can edit this later": "Dies kann später bearbeitet werden",
     "You can read more about fetching emails :%a_begin%here:%a_end%.": "Sie können :%a_begin%here:%a_end% mehr über den Empfang von E-Mails lesen.",
-    "You can read more about sending emails :%a_begin%here:%a_end%.": "Sie können %a_begin%here:%a_end% mehr über den Versand von E-Mails lesen.",
+    "You can read more about sending emails :%a_begin%here:%a_end%.": "Sie können :%a_begin%here:%a_end% mehr über den Versand von E-Mails lesen.",
     "You have the latest version installed": "Die aktuellste Version ist installiert",
     "You have to activate each bundle's module separately": "Jedes Modul im Paket muss separat aktiviert werden",
     "You've already sent this message just recently.": "Die Nachricht wurde grade eben bereits gesendet.",
