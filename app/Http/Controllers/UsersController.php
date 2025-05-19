@@ -160,6 +160,8 @@ class UsersController extends Controller
         $user = User::findOrFail($id);
         $this->authorize('update', $user);
 
+        $auth_user = auth()->user();
+
         // This is also present in PublicController::userSetup
         $validator = Validator::make($request->all(), [
             'first_name'  => 'required|string|max:20',
@@ -212,7 +214,7 @@ class UsersController extends Controller
         }
 
         // Save language into session.
-        if (auth()->user()->id == $id && $request->locale) {
+        if ($auth_user->id == $id && $request->locale) {
             session()->put('user_locale', $request->locale);
         }
 
@@ -221,7 +223,7 @@ class UsersController extends Controller
         if (isset($request_data['photo_url'])) {
             unset($request_data['photo_url']);
         }
-        if (!auth()->user()->can('changeRole', $user)) {
+        if (!$auth_user->can('changeRole', $user)) {
             unset($request_data['role']);
         }
         if ($user->status != User::STATUS_DELETED) {
@@ -231,11 +233,42 @@ class UsersController extends Controller
                 $request_data['status'] = User::STATUS_ACTIVE;
             }
         }
-        $user->setData($request_data);
 
-        if (empty($request->input('enable_kb_shortcuts'))) {
-            $user->enable_kb_shortcuts = false;
+        // Sanitize $request_data array.
+        // $allowed_fields = [
+        //     'first_name',
+        //     'last_name',
+        //     'email', 
+        //     'emails',
+        //     'job_title',
+        //     'phone',
+        //     'locale',
+        //     'timezone'
+        //     'time_format',
+        //     'photo_url',
+        // ];
+        $admin_fields = [
+            'role',
+            'status',
+        ];
+        $nonfillable_fields = [
+            'type',
+            'password',
+        ];
+        if (!$auth_user->isAdmin()) {
+            foreach ($admin_fields as $field) {
+                if (isset($request_data[$field])) {
+                    unset($request_data[$field]);
+                }
+            }
         }
+        foreach ($nonfillable_fields as $field) {
+            if (isset($request_data[$field])) {
+                unset($request_data[$field]);
+            }
+        }
+
+        $user->setData($request_data);
 
         $user = \Eventy::filter('user.save_profile', $user, $request);
 
