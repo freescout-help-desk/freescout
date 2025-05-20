@@ -692,9 +692,10 @@ class Manager
 
     public function removeLocale($locale)
     {
-        if (!$locale) {
+        if (!$locale || !in_array($locale, array_keys(\Helper::$locales))) {
             return false;
         }
+
         $this->ignoreLocales = array_merge($this->ignoreLocales, [$locale]);
         // Only delete from DB.
         //$this->saveIgnoredLocales();
