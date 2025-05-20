@@ -85,8 +85,16 @@ class UsersController extends Controller
                         ->withInput();
         }
 
+        $data = [
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+        ];
+
         $user = new User();
-        $user->fill($request->all());
+
+        $user->fill($data);
+
         if (!$auth_user->can('changeRole', $user)) {
             $user->role = User::ROLE_USER;
         }
