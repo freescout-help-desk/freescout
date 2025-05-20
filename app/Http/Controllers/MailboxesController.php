@@ -106,6 +106,8 @@ class MailboxesController extends Controller
     {
         $mailbox = Mailbox::findOrFail($id);
         $user = auth()->user();
+
+        // Redirect to the accessible page.
         if (!$user->can('updateSettings', $mailbox) && !$user->can('updateEmailSignature', $mailbox)) {
             $accessible_route = '';
 
@@ -160,10 +162,15 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
 
         $user = auth()->user();
+
+        $can_update_settings = $user->can('updateSettings', $mailbox);
+        $can_update_signature = $user->can('updateEmailSignature', $mailbox);
         
-        if (!$user->can('updateSettings', $mailbox) && !$user->can('updateEmailSignature', $mailbox)) {
+        if (!$can_update_settings && !$can_update_signature) {
             \Helper::denyAccess();
         }
+
+        $allowed_fields = [];
 
         if ($user->can('updateSettings', $mailbox)) {
 
@@ -204,9 +211,22 @@ class MailboxesController extends Controller
                             ->withErrors($validator)
                             ->withInput();
             }
+
+            $allowed_fields = [
+                'name',
+                'email',
+                'aliases',
+                'aliases_reply',
+                'auto_bcc',
+                'from_name',
+                'from_name_custom',
+                'ticket_status',
+                'ticket_assignee',
+                'before_reply',
+            ];
         }
 
-        if ($user->can('updateEmailSignature', $mailbox)) {
+        if ($can_update_signature) {
             $validator = Validator::make($request->all(), [
                 'signature'        => 'nullable|string',
             ]);
@@ -216,11 +236,21 @@ class MailboxesController extends Controller
                     ->withErrors($validator)
                     ->withInput();
             }
+            $allowed_fields[] = 'signature';
         }
 
         \Eventy::action('mailbox.settings_before_save', $mailbox, $request);
 
-        $mailbox->fill($request->all());
+        // Leave only allowed fields.
+        $fields = $request->all();
+        foreach ($fields as $field_name => $value) {
+            if (!in_array($field_name, $allowed_fields)) {
+                unset($fields[$field_name]);
+            }
+        }
+
+        $mailbox->fill($fields);
+
         $mailbox->signature = \Helper::stripDangerousTags($mailbox->signature);
 
         $mailbox->save();
@@ -587,7 +617,13 @@ class MailboxesController extends Controller
             }
         }
 
-        $mailbox->fill($request->all());
+        $data = [
+            'auto_reply_enabled' => $request->auto_reply_enabled,
+            'auto_reply_subject' => $request->auto_reply_subject,
+            'auto_reply_message' => $request->auto_reply_message,
+        ];
+
+        $mailbox->fill($data);
         $mailbox->auto_reply_message = \Helper::stripDangerousTags($mailbox->auto_reply_message);
 
         $mailbox->save();
