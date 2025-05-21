@@ -5447,35 +5447,52 @@ function inApp(topic, token)
 	});
 }
 
-function setCookie(name, value, props)
-{
-    props = props || {path:"/", SameSite:'None'};
+function setCookie(name, value, props) {
+    props = props || {};
+    
+    // Default path if not provided
+    if (!("path" in props)) {
+        props.path = "/";
+    }
+    
+    // Default SameSite None (if desired)
+    if (!("samesite" in props)) {
+        props.samesite = "None";
+    }
+    
+    // If SameSite=None, Secure flag is required by modern browsers
+    if (props.samesite && props.samesite.toLowerCase() === "none" && !("secure" in props)) {
+        props.secure = true;
+    }
 
     if (!props.expires) {
-    	// Max expiration date
-		var exp_date = new Date();
-	    exp_date.setSeconds(2147483647);
-    	props.expires = exp_date;
+        var exp_date = new Date();
+        exp_date.setTime(exp_date.getTime() + 2147483647 * 1000);
+        props.expires = exp_date;
     }
 
     var exp = props.expires;
-    if (typeof exp == "number" && exp) {
+
+    if (typeof exp === "number") {
         var d = new Date();
-        d.setTime(d.getTime() + exp*1000);
+        d.setTime(d.getTime() + exp * 1000);
         exp = props.expires = d;
     }
-    if (exp && exp.toUTCString) { 
-    	props.expires = exp.toUTCString();
+
+    if (exp && typeof exp.toUTCString === "function") {
+        props.expires = exp.toUTCString();
     }
 
     value = encodeURIComponent(value);
-    var updatedCookie = name + "=" + value
+
+    var updatedCookie = name + "=" + value;
+
     for (var propName in props) {
-        updatedCookie += "; " + propName;
+        updatedCookie += "; " + propName.toLowerCase();
         var propValue = props[propName];
         if (propValue !== true) {
-        	updatedCookie += "=" + propValue;
-       	}
+            updatedCookie += "=" + propValue;
+        }
     }
 
     document.cookie = updatedCookie;
