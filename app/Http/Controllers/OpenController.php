@@ -109,7 +109,7 @@ class OpenController extends Controller
         // Login user
         Auth::guard()->login($user);
 
-        \Session::flash('flash_success_floating', __('Welcome to :company_name!', ['company_name' => Option::getCompanyName()]));
+        \Session::flash('flash_success_floating', __('Welcome to :company_name!', ['company_name' => htmlspecialchars(Option::getCompanyName())]));
 
         return redirect()->route('dashboard');
     }
