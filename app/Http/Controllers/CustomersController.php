@@ -151,6 +151,15 @@ class CustomersController extends Controller
         if (isset($request_data['photo_url'])) {
             unset($request_data['photo_url']);
         }
+        $nonfillable_fields = [
+            'channel',
+            'channel_id',
+        ];
+        foreach ($nonfillable_fields as $field) {
+            if (isset($request_data[$field])) {
+                unset($request_data[$field]);
+            }
+        }
 
         $customer->setData($request_data);
         // Websites
