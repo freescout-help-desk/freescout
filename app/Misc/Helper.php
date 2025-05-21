@@ -562,7 +562,10 @@ class Helper
         $tags = ['script', 'form', 'iframe'];
 
         foreach ($tags as $tag) {
-            $html = preg_replace('#<'.$tag.'(.*?)>(.*?)</'.$tag.'>#is', '', $html ?? '');
+            $html = preg_replace('#<'.$tag.'(.*?)>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
+
+            // Remove unclosed restricted tags.
+            $html = preg_replace('#<'.$tag.'(.*?)>#is', '', $html ?? '');
         }
 
         return $html;
