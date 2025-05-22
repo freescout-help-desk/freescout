@@ -578,6 +578,12 @@ class Manager
                 $translations = $groups[$group];
                 // Sort translations alphabetically.
                 ksort($translations);
+
+                // Strips some tags to avoid XSS when translations are inserted via {!! ... !!}.
+                foreach ($translations as $key => $value) {
+                    $translations[$key] = \Helper::stripDangerousTags($value);
+                }
+
                 $output = json_encode($translations, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE);
                 $this->files->put($path, $output);
 
