@@ -86,8 +86,14 @@ class MailboxesController extends Controller
                         ->withInput();
         }
 
+        $request_data = [
+            'email'   => $request->email,
+            'name'    => trim(strip_tags($request->name)),
+            'ratings' => $request->ratings,
+        ];
+
         $mailbox = new Mailbox();
-        $mailbox->fill($request->all());
+        $mailbox->fill($request_data);
 
         $mailbox->save();
 
