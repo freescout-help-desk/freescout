@@ -24,7 +24,7 @@ class ConversationPolicy
         if ($user->isAdmin()) {
             return true;
         } else {
-            if ($conversation->mailbox->users->contains($user)) {
+            if ($conversation->userHasAccessToMailbox($user->id)) {
                 // Maybe user can see only assigned conversations.
                 return $this->checkIsOnlyAssigned($conversation, $user);
             } else {
@@ -67,7 +67,7 @@ class ConversationPolicy
         if ($user->isAdmin()) {
             return true;
         } else {
-            if ($conversation->mailbox->users->contains($user)) {
+            if ($conversation->userHasAccessToMailbox($user->id)) {
                 // Maybe user can see only assigned conversations.
                 return $this->checkIsOnlyAssigned($conversation, $user);
             } else {
@@ -84,7 +84,15 @@ class ConversationPolicy
         if ($user->isAdmin()) {
             return true;
         } else {
-            return $user->hasPermission(User::PERM_DELETE_CONVERSATIONS);
+            if (!$user->hasPermission(User::PERM_DELETE_CONVERSATIONS)) {
+                return false;
+            }
+            if ($conversation->userHasAccessToMailbox($user->id)) {
+                // Maybe user can see only assigned conversations.
+                return $this->checkIsOnlyAssigned($conversation, $user);
+            } else {
+                return false;
+            }
         }
     }
 

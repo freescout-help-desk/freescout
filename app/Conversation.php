@@ -2483,4 +2483,11 @@ class Conversation extends Model
 
         return preg_match('#'.$regex.'#', $query_str);
     }
+
+    public function userHasAccessToMailbox($user_id)
+    {
+        return MailboxUser::where('mailbox_id', $this->mailbox_id)
+            ->where('user_id', $user_id)
+            ->exists();
+    }
 }
