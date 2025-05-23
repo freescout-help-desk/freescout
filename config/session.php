@@ -192,9 +192,12 @@ return [
     |
     | When set to "lax" for example the SSO auth does not work: 
     | https://github.com/freescout-help-desk/freescout/issues/4750
+    | 
+    | If set to "none" the "secure" flag should be set:
+    | https://github.com/freescout-help-desk/freescout/issues/4769
     |
     */
 
-    'same_site' => env('SESSION_SAME_SITE', 'none'),
+    'same_site' => env('SESSION_SAME_SITE', null),
 
 ];

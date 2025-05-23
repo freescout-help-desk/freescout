@@ -26,14 +26,7 @@ class ConversationPolicy
         } else {
             if ($conversation->mailbox->users->contains($user)) {
                 // Maybe user can see only assigned conversations.
-                if (!\Eventy::filter('conversation.is_user_assignee', $conversation->user_id == $user->id, $conversation, $user->id)
-                    && $conversation->created_by_user_id != $user->id
-                    && $user->canSeeOnlyAssignedConversations()
-                ) {
-                    return false;
-                } else {
-                    return true;
-                }
+                return $this->checkIsOnlyAssigned($conversation, $user);
             } else {
                 return false;
             }
@@ -54,14 +47,7 @@ class ConversationPolicy
         } else {
             if ($conversation->mailbox->users_cached->contains($user)) {
                 // Maybe user can see only assigned conversations.
-                if (!\Eventy::filter('conversation.is_user_assignee', $conversation->user_id == $user->id, $conversation, $user->id)
-                    && $conversation->created_by_user_id != $user->id
-                    && $user->canSeeOnlyAssignedConversations()
-                ) {
-                    return false;
-                } else {
-                    return true;
-                }
+                return $this->checkIsOnlyAssigned($conversation, $user);
             } else {
                 return false;
             }
@@ -82,7 +68,8 @@ class ConversationPolicy
             return true;
         } else {
             if ($conversation->mailbox->users->contains($user)) {
-                return true;
+                // Maybe user can see only assigned conversations.
+                return $this->checkIsOnlyAssigned($conversation, $user);
             } else {
                 return false;
             }
@@ -116,5 +103,18 @@ class ConversationPolicy
             return true;
         }
         return Mailbox::count() > 1;
+    }
+
+    public function checkIsOnlyAssigned($conversation, $user)
+    {
+        // Maybe user can see only assigned conversations.
+        if (!\Eventy::filter('conversation.is_user_assignee', $conversation->user_id == $user->id, $conversation, $user->id)
+            && $conversation->created_by_user_id != $user->id
+            && $user->canSeeOnlyAssignedConversations()
+        ) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

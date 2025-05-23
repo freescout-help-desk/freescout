@@ -55,7 +55,6 @@ class UserPolicy
         if ($user->isAdmin() 
             || $user->id == $model->id
             || $user->hasPermission(User::PERM_EDIT_USERS)
-            || $user->canManageMailbox($model->id)
         ) {
             return true;
         } else {

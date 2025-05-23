@@ -562,7 +562,10 @@ class Helper
         $tags = ['script', 'form', 'iframe'];
 
         foreach ($tags as $tag) {
-            $html = preg_replace('#<'.$tag.'(.*?)>(.*?)</'.$tag.'>#is', '', $html ?? '');
+            $html = preg_replace('#<'.$tag.'(.*?)>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
+
+            // Remove unclosed restricted tags.
+            $html = preg_replace('#<'.$tag.'(.*?)>#is', '', $html ?? '');
         }
 
         return $html;
@@ -2180,7 +2183,7 @@ class Helper
 
         //  frame-src https://recaptcha.net; connect-src https://recaptcha.net;
 
-        return "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' ".$script_domains."; img-src * 'self' data:; font-src * 'self' data:; style-src * 'self' 'unsafe-inline'; form-action 'self'; script-src 'self' 'nonce-".$nonce."' "
+        return "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' ".$script_domains."; img-src * 'self' data:; font-src * 'self' data:; style-src * 'self' 'unsafe-inline'; form-action 'self'; frame-src * 'self'; script-src 'self' 'nonce-".$nonce."' "
             .$script_src.";"
             .config('app.csp_custom').\Eventy::filter('csp.custom', '')."\">";
     }

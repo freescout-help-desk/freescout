@@ -27,6 +27,8 @@ class CustomersController extends Controller
     {
         $customer = Customer::findOrFail($id);
 
+        $this->checkLimitVisibility($customer);
+
         $customer_emails = $customer->emails;
         if (count($customer_emails)) {
             foreach ($customer_emails as $row) {
@@ -55,6 +57,8 @@ class CustomersController extends Controller
 
         $customer = Customer::findOrFail($id);
         $flash_message = '';
+
+        $this->checkLimitVisibility($customer);
 
         // First name or email must be specified
         $validator = Validator::make($request->all(), [
@@ -126,7 +130,7 @@ class CustomersController extends Controller
                     'email'           => $email->email,
                     'tag_email_begin' => '<strong>',
                     'tag_email_end'   => '</strong>',
-                    'customer'        => $email->customer->getFullName(),
+                    'customer'        => htmlspecialchars($email->customer->getFullName()),
                     'a_begin'         => '<strong><a href="'.$email->customer->url().'" target="_blank">',
                     'a_end'           => '</a></strong>',
                 ]).' ';
@@ -146,6 +150,15 @@ class CustomersController extends Controller
 
         if (isset($request_data['photo_url'])) {
             unset($request_data['photo_url']);
+        }
+        $nonfillable_fields = [
+            'channel',
+            'channel_id',
+        ];
+        foreach ($nonfillable_fields as $field) {
+            if (isset($request_data[$field])) {
+                unset($request_data[$field]);
+            }
         }
 
         $customer->setData($request_data);
@@ -193,6 +206,24 @@ class CustomersController extends Controller
         return redirect()->route('customers.update', ['id' => $id]);
     }
 
+    public function checkLimitVisibility($customer)
+    {
+        $user = auth()->user();
+        $limited_visibility = config('app.limit_user_customer_visibility') && !$user->isAdmin();
+
+        if ($limited_visibility) {
+            $mailbox_ids = $user->mailboxesIdsCanView();
+            
+            $accesible = Conversation::where('customer_id', $customer->id)
+                ->whereIn('conversations.mailbox_id', $mailbox_ids)
+                ->exists();
+
+            if (!$accesible) {
+                \Helper::denyAccess();
+            }
+        }
+    }
+
     /**
      * User mailboxes.
      */
@@ -233,11 +264,18 @@ class CustomersController extends Controller
     {
         $customer = Customer::findOrFail($id);
 
-        $conversations = $customer->conversations()
+        $query = $customer->conversations()
             ->where('customer_id', $customer->id)
             ->whereIn('mailbox_id', auth()->user()->mailboxesIdsCanView())
-            ->orderBy('created_at', 'desc')
-            ->paginate(Conversation::DEFAULT_LIST_SIZE);
+            ->orderBy('created_at', 'desc');
+
+        $user = auth()->user();
+
+        if ($user->canSeeOnlyAssignedConversations()) {
+            $query->where('user_id', '=', $user->id);
+        }
+
+        $conversations = $query->paginate(Conversation::DEFAULT_LIST_SIZE);
 
         return view('customers/conversations', [
             'customer'      => $customer,

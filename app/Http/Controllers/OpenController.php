@@ -87,14 +87,15 @@ class OpenController extends Controller
                         ->withInput();
         }
 
-        $request_data = $request->all();
-        // Do not allow user to set his role
-        if (isset($request_data['role'])) {
-            unset($request_data['role']);
-        }
-        if (isset($request_data['photo_url'])) {
-            unset($request_data['photo_url']);
-        }
+        $request_data = [
+            'email' => $request->email,
+            'password' => $request->password,
+            'job_title' => $request->job_title,
+            'phone' => $request->phone,
+            'timezone' => $request->timezone,
+            'time_format' => $request->time_format,
+        ];
+
         $user->fill($request_data);
 
         $user->password = bcrypt($request->password);
@@ -108,7 +109,7 @@ class OpenController extends Controller
         // Login user
         Auth::guard()->login($user);
 
-        \Session::flash('flash_success_floating', __('Welcome to :company_name!', ['company_name' => Option::getCompanyName()]));
+        \Session::flash('flash_success_floating', __('Welcome to :company_name!', ['company_name' => htmlspecialchars(Option::getCompanyName())]));
 
         return redirect()->route('dashboard');
     }
