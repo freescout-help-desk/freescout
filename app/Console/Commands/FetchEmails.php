@@ -153,7 +153,14 @@ class FetchEmails extends Command
                     }
                 } else {
                     $successfully = false;
-                    $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
+
+                    // When emails are fetched via POP3 we have to come through all the 
+                    // emails and check dates in their headers - it may take some time.
+                    // So there can be situations when more than one fetching imports same email.
+                    if (!\Str::startsWith($e->getMessage(), 'SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry')
+                    ) {
+                        $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
+                    }
                 }
             }
 
