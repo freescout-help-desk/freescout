@@ -1000,6 +1000,20 @@ class User extends Authenticatable
             $data['password'] = \Hash::make($data['password']);
         }
 
+        // Strip tags.
+        $fields_strip = [
+            'first_name',
+            'last_name',
+            'phone',
+            'timezone',
+        ];
+
+        foreach ($fields_strip as $field) {
+            if (in_array($field, array_keys($data))) {
+                $data[$field] = strip_tags($data[$field]);
+            }
+        }
+
         if ($replace_data) {
             $this->fill($data);
         } else {
