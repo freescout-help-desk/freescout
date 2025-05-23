@@ -528,15 +528,20 @@ class UsersController extends Controller
                     $response['msg'] = __('User not found');
                 } elseif (!$auth_user->can('delete', $user)) {
                     $response['msg'] = __('Not enough permissions');
+                } elseif ($auth_user->id == $user->id) {
+                    // Do not allow admin delete himself.
+                    $response['msg'] = __('Not enough permissions');
                 }
 
                 // Check if the user is the only one admin
-                if (!$response['msg'] && $user->isAdmin()) {
-                    $admins_count = User::where('role', User::ROLE_ADMIN)->count();
-                    if ($admins_count < 2) {
-                        $response['msg'] = __('Administrator can not be deleted');
-                    }
-                }
+                // - not needed as only admin can delete  users and
+                // current admin can not delete himself.
+                // if (!$response['msg'] && $user->isAdmin()) {
+                //     $admins_count = User::where('role', User::ROLE_ADMIN)->count();
+                //     if ($admins_count < 2) {
+                //         $response['msg'] = __('Administrator can not be deleted');
+                //     }
+                // }
 
                 if (!$response['msg']) {
 
