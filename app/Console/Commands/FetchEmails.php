@@ -1357,6 +1357,9 @@ class FetchEmails extends Command
 
         $result = '';
 
+        // Can fix broken HTML, remove sensitive parts and etc.
+        $body = \Eventy::filter('fetch_emails.separate_reply.preprocess_body', $body);
+
         if ($is_html) {
             // Extract body content from HTML
             
