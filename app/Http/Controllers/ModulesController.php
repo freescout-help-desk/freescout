@@ -382,6 +382,8 @@ class ModulesController extends Controller
                 if (!$response['msg']) {
                     \App\Module::setActive($alias, true);
 
+                    $user_locale = app()->getLocale();
+
                     $outputLog = new BufferedOutput();
                     \Artisan::call('freescout:module-install', ['module_alias' => $alias], $outputLog);
                     $output = $outputLog->fetch();
@@ -391,6 +393,9 @@ class ModulesController extends Controller
                     if ($module) {
                         $name = $module->getName();
                     }
+
+                    // After clearing cache the locale may be not set.
+                    \Helper::setUserLocale($user_locale);
 
                     $type = 'danger';
                     $msg = __('Error occurred activating ":name" module', ['name' => $name]);
@@ -441,6 +446,8 @@ class ModulesController extends Controller
                 $alias = $request->alias;
                 \App\Module::setActive($alias, false);
 
+                $user_locale = app()->getLocale();
+
                 $outputLog = new BufferedOutput();
                 \Artisan::call('freescout:clear-cache', [], $outputLog);
                 $output = $outputLog->fetch();
@@ -451,6 +458,9 @@ class ModulesController extends Controller
                 if ($module) {
                     $name = $module->getName();
                 }
+
+                // After clearing cache the locale may be not set.
+                \Helper::setUserLocale($user_locale);
 
                 $type = 'danger';
                 $msg = __('Error occurred deactivating :name module', ['name' => $name]);

@@ -926,6 +926,16 @@ class Helper
         }
     }
 
+    public static function setUserLocale($user_locale = '')
+    {
+        if (!$user_locale) {
+            $user_locale = \Eventy::filter('locale', session('user_locale'));
+        }
+        if ($user_locale) {
+            \Helper::setLocale($user_locale);
+        }
+    }
+
     public static function setLocale($locale)
     {
         if (in_array($locale, config('app.locales'))) {
