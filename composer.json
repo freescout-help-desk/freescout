@@ -88,6 +88,9 @@
             "Swift_": "overrides/swiftmailer/swiftmailer/lib/classes",
             "HTMLPurifier_": "overrides/ezyang/htmlpurifier/library"
         },
+        "files": [
+            "app/Misc/Functions.php"
+        ],
         "fs-comment": "Above new lines are listed files containing custom updates. Below - only PHP compatibility updates.",
         "psr-4": {
             "App\\": "app/",

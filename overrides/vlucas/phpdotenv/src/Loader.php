@@ -258,6 +258,8 @@ class Loader
 
             $value = str_replace("\\$quote", $quote, $value);
             $value = str_replace('\\\\', '\\', $value);
+
+            return array($name, $value);
         } else {
             $parts = explode(' #', $value, 2);
             $value = trim($parts[0]);
@@ -271,9 +273,12 @@ class Loader
                     throw new InvalidFileException('Dotenv values containing spaces must be surrounded by quotes.');
                 }
             }
+
+            return array($name, trim($value));
         }
 
-        return array($name, trim($value));
+        // https://github.com/freescout-help-desk/freescout/issues/4714
+        //return array($name, trim($value));
     }
 
     /**

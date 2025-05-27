@@ -89,7 +89,7 @@ class MailboxesController extends Controller
         $request_data = [
             'email'   => $request->email,
             'name'    => trim(strip_tags($request->name)),
-            'ratings' => $request->ratings,
+            'ratings' => $request->ratings ?? 1,
         ];
 
         $mailbox = new Mailbox();
