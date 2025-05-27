@@ -582,10 +582,6 @@ class Manager
                 // Strips some tags to avoid XSS when translations are inserted via {!! ... !!}.
                 foreach ($translations as $key => $value) {
                     $value = \Helper::stripDangerousTags($value);
-                    $value = strtr($value, [
-                        '"' => '&quot;',
-                        "'" => '&#039;',
-                    ]);
 
                     $translations[$key] = $value;
                 }
