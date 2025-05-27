@@ -281,6 +281,9 @@ class Header {
     public static function rfc822_parse_headers($raw_headers) {
         $headers = [];
         $imap_headers = [];
+
+        $raw_headers = $raw_headers ?? '';
+
         // Consider rfc822 option to be always 'true'.
         if (extension_loaded('imap') /*&& isset($this->config) && $this->config["rfc822"]*/) {
             $raw_imap_headers = (array)\imap_rfc822_parse_headers($raw_headers);
