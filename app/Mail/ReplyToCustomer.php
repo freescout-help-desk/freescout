@@ -74,7 +74,7 @@ class ReplyToCustomer extends Mailable
 
         $thread = $this->threads->first();
         $from_alias = trim($thread->from ?? '');
-
+        
         // Set Message-ID
         // Settings via $this->addCustomHeaders does not work
         $new_headers = $this->headers;
@@ -95,38 +95,40 @@ class ReplyToCustomer extends Mailable
                     }
                 }
                 if (!empty($from_alias)) {
+                    $from_address = $from_alias;
                     $aliases = $mailbox->getAliases();
-
-                    // Make sure that the From contains a mailbox alias,
-                    // as user thread may have From specified when a user
-                    // replies to an email notification.
                     if (array_key_exists($from_alias, $aliases)) {
-
-                        $from_alias_name = $aliases[$from_alias] ?? '';
-
-                        // Take into account mailbox From Name setting.
+                        $from_name = $aliases[$from_alias] ?? '';
                         $mailbox_mail_from = $mailbox->getMailFrom($thread->created_by_user, $thread->conversation);
-                        if ($mailbox_mail_from['name'] == $mailbox->name && $from_alias_name) {
+                        if ($mailbox_mail_from['name'] == $mailbox->name && $from_name) {
                             // Use name from alias.
                         } else {
-                            // User name or custom.
-                            $from_alias_name = $mailbox_mail_from['name'];
+                            $from_name = $mailbox_mail_from['name'];
                         }
-
-                        $swift_from = $headers->get('From');
-
-                        if ($from_alias_name) {
-                            $swift_from->setNameAddresses([
-                                $from_alias => $from_alias_name
-                            ]);
-                        } else {
-                            $swift_from->setAddresses([
-                                $from_alias
-                            ]);
-                        }
+                    } else {
+                        $mailbox_mail_from = $mailbox->getMailFrom($thread->created_by_user, $thread->conversation);
+                        $from_name = $mailbox_mail_from['name'];
                     }
+                } else {
+                    // No alias: use mailbox main email 
+                    $from_address = $mailbox->email; 
+                    $mailbox_mail_from = $mailbox->getMailFrom($thread->created_by_user, $thread->conversation);
+                    $from_name = $mailbox_mail_from['name'];
                 }
 
+                // Allow modules to modify the display name (From Name) only
+                $from_name = \Eventy::filter('email.reply_to_customer.from_name', $from_name, $thread, $mailbox, $from_address);
+
+                $swift_from = $headers->get('From');
+                if ($from_name) {
+                    $swift_from->setNameAddresses([
+                        $from_address => $from_name
+                    ]);
+                } else {
+                    $swift_from->setAddresses([
+                        $from_address
+                    ]);
+                }
                 if ($mailbox->imap_sent_folder) {
                     \MailHelper::$smtp_mime_message = $swiftmessage->toString();
                 }
@@ -135,21 +137,21 @@ class ReplyToCustomer extends Mailable
             });
         }
 
-        $template_html = \Eventy::filter('email.reply_to_customer.template_name_html','emails/customer/reply_fancy');
-        $template_text = \Eventy::filter('email.reply_to_customer.template_name_text','emails/customer/reply_fancy_text');
+        $template_html = \Eventy::filter('email.reply_to_customer.template_name_html', 'emails/customer/reply_fancy');
+        $template_text = \Eventy::filter('email.reply_to_customer.template_name_text', 'emails/customer/reply_fancy_text');
 
         // from($this->from) Sets only email, name stays empty.
         // So we set from in Mail::setMailDriver
         $message = $this->subject($this->subject)
-                    ->view($template_html)
-                    ->text($template_text);
+            ->view($template_html)
+            ->text($template_text);
 
         if ($thread->has_attachments) {
             foreach ($thread->attachments as $attachment) {
                 if ($attachment->fileExists()) {
                     $message->attach($attachment->getLocalFilePath());
                 } else {
-                    \Log::error('[ReplyToCustomer] Thread: '.$thread->id.'. Attachment file not find on disk: '.$attachment->getLocalFilePath());
+                    \Log::error('[ReplyToCustomer] Thread: ' . $thread->id . '. Attachment file not find on disk: ' . $attachment->getLocalFilePath());
                 }
             }
         }
