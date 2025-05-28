@@ -406,6 +406,7 @@
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/SmtpTransport.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/SwiftException.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache.php",
+            "vendor/swiftmailer/swiftmailer/lib/classes/Swift/TransportException.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Mime/MimePart.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Mime/SimpleHeaderSet.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Mime/SimpleHeaderFactory.php",
