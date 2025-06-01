@@ -87,6 +87,9 @@ class ConversationPolicy
             if (!$user->hasPermission(User::PERM_DELETE_CONVERSATIONS)) {
                 return false;
             }
+            if (!$conversation->id) {
+                return true;
+            }
             if ($conversation->userHasAccessToMailbox($user->id)) {
                 // Maybe user can see only assigned conversations.
                 return $this->checkIsOnlyAssigned($conversation, $user);
