@@ -1010,7 +1010,9 @@ class User extends Authenticatable
 
         foreach ($fields_strip as $field) {
             if (in_array($field, array_keys($data))) {
-                $data[$field] = strip_tags($data[$field]);
+                if ($data[$field] !== null) {
+                    $data[$field] = strip_tags($data[$field]);
+                }
             }
         }
 

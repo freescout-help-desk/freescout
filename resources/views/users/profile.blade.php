@@ -95,7 +95,7 @@
                         <label for="email" class="col-sm-2 control-label">{{ __('Email') }}</label>
 
                         <div class="col-sm-6">
-                            <input id="email" type="email" class="form-control input-sized" name="email" value="{{ old('email', $user->email) }}" maxlength="100" required autofocus @if (!auth()->user()->isAdmin()) disabled @endif>
+                            <input id="email" type="email" class="form-control input-sized @if (!auth()->user()->isAdmin()) disabled @endif>" name="email" value="{{ old('email', $user->email) }}" maxlength="100" required autofocus @if (!auth()->user()->isAdmin()) readonly @endif>
 
                             @include('partials/field_error', ['field'=>'email'])
                         </div>
