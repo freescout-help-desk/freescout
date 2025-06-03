@@ -2585,6 +2585,7 @@ return array(
     'Swift_SendmailTransport' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/SendmailTransport.php',
     'Swift_SmtpTransport' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/SmtpTransport.php',
     'Swift_SwiftException' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/SwiftException.php',
+    'Swift_TransportException' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/TransportException.php',
     'Swift_Transport_AbstractSmtpTransport' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/AbstractSmtpTransport.php',
     'Swift_Transport_EsmtpTransport' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/EsmtpTransport.php',
     'Swift_Transport_Esmtp_AuthHandler' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/Esmtp/AuthHandler.php',
