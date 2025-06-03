@@ -72,6 +72,13 @@ class SendNotificationToUsers implements ShouldQueue
             return;
         }
 
+        // Do not send email notifications to support agents
+        // if the email is a bounce and mail server send limit reached.
+        // https://github.com/freescout-help-desk/freescout/issues/4806
+        if ($last_thread->isBounce() && strstr($last_thread->body, 'message limit exceeded')) {
+            return;
+        }
+
         // Limit conversation history
         if (config('app.email_user_history') == 'last') {
             $this->threads = $this->threads->slice(0, 2);
