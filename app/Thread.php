@@ -1356,8 +1356,10 @@ class Thread extends Model
         }
         if ($by_user && $this->created_by_user_id == $by_user->id) {
             $name = __('you');
-        } else {
+        } elseif ($this->created_by_user) {
             $name = $this->created_by_user->getFullName();
+        } else {
+            $name = '';
         }
 
         return $name;
