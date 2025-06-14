@@ -2567,6 +2567,7 @@ return array(
     'Swift_Attachment' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Attachment.php',
     'Swift_EmbeddedFile' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/EmbeddedFile.php',
     'Swift_Encoder_QpEncoder' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Encoder/QpEncoder.php',
+    'Swift_IoException' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/IoException.php',
     'Swift_KeyCache' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache.php',
     'Swift_KeyCache_DiskKeyCache' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/DiskKeyCache.php',
     'Swift_KeyCache_SimpleKeyCacheInputStream' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/SimpleKeyCacheInputStream.php',
