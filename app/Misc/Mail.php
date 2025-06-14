@@ -81,7 +81,8 @@ class Mail
         //'regex:/<blockquote((?!quote)[^>])*>/', // General sepator. Should skip Gmail's <blockquote class="gmail_quote">.
         // https://github.com/freescout-help-desk/freescout/issues/4629#issuecomment-2870299221
         '<blockquote type="cite"',
-        '<blockquote class="gmail_quote"',
+        // This is used both for quotes and replies.
+        //'<blockquote class="gmail_quote"',
         // https://github.com/freescout-help-desk/freescout/issues/4629#issuecomment-2874816496
         '<div dir="auto" id="mail-editor-reference-message-container">',
         // https://github.com/freescout-help-desk/freescout/issues/4764

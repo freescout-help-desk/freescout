@@ -286,8 +286,18 @@ class Attachment {
         }
         $this->attributes = array_merge($this->part->getHeader()->getAttributes(), $this->attributes);
 
+
+
         if (!$this->filename) {
-            $this->filename = $this->getHash();
+            $mime_type = $this->getMimeType();
+            // https://github.com/freescout-help-desk/freescout/issues/4738
+            if ($mime_type == 'message/rfc822') {
+                $this->filename = 'RFC822.eml';
+            } elseif ($mime_type == 'text/calendar') {
+                $this->filename = 'calendar.ics';
+            } else {
+                $this->filename = $this->getHash();
+            }
         }
 
         if (!$this->name && $this->filename != "") {
