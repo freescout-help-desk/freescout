@@ -126,7 +126,7 @@ class Kernel extends ConsoleKernel
 
             $mutex_name = \Cache::get('fetch_mutex_name') ?? '';
 
-            // If there is no cache mutext but there are running fetch commands 
+            // If there is no cache mutext but there are running fetch commands
             // it means the mutex had expired after self::FETCH_MAX_EXECUTION_TIME
             // and the existing command(s) is running longer than self::FETCH_MAX_EXECUTION_TIME.
             if (count($fetch_command_pids) > 0 && !\Cache::get($mutex_name)) {
@@ -148,15 +148,21 @@ class Kernel extends ConsoleKernel
 
         // Fetch emails from mailboxes
         $fetch_command = $schedule->command($fetch_command_name)
-            // withoutOverlapping() option creates a mutex in the cache 
+            // withoutOverlapping() option creates a mutex in the cache
             // which by default expires in 24 hours.
             // So we are passing an 'expiresAt' parameter to withoutOverlapping() to
             // prevent fetching from not being executed when fetching command by some reason
-            // does not remove the mutex from the cache. 
+            // does not remove the mutex from the cache.
             ->withoutOverlapping($expiresAt = self::FETCH_MAX_EXECUTION_TIME /* minutes */)
             ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
 
         switch (config('app.fetch_schedule')) {
+            case Mail::FETCH_SCHEDULE_EVERY_TWO_MINUTES:
+                $fetch_command->cron('*/2 * * * *');
+                break;
+            case Mail::FETCH_SCHEDULE_EVERY_THREE_MINUTES:
+                $fetch_command->cron('*/3 * * * *');
+                break;
             case Mail::FETCH_SCHEDULE_EVERY_FIVE_MINUTES:
                 $fetch_command->everyFiveMinutes();
                 break;
@@ -198,7 +204,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('queue:work') command below has withoutOverlapping() option,
         // which works via special mutex stored in the cache preventing several 'queue:work' to work at the same time.
         // So when the cache is cleared the mutex indicating that the 'queue:work' is running is removed,
-        // and the second 'queue:work' command is launched by cron. When `artisan schedule:run` is executed it sees 
+        // and the second 'queue:work' command is launched by cron. When `artisan schedule:run` is executed it sees
         // that there are two 'queue:work' processes running and kills them.
         // After one minute 'queue:work' is executed by cron via `artisan schedule:run` and works in the background.
         if (function_exists('shell_exec')) {
@@ -213,7 +219,7 @@ class Kernel extends ConsoleKernel
                 sleep(1);
                 // Check processes again.
                 $worker_pids = \Helper::getRunningProcesses();
-                
+
                 if (count($worker_pids) > 1) {
                     // Current process also has to be killed, as otherwise it "stucks"
                     // $current_pid = getmypid();
@@ -251,7 +257,7 @@ class Kernel extends ConsoleKernel
     }
 
     /**
-     * This function is needed because every time $schedule->command() is executed 
+     * This function is needed because every time $schedule->command() is executed
      * the schedule() is executed also.
      */
     public function isScheduleRun()
