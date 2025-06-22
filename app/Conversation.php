@@ -799,6 +799,11 @@ class Conversation extends Model
 
         if (!$mailbox) {
             $mailbox = $this->mailbox;
+
+            if ($mailbox->id != $this->mailbox_id) {
+                $this->load('mailbox');
+                $mailbox = $this->mailbox;
+            }
         }
 
         // Find folder

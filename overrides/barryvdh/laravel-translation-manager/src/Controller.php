@@ -78,7 +78,7 @@ class Controller extends BaseController
             ->with('numTodo', $numTodo)
             ->with('numChanged', $numChanged)
             ->with('editUrl', action('\Barryvdh\TranslationManager\Controller@postEdit', [$group]))
-            ->with('deleteEnabled', $this->manager->getConfig('delete_enabled'));
+            ->with('deleteEnabled', (bool) $this->manager->getConfig('delete_enabled'));
     }
 
     public function getView($group = null)
@@ -198,7 +198,8 @@ class Controller extends BaseController
 
     public function postAddGroup(Request $request)
     {
-        $group = str_replace(".", '', $request->input('new-group'));
+        //$group = str_replace(".", '', $request->input('new-group'));
+        $group = $this->sanitizeFilename($request->input('new-group'));
         if ($group)
         {
             return redirect()->action('\Barryvdh\TranslationManager\Controller@getView',$group);
@@ -212,7 +213,8 @@ class Controller extends BaseController
     public function postAddLocale(Request $request)
     {
         $locales = $this->manager->getLocales();
-        $newLocale = str_replace([], '-', trim($request->input('new-locale')));
+        //$newLocale = str_replace([], '-', trim($request->input('new-locale')));
+        $newLocale = $this->sanitizeFilename($request->input('new-locale'));
         if (!$newLocale 
             || in_array($newLocale, $locales)
             || !in_array($newLocale, array_keys(\Helper::$locales))
@@ -229,5 +231,16 @@ class Controller extends BaseController
             $this->manager->removeLocale($locale);
         }
         return redirect()->back();
+    }
+
+    protected function sanitizeFilename($input)
+    {
+        $input = \Str::ascii(trim($input));
+        return str_replace(
+            ['<', '>', '%', '/', '\\', '.', ' ', '"', "'", '#', '?'],
+            '',
+            $input
+        );
+
     }
 }
