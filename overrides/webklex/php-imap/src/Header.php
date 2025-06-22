@@ -215,11 +215,17 @@ class Header {
                 $charset = $parts[0] ?? 'us-ascii';
                 $language = $parts[1] ?? '';
                 $encodedValue = $parts[2] ?? '';
-                $boundary = rawurldecode($encodedValue);
+                $new_boundary = rawurldecode($encodedValue);
 
-                // Convert charset if necessary
+                // Convert charset if necessary.
                 if (function_exists('mb_convert_encoding') && strtolower($charset) !== 'utf-8') {
-                    $boundary = mb_convert_encoding($boundary, 'UTF-8', $charset);
+                    try {
+                        $boundary = mb_convert_encoding($new_boundary, 'UTF-8', $charset);
+                    } catch (\Exception $e) {
+                        // Do nothing.
+                    }
+                } else {
+                    $boundary = $new_boundary;
                 }
             }
         }
