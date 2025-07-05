@@ -1431,6 +1431,13 @@ function initConversation()
 						// Does not work
 						e.preventDefault();
 						e.stopPropagation();
+
+						// If .conv-top-blocks contain invalid forms, exand it
+						$('#conv-top-blocks form').each(function() {
+							if (!$(this)[0].checkValidity()) {
+								$('#conv-top-blocks').collapse('show');
+							}
+						});
 					}
 				}
 			});

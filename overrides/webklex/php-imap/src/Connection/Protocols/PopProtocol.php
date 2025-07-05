@@ -231,6 +231,8 @@ class PopProtocol extends Protocol {
             // self::$connect_response = '+OK POP3 server ready <1896.697170952@dbc.mtview.ca.us>';
             preg_match("#<[^@]+@[^>]+>#", self::$connect_response, $m);
             $secret = $m[0] ?? '';
+
+
             if ($secret) {
                 $response = $this->sendRequest('APOP', md5($secret.$password));
                 if (self::isOk($response)) {
@@ -243,15 +245,18 @@ class PopProtocol extends Protocol {
             if (!$response) {
                 return false;
             }
-            $response = $this->sendRequest('PASS', $password, self::REPLY_OK);
-            if (!$response) {
-                return false;
+            $response = $this->sendRequest('PASS', $password);
+            if ($response && str_starts_with($response, '-ERR')) {
+                throw new AuthFailedException(ltrim($response, '-ERR'));
             }
-            
+            if (!$response || strpos($response, self::REPLY_OK) !== 0) {
+                throw new AuthFailedException('Invalid response to PASS command: '.$response);
+            }
             return $response;
         } catch (RuntimeException $e) {
             throw new AuthFailedException("failed to authenticate", 0, $e);
         }
+
     }
 
     /**

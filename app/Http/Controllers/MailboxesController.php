@@ -257,6 +257,13 @@ class MailboxesController extends Controller
 
         $mailbox->fill($fields);
 
+        // Chat: Start a new conversation when receiving a reply to the closed / deleted Chat conversation.
+        if (!empty($request->chat_start_new)) {
+            $mailbox->setMetaParam('chat_start_new', true);
+        } else {
+            $mailbox->removeMetaParam('chat_start_new');
+        }
+
         $mailbox->signature = \Helper::stripDangerousTags($mailbox->signature);
 
         $mailbox->save();

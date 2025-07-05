@@ -159,6 +159,18 @@
                             </div>
                         </div>
 
+                        <div class="form-group{{ $errors->has('chat_start_new') ? ' has-error' : '' }}">
+                            <label for="chat_start_new" class="col-sm-2 control-label">{{ __('Chat') }}</label>
+
+                            <div class="col-sm-6">
+                                <div class="controls">
+                                    <label for="chat_start_new" class="checkbox inline plain">
+                                        <input type="checkbox" name="chat_start_new" value="1" id="chat_start_new" @if (old('chat_start_new', $mailbox->getMeta('chat_start_new')))checked="checked"@endif> <span>{{ __('Start a new conversation when receiving a reply to the closed / deleted Chat conversation') }}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group{{ $errors->has('before_reply') ? ' has-error' : '' }}">
                             <label for="before_reply" class="col-sm-2 control-label">{{ __('Email Header') }}</label>
 
