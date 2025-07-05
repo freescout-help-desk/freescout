@@ -2495,4 +2495,19 @@ class Conversation extends Model
             ->where('user_id', $user_id)
             ->exists();
     }
+
+    public function chatShouldStartNew($mailbox = null)
+    {
+        if (!$mailbox) {
+            $mailbox = $this->mailbox;
+        }
+        if (!empty($mailbox->meta['chat_start_new'])
+            && ($this->status == Conversation::STATUS_CLOSED
+                || $this->state == Conversation::STATE_DELETED)
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
