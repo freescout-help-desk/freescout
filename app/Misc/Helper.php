@@ -854,13 +854,13 @@ class Helper
      *
      * @return [type] [description]
      */
-    public static function decrypt($value, $password = null)
+    public static function decrypt($value, $password = null, $unserialize = false)
     {
         try {
             if (!$password) {
-                $value = decrypt($value);
+                $value = app('encrypter')->decrypt($value, $unserialize);
             } else {
-                $value = (new \Illuminate\Encryption\Encrypter(md5($password)))->decrypt($value);
+                $value = (new \Illuminate\Encryption\Encrypter(md5($password)))->decrypt($value, $unserialize);
             }
         } catch (\Exception $e) {
             // Do nothing.
