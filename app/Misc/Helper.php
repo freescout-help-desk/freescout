@@ -559,7 +559,7 @@ class Helper
 
     public static function stripDangerousTags($html)
     {
-        $tags = ['script', 'form', 'iframe'];
+        $tags = ['script', 'form', 'iframe', 'object'];
 
         foreach ($tags as $tag) {
             $html = preg_replace('#<'.$tag.'(.*?)>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
