@@ -854,13 +854,19 @@ class Helper
      *
      * @return [type] [description]
      */
-    public static function decrypt($value, $password = null, $unserialize = false)
+    public static function decrypt($value, $password = null, $force_unserialize = false)
     {
         try {
             if (!$password) {
-                $value = app('encrypter')->decrypt($value, $unserialize);
+                $value = app('encrypter')->decrypt($value, false);
             } else {
-                $value = (new \Illuminate\Encryption\Encrypter(md5($password)))->decrypt($value, $unserialize);
+                $value = (new \Illuminate\Encryption\Encrypter(md5($password)))->decrypt($value, false);
+            }
+
+            // If the value is scalar - unserialize it,
+            // Otherwise - do not, as objects may contain dangerous code.
+            if (!preg_match("^[dsa]:", $value) || $force_unserialize) {
+                $value = unserialize($value);
             }
         } catch (\Exception $e) {
             // Do nothing.
