@@ -350,6 +350,7 @@
             @action('conversation.after_customer_sidebar', $conversation)
         </div>
         <div id="conv-layout-main">
+            @action('conversation.before_threads', $conversation)
             @include('conversations/partials/threads')
             @action('conversation.after_threads', $conversation)
         </div>
