@@ -87,6 +87,7 @@ class Mail
         '<div dir="auto" id="mail-editor-reference-message-container">',
         // https://github.com/freescout-help-desk/freescout/issues/4764
         '<!--html--><section>',
+        'regex:/<!\-\-html\-\->\s*<section>/',
         '<!-- originalMessage -->',
         '‐‐‐‐‐‐‐ Original Message ‐‐‐‐‐‐‐',
         '--------------- Original Message ---------------',
