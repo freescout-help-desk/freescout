@@ -1455,7 +1455,7 @@ class Thread extends Model
 
     public function getHeader($header_name)
     {
-        return getHeader($this->headers, $header_name);
+        return \MailHelper::getHeader($this->headers, $header_name);
     }
 
     public function getFromHeader()
