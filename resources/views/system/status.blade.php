@@ -15,6 +15,8 @@
 
 <div class="container">
 
+    @action('system.status.before_info_table')
+
     <h3 id="app">{{ __('Info') }}</h3>
 
     <table class="table table-dark-header table-bordered table-responsive">
@@ -106,6 +108,8 @@
         </tbody>
     </table>
 
+    @action('system.status.after_info_table')
+
     <h3 id="php">{{ __('PHP Extensions') }}</h3>
     <table class="table table-dark-header table-bordered table-responsive table-narrow">
         <tbody>
@@ -124,6 +128,8 @@
         </tbody>
     </table>
 
+    @action('system.status.after_php_extensions')
+
     <h3 id="php">{{ __('Functions') }}</h3>
     <table class="table table-dark-header table-bordered table-responsive table-narrow">
         <tbody>
@@ -141,6 +147,8 @@
             @endforeach
         </tbody>
     </table>
+
+    @action('system.status.after_functions')
 
     <h3 id="permissions">{{ __('Permissions') }}</h3>
     {!! __('These folders must be writable by web server user (:user).', ['user' => '<strong>'.(function_exists('get_current_user') ? get_current_user() : '').'</strong>']) !!} {{ __('Recommended permissions') }}: <strong>775</strong>
@@ -210,6 +218,8 @@
         @include('modules/partials/invalid_symlinks')
     @endif
 
+    @action('system.status.after_permissions')
+
     <h3 id="cron" class="margin-top-40">Cron Commands</h3>
     <p>
         {!! __('Make sure that you have the following line in your crontab:') !!}<br/>
@@ -233,6 +243,8 @@
             @endforeach
         </tbody>
     </table>
+
+    @action('system.status.after_cron_commands')
 
     <h3 id="jobs" class="margin-top-40">{{ __('Background Jobs') }}</h3>
     @if (count($queued_jobs) || count($failed_jobs))
@@ -394,7 +406,12 @@
         </tbody>
     </table>
 
+    @action('system.status.after_background_jobs')
+
 </div>
+
+@action('system.status.after_content')
+
 @endsection
 
 @section('javascript')

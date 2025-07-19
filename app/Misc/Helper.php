@@ -557,9 +557,15 @@ class Helper
         return $text;
     }
 
-    public static function stripDangerousTags($html)
+    public static function stripDangerousTags($html, $allowed_tags = [])
     {
-        $tags = ['script', 'form', 'iframe'];
+        // <script src="/storage/attachment/8/1/1/test.js?id=7&token=c4786c4497db3c6254a0c310623a43c3">
+        // <iframe src="/storage/attachment/8/1/1/1.html?id=95&token=3dced8dc80305031b358119f3d156204"></iframe>
+        // <object data="/storage/attachment/8/1/1/1.html?id=95&token=3dced8dc80305031b358119f3d156204" type="text/html"></object>
+        $tags = ['script', 'form', 'iframe', 'object'];
+        $attrs = 'src|data';
+
+        $tags = array_diff($tags, $allowed_tags);
 
         foreach ($tags as $tag) {
             $html = preg_replace('#<'.$tag.'(.*?)>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
@@ -567,6 +573,35 @@ class Helper
             // Remove unclosed restricted tags.
             $html = preg_replace('#<'.$tag.'(.*?)>#is', '', $html ?? '');
         }
+
+        // If some tag is allowed make sure that it does not point to the file on the current server.
+        if (!empty($allowed_tags)) {
+            foreach ($allowed_tags as $tag) {
+                $html = preg_replace_callback('#<'.$tag.'(.*?)>#is', 
+                    function ($matches) use ($attrs) {
+                        preg_match("/(src|data)\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[1], $attr_match);
+                        if (!empty($attr_match[2])) {
+                            $url = trim($attr_match[2]);
+                            $parts = parse_url($url);
+
+                            // Remove tag.
+                            if (!preg_match("#^(https?:)?//#i", $url)
+                                || empty($parts['host'])
+                                || (strtolower($parts['host']) == strtolower(self::getDomain()))
+                                || preg_match("#/storage/attachment/.*token#", $parts['host'])
+                                || preg_match("#/storage/uploads/.*\.#", $parts['host'])
+                            ) {
+                                return '';
+                            }
+                        }
+
+                        return $matches[0];
+                    },
+                    $html
+                );
+            }
+        }
+        
 
         return $html;
     }
@@ -854,13 +889,19 @@ class Helper
      *
      * @return [type] [description]
      */
-    public static function decrypt($value, $password = null)
+    public static function decrypt($value, $password = null, $force_unserialize = false)
     {
         try {
             if (!$password) {
-                $value = decrypt($value);
+                $value = app('encrypter')->decrypt($value, false);
             } else {
-                $value = (new \Illuminate\Encryption\Encrypter(md5($password)))->decrypt($value);
+                $value = (new \Illuminate\Encryption\Encrypter(md5($password)))->decrypt($value, false);
+            }
+
+            // If the value is scalar - unserialize it,
+            // Otherwise - do not, as objects may contain dangerous code.
+            if (!preg_match("^[dsa]:", $value) || $force_unserialize) {
+                $value = unserialize($value);
             }
         } catch (\Exception $e) {
             // Do nothing.

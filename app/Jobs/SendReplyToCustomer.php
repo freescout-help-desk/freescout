@@ -168,6 +168,19 @@ class SendReplyToCustomer implements ShouldQueue
             }
         }
 
+        // For Outlook threading.
+        // https://github.com/freescout-help-desk/freescout/issues/4922
+        if ($last_customer_thread) {
+            $outloook_thread_index = $last_customer_thread->getHeader('Thread-Index');
+            if (!empty($outloook_thread_index)) {
+                $headers['Thread-Index'] = $outloook_thread_index;
+                $outloook_thread_topic = $last_customer_thread->getHeader('Thread-Topic');
+                if ($outloook_thread_topic) {
+                    $headers['Thread-Topic'] = $outloook_thread_topic;
+                }
+            }
+        }
+
         // Conversation history.
         $email_conv_history = config('app.email_conv_history');
 

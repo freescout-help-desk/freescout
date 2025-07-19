@@ -87,6 +87,7 @@ class Mail
         '<div dir="auto" id="mail-editor-reference-message-container">',
         // https://github.com/freescout-help-desk/freescout/issues/4764
         '<!--html--><section>',
+        'regex:/<!\-\-html\-\->\s*<section>/',
         '<!-- originalMessage -->',
         '‐‐‐‐‐‐‐ Original Message ‐‐‐‐‐‐‐',
         '--------------- Original Message ---------------',
@@ -727,6 +728,9 @@ class Mail
 
     public static function getHeader($headers_str, $header)
     {
+        $header = strtolower($header);
+        $header = str_replace('-', '_', $header);
+
         $headers = self::parseHeaders($headers_str);
         if (!$headers) {
             return;
@@ -735,7 +739,7 @@ class Mail
         if (property_exists($headers, $header)) {
             $value = $headers->$header;
         } else {
-            return;
+            return '';
         }
         switch ($header) {
             case 'message_id':
