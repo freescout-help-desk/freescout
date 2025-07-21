@@ -900,13 +900,12 @@ class Helper
 
             // If the value is scalar - unserialize it,
             // Otherwise - do not, as objects may contain dangerous code.
-            if (!preg_match("^[idsa]:", $value) || $force_unserialize) {
+            if (preg_match("#^[idsa]:#", $value) || $force_unserialize) {
                 $value = unserialize($value);
             }
         } catch (\Exception $e) {
             // Do nothing.
         }
-
         return $value;
     }
 
