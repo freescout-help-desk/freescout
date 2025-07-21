@@ -728,6 +728,11 @@ class Mail
 
     public static function getHeader($headers_str, $header)
     {
+        // Quick check to same resources.
+        if (!stristr($headers_str, $header)) {
+            return '';
+        }
+
         $header = strtolower($header);
         $header = str_replace('-', '_', $header);
 
