@@ -728,6 +728,8 @@ class Mail
 
     public static function getHeader($headers_str, $header)
     {
+        $headers_str = $headers_str ?? '';
+        
         // Quick check to same resources.
         if (!stristr($headers_str, $header)) {
             return '';
