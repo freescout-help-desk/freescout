@@ -1823,6 +1823,7 @@ class Helper
             'localhost',
             $hostname,
             $host_ip,
+            mb_strtolower(self::getDomain()),
             $_SERVER['SERVER_ADDR'] ?? '',
             $_SERVER['LOCAL_ADDR'] ?? ''
         ];
