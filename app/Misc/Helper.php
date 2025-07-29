@@ -1726,10 +1726,10 @@ class Helper
         }
     }
 
-    public static function downloadRemoteFileAsTmp($uri)
+    public static function downloadRemoteFileAsTmp($uri, $follow_redirects = true)
     {
         try {
-            $contents = self::getRemoteFileContents($uri);
+            $contents = self::getRemoteFileContents($uri, $follow_redirects);
 
             if (!$contents) {
                 return false;
@@ -1751,7 +1751,7 @@ class Helper
 
     // Replacement for file_get_contents() as some hostings 
     // do not allow reading remote files via allow_url_fopen option.
-    public static function getRemoteFileContents($url)
+    public static function getRemoteFileContents($url, $follow_redirects = true)
     {
         try {
             // Sanitize URL first.
@@ -1769,7 +1769,9 @@ class Helper
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            if ($follow_redirects) {
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            }
             curl_setopt($ch, CURLOPT_URL, $url);
             \Helper::setCurlDefaultOptions($ch);
             curl_setopt($ch, CURLOPT_TIMEOUT, 180);
@@ -1857,9 +1859,9 @@ class Helper
 
     // Keep in mind that $uploaded_file->getClientMimeType() returns
     // incorrect mime type for images: application/octet-stream
-    public static function downloadRemoteFileAsTmpFile($uri)
+    public static function downloadRemoteFileAsTmpFile($uri, $follow_redirects = true)
     {
-        $file_path = self::downloadRemoteFileAsTmp($uri);
+        $file_path = self::downloadRemoteFileAsTmp($uri, $follow_redirects);
         if ($file_path) {
             return new \Illuminate\Http\UploadedFile(
                 $file_path, basename($file_path),
