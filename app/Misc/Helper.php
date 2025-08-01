@@ -1726,10 +1726,10 @@ class Helper
         }
     }
 
-    public static function downloadRemoteFileAsTmp($uri)
+    public static function downloadRemoteFileAsTmp($uri, $follow_redirects = true)
     {
         try {
-            $contents = self::getRemoteFileContents($uri);
+            $contents = self::getRemoteFileContents($uri, $follow_redirects);
 
             if (!$contents) {
                 return false;
@@ -1751,9 +1751,14 @@ class Helper
 
     // Replacement for file_get_contents() as some hostings 
     // do not allow reading remote files via allow_url_fopen option.
-    public static function getRemoteFileContents($url)
+    public static function getRemoteFileContents($url, $follow_redirects = true)
     {
         try {
+            // Sanitize URL first.
+            if (!self::sanitizeRemoteUrl($url)) {
+                throw new \Exception('URL points to the local host', 1);
+            }
+
             $headers = get_headers($url);
 
             // 307 - Temporary Redirect.
@@ -1764,7 +1769,9 @@ class Helper
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            if ($follow_redirects) {
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            }
             curl_setopt($ch, CURLOPT_URL, $url);
             \Helper::setCurlDefaultOptions($ch);
             curl_setopt($ch, CURLOPT_TIMEOUT, 180);
@@ -1795,6 +1802,46 @@ class Helper
         }
     }
 
+    public static function sanitizeRemoteUrl($url)
+    {
+        $parts = parse_url($url ?? '');
+
+        // Sanitize protocol to avoid access to local files.
+        if (empty($parts['scheme']) || !in_array($parts['scheme'], ['http', 'https'])) {
+            return '';
+        }
+
+        // Sanitize host.
+        if (empty($parts['host'])) {
+            return '';
+        }
+        $parts['host'] = mb_strtolower($parts['host']);
+        $hostname = gethostname();
+        $host_ip = gethostbyname($hostname);
+
+        $restricted_hosts = [
+            '0.0.0.0',
+            '127.0.0.1',
+            'localhost',
+            $hostname,
+            $host_ip,
+            mb_strtolower(self::getDomain()),
+            $_SERVER['SERVER_ADDR'] ?? '',
+            $_SERVER['LOCAL_ADDR'] ?? ''
+        ];
+
+        if (in_array($parts['host'], $restricted_hosts)) {
+            return '';
+        }
+
+        $remote_host_ip = gethostbyname($parts['host']);
+        if (in_array($remote_host_ip, ['0.0.0.0', '127.0.0.1', $host_ip, $_SERVER['SERVER_ADDR'] ?? '', $_SERVER['LOCAL_ADDR'] ?? ''])) {
+            return '';
+        }
+
+        return $url;
+    }
+
     public static function getTempDir()
     {
         return sys_get_temp_dir() ?: '/tmp';
@@ -1812,9 +1859,9 @@ class Helper
 
     // Keep in mind that $uploaded_file->getClientMimeType() returns
     // incorrect mime type for images: application/octet-stream
-    public static function downloadRemoteFileAsTmpFile($uri)
+    public static function downloadRemoteFileAsTmpFile($uri, $follow_redirects = true)
     {
-        $file_path = self::downloadRemoteFileAsTmp($uri);
+        $file_path = self::downloadRemoteFileAsTmp($uri, $follow_redirects);
         if ($file_path) {
             return new \Illuminate\Http\UploadedFile(
                 $file_path, basename($file_path),

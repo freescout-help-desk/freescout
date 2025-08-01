@@ -571,7 +571,7 @@ class MailboxesController extends Controller
             if (Route::currentRouteName() != 'mailboxes.connection.incoming' && !$mailbox->isInActive()) {
                 $flashes[] = [
                     'type'      => 'warning',
-                    'text'      => __('Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address').' ('.__('Connection Settings').' » <a href="'.route('mailboxes.connection.incoming', ['id' => $mailbox->id]).'">'.__('Receiving Emails').'</a>)',
+                    'text'      => __('Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address').' ('.__('Connection Settings').' » <a href="'.route('mailboxes.connection.incoming', ['id' => $mailbox->id]).'">'.__('Fetching Emails').'</a>)',
                     'unescaped' => true,
                 ];
             }
