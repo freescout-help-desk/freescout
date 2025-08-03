@@ -23,7 +23,7 @@ echo -e "\e[33mMake sure to create a backup of the application before you contin
 
 # Determine project root
 TOOLS_DIR=`which $0 | xargs dirname`;
-if [ $TOOLS_DIR = '' ]; then
+if [ "$TOOLS_DIR" = '' ]; then
 	echo -e "\e[31mCould not determine project root folder.\e[0m";
 	exit;
 fi
@@ -99,7 +99,7 @@ else
 	
 	# Check branch
 	branch=`git branch | grep '* ' | sed 's#* ##g'`;
-	if [[ $branch != 'dist' && $branch != 'master' ]]; then
+	if [[ "$branch" != 'dist' && "$branch" != 'master' ]]; then
 		echo -e "\e[31mYour Git repository is on a wrong branch: ${branch}. Upgrading is possible only for dist or master branches. Please switch to the correct branch and restart upgdate.\e[0m";
 		exit;
 	fi
@@ -125,7 +125,7 @@ else
 		else
 			read confirm_overwrite;
 		fi
-		if [ $confirm_overwrite != "Y" ]; then
+		if [ "$confirm_overwrite" != "Y" ]; then
 		    exit;
 		fi
 		git checkout .
@@ -143,7 +143,7 @@ else
 	else
 		read confirm_pull;
 	fi
-	if [ $confirm_pull != "Y" ]; then
+	if [ "$confirm_pull" != "Y" ]; then
 	    exit;
 	fi
 
@@ -164,7 +164,7 @@ else
 	git status
 
 	# If branch is master, run composer install
-	if [ $branch = 'master' ]; then
+	if [ "$branch" = 'master' ]; then
 		printf "\nComposer dependencies will be installed. Continue? (Y/n) [n]:"
 		if [ $yes = true ]; then
 			confirm_install='Y';
@@ -172,7 +172,7 @@ else
 		else
 			read confirm_install;
 		fi
-		if [ $confirm_install != "Y" ]; then
+		if [ "$confirm_install" != "Y" ]; then
 		    exit;
 		fi
 
@@ -217,7 +217,7 @@ if [ $yes = true ]; then
 else
 	read confirm_migrate;
 fi
-if [ $confirm_migrate != "Y" ]; then
+if [ "$confirm_migrate" != "Y" ]; then
     exit;
 fi
 if [ $yes = true ]; then
@@ -235,7 +235,7 @@ if [ $yes = true ]; then
 else
 	read confirm_modules;
 fi
-if [ $confirm_modules != "Y" ]; then
+if [ "$confirm_modules" != "Y" ]; then
     exit;
 fi
 
