@@ -19,15 +19,18 @@ class WebsiteNotification extends Notification implements ShouldQueue
 
     public $thread;
 
+    public $data;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($conversation, $thread)
+    public function __construct($conversation, $thread, $data = [])
     {
         $this->conversation = $conversation;
         $this->thread = $thread;
+        $this->data = $data;
     }
 
     /**
@@ -54,6 +57,7 @@ class WebsiteNotification extends Notification implements ShouldQueue
         return [
             'thread_id'       => $this->thread->id,
             'conversation_id' => $this->conversation->id,
+            'data'            => $this->data,
         ];
     }
 
@@ -150,6 +154,7 @@ class WebsiteNotification extends Notification implements ShouldQueue
                 'user'                => $user,
                 'created_by_user'     => $created_by_user,
                 'created_by_customer' => $created_by_customer,
+                'data'                => $notification->data['data'] ?? []
             ];
         }
 
