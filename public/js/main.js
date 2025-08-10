@@ -4948,7 +4948,7 @@ function converstationBulkActionsInit()
 		$('.conv-cb label').on( 'click', function(e){
 
 		    var all_checkboxes = $('input.conv-checkbox');
-			var this_input = $( this ).parent('td').find('input.conv-checkbox' )[0];
+			var this_input = $(this).parent('td').find('input.conv-checkbox')[0];
 
 			// Remove the selection of text that happens.
 			document.getSelection().removeAllRanges();
@@ -4959,18 +4959,38 @@ function converstationBulkActionsInit()
 		    }
 
 		    if (e.shiftKey) {
-		        var start = all_checkboxes.index( this_input );
+		        var start = all_checkboxes.index(this_input);
 		        var end = all_checkboxes.index(fs_checkbox_shift_last_checked);
 
-		        all_checkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', fs_checkbox_shift_last_checked.checked);
+		        all_checkboxes.slice(Math.min(start,end), Math.max(start,end)+1).prop('checked', fs_checkbox_shift_last_checked.checked);
 
 				// When removing the selected text using getSelection(), the last click gets nullified. Let's re-do it.
-				$( this_input ).trigger('click');
+				if (getBrowser() != 'Firefox') {
+					$(this_input).trigger('click');
+				}
 		    }
 
 		    fs_checkbox_shift_last_checked = this_input;
 		});
 	});
+}
+
+function getBrowser(){
+    let browser = "";
+    let c = navigator.userAgent.search("Chrome");
+    let f = navigator.userAgent.search("Firefox");
+    let m8 = navigator.userAgent.search("MSIE 8.0");
+    let m9 = navigator.userAgent.search("MSIE 9.0");
+    if (c > -1) {
+        browser = "Chrome";
+    } else if (f > -1) {
+        browser = "Firefox";
+    } else if (m9 > -1) {
+        browser ="MSIE 9.0";
+    } else if (m8 > -1) {
+        browser ="MSIE 8.0";
+    }
+    return browser;
 }
 
 function switchToNote()
