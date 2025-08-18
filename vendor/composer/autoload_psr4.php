@@ -108,6 +108,7 @@ return array(
     'Illuminate\\Foundation\\Bootstrap\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation/Bootstrap'),
     'Illuminate\\Foundation\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation'),
     'Illuminate\\Filesystem\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Filesystem'),
+    'Illuminate\\Events\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Events'),
     'Illuminate\\Database\\Schema\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Database/Schema'),
     'Illuminate\\Database\\Query\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Database/Query'),
     'Illuminate\\Database\\Eloquent\\Relations\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Database/Eloquent/Relations'),
