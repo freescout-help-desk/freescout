@@ -170,6 +170,7 @@
             "Illuminate\\Console\\": "overrides/laravel/framework/src/Illuminate/Console/",
             "Illuminate\\Log\\": "overrides/laravel/framework/src/Illuminate/Log/",
             "Illuminate\\Validation\\": "overrides/laravel/framework/src/Illuminate/Validation/",
+            "Illuminate\\Contracts\\Container\\": "overrides/laravel/framework/src/Illuminate/Contracts/Container/",
             "Symfony\\Component\\Routing\\": "overrides/symfony/routing/",
             "Symfony\\Component\\VarDumper\\Cloner\\": "overrides/symfony/var-dumper/Cloner/",
             "Symfony\\Component\\VarDumper\\Dumper\\": "overrides/symfony/var-dumper/Dumper/",
@@ -301,6 +302,7 @@
             "vendor/doctrine/dbal/lib/Doctrine/DBAL/Platforms/PostgreSqlPlatform.php",
             "vendor/laravel/framework/src/Illuminate/Support/Carbon.php",
             "vendor/laravel/framework/src/Illuminate/Support/Str.php",
+            "vendor/laravel/framework/src/Illuminate/Support/Arr.php",
             "vendor/laravel/framework/src/Illuminate/Support/ViewErrorBag.php",
             "vendor/laravel/framework/src/Illuminate/Support/MessageBag.php",
             "vendor/laravel/framework/src/Illuminate/Support/Optional.php",
@@ -484,7 +486,8 @@
             "vendor/psy/psysh/src/Exception/ErrorException.php",
             "vendor/psy/psysh/src/Exception/BreakException.php",
             "vendor/psy/psysh/src/VarDumper/Dumper.php",
-            "vendor/laravel/framework/src/Illuminate/Foundation/Application.php"
+            "vendor/laravel/framework/src/Illuminate/Foundation/Application.php",
+            "vendor/laravel/framework/src/Illuminate/Contracts/Container/Container.php"
         ]
     },
     "autoload-dev": {
@@ -507,6 +510,12 @@
         ],
         "pre-install-cmd": [
             "@php -r \"@mkdir('vendor/natxet/cssmin/src', 775);\""
+        ],
+        "pre-autoload-dump": [
+            "@php -r \"file_put_contents('vendor/guzzlehttp/promises/src/functions_include.php', str_replace('/functions.php', '/../../../../overrides/guzzlehttp/promises/src/functions.php', file_get_contents('vendor/guzzlehttp/promises/src/functions_include.php')));\"",
+            "@php -r \"file_put_contents('vendor/psy/psysh/src/functions.php', '<?php require_once __DIR__ . \\'/../../../../overrides/psy/psysh/src/functions.php\\';');\"",
+            "@php -r \"file_put_contents('vendor/laravel/framework/src/Illuminate/Support/helpers.php', '<?php require_once __DIR__ . \\'/../../../../../../overrides/laravel/framework/src/Illuminate/Support/helpers.php\\';');\"",
+            "@php -r \"file_put_contents('vendor/spatie/laravel-activitylog/src/helpers.php', '<?php require_once __DIR__ . \\'/../../../../overrides/spatie/laravel-activitylog/src/helpers.php\\';');\""
         ],
         "post-autoload-dump": [
             "@php -r \"file_put_contents('vendor/composer/ClassLoader.php', preg_replace('/function includeFile.*/s', base64_decode('DQpmdW5jdGlvbiBpbmNsdWRlRmlsZSgkZmlsZSkNCnsNCiAgICB0cnkgew0KICAgICAgICBpbmNsdWRlICRmaWxlOw0KICAgIH0gY2F0Y2ggKFxFeGNlcHRpb24gJGUpIHsNCiAgICAgICAgJG1zZyA9ICRlLT5nZXRNZXNzYWdlKCk7DQogICAgICAgIGlmIChzdHJzdHIoJG1zZywgJ05vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnknKSkgew0KICAgICAgICAgICAgaWYgKHN0cnN0cigkbXNnLCAnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJykpIHsNCiAgICAgICAgICAgICAgICAkbmV3X2ZpbGUgPSBzdHJfcmVwbGFjZSgnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJywgJy92ZW5kb3IvY29tcG9zZXIvLi4vJywgJGZpbGUpOw0KICAgICAgICAgICAgfSBlbHNlIHsNCiAgICAgICAgICAgICAgICAkbmV3X2ZpbGUgPSBzdHJfcmVwbGFjZSgnL3ZlbmRvci9jb21wb3Nlci8uLi8nLCAnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJywgJGZpbGUpOw0KICAgICAgICAgICAgfQ0KICAgICAgICAgICAgaW5jbHVkZSAkbmV3X2ZpbGU7DQogICAgICAgIH0gZWxzZSB7DQogICAgICAgICAgICB0aHJvdyAkZTsNCiAgICAgICAgfQ0KICAgIH0NCn0='), file_get_contents('vendor/composer/ClassLoader.php')));\"",
