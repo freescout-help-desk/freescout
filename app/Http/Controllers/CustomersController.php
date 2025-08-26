@@ -498,8 +498,10 @@ class CustomersController extends Controller
     public function mergeSave(Request $request, $id)
     {
         $request->validate([
-            'customer2_id' => 'required|exists:customers,id',
+            'customer2_id' => 'required|exists:customers,id|not_in:'.$id,
             //'keep_attributes' => 'array'
+        ], [], [
+            'customer2_id' => __('Merge With')
         ]);
 
         $customer = Customer::findOrFail($id);

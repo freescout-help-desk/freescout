@@ -1292,6 +1292,10 @@ class Customer extends Model
      */
     public function mergeWith(Customer $customer2)
     {
+        if ($this->id == $customer2->id) {
+            return false;
+        }
+        
         $user = auth()->user();
 
         $customer2->conversations()->update(['customer_id' => $this->id]);
@@ -1341,6 +1345,8 @@ class Customer extends Model
         \Eventy::action('customer.merged', $this, $customer2, $user);
 
         $customer2->delete();
+
+        return true;
     }
 
     public static function mergeTypeValueLists($list1, $list2)
