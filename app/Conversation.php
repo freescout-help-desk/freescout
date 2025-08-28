@@ -1728,9 +1728,9 @@ class Conversation extends Model
     {
         $viewers_cache = \Cache::get('conv_view');
         $viewers = [];
-        $first_user_id = null;
         $user_ids = [];
         foreach ($conversations as $conversation) {
+            $first_user_id = null;
             if (!empty($viewers_cache[$conversation->id])) {
                 // Get replying viewers
                 foreach ($viewers_cache[$conversation->id] as $user_id => $viewer) {
