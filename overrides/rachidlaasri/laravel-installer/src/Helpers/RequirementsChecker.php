@@ -67,7 +67,7 @@ class RequirementsChecker
      *
      * @return array
      */
-    public function checkPHPversion(string $minPhpVersion = null)
+    public function checkPHPversion(?string $minPhpVersion = null)
     {
         $minVersionPhp = $minPhpVersion;
         $currentPhpVersion = $this->getPhpVersionInfo();
