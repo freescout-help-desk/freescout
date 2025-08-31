@@ -117,6 +117,7 @@ return array(
     'Illuminate\\Database\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Database'),
     'Illuminate\\Cookie\\Middleware\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Cookie/Middleware'),
     'Illuminate\\Cookie\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Cookie'),
+    'Illuminate\\Contracts\\Container\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Contracts/Container'),
     'Illuminate\\Container\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Container'),
     'Illuminate\\Console\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Console'),
     'Illuminate\\Config\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Config'),
