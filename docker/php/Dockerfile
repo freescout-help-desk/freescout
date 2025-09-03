@@ -3,11 +3,10 @@ FROM php:8.2-fpm
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    git unzip libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
+    git unzip \
     libonig-dev libxml2-dev libzip-dev libicu-dev g++ make \
     curl nano vim mariadb-client \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) bcmath exif gd intl mbstring pdo pdo_mysql zip opcache \
+    && docker-php-ext-install -j$(nproc) bcmath intl mbstring pdo pdo_mysql zip opcache \
     && rm -rf /var/lib/apt/lists/*
 
 # Composer
