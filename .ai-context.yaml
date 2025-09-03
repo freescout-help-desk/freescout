@@ -15,7 +15,7 @@ standards:
 ports:
   # Registered in /Users/agicollective/warp/.port-registry.yaml under projects.freescout
   web: 8087
-  database: 3308
+  database: 3312
   redis: 6384
   mailhog_http: 8026
   mailhog_smtp: 1027

@@ -67,7 +67,7 @@ services:
       MARIADB_USER: "${DB_USERNAME:-freescout}"
       MARIADB_PASSWORD: "${DB_PASSWORD:-freescout}"
     ports:
-      - "${FREESCOUT_DB_PORT:-3308}:3306"
+      - "${FREESCOUT_DB_PORT:-3312}:3306"
     volumes:
       - db_data:/var/lib/mysql
     networks:
