@@ -1,0 +1,34 @@
+# FreeScout (WARP Onboarding)
+
+Diese Datei beschreibt die lokale Dev-Umgebung im WARP-Portfolio.
+
+## Ports (registriert)
+- Web: ${FREESCOUT_WEB_PORT:-8087}
+- MariaDB: ${FREESCOUT_DB_PORT:-3308}
+- Redis: ${FREESCOUT_REDIS_PORT:-6384}
+- MailHog: HTTP ${FREESCOUT_MAILHOG_HTTP_PORT:-8026}, SMTP ${FREESCOUT_MAILHOG_SMTP_PORT:-1027}
+
+## Setup (lokal)
+1) Docker starten
+   docker compose up -d --build
+
+2) Healthcheck
+   - Web: curl -I http://localhost:${FREESCOUT_WEB_PORT:-8087}/health
+   - DB:  nc -z localhost ${FREESCOUT_DB_PORT:-3308}
+   - Redis: docker compose exec -T redis redis-cli ping
+   - MailHog: http://localhost:${FREESCOUT_MAILHOG_HTTP_PORT:-8026}
+
+3) (Optional) Abhängigkeiten installieren
+   docker compose exec -T php composer install
+
+Hinweis: Upstream empfiehlt Web-Installer (kein manuelles .env vorab). Für vollautomatische Provisionierung bitte melden, dann konfiguriere ich .env und führe artisan-Befehle aus.
+
+## QA
+- Code Style: .php-cs-fixer.php
+- Static Analysis: phpstan.neon (Level 5; für Legacy Code moderate Strenge)
+- Tests: phpunit.xml.dist (sqlite in-memory)
+
+## AI-Variablen
+- OLLAMA_HOST (default: http://host.docker.internal:11434)
+- OLLAMA_MODEL (default: tinyllama)
+

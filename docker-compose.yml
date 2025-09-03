@@ -1,0 +1,128 @@
+version: "3.9"
+
+name: freescout
+
+services:
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    depends_on:
+      - php
+    ports:
+      - "${FREESCOUT_WEB_PORT:-8087}:80"
+    volumes:
+      - ./:/var/www/html:delegated
+      - vendor:/var/www/html/vendor
+      - node_modules:/var/www/html/node_modules
+      - storage:/var/www/html/storage
+      - ./docker/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - freescout_net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  php:
+    build:
+      context: ./docker/php
+    environment:
+      APP_ENV: "${APP_ENV:-local}"
+      APP_URL: "${APP_URL:-http://localhost:${FREESCOUT_WEB_PORT:-8087}}"
+      DB_CONNECTION: mysql
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_DATABASE: "${DB_DATABASE:-freescout}"
+      DB_USERNAME: "${DB_USERNAME:-freescout}"
+      DB_PASSWORD: "${DB_PASSWORD:-freescout}"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailhog
+      MAIL_PORT: "${FREESCOUT_MAILHOG_SMTP_PORT:-1027}"
+      MAIL_ENCRYPTION: "null"
+      OLLAMA_HOST: "${OLLAMA_HOST:-http://host.docker.internal:11434}"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-tinyllama}"
+    volumes:
+      - ./:/var/www/html:delegated
+      - vendor:/var/www/html/vendor
+      - node_modules:/var/www/html/node_modules
+      - storage:/var/www/html/storage
+    depends_on:
+      - mariadb
+      - redis
+    networks:
+      - freescout_net
+    healthcheck:
+      test: ["CMD-SHELL", "php -v || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-root}"
+      MARIADB_DATABASE: "${DB_DATABASE:-freescout}"
+      MARIADB_USER: "${DB_USERNAME:-freescout}"
+      MARIADB_PASSWORD: "${DB_PASSWORD:-freescout}"
+    ports:
+      - "${FREESCOUT_DB_PORT:-3308}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - freescout_net
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb -ufreescout -p${DB_PASSWORD:-freescout} -e 'SELECT 1' ${DB_DATABASE:-freescout} || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${FREESCOUT_REDIS_PORT:-6384}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - freescout_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - "${FREESCOUT_MAILHOG_HTTP_PORT:-8026}:8025"
+      - "${FREESCOUT_MAILHOG_SMTP_PORT:-1027}:1025"
+    networks:
+      - freescout_net
+
+  node:
+    image: node:20-alpine
+    working_dir: /var/www/html
+    command: sh -c "npm ci && npm run dev"
+    volumes:
+      - ./:/var/www/html:delegated
+      - node_modules:/var/www/html/node_modules
+    networks:
+      - freescout_net
+    profiles:
+      - dev
+
+volumes:
+  db_data:
+  redis_data:
+  vendor:
+  storage:
+  node_modules:
+
+networks:
+  freescout_net:
+    driver: bridge
+

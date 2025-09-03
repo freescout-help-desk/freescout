@@ -1,0 +1,50 @@
+project:
+  name: freescout
+  type: php-laravel
+  description: "FreeScout help desk (Laravel), portfolio integration (non-Rust exception)"
+  owner: "WARP"
+  repository: "https://github.com/freescout-help-desk/freescout"
+  path: "/Users/agicollective/warp/freescout"
+
+standards:
+  coding: "PSR-12"
+  static_analysis: "PHPStan (levels adjusted per legacy constraints)"
+  tests: "PHPUnit"
+  deviation_from_rust_first: "Upstream third-party app in PHP/Laravel; Rust-first does not apply"
+
+ports:
+  # Registered in /Users/agicollective/warp/.port-registry.yaml under projects.freescout
+  web: 8087
+  database: 3308
+  redis: 6384
+  mailhog_http: 8026
+  mailhog_smtp: 1027
+
+environment:
+  notes: "Do not create .env manually if using the web installer (per upstream guidance)."
+  upstream_env:
+    - DB_CONNECTION
+    - DB_HOST
+    - DB_PORT
+    - DB_DATABASE
+    - DB_USERNAME
+    - DB_PASSWORD
+  portfolio_env_recommended:
+    - OLLAMA_HOST
+    - OLLAMA_MODEL
+
+ai:
+  providers: [openai, claude, grok, ollama]
+  vector_db: "none"
+  notes: "No vector database required by upstream. Prefer Qdrant if we add embeddings later."
+
+workflows:
+  setup:
+    - "Review README.md and Installation Guide"
+    - "Use web installer, or follow upstream Docker/Cloud docs if preferred"
+  quality:
+    - "Adopt PSR-12 and PHPStan where feasible given legacy Laravel 5.5"
+
+deliverables:
+  - ".ai-context.yaml"
+
