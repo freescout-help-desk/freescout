@@ -28,7 +28,16 @@ Hinweis: Upstream empfiehlt Web-Installer (kein manuelles .env vorab). Für voll
 - Static Analysis: phpstan.neon (Level 5; für Legacy Code moderate Strenge)
 - Tests: phpunit.xml.dist (sqlite in-memory)
 
+### Commands
+- Composer: composer run qa:all (runs cs-check, phpstan, phpunit)
+- In Docker: docker compose exec -T php composer run qa:all
+
 ## AI-Variablen
 - OLLAMA_HOST (default: http://host.docker.internal:11434)
 - OLLAMA_MODEL (default: tinyllama)
+
+## CI
+- GitHub Actions Workflow: .github/workflows/ci.yml
+- Läuft auf PHP 7.4 mit MariaDB 10.5 und Redis Services
+- Führt composer install, artisan key:generate, migrations, PHPUnit, PHPStan und PHP-CS-Fixer (dry-run) aus
 

@@ -1,0 +1,100 @@
+# Example GitHub Actions workflow for FreeScout CI
+# Copy this file to .github/workflows/ci.yml in your fork to enable CI.
+# Note: pushing workflow files requires a token with `workflow` scope.
+
+name: CI
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: testing
+      APP_DEBUG: true
+      APP_URL: http://localhost
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: freescout
+      DB_USERNAME: freescout
+      DB_PASSWORD: freescout
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: redis
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: 6379
+
+    services:
+      mariadb:
+        image: mariadb:10.5
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: freescout
+          MARIADB_USER: freescout
+          MARIADB_PASSWORD: freescout
+        ports:
+          - "3306:3306"
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+      redis:
+        image: redis:6
+        ports:
+          - "6379:6379"
+        options: >-
+          --health-cmd="redis-cli ping || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: composer:v2
+          coverage: none
+          extensions: mbstring, intl, bcmath, zip, pdo_mysql
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.composer/cache
+            vendor
+          key: composer-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Prepare application
+        run: |
+          cp .env.example .env || true
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate --force
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run tests
+        run: vendor/bin/phpunit --colors=never --testdox
+
+      - name: PHPStan
+        run: |
+          if [ -x vendor/bin/phpstan ]; then vendor/bin/phpstan analyse -c phpstan.neon --no-progress; fi
+
+      - name: PHP-CS-Fixer (dry-run)
+        run: |
+          if [ -x vendor/bin/php-cs-fixer ]; then vendor/bin/php-cs-fixer fix --dry-run --diff --allow-risky=no; fi
+
