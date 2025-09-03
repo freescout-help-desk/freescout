@@ -22,3 +22,14 @@ stan:
 test:
 	docker compose exec -T php vendor/bin/phpunit --configuration phpunit.xml.dist
 
+qa:
+	make check-style
+	make stan
+	make test
+
+cs-fix:
+	PHP_CS_FIXER_IGNORE_ENV=1 docker compose exec -T php php-cs-fixer fix --allow-risky=no
+
+audit:
+	docker compose exec -T php composer audit || true
+

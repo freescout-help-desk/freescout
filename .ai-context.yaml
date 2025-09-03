@@ -13,12 +13,15 @@ standards:
   deviation_from_rust_first: "Upstream third-party app in PHP/Laravel; Rust-first does not apply"
 
 ports:
-  # Registered in /Users/agicollective/warp/.port-registry.yaml under projects.freescout
+  # Registered in /Users/agicollective/warp/.port-registry.yaml under projects.freescout (host mappings)
   web: 8087
   database: 3312
   redis: 6384
   mailhog_http: 8026
   mailhog_smtp: 1027
+container_ports:
+  # Interne Ports innerhalb des Docker-Netzwerks
+  database: 3306
 
 environment:
   notes: "Do not create .env manually if using the web installer (per upstream guidance)."
@@ -44,7 +47,14 @@ workflows:
     - "Use web installer, or follow upstream Docker/Cloud docs if preferred"
   quality:
     - "Adopt PSR-12 and PHPStan where feasible given legacy Laravel 5.5"
+  ci:
+    - "Enable CI by copying docs/ci.yml.example to .github/workflows/ci.yml (requires token with workflow scope)"
+  hooks:
+    - "Activate Pre-Commit Hook: git config core.hooksPath .githooks"
 
 deliverables:
   - ".ai-context.yaml"
+  - "docker-compose.yml + Dockerfiles (nginx, php-fpm 7.4, mariadb, redis, mailhog)"
+  - "QA-Configs: phpstan.neon, .php-cs-fixer.php, Makefile QA-Targets, .githooks/pre-commit"
+  - "docs/ci.yml.example"
 

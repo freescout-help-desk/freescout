@@ -37,7 +37,12 @@ Hinweis: Upstream empfiehlt Web-Installer (kein manuelles .env vorab). Für voll
 - OLLAMA_MODEL (default: tinyllama)
 
 ## CI
-- GitHub Actions Workflow: .github/workflows/ci.yml
+- Beispiel-Workflow: docs/ci.yml.example
 - Läuft auf PHP 7.4 mit MariaDB 10.5 und Redis Services
 - Führt composer install, artisan key:generate, migrations, PHPUnit, PHPStan und PHP-CS-Fixer (dry-run) aus
+- Aktivierung: Datei nach .github/workflows/ci.yml kopieren (Token mit "workflow"-Scope nötig)
+
+## Git-Hooks aktivieren
+- Pre-Commit Hook (QA-Checks vor jedem Commit)
+  git config core.hooksPath .githooks
 
