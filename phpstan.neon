@@ -1,0 +1,13 @@
+parameters:
+  level: 5
+  paths:
+    - app
+    - Modules
+  excludes_analyse:
+    - vendor
+    - storage
+    - bootstrap/cache
+  checkMissingIterableValueType: false
+  ignoreErrors:
+    - '#Call to an undefined method#'
+

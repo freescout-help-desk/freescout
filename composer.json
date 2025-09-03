@@ -11,33 +11,33 @@
     ],
     "require": {
         "php": ">=7.1.0",
-
-        "symfony/debug": "v3.4.18",
-        "devfactory/minify": "1.0.7",
-        "fideloper/proxy": "3.3.4",
-        "laravel/framework": "v5.5.40",
-        "laravel/tinker": "v1.0.7",
-        "mews/purifier": "3.2.2",
-        "spatie/laravel-activitylog": "2.7.0",
-        "lord/laroute": "2.4.7",
         "axn/laravel-laroute": "1.3.0",
-        "html2text/html2text": "4.1.0",
-        "watson/rememberable": "2.0.4",
-        "nwidart/laravel-modules": "2.7.0",
-        "tormjens/eventy": "0.5.4",
         "barryvdh/laravel-translation-manager": "v0.5.0",
         "chumper/zipper": "v1.0.2",
-        "rachidlaasri/laravel-installer": "4.0.2",
-        "rap2hpoutre/laravel-log-viewer": "v2.0.0",
         "codedge/laravel-selfupdater": "1.4.3",
+        "devfactory/minify": "1.0.7",
         "doctrine/dbal": "2.12.1",
         "egulias/email-validator": "2.1.10",
-        "symfony/console": "v3.4.47",
+        "enshrined/svg-sanitize": "0.15.4",
+        "fideloper/proxy": "3.3.4",
+        "html2text/html2text": "4.1.0",
         "javoscript/laravel-macroable-models": "1.0.4",
+        "laravel/framework": "v5.5.40",
+        "laravel/tinker": "v1.0.7",
+        "lord/laroute": "2.4.7",
+        "mews/purifier": "3.2.2",
+        "nwidart/laravel-modules": "2.7.0",
+        "predis/predis": "^1.1",
+        "rachidlaasri/laravel-installer": "4.0.2",
         "ramsey/uuid": "3.9.6",
+        "rap2hpoutre/laravel-log-viewer": "v2.0.0",
+        "spatie/laravel-activitylog": "2.7.0",
+        "symfony/console": "v3.4.47",
+        "symfony/debug": "v3.4.18",
         "symfony/polyfill-mbstring": "v1.24.0",
-        "webklex/php-imap": "4.1.1",
-        "enshrined/svg-sanitize": "0.15.4"
+        "tormjens/eventy": "0.5.4",
+        "watson/rememberable": "2.0.4",
+        "webklex/php-imap": "4.1.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v3.2.0",
@@ -76,7 +76,9 @@
         "myclabs/deep-copy": "1.10.1",
         "webmozart/assert": "1.3.0",
         "psr/container": "1.0.0",
-        "psr/http-message": "1.0.1"
+        "psr/http-message": "1.0.1",
+        "phpstan/phpstan": "^1.9",
+        "friendsofphp/php-cs-fixer": "^2.19"
     },
     "autoload": {
         "classmap": [
@@ -524,6 +526,23 @@
             "@php -r \"copy('vendor/nesbot/carbon/src/Carbon/Lang/pt.php', 'vendor/nesbot/carbon/src/Carbon/Lang/pt_PT.php');\"",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover"
+        ],
+        "qa:phpstan": [
+            "@php -r \"file_exists('vendor/bin/phpstan') || exit(0);\"",
+            "vendor/bin/phpstan analyse -c phpstan.neon --no-progress"
+        ],
+        "qa:cs:check": [
+            "@php -r \"file_exists('vendor/bin/php-cs-fixer') || exit(0);\"",
+            "vendor/bin/php-cs-fixer fix --dry-run --diff --allow-risky=no"
+        ],
+        "qa:test": [
+            "@php -r \"file_exists('vendor/bin/phpunit') || exit(0);\"",
+            "vendor/bin/phpunit --colors=never --testdox"
+        ],
+        "qa:all": [
+            "@qa:cs:check",
+            "@qa:phpstan",
+            "@qa:test"
         ]
     },
     "config": {

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run QA checks either inside the php container or locally
+if command -v docker >/dev/null 2>&1 && docker compose ps php >/dev/null 2>&1; then
+  docker compose exec -T php sh -lc '
+    if [ -x vendor/bin/php-cs-fixer ]; then vendor/bin/php-cs-fixer fix --dry-run --diff --allow-risky=no; fi
+    if [ -x vendor/bin/phpstan ]; then vendor/bin/phpstan analyse -c phpstan.neon --no-progress; fi
+    if [ -x vendor/bin/phpunit ]; then vendor/bin/phpunit --colors=never --testdox; fi
+  '
+else
+  if [ -x vendor/bin/php-cs-fixer ]; then vendor/bin/php-cs-fixer fix --dry-run --diff --allow-risky=no; fi
+  if [ -x vendor/bin/phpstan ]; then vendor/bin/phpstan analyse -c phpstan.neon --no-progress; fi
+  if [ -x vendor/bin/phpunit ]; then vendor/bin/phpunit --colors=never --testdox; fi
+fi
+
