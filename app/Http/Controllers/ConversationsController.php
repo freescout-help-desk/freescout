@@ -449,6 +449,10 @@ class ConversationsController extends Controller
                 }
             }
         }
+        if ($request->get('body')) {
+            $thread = new Thread();
+            $thread->body = $request->get('body');
+        }
 
         $conversation->subject = $subject;
 
