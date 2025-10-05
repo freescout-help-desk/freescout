@@ -450,6 +450,11 @@ class ConversationsController extends Controller
             }
         }
 
+        if ($request->get('body') && !$thread) {
+            $thread = new Thread();
+            $thread->body = $request->get('body');
+        }
+
         $conversation->subject = $subject;
 
         return view('conversations/create', [
