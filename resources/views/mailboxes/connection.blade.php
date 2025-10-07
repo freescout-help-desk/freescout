@@ -91,7 +91,7 @@
                             <label for="out_username" class="col-sm-2 control-label">{{ __('Username') }}</label>
 
                             <div class="col-sm-6">
-                                <input id="out_username" type="text" class="form-control input-sized @if ($out_oauth_enabled) disabled @endif" name="out_username" value="{{ old('out_username', $mailbox->out_username) }}" maxlength="100" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password" @if ($out_oauth_enabled) readonly @endif>
+                                <input id="out_username" type="text" class="form-control input-sized @if ($out_oauth_enabled) disabled @endif" name="out_username" value="{{ old('out_username', $mailbox->out_username) }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password" @if ($out_oauth_enabled) readonly @endif>
 
                                 @include('partials/field_error', ['field'=>'out_username'])
                             </div>

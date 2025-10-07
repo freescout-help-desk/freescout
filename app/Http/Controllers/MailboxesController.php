@@ -404,7 +404,7 @@ class MailboxesController extends Controller
             $validator = Validator::make($request->all(), [
                 'out_server'          => 'required|string|max:255',
                 'out_port'            => 'required|integer',
-                'out_username'        => 'nullable|string|max:100',
+                'out_username'        => 'nullable|string|max:255',
                 'out_password'        => 'nullable|string|max:255',
                 'out_encryption'      => 'required|integer',
             ]);

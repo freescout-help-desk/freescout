@@ -177,6 +177,7 @@ class Mail
                     \Config::set('mail.username', $mailbox->email);
                     \Config::set('mail.password', $mailbox->oauthGetParam('a_token'));
                 } else {
+                    \Config::set('mail.auth_mode', '');
                     if (!$mailbox->out_username) {
                         \Config::set('mail.username', null);
                         \Config::set('mail.password', null);
