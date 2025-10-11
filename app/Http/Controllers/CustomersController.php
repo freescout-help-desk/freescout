@@ -305,7 +305,12 @@ class CustomersController extends Controller
 
         $select_list = ['customers.id', 'first_name', 'last_name'];
         if ($join_emails) {
-            $select_list[] = 'emails.email';
+            if ($limited_visibility) {
+                // https://github.com/freescout-help-desk/freescout/issues/5032
+                $select_list[] = \DB::raw('MAX(emails.email)');
+            } else {
+                $select_list[] = 'emails.email';
+            }
         }
         if ($request->show_fields == 'phone') {
             $select_list[] = 'phones';
