@@ -2255,9 +2255,10 @@ class Helper
 
     public static function cspMetaTag()
     {
-        if (!config('app.csp_enabled')) {
-            return '';
-        }
+        // Disabled to improve security.
+        // if (!config('app.csp_enabled')) {
+        //     return '';
+        // }
 
         $nonce = \Helper::cspNonce();
 
@@ -2280,9 +2281,14 @@ class Helper
 
         //  frame-src https://recaptcha.net; connect-src https://recaptcha.net;
 
-        return "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' ".$script_domains."; img-src * 'self' data:; font-src * 'self' data:; style-src * 'self' 'unsafe-inline'; form-action 'self'; frame-src * 'self'; script-src 'self' 'nonce-".$nonce."' "
+        $csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' ".$script_domains."; img-src * 'self' data:; font-src * 'self' data:; style-src * 'self' 'unsafe-inline'; form-action 'self'; frame-src * 'self'; script-src 'self' 'nonce-".$nonce."' "
             .$script_src.";"
             .config('app.csp_custom').\Eventy::filter('csp.custom', '')."\">";
+
+        // Strip 'unsafe-inline' to improve security.
+        $csp = str_ireplace('unsafe-inline', '', $csp);
+
+        return $csp;
     }
 
     public static function cspNonceAttr()
