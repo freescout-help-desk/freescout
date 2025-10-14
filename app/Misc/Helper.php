@@ -2281,13 +2281,18 @@ class Helper
 
         //  frame-src https://recaptcha.net; connect-src https://recaptcha.net;
 
-        $csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' ".$script_domains."; img-src * 'self' data:; font-src * 'self' data:; style-src * 'self' 'unsafe-inline'; form-action 'self'; frame-src * 'self'; script-src 'self' 'nonce-".$nonce."' "
-            .$script_src.";"
-            .config('app.csp_custom').\Eventy::filter('csp.custom', '')."\">";
+        $csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' ".self::sanitizeCsp($script_domains)."; img-src * 'self' data:; font-src * 'self' data:; style-src * 'self' 'unsafe-inline'; form-action 'self'; frame-src * 'self'; script-src 'self' 'nonce-".$nonce."' "
+            .self::sanitizeCsp($script_src).";"
+            .self::sanitizeCsp(config('app.csp_custom').\Eventy::filter('csp.custom', ''))."\">";
 
-        // Strip 'unsafe-inline' to improve security.
+        return $csp;
+    }
+
+    // Strip 'unsafe-inline' to improve security.
+    public static function sanitizeCsp($csp)
+    {
+        $csp = str_ireplace("'unsafe-inline'", '', $csp);
         $csp = str_ireplace('unsafe-inline', '', $csp);
-
         return $csp;
     }
 
