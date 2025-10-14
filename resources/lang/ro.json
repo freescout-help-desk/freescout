@@ -555,7 +555,6 @@
     "Queued and failed jobs are cleaned automatically once in a while. No need to worry or delete them manually.": "Sarcinile aflate în coadă și cele eșuate sunt șterse automat din când în când. Nu este nevoie să vă faceți griji sau să le ștergeți manual.",
     "Re-send invite email": "Trimite din nou e-mailul de invitație",
     "Received a new conversation": "A primit o nouă conversație",
-    "Receiving Emails": "Primirea e-mailurilor",
     "Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address": "Primirea e-mailurilor trebuie configurată pentru căsuța poștală pentru a putea prelua e-mailurile de la adresa dvs. de e-mail de asistență.",
     "Recent": "Recent",
     "Recipient clicked a link in the message": "Destinatarul a dat clic pe un link din mesaj",
@@ -808,6 +807,6 @@
     "or Enter Mailbox Email": "sau Introduceți adresa de e-mail a căsuței poștale",
     "read more": "citește mai mult",
     "via": "prin",
-    "you": "tu",
-    "yourself": "tu însuți"
+    "you": "Tu",
+    "yourself": "Tu"
 }
