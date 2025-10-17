@@ -22,7 +22,7 @@
         @endphp
         <a href="{{ $web_notification_data['conversation']->url(null, $web_notification_data['thread']->id, $conv_params) }}" title="{{ __('View conversation') }}">
         	<div class="web-notification-img">
-                @include('partials/person_photo', ['person' => $web_notification_data['thread']->getPerson(true)])
+                @include('partials/person_photo', ['person' => \Eventy::filter('web_notification.person', $web_notification_data['thread']->getPerson(true), $web_notification_data)])
             </div>
             <div class="web-notification-msg">
                 <div class="web-notification-msg-header">

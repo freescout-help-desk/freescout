@@ -1067,8 +1067,10 @@ class FetchEmails extends Command
             $conversation->setBcc($bcc);
         }
         $conversation->customer_email = $from;
-        // Reply from customer makes conversation active
-        if ($conversation->status != Conversation::STATUS_ACTIVE) {
+        // Reply from customer makes conversation active.
+        // If conversation is marked as Spam the status does not change.
+        // https://github.com/freescout-help-desk/freescout/issues/5005
+        if ($conversation->status != Conversation::STATUS_ACTIVE && $conversation->status != Conversation::STATUS_SPAM) {
             $conversation->status = \Eventy::filter('conversation.status_changing', Conversation::STATUS_ACTIVE, $conversation);
         }
         $conversation->last_reply_at = $now;

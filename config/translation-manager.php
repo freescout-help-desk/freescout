@@ -82,6 +82,8 @@ return [
         '@lang',
         '@choice',
         '__',
+        '__j',
+        '__h',
         '$trans.get',
     ],
 
