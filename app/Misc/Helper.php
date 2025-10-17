@@ -2298,9 +2298,9 @@ class Helper
 
     public static function cspNonceAttr()
     {
-        if (!config('app.csp_enabled')) {
-            return '';
-        }
+        // if (!config('app.csp_enabled')) {
+        //     return '';
+        // }
 
         return ' nonce="'.\Helper::cspNonce().'"';
     }
