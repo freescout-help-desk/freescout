@@ -452,7 +452,7 @@ class ConversationsController extends Controller
 
         if ($request->get('body') && !$thread) {
             $thread = new Thread();
-            $thread->body = $request->get('body');
+            $thread->body = \Helper::stripDangerousTags($request->get('body'));
         }
 
         $conversation->subject = $subject;
