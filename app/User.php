@@ -1195,6 +1195,23 @@ class User extends Authenticatable
         return false;
     }
 
+    public static function findByAlternateEmail($email)
+    {
+        $email = Email::sanitizeEmail($email);
+
+        $users = self::nonDeleted()
+            ->where('emails', \Helper::sqlLikeOperator(), '%'.$email.'%')
+            ->get();
+
+        foreach ($users as $user) {
+            if ($user->hasEmail($email)) {
+                return $user;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Check if there is a mailbox with specified email.
      */
