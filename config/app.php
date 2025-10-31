@@ -359,6 +359,14 @@ return [
     */
     'fetching_bunch_size'    => env('APP_FETCHING_BUNCH_SIZE', 100),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Use new POP3 library which does not use PHP IMAP extantion.
+    |
+    |-------------------------------------------------------------------------
+    */
+    'use_new_pop3_lib'    => env('APP_USE_NEW_POP3_LIB', false),
+
      /*
     |--------------------------------------------------------------------------
     | Dashboard path.
