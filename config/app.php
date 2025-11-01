@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.194',
+    'version' => '1.8.195',
 
     /*
     |--------------------------------------------------------------------------
@@ -98,8 +98,8 @@ return [
     */
 
     'locale'          => env('APP_LOCALE', 'en'),
-    'locales'         => ['en', 'ar', 'zh-CN', 'hr', 'cs', 'da', 'nl', 'fi', 'fr', 'de', 'hu', 'it', 'ja', 'kz', 'ko', 'no', 'fa', 'pl', 'pt-PT', 'pt-BR', 'ro', 'ru', 'es', 'sk', 'sv', 'tr', 'uk'],
-    'locales_rtl'     => ['ar', 'fa'],
+    'locales'         => ['en', 'ar', 'zh-CN', 'hr', 'cs', 'da', 'nl', 'fi', 'fr', 'de', 'he', 'hu', 'it', 'ja', 'kz', 'ko', 'no', 'fa', 'pl', 'pt-PT', 'pt-BR', 'ro', 'ru', 'es', 'sk', 'sv', 'tr', 'uk'],
+    'locales_rtl'     => ['ar', 'fa', 'he'],
     'default_locale'  => 'en',
 
     /*
@@ -358,6 +358,14 @@ return [
     |-------------------------------------------------------------------------
     */
     'fetching_bunch_size'    => env('APP_FETCHING_BUNCH_SIZE', 100),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Use new POP3 library which does not use PHP IMAP extantion.
+    |
+    |-------------------------------------------------------------------------
+    */
+    'use_new_pop3_lib'    => env('APP_USE_NEW_POP3_LIB', false),
 
      /*
     |--------------------------------------------------------------------------

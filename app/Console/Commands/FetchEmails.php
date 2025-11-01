@@ -748,6 +748,11 @@ class FetchEmails extends Command
                 if ($original_sender) {
                     // Check if sender is the existing user.
                     $sender_is_user = User::nonDeleted()->where('email', $from)->exists();
+                    // Check Alternate emails.
+                    // https://github.com/freescout-help-desk/freescout/issues/5047
+                    if (!$sender_is_user) {
+                        $sender_is_user = User::findByAlternateEmail($from);
+                    }
                     
                     if ($sender_is_user) {
                         // Substitute sender.

@@ -93,7 +93,7 @@
                             @endif
                         </strong>
                         @if (\Helper::isPrint())
-                            <small>&lt;{{ ($thread->type == App\Thread::TYPE_CUSTOMER ? $thread->customer_cached->getMainEmail() : $thread->created_by_user_cached->email ) }}&gt;</small>
+                            <small>&lt;{{ ($thread->type == App\Thread::TYPE_CUSTOMER ? $thread->customer_cached->getMainEmail() : $mailbox->email ) }}&gt;</small>
                             @if ($thread->isNote())
                                 [{{ __('Note') }}]
                             @endif
