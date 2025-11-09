@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" @if (\Helper::isLocaleRtl()) dir="rtl" @endif>
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
     <meta name="viewport" content="initial-scale=1.0">
@@ -13,6 +13,7 @@
 	<div id="{{ $reply_separator }}" class="{{ $reply_separator }}" data-fs="{{ $reply_separator }}" style="width:100%!important; margin:0; padding:0">
 	    @php
 	    	$is_forwarded = !empty($threads[0]) ? $threads[0]->isForwarded() : false;
+	    	$is_rtl = \Helper::isLocaleRtl();
 	    @endphp
 		@foreach ($threads as $thread)
 			@if ($loop->index == 1)<!-- originalMessage --><div class="gmail_quote" style="height:0; font-size:0px; line-height:0px; color:#ffffff;"></div>@endif
@@ -20,30 +21,49 @@
 	        	@if (!$loop->first)
                 	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:0;">
 						<tr>
-			                <td style="padding:8px 0 10px 0;">
-			                	
-			                    <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#727272; font-size:15px; line-height:21px; margin:0; font-weight:normal;">
-			                    	<strong style="color:#000000;">{{ $thread->getFromName($mailbox) }}@if ($is_forwarded && $thread->from) &lt;{{ $thread->from }}&gt;@endif</strong>
-			                    	{{--if ($loop->last){!! __(':person sent a message', ['person' => '<strong style="color:#000000;">'.htmlspecialchars($thread->getFromName($mailbox)).'</strong>']) !!}@else {!! __(':person replied', ['person' => '<strong style="color:#000000;">'.htmlspecialchars($thread->getFromName($mailbox)).'</strong>']) !!}@endif--}}
-			                	</h3>
+							@if ($is_rtl)
+                                {{-- RTL Order: Sender on the right, Date on the left --}}
+                                <td style="padding:8px 0 10px 0;" valign="top">
+                                    <div style="font-family: Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#9F9F9F; font-size:12px; line-height:18px; margin:0;" align="left">{{ App\Customer::dateFormat($thread->created_at, 'M j, H:i') }}</div>
+                                </td>
+                                <td style="padding:8px 0 10px 0;">
+                                    <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#727272; font-size:15px; line-height:21px; margin:0; font-weight:normal; text-align: right; direction: rtl; unicode-bidi: plaintext;">
+                                        <strong style="color:#000000;">{{ $thread->getFromName($mailbox) }}@if ($is_forwarded && $thread->from) &lt;{{ $thread->from }}&gt;@endif</strong>
+                                    </h3>
+                                    @if ($thread->getCcArray())
+                                        <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#9F9F9F; font-size:12px; line-height:16px; margin:0; text-align: right; direction: rtl; unicode-bidi: plaintext;">
+                                            Cc: {{ implode(', ', $thread->getCcArray() )}}
+                                            <br>
+                                        </p>
+                                    @endif
+                                </td>
+                            @else
+                                {{-- LTR : Date on the right, Sender on the left --}}
+				                <td style="padding:8px 0 10px 0;">
+				                	
+				                    <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#727272; font-size:15px; line-height:21px; margin:0; font-weight:normal;">
+				                    	<strong style="color:#000000;">{{ $thread->getFromName($mailbox) }}@if ($is_forwarded && $thread->from) &lt;{{ $thread->from }}&gt;@endif</strong>
+				                    	{{--if ($loop->last){!! __(':person sent a message', ['person' => '<strong style="color:#000000;">'.htmlspecialchars($thread->getFromName($mailbox)).'</strong>']) !!}@else {!! __(':person replied', ['person' => '<strong style="color:#000000;">'.htmlspecialchars($thread->getFromName($mailbox)).'</strong>']) !!}@endif--}}
+				                	</h3>
 
-			                    @if ($thread->getCcArray())
-				                    <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#9F9F9F; font-size:12px; line-height:16px; margin:0;">
-				                    	Cc: {{ implode(', ', $thread->getCcArray() )}}
-				                    	<br>
-				                    </p>
-				                @endif
-			                </td>
-			                <td style="padding:8px 0 10px 0;" valign="top">
-			                    <div style="font-family: Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#9F9F9F; font-size:12px; line-height:18px; margin:0;" align="right">{{ App\Customer::dateFormat($thread->created_at, 'M j, H:i') }}</div>
-			                </td>
+				                    @if ($thread->getCcArray())
+					                    <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#9F9F9F; font-size:12px; line-height:16px; margin:0;">
+					                    	Cc: {{ implode(', ', $thread->getCcArray() )}}
+					                    	<br>
+					                    </p>
+					                @endif
+				                </td>
+				                <td style="padding:8px 0 10px 0;" valign="top">
+				                    <div style="font-family: Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#9F9F9F; font-size:12px; line-height:18px; margin:0;" align="right">{{ App\Customer::dateFormat($thread->created_at, 'M j, H:i') }}</div>
+				                </td>
+                            @endif
 			            </tr>
 			        </table>
 		        @endif
 		    </div>
             <div colspan="2" style="padding:8px 0 10px 0;">
                 <div>
-                    <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color: #232323; font-size:13px; line-height:19px; margin:0;">
+                    <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color: #232323; font-size:13px; line-height:19px; margin:0; @if($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
                     	@if ($thread->source_via == App\Thread::PERSON_USER && $mailbox->before_reply && $loop->first)
                             <span style="color:#b5b5b5">{{ $mailbox->before_reply }}</span><br><br>
                         @endif
@@ -63,7 +83,7 @@
 			<div style="height:15px;"></div>
 		@endforeach
 		@if (\App\Option::get('email_branding'))
-            <div height="" style="height:30px; font-size:12px; line-height:18px; font-family:Arial,'Helvetica Neue',Helvetica,Tahoma,sans-serif; color: #aaaaaa;">
+            <div height="" style="height:30px; font-size:12px; line-height:18px; font-family:Arial,'Helvetica Neue',Helvetica,Tahoma,sans-serif; color: #aaaaaa; @if($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
 				{!! __('Support powered by :app_name — Free open source help desk & shared mailbox', ['app_name' => '<a href="https://landing.freescout.net">'.\Config::get('app.name').'</a>']) !!}
 			</div>
 		@endif

@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" @if (\Helper::isLocaleRtl()) dir="rtl" @endif>
 <head>
 	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
 	<meta name="viewport" content="width=350px, user-scalable=yes">
@@ -22,6 +22,7 @@
 	<![endif]-->
 </head>
 <body bgcolor="#f8f9f9" style="-webkit-text-size-adjust:none; margin: 0;">
+	@php $is_rtl = \Helper::isLocaleRtl(); @endphp
 	<table bgcolor="#f8f9f9" cellspacing="0" border="0" cellpadding="0" width="100%" id="{{ \MailHelper::REPLY_SEPARATOR_NOTIFICATION }}" class="{{ \MailHelper::REPLY_SEPARATOR_NOTIFICATION }}" data-fs="{{ \MailHelper::REPLY_SEPARATOR_NOTIFICATION }}">
 		<tr>
 			<td>
@@ -40,8 +41,8 @@
                                         <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; font-size:14px; color:#B5B9BD; line-height:16px; margin:0; margin-bottom: 6px;">
                                         	[{{ $mailbox->name }}]
                                         </p>
-				                        <p style="display:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#444; line-height:22px; font-size:16px; margin:0;">
-                                            {{ __('Replying to this notification will email :name', ['name' => ($customer ? $customer->getFirstName(true) : '')]) }} (<a href="mailto:{{ $conversation->customer_email }}" style="color:#3f8abf; text-decoration:none;">{{ $conversation->customer_email }}</a>)
+				                        <p style="display:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#444; line-height:22px; font-size:16px; margin:0; @if ($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
+                                            {{ __('Replying to this notification will email :name', ['name' => ($customer ? $customer->getFirstName(true) : '')]) }} (<a href="mailto:{{ $conversation->customer_email }}" style="color:#3f8abf; text-decoration:none;">{{ $conversation->customer_email ?? '' }}</a>)
                                             @if ($conversation->getCcArray())
                                             	<br/><small>CC: {{ implode(', ', $conversation->getCcArray()) }}</small>
                                             @endif
@@ -63,7 +64,7 @@
 							<table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
 							    <tr>
 							        <td colspan="2">
-							            <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; line-height:15px; margin:0; font-size:12px; color:#a1a6ab; padding-bottom: 0.75em;">
+							            <p style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; line-height:15px; margin:0; font-size:12px; color:#a1a6ab; padding-bottom: 0.75em; @if ($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
 							            	@if (count($threads) == 1)
 							            		{{ __('Received a new conversation') }}
 							            	@else
@@ -82,31 +83,61 @@
 							        </td>
 							    </tr>
 							    <tr>
-							        <td valign="top">
-							            <table border="0" cellspacing="0" cellpadding="0">
-							                <tr>
-							                    <td>
-							                        <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#222222; line-height:25px; font-size:20px; margin:0; font-weight:normal;">{{ $conversation->subject }}</h3>
-							                    </td>
-							                </tr>
-							            </table>
-							        </td>
-							        <td align="right" valign="top">
-							            <table border="0" cellspacing="0" cellpadding="5" style="margin-top: 5px;">
-							                <tr>
-							                    <td height="10" bgcolor="{{ $conversation->getStatusColor() }}" style="color:#ffffff; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; line-height:12px; font-size:12px; margin-top: 3px;border-radius: 2px; {{--@if ($conversation->status == App\Conversation::STATUS_PENDING)border: 1px solid #ccc; color: #727d87;@endif--}}">{{ strtoupper($conversation->getStatusName()) }}</td>
-							                </tr>
-							            </table>
-							            @if ($conversation->user_id && $conversation->user)
+							    	@if ($is_rtl)
+										{{-- RTL Order: Subject on the right, Status on the left --}}
+                                        <td align="left" valign="top">
+                                            <table border="0" cellspacing="0" cellpadding="5" style="margin-top: 5px;">
+                                                <tr>
+                                                    <td height="10" bgcolor="{{ $conversation->getStatusColor() }}" style="color:#ffffff; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; line-height:12px; font-size:12px; margin-top: 3px;border-radius: 2px;">{{ strtoupper($conversation->getStatusName()) }}</td>
+                                                </tr>
+                                            </table>
+                                            @if ($conversation->user_id && $conversation->user)
+                                                <table border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; line-height:16px; font-size:12px; padding-top: 8px;text-align:left;">
+                                                            {{ __('Assigned to') }} {{ $conversation->user->getFullName() }}
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            @endif
+                                        </td>
+                                        <td valign="top">
+                                            <table border="0" cellspacing="0" cellpadding="0">
+                                                <tr>
+                                                    <td>
+                                                        <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#222222; line-height:25px; font-size:20px; margin:0; font-weight:normal; text-align: right; direction: rtl; unicode-bidi: plaintext;">{{ $conversation->subject }}</h3>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+							    	@else
+							    		{{-- LTR Order: Status on the left, Subject on the right --}}
+								        <td valign="top">
 								            <table border="0" cellspacing="0" cellpadding="0">
 								                <tr>
-								                    <td style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; line-height:16px; font-size:12px; padding-top: 8px;text-align:right;">
-								                        {{ __('Assigned to') }} {{ $conversation->user->getFullName() }}
+								                    <td>
+								                        <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#222222; line-height:25px; font-size:20px; margin:0; font-weight:normal;">{{ $conversation->subject ?? '' }}</h3>
 								                    </td>
 								                </tr>
 								            </table>
-								        @endif
-							        </td>
+								        </td>
+								        <td align="right" valign="top">
+								            <table border="0" cellspacing="0" cellpadding="5" style="margin-top: 5px;">
+								                <tr>
+								                    <td height="10" bgcolor="{{ $conversation->getStatusColor() }}" style="color:#ffffff; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; line-height:12px; font-size:12px; margin-top: 3px;border-radius: 2px; {{--@if ($conversation->status == App\Conversation::STATUS_PENDING)border: 1px solid #ccc; color: #727d87;@endif--}}">{{ strtoupper($conversation->getStatusName()) }}</td>
+								                </tr>
+								            </table>
+								            @if ($conversation->user_id && $conversation->user)
+									            <table border="0" cellspacing="0" cellpadding="0">
+									                <tr>
+									                    <td style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; line-height:16px; font-size:12px; padding-top: 8px;text-align:right;">
+									                        {{ __('Assigned to') }} {{ $conversation->user->getFullName() }}
+									                    </td>
+									                </tr>
+									            </table>
+									        @endif
+								        </td>
+								    @endif
 							    </tr>
 							</table>
 						</td>
@@ -124,14 +155,25 @@
 											<td style="padding: 0.75em 2em;">
 												<table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#f8f9fa">
 													<tr>
-														<td valign="top">
-															<div style="disdivlay:inline; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;">
-																{!! $thread->getActionText('', true, false, $user, htmlspecialchars(view('emails/user/thread_by', ['thread' => $thread, 'user' => $user])->render())) !!}
-															</div>
-														</td>
-														<td valign="top">
-															<div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;" align="right">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
-														</td>
+														@if ($is_rtl)
+															<td valign="top">
+																<div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;" align="left">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
+															</td>
+															<td valign="top">
+																<div style="{{-- display:inline; --}}font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0; text-align: right; direction: rtl; unicode-bidi: plaintext;">
+																	{!! $thread->getActionText('', true, false, $user, htmlspecialchars(view('emails/user/thread_by', ['thread' => $thread, 'user' => $user])->render())) !!}
+																</div>
+															</td>
+														@else
+															<td valign="top">
+																<div style="{{-- display:inline; --}}font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;">
+																	{!! $thread->getActionText('', true, false, $user, htmlspecialchars(view('emails/user/thread_by', ['thread' => $thread, 'user' => $user])->render())) !!}
+																</div>
+															</td>
+															<td valign="top">
+																<div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
+															</td>
+														@endif
 													</tr>
 												</table>
 											</td>
@@ -148,45 +190,27 @@
 									        <td style="padding: 2em;" bgcolor="@if ($thread->type == App\Thread::TYPE_MESSAGE){{ config('app.colors')['bg_user_reply'] }}@elseif ($thread->type == App\Thread::TYPE_NOTE){{ config('app.colors')['bg_note'] }}@else{{ 'ffffff' }}@endif">
 									            <table width="100%" border="0" cellspacing="0" cellpadding="0">
 									                <tr>
-									                    <td>
-									                        <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; font-size:17px; line-height:22px; margin:0 0 2px 0; font-weight:normal;">
-																@if ($thread->type == App\Thread::TYPE_NOTE)
-																	<span style="color:#e6b216">
-																		{!! __(':person added a note', ['person' => '<strong style="color:#000000;">'.$thread->getCreatedBy()->getFullName(true).'</strong>']) !!}
-																	</span>
-																@else
-																	@if ($thread->type == App\Thread::TYPE_MESSAGE)
-																		@php
-																			$action_color = config('app.colors')['text_user'];
-																		@endphp
-																	@else
-																		@php
-																			$action_color = config('app.colors')['text_customer'];
-																		@endphp
-																	@endif
-																	<span style="color:{{ $action_color }}">
-																		@if ($thread->isForwarded())
-																			@php $trans_text = __(':person forwarded a conversation :forward_parent_conversation_number') @endphp
-																		@elseif ($loop->last)
-																			@php $trans_text = __(':person started the conversation') @endphp
-																		@else
-																			@php $trans_text = __(':person replied') @endphp
-																		@endif
-																		@php
-																			$trans_params = ['person' => '<strong style="color:#000000;">'.$thread->getCreatedBy()->getFullName(true).'</strong>'];
-																			if ($thread->isForwarded()) {
-																				$trans_params['forward_parent_conversation_number'] = '<a href="'.route('conversations.view', ['id' => $thread->getMetaFw(App\Thread::META_FORWARD_PARENT_CONVERSATION_ID)]).'#thread-'.$thread->getMetaFw(App\Thread::META_FORWARD_PARENT_THREAD_ID).'">#'.$thread->getMetaFw(App\Thread::META_FORWARD_PARENT_CONVERSATION_NUMBER).'</a>';
-																			}
-																		@endphp
-																		{!! __($trans_text, $trans_params) !!}
-																	</span>
-																@endif
-															</h3>
-
-									                    </td>
-									                    <td valign="top">
-									                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; font-size:12px; line-height:18px; margin:0;" align="right">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
-									                    </td>
+									                	@if ($is_rtl)
+                                                            {{-- RTL Order: User name on the right, Date on the left --}}
+                                                            <td valign="top">
+                                                                <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; font-size:12px; line-height:18px; margin:0;" align="left">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
+                                                            </td>
+                                                            <td>
+                                                                <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; font-size:17px; line-height:22px; margin:0 0 2px 0; font-weight:normal; text-align: right; direction: rtl; unicode-bidi: plaintext;">
+                                                                    @include('emails.user._notification_thread_action', ['thread' => $thread])
+                                                                </h3>
+                                                            </td>
+                                                        @else
+                                                            {{-- LTR Order: Date on the right, User name on the left --}}
+										                    <td>
+										                        <h3 style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; font-size:17px; line-height:22px; margin:0 0 2px 0; font-weight:normal;">
+										                        	@include('emails.user._notification_thread_action', ['thread' => $thread])
+																</h3>
+										                    </td>
+										                    <td valign="top">
+										                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; font-size:12px; line-height:18px; margin:0;" align="right">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
+										                    </td>
+										                @endif
 									                </tr>
 									                <tr>
 									                    <td colspan="2" height="20">&nbsp;</td>
@@ -194,7 +218,7 @@
 									                <tr>
 									                    <td colspan="2">
 									                    	@if ($thread->isForward())
-							                                    <div style="color: #b37100; background-color: #fff1cf; padding: 15px; margin-bottom: 20px; border: 1px solid #ffe19d;">
+							                                    <div style="color: #b37100; background-color: #fff1cf; padding: 15px; margin-bottom: 20px; border: 1px solid #ffe19d; @if ($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
 							                                        {!! __(':person forwarded this conversation. Forwarded conversation: :forward_child_conversation_number', [
 							                                        'person' => ucfirst($thread->getForwardByFullName()),
 							                                        'forward_child_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMetaFw(App\Thread::META_FORWARD_CHILD_CONVERSATION_ID)]).'">#'.$thread->getMetaFw(App\Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER).'</a>'
@@ -202,21 +226,21 @@
 							                                    </div>
 							                                @endif
 							                                @action('email_notification.before_body', $thread, $user, $conversation)
-									                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#444; font-size:14px; line-height:20px; margin:0;">
-																{!! $thread->body !!}
+									                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#444; font-size:14px; line-height:20px; margin:0; @if ($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
+																{!! $thread->body ?? '' !!}
 															</div>
 
 															@if ($thread->has_attachments)
-																<table cellspacing="0" cellpadding="6">
+																<table cellspacing="0" cellpadding="6" @if ($is_rtl) width="100%" @endif>
 																	<tr>
 																		<td height="15">&nbsp;</td>
 																	<tr>
 																	<tr>
-																		<td bgcolor="#f1f3f4">
-																			<p style="display:inline; margin:0; padding: 0 5px; line-height:18px; font-size:12px; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#494848;">
+																		<td bgcolor="#f1f3f4" align="{{ $is_rtl ? 'right' : 'left' }}">
+																			<p style="display:inline; margin:0; padding: 0 5px; line-height:18px; font-size:12px; font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#494848; @if ($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
 																				<strong>{{ __('Attached:') }}</strong>
 																				@foreach ($thread->attachments as $attachment)
-																					<a href="{{ $attachment->url() }}" style="color:#3f8abf; text-decoration:none;">{{ $attachment->file_name }}</a> <span style="color:#B5B9BD;">({{ $attachment->getSizeName() }})</span>@if (!$loop->last), &nbsp;@endif
+																					<a href="{{ $attachment->url() }}" style="color:#3f8abf; text-decoration:none;">{{ $attachment->file_name ?? '' }}</a> <span style="color:#B5B9BD;">({{ $attachment->getSizeName() }})</span>@if (!$loop->last), &nbsp;@endif
 																				@endforeach
 																			</p>
 																		</td>
