@@ -131,6 +131,8 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
      */
     public function start()
     {
+        \MailHelper::$smtp_data_sent = false;
+        
         if (!$this->started) {
             if ($evt = $this->eventDispatcher->createTransportChangeEvent($this)) {
                 $this->eventDispatcher->dispatchEvent($evt, 'beforeTransportStarted');
@@ -400,6 +402,7 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
         } catch (Swift_TransportException $e) {
             $this->throwException($e);
         }
+        \MailHelper::$smtp_data_sent = true;
         $this->buffer->setWriteTranslations([]);
         $this->executeCommand("\r\n.\r\n", [250]);
     }
