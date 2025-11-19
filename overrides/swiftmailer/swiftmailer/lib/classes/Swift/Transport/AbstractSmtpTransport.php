@@ -38,6 +38,8 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
     /** Source Ip */
     protected $sourceIp;
 
+    protected $last_command;
+
     /** Return an array of params for the Buffer */
     abstract protected function getBufferParams();
 
@@ -140,6 +142,7 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
                     return;
                 }
             }
+            $this->last_command = 'STREAM_CLIENT_CONNECT';
 
             try {
                 $this->buffer->initialize($this->getBufferParams());
@@ -326,6 +329,8 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
      */
     public function executeCommand($command, $codes = [], &$failures = null, $pipeline = false, $address = null)
     {
+        $this->last_command = $command;
+
         $failures = (array) $failures;
         $seq = $this->buffer->write($command);
         if ($evt = $this->eventDispatcher->createCommandEvent($this, $command, $codes)) {
@@ -395,6 +400,7 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
     /** Stream the contents of the message over the buffer */
     protected function streamMessage(Swift_Mime_SimpleMessage $message)
     {
+        $this->last_command = 'STREAMMESSAGE';
         $this->buffer->setWriteTranslations(["\r\n." => "\r\n.."]);
         try {
             $message->toByteStream($this->buffer);
@@ -431,6 +437,21 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
     /** Throw a TransportException, first sending it to any listeners */
     protected function throwException(Swift_TransportException $e)
     {
+        $dbt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        $caller_function = isset($dbt[1]['function']) ? $dbt[1]['function'] : null;
+
+        if ($caller_function) {
+            $exception_type = get_class($e);
+            $last_command = $this->last_command;
+            // Remove sensitive data from command.
+            if (strstr($last_command, ':')) {
+                list($last_command) = explode(':', $last_command);
+            } else {
+                list($last_command) = explode(' ', $last_command);
+            }
+            $e = new $exception_type('Swift_Transport_AbstractSmtpTransport::'.$caller_function.'(); '.($last_command ? 'Last Command: '.$last_command.'; ' : '').$e->getMessage());
+        }
+
         if ($evt = $this->eventDispatcher->createTransportExceptionEvent($this, $e)) {
             $this->eventDispatcher->dispatchEvent($evt, 'exceptionThrown');
             if (!$evt->bubbleCancelled()) {
