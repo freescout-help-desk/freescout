@@ -129,6 +129,11 @@ class Mail
     public static $smtp_mime_message = '';
 
     /**
+     * Indicates that DATA command and mail content has been sent to the mail server.
+     */
+    public static $smtp_data_sent = false;
+
+    /**
      * Configure mail sending parameters.
      *
      * @param App\Mailbox $mailbox

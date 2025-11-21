@@ -1634,10 +1634,12 @@ class FetchEmails extends Command
             // }
             $data = [];
             if (!empty($item->personal)) {
-                $name_parts = explode(' ', $item->personal, 2);
-                $data['first_name'] = $name_parts[0];
-                if (!empty($name_parts[1])) {
-                    $data['last_name'] = $name_parts[1];
+                $name_parts = Customer::parseName($item->personal);
+                if (!empty($name_parts['first_name'])) {
+                    $data['first_name'] = $name_parts['first_name'];
+                }
+                if (!empty($name_parts['last_name'])) {
+                    $data['last_name'] = $name_parts['last_name'];
                 }
             }
             Customer::create($item->mail, $data);

@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.195',
+    'version' => '1.8.196',
 
     /*
     |--------------------------------------------------------------------------
@@ -98,7 +98,7 @@ return [
     */
 
     'locale'          => env('APP_LOCALE', 'en'),
-    'locales'         => ['en', 'ar', 'zh-CN', 'hr', 'cs', 'da', 'nl', 'fi', 'fr', 'de', 'he', 'hu', 'it', 'ja', 'kz', 'ko', 'no', 'fa', 'pl', 'pt-PT', 'pt-BR', 'ro', 'ru', 'es', 'sk', 'sv', 'tr', 'uk'],
+    'locales'         => ['en', 'ar', 'zh-CN', 'hr', 'cs', 'da', 'nl', 'fi', 'fr', 'de', 'he', 'hu', 'it', 'ja', 'kz', 'ko', 'no', 'fa', 'pl', 'pt-PT', 'pt-BR', 'ro', 'ru', 'es', 'sk', 'sl', 'sv', 'tr', 'uk'],
     'locales_rtl'     => ['ar', 'fa', 'he'],
     'default_locale'  => 'en',
 
@@ -188,7 +188,7 @@ return [
     | Checks for new jobs every --sleep seconds.
     | If --tries is set and job fails it is being processed right away without any delay.
     | --delay parameter does not work to set delays between retry attempts.
-    | --timeout parameter sets job timeout and is used to avoid queue:work freezing.
+    | --timeout parameter sets job timeout in seconds and is used to avoid queue:work freezing.
     |
     | Jobs sending emails are retried manually in handle().
     | Number of retries is set in each job class.

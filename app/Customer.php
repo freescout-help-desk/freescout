@@ -1432,10 +1432,23 @@ class Customer extends Model
             return $data;
         }
 
-        $name_parts = explode(' ', $name, 2);
-        $data['first_name'] = $name_parts[0];
-        if (!empty($name_parts[1])) {
-            $data['last_name'] = $name_parts[1];
+        if (strstr($name, ',')) {
+            // Smith, John.
+            // https://github.com/freescout-help-desk/freescout/issues/5074
+            $name_parts = explode(',', $name, 2);
+            if (!empty($name_parts[1]) && trim($name_parts[1])) {
+                $data['first_name'] = trim($name_parts[1]);
+                $data['last_name'] = trim($name_parts[0]);
+            } else {
+                $data['first_name'] = trim($name_parts[0]);
+            }
+        } else {
+            // Normal format.
+            $name_parts = explode(' ', $name, 2);
+            $data['first_name'] = $name_parts[0];
+            if (!empty($name_parts[1])) {
+                $data['last_name'] = $name_parts[1];
+            }
         }
 
         return $data;

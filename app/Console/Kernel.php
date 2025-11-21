@@ -141,6 +141,11 @@ class Kernel extends ConsoleKernel
                     // So here we are forcefully removing the mutex. Otherwise mutex will live for 24 hours.
                     if (\Cache::has($mutex_name)) {
                         \Cache::forget($mutex_name);
+
+                        // We could not remove the mutex from cache - something is wrong with permissions.
+                        if (\Cache::has($mutex_name)) {
+                            \Log::error('[schedule:run] Could not remove fetch mutex from cache (cache key: '.$mutex_name.'). Check file permissions.');
+                        }
                     }
                 }
             }
@@ -243,8 +248,14 @@ class Kernel extends ConsoleKernel
                             return true;
                         })
                         ->mutexName();
-                    if (\Cache::get($mutex_name)) {
+
+                    if (\Cache::has($mutex_name)) {
                         \Cache::forget($mutex_name);
+
+                        // We could not remove the mutex from cache - something is wrong with permissions.
+                        if (\Cache::has($mutex_name)) {
+                            \Log::error('[schedule:run] Could not remove queue:work mutex from cache (cache key: '.$mutex_name.'). Check file permissions.');
+                        }
                     }
                 }
             }

@@ -96,7 +96,7 @@ class SendNotificationToUsers implements ShouldQueue
         $headers['X-Auto-Response-Suppress'] = 'All';
 
         // We throw an exception if any of the send attempts throws an exception (connection error, etc)
-        $global_exception = null;
+        $last_send_exception = null;
 
         foreach ($this->users as $user) {
 
@@ -154,7 +154,7 @@ class SendNotificationToUsers implements ShouldQueue
                 Mail::to([['name' => $user->getFullName(), 'email' => $user->email]])
                     ->send(new UserNotification($user, $this->conversation, $this->threads, $headers, $from, $mailbox));
             } catch (\Exception $e) {
-                // We come here in case SMTP server unavailable for example
+                // We come here if SMTP server unavailable for example
                 activity()
                     ->causedBy($user)
                     ->withProperties([
@@ -164,7 +164,7 @@ class SendNotificationToUsers implements ShouldQueue
                     ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_USER);
 
                 $exception = $e;
-                $global_exception = $e;
+                $last_send_exception = $e;
             }
 
             $status_message = '';
@@ -185,7 +185,7 @@ class SendNotificationToUsers implements ShouldQueue
             SendLog::log($last_thread->id, $message_id, $user->email, SendLog::MAIL_TYPE_USER_NOTIFICATION, $status, null, $user->id, $status_message);
         }
 
-        if ($global_exception) {
+        if ($last_send_exception) {
             // Retry job with delay.
             // https://stackoverflow.com/questions/35258175/how-can-i-create-delays-between-failed-queued-job-attempts-in-laravel
             // We do not try to resend Bounce messages: https://github.com/freescout-helpdesk/freescout/issues/3156
@@ -194,13 +194,24 @@ class SendNotificationToUsers implements ShouldQueue
                     // Second attempt after 5 min.
                     $this->release(300);
                 } else {
+                    // Mail data has been passed to the mail server but after that
+                    // we have not receved a response from the mail server (due to timeout).
+                    // So we may consider that the email has been successfully sent.
+                    // Otherwise this email may be sent again and again.
+                    if ($this->attempts() >= 3
+                        && preg_match("#^Connection to .* Timed Out$#", $last_send_exception->getMessage())
+                        && \MailHelper::$smtp_data_sent
+                    ) {
+                        $this->fail($last_send_exception);
+                    }
+
                     // Others - after 1 hour.
                     $this->release(3600);
                 }
 
-                throw $global_exception;
+                throw $last_send_exception;
             } else {
-                $this->fail($global_exception);
+                $this->fail($last_send_exception);
 
                 return;
             }
