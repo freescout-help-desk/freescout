@@ -449,7 +449,7 @@ abstract class Swift_Transport_AbstractSmtpTransport implements Swift_Transport
             } else {
                 list($last_command) = explode(' ', $last_command);
             }
-            $e = new $exception_type('Swift_Transport_AbstractSmtpTransport::'.$caller_function.'(); '.($last_command ? 'Last Command: '.$last_command.'; ' : '').$e->getMessage());
+            $e = new $exception_type($caller_function.'(); '.($last_command ? 'Last Command: '.$last_command.'; ' : '').$e->getMessage());
         }
 
         if ($evt = $this->eventDispatcher->createTransportExceptionEvent($this, $e)) {
