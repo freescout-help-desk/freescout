@@ -622,12 +622,14 @@ class Conversation extends Model
      *
      * @param int $status
      */
-    public function setStatus($status, $user = null)
+    public function setStatus($status, $user = null, $update_folder = true)
     {
         $now = date('Y-m-d H:i:s');
 
         $this->status = $status;
-        $this->updateFolder();
+        if ($update_folder) {
+            $this->updateFolder();
+        }
         $this->user_updated_at = $now;
 
         if ($user && $status == self::STATUS_CLOSED) {
