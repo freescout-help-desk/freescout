@@ -390,11 +390,16 @@ class Conversation extends Model
      *
      * @return Collection
      */
-    public function getThreads($skip = null, $take = null, $types = [])
+    public function getThreads($skip = null, $take = null, $types = [], $states = [Thread::STATE_PUBLISHED])
     {
         $query = $this->threads()
-            ->where('state', Thread::STATE_PUBLISHED)
             ->orderBy('created_at', 'desc');
+
+        if (count($states) == 1 && !empty($states[0])) {
+            $query->where('state', $states[0]);
+        } else {
+            $query->whereIn('state', $states);
+        }
 
         if (!is_null($skip)) {
             $query->skip($skip);
