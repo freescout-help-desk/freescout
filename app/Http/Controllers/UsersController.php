@@ -304,7 +304,7 @@ class UsersController extends Controller
             abort(404);
         }
 
-        $mailboxes = Mailbox::all();
+        $mailboxes = Mailbox::all()->sortBy('name');
 
         $users = $this->getUsersForSidebar($id);
 
