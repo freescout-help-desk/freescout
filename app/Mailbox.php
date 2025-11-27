@@ -980,14 +980,48 @@ class Mailbox extends Model
     public function inOauthEnabled()
     {
         return $this->oauthEnabled() 
-            && $this->in_username !== null && !strstr($this->in_username, '@');
+            && $this->in_username !== null 
+            && $this->isInUsernameOauth();
     }
 
     public function outOauthEnabled()
     {
         return $this->oauthEnabled() 
-            && $this->out_username !== null && !strstr($this->out_username, '@')
+            && $this->out_username !== null
+            && $this->isOutUsernameOauth()
             && $this->out_server !== null && trim($this->out_server) == \MailHelper::OAUTH_MICROSOFT_SMTP;
+    }
+
+    // For oAuth Username may have the following format:
+    // test@example.org:123-456-789
+    public function getInOauthUsername()
+    {
+        return preg_replace("#:.*#", '', $this->in_username ?? '');
+    }
+
+    public function getInOauthClientId()
+    {
+        return preg_replace("#.*:#", '', $this->in_username ?? '');
+    }
+
+    public function getOutOauthUsername()
+    {
+        return preg_replace("#:.*#", '', $this->out_username ?? '');
+    }
+
+    public function getOutOauthClientId()
+    {
+        return preg_replace("#.*:#", '', $this->out_username ?? '');
+    }
+
+    public function isInUsernameOauth()
+    {
+        return (!strstr($this->in_username, '@') || preg_match("#.*@.*:.*#", $this->in_username));
+    }
+
+    public function isOutUsernameOauth()
+    {
+        return (!strstr($this->out_username, '@') || preg_match("#.*@.*:.*#", $this->out_username));
     }
 
     public function setEmailAttribute($value)
