@@ -523,6 +523,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Comma separated list of white listed hosts.
+    | If some input containing URL becomes blank after saving it - add its host or IP here.
+    | Example: example.org,test.example.org,192.168.1.97
+    |-------------------------------------------------------------------------
+    */
+    'remote_host_white_list'    => env('APP_REMOTE_HOST_WHITE_LIST', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
