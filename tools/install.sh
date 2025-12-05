@@ -42,7 +42,7 @@ if [ -z "$domain_name" ]; then
     exit;
 fi
 
-mysql_pass=`date +%s | sha256sum | base64 | head -c 9 ; echo`
+mysql_pass=`(date +%s; head -c 10 /dev/urandom;)  | sha256sum | base64 | head -c 9 ; echo`
 
 is_debian=`cat /etc/issue | grep -E ^Debian | wc -l`
 
