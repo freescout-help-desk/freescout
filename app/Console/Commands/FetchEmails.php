@@ -1232,8 +1232,9 @@ class FetchEmails extends Command
 
         // Respect mailbox settings for "Status After Replying
         $prev_status = $conversation->status;
-        $conversation->status = ($mailbox->ticket_status == Mailbox::TICKET_STATUS_KEEP_CURRENT ? $conversation->status : $mailbox->ticket_status);
-        if ($conversation->status != $mailbox->ticket_status) {
+        $new_status = ($mailbox->ticket_status == Mailbox::TICKET_STATUS_KEEP_CURRENT ? $conversation->status : $mailbox->ticket_status);
+        if ($new_status != $prev_status) {
+            $conversation->setStatus($new_status, $user, $update_folder = false);
             \Eventy::action('conversation.status_changed', $conversation, $user, true, $prev_status);
         }
         $conversation->last_reply_at = $now;

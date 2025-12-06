@@ -105,7 +105,7 @@
                                 <p class="form-help">
                                     <small @if ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT && $out_oauth_enabled) class="text-success" @endif>Microsoft Exchange</small> 
                                     @if (!$mailbox->oauthEnabled())
-                                        @if ($mailbox->out_username && $mailbox->out_password && !strstr($mailbox->out_username, '@'))
+                                        @if ($mailbox->out_username && $mailbox->out_password && $mailbox->isOutUsernameOauth())
                                              – <a href="{{ route('mailboxes.oauth', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'out']) }}" target="_blank">{{ __('Connect') }}</a>
                                         @endif
                                     @elseif ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT && $out_oauth_enabled)

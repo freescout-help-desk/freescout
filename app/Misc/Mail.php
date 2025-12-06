@@ -151,7 +151,7 @@ class Mail
                 if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
                     // Try to get an access token (using the authorization code grant)
                     $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
-                        'client_id' => $mailbox->out_username,
+                        'client_id' => $mailbox->getOutOauthClientId(),
                         'client_secret' => $mailbox->out_password,
                         'refresh_token' => $mailbox->oauthGetParam('r_token'),
                     ]);
@@ -179,7 +179,7 @@ class Mail
                 \Config::set('mail.port', $mailbox->out_port);
                 if ($oauth) {
                     \Config::set('mail.auth_mode', 'XOAUTH2');
-                    \Config::set('mail.username', $mailbox->email);
+                    \Config::set('mail.username', $mailbox->getOutOauthUsername());
                     \Config::set('mail.password', $mailbox->oauthGetParam('a_token'));
                 } else {
                     \Config::set('mail.auth_mode', '');
@@ -790,7 +790,7 @@ class Mail
                 'port'          => $mailbox->in_port,
                 'encryption'    => $mailbox->getInEncryptionName(),
                 'validate_cert' => $mailbox->in_validate_cert,
-                'username'      => $mailbox->email,
+                'username'      => $mailbox->getInOauthUsername(),
                 'password'      => $mailbox->oauthGetParam('a_token'),
                 'protocol'      => $mailbox->getInProtocolName(),
                 'authentication' => 'oauth',

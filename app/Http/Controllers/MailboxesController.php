@@ -967,10 +967,10 @@ class MailboxesController extends Controller
             return __('Mailbox not found').': '.$mailbox_id;
         }
         if ($in_out == 'in') {
-            $username = $mailbox->in_username;
+            $username = $mailbox->getInOauthClientId();
             $password = $mailbox->in_password;
         } else {
-            $username = $mailbox->out_username;
+            $username = $mailbox->getOutOauthClientId();
             $password = $mailbox->out_password;
         }
         if (empty($username)) {

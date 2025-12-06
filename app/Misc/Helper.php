@@ -1802,7 +1802,7 @@ class Helper
         }
     }
 
-    public static function sanitizeRemoteUrl($url)
+    public static function sanitizeRemoteUrl($url, $throw_exception = false)
     {
         $parts = parse_url($url ?? '');
 
@@ -1815,6 +1815,11 @@ class Helper
         if (empty($parts['host'])) {
             return '';
         }
+
+        $host_white_list_str = str_replace(' ', '', mb_strtolower(config('app.remote_host_white_list')));
+        $host_white_list = explode(',', $host_white_list_str);
+
+        // Sanitize host name.
         $parts['host'] = mb_strtolower($parts['host']);
         $hostname = gethostname();
         $host_ip = gethostbyname($hostname);
@@ -1830,13 +1835,24 @@ class Helper
             $_SERVER['LOCAL_ADDR'] ?? ''
         ];
 
-        if (in_array($parts['host'], $restricted_hosts)) {
-            return '';
+        if (in_array($parts['host'], $restricted_hosts) && !in_array($parts['host'], $host_white_list)) {
+            if ($throw_exception) {
+                throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $parts['host']]), 1);
+            } else {
+                return '';
+            }
         }
 
+        // Sanitize host IP address.
         $remote_host_ip = gethostbyname($parts['host']);
-        if (in_array($remote_host_ip, ['0.0.0.0', '127.0.0.1', $host_ip, $_SERVER['SERVER_ADDR'] ?? '', $_SERVER['LOCAL_ADDR'] ?? ''])) {
-            return '';
+        if (in_array($remote_host_ip, ['0.0.0.0', '127.0.0.1', $host_ip, $_SERVER['SERVER_ADDR'] ?? '', $_SERVER['LOCAL_ADDR'] ?? ''])
+            && !in_array($remote_host_ip, $host_white_list)
+        ) {
+            if ($throw_exception) {
+                throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), 1);
+            } else {
+                return '';
+            }
         }
 
         return $url;
