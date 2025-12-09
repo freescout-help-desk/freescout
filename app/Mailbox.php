@@ -996,7 +996,13 @@ class Mailbox extends Model
     // test@example.org:123-456-789
     public function getInOauthUsername()
     {
-        return preg_replace("#:.*#", '', $this->in_username ?? '');
+        $username = preg_replace("#:.*#", '', $this->in_username ?? '');
+        
+        if (strstr($username, '@')) {
+            return $username;
+        } else {
+            return $this->email;
+        }
     }
 
     public function getInOauthClientId()
@@ -1006,7 +1012,13 @@ class Mailbox extends Model
 
     public function getOutOauthUsername()
     {
-        return preg_replace("#:.*#", '', $this->out_username ?? '');
+        $username = preg_replace("#:.*#", '', $this->out_username ?? '');
+
+        if (strstr($username, '@')) {
+            return $username;
+        } else {
+            return $this->email;
+        }
     }
 
     public function getOutOauthClientId()
