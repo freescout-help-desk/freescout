@@ -33,10 +33,16 @@ class MailboxObserver
      */
     public function deleting(Mailbox $mailbox)
     {
+        // Same things are deleted in Mailbox->deleteMailbox().
         $mailbox->users()->delete();
         $mailbox->conversations()->delete();
         $mailbox->folders()->delete();
 
         \Eventy::action('mailbox.before_delete', $mailbox);
+    }
+
+    public function deleted(Mailbox $mailbox)
+    {
+        \Eventy::action('mailbox.deleted', $mailbox);
     }
 }

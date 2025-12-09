@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Email;
+use App\Thread;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
@@ -1041,5 +1042,23 @@ class Mailbox extends Model
         if ($value) {
             $this->attributes['email'] = Email::sanitizeEmail($value);
         }
+    }
+
+    public function deleteMailbox()
+    {
+        // Remove threads and conversations.
+        $conversation_ids = $this->conversations()->pluck('id')->toArray();
+        
+        for ($i=0; $i < ceil(count($conversation_ids) / \Helper::IN_LIMIT); $i++) { 
+            $slice_ids = array_slice($conversation_ids, $i*\Helper::IN_LIMIT, \Helper::IN_LIMIT);
+            Thread::whereIn('conversation_id', $slice_ids)->delete();
+        }
+
+        $this->conversations()->delete();
+        $this->users()->sync([]);
+        $this->folders()->delete();
+        // Maybe remove notifications on events in this mailbox?
+
+        $this->delete();
     }
 }
