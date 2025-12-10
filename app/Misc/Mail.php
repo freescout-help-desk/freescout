@@ -823,7 +823,7 @@ class Mail
             if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
                 // Try to get an access token (using the authorization code grant)
                 $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
-                    'client_id' => $mailbox->getOutOauthClientId(),
+                    'client_id' => $mailbox->getInOauthClientId(),
                     'client_secret' => $mailbox->in_password,
                     'refresh_token' => $mailbox->oauthGetParam('r_token'),
                 ]);
