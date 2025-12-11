@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Email;
+use App\Thread;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
@@ -996,7 +997,13 @@ class Mailbox extends Model
     // test@example.org:123-456-789
     public function getInOauthUsername()
     {
-        return preg_replace("#:.*#", '', $this->in_username ?? '');
+        $username = preg_replace("#:.*#", '', $this->in_username ?? '');
+        
+        if (strstr($username, '@')) {
+            return $username;
+        } else {
+            return $this->email;
+        }
     }
 
     public function getInOauthClientId()
@@ -1006,7 +1013,13 @@ class Mailbox extends Model
 
     public function getOutOauthUsername()
     {
-        return preg_replace("#:.*#", '', $this->out_username ?? '');
+        $username = preg_replace("#:.*#", '', $this->out_username ?? '');
+
+        if (strstr($username, '@')) {
+            return $username;
+        } else {
+            return $this->email;
+        }
     }
 
     public function getOutOauthClientId()
@@ -1029,5 +1042,23 @@ class Mailbox extends Model
         if ($value) {
             $this->attributes['email'] = Email::sanitizeEmail($value);
         }
+    }
+
+    public function deleteMailbox()
+    {
+        // Remove threads and conversations.
+        $conversation_ids = $this->conversations()->pluck('id')->toArray();
+        
+        for ($i=0; $i < ceil(count($conversation_ids) / \Helper::IN_LIMIT); $i++) { 
+            $slice_ids = array_slice($conversation_ids, $i*\Helper::IN_LIMIT, \Helper::IN_LIMIT);
+            Thread::whereIn('conversation_id', $slice_ids)->delete();
+        }
+
+        $this->conversations()->delete();
+        $this->users()->sync([]);
+        $this->folders()->delete();
+        // Maybe remove notifications on events in this mailbox?
+
+        $this->delete();
     }
 }
