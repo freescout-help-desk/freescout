@@ -18,6 +18,8 @@ class Email extends Model
     const TYPE_HOME = 2;
     const TYPE_OTHER = 3;
 
+    const MAX_LENGTH = 191;
+
     public static $types = [
         self::TYPE_WORK  => 'work',
         self::TYPE_HOME  => 'home',
@@ -30,6 +32,14 @@ class Email extends Model
      * Attributes which are not fillable using fill() method.
      */
     protected $guarded = ['id', 'customer_id'];
+
+    public function __construct(array $attributes = [])
+    {
+        if (!empty($attributes['email'])) {
+            $attributes['email'] = self::sanitizeLength($attributes['email']);
+        }
+        parent::__construct($attributes);
+    }
 
     /**
      * Get email's customer.
@@ -83,5 +93,10 @@ class Email extends Model
         } catch (\Exception $e) {
             return null;
         }
+    }
+
+    public static function sanitizeLength($email_address)
+    {
+        return substr($email_address, Email::MAX_LENGTH*(-1));
     }
 }
