@@ -1785,11 +1785,15 @@ class Helper
 
             if ($contents == '') {
                 $https_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
+                if (PHP_VERSION_ID < 80000) {
+                    \curl_close($ch);
+                }
                 throw new \Exception('Empty Response. Curl Error Number: '.$curl_errno.'. Response Status Code: '.$https_status, 1);
                 //return false;
             } else {
-                curl_close($ch);
+                if (PHP_VERSION_ID < 80000) {
+                    \curl_close($ch);
+                }
             }
 
             return $contents;
