@@ -320,9 +320,9 @@ class StreamHandler
         );
 
         return $this->createResource(
-            function () use ($uri, &$http_response_header, $context, $options) {
+            function () use ($uri, &$http_response_header_local, $context, $options) {
                 $resource = fopen((string) $uri, 'r', null, $context);
-                $this->lastHeaders = $http_response_header;
+                $this->lastHeaders = $http_response_header_local;
 
                 if (isset($options['read_timeout'])) {
                     $readTimeout = $options['read_timeout'];

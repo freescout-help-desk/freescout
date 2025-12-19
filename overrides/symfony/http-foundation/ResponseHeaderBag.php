@@ -173,7 +173,7 @@ class ResponseHeaderBag extends HeaderBag
 
     public function setCookie(Cookie $cookie)
     {
-        $this->cookies[$cookie->getDomain()][$cookie->getPath()][$cookie->getName()] = $cookie;
+        $this->cookies[$cookie->getDomain() ?? ''][$cookie->getPath() ?? ''][$cookie->getName() ?? ''] = $cookie;
         $this->headerNames['set-cookie'] = 'Set-Cookie';
     }
 

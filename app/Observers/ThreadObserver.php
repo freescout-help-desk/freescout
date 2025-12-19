@@ -38,7 +38,11 @@ class ThreadObserver
         }
         
         if ((in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE]) 
-            || ($conversation->isPhone() && in_array($thread->type, [Thread::TYPE_NOTE])))
+                || ($conversation->isPhone() && in_array($thread->type, [Thread::TYPE_NOTE]))
+                // https://github.com/freescout-help-desk/freescout/issues/5105
+                // This is not a normal situtaion: email conversation containing just one Note thread.
+                || ($conversation->threads_count == 0 && $thread->type == Thread::TYPE_NOTE)
+            )
             && $thread->state == Thread::STATE_PUBLISHED
         ) {
             // $conversation->cc = $thread->cc;

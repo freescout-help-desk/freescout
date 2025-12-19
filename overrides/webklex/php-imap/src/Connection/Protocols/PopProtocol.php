@@ -298,7 +298,7 @@ class PopProtocol extends Protocol {
      * @return bool
      */
     public function connected(): bool {
-        return (boolean) $this->stream;
+        return (bool) $this->stream;
     }
 
     /**

@@ -932,6 +932,9 @@ class Customer extends Model
         if (!$email) {
             return null;
         }
+
+        $email = Email::sanitizeLength($email);
+
         $email_obj = Email::where('email', $email)->first();
         if ($email_obj) {
             $customer = $email_obj->customer;
@@ -953,7 +956,7 @@ class Customer extends Model
         } else {
             $customer = new self();
             $email_obj = new Email();
-            $email_obj->email = $email;
+            $email_obj->email = Email::sanitizeLength($email);
 
             $new = true;
         }

@@ -606,19 +606,19 @@ class Header {
     private function findPriority() {
         if (($priority = $this->get("x_priority")) === null) return;
         switch ((int)"$priority") {
-            case IMAP::MESSAGE_PRIORITY_HIGHEST;
+            case IMAP::MESSAGE_PRIORITY_HIGHEST:
                 $priority = IMAP::MESSAGE_PRIORITY_HIGHEST;
                 break;
-            case IMAP::MESSAGE_PRIORITY_HIGH;
+            case IMAP::MESSAGE_PRIORITY_HIGH:
                 $priority = IMAP::MESSAGE_PRIORITY_HIGH;
                 break;
-            case IMAP::MESSAGE_PRIORITY_NORMAL;
+            case IMAP::MESSAGE_PRIORITY_NORMAL:
                 $priority = IMAP::MESSAGE_PRIORITY_NORMAL;
                 break;
-            case IMAP::MESSAGE_PRIORITY_LOW;
+            case IMAP::MESSAGE_PRIORITY_LOW:
                 $priority = IMAP::MESSAGE_PRIORITY_LOW;
                 break;
-            case IMAP::MESSAGE_PRIORITY_LOWEST;
+            case IMAP::MESSAGE_PRIORITY_LOWEST:
                 $priority = IMAP::MESSAGE_PRIORITY_LOWEST;
                 break;
             default:
