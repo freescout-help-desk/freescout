@@ -115,6 +115,19 @@ if (! function_exists('array_first')) {
     }
 }
 
+/**
+ * Return the first element in an array passing a given truth test.
+ *
+ * @param  array  $array
+ * @param  callable|null  $callback
+ * @param  mixed  $default
+ * @return mixed
+ */
+function array_first_cond($array, ?callable $callback = null, $default = null)
+{
+    return Arr::first($array, $callback, $default);
+}
+
 if (! function_exists('array_flatten')) {
     /**
      * Flatten a multi-dimensional array into a single level.
