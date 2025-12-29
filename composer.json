@@ -430,6 +430,7 @@
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Mime/Headers/MailboxHeader.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/AbstractSmtpTransport.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/EsmtpTransport.php",
+            "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/SendmailTransport.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/MailInvoker.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/MailTransport.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/SimpleMailInvoker.php",
