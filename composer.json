@@ -366,6 +366,7 @@
             "vendor/guzzlehttp/guzzle/src/HandlerStack.php",
             "vendor/guzzlehttp/guzzle/src/Middleware.php",
             "vendor/guzzlehttp/guzzle/src/Exception/RequestException.php",
+            "vendor/guzzlehttp/guzzle/src/Exception/BadResponseException.php",
             "vendor/guzzlehttp/psr7/src/LazyOpenStream.php",
             "vendor/guzzlehttp/psr7/src/Uri.php",
             "vendor/guzzlehttp/promises/src/RejectedPromise.php",
