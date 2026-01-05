@@ -495,7 +495,7 @@ class Conversation extends Model
             $title .= '<br/>'.User::dateFormat($this->created_at, 'M j, Y H:i');
         } else {
             $person = '';
-            if (!empty(self::$persons[$this->last_reply_from])) {
+            if (!empty(self::$persons[$this->last_reply_from ?? ''])) {
                 $person = __(ucfirst(self::$persons[$this->last_reply_from]));
             }
             $title = __('Last reply by :person', ['person' => $person]);
