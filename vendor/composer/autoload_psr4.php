@@ -134,6 +134,7 @@ return array(
     'GuzzleHttp\\Psr7\\' => array($baseDir . '/overrides/guzzlehttp/psr7/src', $vendorDir . '/guzzlehttp/psr7/src'),
     'GuzzleHttp\\Promise\\' => array($baseDir . '/overrides/guzzlehttp/promises/src', $vendorDir . '/guzzlehttp/promises/src'),
     'GuzzleHttp\\Handler\\' => array($baseDir . '/overrides/guzzlehttp/guzzle/src/Handler'),
+    'GuzzleHttp\\Exception\\' => array($baseDir . '/overrides/guzzlehttp/guzzle/src/Exception'),
     'GuzzleHttp\\Cookie\\' => array($baseDir . '/overrides/guzzlehttp/guzzle/src/Cookie'),
     'GuzzleHttp\\' => array($baseDir . '/overrides/guzzlehttp/guzzle/src', $vendorDir . '/guzzlehttp/guzzle/src'),
     'Fideloper\\Proxy\\' => array($vendorDir . '/fideloper/proxy/src'),

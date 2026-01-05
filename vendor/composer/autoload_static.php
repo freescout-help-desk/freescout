@@ -204,6 +204,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\Handler\\' => 19,
+            'GuzzleHttp\\Exception\\' => 21,
             'GuzzleHttp\\Cookie\\' => 18,
             'GuzzleHttp\\' => 11,
         ),
@@ -790,6 +791,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'GuzzleHttp\\Handler\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/guzzlehttp/guzzle/src/Handler',
+        ),
+        'GuzzleHttp\\Exception\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/guzzlehttp/guzzle/src/Exception',
         ),
         'GuzzleHttp\\Cookie\\' => 
         array (
@@ -1690,12 +1695,12 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'GuzzleHttp\\Cookie\\FileCookieJar' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Cookie/FileCookieJar.php',
         'GuzzleHttp\\Cookie\\SessionCookieJar' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Cookie/SessionCookieJar.php',
         'GuzzleHttp\\Cookie\\SetCookie' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Cookie/SetCookie.php',
-        'GuzzleHttp\\Exception\\BadResponseException' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Exception/BadResponseException.php',
+        'GuzzleHttp\\Exception\\BadResponseException' => __DIR__ . '/../..' . '/overrides/guzzlehttp/guzzle/src/Exception/BadResponseException.php',
         'GuzzleHttp\\Exception\\ClientException' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Exception/ClientException.php',
         'GuzzleHttp\\Exception\\ConnectException' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Exception/ConnectException.php',
         'GuzzleHttp\\Exception\\GuzzleException' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Exception/GuzzleException.php',
         'GuzzleHttp\\Exception\\InvalidArgumentException' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Exception/InvalidArgumentException.php',
-        'GuzzleHttp\\Exception\\RequestException' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Exception/RequestException.php',
+        'GuzzleHttp\\Exception\\RequestException' => __DIR__ . '/../..' . '/overrides/guzzlehttp/guzzle/src/Exception/RequestException.php',
         'GuzzleHttp\\Exception\\SeekException' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Exception/SeekException.php',
         'GuzzleHttp\\Exception\\ServerException' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Exception/ServerException.php',
         'GuzzleHttp\\Exception\\TooManyRedirectsException' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Exception/TooManyRedirectsException.php',
@@ -3566,6 +3571,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Swift_Transport_Esmtp_AuthHandler' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/Esmtp/AuthHandler.php',
         'Swift_Transport_MailInvoker' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/MailInvoker.php',
         'Swift_Transport_MailTransport' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/MailTransport.php',
+        'Swift_Transport_SendmailTransport' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/SendmailTransport.php',
         'Swift_Transport_SimpleMailInvoker' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/SimpleMailInvoker.php',
         'Swift_Transport_StreamBuffer' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php',
         'Symfony\\Component\\Console\\Application' => __DIR__ . '/../..' . '/overrides/symfony/console/Application.php',
