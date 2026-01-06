@@ -1911,6 +1911,8 @@ class Conversation extends Model
     {
         \Eventy::action('conversations.before_delete_forever', $conversation_ids);
 
+        $folder_ids = [];
+
         //$conversation_ids = $conversations->pluck('id')->toArray();
         for ($i=0; $i < ceil(count($conversation_ids) / \Helper::IN_LIMIT); $i++) { 
 
@@ -1919,6 +1921,20 @@ class Conversation extends Model
             // Delete attachments.
             $thread_ids = Thread::whereIn('conversation_id', $ids)->pluck('id')->toArray();
             Attachment::deleteByThreadIds($thread_ids);
+
+            // Collect folders IDs.
+            $folder_ids = array_merge($folder_ids, ConversationFolder::whereIn('conversation_id', $ids)
+                ->distinct()
+                ->pluck('id')
+                ->toArray()
+            );
+            $folder_ids = array_unique($folder_ids);
+            $folder_ids = array_merge($folder_ids, Conversation::whereIn('id', $ids)
+                ->distinct()
+                ->pluck('folder_id')
+                ->toArray()
+            );
+            $folder_ids = array_unique($folder_ids);
 
             // Observers do not react on this kind of deleting.
 
@@ -1930,7 +1946,21 @@ class Conversation extends Model
 
             // Delete conversations.
             Conversation::whereIn('id', $ids)->delete();
+
+            // Delete links to folders.
             ConversationFolder::whereIn('conversation_id', $ids)->delete();
+        }
+
+        // Update folders counters.
+        for ($i=0; $i < ceil(count($folder_ids) / \Helper::IN_LIMIT); $i++) { 
+
+            $ids = array_slice($folder_ids, $i*\Helper::IN_LIMIT, \Helper::IN_LIMIT);
+
+            // Update counters.
+            $folders = Folder::whereIn('id', $ids)->get();
+            foreach ($folders as $folder) {
+                $folder->updateCounters();
+            }
         }
     }
 
