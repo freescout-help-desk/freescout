@@ -40,5 +40,8 @@ class AfterAppUpdate extends Command
         $this->call('freescout:clear-cache');
         $this->call('migrate', ['--force' => true]);
         $this->call('queue:restart');
+        
+        // Trigger the 'freescout.upgraded' action hook after the update process
+        \Eventy::action('freescout.upgraded');
     }
 }
