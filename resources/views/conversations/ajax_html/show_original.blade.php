@@ -5,7 +5,7 @@
 <ul class="nav nav-tabs nav-tabs-no-bottom">
 	<li role="presentation" class="active"><a data-toggle="tab" href="#tab_preview_{{ $tabs_unique }}">{{ __('Preview') }}</a></li>
 	<li role="presentation"><a data-toggle="tab" href="#tab_body_{{ $tabs_unique }}">{{ __('Body') }}</a></li>
-	@if ($thread->headers)<li role="presentation"><a data-toggle="tab" href="#tab_headers_{{ $tabs_unique }}">{{ __('Headers') }}</a></li>@endif
+	@if ($thread->headers)<li role="presentation"><a data-toggle="tab" href="#tab_headers_{{ $tabs_unique }}">{{ __('Email Header') }}</a></li>@endif
 </ul>
 
 <div class="tab-content">
