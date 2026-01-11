@@ -145,23 +145,25 @@
                     @endif
                     @if (empty($no_customer))
                         <td class="conv-customer">
-                            <a href="{{ $conversation->url() }}" @if (!empty($params['target_blank'])) target="_blank" @endif>
+                            <a href="{{ $conversation->url() }}" @if (!empty($params['target_blank'])) target="_blank" @endif title="{{ $conversation->customer_email }}">
                                 @if ($conversation->customer_id && $conversation->customer){{ $conversation->customer->getFullName(true)}}@endif&nbsp;@if ($conversation->threads_count > 1)<span class="conv-counter">{{ $conversation->threads_count }}</span>@endif
                                 @if ($conversation->user_id)
                                     <small class="conv-owner-mobile text-help">
                                         {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }} <small class="glyphicon glyphicon-user"></small>
                                     </small>
                                 @endif
+                                <span class="hidden-xs hidden-sm"><br><small class="conv-preview">{{ $conversation->customer_email }}</small></span>
                             </a>
                         </td>
                     @else
                         {{-- Displayed in customer conversation history --}}
                         <td class="conv-customer conv-owner-mobile">
-                            <a href="{{ $conversation->url() }}" class="help-link" @if (!empty($params['target_blank'])) target="_blank" @endif>
+                            <a href="{{ $conversation->url() }}" class="help-link" @if (!empty($params['target_blank'])) target="_blank" @endif title="{{ $conversation->customer_email }}">
                                 <small class="glyphicon glyphicon-envelope"></small> 
                                 @if ($conversation->user_id)
                                      <small>&nbsp;<i class="glyphicon glyphicon-user"></i> {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }}</small> 
                                 @endif
+                                <span class="hidden-xs hidden-sm"><br><small class="conv-preview">{{ $conversation->customer_email }}</small></span>
                             </a>
                         </td>
                     @endif
