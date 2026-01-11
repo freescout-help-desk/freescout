@@ -40,5 +40,7 @@ class AfterAppUpdate extends Command
         $this->call('freescout:clear-cache');
         $this->call('migrate', ['--force' => true]);
         $this->call('queue:restart');
+
+        \Eventy::action('command.after_app_update');
     }
 }
