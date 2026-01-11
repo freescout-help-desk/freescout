@@ -316,7 +316,7 @@
     "Get license key": "Лицензиялық кілтті алу",
     "Go to": "Көшу",
     "HTTPS protocol is required for the browser push notifications to work.": "Шолғыштың push-хабарландыруларының жұмыс істеуі үшін HTTPS протоколы қажет.",
-    "Headers": "Тақырыптар",
+    "Email Headers": "Тақырыптар",
     "Hello :user_name": "Cәлеметсіз бе, :user_name",
     "Help": "Көмек",
     "Hi :user, an account has been created for you at :app_url": "Сәлем, :user, сіз үшін аккаунт жасалды :app_url",

@@ -331,7 +331,7 @@
     "Get license key": "Získání licenčního klíče",
     "Go to": "Přejít na",
     "HTTPS protocol is required for the browser push notifications to work.": "Pro fungování oznámení push v prohlížeči je vyžadován protokol HTTPS.",
-    "Headers": "Záhlaví",
+    "Email Headers": "Záhlaví",
     "Hello :user_name": "Dobrý den :person_name",
     "Help": "Pomoc",
     "Hi :user, an account has been created for you at :app_url": "Dobrý den :user, byl pro vás vytvořen účet na adrese :app_url",

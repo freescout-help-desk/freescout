@@ -329,7 +329,7 @@
     "Get license key": "Dohvati licencni ključ",
     "Go to": "Idi na",
     "HTTPS protocol is required for the browser push notifications to work.": "HTTPS protokol je potreban za rad push obavijesti u pregledniku.",
-    "Headers": "Zaglavlja",
+    "Email Headers": "Zaglavlja",
     "Hello :user_name": "Pozdrav :user_name",
     "Help": "Pomoć",
     "Hi :user, an account has been created for you at :app_url": "Pozdrav :user, kreiran vam je račun na :app_url",

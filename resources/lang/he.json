@@ -327,7 +327,7 @@
     "Get license key": "קבל מפתח רישיון",
     "Go to": "עבור אל",
     "HTTPS protocol is required for the browser push notifications to work.": "פרוטוקול HTTPS נדרש כדי שהתראות הדפדפן יעבדו.",
-    "Headers": "כותרות",
+    "Email Headers": "כותרות",
     "Hello :user_name": "שלום :user_name",
     "Help": "עזרה",
     "Hi :user, an account has been created for you at :app_url": "היי :user, נוצר עבורך חשבון בכתובת :app_url",

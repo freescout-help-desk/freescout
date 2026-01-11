@@ -326,7 +326,7 @@
     "Get license key": "Lisans anahtarını alın",
     "Go to": "Git",
     "HTTPS protocol is required for the browser push notifications to work.": "Tarayıcı push bildirimlerinin çalışması için HTTPS protokolü gereklidir.",
-    "Headers": "Başlıklar",
+    "Email Headers": "Başlıklar",
     "Hello :user_name": "Merhaba :user_name",
     "Help": "Yardım",
     "Hi :user, an account has been created for you at :app_url": "Merhaba, :user sizin için :app_url adresinde bir hesap oluşturuldu",

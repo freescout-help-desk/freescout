@@ -320,7 +320,7 @@
     "Get license key": "Hae lisenssiavain",
     "Go to": "Mene",
     "HTTPS protocol is required for the browser push notifications to work.": "HTTPS-protokolla vaaditaan, jotta selaimen push-ilmoitukset toimivat.",
-    "Headers": "Otsikot",
+    "Email Headers": "Otsikot",
     "Hello :user_name": "Hei :user_name",
     "Help": "Apua",
     "Hi :user, an account has been created for you at :app_url": "Hei :user, sinulle on luotu tili :app_url",
