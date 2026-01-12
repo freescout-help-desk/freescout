@@ -152,7 +152,6 @@
                                         {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }} <small class="glyphicon glyphicon-user"></small>
                                     </small>
                                 @endif
-                                <span class="hidden-xs hidden-sm"><br><small class="conv-preview">{{ $conversation->customer_email }}</small></span>
                             </a>
                         </td>
                     @else
@@ -163,7 +162,6 @@
                                 @if ($conversation->user_id)
                                      <small>&nbsp;<i class="glyphicon glyphicon-user"></i> {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }}</small> 
                                 @endif
-                                <span class="hidden-xs hidden-sm"><br><small class="conv-preview">{{ $conversation->customer_email }}</small></span>
                             </a>
                         </td>
                     @endif
