@@ -36,7 +36,7 @@
 		</ul>
 		<div class="customer-extra">
 			@if ($customer->getSocialProfiles() || $customer->getWebsites())
-				<div class="customer-social-profiles">
+				<div class="customer-section customer-social-profiles">
 					@foreach ($customer->getWebsites() as $website)
 			            <a href="{{ $website }}" target="_blank" title="{{ parse_url($website, PHP_URL_HOST) }}" data-toggle="tooltip" class="glyphicon glyphicon-globe"></a>
 			        @endforeach
