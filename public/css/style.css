@@ -1359,6 +1359,14 @@ https://github.com/freescout-help-desk/freescout/issues/4354
     text-align: center;
     vertical-align: middle;
 }
+.conv-email {
+    color: #93a1af;
+    font-weight: normal;
+    font-size: 13.4px;
+    display: block;
+    max-height: 36px;
+    overflow: hidden;
+}
 .conv-cb label {
     position: relative;
     top: -8px;
@@ -1761,6 +1769,9 @@ button.conv-checkbox-clear {
         top: 0;
         right: 0;
         text-align: right;
+    }
+    .conv-email {
+        display: none;
     }
     .conv-thread-count {
         position: absolute;
