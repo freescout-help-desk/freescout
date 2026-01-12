@@ -35,12 +35,25 @@
 	        @endforeach
 		</ul>
 		<div class="customer-extra">
-			@if ($customer->getSocialProfiles() || $customer->getWebsites())
-				<div class="customer-section customer-social-profiles">
-					@foreach ($customer->getWebsites() as $website)
+			@php
+				$socialProfiles = $customer->getSocialProfiles();
+				$websites = $customer->getWebsites();
+				$totalProfiles = count($socialProfiles) + count($websites);
+				$profileClass = 'customer-social-profiles';
+
+				if ($totalProfiles <= 10) {
+					$profileClass .= ' social-profiles-few';
+				} else {
+					$profileClass .= ' social-profiles-many';
+				}
+			@endphp
+
+			@if ($socialProfiles || $websites)
+				<div class="customer-section {{ $profileClass }}">
+					@foreach ($websites as $website)
 			            <a href="{{ $website }}" target="_blank" title="{{ parse_url($website, PHP_URL_HOST) }}" data-toggle="tooltip" class="glyphicon glyphicon-globe"></a>
 			        @endforeach
-					@foreach ($customer->getSocialProfiles() as $sp)
+					@foreach ($socialProfiles as $sp)
 			            <a href="{{ App\Customer::formatSocialProfile($sp)['value_url'] }}" target="_blank" data-toggle="tooltip" title="{{ App\Customer::formatSocialProfile($sp)['type_name'] }}" class="glyphicon glyphicon-user"></a>
 			        @endforeach
 				</div>
