@@ -2918,6 +2918,10 @@ ul.sidebar-block-list {
         display: none!important;
         height: 0!important;
     }
+    .customer-social-profiles {
+        white-space: normal;
+        max-width: none;
+    }
 }
 @media (max-width:991px) {
     .conv-info .btn-group button.conv-info-val {
