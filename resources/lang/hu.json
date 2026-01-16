@@ -331,7 +331,7 @@
     "Get license key": "Licenckulcs beszerzése",
     "Go to": "Ugrás ide",
     "HTTPS protocol is required for the browser push notifications to work.": "HTTPS protokoll szükséges a böngésző push értesítések működéséhez.",
-    "Headers": "Fejlécek",
+    "Email Headers": "Fejlécek",
     "Hello :user_name": "Üdvözöllek, :user_name",
     "Help": "Segítség",
     "Hi :user, an account has been created for you at :app_url": "Szia :user, egy fiókot hoztunk létre neked itt: :app_url",

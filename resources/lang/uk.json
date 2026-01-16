@@ -328,7 +328,7 @@
     "Get license key": "Отримати ліцензійний ключ",
     "Go to": "Перейти до",
     "HTTPS protocol is required for the browser push notifications to work.": "Для роботи push-сповіщень у браузері потрібен протокол HTTPS.",
-    "Headers": "Заголовки",
+    "Email Headers": "Заголовки",
     "Hello :user_name": "Привіт, :user_name",
     "Help": "Допомога",
     "Hi :user, an account has been created for you at :app_url": "Привіт, :user, для вас створено обліковий запис на :app_url",

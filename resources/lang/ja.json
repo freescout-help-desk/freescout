@@ -329,7 +329,7 @@
     "Get license key": "ライセンスキーを取得する",
     "Go to": "移動",
     "HTTPS protocol is required for the browser push notifications to work.": "ブラウザのプッシュ通知が機能するためには、HTTPS環境が必要です。",
-    "Headers": "ヘッダー",
+    "Email Headers": "ヘッダー",
     "Hello :user_name": "こんにちは :user_name",
     "Help": "ヘルプ",
     "Hi :user, an account has been created for you at :app_url": "こんにちは :user さん、アカウントは :app_url で作成されました",

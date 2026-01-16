@@ -320,7 +320,7 @@
     "Get license key": "Получить лицензионный ключ",
     "Go to": "Перейти к",
     "HTTPS protocol is required for the browser push notifications to work.": "Протокол HTTPS необходим для работы push-уведомлений в браузере.",
-    "Headers": "Заголовки",
+    "Email Headers": "Заголовки",
     "Hello :user_name": "Здравствуйте, :user_name",
     "Help": "Помощь",
     "Hi :user, an account has been created for you at :app_url": "Привет, :user, для вас был создан аккаунт в :app_url",

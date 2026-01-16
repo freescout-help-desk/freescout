@@ -325,7 +325,7 @@
     "Get license key": "Pridobi licenčni ključ",
     "Go to": "Pojdi na",
     "HTTPS protocol is required for the browser push notifications to work.": "Za potisna obvestila v brskalniku je potreben protokol HTTPS.",
-    "Headers": "Glave",
+    "Email Headers": "Glave",
     "Hello :user_name": "Pozdravljen\/-a :user_name",
     "Help": "Pomoč",
     "Hi :user, an account has been created for you at :app_url": "Pozdravljen\/-a :user, račun je bil ustvarjen zate na :app_url",

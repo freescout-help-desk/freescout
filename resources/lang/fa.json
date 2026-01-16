@@ -310,7 +310,7 @@
     "Get license key": "دریافت کلید مجوز",
     "Go to": "قابل اعتماد",
     "HTTPS protocol is required for the browser push notifications to work.": "برای اینکه اعلان های لحظه ای کار کنند، HTTPS لازم است.",
-    "Headers": "سرصفحه ها",
+    "Email Headers": "سرصفحه ها",
     "Hello :user_name": "سلام :user_name",
     "Hi :user, an account has been created for you at :app_url": "سلام :user، یک حساب کاربری برای شما در :app_url ایجاد شده است",
     "Hide": "پنهان شدن",

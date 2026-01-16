@@ -321,7 +321,7 @@
     "Get license key": "Obtenir la clé de licence",
     "Go to": "Aller à",
     "HTTPS protocol is required for the browser push notifications to work.": "Le protocole HTTPS est requis pour que les notifications push du navigateur fonctionnent.",
-    "Headers": "En-têtes",
+    "Email Headers": "En-têtes",
     "Hello :user_name": "Bonjour :user_name",
     "Help": "Aide",
     "Hi :user, an account has been created for you at :app_url": "Hello :user, un compte a été créé pour vous à l'URL :app_url",

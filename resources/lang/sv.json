@@ -329,7 +329,7 @@
     "Get license key": "Hämta licensnyckel",
     "Go to": "Gå till",
     "HTTPS protocol is required for the browser push notifications to work.": "HTTPS-protokoll krävs för att webbläsarens pushnotiser ska fungera.",
-    "Headers": "Rubriker",
+    "Email Headers": "Rubriker",
     "Hello :user_name": "Hej :user_name",
     "Help": "Hjälp",
     "Hi :user, an account has been created for you at :app_url": "Hej :user, ett konto har skapats åt dig på :app_url",

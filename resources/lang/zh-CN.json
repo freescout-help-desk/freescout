@@ -321,7 +321,7 @@
     "Get license key": "获取许可证密钥",
     "Go to": "前往",
     "HTTPS protocol is required for the browser push notifications to work.": "浏览器推送通知需要 HTTPS 协议才能工作。",
-    "Headers": "标头",
+    "Email Headers": "标头",
     "Hello :user_name": "你好:user_name",
     "Help": "帮助",
     "Hi :user, an account has been created for you at :app_url": "嗨 :user,已为您创建了一个账户:app_url",

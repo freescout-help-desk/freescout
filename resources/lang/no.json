@@ -321,7 +321,7 @@
     "Get license key": "Hent lisensnøkkel",
     "Go to": "Gå til",
     "HTTPS protocol is required for the browser push notifications to work.": "HTTPS-protokollen er nødvendig for at push-varslinger skal fungere.",
-    "Headers": "Hodefelt",
+    "Email Headers": "Hodefelt",
     "Hello :user_name": "Hei :user_name",
     "Help": "Hjelp",
     "Hi :user, an account has been created for you at :app_url": "Hei :user, en konto har blitt opprettet for deg på :app_url",
