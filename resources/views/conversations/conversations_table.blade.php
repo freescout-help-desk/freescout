@@ -152,7 +152,7 @@
                                         {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }} <small class="glyphicon glyphicon-user"></small>
                                     </small>
                                 @endif
-                                <span class="conv-email">{{ $conversation->customer_email }}</span>
+                                {{--<span class="conv-email">{{ $conversation->customer_email }}</span>--}}
                             </a>
                         </td>
                     @else
