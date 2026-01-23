@@ -699,6 +699,7 @@ class FetchEmails extends Command
                 $body = $message->getTextBody() ?? '';
                 $body = htmlspecialchars($body);
             }
+            $body = \Helper::utf8Encode($body);
 
             // We have to fetch absolutely all emails, even with empty body.
             // if (!$body) {
@@ -1593,7 +1594,7 @@ class FetchEmails extends Command
         if (!is_string($header)) {
             $header = $header->raw;
         }
-        return $header;
+        return \Helper::utf8Encode($header);
     }
 
     /**
