@@ -81,21 +81,18 @@
 
 			<div style="height:1px"><div style="border-bottom:1px solid #e7e7e7;"></div></div>
 			<div style="height:15px;"></div>
-
-			@if ($loop->index == 0)
-				<div style="height:0; font-size:0px; line-height:0px; color:#ffffff;">	                    	
-					@if (\App\Option::get('open_tracking'))
-						<img src="{{ route('open_tracking.set_read', ['conversation_id' => $threads->first()->conversation_id, 'thread_id' => $threads->first()->id, 'otr' => '1']) }}" alt="" />
-					@endif
-					<span style="font-size: 0px; line-height: 0px; color:#ffffff !important;">{{-- Extra symbols not to show message marker in Gmail snippet preview --}} &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj;{{-- In addition to Message-ID header to detect relies --}}{{ \MailHelper::getMessageMarker($headers['Message-ID']) }}</span>
-				</div>
-			@endif
 		@endforeach
 		@if (\App\Option::get('email_branding'))
             <div height="" style="height:30px; font-size:12px; line-height:18px; font-family:Arial,'Helvetica Neue',Helvetica,Tahoma,sans-serif; color: #aaaaaa; @if($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
 				{!! __('Support powered by :app_name — Free open source help desk & shared mailbox', ['app_name' => '<a href="https://landing.freescout.net">'.\Config::get('app.name').'</a>']) !!}
 			</div>
 		@endif
+		<div style="height:0; font-size:0px; line-height:0px; color:#ffffff;">	                    	
+			@if (\App\Option::get('open_tracking'))
+				<img src="{{ route('open_tracking.set_read', ['conversation_id' => $threads->first()->conversation_id, 'thread_id' => $threads->first()->id, 'otr' => '1']) }}" alt="" />
+			@endif
+			<span style="font-size: 0px; line-height: 0px; color:#ffffff !important;">{{-- Extra symbols not to show message marker in Gmail snippet preview --}} &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj;{{-- In addition to Message-ID header to detect relies --}}{{ \MailHelper::getMessageMarker($headers['Message-ID']) }}</span>
+		</div>
 	</div>
 </body>
 </html>

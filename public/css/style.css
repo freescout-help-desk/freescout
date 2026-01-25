@@ -1367,8 +1367,15 @@ https://github.com/freescout-help-desk/freescout/issues/4354
     font-weight: normal;
     font-size: 13.4px;
     display: block;
-    max-height: 36px;
     overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 12px;
+}
+.conv-customer a {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .conv-cb label {
     position: relative;
