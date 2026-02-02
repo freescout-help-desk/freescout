@@ -49,6 +49,12 @@ class SendReplyToCustomer
             }
         }
 
+        //Possibility of canceling email delivery
+        $skipmail = \Eventy::filter('conversation.skip_send_reply_to_customer',false,$conversation,$replies);
+        if ($skipmail) {            
+             return;
+         }
+
         // Chat conversation.
         if ($conversation->isChat()) {
             \Helper::backgroundAction('chat_conversation.send_reply', [$conversation, $replies, $conversation->customer], now()->addSeconds(Conversation::UNDO_TIMOUT));
