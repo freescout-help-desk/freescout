@@ -282,7 +282,16 @@ class SendReplyToCustomer implements ShouldQueue
         if (count($to_array) > 1) {
             $to = $to_array;
         } else {
-            $to = [['name' => $this->customer->getFullName(), 'email' => $this->customer_email]];
+            // Look up the correct customer name for the email being sent to.
+            // $this->customer may not match $this->customer_email after a requester change.
+            $to_customer_name = $this->customer->getFullName();
+            if ($this->customer_email) {
+                $email_customer = Customer::getByEmail($this->customer_email);
+                if ($email_customer) {
+                    $to_customer_name = $email_customer->getFullName();
+                }
+            }
+            $to = [['name' => $to_customer_name, 'email' => $this->customer_email]];
         }
 
         // If sending fails, all recipiens fail.
