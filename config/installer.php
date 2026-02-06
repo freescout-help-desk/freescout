@@ -33,7 +33,7 @@ return [
             'Tokenizer',
             'JSON',
             'XML',
-            'IMAP',
+            //'IMAP',
             'GD',
             'fileinfo',
             'ZIP',
