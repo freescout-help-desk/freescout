@@ -1659,8 +1659,13 @@ function showReplyForm(data, scroll_offset)
 		$('#body').summernote('focus');
 	}
 
-	// Select2 for CC/BCC
-	initRecipientSelector();
+	if (!isChatMode()) {
+		$('form.form-reply:first .field-cc').removeClass('hidden');
+		// Select2 for CC/BCC
+		initRecipientSelector();
+	} else {
+		$('form.form-reply:first .field-cc').addClass('hidden');
+	}
 
 	if (typeof(scroll_offset) == "undefined") {
 		scroll_offset = 0;
