@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.203',
+    'version' => '1.8.204',
 
     /*
     |--------------------------------------------------------------------------
@@ -365,7 +365,7 @@ return [
     |
     |-------------------------------------------------------------------------
     */
-    'use_new_pop3_lib'    => env('APP_USE_NEW_POP3_LIB', false),
+    'use_new_pop3_lib'    => env('APP_USE_NEW_POP3_LIB', true),
 
      /*
     |--------------------------------------------------------------------------

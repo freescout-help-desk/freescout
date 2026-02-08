@@ -52,7 +52,7 @@
 <option value="Asia/Tokyo" @if ($current_timezone == 'Asia/Tokyo')selected="selected"@endif>(GMT+09:00) Tokyo</option>
 <option value="Australia/North" @if ($current_timezone == 'Australia/North')selected="selected"@endif>(GMT+09:30) Australian Central Time (Northern Territory)</option>
 <option value="Australia/Adelaide" @if ($current_timezone == 'Australia/Adelaide')selected="selected"@endif>(GMT+09:30) Australian Central Time (Adelaide)</option>
-<option value="Australia/Queensland" @if ($current_timezone == 'Australia/Queensland')selected="selected"@endif>(GMT+10:00) Australian Eastern Time (Queensland)</option>
+{{--<option value="Australia/Queensland" @if ($current_timezone == 'Australia/Queensland')selected="selected"@endif>(GMT+10:00) Australian Eastern Time (Queensland)</option>--}}
 <option value="Australia/Sydney" @if ($current_timezone == 'Australia/Sydney')selected="selected"@endif>(GMT+10:00) Australian Eastern Time (Sydney)</option>
 <option value="Pacific/Noumea" @if ($current_timezone == 'Pacific/Noumea')selected="selected"@endif>(GMT+11:00) Noumea, New Caledonia</option>
 <option value="Pacific/Norfolk" @if ($current_timezone == 'Pacific/Norfolk')selected="selected"@endif>(GMT+11:00) Norfolk Island (Austl.)</option>
