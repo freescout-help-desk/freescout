@@ -35,6 +35,11 @@ class Conversation extends Model
     const SUBJECT_LENGTH = 80;
 
     /**
+     * Subject max length.
+     */
+    const SUBJECT_MAXLENGTH = 998;
+
+    /**
      * Conversation reply undo timeout in seconds.
      * Value has to be larger than close_after in fsFloatingAlertsInit.
      */
