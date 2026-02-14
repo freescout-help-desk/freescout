@@ -3548,6 +3548,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Swift_Encoder_QpEncoder' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Encoder/QpEncoder.php',
         'Swift_IoException' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/IoException.php',
         'Swift_KeyCache' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache.php',
+        'Swift_KeyCache_ArrayKeyCache' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/ArrayKeyCache.php',
         'Swift_KeyCache_DiskKeyCache' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/DiskKeyCache.php',
         'Swift_KeyCache_SimpleKeyCacheInputStream' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/SimpleKeyCacheInputStream.php',
         'Swift_MailTransport' => __DIR__ . '/../..' . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/MailTransport.php',

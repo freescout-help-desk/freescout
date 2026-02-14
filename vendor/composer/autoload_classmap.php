@@ -2569,6 +2569,7 @@ return array(
     'Swift_Encoder_QpEncoder' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/Encoder/QpEncoder.php',
     'Swift_IoException' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/IoException.php',
     'Swift_KeyCache' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache.php',
+    'Swift_KeyCache_ArrayKeyCache' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/ArrayKeyCache.php',
     'Swift_KeyCache_DiskKeyCache' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/DiskKeyCache.php',
     'Swift_KeyCache_SimpleKeyCacheInputStream' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/SimpleKeyCacheInputStream.php',
     'Swift_MailTransport' => $baseDir . '/overrides/swiftmailer/swiftmailer/lib/classes/Swift/MailTransport.php',
