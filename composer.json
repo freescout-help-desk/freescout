@@ -438,6 +438,7 @@
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/Esmtp/AuthHandler.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/Encoder/QpEncoder.php",
+            "vendor/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/ArrayKeyCache.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/DiskKeyCache.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/SimpleKeyCacheInputStream.php",
             "vendor/natxet/cssmin/src/CssMin.php",

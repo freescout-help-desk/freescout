@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Conversation;
+use App\Customer;
 
 class SendReplyToCustomer
 {
@@ -23,9 +24,11 @@ class SendReplyToCustomer
     {
         $conversation = $event->conversation;
 
+        $main_customer_email = $conversation->customer->getMainEmail();
+
         // Do not send email if this is a Phone conversation and customer has no email.
         if ($conversation->isPhone()) {
-            if (!$conversation->customer->getMainEmail()) {
+            if (!$main_customer_email) {
                 return;
             }
         }
@@ -66,7 +69,18 @@ class SendReplyToCustomer
         //if (!$conversation->imported) {
         $delay = \Eventy::filter('conversation.send_reply_to_customer_delay', now()->addSeconds(Conversation::UNDO_TIMOUT), $conversation, $replies);
 
-        \App\Jobs\SendReplyToCustomer::dispatch($conversation, $replies, $conversation->customer)
+        $recipient_customer = $conversation->customer;
+
+        // The reply may be sent to some other customer from previous threads.
+        // https://github.com/freescout-help-desk/freescout/pull/5199
+        if ($thread && ($customer_email = $thread->getToArray()[0]) && $customer_email != $main_customer_email) {
+            $other_customer = Customer::getByEmail($customer_email);
+            if ($other_customer) {
+                $recipient_customer = $other_customer;
+            }
+        }
+
+        \App\Jobs\SendReplyToCustomer::dispatch($conversation, $replies, $recipient_customer)
             ->delay($delay)
             ->onQueue('emails');
     }

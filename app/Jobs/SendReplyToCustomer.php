@@ -23,6 +23,7 @@ class SendReplyToCustomer implements ShouldQueue
 
     public $threads;
 
+    // Recipient.
     public $customer;
 
     private $failures = [];
@@ -51,6 +52,7 @@ class SendReplyToCustomer implements ShouldQueue
     {
         $this->conversation = $conversation;
         $this->threads = $threads;
+        // Recipient.
         $this->customer = $customer;
     }
 
@@ -252,7 +254,9 @@ class SendReplyToCustomer implements ShouldQueue
         // Try to get customer by email
         if (!$this->customer) {
             $this->customer = Customer::getByEmail($this->customer_email);
-            return;
+            if (!$this->customer) {
+                return;
+            }
         }
 
         $to_array = $mailbox->removeMailboxEmailsFromList($this->last_thread->getToArray());

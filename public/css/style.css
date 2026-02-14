@@ -124,6 +124,11 @@ body.user-is-guest {
     text-align: -webkit-match-parent;
     border-radius: 0 17px 17px 0;
 }
+.sidebar-menu > li.alert {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
 .sidebar-menu > li.no-link {
     padding: 9px 20px 9px 20px;
 }

@@ -16,6 +16,8 @@ class ConversationObserver
         if ($conversation->source_via == Conversation::PERSON_USER) {
             $conversation->read_by_user = true;
         }
+
+        $conversation->subject = mb_substr($conversation->subject ?? '', 0, Conversation::SUBJECT_MAXLENGTH);
     }
 
     /**
@@ -27,6 +29,17 @@ class ConversationObserver
     {
         // Better to do it manually
         //$conversation->mailbox->updateFoldersCounters();
+    }
+
+    /**
+     * On before updating.
+     *
+     * @param Conversation $conversation
+     */
+    public function updating(Conversation $conversation)
+    {
+        // https://github.com/freescout-help-desk/freescout/issues/5201
+        $conversation->subject = mb_substr($conversation->subject ?? '', 0, Conversation::SUBJECT_MAXLENGTH);
     }
 
     /**
