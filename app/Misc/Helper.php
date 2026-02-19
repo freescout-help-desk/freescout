@@ -741,7 +741,9 @@ class Helper
                            ceil($new_width),
                            ceil($new_height),
                            $width, $height);
-        imagedestroy($src);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($src);
+        }
 
         return $thumb;
     }
