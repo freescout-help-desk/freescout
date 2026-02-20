@@ -65,6 +65,8 @@ class Helper
         'pl',
         'phtml',
         'phar',
+        //'htaccess',
+        //'user.ini',
     ];
 
     /**
@@ -1902,7 +1904,7 @@ class Helper
         // Check extension.
         $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
 
-        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext)) {
+        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext) || mb_substr($file_name, 0, 1) == '.') {
             // Add underscore to the extension if file has restricted extension.
             $file_name = $file_name.'_';
         } elseif ($ext == 'pdf') {
