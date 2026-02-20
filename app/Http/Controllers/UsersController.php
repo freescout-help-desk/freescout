@@ -97,7 +97,10 @@ class UsersController extends Controller
 
         if (!$auth_user->can('changeRole', $user)) {
             $user->role = User::ROLE_USER;
+        } elseif (array_key_exists($request->role, User::$roles)) {
+            $user->role = $request->role;
         }
+
         if (empty($request->send_invite)) {
             // Set password from request
             $user->password = Hash::make($request->password);
