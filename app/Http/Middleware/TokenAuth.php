@@ -18,14 +18,30 @@ class TokenAuth
     public function handle($request, Closure $next)
     {
         // This is needed to restore authentication when app session expires.
-        if (!$request->user() && !empty($request->auth_token) && $request->cookie('in_app')) {
-            try {
-                $user = User::where(\DB::raw('md5(CONCAT(id, created_at, "'.config('app.key').'"))'), $request->auth_token)
-                    ->first();
-            } catch (\Exception $e) {
-                \Helper::logException($e, '[TokenAuth]');
+        if (!$request->user() && !empty($request->auth_token) && \Helper::isInApp($request)) {
+        
+            // Decode token (format: urlencode(base64_encode(user_id:expiry:hash)))
+            $parts = explode(':', urldecode(base64_decode($request->auth_token)));
+            if (count($parts) !== 3) {
+                return $next($request);
             }
-            if (!empty($user)) {
+            list($user_id, $expiry, $token_hash) = $parts;
+
+            // Check expiration.
+            if (time() > (int)$expiry) {
+                return $next($request);
+            }
+
+            // Get user.
+            $user = User::find($user_id);
+            if (!$user) {
+                return $next($request);
+            }
+
+            // Verify hash.
+            $hash = hash_hmac('sha256', $user_id.':'.$expiry, config('app.key').$user->password);
+
+            if (hash_equals($hash, $token_hash)) {
                 \Auth::login($user);
             }
         }

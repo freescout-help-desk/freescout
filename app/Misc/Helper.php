@@ -1521,9 +1521,12 @@ class Helper
     /**
      * Are we in the mobile app.
      */
-    public static function isInApp()
+    public static function isInApp($request = null)
     {
-        return (int)app('request')->cookie('in_app');
+        if (!$request) {
+            $request = app('request');
+        }
+        return (int)$request->cookie('in_app');
     }
 
     /**

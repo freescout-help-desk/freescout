@@ -1148,7 +1148,10 @@ class User extends Authenticatable
 
     public function getAuthToken()
     {
-        return md5($this->id.''.$this->created_at.config('app.key'));
+        $expiry = time()+2592000;
+        $hash = hash_hmac('sha256', $this->id.':'.$expiry, config('app.key').$this->password);
+
+        return urlencode(base64_encode($this->id.':'.$expiry.':'.$hash));
     }
 
     public static function findNonDeleted($id, $extended = false)
