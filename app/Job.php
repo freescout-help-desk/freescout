@@ -27,9 +27,9 @@ class Job extends Model
     	return $this->payload_decoded;
     }
 
-    public function getCommand()
+    public function getCommand($allowed_classes = [])
     {
-    	return self::getPayloadCommand($this->getPayloadDecoded());
+    	return self::getPayloadCommand($this->getPayloadDecoded(), $allowed_classes);
     }
 
     public function getCommandLastThread()
@@ -42,15 +42,23 @@ class Job extends Model
         return null;
     }
 
-    public static function getPayloadCommand($payload)
+    public static function getPayloadCommand($payload, $allowed_classes = [])
     {
     	if (empty($payload['data']) || empty($payload['data']['command'])) {
     		return null;
     	}
+        if (!$allowed_classes) {
+            $allowed_classes = [
+                'App\Jobs\SendReplyToCustomer',
+                'App\Jobs\SendNotificationToUsers',
+                'App\Jobs\SendAutoReply',
+                'Illuminate\Contracts\Database\ModelIdentifier'
+            ];
+        }
         try {
             // If some record has been deleted from DB, there will be an error:
             // No query results for model [App\Conversation].
-            return unserialize($payload['data']['command']);
+            return unserialize($payload['data']['command'], ['allowed_classes' => $allowed_classes]);
         } catch (\Exception $e) {
             return null;
         }
