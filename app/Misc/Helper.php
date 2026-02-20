@@ -67,6 +67,12 @@ class Helper
         'phar',
         //'htaccess',
         //'user.ini',
+        'shtml',
+        'cgi',
+        'asp',
+        'aspx',
+        'jsp',
+        'config',
     ];
 
     /**
