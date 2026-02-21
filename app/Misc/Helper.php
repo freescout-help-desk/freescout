@@ -65,6 +65,14 @@ class Helper
         'pl',
         'phtml',
         'phar',
+        //'htaccess',
+        //'user.ini',
+        'shtml',
+        'cgi',
+        'asp',
+        'aspx',
+        'jsp',
+        'config',
     ];
 
     /**
@@ -741,7 +749,9 @@ class Helper
                            ceil($new_width),
                            ceil($new_height),
                            $width, $height);
-        imagedestroy($src);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($src);
+        }
 
         return $thumb;
     }
@@ -901,7 +911,7 @@ class Helper
             // If the value is scalar - unserialize it,
             // Otherwise - do not, as objects may contain dangerous code.
             if (preg_match("#^[idsa]:#", $value) || $force_unserialize) {
-                $value = unserialize($value);
+                $value = unserialize($value, ['allowed_classes' => false]);
             }
         } catch (\Exception $e) {
             // Do nothing.
@@ -1519,9 +1529,12 @@ class Helper
     /**
      * Are we in the mobile app.
      */
-    public static function isInApp()
+    public static function isInApp($request = null)
     {
-        return (int)app('request')->cookie('in_app');
+        if (!$request) {
+            $request = app('request');
+        }
+        return (int)$request->cookie('in_app');
     }
 
     /**
@@ -1897,7 +1910,7 @@ class Helper
         // Check extension.
         $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
 
-        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext)) {
+        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext) || mb_substr($file_name, 0, 1) == '.') {
             // Add underscore to the extension if file has restricted extension.
             $file_name = $file_name.'_';
         } elseif ($ext == 'pdf') {

@@ -1585,8 +1585,40 @@ class Customer extends Model
             $this->channel_id = $channel_id;
             $this->save();
         }
+        $customer_channel = CustomerChannel::where('customer_id', $this->id)
+                ->where('channel', $channel)
+                ->first();
 
-        return CustomerChannel::create($this->id, $channel, $channel_id);
+        if ($customer_channel) {
+            // Update channel_id.
+            if ($customer_channel->channel_id != $channel_id) {
+                try {
+                    $customer_channel->channel_id = $channel_id;
+                    $customer_channel->save();
+                } catch (\Exception $e) {
+                    // Do nothing.
+                }
+                return $customer_channel;
+            }
+        } else {
+            // Create.
+            return CustomerChannel::create($this->id, $channel, $channel_id);
+        }
+    }
+
+    // Each customer can have only one record for specific CHANNEL in CustomerChannel table.
+    public function updateChannelId($channel, $new_channel_id)
+    {
+        if (!$channel || !$new_channel_id) {
+            return;
+        }
+        try {
+            CustomerChannel::where('customer_id', $this->id)
+                ->where('channel', $channel)
+                ->update(['channel_id' => $new_channel_id]);
+        } catch (\Exception $e) {
+            // Do nothing.
+        }
     }
 
     public static function getCustomerByChannel($channel, $channel_id)

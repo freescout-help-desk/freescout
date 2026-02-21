@@ -229,7 +229,7 @@ class Option extends Model
         // Options are not seralized using serialize() anymore.
         if (self::isSerialized($original)) {
             try {
-                $original = unserialize($original);
+                $original = unserialize($original, ['allowed_classes' => false]);
             } catch (\Exception $e) {
                 // Do nothing
             }

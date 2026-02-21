@@ -404,7 +404,7 @@ class SystemController extends Controller
                 $payload = json_decode($job->payload, true);
 
                 if (!empty($payload['data']['command'])) {
-                    $html .= '<pre>'.\Helper::stripDangerousTags(print_r(unserialize($payload['data']['command']), 1)).'</pre>';
+                    $html .= '<pre>'.\Helper::stripDangerousTags(print_r(unserialize($payload['data']['command'], ['allowed_classes' => false]), 1)).'</pre>';
                 }
                 
                 $html .= '<pre>'.\Helper::stripDangerousTags($job->exception).'</pre>';

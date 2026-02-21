@@ -117,7 +117,7 @@ class User extends Authenticatable
      *
      * @var [type]
      */
-    protected $fillable = ['role', 'status', 'first_name', 'last_name', 'email', 'password', 'timezone', 'photo_url', 'type', 'emails', 'job_title', 'phone', 'time_format', 'locale'];
+    protected $fillable = ['status', 'first_name', 'last_name', 'email', 'password', 'timezone', 'photo_url', 'type', 'emails', 'job_title', 'phone', 'time_format', 'locale'];
 
     protected $casts = [
         'permissions' => 'array',
@@ -1026,6 +1026,10 @@ class User extends Authenticatable
                 }
             }
         }
+        // Role is not fillable.
+        if (!empty($data['role']) && array_key_exists((int)$data['role'], self::$roles)) {
+            $this->role = (int)$data['role'];
+        }
 
         \Eventy::action('user.set_data', $this, $data, $replace_data);
 
@@ -1148,7 +1152,10 @@ class User extends Authenticatable
 
     public function getAuthToken()
     {
-        return md5($this->id.''.$this->created_at.config('app.key'));
+        $expiry = time()+2592000;
+        $hash = hash_hmac('sha256', $this->id.':'.$expiry, config('app.key').$this->password);
+
+        return urlencode(base64_encode($this->id.':'.$expiry.':'.$hash));
     }
 
     public static function findNonDeleted($id, $extended = false)
