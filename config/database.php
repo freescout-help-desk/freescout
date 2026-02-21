@@ -56,7 +56,7 @@ return [
                 (defined('Pdo\Mysql::ATTR_SSL_CA') ? Pdo\Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('DB_MYSQL_ATTR_SSL_CA'),
                 (defined('Pdo\Mysql::ATTR_SSL_CERT') ? Pdo\Mysql::ATTR_SSL_CERT : PDO::MYSQL_ATTR_SSL_CERT) => env('DB_MYSQL_ATTR_SSL_CERT'),
                 PDO::ATTR_PERSISTENT => env('DB_ATTR_PERSISTENT'),
-            ]) : [],
+            ], function($value) { return $value !== null; }) : [],
         ],
 
         'testing' => [
