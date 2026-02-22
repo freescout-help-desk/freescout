@@ -71,6 +71,7 @@ class ConversationChangeCustomerTest extends TestCase
      * This is the regression test for the authorization bypass where changeCustomer()
      * executed unconditionally even when permission checks set an error message.
      */
+    #[RequiresPhp('>=8.3.0')]
     public function testUnauthorizedUserCannotChangeCustomer()
     {
         $response = $this->actingAs($this->unprivUser)
@@ -98,6 +99,7 @@ class ConversationChangeCustomerTest extends TestCase
      * Test that an authorized admin user CAN change a conversation's customer.
      * This ensures the fix does not break normal functionality.
      */
+    #[RequiresPhp('>=8.3.0')]
     public function testAuthorizedUserCanChangeCustomer()
     {
         $response = $this->actingAs($this->admin)
