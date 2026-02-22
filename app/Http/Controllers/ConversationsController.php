@@ -2137,7 +2137,7 @@ class ConversationsController extends Controller
             // Delete converations in a specific folder.
             case 'empty_folder':
                 // At first, check if this user is able to delete conversations
-                if (!auth()->user()->isAdmin() && !auth()->user()->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS)) {
+                if (!$user->isAdmin() && !$user->hasPermission(\App\User::PERM_DELETE_CONVERSATIONS)) {
                     $response['msg'] = __('Not enough permissions');
                     return \Response::json($response);
                 }
@@ -2152,6 +2152,10 @@ class ConversationsController extends Controller
 
                     if (!$folder) {
                         $response['msg'] = __('Folder not found');
+                    }
+
+                    if (!$user->isAdmin() && $folder->mailbox && !$folder->mailbox->userHasAccess($user->id)) {
+                        $response['msg'] = __('Not enough permissions');
                     }
 
                     if (!$response['msg']) {
