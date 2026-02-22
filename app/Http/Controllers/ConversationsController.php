@@ -1845,10 +1845,14 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
-                $conversation->changeCustomer($customer_email, null, $user);
+                if (!$response['msg']) {
+                    $result = $conversation->changeCustomer($customer_email, null, $user);
 
-                $response['status'] = 'success';
-                \Session::flash('flash_success_floating', __('Customer changed'));
+                    if ($result) {
+                        $response['status'] = 'success';
+                        \Session::flash('flash_success_floating', __('Customer changed'));
+                    }
+                }
 
                 break;
 
