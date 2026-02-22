@@ -62,8 +62,8 @@ return [
         'testing' => [
             'driver'         => 'mysql',
             //'url'            => env('DB_TEST_DATABASE_URL'),
-            'host'           => '127.0.0.1',
-            'database'       => 'freescout-test',
+            'host'           => env('DB_TEST_HOST', '127.0.0.1'),
+            'database'       => env('DB_TEST_DATABASE', 'freescout-test'),
             'username'       => env('DB_TEST_USERNAME', 'freescout-test'),
             'password'       => env('DB_TEST_PASSWORD', 'freescout-test'),
             //'port'           => env('DB_TEST_PORT', '3306'),
