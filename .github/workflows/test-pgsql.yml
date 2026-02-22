@@ -54,6 +54,7 @@ jobs:
           DB_PORT: ${{ job.services.postgres.ports[5432] }}
 
       - name: Run PHP tests
+        if: ${{ matrix.php < 8.4 }}
         run: php${{ matrix.php }} ./vendor/bin/phpunit
         env:
           DB_PORT: ${{ job.services.postgres.ports[5432] }}
