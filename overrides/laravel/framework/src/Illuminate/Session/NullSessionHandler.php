@@ -25,7 +25,8 @@ class NullSessionHandler implements SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function read($sessionId): string|false
+    #[\ReturnTypeWillChange]
+    public function read($sessionId)
     {
         return '';
     }
@@ -49,7 +50,8 @@ class NullSessionHandler implements SessionHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function gc($lifetime): int|false
+    #[\ReturnTypeWillChange]
+    public function gc($lifetime)
     {
         return true;
     }
