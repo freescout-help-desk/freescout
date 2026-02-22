@@ -290,6 +290,7 @@
             "vendor/laravel/framework/src/Illuminate/Pagination/LengthAwarePaginator.php",
             "vendor/laravel/framework/src/Illuminate/Routing/RouteCollection.php",
             "vendor/laravel/framework/src/Illuminate/Session/FileSessionHandler.php",
+            "vendor/laravel/framework/src/Illuminate/Session/NullSessionHandler.php",
             "vendor/laravel/framework/src/Illuminate/Session/CacheBasedSessionHandler.php",
             "vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php",
             "vendor/laravel/framework/src/Illuminate/Queue/Listener.php",
