@@ -811,6 +811,11 @@ class Header {
                 if (str_contains($value, ";") && str_contains($value, "=")) {
                     $_attributes = $this->read_attribute($value);
                     foreach($_attributes as $_key => $_value) {
+                        // Without this the following will not be parsed properly with ";" on the end:
+                        // Content-Type: text/html; charset="UTF-8";
+                        if ($_key === "") {
+                            continue;
+                        }
                         if ($_value === "") {
                             // Remove existing value.
                             if (isset($this->attributes[$key])) {
