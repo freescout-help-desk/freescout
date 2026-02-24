@@ -129,6 +129,13 @@ class WebklexTest extends FixtureWebklexMessage {
         self::assertSame("------3f0eb27c226a6efc44713e1b8f40befd34d8d3c9199e2ad04dab9839cbbd3524", $message->header->getBoundary());
     }
 
+    /**
+     * This test also makes sure that 
+     * headers of multipart message are parsed properly
+     * when there is a ";" at the end:
+     * 
+     * Content-Type: text/html; charset="UTF-8";
+     */
     public function testRegularEmail() {
         $message = $this->getFixture("message-3.eml");
 
