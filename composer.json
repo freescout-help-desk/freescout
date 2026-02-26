@@ -265,6 +265,7 @@
             "vendor/chumper/zipper/src/Chumper/Zipper/Repositories/ZipRepository.php",
             "vendor/fzaninotto/faker/src/Faker/Provider/Base.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Host.php",
+            "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/CSS/FontFamily.php",
             "vendor/laravel/framework/src/Illuminate/Database/DetectsLostConnections.php",
 
             "vendor/laravel/framework/src/Illuminate/Support/Collection.php",
