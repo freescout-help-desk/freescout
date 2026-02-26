@@ -102,17 +102,42 @@
                             <div class="col-sm-6">
                                 <input id="out_password" type="password" class="form-control input-sized @if ($out_oauth_enabled) disabled @endif" name="out_password" value="{{ old('out_password', $mailbox->outPasswordSafe()) }}" maxlength="255" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) @endif autofocus {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password" @if ($out_oauth_enabled) readonly @endif>
 
-                                <p class="form-help">
-                                    <small @if ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT && $out_oauth_enabled) class="text-success" @endif>Microsoft Exchange</small> 
-                                    @if (!$mailbox->oauthEnabled())
-                                        @if ($mailbox->out_username && $mailbox->out_password && $mailbox->isOutUsernameOauth())
-                                             – <a href="{{ route('mailboxes.oauth', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'out']) }}" target="_blank">{{ __('Connect') }}</a>
+                                @php
+                                    $active_oauth_provider = '';
+                                    if ($out_oauth_enabled) {
+                                        $active_oauth_provider = $mailbox->oauthGetParam('provider');
+                                    }
+                                @endphp
+
+                                {{-- Microsoft Exchange --}}
+                                @if ($active_oauth_provider != \MailHelper::OAUTH_PROVIDER_GOOGLE)
+                                    <p class="form-help">
+                                        <small @if ($mailbox->isOauthProvider(\MailHelper::OAUTH_PROVIDER_MICROSOFT) && $out_oauth_enabled) class="text-success" @endif>Microsoft Exchange</small> 
+                                        @if (!$mailbox->oauthEnabled())
+                                            @if ($mailbox->out_username && $mailbox->out_password && $mailbox->isOutUsernameOauth())
+                                                 – <a href="{{ route('mailboxes.oauth', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'out']) }}" target="_blank">{{ __('Connect') }}</a>
+                                            @endif
+                                        @elseif ($mailbox->isOauthProvider(\MailHelper::OAUTH_PROVIDER_MICROSOFT) && $out_oauth_enabled)
+                                             – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'out']) }}">{{ __('Disconnect') }}</a>
                                         @endif
-                                    @elseif ($mailbox->oauthGetParam('provider') == \MailHelper::OAUTH_PROVIDER_MICROSOFT && $out_oauth_enabled)
-                                         – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'out']) }}">{{ __('Disconnect') }}</a>
-                                    @endif
-                                    <small>(<a href="{{ config('app.freescout_repo') }}/wiki/Connect-FreeScout-to-Microsoft-365-Exchange-via-oAuth" target="_blank">{{ __('Help') }}</a>)</small>
-                                </p>
+                                        <small>(<a href="{{ config('app.freescout_repo') }}/wiki/Connect-FreeScout-to-Microsoft-365-Exchange-via-oAuth" target="_blank">{{ __('Help') }}</a>)</small>
+                                    </p>
+                                @endif
+
+                                {{-- Google Workspace --}}
+                                @if ($active_oauth_provider != \MailHelper::OAUTH_PROVIDER_MICROSOFT)
+                                    <p class="form-help">
+                                        <small @if ($mailbox->isOauthProvider(\MailHelper::OAUTH_PROVIDER_GOOGLE) && $out_oauth_enabled) class="text-success" @endif>Google Workspace</small> 
+                                        @if (!$mailbox->oauthEnabled())
+                                            @if ($mailbox->out_username && $mailbox->out_password && $mailbox->isOutUsernameOauth())
+                                                 – <a href="{{ route('mailboxes.oauth', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_GOOGLE, 'in_out' => 'out']) }}" target="_blank">{{ __('Connect') }}</a>
+                                            @endif
+                                        @elseif ($mailbox->isOauthProvider(\MailHelper::OAUTH_PROVIDER_GOOGLE) && $out_oauth_enabled)
+                                             – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_GOOGLE, 'in_out' => 'out']) }}">{{ __('Disconnect') }}</a>
+                                        @endif
+                                        <small>(<a href="{{ config('app.freescout_repo') }}/wiki/Connect-FreeScout-to-Google-Workspace" target="_blank">{{ __('Help') }}</a>)</small>
+                                    </p>
+                                @endif
                             </div>
                         </div>
                         <div class="form-group{{ $errors->has('out_encryption') ? ' has-error' : '' }}">

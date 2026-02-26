@@ -161,6 +161,10 @@ class Mail
                     ]);
 
                     if (!empty($token_data['a_token'])) {
+                        // In Google Workspace new refresh token is not returned after refreshing the token.
+                        if (empty($token_data['r_token'])) {
+                            $token_data['r_token'] = $mailbox->oauthGetParam('r_token');
+                        }
                         $mailbox->setMetaParam('oauth', $token_data, true);
                     } elseif (!empty($token_data['error'])) {
                         $error_message = 'Error occurred refreshing oAuth Access Token: '.$token_data['error'];
@@ -833,6 +837,10 @@ class Mail
                 ]);
 
                 if (!empty($token_data['a_token'])) {
+                    // In Google Workspace new refresh token is not returned after refreshing the token.
+                    if (empty($token_data['r_token'])) {
+                        $token_data['r_token'] = $mailbox->oauthGetParam('r_token');
+                    }
                     $mailbox->setMetaParam('oauth', $token_data, true);
                 } elseif (!empty($token_data['error'])) {
                     $error_message = 'Error occurred refreshing oAuth Access Token: '.$token_data['error'];
@@ -1073,7 +1081,6 @@ class Mail
                 
                 $full_url = "https://oauth2.googleapis.com/token";
 
-
                 $curl = curl_init($full_url);
 
                 curl_setopt($curl, CURLOPT_POST, true);
@@ -1098,7 +1105,9 @@ class Mail
                     if (!empty($result['access_token'])) {
                         $token_data['provider'] = self::OAUTH_PROVIDER_GOOGLE;
                         $token_data['a_token'] = $result['access_token'];
-                        $token_data['r_token'] = $result['refresh_token'];
+                        if ($post_params['grant_type'] != 'refresh_token') {
+                            $token_data['r_token'] = $result['refresh_token'];
+                        }
                         //$token_data['id_token'] = $result['id_token'];
                         $token_data['issued_on'] = now()->toDateTimeString();
                         $token_data['expires_in'] = $result['expires_in'];
@@ -1125,28 +1134,27 @@ class Mail
                 return redirect()->away('https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri='.urlencode($redirect_uri));
 
             case self::OAUTH_PROVIDER_GOOGLE:
-                $post_params = [
-                    'token' => $mailbox->oauthGetParam('a_token')
-                ];
+                // This does not work.
+                // $post_params = [
+                //     'token' => $mailbox->oauthGetParam('a_token')
+                // ];
 
-                $full_url = "https://oauth2.googleapis.com/revoke";
-                $curl = curl_init($full_url);
+                // $full_url = "https://oauth2.googleapis.com/revoke";
+                // $curl = curl_init($full_url);
 
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $post_params);
-                curl_setopt($curl, CURLOPT_HTTPHEADER, array("application/x-www-form-urlencoded"));
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                \Helper::setCurlDefaultOptions($curl);
-                curl_setopt($curl, CURLOPT_TIMEOUT, 180);
+                // curl_setopt($curl, CURLOPT_POST, true);
+                // curl_setopt($curl, CURLOPT_POSTFIELDS, $post_params);
+                // curl_setopt($curl, CURLOPT_HTTPHEADER, array("application/x-www-form-urlencoded"));
+                // curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                // \Helper::setCurlDefaultOptions($curl);
+                // curl_setopt($curl, CURLOPT_TIMEOUT, 180);
 
-                $response = curl_exec($curl);
-                $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                // $response = curl_exec($curl);
+                // $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-                if ($http_status != 200) {
-                    \Log::error('[Google Workspace OAuth] Error revoking token on logout: HTTPS Status Code'.$http_status.'; '.json_encode($response));
-                }
-                
-
+                // if ($http_status != 200) {
+                //     \Log::error('[Google Workspace OAuth] Error revoking token on logout: HTTPS Status Code - '.$http_status.'; '.json_encode($response));
+                // }
                 return redirect()->away($redirect_uri);
         }
     }
