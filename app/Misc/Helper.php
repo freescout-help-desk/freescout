@@ -1907,22 +1907,6 @@ class Helper
 
     public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null)
     {
-        // Check extension.
-        $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-
-        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext) || mb_substr($file_name, 0, 1) == '.') {
-            // Add underscore to the extension if file has restricted extension.
-            $file_name = $file_name.'_';
-        } elseif ($ext == 'pdf') {
-            // Rename PDF to avoid running embedded JavaScript.
-            if ($uploaded_file && !$contents) {
-                $contents = file_get_contents($uploaded_file->getRealPath() ?: $uploaded_file->getPathname());
-            }
-            if ($contents && strstr($contents, '/JavaScript')) {
-                $file_name = $file_name.'_';
-            }
-        }
-
         // Remove illegal chars.
         $illegal_chars = [
             // Unix.
@@ -1957,6 +1941,22 @@ class Helper
         $file_name = preg_replace("#\p{C}+#u", '', $file_name);
         // https://github.com/freescout-help-desk/freescout/issues/2123#issuecomment-2775392740
         $file_name = preg_replace("#\p{Cf}+#u", '', $file_name);
+
+        // Check extension.
+        $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext) || mb_substr($file_name, 0, 1) == '.') {
+            // Add underscore to the extension if file has restricted extension.
+            $file_name = $file_name.'_';
+        } elseif ($ext == 'pdf') {
+            // Rename PDF to avoid running embedded JavaScript.
+            if ($uploaded_file && !$contents) {
+                $contents = file_get_contents($uploaded_file->getRealPath() ?: $uploaded_file->getPathname());
+            }
+            if ($contents && strstr($contents, '/JavaScript')) {
+                $file_name = $file_name.'_';
+            }
+        }
 
         return $file_name;
     }
