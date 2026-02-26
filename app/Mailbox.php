@@ -990,7 +990,8 @@ class Mailbox extends Model
         return $this->oauthEnabled() 
             && $this->out_username !== null
             && $this->isOutUsernameOauth()
-            && $this->out_server !== null && trim($this->out_server) == \MailHelper::OAUTH_MICROSOFT_SMTP;
+            && $this->out_server !== null 
+            && $this->isOutServerOauth();
     }
 
     // For oAuth Username may have the following format:
@@ -1035,6 +1036,16 @@ class Mailbox extends Model
     public function isOutUsernameOauth()
     {
         return (!strstr($this->out_username, '@') || preg_match("#.*@.*:.*#", $this->out_username));
+    }
+
+    public function isOauthProvider($provider)
+    {
+        return ($this->oauthGetParam('provider') == $provider);
+    }
+
+    public function isOutServerOauth()
+    {
+        return in_array(trim($this->out_server), [\MailHelper::OAUTH_MICROSOFT_SMTP, \MailHelper::OAUTH_GOOGLE_SMTP]);
     }
 
     public function setEmailAttribute($value)

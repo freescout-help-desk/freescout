@@ -51,6 +51,10 @@ class Mail
     const OAUTH_PROVIDER_MICROSOFT = 'ms';
     const OAUTH_MICROSOFT_SMTP = 'smtp.office365.com';
 
+    // Google Workspace
+    const OAUTH_PROVIDER_GOOGLE = 'gw';
+    const OAUTH_GOOGLE_SMTP = 'smtp.gmail.com';
+
     /**
      * If reply is not extracted properly from the incoming email, add here a new separator.
      * Order is not important.
@@ -150,7 +154,7 @@ class Mail
             if ($oauth) {
                 if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
                     // Try to get an access token (using the authorization code grant)
-                    $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
+                    $token_data = \MailHelper::oauthGetAccessToken($mailbox->oauthGetParam('provider'), [
                         'client_id' => $mailbox->getOutOauthClientId(),
                         'client_secret' => $mailbox->out_password,
                         'refresh_token' => $mailbox->oauthGetParam('r_token'),
@@ -822,7 +826,7 @@ class Mail
         if ($oauth) {
             if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
                 // Try to get an access token (using the authorization code grant)
-                $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
+                $token_data = \MailHelper::oauthGetAccessToken($mailbox->oauthGetParam('provider'), [
                     'client_id' => $mailbox->getInOauthClientId(),
                     'client_secret' => $mailbox->in_password,
                     'refresh_token' => $mailbox->oauthGetParam('r_token'),
@@ -947,6 +951,7 @@ class Mail
         $args = [];
 
         switch ($provider_code) {
+
             case self::OAUTH_PROVIDER_MICROSOFT:
                 // https://docs.microsoft.com/en-us/exchange/client-developer/legacy-protocols/how-to-authenticate-an-imap-pop-smtp-application-by-using-oauth
                 $args = [
@@ -954,9 +959,23 @@ class Mail
                     'response_type' => 'code',
                     'approval_prompt' => 'auto',
                     'redirect_uri' => route('mailboxes.oauth_callback'),
+                    //'state' => // passed in $params
                 ];
                 $args = array_merge($args, $params);
                 $url = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?'.http_build_query($args);
+                break;
+
+            case self::OAUTH_PROVIDER_GOOGLE:
+                $args = [
+                    'scope' => 'https://mail.google.com/',
+                    'response_type' => 'code',
+                    'prompt' => 'consent', // Without this there will be no refresh_token in response
+                    'redirect_uri' => route('mailboxes.oauth_callback'),
+                    'access_type' => 'offline', // Without this there will be no refresh_token in response
+                    //'state' => // passed in $params
+                ];
+                $args = array_merge($args, $params);
+                $url = 'https://accounts.google.com/o/oauth2/v2/auth?'.http_build_query($args);
                 break;
         }
 
@@ -969,6 +988,7 @@ class Mail
         $post_params = [];
 
         switch ($provider_code) {
+
             case self::OAUTH_PROVIDER_MICROSOFT:
                 $post_params = [
                     'scope' => 'offline_access https://outlook.office.com/IMAP.AccessAsUser.All https://outlook.office.com/SMTP.Send',
@@ -1031,20 +1051,103 @@ class Mail
                         $token_data['error'] = 'Response code: '.curl_getinfo($curl, CURLINFO_HTTP_CODE);
                     }
                 }
-                curl_close($curl);
+                
+                if (PHP_VERSION_ID < 80000) {
+                    curl_close($curl);
+                }
+                break;
 
+            case self::OAUTH_PROVIDER_GOOGLE:
+                $post_params = [
+                    //'scope' => 'https://mail.google.com/', // Just in case
+                    "grant_type" => "authorization_code",
+                    'redirect_uri' => route('mailboxes.oauth_callback'),
+                ];
+
+                $post_params = array_merge($post_params, $params);
+
+                // Refreshing Access Token.
+                if (!empty($post_params['refresh_token'])) {
+                    $post_params['grant_type'] = 'refresh_token';
+                }
+                
+                $full_url = "https://oauth2.googleapis.com/token";
+
+
+                $curl = curl_init($full_url);
+
+                curl_setopt($curl, CURLOPT_POST, true);
+                //curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $post_params);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array("application/x-www-form-urlencoded"));
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                \Helper::setCurlDefaultOptions($curl);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 180);
+
+                $response = curl_exec($curl);
+
+                if ($response) {
+                    $result = json_decode($response, true);
+                    // {
+                    //   "access_token": "...",
+                    //   "refresh_token": "...",
+                    //   "expires_in": 3598,
+                    //   "scope": "https://mail.google.com/",
+                    //   "token_type": "Bearer"
+                    // }
+                    if (!empty($result['access_token'])) {
+                        $token_data['provider'] = self::OAUTH_PROVIDER_GOOGLE;
+                        $token_data['a_token'] = $result['access_token'];
+                        $token_data['r_token'] = $result['refresh_token'];
+                        //$token_data['id_token'] = $result['id_token'];
+                        $token_data['issued_on'] = now()->toDateTimeString();
+                        $token_data['expires_in'] = $result['expires_in'];
+                    } elseif ($response) {
+                        $token_data['error'] = $response;
+                    } else {
+                        $token_data['error'] = 'Response code: '.curl_getinfo($curl, CURLINFO_HTTP_CODE);
+                    }
+                }
+                if (PHP_VERSION_ID < 80000) {
+                    curl_close($curl);
+                }
                 break;
         }
 
         return $token_data;
     }
 
-    public static function oauthDisconnect($provider_code, $redirect_uri)
+    public static function oauthDisconnect($provider_code, $redirect_uri, $mailbox)
     {
         switch ($provider_code) {
+
             case self::OAUTH_PROVIDER_MICROSOFT:
                 return redirect()->away('https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri='.urlencode($redirect_uri));
-            break;
+
+            case self::OAUTH_PROVIDER_GOOGLE:
+                $post_params = [
+                    'token' => $mailbox->oauthGetParam('a_token')
+                ];
+
+                $full_url = "https://oauth2.googleapis.com/revoke";
+                $curl = curl_init($full_url);
+
+                curl_setopt($curl, CURLOPT_POST, true);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $post_params);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array("application/x-www-form-urlencoded"));
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                \Helper::setCurlDefaultOptions($curl);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 180);
+
+                $response = curl_exec($curl);
+                $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+                if ($http_status != 200) {
+                    \Log::error('[Google Workspace OAuth] Error revoking token on logout: HTTPS Status Code'.$http_status.'; '.json_encode($response));
+                }
+                
+
+                return redirect()->away($redirect_uri);
         }
     }
 
