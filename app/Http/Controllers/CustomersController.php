@@ -489,6 +489,8 @@ class CustomersController extends Controller
     {
         $customer = Customer::findOrFail($id);
 
+        $this->checkLimitVisibility($customer);
+
         // $customers = Customer::where('id', '!=', $id)
         //     ->orderBy('first_name')
         //     ->orderBy('last_name')
@@ -511,6 +513,8 @@ class CustomersController extends Controller
 
         $customer = Customer::findOrFail($id);
         $customer2 = Customer::find($request->customer2_id);
+
+        $this->checkLimitVisibility($customer);
 
         // Ensure customers are different
         if ($id === $customer2->id) {

@@ -82,7 +82,8 @@
         "classmap": [
             "database/seeds",
             "database/factories",
-            "overrides/natxet/cssmin/src/"
+            "overrides/natxet/cssmin/src/",
+            "overrides/erusev/parsedown/"
         ],
         "psr-0": {
             "Swift_": "overrides/swiftmailer/swiftmailer/lib/classes",
@@ -198,6 +199,8 @@
             "Symfony\\Component\\Console\\Exception\\": "overrides/symfony/console/Exception/",
             "Symfony\\Component\\Console\\Question\\": "overrides/symfony/console/",
             "Symfony\\Component\\CssSelector\\XPath\\Extension\\": "overrides/symfony/css-selector/XPath/Extension/",
+            "Symfony\\Component\\CssSelector\\XPath\\": "overrides/symfony/css-selector/XPath/",
+            "Symfony\\Component\\CssSelector\\Parser\\": "overrides/symfony/css-selector/Parser/",
             "Symfony\\Component\\Translation\\Loader\\": "overrides/symfony/translation/Loader/",
             "Symfony\\Component\\Translation\\Formatter\\": "overrides/symfony/translation/Formatter/",
             "Symfony\\Component\\Translation\\": "overrides/symfony/translation/",
@@ -215,7 +218,9 @@
             "Psy\\TimeitCommand\\": "overrides/psy/psysh/src/TimeitCommand/",
             "Psy\\Command\\ListCommand\\": "overrides/psy/psysh/src/Command/ListCommand/",
             "Psy\\Exception\\": "overrides/psy/psysh/src/ErrorException/",
-            "Psy\\VarDumper\\": "overrides/psy/psysh/src/VarDumper/"
+            "Psy\\VarDumper\\": "overrides/psy/psysh/src/VarDumper/",
+            "TijsVerkoyen\\CssToInlineStyles\\": "overrides/tijsverkoyen/css-to-inline-styles/src/",
+            "TijsVerkoyen\\CssToInlineStyles\\Css\\Property\\": "overrides/tijsverkoyen/css-to-inline-styles/src/Css/Property/"
         },
         "exclude-from-classmap": [
             "Modules/",
@@ -265,6 +270,7 @@
             "vendor/chumper/zipper/src/Chumper/Zipper/Repositories/ZipRepository.php",
             "vendor/fzaninotto/faker/src/Faker/Provider/Base.php",
             "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/URI/Host.php",
+            "vendor/ezyang/htmlpurifier/library/HTMLPurifier/AttrDef/CSS/FontFamily.php",
             "vendor/laravel/framework/src/Illuminate/Database/DetectsLostConnections.php",
 
             "vendor/laravel/framework/src/Illuminate/Support/Collection.php",
@@ -290,6 +296,7 @@
             "vendor/laravel/framework/src/Illuminate/Pagination/LengthAwarePaginator.php",
             "vendor/laravel/framework/src/Illuminate/Routing/RouteCollection.php",
             "vendor/laravel/framework/src/Illuminate/Session/FileSessionHandler.php",
+            "vendor/laravel/framework/src/Illuminate/Session/NullSessionHandler.php",
             "vendor/laravel/framework/src/Illuminate/Session/CacheBasedSessionHandler.php",
             "vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php",
             "vendor/laravel/framework/src/Illuminate/Queue/Listener.php",
@@ -397,6 +404,8 @@
             "vendor/symfony/console/Question/Question.php",
             "vendor/symfony/finder/Iterator/SortableIterator.php",
             "vendor/symfony/css-selector/XPath/Extension/NodeExtension.php",
+            "vendor/symfony/css-selector/XPath/Translator.php",
+            "vendor/symfony/css-selector/Parser/Parser.php",
             "vendor/symfony/translation/Loader/ArrayLoader.php",
             "vendor/symfony/translation/Formatter/MessageFormatter.php",
             "vendor/symfony/translation/Translator.php",
@@ -497,7 +506,11 @@
             "vendor/psy/psysh/src/Exception/BreakException.php",
             "vendor/psy/psysh/src/VarDumper/Dumper.php",
             "vendor/laravel/framework/src/Illuminate/Foundation/Application.php",
-            "vendor/laravel/framework/src/Illuminate/Contracts/Container/Container.php"
+            "vendor/laravel/framework/src/Illuminate/Contracts/Container/Container.php",
+            "vendor/erusev/parsedown/Parsedown.php",
+            "vendor/tijsverkoyen/css-to-inline-styles/src/CssToInlineStyles.php",
+            "vendor/tijsverkoyen/css-to-inline-styles/src/Css/Property/Processor.php",
+            "vendor/tijsverkoyen/css-to-inline-styles/src/Css/Property/Property.php"
         ]
     },
     "autoload-dev": {

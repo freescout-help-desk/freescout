@@ -73,7 +73,12 @@ class SendReplyToCustomer
 
         // The reply may be sent to some other customer from previous threads.
         // https://github.com/freescout-help-desk/freescout/pull/5199
-        if ($thread && ($customer_email = $thread->getToArray()[0]) && $customer_email != $main_customer_email) {
+        if ($thread 
+            && ($to_array = $thread->getToArray())
+            && !empty($to_array[0])
+            && ($customer_email = $to_array[0])
+            && $customer_email != $main_customer_email
+        ) {
             $other_customer = Customer::getByEmail($customer_email);
             if ($other_customer) {
                 $recipient_customer = $other_customer;

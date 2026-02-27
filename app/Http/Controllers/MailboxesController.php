@@ -980,7 +980,7 @@ class MailboxesController extends Controller
                 'in_out' => $in_out,
                 'state' => crc32($username.$password),
             ];
-            $url = \MailHelper::oauthGetAuthorizationUrl(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
+            $url = \MailHelper::oauthGetAuthorizationUrl($provider, [
                 'state' => json_encode($state),
                 'client_id' => $username,
             ]);
@@ -1005,7 +1005,7 @@ class MailboxesController extends Controller
         } else {
             // state is set.
             // Try to get an access token (using the authorization code grant)
-            $token_data = \MailHelper::oauthGetAccessToken(\MailHelper::OAUTH_PROVIDER_MICROSOFT, [
+            $token_data = \MailHelper::oauthGetAccessToken($provider, [
                 'client_id' => $username,
                 'client_secret' => $password,
                 'code' => $request->code,
@@ -1015,7 +1015,7 @@ class MailboxesController extends Controller
                 // Set username and password for the oppozite in_out.
                 if ($in_out == 'in') {
                     if (empty($mailbox->out_server) 
-                        || (trim($mailbox->out_server) == \MailHelper::OAUTH_MICROSOFT_SMTP 
+                        || ($mailbox->isOutServerOauth()
                             && (!$mailbox->out_username || $mailbox->out_username == $username))
                     ) {
                         $mailbox->out_username = $username;
@@ -1058,6 +1058,6 @@ class MailboxesController extends Controller
             $route = 'mailboxes.connection';
         }
 
-        return \MailHelper::oauthDisconnect($provider, route($route, ['id' => $mailbox_id]));
+        return \MailHelper::oauthDisconnect($provider, route($route, ['id' => $mailbox_id]), $mailbox);
     }
 }

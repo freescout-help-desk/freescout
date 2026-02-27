@@ -55,15 +55,16 @@ return [
             'options'     => extension_loaded('pdo_mysql') ? array_filter([
                 (defined('Pdo\Mysql::ATTR_SSL_CA') ? Pdo\Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('DB_MYSQL_ATTR_SSL_CA'),
                 (defined('Pdo\Mysql::ATTR_SSL_CERT') ? Pdo\Mysql::ATTR_SSL_CERT : PDO::MYSQL_ATTR_SSL_CERT) => env('DB_MYSQL_ATTR_SSL_CERT'),
+                (defined('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT') ? Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT) => env('DB_MYSQL_ATTR_SSL_VERIFY_SERVER_CERT', true),
                 PDO::ATTR_PERSISTENT => env('DB_ATTR_PERSISTENT'),
-            ]) : [],
+            ], function($value) { return $value !== null; }) : [],
         ],
 
         'testing' => [
             'driver'         => 'mysql',
             //'url'            => env('DB_TEST_DATABASE_URL'),
-            'host'           => '127.0.0.1',
-            'database'       => 'freescout-test',
+            'host'           => env('DB_TEST_HOST', '127.0.0.1'),
+            'database'       => env('DB_TEST_DATABASE', 'freescout-test'),
             'username'       => env('DB_TEST_USERNAME', 'freescout-test'),
             'password'       => env('DB_TEST_PASSWORD', 'freescout-test'),
             //'port'           => env('DB_TEST_PORT', '3306'),

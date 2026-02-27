@@ -28,7 +28,7 @@ class HttpsRedirect {
 
     public function handle($request, Closure $next)
     {
-        if (\Helper::isHttps()) {
+        if (\Helper::isHttps() && !\Helper::isConsole()) {
             //$request->setTrustedProxies( [ $request->getClientIp() ], array_keys($this->headers)); 
             //!$request->secure()
             if (!\Helper::isCurrentUrlHttps()) {

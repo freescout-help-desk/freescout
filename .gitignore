@@ -36,3 +36,4 @@ Thumbs.db
 /resources/lang/module.*
 .phpunit.result.cache
 /.phpunit.cache
+.env.testing
