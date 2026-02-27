@@ -57,7 +57,7 @@ class GenerateVars extends Command
             // https://github.com/freescout-help-desk/freescout/issues/4369
             $content = preg_replace_callback(
                 "#(:[ ]*\")(.*)(\"[,\r\n])#",
-                function($v) {
+                function ($v) {
                     return $v[1].str_replace('"', '\"', $v[2]).$v[3];
                 },
                 $content
