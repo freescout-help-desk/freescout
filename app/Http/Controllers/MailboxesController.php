@@ -189,7 +189,7 @@ class MailboxesController extends Controller
             if (!auth()->user()->isAdmin()) {
                 $request->merge([
                     'name' => $mailbox->name,
-                    'email' => $mailbox->email
+                    'email' => $mailbox->email,
                 ]);
             }
 
@@ -700,7 +700,7 @@ class MailboxesController extends Controller
 
                 if (!$response['msg']) {
                     $test_result = [
-                        'status' => 'error'
+                        'status' => 'error',
                     ];
 
                     try {
@@ -895,7 +895,8 @@ class MailboxesController extends Controller
     }
 
     // Recursively interate over folders.
-    public function interateFolders($response, $imap_folders, $subfolder = false) {
+    public function interateFolders($response, $imap_folders, $subfolder = false)
+    {
         foreach ($imap_folders as $imap_folder) {
             if (!empty($imap_folder->name) && !$subfolder) {
                 $response['folders'][] = $imap_folder->name;

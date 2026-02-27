@@ -741,14 +741,16 @@ class Helper
             imagesavealpha($thumb, true);
         }
         // Resize and crop
-        imagecopyresampled($thumb,
-                           $src,
-                           ceil(0 - ($new_width - $thumb_width) / 2), // Center the image horizontally
-                           ceil(0 - ($new_height - $thumb_height) / 2), // Center the image vertically
-                           0, 0,
-                           ceil($new_width),
-                           ceil($new_height),
-                           $width, $height);
+        imagecopyresampled(
+            $thumb,
+            $src,
+            ceil(0 - ($new_width - $thumb_width) / 2), // Center the image horizontally
+            ceil(0 - ($new_height - $thumb_height) / 2), // Center the image vertically
+            0, 0,
+            ceil($new_width),
+            ceil($new_height),
+            $width, $height
+        );
         if (PHP_VERSION_ID < 80000) {
             imagedestroy($src);
         }
@@ -1145,7 +1147,7 @@ class Helper
 
         if ($embed_images) {
             // Replace embedded images with their urls.
-            $text = preg_replace( '/<img\b[^>]*src=\"([^>"]+)\"[^>]*>/i', "<div>$1</div>", $text);
+            $text = preg_replace('/<img\b[^>]*src=\"([^>"]+)\"[^>]*>/i', "<div>$1</div>", $text);
         }
         return (new \Html2Text\Html2Text($text, $options))->getText();
     }
@@ -1174,7 +1176,7 @@ class Helper
     {
         try {
             return json_decode('"'.str_replace('"', '\\"', $text).'"');
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return $text;
         }
     }
@@ -1408,7 +1410,7 @@ class Helper
             foreach ($mixed as $key => $value) {
                 $mixed[$key] = self::utf8ize($value);
             }
-        } else if (is_string($mixed)) {
+        } elseif (is_string($mixed)) {
             return self::utf8Encode($mixed);
         }
         return $mixed;
@@ -1482,7 +1484,9 @@ class Helper
         $links = array();
 
         // Extract existing links and tags
-        $value = preg_replace_callback('~(<a .*?>.*?</a>|<.*?>)~i', function ($match) use (&$links) { return '<' . array_push($links, $match[1]) . '>'; }, $value ?? '') ?: $value;
+        $value = preg_replace_callback('~(<a .*?>.*?</a>|<.*?>)~i', function ($match) use (&$links) {
+            return '<' . array_push($links, $match[1]) . '>';
+        }, $value ?? '') ?: $value;
 
         $value = $value ?? '';
 
@@ -1496,24 +1500,32 @@ class Helper
                     // https://github.com/freescout-helpdesk/freescout/issues/3402
                     $nbsp = html_entity_decode('&nbsp;');
                     $value = preg_replace_callback('%([>\r\n\s:;\( '.$nbsp.']|^)((([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
-                            if ($match[4]) {
-                                $protocol = $match[4];
-                            }
-                            $link = $match[2];
-                            $link = substr($link, strlen($match[3]));
-                            //return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
-                            return $match[1].'<' . array_push($links, "<a $attr href=\"$protocol://$link\">".$match[2]."</a>") . '>';
+                        if ($match[4]) {
+                            $protocol = $match[4];
+                        }
+                        $link = $match[2];
+                        $link = substr($link, strlen($match[3]));
+                        //return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
+                        return $match[1].'<' . array_push($links, "<a $attr href=\"$protocol://$link\">".$match[2]."</a>") . '>';
                     }, $value) ?: $value;
                     break;
-                case 'mail':    $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:\)])~', function ($match) use (&$links, $attr) { return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>'; }, $value) ?: $value;
+                case 'mail':
+                    $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:\)])~', function ($match) use (&$links, $attr) {
+                        return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>';
+                    }, $value) ?: $value;
                     break;
-                default:        $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { return '<' . array_push($links, "<a $attr href=\"$protocol://{$match[1]}\">$protocol://{$match[1]}</a>") . '>'; }, $value) ?: $value;
+                default:
+                    $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) {
+                        return '<' . array_push($links, "<a $attr href=\"$protocol://{$match[1]}\">$protocol://{$match[1]}</a>") . '>';
+                    }, $value) ?: $value;
                     break;
             }
         }
 
         // Insert all links
-        return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { return $links[$match[1] - 1]; }, $value ?? '') ?: $value;
+        return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { 
+            return $links[$match[1] - 1];
+        }, $value ?? '') ?: $value;
     }
 
     /**
@@ -1693,16 +1705,16 @@ class Helper
         return str_replace(json_decode('"\u0000"'), "", $string);
     }
 
-    public static function humanFileSize($size, $unit="")
+    public static function humanFileSize($size, $unit = "")
     {
         if ((!$unit && $size >= 1<<30) || $unit == "GB") {
-            return number_format($size/(1<<30),2)."GB";
+            return number_format($size/(1<<30), 2)."GB";
         }
         if ((!$unit && $size >= 1<<20) || $unit == "MB") {
-            return number_format($size/(1<<20),2)."MB";
+            return number_format($size/(1<<20), 2)."MB";
         }
         //if ((!$unit && $size >= 1<<10) || $unit == "KB") {
-        return number_format($size/(1<<10),2)."KB";
+        return number_format($size/(1<<10), 2)."KB";
         // }
         // return number_format($size)." bytes";
     }
@@ -1849,7 +1861,7 @@ class Helper
             $host_ip,
             mb_strtolower(self::getDomain()),
             $_SERVER['SERVER_ADDR'] ?? '',
-            $_SERVER['LOCAL_ADDR'] ?? ''
+            $_SERVER['LOCAL_ADDR'] ?? '',
         ];
 
         if (in_array($parts['host'], $restricted_hosts) && !in_array($parts['host'], $host_white_list)) {
@@ -2190,7 +2202,7 @@ class Helper
         if (\Option::get('send_emails_problem')) {
             $flashes[] = [
                 'type'      => 'warning',
-                'text'      =>  __('There is a problem processing outgoing mail queue — an admin should check :%a_begin%System Status:%a_end% and :%a_begin_recommendations%Recommendations:%a_end%', ['%a_begin%' => '<a href="'.route('system').'#cron" target="_blank">', '%a_end%' => '</a>', /*'%a_begin_logs%' => '<a href="'.route('logs', ['name' => 'send_errors']).'#cron" target="_blank">',*/ '%a_begin_recommendations%' => '<a href="'.config('app.freescout_repo').'/wiki/Background-Jobs" target="_blank">']),
+                'text'      => __('There is a problem processing outgoing mail queue — an admin should check :%a_begin%System Status:%a_end% and :%a_begin_recommendations%Recommendations:%a_end%', ['%a_begin%' => '<a href="'.route('system').'#cron" target="_blank">', '%a_end%' => '</a>', /*'%a_begin_logs%' => '<a href="'.route('logs', ['name' => 'send_errors']).'#cron" target="_blank">',*/ '%a_begin_recommendations%' => '<a href="'.config('app.freescout_repo').'/wiki/Background-Jobs" target="_blank">']),
                 'unescaped' => true,
             ];
         }

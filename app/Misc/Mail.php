@@ -321,7 +321,7 @@ class Mail
         );
 
         // Add fallback values to the $vars array, if present.
-        foreach($matches['var'] as $i => $var) {
+        foreach ($matches['var'] as $i => $var) {
             $merge_code   = "{%{$var}%}";
             $full_match   = $matches[0][$i];
             $has_fallback = false !== strpos($full_match, ',fallback=');
@@ -844,11 +844,13 @@ class Mail
                     $mailbox->setMetaParam('oauth', $token_data, true);
                 } elseif (!empty($token_data['error'])) {
                     $error_message = 'Error occurred refreshing oAuth Access Token: '.$token_data['error'];
-                    \Helper::log(\App\ActivityLog::NAME_EMAILS_FETCHING, 
+                    \Helper::log(
+                        \App\ActivityLog::NAME_EMAILS_FETCHING, 
                         \App\ActivityLog::DESCRIPTION_EMAILS_FETCHING_ERROR, [
-                        'error'   => $error_message,
-                        'mailbox' => $mailbox->name,
-                    ]);
+                            'error'   => $error_message,
+                            'mailbox' => $mailbox->name,
+                        ]
+                    );
                     throw new \Exception($error_message, 1);
                 }
             }
@@ -913,9 +915,9 @@ class Mail
 
                 // Limit using date to speed up the search.
                 if ($message_date) {
-                   $query->since($message_date->subDays(7));
-                   // Here we should add 14 days, as previous line subtracts 7 days.
-                   $query->before($message_date->addDays(14));
+                    $query->since($message_date->subDays(7));
+                    // Here we should add 14 days, as previous line subtracts 7 days.
+                    $query->before($message_date->addDays(14));
                 }
 
                 if ($no_charset) {
@@ -935,8 +937,8 @@ class Mail
                     //$query = $folder->query()->text('<'.$message_id.'>')->leaveUnread()->limit(1)->setCharset(null);
                     $query = $folder->query()->whereMessageId('"<'.$search_message_id.'>"')->leaveUnread()->limit(1)->setCharset(null);
                     if ($message_date) {
-                       $query->since($message_date->subDays(7));
-                       $query->before($message_date->addDays(14));
+                        $query->since($message_date->subDays(7));
+                        $query->before($message_date->addDays(14));
                     }
                     $messages = $query->get();
                     $no_charset = true;
@@ -1188,7 +1190,7 @@ class Mail
     public static function getImapFolder($client, $folder_name)
     {
         // https://github.com/freescout-helpdesk/freescout/issues/3502
-        $folder_name = mb_convert_encoding($folder_name, "UTF7-IMAP","UTF-8");
+        $folder_name = mb_convert_encoding($folder_name, "UTF7-IMAP", "UTF-8");
 
         if (method_exists($client, 'getFolderByPath')) {
             return $client->getFolderByPath($folder_name);
@@ -1234,7 +1236,7 @@ class Mail
         // Only one type of encoding should be used.
         preg_match_all("/(=\?[^\?]+\?[BQ]\?)([^\?]+)(\?=)/i", $subject, $m);
         $encodings = $m[1] ?? [];
-        array_walk($encodings, function($value) {
+        array_walk($encodings, function ($value) {
             $value = strtolower($value);
         });
         $one_encoding = count(array_unique($encodings)) == 1;
@@ -1308,7 +1310,8 @@ class Mail
         return $subject_decoded;
     }
 
-    public static function isNotYetFullyDecoded($subject_decoded) {
+    public static function isNotYetFullyDecoded($subject_decoded)
+    {
         // https://stackoverflow.com/questions/15276191/why-does-a-diamond-with-a-questionmark-in-it-appear-in-my-html
         $invalid_utf_symbols = ['�'];
 
@@ -1317,7 +1320,8 @@ class Mail
             || \Str::contains($subject_decoded, $invalid_utf_symbols);
     }
 
-    public static function getHashedReplySeparator($message_id) {
+    public static function getHashedReplySeparator($message_id)
+    {
         $separator = \MailHelper::REPLY_SEPARATOR_HTML;
 
         if ($message_id) {
@@ -1328,14 +1332,16 @@ class Mail
     }
 
     // Sanitize status message - remove SMTP username and password.
-    public static function sanitizeSmtpStatusMessage($status_message) {
+    public static function sanitizeSmtpStatusMessage($status_message)
+    {
         $status_message = preg_replace('#(username ")[^"]+(")#', '$1***$2', $status_message ?? '');
         $status_message = preg_replace("#(Swift_Transport_Esmtp_Auth_LoginAuthenticator\->authenticate\(Object\(Swift_SmtpTransport\), ')[^\']+(', ')[^\']+('\))#", '$1***$2***$3', $status_message ?? '');
 
         return $status_message;
     }
 
-    public static function parseEml($content, $mailbox) {
+    public static function parseEml($content, $mailbox)
+    {
         if (!str_contains($content, "\r\n")){
             $content = str_replace("\n", "\r\n", $content);
         }

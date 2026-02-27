@@ -16,7 +16,6 @@ if (! function_exists('__j')) {
 
     /**
      * Translate the given message and prepare it for using in HTML.
-     *
      */
     function __h($key, $replace = [], $locale = null)
     {

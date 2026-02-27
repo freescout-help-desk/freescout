@@ -48,8 +48,8 @@ class CreateUser extends Command
         $user = new $class();
 
         $user->role = $this->option('role');
-        if ($user->role ) {
-            if (!in_array($user->role , User::$roles)) {
+        if ($user->role) {
+            if (!in_array($user->role, User::$roles)) {
                 $this->error('Invalid role');
                 return false;
             }

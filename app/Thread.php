@@ -355,7 +355,7 @@ class Thread extends Model
         // Add target="_blank" to links.
         $pattern = '/<a(.*?)?href=[\'"]?[\'"]?(.*?)?>/i';
 
-        $body = preg_replace_callback($pattern, function($m){
+        $body = preg_replace_callback($pattern, function ($m) {
             $tpl = array_shift($m);
             $href = isset($m[1]) ? $m[1] : null;
 
@@ -368,7 +368,7 @@ class Thread extends Model
                 return $tpl;
             }
 
-            return preg_replace_callback('/href=/i', function($m2){
+            return preg_replace_callback('/href=/i', function ($m2) {
                 return sprintf('target="_blank" %s', array_shift($m2));
             }, $tpl);
 
@@ -1512,7 +1512,8 @@ class Thread extends Model
     {
         \Helper::setPcreBacktrackLimit();
 
-        $body = preg_replace_callback("#(<img[^<>]+src=[\"'])data:image/([^;]+);base64,([^\"']+)([\"'])#",
+        $body = preg_replace_callback(
+            "#(<img[^<>]+src=[\"'])data:image/([^;]+);base64,([^\"']+)([\"'])#",
             function ($match) {
                 $attachment = null;
                 $data = base64_decode($match[3]);

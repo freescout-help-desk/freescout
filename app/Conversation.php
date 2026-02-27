@@ -289,6 +289,7 @@ class Conversation extends Model
 
     /**
      * Cached mailbox.
+     * 
      * @return [type] [description]
      */
     public function mailbox_cached()
@@ -1753,7 +1754,7 @@ class Conversation extends Model
                         $viewers[$conversation->id] = [
                             'user'     => null,
                             'user_id'  => $user_id,
-                            'replying' => true
+                            'replying' => true,
                         ];
                         $user_ids[] = $user_id;
                         break;
@@ -1764,7 +1765,7 @@ class Conversation extends Model
                     $viewers[$conversation->id] = [
                         'user'     => null,
                         'user_id'  => $first_user_id,
-                        'replying' => false
+                        'replying' => false,
                     ];
                     $user_ids[] = $first_user_id;
                 }
@@ -2121,7 +2122,8 @@ class Conversation extends Model
     //     return self::$email_history_codes[(int)$this->email_history] ?? 'global';
     // }
 
-    public static function getEmailHistoryName($code) {
+    public static function getEmailHistoryName($code)
+    {
         $label = '';
 
         switch ($code) {
@@ -2272,8 +2274,7 @@ class Conversation extends Model
 
         $result = \Eventy::filter('conversations.table_sorting', $result);
 
-        if (
-            !empty($request->sorting['sort_by']) && !empty($request->sorting['order']) &&
+        if (!empty($request->sorting['sort_by']) && !empty($request->sorting['order']) &&
             in_array($request->sorting['sort_by'], ['subject', 'number', 'date']) &&
             in_array($request->sorting['order'], ['asc', 'desc'])
         ) {
@@ -2416,7 +2417,7 @@ class Conversation extends Model
         }
 
         if (!self::queryContainsStr($query_sql, '`customers`.`id`')) {
-            $query_conversations->leftJoin('customers', 'conversations.customer_id', '=' ,'customers.id');
+            $query_conversations->leftJoin('customers', 'conversations.customer_id', '=', 'customers.id');
         }
 
         $query_conversations = \Eventy::filter('search.conversations.apply_filters', $query_conversations, $filters, $q);

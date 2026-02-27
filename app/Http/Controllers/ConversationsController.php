@@ -304,12 +304,12 @@ class ConversationsController extends Controller
                 if (isset($conv_view[$conversation->id][$viewer->id]['r']) && $viewer->id != $user->id) {
                     $viewers[] = [
                         'user'     => $viewer,
-                        'replying' => (int)$conv_view[$conversation->id][$viewer->id]['r']
+                        'replying' => (int)$conv_view[$conversation->id][$viewer->id]['r'],
                     ];
                 }
             }
             // Show replying first.
-            usort($viewers, function($a, $b) {
+            usort($viewers, function ($a, $b) {
                 return $b['replying'] <=> $a['replying'];
             });
         }
@@ -802,7 +802,7 @@ class ConversationsController extends Controller
                     }
 
                     if ($validator->fails()) {
-                        foreach ($validator->errors()->getMessages()as $errors) {
+                        foreach ($validator->errors()->getMessages() as $errors) {
                             foreach ($errors as $field => $message) {
                                 $response['msg'] .= $message.' ';
                             }
@@ -1364,7 +1364,7 @@ class ConversationsController extends Controller
                         if ($show_view_link) {
                             $flash_text = __(':%tag_start%' . $identifier . ' added:%tag_end% :%view_start%View:%a_end%', $flash_vars);
                         } else {
-                            $flash_text = '<strong>'.__('%identifier% added',['%identifier%'=>$identifier]).'</strong>';
+                            $flash_text = '<strong>'.__('%identifier% added', ['%identifier%' => $identifier]).'</strong>';
                         }
                     } elseif ($is_note) {
                         $flash_type = 'warning';
@@ -1981,7 +1981,7 @@ class ConversationsController extends Controller
                     $thread->body = \Helper::stripDangerousTags($thread->body);
 
                     $data = [
-                        'thread' => $thread
+                        'thread' => $thread,
                     ];
                     $response['html'] = \View::make('conversations/partials/edit_thread')->with($data)->render();
 
@@ -2336,7 +2336,7 @@ class ConversationsController extends Controller
 
                 if (!$response['msg']) {
                     $response['html'] = \View::make('conversations/partials/merge_search_result')->with([
-                            'conversation' => $conversation
+                            'conversation' => $conversation,
                         ])->render();
                     $response['status'] = 'success';
                 }
@@ -2585,7 +2585,7 @@ class ConversationsController extends Controller
             abort(403);
         }
 
-        $mailboxes = \Eventy::filter( 'conversations.move_conv.mailboxes', $user->mailboxesCanView() );
+        $mailboxes = \Eventy::filter('conversations.move_conv.mailboxes', $user->mailboxesCanView());
 
         return view('conversations/ajax_html/move_conv', [
             'conversation' => $conversation,
@@ -3021,7 +3021,7 @@ class ConversationsController extends Controller
         $mailbox_ids = $user->mailboxesIdsCanView();
 
         // Filters
-        $filters = $this->getSearchFilters($request);;
+        $filters = $this->getSearchFilters($request);
 
         // Search query
         $q = $this->getSearchQuery($request);

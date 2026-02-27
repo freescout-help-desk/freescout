@@ -1,6 +1,6 @@
 <?php
 /**
- * todo: implement caching by saving all options in one cache variable on register_shutdown_function.
+ * Todo: implement caching by saving all options in one cache variable on register_shutdown_function.
  */
 
 namespace App;
@@ -51,7 +51,8 @@ class Option extends Model
         $serialized_value = self::maybeSerialize($value);
 
         $option = self::firstOrCreate(
-            ['name' => $name], ['value' => $serialized_value]
+            ['name' => $name],
+            ['value' => $serialized_value]
         );
 
         $old_value = $option['value'];

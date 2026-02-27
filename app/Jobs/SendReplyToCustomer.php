@@ -480,7 +480,7 @@ class SendReplyToCustomer implements ShouldQueue
 
                 try {
                     // https://github.com/freescout-helpdesk/freescout/issues/3502
-                    $imap_sent_folder = mb_convert_encoding($imap_sent_folder, "UTF7-IMAP","UTF-8");
+                    $imap_sent_folder = mb_convert_encoding($imap_sent_folder, "UTF7-IMAP", "UTF-8");
 
                     // https://github.com/Webklex/php-imap/issues/380
                     if (method_exists($client, 'getFolderByPath')) {

@@ -1015,7 +1015,7 @@ class FetchEmails extends Command
         $prev_customer_id = null;
         if ($use_mail_date_on_fetching) {
             $now = $date;
-        }else{
+        } else {
             $now = date('Y-m-d H:i:s');
         }
         $conv_cc = $cc;
@@ -1196,7 +1196,7 @@ class FetchEmails extends Command
         $conversation = null;
         if ($use_mail_date_on_fetching) {
             $now = $date;
-        }else{
+        } else {
             $now = date('Y-m-d H:i:s');
         }
         $user_id = $user->id;

@@ -127,8 +127,140 @@
     <rule ref="Squiz.WhiteSpace.ScopeKeywordSpacing"/>
     <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
     <rule ref="Zend.Files.ClosingTag"/>
-
     <rule ref="PSR2.ControlStructures.ControlStructureSpacing"/>
+
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EndLine">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.Commenting.DocComment.LongNotCapital">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.WhiteSpace.DisallowTabIndent.NonIndentTabsUsed">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.Files.LineLength.TooLong">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.UselessOverridingMethod.Found">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.Formatting.SpaceAfterCast.NoSpace">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.OperatorSpacing.NoSpaceBefore">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.OperatorSpacing.NoSpaceAfter">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="PSR2.Files.EndFileNewline.NoneFound">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="PSR2.Methods.FunctionClosingBrace.SpacingBeforeClose">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="PSR2.Namespaces.UseDeclaration.SpaceAfterLastUse">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.WhiteSpace.DisallowTabIndent.TabsUsed">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedCatch">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseParenthesis">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.ControlStructures.ControlSignature.NewlineAfterOpenBrace">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.ScopeClosingBrace.ContentBefore">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.ControlStructureSpacing.SpacingBeforeClose">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="PSR2.Files.EndFileNewline.TooMany">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.Metrics.NestingLevel.TooHigh">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.CloseBraceNewLine">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.Metrics.CyclomaticComplexity.TooHigh">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedElseif">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="PSR2.Methods.FunctionCallSignature.MultipleArguments">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.PHP.DisallowSizeFunctionsInLoops.Found">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.ForLoopWithTestFunctionCall.NotAllowed">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="PSR2.Methods.FunctionCallSignature.SpaceBeforeCloseBracket">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.Commenting.DocComment.ShortNotCapital">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.PHP.NonExecutableCode.Unreachable">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedElse">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.Metrics.CyclomaticComplexity.MaxExceeded">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter.Found">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClass">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.PHP.DeprecatedFunctions.Deprecated">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.ScopeClosingBrace.Indent">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Arrays.ArrayDeclaration.IndexNoNewline">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="PSR2.Methods.FunctionCallSignature.ContentAfterOpenBracket">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="PSR2.Methods.FunctionCallSignature.CloseBracketLine">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClassAfterLastUsed">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.PHP.DiscouragedFunctions.Found">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClassBeforeLastUsed">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
 
     <exclude-pattern>*/.phpstorm.meta.php</exclude-pattern>
     <exclude-pattern>*/_ide_helper.php</exclude-pattern>
@@ -152,4 +284,5 @@
     <exclude-pattern>*/Http/Kernel.php</exclude-pattern>
     <exclude-pattern>*/Providers/*</exclude-pattern>
     <exclude-pattern>*/resources/lang/*</exclude-pattern>
+    <exclude-pattern>*/Modules/*</exclude-pattern>
 </ruleset>

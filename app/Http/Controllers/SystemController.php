@@ -87,7 +87,7 @@ class SystemController extends Controller
         // Commands
         $commands_list = [
             'freescout:fetch-emails' => 'freescout:fetch-emails',
-            \Helper::getWorkerIdentifier() => 'queue:work'
+            \Helper::getWorkerIdentifier() => 'queue:work',
         ];
         foreach ($commands_list as $command_identifier => $command_name) {
             $status_texts = [];
