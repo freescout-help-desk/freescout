@@ -260,6 +260,9 @@
     <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClassBeforeLastUsed">
         <exclude-pattern>*</exclude-pattern>
     </rule>
+    <rule ref="Generic.PHP.NoSilencedErrors.Discouraged">
+        <exclude-pattern>*</exclude-pattern>
+    </rule>
 
     <exclude-pattern>*/.phpstorm.meta.php</exclude-pattern>
     <exclude-pattern>*/_ide_helper.php</exclude-pattern>
