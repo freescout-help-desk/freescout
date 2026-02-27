@@ -11,8 +11,8 @@ use Closure;
 use Illuminate\Support\Facades\App;
 use Illuminate\Http\Request;
 
-class HttpsRedirect {
-
+class HttpsRedirect
+{
     /**
      * The current proxy header mappings.
      *
