@@ -7,7 +7,6 @@
     <file>public</file>
     <file>resources</file>
     <file>routes</file>
-    <file>tests</file>
 
     <arg name="basepath" value="."/>
     <arg name="colors"/>
