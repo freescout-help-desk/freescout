@@ -2281,14 +2281,16 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
-                if ($request->action == 'follow') {
-                    $user->followConversation($request->conversation_id);
-                } else {
-                    $follower = Follower::where('conversation_id', $request->conversation_id)
-                        ->where('user_id', $user->id)
-                        ->first();
-                    if ($follower) {
-                        $follower->delete();
+                if (!$response['msg']) {
+                    if ($request->action == 'follow') {
+                        $user->followConversation($request->conversation_id);
+                    } else {
+                        $follower = Follower::where('conversation_id', $request->conversation_id)
+                            ->where('user_id', $user->id)
+                            ->first();
+                        if ($follower) {
+                            $follower->delete();
+                        }
                     }
                 }
 
