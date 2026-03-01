@@ -19,6 +19,8 @@ class Mail
 
     /**
      * Message-ID prefixes for outgoing emails.
+     * Message-IDs should not match Spam Assasin patters.
+     * https://github.com/freescout-help-desk/freescout/issues/5245
      */
     const MESSAGE_ID_PREFIX_NOTIFICATION = 'notify';
     const MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY = 'conversation';

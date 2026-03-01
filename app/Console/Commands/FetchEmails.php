@@ -482,11 +482,11 @@ class FetchEmails extends Command
 
             // Some mail service providers change Message-ID of the outgoing email,
             // so we are passing Message-ID in marker in body.
-            $reply_prefixes = [
-                \MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION,
-                \MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER,
-                \MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY,
-            ];
+            // $reply_prefixes = [
+            //     \MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION,
+            //     \MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER,
+            //     \MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY,
+            // ];
 
             // Try to get previous message ID from marker in body.
             $html_body = $message->getHTMLBody(false);
