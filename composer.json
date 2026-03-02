@@ -491,6 +491,7 @@
             "vendor/laravel/framework/src/Illuminate/Foundation/Validation/ValidatesRequests.php",
             "vendor/chumper/zipper/src/Chumper/Zipper/Zipper.php",
             "vendor/psy/psysh/src/Shell.php",
+            "vendor/psy/psysh/src/Configuration.php",
             "vendor/psy/psysh/src/CodeCleaner.php",
             "vendor/psy/psysh/src/Input/FilterOptions.php",
             "vendor/psy/psysh/src/Input/ShellInput.php",
