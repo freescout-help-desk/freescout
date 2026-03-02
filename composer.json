@@ -37,7 +37,7 @@
         "ramsey/uuid": "3.9.6",
         "symfony/polyfill-mbstring": "v1.24.0",
         "webklex/php-imap": "4.1.1",
-        "enshrined/svg-sanitize": "0.15.4"
+        "enshrined/svg-sanitize": "0.22.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v3.2.0",
