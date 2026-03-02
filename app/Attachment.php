@@ -70,7 +70,7 @@ class Attachment extends Model
         $orig_extension = pathinfo($file_name, PATHINFO_EXTENSION);
 
         // Add underscore to the extension if file has restricted extension.
-        $file_name = \Helper::sanitizeUploadedFileName($file_name, $uploaded_file, $content);
+        $file_name = \Helper::sanitizeUploadedFileName($file_name, $uploaded_file, $content, $mime_type);
 
         // Replace some symbols in file name.
         // Gmail can not load image if it contains spaces.

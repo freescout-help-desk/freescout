@@ -1598,15 +1598,16 @@ class Helper
             }
         }
 
+        $mime_type = $file->getMimeType();
+
         if ($allowed_mimes) {
-            $mime_type = $file->getMimeType();
             if (!in_array($mime_type, $allowed_mimes)) {
                 throw new \Exception(__('Unsupported file type'), 1);
             }
         }
         $file_name = \Str::random(25).'.'.$ext;
 
-        $file_name = \Helper::sanitizeUploadedFileName($file_name, $file);
+        $file_name = \Helper::sanitizeUploadedFileName($file_name, $file, null, $mime_type);
 
         $file->storeAs('uploads', $file_name);
 
@@ -1917,8 +1918,12 @@ class Helper
         }
     }
 
-    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null)
+    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null, $mime_type = '')
     {
+        $pdf_mime_types = [
+            'application/pdf', 'application/x-pdf', 'application/acrobat',
+            'applications/vnd.pdf', 'text/pdf', 'text/x-pdf'
+        ];
         // Remove illegal chars.
         $illegal_chars = [
             // Unix.
@@ -1960,7 +1965,7 @@ class Helper
         if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext) || mb_substr($file_name, 0, 1) == '.') {
             // Add underscore to the extension if file has restricted extension.
             $file_name = $file_name.'_';
-        } elseif ($ext == 'pdf') {
+        } elseif ($ext == 'pdf' || in_array(strtolower($mime_type), $pdf_mime_types)) {
             // Rename PDF to avoid running embedded JavaScript.
             if ($uploaded_file && !$contents) {
                 $contents = file_get_contents($uploaded_file->getRealPath() ?: $uploaded_file->getPathname());
