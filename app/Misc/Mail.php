@@ -22,10 +22,10 @@ class Mail
      * Message-IDs should not match Spam Assasin patters.
      * https://github.com/freescout-help-desk/freescout/issues/5245
      */
-    const MESSAGE_ID_PREFIX_NOTIFICATION = 'notify';
-    const MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY = 'conversation';
-    const MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER = 'reply';
-    const MESSAGE_ID_PREFIX_AUTO_REPLY = 'autoreply';
+    const MESSAGE_ID_PREFIX_NOTIFICATION = 'FS_notify';
+    const MESSAGE_ID_PREFIX_NOTIFICATION_IN_REPLY = 'FS_conversation';
+    const MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER = 'FS_reply';
+    const MESSAGE_ID_PREFIX_AUTO_REPLY = 'FS_autoreply';
 
     /**
      * Mail drivers.

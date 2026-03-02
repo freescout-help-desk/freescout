@@ -49,7 +49,7 @@ class MessageIdAssasinTest extends TestCase
             'type' => Thread::TYPE_MESSAGE,
         ]);
 
-        $message_id = 'FS_'.$thread->getMessageId($mailbox);
+        $message_id = $thread->getMessageId($mailbox);
 
         foreach ($this->assasin_regexes as $key => $regex) {
             if (preg_match($regex, $message_id)) {

@@ -564,7 +564,7 @@ class FetchEmails extends Command
             # Try to get the thread traversing the possible prev_message_ids
             foreach ($prev_message_ids as $prev_message_id) {
                 // Is it a message from Customer or User replied to the notification
-                preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $prev_message_id, $m);
+                preg_match('/^'.$this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION)."\-(\d+)\-(\d+)\-/", $prev_message_id, $m);
 
                 if (!$is_bounce && !empty($m[1]) && !empty($m[2])) {
                     // Reply from User to the notification
@@ -596,7 +596,7 @@ class FetchEmails extends Command
                             $prev_thread_id = '';
 
                             // Customer replied to the email from user
-                            preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
+                            preg_match('/^'.$this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER)."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
                             // Simply checking thread_id from message_id was causing an issue when 
                             // customer was sending a message from FreeScout - the message was 
                             // connected to the wrong conversation.
@@ -614,7 +614,7 @@ class FetchEmails extends Command
 
                             // Customer replied to the auto reply
                             if (!$prev_thread_id) {
-                                preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
+                                preg_match('/^'.$this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY)."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
                                 if (!empty($m[1]) && !empty($m[2])) {
                                     $message_id_hash = $m[2];
                                     if (strlen($message_id_hash) == 16) {
@@ -910,6 +910,12 @@ class FetchEmails extends Command
         }
     }
 
+    // Get prefix as regex (for backward compatibility).
+    public function formatMessageIdPrefix($prefix)
+    {
+        return str_replace('FS_', '(?:FS_)?', $prefix);
+    }
+
     // Try to get "From:" from body.
     public function getOriginalSenderFromFwd($body)
     {
@@ -939,8 +945,8 @@ class FetchEmails extends Command
         $bounced_thread = null;
         if ($bounced_message_id) {
             $prefixes = [
-                \MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER,
-                \MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY,
+                $this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER),
+                $this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY),
             ];
             preg_match('/^('.implode('|', $prefixes).')\-(\d+)\-/', $bounced_message_id, $matches);
             if (!empty($matches[2])) {
