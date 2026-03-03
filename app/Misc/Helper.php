@@ -1922,7 +1922,7 @@ class Helper
     {
         $pdf_mime_types = [
             'application/pdf', 'application/x-pdf', 'application/acrobat',
-            'applications/vnd.pdf', 'text/pdf', 'text/x-pdf'
+            'applications/vnd.pdf', 'text/pdf', 'text/x-pdf',
         ];
         // Remove illegal chars.
         $illegal_chars = [
