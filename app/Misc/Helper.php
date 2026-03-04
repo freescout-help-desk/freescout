@@ -2407,11 +2407,10 @@ class Helper
     {
         try {
             return shell_exec($command);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             self::logException($e, '\Helper::shellExec() - ');
+            return false;
         }
-
-        return '';
     }
 
     public static function startsiWith($text, $string)

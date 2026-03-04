@@ -54,11 +54,15 @@ class SystemController extends Controller
         $non_writable_cache_file = '';
         if (function_exists('shell_exec')) {
             $non_writable_cache_file = \Helper::shellExec('find '.base_path('storage/framework/cache/data/').' -type f | xargs -I {} sh -c \'[ ! -w "{}" ] && echo {}\' 2>&1 | head -n 1');
-            $non_writable_cache_file = trim($non_writable_cache_file ?? '');
-            // Leave only one line (in case head -n 1 does not work)
-            $non_writable_cache_file = preg_replace("#[\r\n].+#m", '', $non_writable_cache_file);
-            if (!strstr($non_writable_cache_file, base_path('storage/framework/cache/data/'))) {
-                $non_writable_cache_file = '';
+            if ($non_writable_cache_file === false) {
+                $non_writable_cache_file = 'Could not execute command via shell_exec()';
+            } else {
+                $non_writable_cache_file = trim($non_writable_cache_file ?? '');
+                // Leave only one line (in case head -n 1 does not work)
+                $non_writable_cache_file = preg_replace("#[\r\n].+#m", '', $non_writable_cache_file);
+                if (!strstr($non_writable_cache_file, base_path('storage/framework/cache/data/'))) {
+                    $non_writable_cache_file = '';
+                }
             }
         }
         
@@ -97,19 +101,29 @@ class SystemController extends Controller
                 $running_commands = 0;
 
                 try {
-                    $processes = preg_split("/[\r\n]/", \Helper::shellExec("ps auxww | grep '{$command_identifier}'"));
-                    $pids = [];
-                    foreach ($processes as $process) {
-                        $process = trim($process);
-                        preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
-                        if (empty($m)) {
-                            // Another format (used in Docker image).
-                            // 1713 nginx     0:00 /usr/bin/php82...
-                            preg_match("/^([\d]+)\s+[\S]+\s+/", $process, $m);
-                        }
-                        if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {
-                            $running_commands++;
-                            $pids[] = $m[1];
+                    $ps_output = \Helper::shellExec("ps auxww | grep '{$command_identifier}'");
+
+                    if ($ps_output === false) {
+                        $commands[] = [
+                            'name'        => $command_name,
+                            'status'      => 'error',
+                            'status_text' => __('Could not execute command via shell_exec()'),
+                        ];
+                    } else {
+                        $processes = preg_split("/[\r\n]/", $ps_output);
+                        $pids = [];
+                        foreach ($processes as $process) {
+                            $process = trim($process);
+                            preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
+                            if (empty($m)) {
+                                // Another format (used in Docker image).
+                                // 1713 nginx     0:00 /usr/bin/php82...
+                                preg_match("/^([\d]+)\s+[\S]+\s+/", $process, $m);
+                            }
+                            if (!preg_match("/(sh \-c|grep )/", $process) && !empty($m[1])) {
+                                $running_commands++;
+                                $pids[] = $m[1];
+                            }
                         }
                     }
                 } catch (\Exception $e) {
