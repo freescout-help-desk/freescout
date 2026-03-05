@@ -2401,12 +2401,12 @@ class Helper
         return str_replace('T', ' ', $datetime);
     }
 
-    // To catch possible exception:
-    // shell_exec(): Unable to execute
+    // To catch possible exception: shell_exec(): Unable to execute
+    // Return string or false.
     public static function shellExec($command)
     {
         try {
-            return shell_exec($command);
+            return shell_exec($command) ?? '';
         } catch (\Throwable $e) {
             self::logException($e, '\Helper::shellExec() - ');
             return false;
