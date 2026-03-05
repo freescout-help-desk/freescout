@@ -2142,17 +2142,23 @@ class ConversationsController extends Controller
                     return \Response::json($response);
                 }
 
+                // Check access to the mailbox.
+                $folder = Folder::find($request->folder_id ?? '');
+
+                if (!$folder) {
+                    $response['msg'] = __('Folder not found');
+                }
+                if (!$response['msg'] && !$folder->mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Not enough permissions');
+                    return \Response::json($response);
+                }
+
                 $response = \Eventy::filter('conversations.empty_folder', $response, 
                     $request->mailbox_id,
                     $request->folder_id
                 );
 
                 if (empty($response['processed'])) {
-                    $folder = Folder::find($request->folder_id ?? '');
-
-                    if (!$folder) {
-                        $response['msg'] = __('Folder not found');
-                    }
 
                     if (!$user->isAdmin() && $folder->mailbox && !$folder->mailbox->userHasAccess($user->id)) {
                         $response['msg'] = __('Not enough permissions');
