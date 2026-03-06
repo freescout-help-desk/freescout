@@ -126,6 +126,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Psr\\Container\\' => 14,
             'PhpParser\\' => 10,
             'Patchwork\\' => 10,
+            'PHPUnit\\Runner\\' => 15,
         ),
         'N' => 
         array (
@@ -560,6 +561,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Patchwork\\' => 
         array (
             0 => __DIR__ . '/..' . '/patchwork/utf8/src/Patchwork',
+        ),
+        'PHPUnit\\Runner\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/phpunit/phpunit/src/Runner',
         ),
         'Nwidart\\Modules\\' => 
         array (
@@ -3395,7 +3400,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Psy\\Command\\WhereamiCommand' => __DIR__ . '/..' . '/psy/psysh/src/Command/WhereamiCommand.php',
         'Psy\\Command\\WtfCommand' => __DIR__ . '/..' . '/psy/psysh/src/Command/WtfCommand.php',
         'Psy\\ConfigPaths' => __DIR__ . '/..' . '/psy/psysh/src/ConfigPaths.php',
-        'Psy\\Configuration' => __DIR__ . '/..' . '/psy/psysh/src/Configuration.php',
+        'Psy\\Configuration' => __DIR__ . '/../..' . '/overrides/psy/psysh/src/Configuration.php',
         'Psy\\ConsoleColorFactory' => __DIR__ . '/..' . '/psy/psysh/src/ConsoleColorFactory.php',
         'Psy\\Context' => __DIR__ . '/..' . '/psy/psysh/src/Context.php',
         'Psy\\ContextAware' => __DIR__ . '/..' . '/psy/psysh/src/ContextAware.php',

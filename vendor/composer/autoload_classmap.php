@@ -2400,7 +2400,7 @@ return array(
     'Psy\\Command\\WhereamiCommand' => $vendorDir . '/psy/psysh/src/Command/WhereamiCommand.php',
     'Psy\\Command\\WtfCommand' => $vendorDir . '/psy/psysh/src/Command/WtfCommand.php',
     'Psy\\ConfigPaths' => $vendorDir . '/psy/psysh/src/ConfigPaths.php',
-    'Psy\\Configuration' => $vendorDir . '/psy/psysh/src/Configuration.php',
+    'Psy\\Configuration' => $baseDir . '/overrides/psy/psysh/src/Configuration.php',
     'Psy\\ConsoleColorFactory' => $vendorDir . '/psy/psysh/src/ConsoleColorFactory.php',
     'Psy\\Context' => $vendorDir . '/psy/psysh/src/Context.php',
     'Psy\\ContextAware' => $vendorDir . '/psy/psysh/src/ContextAware.php',

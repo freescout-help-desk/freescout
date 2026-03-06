@@ -39,6 +39,11 @@ class Sanitizer
     /**
      * @var bool
      */
+    protected $xmlErrorHandlerPreviousValue;
+
+    /**
+     * @var bool
+     */
     protected $minifyXML = false;
 
     /**
@@ -75,6 +80,11 @@ class Sanitizer
      * @var int
      */
     protected $useNestingLimit = 15;
+
+    /**
+     * @var bool
+     */
+    protected $allowHugeFiles = false;
 
     /**
      *
@@ -178,12 +188,30 @@ class Sanitizer
         return $this->xmlIssues;
     }
 
+    /**
+     * Can we allow huge files?
+     *
+     * @return bool
+     */
+    public function getAllowHugeFiles() {
+        return $this->allowHugeFiles;
+    }
+
+    /**
+     * Set whether we can allow huge files.
+     *
+     * @param bool $allowHugeFiles
+     */
+    public function setAllowHugeFiles( $allowHugeFiles ) {
+        $this->allowHugeFiles = $allowHugeFiles;
+    }
+
 
     /**
      * Sanitize the passed string
      *
      * @param string $dirty
-     * @return string
+     * @return string|false
      */
     public function sanitize($dirty)
     {
@@ -192,16 +220,22 @@ class Sanitizer
             return '';
         }
 
-        // Strip php tags
-        $dirty = preg_replace('/<\?(=|php)(.+?)\?>/i', '', $dirty);
+        do {
+            /*
+             * recursively remove php tags because they can be hidden inside tags
+             * i.e. <?p<?php test?>hp echo . ' danger! ';?>
+             */
+            $dirty = preg_replace('/<\?(=|php)(.+?)\?>/i', '', $dirty);
+        } while (preg_match('/<\?(=|php)(.+?)\?>/i', $dirty) != 0);
 
         $this->resetInternal();
         $this->setUpBefore();
 
-        $loaded = $this->xmlDocument->loadXML($dirty);
+        $loaded = $this->xmlDocument->loadXML($dirty, $this->getAllowHugeFiles() ? LIBXML_PARSEHUGE : 0);
 
         // If we couldn't parse the XML then we go no further. Reset and return false
         if (!$loaded) {
+            $this->xmlIssues = self::getXmlErrors();
             $this->resetAfter();
             return false;
         }
@@ -212,7 +246,7 @@ class Sanitizer
         $this->elementReferenceResolver->collect();
         $elementsToRemove = $this->elementReferenceResolver->getElementsToRemove();
 
-        // Start the cleaning proccess
+        // Start the cleaning process
         $this->startClean($this->xmlDocument->childNodes, $elementsToRemove);
 
         // Save cleaned XML to a variable
@@ -245,8 +279,9 @@ class Sanitizer
             $this->xmlLoaderValue = libxml_disable_entity_loader(true);
         }
 
-        // Suppress the errors because we don't really have to worry about formation before cleansing
-        libxml_use_internal_errors(true);
+        // Suppress the errors because we don't really have to worry about formation before cleansing.
+        // See reset in resetAfter().
+        $this->xmlErrorHandlerPreviousValue = libxml_use_internal_errors(true);
 
         // Reset array of altered XML
         $this->xmlIssues = array();
@@ -263,6 +298,9 @@ class Sanitizer
             // Reset the entity loader
             libxml_disable_entity_loader($this->xmlLoaderValue);
         }
+
+        libxml_clear_errors();
+        libxml_use_internal_errors($this->xmlErrorHandlerPreviousValue);
     }
 
     /**
@@ -331,7 +369,7 @@ class Sanitizer
                     $breaksOutOfForeignContent = false;
                     for ($x = $currentElement->attributes->length - 1; $x >= 0; $x--) {
                         // get attribute name
-                        $attrName = $currentElement->attributes->item( $x )->name;
+                        $attrName = $currentElement->attributes->item( $x )->nodeName;
 
                         if (in_array(strtolower($attrName), ['face', 'color', 'size'])) {
                             $breaksOutOfForeignContent = true;
@@ -366,7 +404,7 @@ class Sanitizer
     {
         for ($x = $element->attributes->length - 1; $x >= 0; $x--) {
             // get attribute name
-            $attrName = $element->attributes->item($x)->name;
+            $attrName = $element->attributes->item($x)->nodeName;
 
             // Remove attribute if not in whitelist
             if (!in_array(strtolower($attrName), $this->allowedAttrs) && !$this->isAriaAttribute(strtolower($attrName)) && !$this->isDataAttribute(strtolower($attrName))) {
@@ -383,7 +421,7 @@ class Sanitizer
              * Such as xlink:href when the xlink namespace isn't imported.
              * We have to do this as the link is still ran in this case.
              */
-            if (false !== strpos($attrName, 'href')) {
+            if (false !== stripos($attrName, 'href')) {
                 $href = $element->getAttribute($attrName);
                 if (false === $this->isHrefSafeValue($href)) {
                     $element->removeAttribute($attrName);
@@ -415,14 +453,17 @@ class Sanitizer
      */
     protected function cleanXlinkHrefs(\DOMElement $element)
     {
-        $xlinks = $element->getAttributeNS('http://www.w3.org/1999/xlink', 'href');
-        if (false === $this->isHrefSafeValue($xlinks)) {
-            $element->removeAttributeNS( 'http://www.w3.org/1999/xlink', 'href' );
-            $this->xmlIssues[] = array(
-                'message' => 'Suspicious attribute \'href\'',
-                'line' => $element->getLineNo(),
-            );
+        foreach ($element->attributes as $attribute) {
+            // remove attributes with unexpected namespace prefix, e.g. `XLinK:href` (instead of `xlink:href`)
+            if ($attribute->prefix === '' && strtolower($attribute->nodeName) === 'xlink:href') {
+                $element->removeAttribute($attribute->nodeName);
+                $this->xmlIssues[] = array(
+                    'message' => sprintf('Unexpected attribute \'%s\'', $attribute->nodeName),
+                    'line' => $element->getLineNo(),
+                );
+            }
         }
+        $this->cleanHrefAttributes($element, 'xlink');
     }
 
     /**
@@ -432,13 +473,33 @@ class Sanitizer
      */
     protected function cleanHrefs(\DOMElement $element)
     {
-        $href = $element->getAttribute('href');
-        if (false === $this->isHrefSafeValue($href)) {
-            $element->removeAttribute('href');
-            $this->xmlIssues[] = array(
-                'message' => 'Suspicious attribute \'href\'',
-                'line' => $element->getLineNo(),
-            );
+        $this->cleanHrefAttributes($element);
+    }
+
+    protected function cleanHrefAttributes(\DOMElement $element, string $prefix = ''): void
+    {
+        $relevantAttributes = array_filter(
+            iterator_to_array($element->attributes),
+            static function (\DOMAttr $attr) use ($prefix) {
+                return strtolower($attr->name) === 'href' && strtolower($attr->prefix) === $prefix;
+            }
+        );
+        foreach ($relevantAttributes as $attribute) {
+            if (!$this->isHrefSafeValue($attribute->value)) {
+                $element->removeAttribute($attribute->nodeName);
+                $this->xmlIssues[] = array(
+                    'message' => sprintf('Suspicious attribute \'%s\'', $attribute->nodeName),
+                    'line' => $element->getLineNo(),
+                );
+                continue;
+            }
+            // in case the attribute name is `HrEf`/`xlink:HrEf`, adjust it to `href`/`xlink:href`
+            if (!in_array($attribute->nodeName, $this->allowedAttrs, true)
+                && in_array(strtolower($attribute->nodeName), $this->allowedAttrs, true)
+            ) {
+                $element->removeAttribute($attribute->nodeName);
+                $element->setAttribute(strtolower($attribute->nodeName), $attribute->value);
+            }
         }
     }
 
@@ -665,5 +726,22 @@ class Sanitizer
                 $this->cleanUnsafeNodes($childElement);
             }
         }
+    }
+
+    /**
+     * Retrieve array of errors
+     * @return array
+     */
+    private static function getXmlErrors()
+    {
+        $errors = [];
+        foreach (libxml_get_errors() as $error) {
+            $errors[] = [
+                'message' => trim($error->message),
+                'line' => $error->line,
+            ];
+        }
+
+        return $errors;
     }
 }

@@ -77,6 +77,7 @@ return array(
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'Patchwork\\' => array($vendorDir . '/patchwork/utf8/src/Patchwork'),
+    'PHPUnit\\Runner\\' => array($baseDir . '/overrides/phpunit/phpunit/src/Runner'),
     'Nwidart\\Modules\\' => array($baseDir . '/overrides/nwidart/laravel-modules/src', $vendorDir . '/nwidart/laravel-modules/src'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Modules\\' => array($baseDir . '/Modules'),
