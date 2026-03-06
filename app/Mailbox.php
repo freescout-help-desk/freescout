@@ -671,6 +671,22 @@ class Mailbox extends Model
     }
 
     /**
+     * Determines if Fetching settings for the mailbox have been saved by admin.
+     */
+    public function inSettingsSaved()
+    {
+        return ($this->attributes['in_password'] !== null);
+    }
+
+    /**
+     * Determines if Sending settings for the mailbox have been saved by admin.
+     */
+    public function outSettingsSaved()
+    {
+        return ($this->attributes['out_password'] !== null);
+    }
+
+    /**
      * Get pivot table parameters for the user.
      */
     public function getUserSettings($user_id)

@@ -153,12 +153,21 @@
                                 $new_fetching_library = config('app.new_fetching_library');
                             @endphp
                             <div class="col-sm-6">
+                                @php
+                                    $in_encryption = old('in_encryption', $mailbox->in_encryption);
+                                    // Set TLS encryption by default.
+                                    if ($in_encryption == App\Mailbox::IN_ENCRYPTION_NONE) {
+                                        if (!$mailbox->inSettingsSaved()) {
+                                            $in_encryption = App\Mailbox::IN_ENCRYPTION_TLS;
+                                        }
+                                    }
+                                @endphp
                                 <select id="in_encryption" class="form-control input-sized" name="in_encryption" @if ($mailbox->out_method == App\Mailbox::OUT_METHOD_SMTP) required @endif autofocus>
-                                    <option value="{{ App\Mailbox::IN_ENCRYPTION_NONE }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_NONE)selected="selected"@endif>{{ __('None') }}</option>
-                                    <option value="{{ App\Mailbox::IN_ENCRYPTION_SSL }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_SSL)selected="selected"@endif>SSL</option>
-                                    <option value="{{ App\Mailbox::IN_ENCRYPTION_TLS }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_TLS)selected="selected"@endif>{{ 'TLS' }}@if (!$new_fetching_library) &nbsp;(+StartTLS)@endif</option>
+                                    <option value="{{ App\Mailbox::IN_ENCRYPTION_NONE }}" @if ($in_encryption == App\Mailbox::IN_ENCRYPTION_NONE)selected="selected"@endif>{{ __('None') }}</option>
+                                    <option value="{{ App\Mailbox::IN_ENCRYPTION_SSL }}" @if ($in_encryption == App\Mailbox::IN_ENCRYPTION_SSL)selected="selected"@endif>SSL</option>
+                                    <option value="{{ App\Mailbox::IN_ENCRYPTION_TLS }}" @if ($in_encryption == App\Mailbox::IN_ENCRYPTION_TLS)selected="selected"@endif>{{ 'TLS' }}@if (!$new_fetching_library) &nbsp;(+StartTLS)@endif</option>
                                     @if ($new_fetching_library)
-                                        <option value="{{ App\Mailbox::IN_ENCRYPTION_STARTTLS }}" @if (old('in_encryption', $mailbox->in_encryption) == App\Mailbox::IN_ENCRYPTION_STARTTLS)selected="selected"@endif>TLS &nbsp;(+StartTLS)</option>
+                                        <option value="{{ App\Mailbox::IN_ENCRYPTION_STARTTLS }}" @if ($in_encryption == App\Mailbox::IN_ENCRYPTION_STARTTLS)selected="selected"@endif>TLS &nbsp;(+StartTLS)</option>
                                     @endif
                                 </select>
 
