@@ -2195,6 +2195,23 @@ class Helper
         return app()->runningInConsole();
     }
 
+    public static function isCron()
+    {
+        if (!self::isConsole()) {
+            return false;
+        }
+        if (php_sapi_name() == 'cli') {   
+           if (isset($_SERVER['TERM'])) {   
+              return false;
+           } else {   
+              return true;
+           }   
+        } else { 
+           // The script was run from a webserver, or something else.
+           return false;
+        }
+    }
+
     /**
      * Show a warning when background jobs sending emails
      * are not processed for some time.
