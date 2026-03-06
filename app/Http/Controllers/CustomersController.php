@@ -444,7 +444,7 @@ class CustomersController extends Controller
                 $validator = Validator::make($request->all(), $validator_config);
 
                 if ($validator->fails()) {
-                    foreach ($validator->errors()->getMessages()as $errors) {
+                    foreach ($validator->errors()->getMessages() as $errors) {
                         foreach ($errors as $field => $message) {
                             $response['msg'] .= $message.' ';
                         }
@@ -508,7 +508,7 @@ class CustomersController extends Controller
             'customer2_id' => 'required|exists:customers,id|not_in:'.$id,
             //'keep_attributes' => 'array'
         ], [], [
-            'customer2_id' => __('Merge With')
+            'customer2_id' => __('Merge With'),
         ]);
 
         $customer = Customer::findOrFail($id);

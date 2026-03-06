@@ -52,7 +52,8 @@ class Job extends Model
                 'App\Jobs\SendReplyToCustomer',
                 'App\Jobs\SendNotificationToUsers',
                 'App\Jobs\SendAutoReply',
-                'Illuminate\Contracts\Database\ModelIdentifier'
+                'App\Jobs\SendAlert',
+                'Illuminate\Contracts\Database\ModelIdentifier',
             ];
         }
         try {

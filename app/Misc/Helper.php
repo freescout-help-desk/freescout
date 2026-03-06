@@ -741,14 +741,16 @@ class Helper
             imagesavealpha($thumb, true);
         }
         // Resize and crop
-        imagecopyresampled($thumb,
-                           $src,
-                           ceil(0 - ($new_width - $thumb_width) / 2), // Center the image horizontally
-                           ceil(0 - ($new_height - $thumb_height) / 2), // Center the image vertically
-                           0, 0,
-                           ceil($new_width),
-                           ceil($new_height),
-                           $width, $height);
+        imagecopyresampled(
+            $thumb,
+            $src,
+            ceil(0 - ($new_width - $thumb_width) / 2), // Center the image horizontally
+            ceil(0 - ($new_height - $thumb_height) / 2), // Center the image vertically
+            0, 0,
+            ceil($new_width),
+            ceil($new_height),
+            $width, $height
+        );
         if (PHP_VERSION_ID < 80000) {
             imagedestroy($src);
         }
@@ -1145,7 +1147,7 @@ class Helper
 
         if ($embed_images) {
             // Replace embedded images with their urls.
-            $text = preg_replace( '/<img\b[^>]*src=\"([^>"]+)\"[^>]*>/i', "<div>$1</div>", $text);
+            $text = preg_replace('/<img\b[^>]*src=\"([^>"]+)\"[^>]*>/i', "<div>$1</div>", $text);
         }
         return (new \Html2Text\Html2Text($text, $options))->getText();
     }
@@ -1174,7 +1176,7 @@ class Helper
     {
         try {
             return json_decode('"'.str_replace('"', '\\"', $text).'"');
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return $text;
         }
     }
@@ -1408,7 +1410,7 @@ class Helper
             foreach ($mixed as $key => $value) {
                 $mixed[$key] = self::utf8ize($value);
             }
-        } else if (is_string($mixed)) {
+        } elseif (is_string($mixed)) {
             return self::utf8Encode($mixed);
         }
         return $mixed;
@@ -1482,7 +1484,9 @@ class Helper
         $links = array();
 
         // Extract existing links and tags
-        $value = preg_replace_callback('~(<a .*?>.*?</a>|<.*?>)~i', function ($match) use (&$links) { return '<' . array_push($links, $match[1]) . '>'; }, $value ?? '') ?: $value;
+        $value = preg_replace_callback('~(<a .*?>.*?</a>|<.*?>)~i', function ($match) use (&$links) {
+            return '<' . array_push($links, $match[1]) . '>';
+        }, $value ?? '') ?: $value;
 
         $value = $value ?? '';
 
@@ -1496,24 +1500,32 @@ class Helper
                     // https://github.com/freescout-helpdesk/freescout/issues/3402
                     $nbsp = html_entity_decode('&nbsp;');
                     $value = preg_replace_callback('%([>\r\n\s:;\( '.$nbsp.']|^)((([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
-                            if ($match[4]) {
-                                $protocol = $match[4];
-                            }
-                            $link = $match[2];
-                            $link = substr($link, strlen($match[3]));
-                            //return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
-                            return $match[1].'<' . array_push($links, "<a $attr href=\"$protocol://$link\">".$match[2]."</a>") . '>';
+                        if ($match[4]) {
+                            $protocol = $match[4];
+                        }
+                        $link = $match[2];
+                        $link = substr($link, strlen($match[3]));
+                        //return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
+                        return $match[1].'<' . array_push($links, "<a $attr href=\"$protocol://$link\">".$match[2]."</a>") . '>';
                     }, $value) ?: $value;
                     break;
-                case 'mail':    $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:\)])~', function ($match) use (&$links, $attr) { return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>'; }, $value) ?: $value;
+                case 'mail':
+                    $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:\)])~', function ($match) use (&$links, $attr) {
+                        return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>';
+                    }, $value) ?: $value;
                     break;
-                default:        $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) { return '<' . array_push($links, "<a $attr href=\"$protocol://{$match[1]}\">$protocol://{$match[1]}</a>") . '>'; }, $value) ?: $value;
+                default:
+                    $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) {
+                        return '<' . array_push($links, "<a $attr href=\"$protocol://{$match[1]}\">$protocol://{$match[1]}</a>") . '>';
+                    }, $value) ?: $value;
                     break;
             }
         }
 
         // Insert all links
-        return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { return $links[$match[1] - 1]; }, $value ?? '') ?: $value;
+        return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { 
+            return $links[$match[1] - 1];
+        }, $value ?? '') ?: $value;
     }
 
     /**
@@ -1586,15 +1598,16 @@ class Helper
             }
         }
 
+        $mime_type = $file->getMimeType();
+
         if ($allowed_mimes) {
-            $mime_type = $file->getMimeType();
             if (!in_array($mime_type, $allowed_mimes)) {
                 throw new \Exception(__('Unsupported file type'), 1);
             }
         }
         $file_name = \Str::random(25).'.'.$ext;
 
-        $file_name = \Helper::sanitizeUploadedFileName($file_name, $file);
+        $file_name = \Helper::sanitizeUploadedFileName($file_name, $file, null, $mime_type);
 
         $file->storeAs('uploads', $file_name);
 
@@ -1693,16 +1706,16 @@ class Helper
         return str_replace(json_decode('"\u0000"'), "", $string);
     }
 
-    public static function humanFileSize($size, $unit="")
+    public static function humanFileSize($size, $unit = "")
     {
         if ((!$unit && $size >= 1<<30) || $unit == "GB") {
-            return number_format($size/(1<<30),2)."GB";
+            return number_format($size/(1<<30), 2)."GB";
         }
         if ((!$unit && $size >= 1<<20) || $unit == "MB") {
-            return number_format($size/(1<<20),2)."MB";
+            return number_format($size/(1<<20), 2)."MB";
         }
         //if ((!$unit && $size >= 1<<10) || $unit == "KB") {
-        return number_format($size/(1<<10),2)."KB";
+        return number_format($size/(1<<10), 2)."KB";
         // }
         // return number_format($size)." bytes";
     }
@@ -1849,7 +1862,7 @@ class Helper
             $host_ip,
             mb_strtolower(self::getDomain()),
             $_SERVER['SERVER_ADDR'] ?? '',
-            $_SERVER['LOCAL_ADDR'] ?? ''
+            $_SERVER['LOCAL_ADDR'] ?? '',
         ];
 
         if (in_array($parts['host'], $restricted_hosts) && !in_array($parts['host'], $host_white_list)) {
@@ -1905,8 +1918,12 @@ class Helper
         }
     }
 
-    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null)
+    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null, $mime_type = '')
     {
+        $pdf_mime_types = [
+            'application/pdf', 'application/x-pdf', 'application/acrobat',
+            'applications/vnd.pdf', 'text/pdf', 'text/x-pdf',
+        ];
         // Remove illegal chars.
         $illegal_chars = [
             // Unix.
@@ -1948,7 +1965,7 @@ class Helper
         if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext) || mb_substr($file_name, 0, 1) == '.') {
             // Add underscore to the extension if file has restricted extension.
             $file_name = $file_name.'_';
-        } elseif ($ext == 'pdf') {
+        } elseif ($ext == 'pdf' || in_array(strtolower($mime_type), $pdf_mime_types)) {
             // Rename PDF to avoid running embedded JavaScript.
             if ($uploaded_file && !$contents) {
                 $contents = file_get_contents($uploaded_file->getRealPath() ?: $uploaded_file->getPathname());
@@ -2190,7 +2207,7 @@ class Helper
         if (\Option::get('send_emails_problem')) {
             $flashes[] = [
                 'type'      => 'warning',
-                'text'      =>  __('There is a problem processing outgoing mail queue — an admin should check :%a_begin%System Status:%a_end% and :%a_begin_recommendations%Recommendations:%a_end%', ['%a_begin%' => '<a href="'.route('system').'#cron" target="_blank">', '%a_end%' => '</a>', /*'%a_begin_logs%' => '<a href="'.route('logs', ['name' => 'send_errors']).'#cron" target="_blank">',*/ '%a_begin_recommendations%' => '<a href="'.config('app.freescout_repo').'/wiki/Background-Jobs" target="_blank">']),
+                'text'      => __('There is a problem processing outgoing mail queue — an admin should check :%a_begin%System Status:%a_end% and :%a_begin_recommendations%Recommendations:%a_end%', ['%a_begin%' => '<a href="'.route('system').'#cron" target="_blank">', '%a_end%' => '</a>', /*'%a_begin_logs%' => '<a href="'.route('logs', ['name' => 'send_errors']).'#cron" target="_blank">',*/ '%a_begin_recommendations%' => '<a href="'.config('app.freescout_repo').'/wiki/Background-Jobs" target="_blank">']),
                 'unescaped' => true,
             ];
         }
@@ -2384,17 +2401,16 @@ class Helper
         return str_replace('T', ' ', $datetime);
     }
 
-    // To catch possible exception:
-    // shell_exec(): Unable to execute
+    // To catch possible exception: shell_exec(): Unable to execute
+    // Return string or false.
     public static function shellExec($command)
     {
         try {
-            return shell_exec($command);
-        } catch (\Exception $e) {
+            return shell_exec($command) ?? '';
+        } catch (\Throwable $e) {
             self::logException($e, '\Helper::shellExec() - ');
+            return false;
         }
-
-        return '';
     }
 
     public static function startsiWith($text, $string)

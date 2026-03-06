@@ -179,7 +179,7 @@ class Folder extends Model
         $sorting = Conversation::getConvTableSorting();
         if ($sorting['sort_by'] == 'date') {
             if ($sorting['order'] != 'desc') {
-                 foreach ($order_by as $block_i => $block) {
+                foreach ($order_by as $block_i => $block) {
                     foreach ($block as $field => $order) {
                         if ($field == 'status') {
                             unset($order_by[$block_i][$field]);
@@ -224,7 +224,7 @@ class Folder extends Model
     public function updateCounters()
     {
         if (config('app.update_folder_counters_in_background')) {
-            if(!\Illuminate\Support\Facades\Cache::has("folder_update_lock_{$this->id}")) {
+            if (!\Illuminate\Support\Facades\Cache::has("folder_update_lock_{$this->id}")) {
                 \App\Jobs\UpdateFolderCounters::dispatch($this);
             }
         } else {
@@ -382,13 +382,13 @@ class Folder extends Model
         } elseif ($this->type == \App\Folder::TYPE_DELETED) {
             return 'user_updated_at';
         } else {
-            return'last_reply_at';
+            return 'last_reply_at';
         }
     }
 
     public function url($mailbox_id)
     {
-        return \Eventy::filter('folder.url', route('mailboxes.view.folder', ['id'=>$mailbox_id, 'folder_id'=>$this->id]), $mailbox_id, $this);
+        return \Eventy::filter('folder.url', route('mailboxes.view.folder', ['id' => $mailbox_id, 'folder_id' => $this->id]), $mailbox_id, $this);
     }
 
     public static function create($data, $unique_per_user = true, $save = true)
@@ -396,7 +396,7 @@ class Folder extends Model
         if (!isset($data['mailbox_id']) || !isset($data['type'])) {
             return null;
         }
-        $folder = new Folder ();
+        $folder = new Folder();
         $folder->mailbox_id = $data['mailbox_id'];
         $folder->type = $data['type'];
 

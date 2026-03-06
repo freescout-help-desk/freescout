@@ -154,7 +154,7 @@ class WebsiteNotification extends Notification implements ShouldQueue
                 'user'                => $user,
                 'created_by_user'     => $created_by_user,
                 'created_by_customer' => $created_by_customer,
-                'data'                => $notification->data['data'] ?? []
+                'data'                => $notification->data['data'] ?? [],
             ];
         }
 

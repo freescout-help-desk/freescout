@@ -1,6 +1,8 @@
 <?php
 
+use App\Customer;
 use App\Thread;
+use App\User;
 use Faker\Generator as Faker;
 
 $factory->define(Thread::class, function (Faker $faker, $params) {
@@ -9,7 +11,7 @@ $factory->define(Thread::class, function (Faker $faker, $params) {
     } else {
         // Pick random customer
         //$customer_id =  $faker->randomElement(App\Customer::pluck('id')->toArray());
-        $customer = User::inRandomOrder()->first();
+        $customer = Customer::inRandomOrder()->first();
         if (!$customer) {
             $customer = factory(App\Customer::class)->create();
         }

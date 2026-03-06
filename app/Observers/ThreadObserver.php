@@ -26,7 +26,7 @@ class ThreadObserver
 
         if ($use_mail_date_on_fetching) {
             $now = $thread->created_at;
-        }else{
+        } else {
             $now = date('Y-m-d H:i:s');
         }
         

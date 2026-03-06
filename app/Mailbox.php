@@ -685,7 +685,8 @@ class Mailbox extends Model
     }
 
     /**
-     * Create dummy object with default parameters
+     * Create dummy object with default parameters.
+     * 
      * @return [type] [description]
      */
     public static function getDummySettings()

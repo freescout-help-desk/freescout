@@ -1660,7 +1660,6 @@ function showReplyForm(data, scroll_offset)
 	}
 
 	if (!isChatMode()) {
-		$('form.form-reply:first .field-cc').removeClass('hidden');
 		// Select2 for CC/BCC
 		initRecipientSelector();
 	} else {

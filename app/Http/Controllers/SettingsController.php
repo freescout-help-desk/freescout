@@ -395,7 +395,7 @@ class SettingsController extends Controller
 
                 if (!$response['msg']) {
                     $test_result = [
-                        'status' => 'error'
+                        'status' => 'error',
                     ];
 
                     try {

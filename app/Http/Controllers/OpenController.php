@@ -197,7 +197,7 @@ class OpenController extends Controller
         if (config('app.download_attachments_via') == 'apache') {
             // Send using Apache mod_xsendfile.
             $response = response(null)
-               ->header('Content-Type' , $attachment->mime_type)
+               ->header('Content-Type', $attachment->mime_type)
                ->header('X-Sendfile', $attachment->getLocalFilePath());
 
             if (!$view_attachment) {
@@ -206,7 +206,7 @@ class OpenController extends Controller
         } elseif (config('app.download_attachments_via') == 'nginx') {
             // Send using Nginx.
             $response = response(null)
-               ->header('Content-Type' , $attachment->mime_type)
+               ->header('Content-Type', $attachment->mime_type)
                ->header('X-Accel-Redirect', $attachment->getLocalFilePath(false));
                
             if (!$view_attachment) {

@@ -652,7 +652,7 @@ class Customer extends Model
             return [[
                 'value' => '',
                 'type' => self::PHONE_TYPE_WORK,
-            ]];
+            ],];
         } else {
             return [];
         }
@@ -776,7 +776,7 @@ class Customer extends Model
             return [[
                 'type' => '',
                 'value' => '',
-            ]];
+            ],];
         } else {
             return [];
         }
@@ -1145,7 +1145,7 @@ class Customer extends Model
      */
     public function url()
     {
-        return route('customers.update', ['id'=>$this->id]);
+        return route('customers.update', ['id' => $this->id]);
     }
 
     /**
@@ -1155,7 +1155,7 @@ class Customer extends Model
      */
     public function urlView()
     {
-        return route('customers.conversations', ['id'=>$this->id]);
+        return route('customers.conversations', ['id' => $this->id]);
     }
 
     /**

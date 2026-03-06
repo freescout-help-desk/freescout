@@ -19,9 +19,9 @@ class Attachment extends Model
 
     const DIRECTORY = 'attachment';
 
-    CONST DISK = 'private';
+    const DISK = 'private';
 
-    CONST MIME_TYPE_MAX_LENGTH = 127;
+    const MIME_TYPE_MAX_LENGTH = 127;
 
     // https://github.com/Webklex/laravel-imap/blob/master/src/IMAP/Attachment.php
     public static $types = [
@@ -37,7 +37,7 @@ class Attachment extends Model
     ];
 
     public static $type_extensions = [
-        self::TYPE_VIDEO => ['flv', 'mp4', 'm3u8', 'ts', '3gp', 'mov', 'avi', 'wmv']
+        self::TYPE_VIDEO => ['flv', 'mp4', 'm3u8', 'ts', '3gp', 'mov', 'avi', 'wmv'],
     ];
 
     public $timestamps = false;
@@ -70,7 +70,7 @@ class Attachment extends Model
         $orig_extension = pathinfo($file_name, PATHINFO_EXTENSION);
 
         // Add underscore to the extension if file has restricted extension.
-        $file_name = \Helper::sanitizeUploadedFileName($file_name, $uploaded_file, $content);
+        $file_name = \Helper::sanitizeUploadedFileName($file_name, $uploaded_file, $content, $mime_type);
 
         // Replace some symbols in file name.
         // Gmail can not load image if it contains spaces.
@@ -295,7 +295,8 @@ class Attachment extends Model
         return $this->getDisk()->download($this->getStorageFilePath(), $file_name, $headers);
     }
 
-    private function getDisk() {
+    private function getDisk()
+    {
         return Storage::disk(self::DISK);
     }
 

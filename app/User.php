@@ -126,7 +126,7 @@ class User extends Authenticatable
     public function __construct(array $attributes = array())
     {
         $this->setRawAttributes(array_merge($this->attributes, array(
-            'timezone' => config('app.timezone') ?: User::DEFAULT_TIMEZONE
+            'timezone' => config('app.timezone') ?: User::DEFAULT_TIMEZONE,
         )), true);
         parent::__construct($attributes);
     }
@@ -329,7 +329,8 @@ class User extends Authenticatable
     /**
      * Check to see if the user can manage any mailboxes
      */
-    public function hasManageMailboxAccess() {
+    public function hasManageMailboxAccess()
+    {
         if ($this->isAdmin()) {
             return true;
         } else {
@@ -363,7 +364,8 @@ class User extends Authenticatable
      * Main function to check if user has some exta access permission
      * for a given mailbox.
      */
-    public function hasManageMailboxPermission($mailbox_id, $perm) {
+    public function hasManageMailboxPermission($mailbox_id, $perm)
+    {
         // Experimental feature.
         // This option does not affect admin users.
         if ($perm == Mailbox::ACCESS_PERM_ASSIGNED) {
@@ -391,8 +393,6 @@ class User extends Authenticatable
             }
         }
     }
-
-
 
     /**
      * Generate random password for the user.
@@ -428,7 +428,7 @@ class User extends Authenticatable
      */
     public function url()
     {
-        return route('users.profile', ['id'=>$this->id]);
+        return route('users.profile', ['id' => $this->id]);
     }
 
     /**

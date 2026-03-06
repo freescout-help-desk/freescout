@@ -355,6 +355,7 @@ class ModulesController extends Controller
                                     break;
                                 case 'inactive':
                                     $response['msg'] = __('License key has not been activated yet');
+                                    break;
                                 case 'site_inactive':
                                     $response['msg'] = __('No activations left for this license key').' ('.__("Use 'Deactivate License' link above to transfer license key from another domain").')';
                                     break;
