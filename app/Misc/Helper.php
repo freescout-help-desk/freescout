@@ -1755,6 +1755,10 @@ class Helper
     public static function downloadRemoteFileAsTmp($uri, $follow_redirects = true)
     {
         try {
+            // Sanitize URL first.
+            if (!self::sanitizeRemoteUrl($uri)) {
+                throw new \Exception('URL points to the local host', 1);
+            }
             $contents = self::getRemoteFileContents($uri, $follow_redirects);
 
             if (!$contents) {
@@ -1797,6 +1801,7 @@ class Helper
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             if ($follow_redirects) {
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
             }
             curl_setopt($ch, CURLOPT_URL, $url);
             \Helper::setCurlDefaultOptions($ch);
@@ -1832,7 +1837,27 @@ class Helper
         }
     }
 
-    public static function sanitizeRemoteUrl($url, $throw_exception = false)
+    public static function sanitizeRemoteUrl($url, $throw_exception = false, $follow_redirects = true)
+    {
+        if (!self::checkUrlIpAndHost($url, $throw_exception)) {
+            return '';
+        }
+
+        // Follow redirects and check final IP/host.
+        if ($follow_redirects) {
+            $last_redirected_url = self::curlGetLastRedirectedUrl($url);
+
+            if ($last_redirected_url != $url) {
+                if (!self::checkUrlIpAndHost($url, $throw_exception)) {
+                    return '';
+                }
+            }
+        }
+
+        return $url;
+    }
+
+    public static function checkUrlIpAndHost($url, $throw_exception = false)
     {
         $parts = parse_url($url ?? '');
 
@@ -1854,7 +1879,15 @@ class Helper
         $hostname = gethostname();
         $host_ip = gethostbyname($hostname);
 
+        // Can also include IP masks.
         $restricted_hosts = [
+            '::1', // IPv6 loopback
+            '::ffff:127.0.0.1', // IPv4-mapped IPv6
+            '169.254.169.254', // AWS/GCP/Azure metadata
+            'fd00::/8', // IPv6 ULA
+            '10.0.0.0/8', // RFC1918
+            '172.16.0.0/12', // RFC1918
+            'fd00::/8', // RFC1918
             '0.0.0.0',
             '127.0.0.1',
             'localhost',
@@ -1865,29 +1898,81 @@ class Helper
             $_SERVER['LOCAL_ADDR'] ?? '',
         ];
 
-        if (in_array($parts['host'], $restricted_hosts) && !in_array($parts['host'], $host_white_list)) {
-            if ($throw_exception) {
-                throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $parts['host']]), 1);
-            } else {
-                return '';
+        if (!in_array($parts['host'], $host_white_list)) {
+            if (in_array($parts['host'], $restricted_hosts) || self::checkIpByMask($parts['host'], $restricted_hosts)) {
+                if ($throw_exception) {
+                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $parts['host']]), 1);
+                } else {
+                    return '';
+                }
             }
         }
 
         // Sanitize host IP address.
         $remote_host_ip = gethostbyname($parts['host']);
-        if (in_array($remote_host_ip, ['0.0.0.0', '127.0.0.1', $host_ip, $_SERVER['SERVER_ADDR'] ?? '', $_SERVER['LOCAL_ADDR'] ?? ''])
-            && !in_array($remote_host_ip, $host_white_list)
-        ) {
-            if ($throw_exception) {
-                throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), 1);
-            } else {
-                return '';
+        if (!in_array($remote_host_ip, $host_white_list)) {
+            if (in_array($remote_host_ip, $restricted_hosts) || self::checkIpByMask($remote_host_ip, $restricted_hosts)) {
+                if ($throw_exception) {
+                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), 1);
+                } else {
+                    return '';
+                }
             }
         }
 
         return $url;
     }
 
+    // Get last redicred URL.
+    public static function curlGetLastRedirectedUrl($url, $throw_exception = false)
+    {
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        // Get last effective URL.
+        
+        \Helper::setCurlDefaultOptions($ch);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 180);
+        curl_exec($ch);
+
+        $curl_errno = curl_errno($ch);
+
+        if ($curl_errno) {
+            if ($throw_exception) {
+                throw new \Exception('Could not check URL contents by following redirects: '.$curl_errno, 1);
+            } else {
+                return '';
+            }
+        }
+
+        $last_redirected_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        if (PHP_VERSION_ID < 80000) {
+            \curl_close($ch);
+        }
+
+        return $last_redirected_url;
+    }
+
+    // Returns mask or false.
+    public static function checkIpByMask($ip, $masks = [])
+    {
+        if (!strstr($ip, '/')) {
+            return false;
+        }
+        foreach ($masks as $mask) {
+            if (!strstr($mask, '/')) {
+                continue;
+            }
+            if (\Symfony\Component\HttpFoundation\IpUtils::checkIp($ip, $mask)) {
+                return $mask;
+            }
+        }
+        return false;
+    }
     public static function getTempDir()
     {
         return sys_get_temp_dir() ?: '/tmp';
@@ -2201,14 +2286,14 @@ class Helper
             return false;
         }
         if (php_sapi_name() == 'cli') {   
-           if (isset($_SERVER['TERM'])) {   
-              return false;
-           } else {   
-              return true;
-           }   
+            if (isset($_SERVER['TERM'])) {   
+                return false;
+            } else {   
+                return true;
+            }   
         } else { 
-           // The script was run from a webserver, or something else.
-           return false;
+            // The script was run from a webserver, or something else.
+            return false;
         }
     }
 
