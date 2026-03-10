@@ -1629,6 +1629,10 @@ class Helper
                 $content = $storage->get($file_path);
             }
             if ($content) {
+                // Remove comments from SVG content.
+                // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-cvr8-cw5c-5pfw
+                $content = preg_replace('/<!--(.|\s)*?-->/', '', $content);
+
                 $svg_sanitizer = new \enshrined\svgSanitize\Sanitizer();
                 $clean_content = $svg_sanitizer->sanitize($content);
                 if (!$clean_content)  {
