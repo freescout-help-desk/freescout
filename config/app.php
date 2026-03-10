@@ -276,6 +276,7 @@ return [
     // If HTML file is renamed into .txt for example it will be shown by the browser as HTML.
     // Regular expressions (#...#)
     'viewable_mime_types'    => env('APP_VIEWABLE_MIME_TYPES', ['image/.*', 'application/pdf', 'text/plain', 'text/x-diff', 'application/json', 'audio/.*']),
+    'non_viewable_mime_types'    => env('APP_NON_VIEWABLE_MIME_TYPES', ['image/svg.*']),
 
     /*
     |--------------------------------------------------------------------------

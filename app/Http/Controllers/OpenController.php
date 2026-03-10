@@ -189,6 +189,14 @@ class OpenController extends Controller
                     break;
                 }
             }
+            if ($allowed_mime_type) {
+                foreach (config('app.non_viewable_mime_types') as $mime_type) {
+                    if (preg_match('#'.$mime_type.'#', $attachment->mime_type)) {
+                        $allowed_mime_type = false;
+                        break;
+                    }
+                }
+            }
             if (!$allowed_mime_type) {
                 $view_attachment = false;
             }
