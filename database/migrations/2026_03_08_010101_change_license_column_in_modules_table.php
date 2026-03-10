@@ -16,6 +16,13 @@ class ChangeLIcenseColumnInModulesTable extends Migration
         Schema::table('modules', function (Blueprint $table) {
             $table->text('license')->nullable()->change();
         });
+        foreach (\App\Module::get() as $module) {
+            $license = $module->getOriginal('license');
+            if ($license) {
+                $module->setLicenseAttribute($license);
+            }
+            $module->save();
+        }
     }
 
     /**
