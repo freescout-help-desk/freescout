@@ -20,8 +20,8 @@ class ChangeLIcenseColumnInModulesTable extends Migration
             $license = $module->getOriginal('license');
             if ($license) {
                 $module->setLicenseAttribute($license);
+                $module->save();
             }
-            $module->save();
         }
     }
 
