@@ -67,7 +67,7 @@
                     	@if ($thread->source_via == App\Thread::PERSON_USER && $mailbox->before_reply && $loop->first)
                             <span style="color:#b5b5b5">{{ $mailbox->before_reply }}</span><br><br>
                         @endif
-                        {!! $thread->body !!}
+                        {!! $thread->getCleanBody() !!}
 
                         @action('reply_email.before_signature', $thread, $loop, $threads, $conversation, $mailbox, $threads_count)
                         @if ($thread->source_via == App\Thread::PERSON_USER && \Eventy::filter('reply_email.include_signature', true, $thread))
