@@ -119,6 +119,16 @@ class Header {
     }
 
     /**
+     * Check if a specific attribute exists
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function has($name): bool {
+        return isset($this->attributes[$name]);
+    }
+
+    /**
      * Set a specific attribute
      * @param string $name
      * @param array|mixed $value
