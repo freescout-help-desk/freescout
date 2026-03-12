@@ -570,7 +570,8 @@ class Header {
                     }
                 }
             } elseif ($decoder === 'iconv') {
-                $value = iconv_mime_decode($value, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+                //$value = iconv_mime_decode($value, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+                $value = \Helper::iconvMimeDecode($value);
             } elseif ($is_utf8_base) {
                 $value = mb_decode_mimeheader($value);
             }

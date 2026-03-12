@@ -713,7 +713,7 @@ class FetchEmails extends Command
 
             // Convert subject encoding
             if (preg_match('/=\?[a-z\d-]+\?[BQ]\?.*\?=/i', $subject)) {
-                $subject = iconv_mime_decode($subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, 'UTF-8');
+                $subject = \Helper::iconvMimeDecode($subject);
             }
 
             $to = $this->formatEmailList($message->getTo());

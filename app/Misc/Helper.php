@@ -2523,4 +2523,16 @@ class Helper
     {
         return (stripos($text, $string) === 0);
     }
+
+    // The iconv_mime_decode() may throw an error even with ICONV_MIME_DECODE_CONTINUE_ON_ERROR.
+    // https://github.com/freescout-help-desk/freescout/issues/5265
+    public static function iconvMimeDecode($string, $mode = ICONV_MIME_DECODE_CONTINUE_ON_ERROR, $encoding = "UTF-8")
+    {
+        try {
+            return iconv_mime_decode($string, $mode, $encoding);
+        } catch (\Exception $e) {
+            self::logException($e);
+            return $string;
+        }
+    }
 }
