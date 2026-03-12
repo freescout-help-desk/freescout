@@ -645,6 +645,15 @@ class Message {
         if ($part->isAttachment()) {
             $this->fetchAttachment($part);
         }else{
+            // Don't fetch text/plain parts which have a Content-ID:
+            //     These parts are referenced MIME entities, usually machine-generated, and intended to stripped
+            //     from the message body.  An example are binary blobs of anti-spam data.  This assumes that no
+            //     standard mail-client assigns a Content-ID on the primary text/plain message body.
+            $partSubtype = strtolower($part->subtype ?? '');
+            if (($partSubtype === 'plain' || $partSubtype === '') && !empty($part->id)) {
+                return;
+            }
+
             $encoding = $this->getEncoding($part);
 
             $content = $this->decodeString($part->content, $part->encoding);
