@@ -738,7 +738,7 @@ class Mail
         if (function_exists('imap_utf8')) {
             return imap_utf8($mime_encoded_text);
         } else {
-            return iconv_mime_decode($mime_encoded_text, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+            return \Helper::iconvMimeDecode($mime_encoded_text);
         }
     }
 
@@ -1288,7 +1288,7 @@ class Mail
 
         // iconv_mime_decode() can't decode:
         // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=
-        $subject_decoded = iconv_mime_decode($subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, "UTF-8");
+        $subject_decoded = \Helper::iconvMimeDecode($subject);
 
         // Sometimes iconv_mime_decode() can't decode some parts of the subject:
         // =?iso-2022-jp?B?IBskQiFaSEcyPDpuQC4wTU1qIVs3Mkp2JSIlLyU3JSItahsoQg==?=

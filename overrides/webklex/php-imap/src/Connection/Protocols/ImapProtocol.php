@@ -138,6 +138,31 @@ class ImapProtocol extends Protocol {
     }
 
     public function debug($line) {
+        // Regular authentication.
+        // >> TAG1 LOGIN "test@example.org" "12345678"
+        $regex = '#^(>> TAG[0-9]+ LOGIN ")(.+)(" ")(.+)(")#';
+        preg_match($regex, $line, $m);
+        $password = $m[4] ?? '';
+        if ($password) {
+            $password = \Helper::safePassword($password);
+            $line = preg_replace($regex, '$1$2$3'.$password.'$5', $line);
+        }
+        // OAuth 2.0
+        // >> TAG1 AUTHENTICATE XOAUTH2 BASE64ENCODED==
+        $regex = '#^(>> TAG[0-9]+ AUTHENTICATE XOAUTH2 )(.*)$#';
+        preg_match($regex, $line, $m);
+        $string_base64 = $m[2] ?? '';
+        if ($string_base64) {
+            $string = base64_decode($string_base64);
+            preg_match("#(auth=Bearer )(.*)#", $string, $m);
+            $bearer = $m[2] ?? '';
+            if ($bearer) {
+                $bearer = \Helper::safePassword($bearer);
+                $string = preg_replace("#(auth=Bearer )(.*)#", '$1'.$bearer, $string);
+                $line = preg_replace($regex, '$1'.base64_encode($string), $line);
+            }
+        }
+
         if (self::$output_debug_log) {
             echo $line;
         }

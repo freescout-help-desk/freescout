@@ -134,6 +134,30 @@ class Module extends Model
         $module->save();
     }
 
+    /**
+     * Automatically encrypt license key.
+     */
+    public function setLicenseAttribute($value)
+    {
+        if ($value != '') {
+            $this->attributes['license'] = \Helper::encrypt($value);
+        } else {
+            $this->attributes['license'] = '';
+        }
+    }
+
+    /**
+     * Automatically decrypt license key.
+     */
+    public function getLicenseAttribute($value)
+    {
+        if (!$value) {
+            return '';
+        }
+
+        return \Helper::decrypt($value);
+    }
+
     public static function normalizeAlias($alias)
     {
         return trim(strtolower($alias));

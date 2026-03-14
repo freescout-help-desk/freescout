@@ -671,6 +671,22 @@ class Mailbox extends Model
     }
 
     /**
+     * Determines if Fetching settings for the mailbox have been saved by admin.
+     */
+    public function inSettingsSaved()
+    {
+        return ($this->attributes['in_password'] !== null);
+    }
+
+    /**
+     * Determines if Sending settings for the mailbox have been saved by admin.
+     */
+    public function outSettingsSaved()
+    {
+        return ($this->attributes['out_password'] !== null);
+    }
+
+    /**
      * Get pivot table parameters for the user.
      */
     public function getUserSettings($user_id)
@@ -932,6 +948,15 @@ class Mailbox extends Model
 
     public function setMetaParam($param, $value, $save = false)
     {
+        // Encrypt some values.
+        if ($param == 'oauth' && is_array($value)) {
+            if (!empty($value['a_token'])) {
+                $value['a_token'] = \Helper::encrypt($value['a_token']);
+            }
+            if (!empty($value['r_token'])) {
+                $value['r_token'] = \Helper::encrypt($value['r_token']);
+            }
+        }
         $meta = $this->meta;
         $meta[$param] = $value;
         $this->meta = $meta;
@@ -976,7 +1001,14 @@ class Mailbox extends Model
 
     public function oauthGetParam($param)
     {
-        return $this->meta['oauth'][$param] ?? '';
+        $value = $this->meta['oauth'][$param] ?? '';
+
+        // Decrypt some values.
+        if (in_array($param, ['a_token', 'r_token'])) {
+            $value = \Helper::decrypt($value);
+        }
+
+        return $value;
     }
 
     public function inOauthEnabled()

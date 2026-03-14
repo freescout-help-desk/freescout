@@ -189,10 +189,21 @@ class OpenController extends Controller
                     break;
                 }
             }
+            if ($allowed_mime_type) {
+                foreach (config('app.non_viewable_mime_types') as $mime_type) {
+                    if (preg_match('#'.$mime_type.'#', $attachment->mime_type)) {
+                        $allowed_mime_type = false;
+                        break;
+                    }
+                }
+            }
             if (!$allowed_mime_type) {
                 $view_attachment = false;
             }
         }
+
+        // CSP header for exatra security.
+        $csp_header_value = "script-src 'none'; frame-src 'none'; object-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'none'; sandbox";
 
         if (config('app.download_attachments_via') == 'apache') {
             // Send using Apache mod_xsendfile.
@@ -202,6 +213,8 @@ class OpenController extends Controller
 
             if (!$view_attachment) {
                 $response->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"');
+            } else {
+                $response->header('Content-Security-Policy', $csp_header_value);
             }
         } elseif (config('app.download_attachments_via') == 'nginx') {
             // Send using Nginx.
@@ -211,9 +224,15 @@ class OpenController extends Controller
                
             if (!$view_attachment) {
                 $response->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"');
+            } else {
+                $response->header('Content-Security-Policy', $csp_header_value);
             }
         } else {
-            $response = $attachment->download($view_attachment);
+            $headers = [];
+            if ($view_attachment) {
+                $headers['Content-Security-Policy'] = $csp_header_value;
+            }
+            $response = $attachment->download($view_attachment, $headers);
         }
 
         return $response;

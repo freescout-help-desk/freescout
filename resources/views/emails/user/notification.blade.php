@@ -227,7 +227,7 @@
 							                                @endif
 							                                @action('email_notification.before_body', $thread, $user, $conversation)
 									                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#444; font-size:14px; line-height:20px; margin:0; @if ($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
-																{!! $thread->body ?? '' !!}
+																{!! $thread->getCleanBody() ?? '' !!}
 															</div>
 
 															@if ($thread->has_attachments)
