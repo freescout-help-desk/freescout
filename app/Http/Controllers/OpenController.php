@@ -203,7 +203,7 @@ class OpenController extends Controller
         }
 
         // CSP header for exatra security.
-        $csp_header_value = "script-src 'none'; frame-src 'none'; object-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'none'; sandbox";
+        $csp_header_value = "script-src 'none'; frame-src 'none'; object-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; form-action 'none'; base-uri 'none'; sandbox";
 
         if (config('app.download_attachments_via') == 'apache') {
             // Send using Apache mod_xsendfile.
