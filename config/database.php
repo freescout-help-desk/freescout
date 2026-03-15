@@ -55,7 +55,8 @@ return [
             'options'     => extension_loaded('pdo_mysql') ? array_filter([
                 (defined('Pdo\Mysql::ATTR_SSL_CA') ? Pdo\Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('DB_MYSQL_ATTR_SSL_CA'),
                 (defined('Pdo\Mysql::ATTR_SSL_CERT') ? Pdo\Mysql::ATTR_SSL_CERT : PDO::MYSQL_ATTR_SSL_CERT) => env('DB_MYSQL_ATTR_SSL_CERT'),
-                (defined('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT') ? Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT) => env('DB_MYSQL_ATTR_SSL_VERIFY_SERVER_CERT', true),
+                // https://github.com/freescout-help-desk/freescout/issues/5273
+                (defined('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT') ? Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT : (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT') ? PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT : -1)) => env('DB_MYSQL_ATTR_SSL_VERIFY_SERVER_CERT', true),
                 PDO::ATTR_PERSISTENT => env('DB_ATTR_PERSISTENT'),
             ], function($value) { return $value !== null; }) : [],
         ],
