@@ -184,14 +184,14 @@ class OpenController extends Controller
             $allowed_mime_type = false;
 
             foreach (config('app.viewable_mime_types') as $mime_type) {
-                if (preg_match('#'.$mime_type.'#', $attachment->mime_type)) {
+                if (preg_match('#^'.$mime_type.'$#', $attachment->mime_type)) {
                     $allowed_mime_type = true;
                     break;
                 }
             }
             if ($allowed_mime_type) {
                 foreach (config('app.non_viewable_mime_types') as $mime_type) {
-                    if (preg_match('#'.$mime_type.'#', $attachment->mime_type)) {
+                    if (preg_match('#^'.$mime_type.'$#', $attachment->mime_type)) {
                         $allowed_mime_type = false;
                         break;
                     }
@@ -203,7 +203,11 @@ class OpenController extends Controller
         }
 
         // CSP header for exatra security.
-        $csp_header_value = "script-src 'none'; frame-src 'none'; object-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; form-action 'none'; base-uri 'none'; sandbox";
+        $csp_header_value = "script-src 'none'; frame-src 'none'; object-src 'none'; font-src 'none'; connect-src 'none'; media-src 'self'; form-action 'none'; base-uri 'none'; sandbox";
+        // https://github.com/freescout-help-desk/freescout/issues/5281
+        if (preg_match('#^audio/.*$#', $attachment->mime_type)) {
+            $csp_header_value .= ' allow-scripts';
+        }
 
         if (config('app.download_attachments_via') == 'apache') {
             // Send using Apache mod_xsendfile.
