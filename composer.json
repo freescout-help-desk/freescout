@@ -95,7 +95,6 @@
         "fs-comment": "Above new lines are listed files containing custom updates. Below - only PHP compatibility updates.",
         "psr-4": {
             "App\\": "app/",
-            "Modules\\": "Modules/",
             "Axn\\Laroute\\Routes\\": "overrides/axn/laravel-laroute/src/Routes/",
             "Webklex\\PHPIMAP\\": "overrides/webklex/php-imap/src/",
             "RachidLaasri\\LaravelInstaller\\Helpers\\": "overrides/rachidlaasri/laravel-installer/src/Helpers/",
@@ -224,7 +223,6 @@
             "PHPUnit\\Runner\\": "overrides/phpunit/phpunit/src/Runner/"
         },
         "exclude-from-classmap": [
-            "Modules/",
             "vendor/axn/laravel-laroute/src/Routes/Collection.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/RequirementsChecker.php",
             "vendor/rachidlaasri/laravel-installer/src/Helpers/PermissionsChecker.php",

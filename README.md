@@ -152,3 +152,7 @@ Web installer:
 Login page:
 
 ![Login page](https://freescout-helpdesk.github.io/img/screenshots/freescout-login.png)
+
+
+CSP:
+Content-Security-Policy: default-src 'self' 'unsafe-inline' 'unsafe-eval';  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com;  script-src-elem 'self' 'unsafe-inline' https://static.cloudflareinsights.com;  script-src-attr 'unsafe-inline';  style-src 'self' 'unsafe-inline';  style-src-elem 'self' 'unsafe-inline';  img-src 'self' data: blob:;  font-src 'self' data:;  connect-src 'self' https://static.cloudflareinsights.com;  frame-src 'self';  object-src 'none';  media-src 'self';  child-src 'self';  frame-ancestors 'self'
