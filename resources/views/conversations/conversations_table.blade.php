@@ -87,7 +87,7 @@
         <thead>
         <tr>
             <th class="conv-current">&nbsp;</th>
-            @if (empty($no_checkboxes))<th class="conv-cb"><input type="checkbox" class="toggle-all magic-checkbox" id="toggle-all"><label for="toggle-all"></label></th>@endif
+            @if (empty($no_checkboxes))<th class="conv-cb"><input type="checkbox" class="toggle-all magic-checkbox" id="toggle-all"><label for="toggle-all"><span class="sr-only">{{ __('Select All Conversations') }}</span></label></th>@endif
             @if (empty($no_customer))
                 <th class="conv-customer">
                     <span>{{ __("Customer") }}</span>
@@ -140,7 +140,7 @@
                             @endif</td>@else<td class="conv-current"></td>@endif
                     @if (empty($no_checkboxes))
                         <td class="conv-cb">
-                            <input type="checkbox" class="conv-checkbox magic-checkbox" id="cb-{{ $conversation->id }}" name="cb_{{ $conversation->id }}" value="{{ $conversation->id }}"><label for="cb-{{ $conversation->id }}"></label>
+                            <input type="checkbox" class="conv-checkbox magic-checkbox" id="cb-{{ $conversation->id }}" name="cb_{{ $conversation->id }}" value="{{ $conversation->id }}"><label for="cb-{{ $conversation->id }}"><span class="sr-only">{{ __('Select Conversation') }}: {{ $conversation->getSubject() }}</span></label>
                         </td>
                     @endif
                     @if (empty($no_customer))

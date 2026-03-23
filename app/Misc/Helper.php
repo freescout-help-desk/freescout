@@ -203,16 +203,16 @@ class Helper
         'ca' => ['name'          => 'Català',
                  'name_en'       => 'Catalan',
         ],
-        'zh-CN' => ['name'          => '简体中文',
+        'zh-CN' => ['name'          => '简体中文 (Simplified Chinese)',
                     'name_en'       => 'Chinese (Simplified)',
         ],
-        'zh-SG' => ['name'          => '简体中文',
+        'zh-SG' => ['name'          => '简体中文 (Singapore)',
                     'name_en'       => 'Chinese (Singapore)',
         ],
-        'zh-TW' => ['name'          => '简体中文',
+        'zh-TW' => ['name'          => '繁體中文 (Traditional Chinese)',
                     'name_en'       => 'Chinese (Traditional)',
         ],
-        'zh-HK' => ['name'          => '简体中文',
+        'zh-HK' => ['name'          => '繁體中文 (Hong Kong)',
                     'name_en'       => 'Chinese (Hong Kong SAR)',
         ],
         'hr' => ['name'          => 'Hrvatski',
@@ -2436,7 +2436,7 @@ class Helper
         }
 
         //  frame-src https://recaptcha.net; connect-src https://recaptcha.net;
-
+        //  The frame-ancestors is ignored when delivered via a meta element.
         $csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"base-uri 'none'; default-src 'self' ".self::sanitizeCsp($script_domains)."; img-src * 'self' data:; font-src * 'self' data:; style-src * 'self' 'unsafe-inline'; form-action 'self' ".self::sanitizeCsp(\Eventy::filter('csp.form_action', ''), true)."; frame-src * 'self'; script-src 'self' 'nonce-".$nonce."' "
             .self::sanitizeCsp($script_src).";"
             .self::sanitizeCsp(config('app.csp_custom').self::sanitizeCsp(\Eventy::filter('csp.custom', '')))."\">";

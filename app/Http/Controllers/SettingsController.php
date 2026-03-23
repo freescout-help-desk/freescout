@@ -313,7 +313,7 @@ class SettingsController extends Controller
                     $env_value = json_encode($env_value);
                 }
 
-                if (!empty($settings_params[$option_name]['encrypt'])) {
+                if ($env_value !== '' && !empty($settings_params[$option_name]['encrypt'])) {
                     $env_value = encrypt($env_value);
                 }
 
