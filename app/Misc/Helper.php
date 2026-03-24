@@ -1892,6 +1892,7 @@ class Helper
             '10.0.0.0/8', // RFC1918
             '172.16.0.0/12', // RFC1918
             'fd00::/8', // RFC1918
+            '192.168.0.0/16', // RFC1918
             '0.0.0.0',
             '127.0.0.1',
             'localhost',
@@ -1964,9 +1965,6 @@ class Helper
     // Returns mask or false.
     public static function checkIpByMask($ip, $masks = [])
     {
-        if (!strstr($ip, '/')) {
-            return false;
-        }
         foreach ($masks as $mask) {
             if (!strstr($mask, '/')) {
                 continue;
