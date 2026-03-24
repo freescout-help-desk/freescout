@@ -2886,13 +2886,27 @@ class ConversationsController extends Controller
         }
 
         $conversations = [];
+
         if (\Eventy::filter('search.is_needed', true, 'conversations')) {
-            $conversations = $this->searchQuery($user, $q, $filters);
+            // If search string starts with # - try to find conversation by number.
+            if (\Str::startsWith($q, '#')) {
+                $conv_number = ltrim($q, '#');
+                if (is_numeric($conv_number)) {
+                    $conversation = Conversation::where(Conversation::numberFieldName(), $conv_number)->first();
+                    if ($conversation) {
+                        $conversations[] = $conversation;
+                    }
+                }
+            }
+
+            if (!count($conversations)) {
+                $conversations = $this->searchQuery($user, $q, $filters);
+            }
         }
 
         // Jump to the conversation if searching by conversation number.
         if (count($conversations) == 1 
-            && $conversations[0]->number == $q
+            && ($conversations[0]->number == $q || $conversations[0]->number == ltrim($q, '#'))
             && empty($filters)
             && !$request->x_embed
         ) {
