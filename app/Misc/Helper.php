@@ -1464,6 +1464,14 @@ class Helper
     }
 
     /**
+     * Check if the password consists of asterisks only.
+     */
+    public static function isSafePassword($password)
+    {
+        return preg_match("/^\*+$/", $password ?? '');
+    }
+
+    /**
      * Turn all URLs in clickable links.
      * Released under public domain
      * https://gist.github.com/jasny/2000705
