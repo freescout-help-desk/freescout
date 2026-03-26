@@ -16,7 +16,6 @@ class TrustHosts
 
     /**
      * The trusted hosts that have been configured to always be trusted.
-     *
      */
     protected static $trusted_hosts;
 
