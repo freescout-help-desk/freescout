@@ -533,6 +533,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | By default only the host specified in APP_URL is allowed.
+    | To allow additional hosts list them separating by commas.
+    |--------------------------------------------------------------------------
+    */
+    'trusted_hosts' => env('APP_TRUSTED_HOSTS', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
