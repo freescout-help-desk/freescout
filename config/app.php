@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.210',
+    'version' => '1.8.211',
 
     /*
     |--------------------------------------------------------------------------
@@ -530,6 +530,14 @@ return [
     |-------------------------------------------------------------------------
     */
     'remote_host_white_list'    => env('APP_REMOTE_HOST_WHITE_LIST', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | By default only the host specified in APP_URL is allowed.
+    | To allow additional hosts list them separating by commas.
+    |--------------------------------------------------------------------------
+    */
+    'trusted_hosts' => env('APP_TRUSTED_HOSTS', ''),
 
     /*
     |--------------------------------------------------------------------------

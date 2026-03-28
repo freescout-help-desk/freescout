@@ -2330,7 +2330,8 @@ class Conversation extends Model
                 $query->where('conversations.subject', $like_op, $like)
                     ->orWhere('conversations.customer_email', $like_op, $like)
                     ->orWhere('conversations.'.self::numberFieldName(), $q_int)
-                    ->orWhere('conversations.id', $q_int)
+                    // https://github.com/freescout-help-desk/freescout/issues/5298
+                    //->orWhere('conversations.id', $q_int)
 					->orWhere('customers.first_name', $like_op, $like)
                     ->orWhere('customers.last_name', $like_op, $like)
                     ->orWhere(\Helper::isPgSql() ? \DB::raw('(customers.first_name || \' \' || customers.last_name)') : \DB::raw('CONCAT(customers.first_name, " ", customers.last_name)'), $like_op, $like)

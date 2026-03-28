@@ -767,6 +767,10 @@ class Message {
      * @return string
      */
     public function decodeString($string, $encoding): string {
+
+        // Remove null bytes and other control characters.
+        $string = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $string);
+
         switch ($encoding) {
             case IMAP::MESSAGE_ENC_BINARY:
                 if (extension_loaded('imap')) {

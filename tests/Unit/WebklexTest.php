@@ -143,4 +143,11 @@ class WebklexTest extends FixtureWebklexMessage {
         self::assertSame("1\n", $message->getTextBody());
         self::assertSame('<div dir="ltr"><div>1</div></div>', $message->getHtmlBody());
     }
+
+    // https://github.com/freescout-help-desk/freescout/issues/5292
+    public function testNullBytesInBody() {
+        $message = $this->getFixture("message-4-null-bytes.eml");
+
+        self::assertStringEndsWith("</html>", $message->getHtmlBody());
+    }
 }
