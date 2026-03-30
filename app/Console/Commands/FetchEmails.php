@@ -1408,7 +1408,8 @@ class FetchEmails extends Command
                 libxml_use_internal_errors(true);
                 //$dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
                 //$dom->loadHTML(\Helper::mbConvertEncodingHtmlEntities($html));
-                $dom->loadHTML(\Symfony\Polyfill\Mbstring\Mbstring::mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8') ?: $html);
+                // LIBXML_PARSEHUGE - https://github.com/freescout-help-desk/freescout/issues/5304
+                $dom->loadHTML(\Symfony\Polyfill\Mbstring\Mbstring::mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8') ?: $html, LIBXML_PARSEHUGE);
                 libxml_use_internal_errors(false);
                 $bodies = $dom->getElementsByTagName('body');
                 if ($bodies->length == 1) {
