@@ -221,6 +221,7 @@
             "Psy\\VarDumper\\": "overrides/psy/psysh/src/VarDumper/",
             "TijsVerkoyen\\CssToInlineStyles\\": "overrides/tijsverkoyen/css-to-inline-styles/src/",
             "TijsVerkoyen\\CssToInlineStyles\\Css\\Property\\": "overrides/tijsverkoyen/css-to-inline-styles/src/Css/Property/",
+            "Html2Text\\": "overrides/html2text/html2text/src/",
             "PHPUnit\\Runner\\": "overrides/phpunit/phpunit/src/Runner/"
         },
         "exclude-from-classmap": [
@@ -512,6 +513,7 @@
             "vendor/erusev/parsedown/Parsedown.php",
             "vendor/tijsverkoyen/css-to-inline-styles/src/CssToInlineStyles.php",
             "vendor/tijsverkoyen/css-to-inline-styles/src/Css/Property/Processor.php",
+            "vendor/html2text/html2text/src/Html2Text.php",
             "vendor/phpunit/phpunit/src/Runner/PhptTestCase.php"
         ]
     },
