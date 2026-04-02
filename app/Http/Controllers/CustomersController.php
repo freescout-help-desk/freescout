@@ -517,6 +517,7 @@ class CustomersController extends Controller
         $customer2 = Customer::find($request->customer2_id);
 
         $this->checkLimitVisibility($customer);
+        $this->checkLimitVisibility($customer2);
 
         // Ensure customers are different
         if ($id === $customer2->id) {
