@@ -172,7 +172,7 @@ class OpenController extends Controller
         }
 
         // Only allow download if the attachment is public or if the token matches the hash of the contents
-        if ($token != $attachment->getToken() && (bool)$attachment->public !== true) {
+        if ($token != $attachment->getToken() && $attachment->token_type != Attachment::TOKEN_TYPE_LEGACY) {
             return \Helper::denyAccess();
         }
 
