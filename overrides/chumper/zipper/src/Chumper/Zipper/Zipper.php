@@ -63,7 +63,7 @@ class Zipper
      */
     public function __destruct()
     {
-        if (null !== $this->repository) {
+        if (null !== $this->repository && !is_string($this->repository)) {
             $this->repository->close();
         }
     }
