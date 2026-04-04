@@ -2397,10 +2397,16 @@ class ConversationsController extends Controller
                 $customer = Customer::getByEmail($request->customer_email);
 
                 if ($customer) {
-                    // Previous conversations
-                    $prev_conversations = [];
 
                     $mailbox = Mailbox::find($request->mailbox_id);
+
+                    if (!$mailbox || !$mailbox->userHasAccess($user->id)) {
+                        $response['msg'] = __('Not enough permissions');
+                        break;
+                    }
+
+                    // Previous conversations
+                    $prev_conversations = [];
 
                     if ($mailbox && $mailbox->userHasAccess($user->id)) {
                         $conversation_id = (int)$request->conversation_id ?? 0;
