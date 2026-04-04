@@ -122,6 +122,10 @@ class OpenController extends Controller
         $conversation = Conversation::findOrFail($conversation_id);
         $thread = Thread::findOrFail($thread_id);
 
+        if ($thread->conversation_id !== (int)$conversation_id) {
+            return \Helper::denyAccess();
+        }
+
         // We only track the first opening
         if (empty($thread->opened_at)) {
             $thread->opened_at = date('Y-m-d H:i:s');
