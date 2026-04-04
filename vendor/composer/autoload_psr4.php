@@ -134,7 +134,7 @@ return array(
     'Illuminate\\Auth\\Access\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Auth/Access'),
     'Illuminate\\Auth\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Auth'),
     'Illuminate\\' => array($vendorDir . '/laravel/framework/src/Illuminate'),
-    'Html2Text\\' => array($vendorDir . '/html2text/html2text/src', $vendorDir . '/html2text/html2text/test'),
+    'Html2Text\\' => array($baseDir . '/overrides/html2text/html2text/src', $vendorDir . '/html2text/html2text/src', $vendorDir . '/html2text/html2text/test'),
     'GuzzleHttp\\Psr7\\' => array($baseDir . '/overrides/guzzlehttp/psr7/src', $vendorDir . '/guzzlehttp/psr7/src'),
     'GuzzleHttp\\Promise\\' => array($baseDir . '/overrides/guzzlehttp/promises/src', $vendorDir . '/guzzlehttp/promises/src'),
     'GuzzleHttp\\Handler\\' => array($baseDir . '/overrides/guzzlehttp/guzzle/src/Handler'),
