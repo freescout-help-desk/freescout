@@ -28,6 +28,7 @@
                     </ul>
                 </div>
             @endif
+            @action('mailbox.view.sidebar_buttons', $mailbox)
             <a class="btn btn-trans" href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" aria-label="{{ __("New Conversation") }}" data-toggle="tooltip" title="{{ __("New Conversation") }}" role="button"><i class="glyphicon glyphicon-envelope"></i></a>
         </div>
     @endif
