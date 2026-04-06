@@ -88,7 +88,7 @@ class MailboxesController extends Controller
 
         $request_data = [
             'email'   => $request->email,
-            'name'    => trim(strip_tags($request->name)),
+            'name'    => trim(\Helper::stripTags($request->name)),
             'ratings' => $request->ratings ?? 1,
         ];
 
@@ -613,7 +613,7 @@ class MailboxesController extends Controller
 
         if ($request->auto_reply_enabled) {
             $post = $request->all();
-            $post['auto_reply_message'] = strip_tags($post['auto_reply_message']);
+            $post['auto_reply_message'] = \Helper::stripTags($post['auto_reply_message']);
             $validator = Validator::make($post, [
                 'auto_reply_subject' => 'required|string|max:128',
                 'auto_reply_message' => 'required|string',

@@ -118,7 +118,7 @@ class BroadcastNotification extends Notification implements ShouldQueue
 
         // Text and url for the browser push notification
         if (in_array(Subscription::MEDIUM_BROWSER, $mediums)) {
-            $data['browser']['text'] = strip_tags($thread->getActionDescription($thread->conversation->number));
+            $data['browser']['text'] = \Helper::stripTags($thread->getActionDescription($thread->conversation->number));
             $data['browser']['url'] = $thread->conversation->url(null, $thread->id, ['mark_as_read' => $db_notification->id]);
         }
 
