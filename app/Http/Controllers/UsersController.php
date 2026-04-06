@@ -91,9 +91,7 @@ class UsersController extends Controller
             'email' => $request->email,
         ];
 
-        $user = new User();
-
-        $user->fill($data);
+        $user = User::create($data, ['without_password' => true]);
 
         if (!$auth_user->can('changeRole', $user)) {
             $user->role = User::ROLE_USER;
