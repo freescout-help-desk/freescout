@@ -2053,10 +2053,7 @@ class Helper
         $file_name = preg_replace('/[' . $escaped_regex . ']/', '_', $file_name);
         $file_name = preg_replace("/[\t\r\n]/", '', $file_name);
         // Remove unprintable characters and invalid unicode characters.
-        // https://github.com/freescout-help-desk/freescout/issues/4681
-        $file_name = preg_replace("#\p{C}+#u", '', $file_name);
-        // https://github.com/freescout-help-desk/freescout/issues/2123#issuecomment-2775392740
-        $file_name = preg_replace("#\p{Cf}+#u", '', $file_name);
+        $file_name = self::stripInvalidUnicodeChars($file_name);
 
         // Check extension.
         $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
@@ -2544,5 +2541,18 @@ class Helper
             self::logException($e);
             return $string;
         }
+    }
+
+    public static function stripInvalidUnicodeChars($string)
+    {
+        // Remove unprintable characters and invalid unicode characters.
+        // https://github.com/freescout-help-desk/freescout/issues/4681
+        $string = preg_replace("#\p{C}+#u", '', $string);
+        // https://github.com/freescout-help-desk/freescout/issues/2123#issuecomment-2775392740
+        $string = preg_replace("#\p{Cf}+#u", '', $string);
+        // Remove Unicode control characters and null bytes
+        $string = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $string);
+
+        return $string;
     }
 }
