@@ -570,7 +570,11 @@ class Helper
         // <script src="/storage/attachment/8/1/1/test.js?id=7&token=c4786c4497db3c6254a0c310623a43c3">
         // <iframe src="/storage/attachment/8/1/1/1.html?id=95&token=3dced8dc80305031b358119f3d156204"></iframe>
         // <object data="/storage/attachment/8/1/1/1.html?id=95&token=3dced8dc80305031b358119f3d156204" type="text/html"></object>
-        $tags = ['script', 'form', 'iframe', 'object'];
+        $tags = [
+            'script', 'form', 'iframe', 'object',
+            // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-fh99-wr77-pxq3
+            'style',
+        ];
         $attrs = 'src|data';
 
         $tags = array_diff($tags, $allowed_tags);
