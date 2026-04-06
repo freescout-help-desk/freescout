@@ -548,7 +548,7 @@ class UsersController extends Controller
 
                     $user->deleteUser($auth_user, $request->assign_user);
 
-                    \Session::flash('flash_success_floating', __('User deleted').': '.$user->getFullName());
+                    \Session::flash('flash_success_floating', __('User deleted').': '.htmlspecialchars($user->getFullName()));
 
                     $response['status'] = 'success';
                 }
