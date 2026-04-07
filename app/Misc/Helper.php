@@ -571,7 +571,12 @@ class Helper
         // <iframe src="/storage/attachment/8/1/1/1.html?id=95&token=3dced8dc80305031b358119f3d156204"></iframe>
         // <object data="/storage/attachment/8/1/1/1.html?id=95&token=3dced8dc80305031b358119f3d156204" type="text/html"></object>
         $tags = [
-            'script', 'form', 'iframe', 'object',
+            'script',
+            'form',
+            'iframe',
+            'link',
+            'object',
+            'meta',
             // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-fh99-wr77-pxq3
             'style',
         ];
@@ -2053,7 +2058,7 @@ class Helper
         $file_name = preg_replace('/[' . $escaped_regex . ']/', '_', $file_name);
         $file_name = preg_replace("/[\t\r\n]/", '', $file_name);
         // Remove unprintable characters and invalid unicode characters.
-        $file_name = self::stripInvalidUnicodeChars($file_name);
+        $file_name = self::stripUnprintableAndUnsafeChars($file_name);
 
         // Check extension.
         $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
@@ -2543,15 +2548,29 @@ class Helper
         }
     }
 
-    public static function stripInvalidUnicodeChars($string)
+    public static function stripUnprintableChars($string)
     {
         // Remove unprintable characters and invalid unicode characters.
         // https://github.com/freescout-help-desk/freescout/issues/4681
         $string = preg_replace("#\p{C}+#u", '', $string);
         // https://github.com/freescout-help-desk/freescout/issues/2123#issuecomment-2775392740
         $string = preg_replace("#\p{Cf}+#u", '', $string);
+
+        return $string;
+    }
+
+    public static function stripUnsafeChars($string)
+    {
         // Remove Unicode control characters and null bytes
         $string = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $string);
+
+        return $string;
+    }
+
+    public static function stripUnprintableAndUnsafeChars($string)
+    {
+        $string = self::stripUnprintableChars($string);
+        $string = self::stripUnsafeChars($string);
 
         return $string;
     }

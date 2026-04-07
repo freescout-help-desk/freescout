@@ -5,7 +5,7 @@
     <div class="dropdown customer-profile-menu">
         <a href="#" class="dropdown-toggle glyphicon glyphicon-cog link-grey" data-toggle="dropdown"></a>
         <ul class="dropdown-menu dropdown-menu-right">
-            {!! $profile_menu !!}
+            {!! safe_raw_html($profile_menu) !!}
         </ul>
     </div>
 @endif

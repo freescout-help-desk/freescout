@@ -2,7 +2,7 @@
     @section('body_bottom')
         @parent
         <div class="alert alert-success alert-floating">
-            <div><i class="glyphicon glyphicon-ok"></i>{!! session('flash_success_floating') !!}</div>
+            <div><i class="glyphicon glyphicon-ok"></i>{!! safe_raw_html(session('flash_success_floating')) !!}</div>
         </div>
     @endsection
 @endif
@@ -10,7 +10,7 @@
     @section('body_bottom')
         @parent
         <div class="alert alert-warning alert-floating">
-            <div>{!! session('flash_warning_floating') !!}</div>
+            <div>{!! safe_raw_html(session('flash_warning_floating')) !!}</div>
         </div>
     @endsection
 @endif
@@ -18,7 +18,7 @@
     @section('body_bottom')
         @parent
         <div class="alert alert-danger alert-floating">
-            <div><i class="glyphicon glyphicon-exclamation-sign"></i>{!! session('flash_error_floating') !!}</div>
+            <div><i class="glyphicon glyphicon-exclamation-sign"></i>{!! safe_raw_html(session('flash_error_floating')) !!}</div>
         </div>
     @endsection
 @endif
@@ -29,7 +29,7 @@
             <div class="alert alert-{{ $flash['type'] }} alert-floating alert-noautohide">
                 <div>
                     @if (!empty($flash['unescaped']))
-                        {!! $flash['text'] !!}
+                        {!! safe_raw_html($flash['text']) !!}
                     @else
                         {{ $flash['text'] }}
                     @endif

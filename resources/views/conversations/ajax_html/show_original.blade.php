@@ -13,7 +13,7 @@
 		@if (!$fetched)
 			<div class="alert alert-info alert-narrow margin-bottom-0">{{ __('The original message could not be loaded from mail server, below is the latest truncated copy stored in database.') }} (<a href="{{ config('app.freescout_repo') }}/wiki/FAQ#why-does-show-original-window-shows-truncated-message-without-previous-history" target="_blank">{{ __('read more') }}</a>)</div>
 		@endif
-		<iframe sandbox="" srcdoc="{!! str_replace('"', '&quot;', $body_preview) !!}" frameborder="0" class="preview-iframe tab-body"></iframe>
+		<iframe sandbox="" srcdoc="{!! safe_raw_html(str_replace('"', '&quot;', $body_preview)) !!}" frameborder="0" class="preview-iframe tab-body"></iframe>
 	</div>
 	<div id="tab_body_{{ $tabs_unique }}" class="tab-pane fade">
 		<pre class="pre-wrap">{{ $thread->getBodyOriginal() }}</pre>

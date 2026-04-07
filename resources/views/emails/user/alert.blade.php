@@ -4,7 +4,7 @@
 
 	<div style="color:#2a3b47;font:500 20px/26px 'Helvetica Neue',Helvetica,Arial,sans-serif">
 		@if (!empty($title))
-			{!! $title !!}
+			{{ $title }}
 		@else
 			{{ __('System Alert') }}
 		@endif

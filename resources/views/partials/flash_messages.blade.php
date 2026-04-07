@@ -1,7 +1,7 @@
 @if (session('flash_success') || session('flash_success_unescaped'))
     <div class="alert alert-success">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        {{ session('flash_success') }}{!! session('flash_success_unescaped') !!}
+        {{ session('flash_success') }}{!! safe_raw_html(session('flash_success_unescaped')) !!}
     </div>
 @endif
 @if (session('flash_warning'))
@@ -19,7 +19,7 @@
 @if (session('flash_error_unescaped'))
     <div class="alert alert-danger">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        {!! session('flash_error_unescaped') !!}
+        {!! safe_raw_html(session('flash_error_unescaped')) !!}
     </div>
 @endif
 
@@ -33,7 +33,7 @@
      	<div class="alert alert-{{ $flash['type'] }}">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
      		@if (!empty($flash['unescaped']))
-        		{!! $flash['text'] !!}
+        		{!! safe_raw_html($flash['text']) !!}
         	@else
         		{{ $flash['text'] }}
         	@endif

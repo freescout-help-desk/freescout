@@ -237,7 +237,7 @@
     <div id="delete_user_modal" class="hidden">
         <div>
         <div class="text-center">
-            <div class="col-sm-10 col-sm-offset-1 text-large margin-top-10 margin-bottom">{!! __("Deleting :name will deactivate workflows they are tied to and assign their conversations to:", ['name' => '<strong>'.htmlspecialchars($user->getFullName()).'</strong>']) !!}</div>
+            <div class="col-sm-10 col-sm-offset-1 text-large margin-top-10 margin-bottom">{!! __h("Deleting :name will deactivate workflows they are tied to and assign their conversations to:", ['name' => '<strong>'.htmlspecialchars($user->getFullName()).'</strong>']) !!}</div>
             <form class="assign_form form-horizontal">
                 @foreach (App\Mailbox::all() as $mailbox)
                     <div class="col-sm-9 col-sm-offset-1">
@@ -257,10 +257,10 @@
                     </div>
                 @endforeach
             </form>
-            <div class="col-sm-12 text-large margin-top">{!! __("If you are sure, type :delete and click the red button.", ['delete' => '<span class="text-danger">DELETE</span>']) !!}</div>
+            <div class="col-sm-12 text-large margin-top">{!! __h("If you are sure, type :delete and click the red button.", ['delete' => '<span class="text-danger">DELETE</span>']) !!}</div>
             <div class="col-sm-6 col-sm-offset-3 margin-top-10 margin-bottom">
                 <div class="input-group">
-                    <input type="text" class="form-control input-delete-user" placeholder="{!! __("Type :delete", ['delete' => '&quot;DELETE&quot;']) !!}">
+                    <input type="text" class="form-control input-delete-user" placeholder="{!! __h("Type :delete", ['delete' => '&quot;DELETE&quot;']) !!}">
                     <span class="input-group-btn">
                         <button class="btn btn-danger button-delete-user" disabled="disabled"><i class="glyphicon glyphicon-ok"></i></button>
                     </span>

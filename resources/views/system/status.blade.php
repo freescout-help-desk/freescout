@@ -151,7 +151,7 @@
     @action('system.status.after_functions')
 
     <h3 id="permissions">{{ __('Permissions') }}</h3>
-    {!! __('These folders must be writable by web server user (:user).', ['user' => '<strong>'.(function_exists('get_current_user') ? get_current_user() : '').'</strong>']) !!} {{ __('Recommended permissions') }}: <strong>775</strong>
+    {!! __h('These folders must be writable by web server user (:user).', ['user' => '<strong>'.(function_exists('get_current_user') ? htmlspecialchars(get_current_user()) : '').'</strong>']) !!} {{ __('Recommended permissions') }}: <strong>775</strong>
     <table class="table table-dark-header table-bordered table-responsive table-narrow">
         <tbody>
             @foreach ($permissions as $perm_path => $perm)
@@ -226,10 +226,10 @@
 
     <h3 id="cron" class="margin-top-40">Cron Commands</h3>
     <p>
-        {!! __('Make sure that you have the following line in your crontab:') !!}<br/>
+        {{ __('Make sure that you have the following line in your crontab:') }}<br/>
         <code>* * * * * php {{ base_path() }}/artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code>
         <br/>
-        {!! __('Alternatively cron job can be executed by requesting the following URL every minute (this method is not recommended as some features may not work as expected, use it at your own risk)') !!}:<br/>
+        {{ __('Alternatively cron job can be executed by requesting the following URL every minute (this method is not recommended as some features may not work as expected, use it at your own risk)') }}:<br/>
         <a href="{{ route('system.cron', ['hash' => \Helper::getWebCronHash()]) }}" target="_blank">{{ route('system.cron', ['hash' => \Helper::getWebCronHash()]) }}</a>
     </p>
     <table class="table table-dark-header table-bordered table-responsive">

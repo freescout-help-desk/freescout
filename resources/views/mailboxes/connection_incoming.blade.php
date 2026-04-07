@@ -26,7 +26,7 @@
                     {{ csrf_field() }}
 
                     <div class="descr-block">
-                        {!! __("You can read more about fetching emails :%a_begin%here:%a_end%.", ['%a_begin%' => '<a href="'.config('app.freescout_repo').'/wiki/Fetching-Emails" target="_blank">', '%a_end%' =>'</a>']) !!}
+                        {!! __("You can read more about fetching emails :%a_begin%here:%a_end%.", ['%a_begin%' => '<a href="'.htmlspecialchars(config('app.freescout_repo')).'/wiki/Fetching-Emails" target="_blank">', '%a_end%' =>'</a>']) !!}
                     </div>
 
                     <div class="form-group margin-top">
@@ -208,7 +208,7 @@
 
                                 @include('partials/field_error', ['field'=>'in_validate_cert'])
 
-                                <div class="form-help">{!! __("Make sure to save settings before checking connection.") !!}</div>
+                                <div class="form-help">{{ __("Make sure to save settings before checking connection.") }}</div>
                             </div>
                         </div>
 
@@ -218,7 +218,7 @@
 
                                 <div class="col-sm-6">
                                     <input id="imap_sent_folder" type="text" class="form-control input-sized" name="imap_sent_folder" value="{{ old('imap_sent_folder', $mailbox->imap_sent_folder) }}" maxlength="50" placeholder="Sent">
-                                    <div class="form-help">{!! __("Enter IMAP folder name to save outgoing replies if your mail service provider does not do it automatically (Gmail does it), otherwise leave it blank.") !!}</div>
+                                    <div class="form-help">{{ __("Enter IMAP folder name to save outgoing replies if your mail service provider does not do it automatically (Gmail does it), otherwise leave it blank.") }}</div>
                                 </div>
                             </div>
                             <hr/>

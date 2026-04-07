@@ -66,7 +66,7 @@
 
     <div class="row-container margin-top">
         <p class="text-help margin-bottom col-xs-12 padding-0">
-            {!! __('Want to be notified by email when new modules are released?') !!} <a href="{{ \Config::get('app.freescout_url') }}/subscribe/" target="_blank">{{ __('Subscribe') }}</a>
+            {{ __('Want to be notified by email when new modules are released?') }} <a href="{{ \Config::get('app.freescout_url') }}/subscribe/" target="_blank">{{ __('Subscribe') }}</a>
         </p>
         @foreach ($modules_directory as $module)
             @include('modules/partials/module_card')
