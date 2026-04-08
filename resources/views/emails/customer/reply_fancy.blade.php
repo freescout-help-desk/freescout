@@ -71,7 +71,7 @@
 
                         @action('reply_email.before_signature', $thread, $loop, $threads, $conversation, $mailbox, $threads_count)
                         @if ($thread->source_via == App\Thread::PERSON_USER && \Eventy::filter('reply_email.include_signature', true, $thread))
-                            <br>{!! $conversation->getSignatureProcessed(['thread' => $thread]) !!}
+                            <br>{!! $conversation->getSignatureProcessed(['thread' => $thread], true) !!}
                         @endif
                         @action('reply_email.after_signature', $thread, $loop, $threads, $conversation, $mailbox, $threads_count)
                         <br><br>
@@ -84,7 +84,7 @@
 		@endforeach
 		@if (\App\Option::get('email_branding'))
             <div height="" style="height:30px; font-size:12px; line-height:18px; font-family:Arial,'Helvetica Neue',Helvetica,Tahoma,sans-serif; color: #aaaaaa; @if($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
-				{!! __('Support powered by :app_name — Free open source help desk & shared mailbox', ['app_name' => '<a href="https://landing.freescout.net">'.\Config::get('app.name').'</a>']) !!}
+				{!! __h('Support powered by :app_name — Free open source help desk & shared mailbox', ['app_name' => '<a href="https://landing.freescout.net">'.htmlspecialchars(\Config::get('app.name')).'</a>']) !!}
 			</div>
 		@endif
 		<div style="height:0; font-size:0px; line-height:0px; color:#ffffff;">	                    	

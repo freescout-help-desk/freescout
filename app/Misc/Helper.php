@@ -565,6 +565,29 @@ class Helper
         return $text;
     }
 
+    public static function stripTagsFromArray($data, $fields = [])
+    {
+        if (empty($fields)) {
+            $fields = array_keys($data);
+        }
+        foreach ($fields as $field) {
+            if (!array_key_exists($field, $data)) {
+                continue;
+            }
+            if (is_array($data[$field])) {
+                foreach ($data[$field] as $sub_field => $sub_data) {
+                    $data[$field][$sub_field] = self::stripTagsFromArray($sub_data);
+                }
+            } else {
+                if ($data[$field] !== null) {
+                    $data[$field] = \Helper::stripTags($data[$field]);
+                }
+            }
+        }
+
+        return $data;
+    }
+
     public static function stripDangerousTags($html, $allowed_tags = [])
     {
         // <script src="/storage/attachment/8/1/1/test.js?id=7&token=c4786c4497db3c6254a0c310623a43c3">
