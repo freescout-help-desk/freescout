@@ -1,14 +1,13 @@
-<ifModule mod_headers.c>
-	# The list should be in sync with /config/app.php and nginx config.
-	<FilesMatch "\.((?!(jpg|jpeg|jfif|pjpeg|pjp|apng|bmp|gif|ico|cur|png|tif|tiff|webp|pdf|txt|diff|patch|json|mp3|wav|ogg|wma)).)*$">
-		ForceType application/octet-stream
-		Header set Content-Disposition attachment
-	</FilesMatch>
-	# SVG image is the special case: it is an image but we can't
-	# let it open in the browser as it may content malicious code
-	# and it requires a special "image/svg+xml" content type to be set.
-	<FilesMatch "\.svg$">
-		ForceType image/svg+xml
-		Header set Content-Disposition attachment
-	</FilesMatch>
-</IfModule>
+# The list should be in sync with /config/app.php and nginx config.
+<FilesMatch "\.((?!(jpg|jpeg|jfif|pjpeg|pjp|apng|bmp|gif|ico|cur|png|tif|tiff|webp|pdf|txt|diff|patch|json|mp3|wav|ogg|wma)).)*$">
+	ForceType application/octet-stream
+	Header set Content-Disposition attachment
+</FilesMatch>
+
+# SVG image is the special case: it is an image but we can't
+# let it open in the browser as it may content malicious code
+# and it requires a special "image/svg+xml" content type to be set.
+<FilesMatch "\.svg$">
+	ForceType image/svg+xml
+	Header set Content-Disposition attachment
+</FilesMatch>
