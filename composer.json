@@ -357,6 +357,7 @@
             "vendor/devfactory/minify/src/Providers/BaseProvider.php",
             "vendor/barryvdh/laravel-debugbar/src/DataFormatter/QueryFormatter.php",
             "vendor/barryvdh/laravel-debugbar/src/DataCollector/QueryCollector.php",
+            "vendor/barryvdh/laravel-debugbar/src/DataCollector/ViewCollector.php",
             "vendor/symfony/process/Process.php",
             "vendor/symfony/http-kernel/UriSigner.php",
             "vendor/symfony/http-kernel/Exception/HttpException.php",
