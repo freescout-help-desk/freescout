@@ -422,6 +422,17 @@ class MailboxesController extends Controller
         } else {
             $params = $request->all();
         }
+
+        // Leave only allowed fields.
+        $params = \Helper::filterArrayByKeys($params, [
+            'out_method',
+            'out_server',
+            'out_port',
+            'out_username',
+            'out_encryption',
+            'send_test_to',
+        ]);
+
         $mailbox->fill($params);
         $mailbox->save();
 
@@ -496,6 +507,18 @@ class MailboxesController extends Controller
         }
 
         \Eventy::action('mailbox.incoming_settings_before_save', $mailbox, $request);
+
+        // Leave only allowed fields.
+        $params = \Helper::filterArrayByKeys($params, [
+            'in_protocol',
+            'in_server',
+            'in_port',
+            'in_username',
+            'in_encryption',
+            'in_imap_folders',
+            'in_validate_cert',
+            'imap_sent_folder',
+        ]);
 
         $mailbox->fill($params);
 

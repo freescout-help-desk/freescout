@@ -2597,4 +2597,15 @@ class Helper
 
         return $string;
     }
+
+    public static function filterArrayByKeys($list, $allowed_keys)
+    {
+        foreach ($list as $key => $value) {
+            if (!in_array($key, $allowed_keys)) {
+                unset($list[$key]);
+            }
+        }
+
+        return $list;
+    }
 }
