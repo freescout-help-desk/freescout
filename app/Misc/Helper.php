@@ -2608,4 +2608,67 @@ class Helper
 
         return $list;
     }
+
+    /**
+     * Check if the visitor's browser supports CSP (Content Security Policy).
+     */
+    public static function isCspSupported($user_agent = '')
+    {
+        if (!$user_agent) {
+            $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        }
+
+        // Check for Internet Explorer (any version) - NO support.
+        if (preg_match('/MSIE [1-9]\.|Trident\/[1-7]\./i', $user_agent)) {
+            return false; // IE 1-9 or IE 10-11 (Trident 7.0 has limited/no support)
+        }
+
+        // Check for Edge Legacy (EdgeHTML) - partial support, but better to block
+        if (preg_match('/Edge\/[1-9][0-9]?\./i', $user_agent) && !preg_match('/Edg\//i', $user_agent)) {
+            return false; // Legacy Edge (not Chromium-based)
+        }
+
+        // Check for older Safari versions (before iOS 15.4 / Safari 15.4).
+        if (preg_match('/Safari\/(\d+)\./i', $user_agent, $matches)) {
+            $safariVersion = intval($matches[1]);
+
+            // Safari version numbers: Safari 15.4 = version 604.1.15 (this is complicated)
+            // Better to check iOS version or macOS Safari version
+            if (preg_match('/iPhone OS ([0-9_]+)/i', $user_agent, $iosMatches)) {
+                $iosVersion = str_replace('_', '.', $iosMatches[1]);
+                if (version_compare($iosVersion, '15.4', '<')) {
+                    return false; // iOS Safari before 15.4
+                }
+            } elseif (preg_match('/Mac OS X/i', $user_agent) && $safariVersion < 604) {
+                return false; // Older macOS Safari
+            }
+        }
+
+        // Check for Firefox (CSP meta supported since Firefox 23+).
+        if (preg_match('/Firefox\/(\d+)\./i', $user_agent, $matches)) {
+            $firefoxVersion = intval($matches[1]);
+            if ($firefoxVersion < 23) {
+                return false; // Firefox before version 23
+            }
+        }
+
+        // Check for Chrome (supported since Chrome 25+).
+        if (preg_match('/Chrome\/(\d+)\./i', $user_agent, $matches)) {
+            $chromeVersion = intval($matches[1]);
+            if ($chromeVersion < 25) {
+                return false; // Chrome before version 25
+            }
+        }
+
+        // Check for Opera (supported since Opera 15+).
+        if (preg_match('/Opera\/(\d+)\./i', $user_agent, $matches)) {
+            $operaVersion = intval($matches[1]);
+            if ($operaVersion < 15) {
+                return false; // Opera before version 15
+            }
+        }
+
+        // Default to true for modern browsers.
+        return true;
+    }
 }
