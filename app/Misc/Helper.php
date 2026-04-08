@@ -1459,7 +1459,7 @@ class Helper
     /**
      * Check if host is available on the port specified.
      */
-    public static function checkPort($host, $port, $timeout = 10)
+    public static function checkPort($host, $port)
     {
         $connection = @fsockopen($host, $port);
         if (is_resource($connection)) {

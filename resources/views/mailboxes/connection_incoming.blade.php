@@ -75,7 +75,7 @@
                             <div class="col-sm-6">
                                 <input id="in_server" type="text" class="form-control input-sized" name="in_server" value="{{ old('in_server', $mailbox->in_server) }}" maxlength="255">
 
-                                {{--@include('partials/field_error', ['field'=>'in_server'])--}}
+                                @include('partials/field_error', ['field'=>'in_server'])
                             </div>
                         </div>
 

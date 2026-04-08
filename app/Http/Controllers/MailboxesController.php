@@ -402,7 +402,7 @@ class MailboxesController extends Controller
 
         if ($request->out_method == Mailbox::OUT_METHOD_SMTP) {
             $validator = Validator::make($request->all(), [
-                'out_server'          => 'required|string|max:255',
+                'out_server'          => 'required|string|max:255|safehost',
                 'out_port'            => 'required|integer',
                 'out_username'        => 'nullable|string|max:255',
                 'out_password'        => 'nullable|string|max:255',
@@ -464,13 +464,22 @@ class MailboxesController extends Controller
         ];
 
         $validator = Validator::make($fields, [
-            'in_server'   => 'required',
+            //'in_server'   => 'required',
             'in_port'     => 'required',
             'in_username' => 'required',
             'in_password' => 'required',
         ]);
 
-        return view('mailboxes/connection_incoming', ['mailbox' => $mailbox, 'flashes' => $this->mailboxActiveWarning($mailbox)])->withErrors($validator);
+        $response = view('mailboxes/connection_incoming', ['mailbox' => $mailbox, 'flashes' => $this->mailboxActiveWarning($mailbox)]);
+
+        if (empty($request->session()->get('errors'))) {
+            if (empty($mailbox->in_server)) {
+                $validator->errors()->add('in_server', 'dummy');
+            }
+            $response->withErrors($validator);
+        }
+
+        return $response;
     }
 
     /**
@@ -481,18 +490,18 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
         $this->authorize('admin', $mailbox);
 
-        // $validator = Validator::make($request->all(), [
-        //     'in_server'   => 'nullable|string|max:255',
-        //     'in_port'     => 'nullable|integer',
-        //     'in_username' => 'nullable|string|max:100',
-        //     'in_password' => 'nullable|string|max:255',
-        // ]);
+        $validator = Validator::make($request->all(), [
+            'in_server'   => 'required|string|max:255|safehost',
+            'in_port'     => 'required|integer',
+            'in_username' => 'required|string|max:100',
+            'in_password' => 'required|string|max:255',
+        ]);
 
-        // if ($validator->fails()) {
-        //     return redirect()->route('mailboxes.connection.incoming', ['id' => $id])
-        //                 ->withErrors($validator)
-        //                 ->withInput();
-        // }
+        if ($validator->fails()) {
+            return redirect()->route('mailboxes.connection.incoming', ['id' => $id])
+                        ->withErrors($validator)
+                        ->withInput();
+        }
 
         // Checkboxes
         $request->merge([
