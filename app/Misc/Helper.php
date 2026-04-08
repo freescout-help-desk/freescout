@@ -2108,7 +2108,7 @@ class Helper
 
     public static function getWebCronHash()
     {
-        return md5(config('app.key').'web_cron_hash');
+        return hash_hmac('sha512', 'web_cron_hash', config('app.key'));
     }
 
     public static function getProtocol($url = '')

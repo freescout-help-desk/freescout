@@ -399,7 +399,12 @@ class SystemController extends Controller
         \Artisan::call('schedule:run', [], $outputLog);
         $output = $outputLog->fetch();
 
-        return response($output, 200)->header('Content-Type', 'text/plain');
+        preg_match_all("#'artisan'\s+([^\s>]+)#", $output ?? '', $m);
+
+        $commands = $m[1] ?? [];
+        $result = count($commands)." commands executed:\r\n".(count($commands) ? '- ' : '').implode("\r\n- ", $commands);
+
+        return response($result, 200)->header('Content-Type', 'text/plain');
     }
 
     /**
