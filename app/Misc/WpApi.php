@@ -40,12 +40,14 @@ class WpApi
             return $client->request('POST', $url, \Helper::setGuzzleDefaultOptions([
                 'connect_timeout' => 10,
                 'form_params' => $params,
+                'allow_redirects' => ['strict' => true],
             ]));
         } else {
             $params['v'] = config('app.version');
             return $client->request('GET', $url, \Helper::setGuzzleDefaultOptions([
                 'connect_timeout' => 10,
                 'query' => $params,
+                'allow_redirects' => ['strict' => true],
             ]));
         }
     }

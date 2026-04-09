@@ -727,7 +727,7 @@ class Thread extends Model
         $did_this = \Eventy::filter('thread.action_text', $did_this, $this, $conversation_number, $escape, $viewed_by_user);
 
         if ($strip_tags) {
-            $did_this = strip_tags($did_this);
+            $did_this = \Helper::stripTags($did_this);
         }
 
         if ($person) {

@@ -45,7 +45,7 @@
                 <input id="mail_host" type="text" class="form-control input-sized" name="settings[mail_host]" value="{{ old('settings.mail_host', $settings['mail_host']) }}" maxlength="255"  @if ($settings['mail_driver'] == \MailHelper::MAIL_DRIVER_SMTP) required @endif autofocus>
                 @if (strstr($settings['mail_host'] ?? '', '.gmail.'))
                     <div class="form-help">
-                        {!! __("Make sure to :%link_start%enable less secure apps:%link_end% in your Google account to send emails from Gmail.", ['%link_start%' => '<a href="https://myaccount.google.com/lesssecureapps?pli=1" target="_blank">', '%link_end%' => '</a>']) !!}
+                        {!! __h("Make sure to :%link_start%enable less secure apps:%link_end% in your Google account to send emails from Gmail.", ['%link_start%' => '<a href="https://myaccount.google.com/lesssecureapps?pli=1" target="_blank">', '%link_end%' => '</a>']) !!}
                     </div>
                 @endif
                 @include('partials/field_error', ['field'=>'settings.mail_host'])
@@ -103,7 +103,7 @@
                     <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…">{{ __('Send Test') }}</button>
                 </span>
             </div>
-            <div class="form-help">{!! __("Make sure to save settings before testing.") !!}</div>
+            <div class="form-help">{{ __("Make sure to save settings before testing.") }}</div>
             <pre class="alert alert-warning hidden" id="send_test_log"></pre>
         </div>
     </div>

@@ -3,7 +3,7 @@
         <div class="thread-message">
             <div class="thread-header">
                 <div class="thread-title">
-                    {!! $thread->getActionText('', true, false, null, view('conversations/thread_by', ['thread' => $thread])->render()) !!}
+                    {!! safe_raw_html($thread->getActionText('', true, false, null, view('conversations/thread_by', ['thread' => $thread])->render())) !!}
                 </div>
                 <div class="thread-info">
                     <a href="#thread-{{ $thread->id }}" class="thread-date" data-toggle="tooltip" title='{{ App\User::dateFormat($thread->created_at) }}'>{{ App\User::dateDiffForHumans($thread->created_at) }}</a>
@@ -50,7 +50,7 @@
             @action('thread.after_header', $thread, $loop, $threads, $conversation, $mailbox)
             <div class="thread-body">
                 @action('thread.before_body', $thread, $loop, $threads, $conversation, $mailbox)
-                {!! $thread->getCleanBody() !!}
+                {!! safe_raw_html($thread->getCleanBody()) !!}
 
                 @include('conversations/partials/thread_attachments')
             </div>
@@ -221,7 +221,7 @@
                                     $bounce_for_conversation = App\Conversation::find($send_status_data['bounce_for_conversation']);
                                 @endphp
                                 @if ($bounce_for_conversation)
-                                    {!! __('This is a bounce message for :link', [
+                                    {!! __safe_raw_html('This is a bounce message for :link', [
                                     'link' => '<a href="'.route('conversations.view', ['id' => $send_status_data['bounce_for_conversation']]).'#thread-id='.$send_status_data['bounce_for_thread'].'">#'.$bounce_for_conversation->number.'</a>'
                                     ]) !!}
                                 @endif
@@ -246,7 +246,7 @@
                                 @endphp
                                 @if ($bounced_by_conversation)
                                     <small>
-                                        {!! __('Message bounced (:link)', [
+                                        {!! __safe_raw_html('Message bounced (:link)', [
                                         'link' => '<a href="'.route('conversations.view', ['id' => $send_status_data['bounced_by_conversation']]).'#thread-id='.$send_status_data['bounced_by_thread'].'">#'.$bounced_by_conversation->number.'</a>'
                                         ]) !!}
                                     </small>
@@ -262,14 +262,14 @@
                 @if ($thread->isForwarded())
                     <div class="alert alert-info">
                         {{ __('This is a forwarded conversation.') }}
-                        {!! __('Original conversation: :forward_parent_conversation_number', [
+                        {!! __safe_raw_html('Original conversation: :forward_parent_conversation_number', [
                         'forward_parent_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMetaFw(App\Thread::META_FORWARD_PARENT_CONVERSATION_ID)]).'#thread-'.$thread->getMetaFw(App\Thread::META_FORWARD_PARENT_THREAD_ID).'">#'.$thread->getMetaFw(App\Thread::META_FORWARD_PARENT_CONVERSATION_NUMBER).'</a>'
                         ]) !!}
                     </div>
                 @endif
                 @if ($thread->isForward())
                     <div class="alert alert-note">
-                        {!! __(':person forwarded this conversation. Forwarded conversation: :forward_child_conversation_number', [
+                        {!! __safe_raw_html(':person forwarded this conversation. Forwarded conversation: :forward_child_conversation_number', [
                         'person' => ucfirst($thread->getForwardByFullName()),
                         'forward_child_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMetaFw(App\Thread::META_FORWARD_CHILD_CONVERSATION_ID)]).'">#'.$thread->getMetaFw(App\Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER).'</a>'
                         ]) !!}
@@ -279,13 +279,13 @@
                 @action('thread.before_body', $thread, $loop, $threads, $conversation, $mailbox)
 
                 <div class="thread-content" dir="auto">
-                    {!! \Eventy::filter('thread.body_output', $thread->getBodyWithFormatedLinks(), $thread, $conversation, $mailbox) !!}
+                    {!! safe_raw_html(\Eventy::filter('thread.body_output', $thread->getBodyWithFormatedLinks(), $thread, $conversation, $mailbox)) !!}
                 </div>
 
                 @if ($thread->body_original)
                     <div class='thread-meta'>
                         <i class="glyphicon glyphicon-pencil"></i> {{ __("Edited by :whom :when", ['whom' => $thread->getEditedByUserName(), 'when' => App\User::dateDiffForHumansWithHours($thread->edited_at)]) }} &nbsp;<a href="#" class="thread-original-show help-link link-underlined">{{ __("Show original") }}</a><a href="#" class="thread-original-hide help-link link-underlined hidden">{{ __("Hide") }}</a>
-                        <div class="thread-original thread-text hidden">{!! $thread->getCleanBodyOriginal() !!}</div>
+                        <div class="thread-original thread-text hidden">{!! safe_raw_html($thread->getCleanBodyOriginal()) !!}</div>
                     </div>
                 @endif
                 @if ($thread->opened_at)

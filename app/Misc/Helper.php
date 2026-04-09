@@ -565,12 +565,44 @@ class Helper
         return $text;
     }
 
+    public static function stripTagsFromArray($data, $fields = [])
+    {
+        if (empty($fields)) {
+            $fields = array_keys($data);
+        }
+        foreach ($fields as $field) {
+            if (!array_key_exists($field, $data)) {
+                continue;
+            }
+            if (is_array($data[$field])) {
+                foreach ($data[$field] as $sub_field => $sub_data) {
+                    $data[$field][$sub_field] = self::stripTagsFromArray($sub_data);
+                }
+            } else {
+                if ($data[$field] !== null) {
+                    $data[$field] = \Helper::stripTags($data[$field]);
+                }
+            }
+        }
+
+        return $data;
+    }
+
     public static function stripDangerousTags($html, $allowed_tags = [])
     {
         // <script src="/storage/attachment/8/1/1/test.js?id=7&token=c4786c4497db3c6254a0c310623a43c3">
         // <iframe src="/storage/attachment/8/1/1/1.html?id=95&token=3dced8dc80305031b358119f3d156204"></iframe>
         // <object data="/storage/attachment/8/1/1/1.html?id=95&token=3dced8dc80305031b358119f3d156204" type="text/html"></object>
-        $tags = ['script', 'form', 'iframe', 'object'];
+        $tags = [
+            'script',
+            'form',
+            'iframe',
+            'link',
+            'object',
+            'meta',
+            // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-fh99-wr77-pxq3
+            'style',
+        ];
         $attrs = 'src|data';
 
         $tags = array_diff($tags, $allowed_tags);
@@ -1427,7 +1459,7 @@ class Helper
     /**
      * Check if host is available on the port specified.
      */
-    public static function checkPort($host, $port, $timeout = 10)
+    public static function checkPort($host, $port)
     {
         $connection = @fsockopen($host, $port);
         if (is_resource($connection)) {
@@ -1514,17 +1546,23 @@ class Helper
                         $link = $match[2];
                         $link = substr($link, strlen($match[3]));
                         //return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
-                        return $match[1].'<' . array_push($links, "<a $attr href=\"$protocol://$link\">".$match[2]."</a>") . '>';
+                        $href = htmlspecialchars($protocol.'://'.$link, ENT_QUOTES, 'UTF-8');
+                        $link_text = htmlspecialchars($match[2], ENT_QUOTES, 'UTF-8');
+                        return $match[1].'<' . array_push($links, "<a $attr href=\"".$href."\">".$link_text."</a>") . '>';
                     }, $value) ?: $value;
                     break;
                 case 'mail':
                     $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:\)])~', function ($match) use (&$links, $attr) {
-                        return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>';
+                        $href = htmlspecialchars($match[1], ENT_QUOTES, 'UTF-8');
+                        $link_text = htmlspecialchars($match[1], ENT_QUOTES, 'UTF-8');
+                        return '<' . array_push($links, "<a $attr href=\"mailto:{$href}\">{$link_text}</a>") . '>';
                     }, $value) ?: $value;
                     break;
                 default:
                     $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) {
-                        return '<' . array_push($links, "<a $attr href=\"$protocol://{$match[1]}\">$protocol://{$match[1]}</a>") . '>';
+                        $href = htmlspecialchars("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
+                        $link_text = htmlspecialchars("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
+                        return '<' . array_push($links, "<a $attr href=\"{$href}\">{$link_text}</a>") . '>';
                     }, $value) ?: $value;
                     break;
             }
@@ -2049,10 +2087,7 @@ class Helper
         $file_name = preg_replace('/[' . $escaped_regex . ']/', '_', $file_name);
         $file_name = preg_replace("/[\t\r\n]/", '', $file_name);
         // Remove unprintable characters and invalid unicode characters.
-        // https://github.com/freescout-help-desk/freescout/issues/4681
-        $file_name = preg_replace("#\p{C}+#u", '', $file_name);
-        // https://github.com/freescout-help-desk/freescout/issues/2123#issuecomment-2775392740
-        $file_name = preg_replace("#\p{Cf}+#u", '', $file_name);
+        $file_name = self::stripUnprintableAndUnsafeChars($file_name);
 
         // Check extension.
         $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
@@ -2102,7 +2137,7 @@ class Helper
 
     public static function getWebCronHash()
     {
-        return md5(config('app.key').'web_cron_hash');
+        return hash_hmac('sha512', 'web_cron_hash', config('app.key'));
     }
 
     public static function getProtocol($url = '')
@@ -2540,5 +2575,106 @@ class Helper
             self::logException($e);
             return $string;
         }
+    }
+
+    public static function stripUnprintableChars($string)
+    {
+        // Remove unprintable characters and invalid unicode characters.
+        // https://github.com/freescout-help-desk/freescout/issues/4681
+        $string = preg_replace("#\p{C}+#u", '', $string);
+        // https://github.com/freescout-help-desk/freescout/issues/2123#issuecomment-2775392740
+        $string = preg_replace("#\p{Cf}+#u", '', $string);
+
+        return $string;
+    }
+
+    public static function stripUnsafeChars($string)
+    {
+        // Remove Unicode control characters and null bytes
+        $string = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $string);
+
+        return $string;
+    }
+
+    public static function stripUnprintableAndUnsafeChars($string)
+    {
+        $string = self::stripUnprintableChars($string);
+        $string = self::stripUnsafeChars($string);
+
+        return $string;
+    }
+
+    public static function filterArrayByKeys($list, $allowed_keys)
+    {
+        foreach ($list as $key => $value) {
+            if (!in_array($key, $allowed_keys)) {
+                unset($list[$key]);
+            }
+        }
+
+        return $list;
+    }
+
+    /**
+     * Check if the visitor's browser supports CSP (Content Security Policy).
+     */
+    public static function isCspSupported($user_agent = '')
+    {
+        if (!$user_agent) {
+            $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        }
+
+        // Check for Internet Explorer (any version) - NO support.
+        if (preg_match('/MSIE [1-9]\.|Trident\/[1-7]\./i', $user_agent)) {
+            return false; // IE 1-9 or IE 10-11 (Trident 7.0 has limited/no support)
+        }
+
+        // Check for Edge Legacy (EdgeHTML) - partial support, but better to block
+        if (preg_match('/Edge\/[1-9][0-9]?\./i', $user_agent) && !preg_match('/Edg\//i', $user_agent)) {
+            return false; // Legacy Edge (not Chromium-based)
+        }
+
+        // Check for older Safari versions (before iOS 15.4 / Safari 15.4).
+        if (preg_match('/Safari\/(\d+)\./i', $user_agent, $matches)) {
+            $safariVersion = intval($matches[1]);
+
+            // Safari version numbers: Safari 15.4 = version 604.1.15 (this is complicated)
+            // Better to check iOS version or macOS Safari version
+            if (preg_match('/iPhone OS ([0-9_]+)/i', $user_agent, $iosMatches)) {
+                $iosVersion = str_replace('_', '.', $iosMatches[1]);
+                if (version_compare($iosVersion, '15.4', '<')) {
+                    return false; // iOS Safari before 15.4
+                }
+            } elseif (preg_match('/Mac OS X/i', $user_agent) && $safariVersion < 604) {
+                return false; // Older macOS Safari
+            }
+        }
+
+        // Check for Firefox (CSP meta supported since Firefox 23+).
+        if (preg_match('/Firefox\/(\d+)\./i', $user_agent, $matches)) {
+            $firefoxVersion = intval($matches[1]);
+            if ($firefoxVersion < 23) {
+                return false; // Firefox before version 23
+            }
+        }
+
+        // Check for Chrome (supported since Chrome 25+).
+        if (preg_match('/Chrome\/(\d+)\./i', $user_agent, $matches)) {
+            $chromeVersion = intval($matches[1]);
+            if ($chromeVersion < 25) {
+                return false; // Chrome before version 25
+            }
+        }
+
+        // Check for Opera (supported since Opera 15+).
+        if (preg_match('/Opera\/(\d+)\./i', $user_agent, $matches)) {
+            $operaVersion = intval($matches[1]);
+            if ($operaVersion < 15) {
+                return false; // Opera before version 15
+            }
+        }
+
+        // Default to true for modern browsers.
+        return true;
     }
 }

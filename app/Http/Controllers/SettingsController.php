@@ -94,6 +94,7 @@ class SettingsController extends Controller
                         ],
                     ],
                     'validator_rules' => [
+                        'settings.mail_host' => 'safehost',
                         'settings.mail_from' => 'required|email',
                     ],
                     'settings' => [

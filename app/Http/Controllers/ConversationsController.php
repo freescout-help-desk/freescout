@@ -413,7 +413,7 @@ class ConversationsController extends Controller
                 $thread = new Thread();
                 $thread->body = $orig_thread->body;
                 // If this is a forwarded message, try to fetch From
-                preg_match_all("/From:[^<\n]+<([^<\n]+)>/m", html_entity_decode(strip_tags($thread->body)), $m);
+                preg_match_all("/From:[^<\n]+<([^<\n]+)>/m", html_entity_decode(\Helper::stripTags($thread->body)), $m);
 
                 if (!empty($m[1])) {
                     foreach ($m[1] as $value) {
@@ -1144,6 +1144,7 @@ class ConversationsController extends Controller
                             $forwarded_conversation->save();
 
                             $forwarded_thread = $thread->replicate();
+                            $forwarded_thread->setTo($recipient_email);
 
                             $forwarded_conversations[] = $forwarded_conversation;
                             $forwarded_threads[] = $forwarded_thread;
@@ -2007,7 +2008,7 @@ class ConversationsController extends Controller
                     $thread->edited_at = date('Y-m-d H:i:s');
                     $response['body'] = $thread->getCleanBody();
 
-                    if (strip_tags($response['body'])) {
+                    if (\Helper::stripTags($response['body'])) {
 
                         // Update the preview for the conversation if needed.
                         $last_thread = $thread->conversation->getLastThread([Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE]);
@@ -2397,10 +2398,16 @@ class ConversationsController extends Controller
                 $customer = Customer::getByEmail($request->customer_email);
 
                 if ($customer) {
-                    // Previous conversations
-                    $prev_conversations = [];
 
                     $mailbox = Mailbox::find($request->mailbox_id);
+
+                    if (!$mailbox || !$mailbox->userHasAccess($user->id)) {
+                        $response['msg'] = __('Not enough permissions');
+                        break;
+                    }
+
+                    // Previous conversations
+                    $prev_conversations = [];
 
                     if ($mailbox && $mailbox->userHasAccess($user->id)) {
                         $conversation_id = (int)$request->conversation_id ?? 0;

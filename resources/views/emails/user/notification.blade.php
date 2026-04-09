@@ -69,14 +69,14 @@
 							            		{{ __('Received a new conversation') }}
 							            	@else
 								            	@if ($thread->action_type == App\Thread::ACTION_TYPE_STATUS_CHANGED)
-			                                        {!! __(":person marked as :status conversation", ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>', 'status' => $thread->getStatusName()]) !!}
+			                                        {!! __h(":person marked as :status conversation", ['person' => '<strong>'.htmlspecialchars($thread->getCreatedBy()->getFullName(true)).'</strong>', 'status' => htmlspecialchars($thread->getStatusName())]) !!}
 			                                    @elseif ($thread->action_type == App\Thread::ACTION_TYPE_USER_CHANGED)
 				                                    <strong>@include('emails/user/thread_by')</strong>  
 													{{ __("assigned to :person conversation", ['person' => $thread->getAssigneeName(false, $user)]) }}
 			                                    @elseif ($thread->type == App\Thread::TYPE_NOTE)
-			                                    	{!! __(":person added a note to conversation", ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>']) !!}
+			                                    	{!! __h(":person added a note to conversation", ['person' => '<strong>'.htmlspecialchars($thread->getCreatedBy()->getFullName(true)).'</strong>']) !!}
 			                                    @else
-			                                    	{!! __(":person replied to conversation", ['person' => '<strong>'.$thread->getCreatedBy()->getFullName(true).'</strong>']) !!}
+			                                    	{!! __h(":person replied to conversation", ['person' => '<strong>'.htmlspecialchars($thread->getCreatedBy()->getFullName(true)).'</strong>']) !!}
 			                                    @endif
 			                                @endif
 							            	<a href="{{ \Eventy::filter('email_notification.conv_url', $conversation->url(), $user) }}" style="color:#3f8abf; text-decoration:none;">#{{ $conversation->number }}</a></p>
@@ -161,13 +161,13 @@
 															</td>
 															<td valign="top">
 																<div style="{{-- display:inline; --}}font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0; text-align: right; direction: rtl; unicode-bidi: plaintext;">
-																	{!! $thread->getActionText('', true, false, $user, htmlspecialchars(view('emails/user/thread_by', ['thread' => $thread, 'user' => $user])->render())) !!}
+																	{!! safe_raw_html($thread->getActionText('', true, false, $user, htmlspecialchars(view('emails/user/thread_by', ['thread' => $thread, 'user' => $user])->render()))) !!}
 																</div>
 															</td>
 														@else
 															<td valign="top">
 																<div style="{{-- display:inline; --}}font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;">
-																	{!! $thread->getActionText('', true, false, $user, htmlspecialchars(view('emails/user/thread_by', ['thread' => $thread, 'user' => $user])->render())) !!}
+																	{!! safe_raw_html($thread->getActionText('', true, false, $user, htmlspecialchars(view('emails/user/thread_by', ['thread' => $thread, 'user' => $user])->render()))) !!}
 																</div>
 															</td>
 															<td valign="top">
@@ -219,15 +219,15 @@
 									                    <td colspan="2">
 									                    	@if ($thread->isForward())
 							                                    <div style="color: #b37100; background-color: #fff1cf; padding: 15px; margin-bottom: 20px; border: 1px solid #ffe19d; @if ($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
-							                                        {!! __(':person forwarded this conversation. Forwarded conversation: :forward_child_conversation_number', [
-							                                        'person' => ucfirst($thread->getForwardByFullName()),
-							                                        'forward_child_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMetaFw(App\Thread::META_FORWARD_CHILD_CONVERSATION_ID)]).'">#'.$thread->getMetaFw(App\Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER).'</a>'
+							                                        {!! __h(':person forwarded this conversation. Forwarded conversation: :forward_child_conversation_number', [
+							                                        'person' => htmlspecialchars(ucfirst($thread->getForwardByFullName())),
+							                                        'forward_child_conversation_number' => '<a href="'.route('conversations.view', ['id' => $thread->getMetaFw(App\Thread::META_FORWARD_CHILD_CONVERSATION_ID)]).'">#'.htmlspecialchars($thread->getMetaFw(App\Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER)).'</a>'
 							                                        ]) !!}
 							                                    </div>
 							                                @endif
 							                                @action('email_notification.before_body', $thread, $user, $conversation)
 									                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#444; font-size:14px; line-height:20px; margin:0; @if ($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
-																{!! $thread->getCleanBody() ?? '' !!}
+																{!! safe_raw_html($thread->getCleanBody() ?? '') !!}
 															</div>
 
 															@if ($thread->has_attachments)

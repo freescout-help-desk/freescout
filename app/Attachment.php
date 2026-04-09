@@ -23,6 +23,13 @@ class Attachment extends Model
 
     const MIME_TYPE_MAX_LENGTH = 127;
 
+    // For backward compatibility.
+    const TOKEN_TYPE_LEGACY = 1;
+    // For backward compatibility.
+    const TOKEN_TYPE_MD5    = 2;
+    // Current way.
+    const TOKEN_TYPE_SHA256 = 3;
+
     // https://github.com/Webklex/laravel-imap/blob/master/src/IMAP/Attachment.php
     public static $types = [
         'message'     => self::TYPE_MESSAGE,
@@ -121,6 +128,7 @@ class Attachment extends Model
         $attachment->mime_type = $mime_type;
         $attachment->type = $type;
         $attachment->embedded = $embedded;
+        $attachment->token_type = self::TOKEN_TYPE_SHA256;
         $attachment->save();
 
         $file_info = self::saveFileToDisk($attachment, $file_name, $content, $uploaded_file);
@@ -271,8 +279,13 @@ class Attachment extends Model
      */
     public function getToken()
     {
-        // \Hash::make() may contain . and / symbols which may cause problems.
-        return md5(config('app.key').$this->id.$this->size);
+        if ($this->token_type == self::TOKEN_TYPE_MD5) {
+            // Backward compatibility.
+            // \Hash::make() may contain . and / symbols which may cause problems.
+            return md5(config('app.key').$this->id.$this->size);
+        } else {
+            return hash_hmac('sha256', $this->id.$this->size.$this->file_name, config('app.key'));
+        }
     }
 
     /**

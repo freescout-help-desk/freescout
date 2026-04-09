@@ -26,9 +26,9 @@
                     {{ csrf_field() }}
 
                     <div class="descr-block">
-                        {!! __("You can read more about sending emails :%a_begin%here:%a_end%.", ['%a_begin%' => '<a href="'.config('app.freescout_repo').'/wiki/Sending-emails" target="_blank">', '%a_end%' =>'</a>']) !!}
+                        {!! __h("You can read more about sending emails :%a_begin%here:%a_end%.", ['%a_begin%' => '<a href="'.htmlspecialchars(config('app.freescout_repo')).'/wiki/Sending-emails" target="_blank">', '%a_end%' =>'</a>']) !!}
 
-                        {!! __("To send system emails via webmail providers (Gmail, Yahoo, etc) use only SMTP method and make sure that SMTP username is equal to the mailbox email address (:%mailbox_email%), otherwise webmail provider won't send emails.", ['%mailbox_email%' => $mailbox->email]) !!}
+                        {{ __("To send system emails via webmail providers (Gmail, Yahoo, etc) use only SMTP method and make sure that SMTP username is equal to the mailbox email address (:%mailbox_email%), otherwise webmail provider won't send emails.", ['%mailbox_email%' => $mailbox->email]) }}
                     </div>
                     <hr/>
 
@@ -68,7 +68,7 @@
 
                                 @if (strstr($mailbox->out_server ?? '', '.gmail.'))
                                     <div class="form-help">
-                                        {!! __("How to :%link_start%connect Gmail:%link_end% to FreeScout.", ['%link_start%' => '<a href="'.config('app.freescout_repo').'/wiki/Connect-Gmail-to-FreeScout" target="_blank">', '%link_end%' => '</a>']) !!}
+                                        {!! __h("How to :%link_start%connect Gmail:%link_end% to FreeScout.", ['%link_start%' => '<a href="'.htmlspecialchars(config('app.freescout_repo')).'/wiki/Connect-Gmail-to-FreeScout" target="_blank">', '%link_end%' => '</a>']) !!}
                                     </div>
                                 @endif
 
@@ -175,7 +175,7 @@
                                         <button id="send-test-trigger" class="btn btn-default" type="button" data-loading-text="{{ __('Sending') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>{{ __('Send Test') }}</button>
                                     </span>
                                 </div>
-                                <div class="form-help">{!! __("Make sure to save settings before testing.") !!}</div>
+                                <div class="form-help">{{ __("Make sure to save settings before testing.") }}</div>
                                 <pre class="alert alert-warning hidden" id="send_test_log"></pre>
                             </div>
                         </div>

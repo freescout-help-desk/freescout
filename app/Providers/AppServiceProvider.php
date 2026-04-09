@@ -30,6 +30,28 @@ class AppServiceProvider extends ServiceProvider
         \App\Attachment::observe(\App\Observers\AttachmentObserver::class);
         \App\Follower::observe(\App\Observers\FollowerObserver::class);
         \Illuminate\Notifications\DatabaseNotification::observe(\App\Observers\DatabaseNotificationObserver::class);
+
+        \Validator::extend('safehost', function ($attribute, $value, $parameters, $validator) {
+            if (!$value) {
+                return true;
+            }
+            $msg = '';
+            try {
+                $url = $value;
+                if (!preg_match("#^https?://#", $value)) {
+                    $url = 'https://'.$url;
+                }
+                \Helper::checkUrlIpAndHost($url, true);
+            } catch (\Exception $e) {
+                $msg = $e->getMessage();
+            }
+            if ($msg) {
+                $validator->errors()->add($attribute, $msg);
+                return false;
+            }
+
+            return true;
+        });
     }
 
     /**

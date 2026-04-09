@@ -88,7 +88,7 @@ class MailboxesController extends Controller
 
         $request_data = [
             'email'   => $request->email,
-            'name'    => trim(strip_tags($request->name)),
+            'name'    => trim(\Helper::stripTags($request->name)),
             'ratings' => $request->ratings ?? 1,
         ];
 
@@ -402,7 +402,7 @@ class MailboxesController extends Controller
 
         if ($request->out_method == Mailbox::OUT_METHOD_SMTP) {
             $validator = Validator::make($request->all(), [
-                'out_server'          => 'required|string|max:255',
+                'out_server'          => 'required|string|max:255|safehost',
                 'out_port'            => 'required|integer',
                 'out_username'        => 'nullable|string|max:255',
                 'out_password'        => 'nullable|string|max:255',
@@ -422,6 +422,17 @@ class MailboxesController extends Controller
         } else {
             $params = $request->all();
         }
+
+        // Leave only allowed fields.
+        $params = \Helper::filterArrayByKeys($params, [
+            'out_method',
+            'out_server',
+            'out_port',
+            'out_username',
+            'out_encryption',
+            'send_test_to',
+        ]);
+
         $mailbox->fill($params);
         $mailbox->save();
 
@@ -453,13 +464,22 @@ class MailboxesController extends Controller
         ];
 
         $validator = Validator::make($fields, [
-            'in_server'   => 'required',
+            //'in_server'   => 'required',
             'in_port'     => 'required',
             'in_username' => 'required',
             'in_password' => 'required',
         ]);
 
-        return view('mailboxes/connection_incoming', ['mailbox' => $mailbox, 'flashes' => $this->mailboxActiveWarning($mailbox)])->withErrors($validator);
+        $response = view('mailboxes/connection_incoming', ['mailbox' => $mailbox, 'flashes' => $this->mailboxActiveWarning($mailbox)]);
+
+        if (empty($request->session()->get('errors'))) {
+            if (empty($mailbox->in_server)) {
+                $validator->errors()->add('in_server', 'dummy');
+            }
+            $response->withErrors($validator);
+        }
+
+        return $response;
     }
 
     /**
@@ -470,18 +490,18 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($id);
         $this->authorize('admin', $mailbox);
 
-        // $validator = Validator::make($request->all(), [
-        //     'in_server'   => 'nullable|string|max:255',
-        //     'in_port'     => 'nullable|integer',
-        //     'in_username' => 'nullable|string|max:100',
-        //     'in_password' => 'nullable|string|max:255',
-        // ]);
+        $validator = Validator::make($request->all(), [
+            'in_server'   => 'required|string|max:255|safehost',
+            'in_port'     => 'required|integer',
+            'in_username' => 'required|string|max:100',
+            'in_password' => 'required|string|max:255',
+        ]);
 
-        // if ($validator->fails()) {
-        //     return redirect()->route('mailboxes.connection.incoming', ['id' => $id])
-        //                 ->withErrors($validator)
-        //                 ->withInput();
-        // }
+        if ($validator->fails()) {
+            return redirect()->route('mailboxes.connection.incoming', ['id' => $id])
+                        ->withErrors($validator)
+                        ->withInput();
+        }
 
         // Checkboxes
         $request->merge([
@@ -496,6 +516,18 @@ class MailboxesController extends Controller
         }
 
         \Eventy::action('mailbox.incoming_settings_before_save', $mailbox, $request);
+
+        // Leave only allowed fields.
+        $params = \Helper::filterArrayByKeys($params, [
+            'in_protocol',
+            'in_server',
+            'in_port',
+            'in_username',
+            'in_encryption',
+            'in_imap_folders',
+            'in_validate_cert',
+            'imap_sent_folder',
+        ]);
 
         $mailbox->fill($params);
 
@@ -613,7 +645,7 @@ class MailboxesController extends Controller
 
         if ($request->auto_reply_enabled) {
             $post = $request->all();
-            $post['auto_reply_message'] = strip_tags($post['auto_reply_message']);
+            $post['auto_reply_message'] = \Helper::stripTags($post['auto_reply_message']);
             $validator = Validator::make($post, [
                 'auto_reply_subject' => 'required|string|max:128',
                 'auto_reply_message' => 'required|string',

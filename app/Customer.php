@@ -1012,6 +1012,9 @@ class Customer extends Model
             $data['notes'] = $data['background'];
         }
 
+        // Strip tags.
+        $data = \Helper::stripTagsFromArray($data, $this->fillable);
+
         if ($replace_data) {
             // Replace data.
             $data_prepared = $data;

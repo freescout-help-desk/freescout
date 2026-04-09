@@ -3,7 +3,7 @@
 <div id="editor_bottom_toolbar" style="display:none">
     <div id="editor_signature">
         @if ($mailbox->signature)
-            {!! $conversation->getSignatureProcessed([], true) !!}
+            {!! safe_raw_html($conversation->getSignatureProcessed([], true)) !!}
         @endif
     </div>
     @action('conv_editor.editor_toolbar_prepend', $mailbox, $conversation)

@@ -969,11 +969,11 @@ class User extends Authenticatable
     /**
      * Create user.
      */
-    public static function create($data)
+    public static function create($data, $options = [])
     {
         $user = new self();
 
-        if (empty($data['email']) || empty($data['password'])) {
+        if (empty($data['email']) || (empty($data['password']) && empty($options['without_password']))) {
             return null;
         }
 
@@ -1011,7 +1011,7 @@ class User extends Authenticatable
         foreach ($fields_strip as $field) {
             if (in_array($field, array_keys($data))) {
                 if ($data[$field] !== null) {
-                    $data[$field] = strip_tags($data[$field]);
+                    $data[$field] = \Helper::stripTags($data[$field]);
                 }
             }
         }
