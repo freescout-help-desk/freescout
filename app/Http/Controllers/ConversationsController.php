@@ -1144,6 +1144,7 @@ class ConversationsController extends Controller
                             $forwarded_conversation->save();
 
                             $forwarded_thread = $thread->replicate();
+                            $forwarded_thread->setTo($recipient_email);
 
                             $forwarded_conversations[] = $forwarded_conversation;
                             $forwarded_threads[] = $forwarded_thread;
