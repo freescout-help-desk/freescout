@@ -685,7 +685,10 @@ class FetchEmails extends Command
                             // Try to get thread by generated message ID.
                             if ($in_reply_to) {
 
-                                $prev_thread = Thread::where('message_id', \MailHelper::generateMessageId($in_reply_to, $mailbox->id.$in_reply_to))->first();
+                                $message_ids = [\MailHelper::generateMessageId($in_reply_to, $mailbox->id.$in_reply_to), $in_reply_to];
+                                $prev_thread = Thread::whereIn('message_id', $message_ids)->whereHas('conversation', function ($q) use ($mailbox) {
+                                        $q->where('mailbox_id', $mailbox->id);
+                                    })->first();
 
                                 if (!$prev_thread) {
                                     $prev_thread = null;
