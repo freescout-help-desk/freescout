@@ -1546,17 +1546,23 @@ class Helper
                         $link = $match[2];
                         $link = substr($link, strlen($match[3]));
                         //return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
-                        return $match[1].'<' . array_push($links, "<a $attr href=\"$protocol://$link\">".$match[2]."</a>") . '>';
+                        $href = htmlspecialchars($protocol.'://'.$link, ENT_QUOTES, 'UTF-8');
+                        $link_text = htmlspecialchars($match[2], ENT_QUOTES, 'UTF-8');
+                        return $match[1].'<' . array_push($links, "<a $attr href=\"".$href."\">".$link_text."</a>") . '>';
                     }, $value) ?: $value;
                     break;
                 case 'mail':
                     $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:\)])~', function ($match) use (&$links, $attr) {
-                        return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>';
+                        $href = htmlspecialchars($match[1], ENT_QUOTES, 'UTF-8');
+                        $link_text = htmlspecialchars($match[1], ENT_QUOTES, 'UTF-8');
+                        return '<' . array_push($links, "<a $attr href=\"mailto:{$href}\">{$link_text}</a>") . '>';
                     }, $value) ?: $value;
                     break;
                 default:
                     $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) {
-                        return '<' . array_push($links, "<a $attr href=\"$protocol://{$match[1]}\">$protocol://{$match[1]}</a>") . '>';
+                        $href = htmlspecialchars("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
+                        $link_text = htmlspecialchars("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
+                        return '<' . array_push($links, "<a $attr href=\"{$href}\">{$link_text}</a>") . '>';
                     }, $value) ?: $value;
                     break;
             }
