@@ -117,7 +117,7 @@ class CustomersController extends Controller
                 // of that customer's emails to the current profile.
                 if ($email->customer_id !== $customer->id) {
                     if (!$this->checkLimitVisibility($email->customer, true)) {
-                        $validator->errors()->add('email', __('The new email belongs to a customer from an inaccessible mailbox.'));
+                        $validator->errors()->add('email', __('The specified email belongs to a customer from an inaccessible mailbox.'));
                         return redirect()->route('customers.update', ['id' => $id])
                                     ->withErrors($validator)
                                     ->withInput();
@@ -461,8 +461,18 @@ class CustomersController extends Controller
                     }
                 }
 
+                if (!$response['msg'] && $limited_visibility) {
+                    $existing_email = Email::where('email', $request->email)->first();
+
+                    if ($existing_email
+                        && $existing_email->customer
+                        && !$user->can('view', $existing_email->customer)
+                    ) {
+                        $response['msg'] .= __('The specified email belongs to a customer from an inaccessible mailbox.');
+                    }
+                }
+
                 if (!$response['msg']) {
-                   
                     $customer = Customer::create($request->email, $request->all());
                     if ($customer) {
                         $response['email']  = $request->email;
