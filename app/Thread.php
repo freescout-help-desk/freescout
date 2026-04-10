@@ -307,6 +307,11 @@ class Thread extends Model
         if ($body === null) {
             $body = '';
         }
+        //Skip cleaning the body and remove it as is
+		$skipCleanBody = \Eventy::filter('thread.skip_clean_body', false, $this, $body);
+		if ($skipCleanBody) {
+			return $body;
+		}
 
         // Change "background:" to "background-color:".
         // https://github.com/freescout-helpdesk/freescout/issues/2560
