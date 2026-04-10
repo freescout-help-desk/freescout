@@ -113,6 +113,17 @@ class CustomersController extends Controller
         foreach ($new_emails as $new_email) {
             $email = Email::where('email', $new_email)->first();
             if ($email && $email->customer) {
+                // Prevent pulling in an out-of-scope customer by attaching one
+                // of that customer's emails to the current profile.
+                if ($email->customer_id !== $customer->id) {
+                    if (!$this->checkLimitVisibility($email->customer, true)) {
+                        $validator->errors()->add('email', __('The new email belongs to a customer from an inaccessible mailbox.'));
+                        return redirect()->route('customers.update', ['id' => $id])
+                                    ->withErrors($validator)
+                                    ->withInput();
+                    }
+                }
+
                 // If customer whose email is removed does not have first name and other emails
                 // we have to create first name for this customer
                 if (!$email->customer->first_name && count($email->customer->emails) == 1) {
@@ -206,7 +217,7 @@ class CustomersController extends Controller
         return redirect()->route('customers.update', ['id' => $id]);
     }
 
-    public function checkLimitVisibility($customer)
+    public function checkLimitVisibility($customer, $return_result = false)
     {
         $user = auth()->user();
         $limited_visibility = config('app.limit_user_customer_visibility') && !$user->isAdmin();
@@ -219,9 +230,15 @@ class CustomersController extends Controller
                 ->exists();
 
             if (!$accesible) {
-                \Helper::denyAccess();
+                if (!$return_result) {
+                    \Helper::denyAccess();
+                } else {
+                    return false;
+                }
             }
         }
+
+        return true;
     }
 
     /**
