@@ -220,21 +220,12 @@ class CustomersController extends Controller
     public function checkLimitVisibility($customer, $return_result = false)
     {
         $user = auth()->user();
-        $limited_visibility = config('app.limit_user_customer_visibility') && !$user->isAdmin();
-
-        if ($limited_visibility) {
-            $mailbox_ids = $user->mailboxesIdsCanView();
-            
-            $accesible = Conversation::where('customer_id', $customer->id)
-                ->whereIn('conversations.mailbox_id', $mailbox_ids)
-                ->exists();
-
-            if (!$accesible) {
-                if (!$return_result) {
-                    \Helper::denyAccess();
-                } else {
-                    return false;
-                }
+        
+        if (!$user->can('view', $customer)) {
+            if (!$return_result) {
+                \Helper::denyAccess();
+            } else {
+                return false;
             }
         }
 

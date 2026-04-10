@@ -17,6 +17,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Folder'       => 'App\Policies\FolderPolicy',
         'App\Conversation' => 'App\Policies\ConversationPolicy',
         'App\Thread'       => 'App\Policies\ThreadPolicy',
+        'App\Customer'     => 'App\Policies\CustomerPolicy',
     ];
 
     /**

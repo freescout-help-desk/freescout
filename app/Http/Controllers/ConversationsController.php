@@ -1835,6 +1835,7 @@ class ConversationsController extends Controller
             case 'conversation_change_customer':
                 $conversation = Conversation::find($request->conversation_id);
                 $customer_email = $request->customer_email;
+                $target_customer = Customer::getByEmail($request->customer_email);
 
                 if (!$conversation) {
                     $response['msg'] = __('Conversation not found');
@@ -1843,6 +1844,10 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
                 if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg'] && $target_customer && !$user->can('view', $target_customer)) {
                     $response['msg'] = __('Not enough permissions');
                 }
 
