@@ -46,7 +46,7 @@
                             <p class="block-help"><a href="#" class="multi-add " tabindex="-1">{{ __('Add an email address') }}</a></p>
                         </div>
 
-                        {{-- @include('partials/field_error', ['field'=>'emails.*']) --}}
+                        @include('partials/field_error', ['field'=>'email'])
                     </div>
                 </div>
 

@@ -2618,60 +2618,38 @@ class Helper
     /**
      * Check if the visitor's browser supports CSP (Content Security Policy).
      */
-    public static function isCspSupported($user_agent = '')
+    public static function isCspSupported($ua = '')
     {
-        if (!$user_agent) {
-            $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        if (!$ua) {
+            $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
         }
 
-        // Check for Internet Explorer (any version) - NO support.
-        if (preg_match('/MSIE [1-9]\.|Trident\/[1-7]\./i', $user_agent)) {
-            return false; // IE 1-9 or IE 10-11 (Trident 7.0 has limited/no support)
+        // Normalize
+        $ua = strtolower($ua);
+
+        // Internet Explorer (all versions) → NO proper CSP support
+        if (strpos($ua, 'msie') !== false || strpos($ua, 'trident/') !== false) {
+            return false;
         }
 
-        // Check for Edge Legacy (EdgeHTML) - partial support, but better to block
-        if (preg_match('/Edge\/[1-9][0-9]?\./i', $user_agent) && !preg_match('/Edg\//i', $user_agent)) {
-            return false; // Legacy Edge (not Chromium-based)
+        // Chrome (CSP supported from version 25+ reliably)
+        if (preg_match('/chrome\/(\d+)/', $ua, $matches)) {
+            return (int)$matches[1] >= 25;
         }
 
-        // Check for older Safari versions (before iOS 15.4 / Safari 15.4).
-        if (preg_match('/Safari\/(\d+)\./i', $user_agent, $matches)) {
-            $safariVersion = intval($matches[1]);
-
-            // Safari version numbers: Safari 15.4 = version 604.1.15 (this is complicated)
-            // Better to check iOS version or macOS Safari version
-            if (preg_match('/iPhone OS ([0-9_]+)/i', $user_agent, $iosMatches)) {
-                $iosVersion = str_replace('_', '.', $iosMatches[1]);
-                if (version_compare($iosVersion, '15.4', '<')) {
-                    return false; // iOS Safari before 15.4
-                }
-            } elseif (preg_match('/Mac OS X/i', $user_agent) && $safariVersion < 604) {
-                return false; // Older macOS Safari
-            }
+        // Firefox (CSP supported from version 23+)
+        if (preg_match('/firefox\/(\d+)/', $ua, $matches)) {
+            return (int)$matches[1] >= 23;
         }
 
-        // Check for Firefox (CSP meta supported since Firefox 23+).
-        if (preg_match('/Firefox\/(\d+)\./i', $user_agent, $matches)) {
-            $firefoxVersion = intval($matches[1]);
-            if ($firefoxVersion < 23) {
-                return false; // Firefox before version 23
-            }
+        // Safari (CSP supported from version 7+)
+        if (preg_match('/version\/(\d+).+safari/', $ua, $matches)) {
+            return (int)$matches[1] >= 7;
         }
 
-        // Check for Chrome (supported since Chrome 25+).
-        if (preg_match('/Chrome\/(\d+)\./i', $user_agent, $matches)) {
-            $chromeVersion = intval($matches[1]);
-            if ($chromeVersion < 25) {
-                return false; // Chrome before version 25
-            }
-        }
-
-        // Check for Opera (supported since Opera 15+).
-        if (preg_match('/Opera\/(\d+)\./i', $user_agent, $matches)) {
-            $operaVersion = intval($matches[1]);
-            if ($operaVersion < 15) {
-                return false; // Opera before version 15
-            }
+        // Edge (EdgeHTML and Chromium-based both support CSP)
+        if (preg_match('/edge\/(\d+)/', $ua, $matches) || preg_match('/edg\/(\d+)/', $ua, $matches)) {
+            return (int)$matches[1] >= 12;
         }
 
         // Default to true for modern browsers.

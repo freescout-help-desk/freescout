@@ -878,6 +878,11 @@ class Mail
         return 'fs-'.$hash.'@'.preg_replace("/.*@/", '', $email_address);
     }
 
+    public static function isGeneratedMessageId($message_id)
+    {
+        return preg_match("#^fs\-[a-z0-9]+@#", $message_id);
+    }
+
     /**
      * Fetch IMAP message by Message-ID.
      */

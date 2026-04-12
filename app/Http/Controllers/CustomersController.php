@@ -113,6 +113,17 @@ class CustomersController extends Controller
         foreach ($new_emails as $new_email) {
             $email = Email::where('email', $new_email)->first();
             if ($email && $email->customer) {
+                // Prevent pulling in an out-of-scope customer by attaching one
+                // of that customer's emails to the current profile.
+                if ($email->customer_id !== $customer->id) {
+                    if (!$this->checkLimitVisibility($email->customer, true)) {
+                        $validator->errors()->add('email', __('The specified email belongs to a customer from an inaccessible mailbox.'));
+                        return redirect()->route('customers.update', ['id' => $id])
+                                    ->withErrors($validator)
+                                    ->withInput();
+                    }
+                }
+
                 // If customer whose email is removed does not have first name and other emails
                 // we have to create first name for this customer
                 if (!$email->customer->first_name && count($email->customer->emails) == 1) {
@@ -206,22 +217,19 @@ class CustomersController extends Controller
         return redirect()->route('customers.update', ['id' => $id]);
     }
 
-    public function checkLimitVisibility($customer)
+    public function checkLimitVisibility($customer, $return_result = false)
     {
         $user = auth()->user();
-        $limited_visibility = config('app.limit_user_customer_visibility') && !$user->isAdmin();
-
-        if ($limited_visibility) {
-            $mailbox_ids = $user->mailboxesIdsCanView();
-            
-            $accesible = Conversation::where('customer_id', $customer->id)
-                ->whereIn('conversations.mailbox_id', $mailbox_ids)
-                ->exists();
-
-            if (!$accesible) {
+        
+        if (!$user->can('view', $customer)) {
+            if (!$return_result) {
                 \Helper::denyAccess();
+            } else {
+                return false;
             }
         }
+
+        return true;
     }
 
     /**
@@ -453,8 +461,18 @@ class CustomersController extends Controller
                     }
                 }
 
+                if (!$response['msg'] && $limited_visibility) {
+                    $existing_email = Email::where('email', $request->email)->first();
+
+                    if ($existing_email
+                        && $existing_email->customer
+                        && !$user->can('view', $existing_email->customer)
+                    ) {
+                        $response['msg'] .= __('The specified email belongs to a customer from an inaccessible mailbox.');
+                    }
+                }
+
                 if (!$response['msg']) {
-                   
                     $customer = Customer::create($request->email, $request->all());
                     if ($customer) {
                         $response['email']  = $request->email;

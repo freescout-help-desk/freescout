@@ -686,16 +686,36 @@ class FetchEmails extends Command
                             if ($in_reply_to) {
 
                                 $message_ids = [\MailHelper::generateMessageId($in_reply_to, $mailbox->id.$in_reply_to), $in_reply_to];
-                                $prev_thread = Thread::whereIn('message_id', $message_ids)->whereHas('conversation', function ($q) use ($mailbox) {
+                                $prev_thread_tmp = Thread::whereIn('message_id', $message_ids)->whereHas('conversation', function ($q) use ($mailbox) {
                                         $q->where('mailbox_id', $mailbox->id);
                                 })->first();
 
+                                if ($prev_thread_tmp) {
+                                    $prev_thread = $prev_thread_tmp;
+                                } elseif (\MailHelper::isGeneratedMessageId($prev_thread->message_id)) {
+                                    // Try to extract the original Message-ID from the mismatched thread's raw headers
+                                    // https://github.com/freescout-help-desk/freescout/issues/5308#issuecomment-4218652527
+                                    $original_id = trim(\MailHelper::getHeader($prev_thread->headers, 'Message-ID'));
+                                    $correct_thread = null;
+
+                                    // Search the current mailbox for the original un-hashed ID
+                                    $correct_thread = Thread::where('message_id', $original_id)
+                                        ->whereHas('conversation', function ($q) use ($mailbox) {
+                                            $q->where('mailbox_id', $mailbox->id);
+                                        })->first();
+
+                                    if ($correct_thread) {
+                                        $prev_thread = $correct_thread;
+                                    }
+                                    if (!$correct_thread) {
+                                        $prev_thread = null;
+                                    }
+                                }
                                 if (!$prev_thread) {
                                     $prev_thread = null;
                                     $is_reply = false;
                                 }
                             } else {
-
                                 $prev_thread = null;
                                 $is_reply = false;
                             }

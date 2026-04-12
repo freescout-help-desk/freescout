@@ -924,7 +924,12 @@ class ConversationsController extends Controller
 
                     if ($is_phone && $is_create) {
                         // Phone.
-                        $phone_customer_data = $this->processPhoneCustomer($request);
+                        $phone_customer_data = $this->processPhoneCustomer($request, $user);
+
+                        if (!empty($phone_customer_data['msg'])) {
+                            $response['msg'] = $phone_customer_data['msg'];
+                            break;
+                        }
 
                         $customer_email = $phone_customer_data['customer_email'];
                         $customer = $phone_customer_data['customer'];
@@ -1481,7 +1486,12 @@ class ConversationsController extends Controller
 
                         if ($type == Conversation::TYPE_PHONE) {
                             // Phone.
-                            $phone_customer_data = $this->processPhoneCustomer($request);
+                            $phone_customer_data = $this->processPhoneCustomer($request, $user);
+
+                            if (!empty($phone_customer_data['msg'])) {
+                                $response['msg'] = $phone_customer_data['msg'];
+                                break;
+                            }
 
                             $customer_email = $phone_customer_data['customer_email'];
                             $customer = $phone_customer_data['customer'];
@@ -1835,6 +1845,7 @@ class ConversationsController extends Controller
             case 'conversation_change_customer':
                 $conversation = Conversation::find($request->conversation_id);
                 $customer_email = $request->customer_email;
+                $target_customer = Customer::getByEmail($request->customer_email);
 
                 if (!$conversation) {
                     $response['msg'] = __('Conversation not found');
@@ -1843,6 +1854,10 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
                 if (!$response['msg'] && !$conversation->mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg'] && $target_customer && !$user->can('view', $target_customer)) {
                     $response['msg'] = __('Not enough permissions');
                 }
 
@@ -3229,6 +3244,11 @@ class ConversationsController extends Controller
             abort(404);
         }
 
+        if ($thread->created_by_user_id != \Auth::id()) {
+            \Session::flash('flash_error_floating', __('Sending can not be undone'));
+            return redirect()->away($conversation->url($conversation->folder_id));
+        }
+
         $conversation = $thread->conversation;
         $this->authorize('view', $conversation);
 
@@ -3305,7 +3325,7 @@ class ConversationsController extends Controller
     /**
      * Find or create customer when creating a Phone conversation.
      */
-    public function processPhoneCustomer($request)
+    public function processPhoneCustomer($request, $user)
     {
         $customer_data = [];
         $customer_email = '';
@@ -3332,6 +3352,14 @@ class ConversationsController extends Controller
         if (!$request->customer_id && is_numeric($request_name)) {
             // Try to find customer by ID.
             $customer = Customer::find($request_name);
+            if ($customer) {
+                if (!$user->can('view', $customer)) {
+                    return [
+                        'status' => 'error',
+                        'msg' => __('Inaccessible customer'),
+                    ];
+                }
+            }
         }
 
         if (!$customer && $request->to_email) {
@@ -3359,6 +3387,12 @@ class ConversationsController extends Controller
                 if ($request->customer_id) {
                     $customer = Customer::find($request->customer_id);
                     if ($customer) {
+                        if (!$user->can('view', $customer)) {
+                            return [
+                                'status' => 'error',
+                                'msg' => __('Inaccessible customer'),
+                            ];
+                        }
                         // Add email to customer.
                         $customer->addEmail($customer_email, true);
                     } else {
@@ -3371,6 +3405,12 @@ class ConversationsController extends Controller
                 if ($request->customer_id) {
                     $customer = Customer::find($request->customer_id);
                     if ($customer) {
+                        if (!$user->can('view', $customer)) {
+                            return [
+                                'status' => 'error',
+                                'msg' => __('Inaccessible customer'),
+                            ];
+                        }
                         $customer->setData($customer_data, false, true);
                     }
                 }
