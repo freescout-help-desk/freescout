@@ -3244,6 +3244,11 @@ class ConversationsController extends Controller
             abort(404);
         }
 
+        if ($thread->created_by_user_id != \Auth::id()) {
+            \Session::flash('flash_error_floating', __('Sending can not be undone'));
+            return redirect()->away($conversation->url($conversation->folder_id));
+        }
+
         $conversation = $thread->conversation;
         $this->authorize('view', $conversation);
 
