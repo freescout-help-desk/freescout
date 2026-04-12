@@ -609,10 +609,23 @@ class Zipper
     {
         $tmpPath = str_replace($this->getInternalPath(), '', $fileName);
 
+        // Prevent Zip traversal attacks
+        if (strpos($fileName, '../') !== false || strpos($fileName, '..\\') !== false) {
+            \Log::error('[Zipper] Path traversal detected - special characters found within filename: '.$fileName);
+            throw new \RuntimeException('Zipper: Path traversal detected - special characters found within filename');
+        }
+        // Block path traversal attempts
+        $realBase = realpath($path);
+        $realDest = realpath(pathinfo($path . DIRECTORY_SEPARATOR . $tmpPath)['dirname'] ?? '');
+        if ($realDest === false || strpos($realDest, $realBase) !== 0) {
+            \Log::error('[Zipper] Path traversal detected - path: '.$path.'; fileName: '.$fileName.'; realBase: '.$realBase.'; tmpPath: '.$tmpPath.'; realDest: '.$realDest);
+            throw new \RuntimeException('Zipper: Path traversal detected');
+        }
+
         // We need to create the directory first in case it doesn't exist
         $dir = pathinfo($path.DIRECTORY_SEPARATOR.$tmpPath, PATHINFO_DIRNAME);
         if (!$this->file->exists($dir) && !$this->file->makeDirectory($dir, 0755, true, true)) {
-            throw new \RuntimeException('Failed to create folders');
+            throw new \RuntimeException('Zipper: Failed to create folders');
         }
 
         $toPath = $path.DIRECTORY_SEPARATOR.$tmpPath;
