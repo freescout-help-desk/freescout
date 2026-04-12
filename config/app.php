@@ -541,6 +541,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | If you get an error message saying that your browser doesn't support CSP,
+    | list your User-Agent in this parameter (https://www.whatismybrowser.com/detect/what-is-my-user-agent/).
+    | Use "|" symbol to separate multiple User-Agents.
+    | And don't forget to send your User-Agent to this issue: https://github.com/freescout-help-desk/freescout/issues/5331
+    |--------------------------------------------------------------------------
+    */
+    'allowed_user_agents' => env('APP_ALLOWED_USER_AGENTS', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
