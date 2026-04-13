@@ -729,7 +729,7 @@
     "Username": "用户名",
     "Users": "用户",
     "Users are allowed to delete conversations": "允许用户删除对话",
-    "Users are allowed to edit notes\/replies": "允许用户编辑注释\/回复",
+    "Users are allowed to edit own notes\/replies": "允许用户编辑注释\/回复",
     "Users are allowed to edit\/delete saved replies": "允许用户编辑\/删除已保存的回复",
     "Users are allowed to manage custom folders": "允许用户管理自定义文件夹",
     "Users are allowed to manage tags": "被允许管理标签的用户",

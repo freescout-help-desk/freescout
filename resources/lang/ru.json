@@ -725,7 +725,7 @@
     "Username": "Имя пользователя",
     "Users": "Агенты",
     "Users are allowed to delete conversations": "Агенты могут удалять тикеты",
-    "Users are allowed to edit notes\/replies": "Агенты могут редактировать примечания\/ответы",
+    "Users are allowed to edit own notes\/replies": "Агенты могут редактировать примечания\/ответы",
     "Users are allowed to edit\/delete saved replies": "Агенты могут редактировать\/удалять шаблонные ответы",
     "Users are allowed to manage custom folders": "Агенты могут управлять пользовательскими папками",
     "Users are allowed to manage tags": "Агенты могут управлять тегами",

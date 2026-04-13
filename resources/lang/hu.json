@@ -748,7 +748,7 @@
     "Username": "Felhasználónév",
     "Users": "Felhasználók",
     "Users are allowed to delete conversations": "A felhasználók törölhetnek beszélgetéseket",
-    "Users are allowed to edit notes\/replies": "A felhasználók szerkeszthetnek megjegyzéseket\/válaszokat",
+    "Users are allowed to edit own notes\/replies": "A felhasználók szerkeszthetnek megjegyzéseket\/válaszokat",
     "Users are allowed to edit\/delete saved replies": "A felhasználók szerkeszthetnek\/törölhetnek mentett válaszokat",
     "Users are allowed to manage custom folders": "A felhasználók kezelhetnek egyéni mappákat",
     "Users are allowed to manage tags": "A felhasználók kezelhetnek címkéket",

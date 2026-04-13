@@ -725,7 +725,7 @@
     "Username": "Käyttäjänimi",
     "Users": "Käyttäjät",
     "Users are allowed to delete conversations": "Käyttäjät voivat poistaa keskusteluja",
-    "Users are allowed to edit notes\/replies": "Käyttäjät voivat muokata huomautuksia\/vastauksia",
+    "Users are allowed to edit own notes\/replies": "Käyttäjät voivat muokata huomautuksia\/vastauksia",
     "Users are allowed to edit\/delete saved replies": "Käyttäjät voivat muokata tai poistaa tallennettuja vastauksia.",
     "Users are allowed to manage custom folders": "Käyttäjät voivat hallita mukautettuja kansioita",
     "Users are allowed to manage tags": "Käyttäjät voivat hallita tunnisteita",
