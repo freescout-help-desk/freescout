@@ -178,7 +178,7 @@ class MailboxesController extends Controller
 
         $allowed_fields = [];
 
-        if ($user->can('updateSettings', $mailbox)) {
+        if ($can_update_settings) {
 
             // Checkboxes
             $request->merge([
@@ -258,10 +258,12 @@ class MailboxesController extends Controller
         $mailbox->fill($fields);
 
         // Chat: Start a new conversation when receiving a reply to the closed / deleted Chat conversation.
-        if (!empty($request->chat_start_new)) {
-            $mailbox->setMetaParam('chat_start_new', true);
-        } else {
-            $mailbox->removeMetaParam('chat_start_new');
+        if ($can_update_settings) {
+            if (!empty($request->chat_start_new)) {
+                $mailbox->setMetaParam('chat_start_new', true);
+            } else {
+                $mailbox->removeMetaParam('chat_start_new');
+            }
         }
 
         $mailbox->signature = \Helper::stripDangerousTags($mailbox->signature);
