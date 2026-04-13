@@ -860,7 +860,7 @@ class ConversationsController extends Controller
 
                     // Get attachments info
                     // Delete removed attachments.
-                    $attachments_info = $this->processReplyAttachments($request);
+                    $attachments_info = $this->processReplyAttachments($request, $thread->id ?? null);
 
                     // Determine redirect.
                     // Must be done before updating current conversation's status or assignee.
@@ -1462,7 +1462,7 @@ class ConversationsController extends Controller
                 if (!$response['msg']) {
 
                     // Get attachments info
-                    $attachments_info = $this->processReplyAttachments($request);
+                    $attachments_info = $this->processReplyAttachments($request, $thread->id ?? null);
 
                     // Conversation
                     $now = date('Y-m-d H:i:s');
@@ -3190,7 +3190,7 @@ class ConversationsController extends Controller
     /**
      * Process attachments on reply, new conversation, saving draft and forwarding.
      */
-    public function processReplyAttachments($request)
+    public function processReplyAttachments($request, $thread_id = null)
     {
         $has_attachments = false;
         $attachments = [];
@@ -3210,7 +3210,18 @@ class ConversationsController extends Controller
             ) {
                 $has_attachments = true;
             }
-            Attachment::deleteByIds($attachments_to_remove);
+            // Sanitize $attachments_to_remove list.
+            if (count($attachments_to_remove)) {
+                $attachments_check = Attachment::select('id', 'thread_id')
+                    ->whereIn('id', $attachments_to_remove)
+                    ->get();
+                foreach ($attachments_check as $attachment) {
+                    if ($attachment->thread_id && $attachment->thread_id != $thread_id) {
+                        $attachments_to_remove = array_diff($attachments_to_remove, [$attachment->id]);
+                    }
+                }
+                Attachment::deleteByIds($attachments_to_remove);
+            }
         }
 
         return [
