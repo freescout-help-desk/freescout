@@ -1082,6 +1082,10 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($mailbox_id);
         $this->authorize('admin', $mailbox);
         
+        if (csrf_token() != $request->token) {
+            return throw new \Illuminate\Session\TokenMismatchException;
+        }
+
         // oAuth Disconnect.
         $mailbox->removeMetaParam('oauth', true);
 
