@@ -88,7 +88,7 @@ class MailboxesController extends Controller
 
         $request_data = [
             'email'   => $request->email,
-            'name'    => trim(\Helper::stripTags($request->name)),
+            'name'    => trim(strip_tags($request->name)),
             'ratings' => $request->ratings ?? 1,
         ];
 
@@ -178,7 +178,7 @@ class MailboxesController extends Controller
 
         $allowed_fields = [];
 
-        if ($user->can('updateSettings', $mailbox)) {
+        if ($can_update_settings) {
 
             // Checkboxes
             $request->merge([
@@ -258,10 +258,12 @@ class MailboxesController extends Controller
         $mailbox->fill($fields);
 
         // Chat: Start a new conversation when receiving a reply to the closed / deleted Chat conversation.
-        if (!empty($request->chat_start_new)) {
-            $mailbox->setMetaParam('chat_start_new', true);
-        } else {
-            $mailbox->removeMetaParam('chat_start_new');
+        if ($can_update_settings) {
+            if (!empty($request->chat_start_new)) {
+                $mailbox->setMetaParam('chat_start_new', true);
+            } else {
+                $mailbox->removeMetaParam('chat_start_new');
+            }
         }
 
         $mailbox->signature = \Helper::stripDangerousTags($mailbox->signature);
@@ -429,6 +431,7 @@ class MailboxesController extends Controller
             'out_server',
             'out_port',
             'out_username',
+            'out_password',
             'out_encryption',
             'send_test_to',
         ]);
@@ -523,6 +526,7 @@ class MailboxesController extends Controller
             'in_server',
             'in_port',
             'in_username',
+            'in_password',
             'in_encryption',
             'in_imap_folders',
             'in_validate_cert',
@@ -645,7 +649,7 @@ class MailboxesController extends Controller
 
         if ($request->auto_reply_enabled) {
             $post = $request->all();
-            $post['auto_reply_message'] = \Helper::stripTags($post['auto_reply_message']);
+            $post['auto_reply_message'] = strip_tags($post['auto_reply_message']);
             $validator = Validator::make($post, [
                 'auto_reply_subject' => 'required|string|max:128',
                 'auto_reply_message' => 'required|string',
@@ -1082,6 +1086,10 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($mailbox_id);
         $this->authorize('admin', $mailbox);
         
+        if (csrf_token() != $request->token) {
+            return throw new \Illuminate\Session\TokenMismatchException;
+        }
+
         // oAuth Disconnect.
         $mailbox->removeMetaParam('oauth', true);
 

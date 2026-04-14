@@ -745,7 +745,7 @@
     "Username": "ユーザー名",
     "Users": "ユーザー",
     "Users are allowed to delete conversations": "ユーザーはメモや会話を削除することができます",
-    "Users are allowed to edit notes\/replies": "ユーザーはメモや返信を編集することができます",
+    "Users are allowed to edit own notes\/replies": "ユーザーはメモや返信を編集することができます",
     "Users are allowed to edit\/delete saved replies": "ユーザーは保存された返信を編集・削除することができます",
     "Users are allowed to manage custom folders": "ユーザーはカスタムフォルダを管理することができます",
     "Users are allowed to manage tags": "ユーザーはタグを管理することができます",

@@ -123,7 +123,7 @@
                                                  – <a href="{{ route('mailboxes.oauth', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'in']) }}" target="_blank">{{ __('Connect') }}</a>
                                             @endif
                                         @elseif ($mailbox->isOauthProvider(\MailHelper::OAUTH_PROVIDER_MICROSOFT) && $in_oauth_enabled)
-                                             – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'in']) }}">{{ __('Disconnect') }}</a>
+                                             – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_MICROSOFT, 'in_out' => 'in', 'token' => csrf_token()]) }}">{{ __('Disconnect') }}</a>
                                         @endif
                                         <small>(<a href="{{ config('app.freescout_repo') }}/wiki/Connect-FreeScout-to-Microsoft-365-Exchange-via-oAuth" target="_blank">{{ __('Help') }}</a>)</small>
                                     </p>
@@ -138,7 +138,7 @@
                                                  – <a href="{{ route('mailboxes.oauth', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_GOOGLE, 'in_out' => 'in']) }}" target="_blank">{{ __('Connect') }}</a>
                                             @endif
                                         @elseif ($mailbox->isOauthProvider(\MailHelper::OAUTH_PROVIDER_GOOGLE) && $in_oauth_enabled)
-                                             – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_GOOGLE, 'in_out' => 'in']) }}">{{ __('Disconnect') }}</a>
+                                             – <a href="{{ route('mailboxes.oauth_disconnect', ['id' => $mailbox->id, 'provider' => \MailHelper::OAUTH_PROVIDER_GOOGLE, 'in_out' => 'in', 'token' => csrf_token()]) }}">{{ __('Disconnect') }}</a>
                                         @endif
                                         <small>(<a href="{{ config('app.freescout_repo') }}/wiki/Connect-FreeScout-to-Google-Workspace" target="_blank">{{ __('Help') }}</a>)</small>
                                     </p>

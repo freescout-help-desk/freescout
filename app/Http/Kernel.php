@@ -47,6 +47,13 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\CustomHandle::class,
         ],
 
+        'open' => [
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\HttpsRedirect::class,
+            \App\Http\Middleware\FrameGuard::class,
+            \App\Http\Middleware\CustomHandle::class,
+        ],
+
         // 'api' => [
         //     'throttle:60,1',
         //     'bindings',

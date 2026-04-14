@@ -739,7 +739,7 @@
     "Username": "Ім'я користувача",
     "Users": "Користувачі",
     "Users are allowed to delete conversations": "Користувачам дозволено видаляти розмови",
-    "Users are allowed to edit notes\/replies": "Користувачам дозволено редагувати нотатки/відповіді",
+    "Users are allowed to edit own notes\/replies": "Користувачам дозволено редагувати нотатки/відповіді",
     "Users are allowed to edit\/delete saved replies": "Користувачам дозволено редагувати/видаляти збережені відповіді",
     "Users are allowed to manage custom folders": "Користувачам дозволено керувати власними папками",
     "Users are allowed to manage tags": "Користувачам дозволено керувати тегами",

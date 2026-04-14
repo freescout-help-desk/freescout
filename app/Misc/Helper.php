@@ -529,7 +529,11 @@ class Helper
     }
 
     /**
-     * Remove from text all tags, double spaces, etc.
+     * Strip all tags, double spaces, etc to show HTML as text.
+     * Differences from strip_tags():
+     * - Strips new lines
+     * - Strips double spaces
+     * - Strips <script> and <style> elements along with their content
      */
     public static function stripTags($text)
     {
@@ -588,6 +592,9 @@ class Helper
         return $data;
     }
 
+    /**
+     * Strips dangerous tags along with their content.
+     */
     public static function stripDangerousTags($html, $allowed_tags = [])
     {
         // <script src="/storage/attachment/8/1/1/test.js?id=7&token=c4786c4497db3c6254a0c310623a43c3">
@@ -600,6 +607,8 @@ class Helper
             'link',
             'object',
             'meta',
+            'embed',
+            'applet',
             // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-fh99-wr77-pxq3
             'style',
         ];

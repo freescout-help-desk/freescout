@@ -413,7 +413,7 @@ class ConversationsController extends Controller
                 $thread = new Thread();
                 $thread->body = $orig_thread->body;
                 // If this is a forwarded message, try to fetch From
-                preg_match_all("/From:[^<\n]+<([^<\n]+)>/m", html_entity_decode(\Helper::stripTags($thread->body)), $m);
+                preg_match_all("/From:[^<\n]+<([^<\n]+)>/m", html_entity_decode(strip_tags($thread->body)), $m);
 
                 if (!empty($m[1])) {
                     foreach ($m[1] as $value) {
@@ -860,7 +860,7 @@ class ConversationsController extends Controller
 
                     // Get attachments info
                     // Delete removed attachments.
-                    $attachments_info = $this->processReplyAttachments($request);
+                    $attachments_info = $this->processReplyAttachments($request, $thread->id ?? null);
 
                     // Determine redirect.
                     // Must be done before updating current conversation's status or assignee.
@@ -1407,7 +1407,7 @@ class ConversationsController extends Controller
                 $new = true;
                 if (!$response['msg'] && !empty($request->conversation_id)) {
                     $conversation = Conversation::find($request->conversation_id);
-                    if ($conversation && !$user->can('view', $conversation) && !$user->hasManageMailboxPermission($request->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)) {
+                    if ($conversation && !$user->can('view', $conversation) /*&& !$user->hasManageMailboxPermission($request->mailbox_id, Mailbox::ACCESS_PERM_ASSIGNED)*/) {
                         $response['msg'] = __('Not enough permissions');
                     } else {
                         $new = false;
@@ -1462,7 +1462,7 @@ class ConversationsController extends Controller
                 if (!$response['msg']) {
 
                     // Get attachments info
-                    $attachments_info = $this->processReplyAttachments($request);
+                    $attachments_info = $this->processReplyAttachments($request, $thread->id ?? null);
 
                     // Conversation
                     $now = date('Y-m-d H:i:s');
@@ -2023,7 +2023,7 @@ class ConversationsController extends Controller
                     $thread->edited_at = date('Y-m-d H:i:s');
                     $response['body'] = $thread->getCleanBody();
 
-                    if (\Helper::stripTags($response['body'])) {
+                    if (strip_tags($response['body'])) {
 
                         // Update the preview for the conversation if needed.
                         $last_thread = $thread->conversation->getLastThread([Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE]);
@@ -2898,6 +2898,9 @@ class ConversationsController extends Controller
             $filters_data['customer'] = Customer::find($filters['customer']);
         }
         //$filters = \Eventy::filter('search.filters', $filters, $filters_data, $mode, $q);
+        if ($user->canSeeOnlyAssignedConversations()) {
+            $filters['assigned'] = $user->id;
+        }
 
         // Remember recent query.
         $recent_search_queries = session('recent_search_queries') ?? [];
@@ -3006,6 +3009,11 @@ class ConversationsController extends Controller
         if ($conversations !== '') {
             return $conversations;
         }
+
+        if ($user->canSeeOnlyAssignedConversations()) {
+            $filters['assigned'] = $user->id;
+        }
+
         $query_conversations = Conversation::search($q, $filters, $user);
         return $query_conversations->paginate(Conversation::DEFAULT_LIST_SIZE);
     }
@@ -3190,7 +3198,7 @@ class ConversationsController extends Controller
     /**
      * Process attachments on reply, new conversation, saving draft and forwarding.
      */
-    public function processReplyAttachments($request)
+    public function processReplyAttachments($request, $thread_id = null)
     {
         $has_attachments = false;
         $attachments = [];
@@ -3210,7 +3218,18 @@ class ConversationsController extends Controller
             ) {
                 $has_attachments = true;
             }
-            Attachment::deleteByIds($attachments_to_remove);
+            // Sanitize $attachments_to_remove list.
+            if (count($attachments_to_remove)) {
+                $attachments_check = Attachment::select('id', 'thread_id')
+                    ->whereIn('id', $attachments_to_remove)
+                    ->get();
+                foreach ($attachments_check as $attachment) {
+                    if ($attachment->thread_id && $attachment->thread_id != $thread_id) {
+                        $attachments_to_remove = array_diff($attachments_to_remove, [$attachment->id]);
+                    }
+                }
+                Attachment::deleteByIds($attachments_to_remove);
+            }
         }
 
         return [

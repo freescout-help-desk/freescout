@@ -122,7 +122,7 @@ class OpenController extends Controller
         $conversation = Conversation::findOrFail($conversation_id);
         $thread = Thread::findOrFail($thread_id);
 
-        if ($thread->conversation_id !== (int)$conversation_id) {
+        if ((int)$thread->conversation_id !== (int)$conversation_id) {
             return \Helper::denyAccess();
         }
 

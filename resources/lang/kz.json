@@ -720,7 +720,7 @@
     "Username": "Пайдаланушы аты",
     "Users": "Агенттер",
     "Users are allowed to delete conversations": "Агенттер әңгімелерді жоя алады",
-    "Users are allowed to edit notes/replies": "Агенттер ескертулерді/жауаптарды өңдей алады",
+    "Users are allowed to edit own notes/replies": "Агенттер ескертулерді/жауаптарды өңдей алады",
     "Users are allowed to edit/delete saved replies": "Агенттер сақталған жауаптарды өңдей немесе жоя алады",
     "Users are allowed to manage custom folders": "Агенттер жеке қалталарды басқара алады",
     "Users are allowed to manage tags": "Агенттер тегтерді басқара алады",

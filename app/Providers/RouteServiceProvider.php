@@ -38,6 +38,7 @@ class RouteServiceProvider extends ServiceProvider
         //$this->mapApiRoutes();
 
         $this->mapWebRoutes();
+        $this->mapOpenRoutes();
 
         //
     }
@@ -62,6 +63,21 @@ class RouteServiceProvider extends ServiceProvider
              
         $route->namespace($this->namespace)
               ->group(base_path('routes/web.php'));
+    }
+
+    protected function mapOpenRoutes()
+    {
+        $subdirectory = \Helper::getSubdirectory();
+
+        if ($subdirectory) {
+            $route = Route::prefix($subdirectory)
+                     ->middleware('open');
+        } else {
+            $route = Route::middleware('open');
+        }
+
+        $route->namespace($this->namespace)
+              ->group(base_path('routes/open.php'));
     }
 
     /**

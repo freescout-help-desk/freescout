@@ -745,7 +745,7 @@
     "Username": "Användarnamn",
     "Users": "Användare",
     "Users are allowed to delete conversations": "Användare har tillåtelse att ta bort ärenden",
-    "Users are allowed to edit notes\/replies": "Användare har tillåtelse att redigera anteckningar\/svar",
+    "Users are allowed to edit own notes\/replies": "Användare har tillåtelse att redigera anteckningar\/svar",
     "Users are allowed to edit\/delete saved replies": "Användare har tillåtelse att redigera\/ta bort sparade svar",
     "Users are allowed to manage custom folders": "Användare har tillåtelse att hantera anpassade mappar",
     "Users are allowed to manage tags": "Användare har tillåtelse att hantera etiketter",

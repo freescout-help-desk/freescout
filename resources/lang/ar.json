@@ -647,7 +647,7 @@
     "Users": "مستخدمين",
     "Users are allowed to delete conversations": "يسمح للمستخدمين بحذف المحادثات",
     "Users are allowed to edit assigne conversation": "يُسمح للمستخدمين بتعديل التخصيص في المحادثة",
-    "Users are allowed to edit notes\/replies": "يسمح للمستخدمين بتعديل الملاحظات \/ الردود",
+    "Users are allowed to edit own notes\/replies": "يسمح للمستخدمين بتعديل الملاحظات \/ الردود",
     "Users are allowed to edit\/delete saved replies": "يسمح للمستخدمين بتعديل \/ حذف الردود المحفوظة",
     "Users are allowed to manage custom folders": "يُسمح للمستخدمين بإدارة المجلدات المخصصة",
     "Users are allowed to manage customers": "يُسمح للمستخدمين بإدارة العملاء",
