@@ -2898,6 +2898,9 @@ class ConversationsController extends Controller
             $filters_data['customer'] = Customer::find($filters['customer']);
         }
         //$filters = \Eventy::filter('search.filters', $filters, $filters_data, $mode, $q);
+        if ($user->canSeeOnlyAssignedConversations()) {
+            $filters['assigned'] = $user->id;
+        }
 
         // Remember recent query.
         $recent_search_queries = session('recent_search_queries') ?? [];
@@ -3006,6 +3009,11 @@ class ConversationsController extends Controller
         if ($conversations !== '') {
             return $conversations;
         }
+
+        if ($user->canSeeOnlyAssignedConversations()) {
+            $filters['assigned'] = $user->id;
+        }
+
         $query_conversations = Conversation::search($q, $filters, $user);
         return $query_conversations->paginate(Conversation::DEFAULT_LIST_SIZE);
     }
