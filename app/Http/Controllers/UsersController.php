@@ -85,13 +85,23 @@ class UsersController extends Controller
                         ->withInput();
         }
 
+        $password = '';
+        if (empty($request->send_invite)) {
+            // Set password from request.
+            $password = $request->password;
+        } else {
+            // Set some random password before sending invite.
+            $password = User::generateRandomPassword();
+        }
+
         $data = [
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
+            'password' => $password,
         ];
 
-        $user = User::create($data, ['without_password' => true]);
+        $user = User::create($data);
 
         if (!$auth_user->can('changeRole', $user)) {
             $user->role = User::ROLE_USER;
@@ -99,13 +109,6 @@ class UsersController extends Controller
             $user->role = $request->role;
         }
 
-        if (empty($request->send_invite)) {
-            // Set password from request
-            $user->password = Hash::make($request->password);
-        } else {
-            // Set some random password before sending invite
-            $user->password = Hash::make($user->generateRandomPassword());
-        }
         // Set system timezone.
         $user->timezone = config('app.timezone') ?: User::DEFAULT_TIMEZONE;
         $user = \Eventy::filter('user.create_save', $user, $request);

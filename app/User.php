@@ -973,7 +973,7 @@ class User extends Authenticatable
     {
         $user = new self();
 
-        if (empty($data['email']) || (empty($data['password']) && empty($options['without_password']))) {
+        if (empty($data['email']) || empty($data['password'])) {
             return null;
         }
 
@@ -982,6 +982,7 @@ class User extends Authenticatable
         try {
             $user->save();
         } catch (\Exception $e) {
+            \Helper::logException($e);
             return null;
         }
 
