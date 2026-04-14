@@ -431,6 +431,7 @@ class MailboxesController extends Controller
             'out_server',
             'out_port',
             'out_username',
+            'out_password',
             'out_encryption',
             'send_test_to',
         ]);
@@ -525,6 +526,7 @@ class MailboxesController extends Controller
             'in_server',
             'in_port',
             'in_username',
+            'in_password',
             'in_encryption',
             'in_imap_folders',
             'in_validate_cert',
