@@ -21,7 +21,7 @@ class CheckBrowser
     {
         $user_agent = $request->server('HTTP_USER_AGENT') ?? '';
 
-        $allowed_user_agents = explode('|', strtolower(config('app.allowed_user_agents')));
+        $allowed_user_agents = explode('|', strtolower(config('app.allowed_user_agents') ?? ''));
 
         if (in_array(strtolower($user_agent), $allowed_user_agents)) {
             return $next($request);
