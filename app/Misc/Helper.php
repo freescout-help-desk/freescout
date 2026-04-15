@@ -626,6 +626,10 @@ class Helper
         // If some tag is allowed make sure that it does not point to the file on the current server.
         if (!empty($allowed_tags)) {
             foreach ($allowed_tags as $tag) {
+                // Skip some tags.
+                if (in_array($tag, ['iframe'])) {
+                    continue;
+                }
                 $html = preg_replace_callback('#<'.$tag.'(.*?)>#is', 
                     function ($matches) use ($attrs) {
                         preg_match("/(src|data)\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[1], $attr_match);
