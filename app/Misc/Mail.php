@@ -880,7 +880,7 @@ class Mail
 
     public static function isGeneratedMessageId($message_id)
     {
-        return preg_match("#^fs\-[a-z0-9]+@#", $message_id);
+        return preg_match("#^fs\-[a-z0-9]+@#", $message_id ?? '');
     }
 
     /**
