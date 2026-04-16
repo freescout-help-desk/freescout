@@ -38,5 +38,8 @@ class StripTagsTest extends TestCase
 //--></script>3";
         $this->assertEquals('13', \Helper::stripTags($str));
         $this->assertEquals('13', \Helper::stripDangerousTags($str));
+
+        $str = '1<iframe src="/test/" frameborder="0" class="modal-iframe"></iframe>2';
+        $this->assertEquals($str, \Helper::stripDangerousTags($str, ['iframe']));
     }
 }

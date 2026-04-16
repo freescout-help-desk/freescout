@@ -1284,11 +1284,7 @@ class Conversation extends Model
         // Make conversation Unassigned if current assignee does not have
         // access to the target mailbox.
         // https://github.com/freescout-help-desk/freescout/issues/5333
-        $conv_user = $user;
-        if ($this->user_id != $user->id) {
-            $conv_user = $this->user;
-        }
-        if (!$conv_user->can('view', $mailbox)) {
+        if ($this->user_id && $this->user && !$this->user->can('view', $mailbox)) {
             $this->changeUser(self::USER_UNASSIGNED, $user, $create_thread = true);
         }
 

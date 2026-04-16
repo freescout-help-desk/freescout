@@ -1087,7 +1087,7 @@ class MailboxesController extends Controller
         $this->authorize('admin', $mailbox);
         
         if (csrf_token() != $request->token) {
-            return throw new \Illuminate\Session\TokenMismatchException;
+            throw new \Illuminate\Session\TokenMismatchException;
         }
 
         // oAuth Disconnect.

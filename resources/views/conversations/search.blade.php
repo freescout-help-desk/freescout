@@ -6,7 +6,7 @@
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
     <div class="sidebar-title">
-		{!! safe_raw_html(Eventy::filter('search.title', __('Search'))) !!}
+		{!! safe_raw_html(Eventy::filter('search.title', __('Search')), ['iframe']) !!}
 	</div>
     <ul class="sidebar-menu sidebar-menu-noicons">
     	@if (!$recent || (count($recent) == 1 && $recent[0] == $q))

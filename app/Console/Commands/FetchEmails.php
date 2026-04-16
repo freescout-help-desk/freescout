@@ -710,6 +710,8 @@ class FetchEmails extends Command
                                     if (!$correct_thread) {
                                         $prev_thread = null;
                                     }
+                                } else {
+                                    $prev_thread = null;
                                 }
                                 if (!$prev_thread) {
                                     $prev_thread = null;

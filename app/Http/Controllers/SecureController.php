@@ -29,11 +29,8 @@ class SecureController extends Controller
     public function dashboard()
     {
         $user = auth()->user();
-        if (!$user->isAdmin()) {
-            $mailboxes = $user->mailboxesCanView();
-        } else {
-            $mailboxes = $user->mailboxesCanViewWithSettings();
-        }
+
+        $mailboxes = $user->mailboxesCanViewWithSettings();
 
         // Sort by name.
         $mailboxes = \Eventy::filter('dashboard.mailboxes', $mailboxes->sortBy('name'));
