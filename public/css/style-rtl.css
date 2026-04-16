@@ -498,3 +498,32 @@ table.dataTable thead .sorting {
         margin-top: 0.5em !important;
     }
 }
+
+/**
+ Fix: In RTL, clicking the onoffswitch label moves focus to the hidden
+ checkbox positioned at left:-9999px, which causes the browser to scroll
+ the whole page to the left. Hide it without off-screen positioning.
+*/
+.onoffswitch-checkbox {
+        left: auto;
+        right: auto;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        clip: rect(0 0 0 0);
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        border: 0;
+}
+
+/* Mirror the knob: in LTR it slides from right:19px (off) to right:0 (on).
+   In RTL the label is visually mirrored, so anchor the knob to the left. */
+.onoffswitch-label:before {
+        left: 19px;
+        right: auto;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label:before {
+        left: 0;
+        right: auto;
+}
