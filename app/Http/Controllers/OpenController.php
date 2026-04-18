@@ -27,7 +27,7 @@ class OpenController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function userSetup($hash)
+    public function userSetup($hash, $invite_sent_at)
     {
         if (auth()->user()) {
             return redirect()->route('dashboard');
@@ -38,13 +38,17 @@ class OpenController extends Controller
             \Helper::setLocale($user->locale);
         }
 
+        if ($user && !$this->isInviteExpirationValid($invite_sent_at, $user)) {
+            $user = null;
+        }
+
         return view('open/user_setup', ['user' => $user]);
     }
 
     /**
      * Save user from invitation.
      */
-    public function userSetupSave($hash, Request $request)
+    public function userSetupSave($hash, $invite_sent_at, Request $request)
     {
         if (auth()->user()) {
             return redirect()->route('dashboard');
@@ -53,6 +57,10 @@ class OpenController extends Controller
 
         if (!$user) {
             abort(404);
+        }
+
+        if (!$this->isInviteExpirationValid($invite_sent_at, $user)) {
+            \Helper::denyAccess();
         }
 
         $validator = Validator::make($request->all(), [
@@ -112,6 +120,20 @@ class OpenController extends Controller
         \Session::flash('flash_success_floating', __('Welcome to :company_name!', ['company_name' => htmlspecialchars(Option::getCompanyName())]));
 
         return redirect()->route('dashboard');
+    }
+
+    public function isInviteExpirationValid($invite_sent_at, $user)
+    {
+        $invite_sent_at = \Helper::decrypt($invite_sent_at, $user->password);
+
+        if (!$invite_sent_at 
+            || !is_numeric($invite_sent_at) 
+            || (int)$invite_sent_at < time() - User::INVITE_TTL_DAYS*86400
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     /*

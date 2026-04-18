@@ -930,10 +930,15 @@ class Helper
             if (!$password) {
                 $value = encrypt($value);
             } else {
-                $value = (new \Illuminate\Encryption\Encrypter(md5($password)))->encrypt($value);
+                $data = [
+                    'v' => $value,
+                    'p' => hash('sha256', $password),
+                ];
+
+                $value = encrypt($data);
             }
         } catch (\Exception $e) {
-            // Do nothing.
+            //self::logException($e);
         }
 
         return $value;
@@ -952,7 +957,15 @@ class Helper
             if (!$password) {
                 $value = app('encrypter')->decrypt($value, false);
             } else {
-                $value = (new \Illuminate\Encryption\Encrypter(md5($password)))->decrypt($value, false);
+                $decrypted = decrypt($value);
+
+                if (is_array($decrypted)
+                    && !empty($decrypted['v'])
+                    && !empty($decrypted['p'])
+                    && hash('sha256', $password) === $decrypted['p']
+                ) {
+                    $value = $decrypted['v'];
+                }
             }
 
             // If the value is scalar - unserialize it,
@@ -961,7 +974,7 @@ class Helper
                 $value = unserialize($value, ['allowed_classes' => false]);
             }
         } catch (\Exception $e) {
-            // Do nothing.
+            //self::logException($e);
         }
         return $value;
     }

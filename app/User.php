@@ -69,6 +69,11 @@ class User extends Authenticatable
     const INVITE_STATE_NOT_INVITED = 3;
 
     /**
+     * For how long invitation link is valid.
+     */
+    const INVITE_TTL_DAYS = 7;
+
+    /**
      * Time formats.
      */
     const TIME_FORMAT_12 = 1;
@@ -438,7 +443,9 @@ class User extends Authenticatable
      */
     public function urlSetup()
     {
-        return route('user_setup', ['hash' => $this->invite_hash]);
+        $invite_sent_at = \Helper::encrypt(time().'', $this->password);
+
+        return route('user_setup', ['hash' => $this->invite_hash, 'invite_sent_at' => $invite_sent_at]);
     }
 
     /**
