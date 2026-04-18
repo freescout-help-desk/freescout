@@ -1911,7 +1911,7 @@ class Helper
             $last_redirected_url = self::curlGetLastRedirectedUrl($url);
 
             if ($last_redirected_url != $url) {
-                if (!self::checkUrlIpAndHost($url, $throw_exception)) {
+                if (!self::checkUrlIpAndHost($last_redirected_url, $throw_exception)) {
                     return '';
                 }
             }
