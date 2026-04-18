@@ -63,6 +63,26 @@ class UserPolicy
     }
 
     /**
+     * Determine whether the user can update model's notification settings.
+     *
+     * @param \App\User $user
+     * @param \App\User $model
+     *
+     * @return mixed
+     */
+    public function updateNotifications(User $user, User $model)
+    {
+        if ($user->isAdmin()
+            || $user->id == $model->id
+            || ($user->hasPermission(User::PERM_EDIT_USERS) && !$model->isAdmin())
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Determine whether the user can delete the model.
      *
      * @param \App\User $user

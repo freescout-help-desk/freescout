@@ -364,7 +364,7 @@ class UsersController extends Controller
     public function notifications($id)
     {
         $user = User::findOrFail($id);
-        $this->authorize('update', $user);
+        $this->authorize('updateNotifications', $user);
 
         if ($user->isDeleted()) {
             abort(404);
@@ -397,7 +397,7 @@ class UsersController extends Controller
     public function notificationsSave($id, Request $request)
     {
         $user = User::findOrFail($id);
-        $this->authorize('update', $user);
+        $this->authorize('updateNotifications', $user);
 
         Subscription::saveFromArray($request->subscriptions, $user->id);
 
