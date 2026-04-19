@@ -926,22 +926,30 @@ class Helper
 
     public static function encrypt($value, $password = null)
     {
+        $encrypted_value = $value;
+
         try {
             if (!$password) {
-                $value = encrypt($value);
+                $encrypted_value = encrypt($value);
             } else {
-                $data = [
-                    'v' => $value,
-                    'p' => hash('sha256', $password),
-                ];
+                // Derive a 32-byte key (AES-256 requires 32 bytes).
+                $key = hash('sha256', $password, true);
+                // Create encrypter instance.
+                $encrypter = new \Illuminate\Encryption\Encrypter($key, 'AES-256-CBC');
+                // Encrypt text.
+                $encrypted_value = $encrypter->encrypt($value);
 
-                $value = encrypt($data);
+                // $data = [
+                //     'v' => $value,
+                //     'p' => hash('sha256', $password),
+                // ];
+                // $value = encrypt($data);
             }
         } catch (\Exception $e) {
             //self::logException($e);
         }
 
-        return $value;
+        return $encrypted_value;
     }
 
     /**
@@ -953,30 +961,37 @@ class Helper
      */
     public static function decrypt($value, $password = null, $force_unserialize = false)
     {
+        $decrypted_value = $value;
+
         try {
             if (!$password) {
-                $value = app('encrypter')->decrypt($value, false);
+                $decrypted_value = app('encrypter')->decrypt($value, false);
             } else {
-                $decrypted = decrypt($value);
+                $key = hash('sha256', $password, true);
+                $encrypter = new \Illuminate\Encryption\Encrypter($key, 'AES-256-CBC');
+                // Decrypt.
+                $decrypted_value = $encrypter->decrypt($value);
 
-                if (is_array($decrypted)
-                    && !empty($decrypted['v'])
-                    && !empty($decrypted['p'])
-                    && hash('sha256', $password) === $decrypted['p']
-                ) {
-                    $value = $decrypted['v'];
-                }
+                // $decrypted = decrypt($value);
+                // if (is_array($decrypted)
+                //     && !empty($decrypted['v'])
+                //     && !empty($decrypted['p'])
+                //     && hash('sha256', $password) === $decrypted['p']
+                // ) {
+                //     $value = $decrypted['v'];
+                // }
             }
 
-            // If the value is scalar - unserialize it,
+            // If the decrypted_value is scalar - unserialize it,
             // Otherwise - do not, as objects may contain dangerous code.
-            if (preg_match("#^[idsa]:#", $value) || $force_unserialize) {
-                $value = unserialize($value, ['allowed_classes' => false]);
+            if (preg_match("#^[idsa]:#", $decrypted_value) || $force_unserialize) {
+                $decrypted_value = unserialize($decrypted_value, ['allowed_classes' => false]);
             }
         } catch (\Exception $e) {
             //self::logException($e);
         }
-        return $value;
+
+        return $decrypted_value;
     }
 
     /**
