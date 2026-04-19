@@ -27,8 +27,8 @@ if (config('app.dashboard_path')) {
 }
 
 // Open routes
-Route::get('/user-setup/{hash}', 'OpenController@userSetup')->name('user_setup');
-Route::post('/user-setup/{hash}', 'OpenController@userSetupSave');
+Route::get('/user-setup/{hash}/{invite_sent_at}', 'OpenController@userSetup')->name('user_setup');
+Route::post('/user-setup/{hash}/{invite_sent_at}', 'OpenController@userSetupSave');
 
 // General routes for logged in users
 if (config('app.dashboard_path')) {

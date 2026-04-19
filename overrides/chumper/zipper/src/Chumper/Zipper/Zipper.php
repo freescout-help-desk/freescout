@@ -617,7 +617,8 @@ class Zipper
         // Block path traversal attempts
         $realBase = realpath($path);
         $realDest = realpath(pathinfo($path . DIRECTORY_SEPARATOR . $tmpPath)['dirname'] ?? '');
-        if ($realDest === false || strpos($realDest, $realBase) !== 0) {
+        // On some systems $realDest is empty for valid paths.
+        if ($realBase && $realDest && strpos($realDest, $realBase) !== 0) {
             \Log::error('[Zipper] Path traversal detected - path: '.$path.'; fileName: '.$fileName.'; realBase: '.$realBase.'; tmpPath: '.$tmpPath.'; realDest: '.$realDest);
             throw new \RuntimeException('Zipper: Path traversal detected');
         }
