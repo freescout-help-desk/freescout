@@ -9,7 +9,8 @@ define('PHP_PATH', '');
 define('ALLOWED_PHP_DIRS', [
     '/usr/bin',
     '/usr/local/bin',
-    '/usr/sbin'
+    '/usr/sbin',
+    '/usr/local/sbin',
 ]);
 
 ini_set('display_errors', 'Off');
