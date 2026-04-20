@@ -128,7 +128,7 @@ if (!empty($_POST)) {
     if (empty($errors)) {
         if (trim($app_key) !== trim(getEnvVar('APP_KEY', $root_dir))) {
             $errors['app_key'] = 'Invalid App Key';
-        }  elseif (trim($db_password) !== trim(getEnvVar('DB_PASSWORD', $root_dir))) {
+        } elseif (trim($db_password) !== trim(getEnvVar('DB_PASSWORD', $root_dir))) {
             $errors['db_password'] = 'Invalid DB Password';
         } else {
             if (!function_exists('shell_exec')) {
