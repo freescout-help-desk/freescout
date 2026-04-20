@@ -872,9 +872,15 @@ class Helper
         return 'Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')';
     }
 
-    public static function denyAccess($msg = '')
+    public static function denyAccess($msg = '', $display_to_visitor = false)
     {
-        abort(403, $msg ?: 'This action is unauthorized.');
+        $msg = $msg ?: 'This action is unauthorized.';
+
+        if ($display_to_visitor) {
+            $msg .= '[display]';
+        }
+
+        abort(403, $msg);
     }
 
     /**
