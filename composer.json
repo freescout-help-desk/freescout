@@ -222,7 +222,9 @@
             "TijsVerkoyen\\CssToInlineStyles\\": "overrides/tijsverkoyen/css-to-inline-styles/src/",
             "TijsVerkoyen\\CssToInlineStyles\\Css\\Property\\": "overrides/tijsverkoyen/css-to-inline-styles/src/Css/Property/",
             "Html2Text\\": "overrides/html2text/html2text/src/",
-            "PHPUnit\\Runner\\": "overrides/phpunit/phpunit/src/Runner/"
+            "PHPUnit\\Runner\\": "overrides/phpunit/phpunit/src/Runner/",
+            "PHPUnit\\Util\\PHP\\": "overrides/phpunit/phpunit/src/Util/PHP/",
+            "PHPUnit\\Util\\Xml\\": "overrides/phpunit/phpunit/src/Util/Xml/"
         },
         "exclude-from-classmap": [
             "Modules/",
@@ -516,7 +518,9 @@
             "vendor/tijsverkoyen/css-to-inline-styles/src/CssToInlineStyles.php",
             "vendor/tijsverkoyen/css-to-inline-styles/src/Css/Property/Processor.php",
             "vendor/html2text/html2text/src/Html2Text.php",
-            "vendor/phpunit/phpunit/src/Runner/PhptTestCase.php"
+            "vendor/phpunit/phpunit/src/Runner/PhpTestCase.php",
+            "vendor/phpunit/phpunit/src/Util/PHP/AbstractPhpProcess.php",
+            "vendor/phpunit/phpunit/src/Util/Xml/Loader.php"
         ]
     },
     "autoload-dev": {
