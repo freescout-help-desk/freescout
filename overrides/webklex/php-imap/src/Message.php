@@ -768,8 +768,13 @@ class Message {
      */
     public function decodeString($string, $encoding): string {
 
+        // https://github.com/freescout-help-desk/freescout/issues/5356
         // Remove null bytes and other control characters.
-        $string = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $string);
+        // $string = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $string);
+
+        // Remove null bytes.
+        // https://github.com/freescout-help-desk/freescout/issues/5292
+        $string = preg_replace('/[\x00]/', '', $string);
 
         switch ($encoding) {
             case IMAP::MESSAGE_ENC_BINARY:

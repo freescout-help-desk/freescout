@@ -150,4 +150,11 @@ class WebklexTest extends FixtureWebklexMessage {
 
         self::assertStringEndsWith("</html>", $message->getHtmlBody());
     }
+
+    // https://github.com/freescout-help-desk/freescout/issues/5356
+    public function testIso2022JpCharset() {
+        $message = $this->getFixture("message-5-iso-2022-jp.eml");
+
+        self::assertStringEndsWith("※ アマゾン 配送部", $message->getTextBody());
+    }
 }
