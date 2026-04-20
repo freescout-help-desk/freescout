@@ -1592,6 +1592,7 @@ class Helper
                         }
                         $link = $match[2];
                         $link = substr($link, strlen($match[3]));
+                        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-49pm-xwqj-vwjp
                         //return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
                         $href = htmlspecialchars($protocol.'://'.$link, ENT_QUOTES, 'UTF-8');
                         $link_text = htmlspecialchars($match[2], ENT_QUOTES, 'UTF-8');
@@ -1600,8 +1601,8 @@ class Helper
                     break;
                 case 'mail':
                     $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:\)])~', function ($match) use (&$links, $attr) {
-                        $href = htmlspecialchars($match[1], ENT_QUOTES, 'UTF-8');
-                        $link_text = htmlspecialchars($match[1], ENT_QUOTES, 'UTF-8');
+                        $href = self::encodeQuotes($match[1]);
+                        $link_text = $href;
                         return '<' . array_push($links, "<a $attr href=\"mailto:{$href}\">{$link_text}</a>") . '>';
                     }, $value) ?: $value;
                     break;
@@ -1619,6 +1620,11 @@ class Helper
         return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { 
             return $links[$match[1] - 1];
         }, $value ?? '') ?: $value;
+    }
+
+    public static function encodeQuotes($str)
+    {
+        return str_replace('"', '&quot;', $str);
     }
 
     /**
