@@ -1594,8 +1594,8 @@ class Helper
                         $link = substr($link, strlen($match[3]));
                         // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-49pm-xwqj-vwjp
                         //return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
-                        $href = htmlspecialchars($protocol.'://'.$link, ENT_QUOTES, 'UTF-8');
-                        $link_text = htmlspecialchars($match[2], ENT_QUOTES, 'UTF-8');
+                        $href = self::encodeQuotes($protocol.'://'.$link, ENT_QUOTES, 'UTF-8');
+                        $link_text = self::encodeQuotes($match[2], ENT_QUOTES, 'UTF-8');
                         return $match[1].'<' . array_push($links, "<a $attr href=\"".$href."\">".$link_text."</a>") . '>';
                     }, $value) ?: $value;
                     break;
@@ -1608,8 +1608,8 @@ class Helper
                     break;
                 default:
                     $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) {
-                        $href = htmlspecialchars("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
-                        $link_text = htmlspecialchars("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
+                        $href = self::encodeQuotes("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
+                        $link_text = self::encodeQuotes("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
                         return '<' . array_push($links, "<a $attr href=\"{$href}\">{$link_text}</a>") . '>';
                     }, $value) ?: $value;
                     break;
