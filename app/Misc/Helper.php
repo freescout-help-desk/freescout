@@ -2005,7 +2005,7 @@ class Helper
             $_SERVER['LOCAL_ADDR'] ?? '',
         ];
 
-        if (!in_array($parts['host'], $host_white_list)) {
+        if (!in_array($parts['host'], $host_white_list) && !self::checkIpByMask($parts['host'], $host_white_list)) {
             if (in_array($parts['host'], $restricted_hosts) || self::checkIpByMask($parts['host'], $restricted_hosts)) {
                 if ($throw_exception) {
                     throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $parts['host']]), 1);
@@ -2018,7 +2018,7 @@ class Helper
         // Sanitize host IP address.
         $remote_host_ip = gethostbyname($parts['host']);
         if (!in_array($remote_host_ip, $host_white_list)) {
-            if (in_array($remote_host_ip, $restricted_hosts) || self::checkIpByMask($remote_host_ip, $restricted_hosts)) {
+            if (!in_array($remote_host_ip, $host_white_list) && !self::checkIpByMask($remote_host_ip, $host_white_list)) {
                 if ($throw_exception) {
                     throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), 1);
                 } else {
