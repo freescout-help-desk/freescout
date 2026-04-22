@@ -44,6 +44,9 @@ class Helper
 
     const DB_INT_MAX = 2147483647;
 
+    const UPLOAD_MODE_DEFAULT = 'default';
+    const UPLOAD_MODE_BY_CUSTOMER = 'customer';
+
     public static $csp_nonce = null;
 
     /**
@@ -2104,7 +2107,7 @@ class Helper
         }
     }
 
-    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null, $mime_type = '')
+    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null, $mime_type = '', $upload_mode = self::UPLOAD_MODE_DEFAULT)
     {
         $pdf_mime_types = [
             'application/pdf', 'application/x-pdf', 'application/acrobat',
@@ -2145,8 +2148,20 @@ class Helper
         // Check extension.
         $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
 
+        // Add underscore to the extension if file has restricted extension.
+        $rename = false;
         if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext) || mb_substr($file_name, 0, 1) == '.') {
-            // Add underscore to the extension if file has restricted extension.
+            $rename = true;
+        } elseif ($upload_mode == self::UPLOAD_MODE_BY_CUSTOMER) {
+            $customer_allowed_extensions = config('app.customer_allowed_extensions') ?? [];
+            $customer_allowed_mime_types = config('app.customer_allowed_mime_types') ?? [];
+
+            if (!in_array($ext, $customer_allowed_extensions) || ($mime_type && !in_array($mime_type, $customer_allowed_mime_types))) {
+                $rename = true;
+            }
+        }
+
+        if ($rename) { 
             $file_name = $file_name.'_';
         } elseif ($ext == 'pdf' || in_array(strtolower($mime_type), $pdf_mime_types)) {
             // Rename PDF to avoid running embedded JavaScript.
