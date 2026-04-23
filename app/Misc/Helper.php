@@ -2017,8 +2017,8 @@ class Helper
 
         // Sanitize host IP address.
         $remote_host_ip = gethostbyname($parts['host']);
-        if (!in_array($remote_host_ip, $host_white_list)) {
-            if (!in_array($remote_host_ip, $host_white_list) && !self::checkIpByMask($remote_host_ip, $host_white_list)) {
+        if (!in_array($remote_host_ip, $host_white_list) && !self::checkIpByMask($remote_host_ip, $host_white_list)) {
+            if (in_array($remote_host_ip, $restricted_hosts) || self::checkIpByMask($remote_host_ip, $restricted_hosts)) {
                 if ($throw_exception) {
                     throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), 1);
                 } else {
