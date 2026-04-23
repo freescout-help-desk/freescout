@@ -1365,6 +1365,11 @@ class Conversation extends Model
      */
     public function mergeConversations($second_conversation, $user)
     {
+        // Do not allow to merge with self.
+        if ($second_conversation->id == $this->id) {
+            return false;
+        }
+
         // Move all threads from old to new conversation.
         foreach ($second_conversation->threads as $thread) {
             $thread->conversation_id = $this->id;

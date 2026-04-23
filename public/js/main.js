@@ -3117,6 +3117,7 @@ function initMergeConv()
 			fsAjax({
 					action: 'merge_search',
 					number: $('.merge-conv-number:visible:first').val(),
+					cur_conv_id: getGlobalAttr('conversation_id')
 				},
 				laroute.route('conversations.ajax'),
 				function(response) {

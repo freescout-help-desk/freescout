@@ -2351,7 +2351,7 @@ class ConversationsController extends Controller
             case 'merge_search':
                 $conversation = Conversation::where(Conversation::numberFieldName(), $request->number)->first();
 
-                if (!$conversation) {
+                if (!$conversation || $conversation->id == ($request->cur_conv_id ?? '')) {
                     $response['msg'] = __('Conversation not found');
                 }
                 if (!$response['msg'] && !$user->can('view', $conversation)) {
