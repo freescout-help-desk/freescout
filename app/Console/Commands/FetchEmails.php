@@ -413,7 +413,7 @@ class FetchEmails extends Command
                 $duplicate_message_id = Thread::where('message_id', $message_id)->first();
             }
 
-            // Mailbox has been mentioned in Bcc.
+            // Mailbox has been mentioned in Bcc or email originates from within FreeScout.
             if (!$extra && $duplicate_message_id) {
 
                 $recipients = array_merge(
@@ -421,7 +421,10 @@ class FetchEmails extends Command
                     $this->formatEmailList($message->getCc())
                 );
 
-                if (!in_array(Email::sanitizeEmail($mailbox->email), $recipients)
+                // Check if the duplicate originates from FreeScout
+                // https://github.com/freescout-help-desk/freescout/issues/5368#issuecomment-4309140388
+                $is_outbound_from_fs = \MailHelper::isFsMessageId($duplicate_message_id->message_id);
+                if ((!in_array(Email::sanitizeEmail($mailbox->email), $recipients) || $is_outbound_from_fs)
                     // Make sure that previous email has been imported into other mailbox.
                     && $duplicate_message_id->conversation
                     && $duplicate_message_id->conversation->mailbox_id != $mailbox->id
