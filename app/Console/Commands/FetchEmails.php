@@ -705,7 +705,7 @@ class FetchEmails extends Command
                                     if ($original_id) {
                                         $search_ids = [
                                             $original_id,
-                                            \MailHelper::generateMessageId($original_id, $mailbox->id.$original_id)
+                                            \MailHelper::generateMessageId($original_id, $mailbox->id.$original_id),
                                         ];
 
                                         $correct_thread = Thread::whereIn('message_id', $search_ids)
