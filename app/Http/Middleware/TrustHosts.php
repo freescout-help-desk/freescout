@@ -4,7 +4,11 @@ namespace App\Http\Middleware;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
 
+/**
+ * https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-822g-7rw5-53xj
+ */
 class TrustHosts
 {
     /**
@@ -65,11 +69,14 @@ class TrustHosts
         if ($is_trusted_host) {
             return $next($request);
         }
+ 
+        // Throws: Untrusted Host...
+        //Request::setTrustedHosts([$current_host]);
+        //throw new SuspiciousOperationException(sprintf('Untrusted Host "%s".', $host));
 
-        // Throw: Untrusted Host...
-        Request::setTrustedHosts([$app_host]);
+        \Helper::denyAccess("Untrusted Host: {$current_host}. Add the following to your .env file and clear cache: APP_TRUSTED_HOSTS ='$current_host'", true);
 
-        return $next($request);
+        //return $next($request);
     }
 
     /**

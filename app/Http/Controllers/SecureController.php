@@ -197,7 +197,7 @@ class SecureController extends Controller
     /**
      * Upload files and images.
      */
-    public function upload(Request $request, $allowed_exts = [])
+    public function upload(Request $request)
     {
         // 'jpg','gif','png'
         $response = [
@@ -217,7 +217,7 @@ class SecureController extends Controller
 
         if (!$response['msg']) {
 
-            $upload = Helper::uploadFile($request->file, $allowed_exts);
+            $upload = Helper::uploadFile($request->file);
             $filename = basename($upload);
 
             if ($upload) {

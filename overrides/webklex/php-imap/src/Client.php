@@ -343,15 +343,15 @@ class Client {
             $this->connection->setConnectionTimeout($this->timeout);
             $this->connection->setProxy($this->proxy);
         } else {
-            if (config('app.use_new_pop3_lib') || (extension_loaded('imap') === false)) {
-                $this->connection = new PopProtocol($this->validate_cert, $this->encryption);
-            } else {
+            //if (config('app.use_new_pop3_lib') || (extension_loaded('imap') === false)) {
+            $this->connection = new PopProtocol($this->validate_cert, $this->encryption);
+            /*} else {
                 $this->connection = new \Webklex\PHPIMAP\Connection\Protocols\LegacyProtocol($this->validate_cert, $this->encryption);
                 if (strpos($protocol, "legacy-") === 0) {
                     $protocol = substr($protocol, 7);
                 }
                 $this->connection->setProtocol($protocol);
-            }
+            }*/
 
             $this->connection->setConnectionTimeout($this->timeout);
             $this->connection->setProxy($this->proxy);

@@ -1124,7 +1124,8 @@ class Thread extends Model
                     $uploaded_file,
                     $embedded = false,
                     $thread->id,
-                    $user_id ?? null
+                    $user_id ?? null,
+                    $data['attachments_upload_mode'] ?? \Helper::UPLOAD_MODE_DEFAULT,
                 );
 
                 if ($attachment) {

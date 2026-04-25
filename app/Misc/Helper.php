@@ -44,6 +44,9 @@ class Helper
 
     const DB_INT_MAX = 2147483647;
 
+    const UPLOAD_MODE_DEFAULT = 'default';
+    const UPLOAD_MODE_BY_CUSTOMER = 'customer';
+
     public static $csp_nonce = null;
 
     /**
@@ -872,9 +875,15 @@ class Helper
         return 'Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')';
     }
 
-    public static function denyAccess($msg = '')
+    public static function denyAccess($msg = '', $display_to_visitor = false)
     {
-        abort(403, $msg ?: 'This action is unauthorized.');
+        $msg = $msg ?: 'This action is unauthorized.';
+
+        if ($display_to_visitor) {
+            $msg .= '[display]';
+        }
+
+        abort(403, $msg);
     }
 
     /**
@@ -1586,23 +1595,24 @@ class Helper
                         }
                         $link = $match[2];
                         $link = substr($link, strlen($match[3]));
+                        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-49pm-xwqj-vwjp
                         //return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$protocol://$link</a>") . '>';
-                        $href = htmlspecialchars($protocol.'://'.$link, ENT_QUOTES, 'UTF-8');
-                        $link_text = htmlspecialchars($match[2], ENT_QUOTES, 'UTF-8');
+                        $href = self::encodeQuotes($protocol.'://'.$link, ENT_QUOTES, 'UTF-8');
+                        $link_text = self::encodeQuotes($match[2], ENT_QUOTES, 'UTF-8');
                         return $match[1].'<' . array_push($links, "<a $attr href=\"".$href."\">".$link_text."</a>") . '>';
                     }, $value) ?: $value;
                     break;
                 case 'mail':
                     $value = preg_replace_callback('~([^\s<>]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:\)])~', function ($match) use (&$links, $attr) {
-                        $href = htmlspecialchars($match[1], ENT_QUOTES, 'UTF-8');
-                        $link_text = htmlspecialchars($match[1], ENT_QUOTES, 'UTF-8');
+                        $href = self::encodeQuotes($match[1]);
+                        $link_text = $href;
                         return '<' . array_push($links, "<a $attr href=\"mailto:{$href}\">{$link_text}</a>") . '>';
                     }, $value) ?: $value;
                     break;
                 default:
                     $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) {
-                        $href = htmlspecialchars("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
-                        $link_text = htmlspecialchars("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
+                        $href = self::encodeQuotes("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
+                        $link_text = self::encodeQuotes("$protocol://{$match[1]}", ENT_QUOTES, 'UTF-8');
                         return '<' . array_push($links, "<a $attr href=\"{$href}\">{$link_text}</a>") . '>';
                     }, $value) ?: $value;
                     break;
@@ -1613,6 +1623,11 @@ class Helper
         return preg_replace_callback('/<(\d+)>/', function ($match) use (&$links) { 
             return $links[$match[1] - 1];
         }, $value ?? '') ?: $value;
+    }
+
+    public static function encodeQuotes($str)
+    {
+        return str_replace('"', '&quot;', $str);
     }
 
     /**
@@ -1990,7 +2005,7 @@ class Helper
             $_SERVER['LOCAL_ADDR'] ?? '',
         ];
 
-        if (!in_array($parts['host'], $host_white_list)) {
+        if (!in_array($parts['host'], $host_white_list) && !self::checkIpByMask($parts['host'], $host_white_list)) {
             if (in_array($parts['host'], $restricted_hosts) || self::checkIpByMask($parts['host'], $restricted_hosts)) {
                 if ($throw_exception) {
                     throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $parts['host']]), 1);
@@ -2002,7 +2017,7 @@ class Helper
 
         // Sanitize host IP address.
         $remote_host_ip = gethostbyname($parts['host']);
-        if (!in_array($remote_host_ip, $host_white_list)) {
+        if (!in_array($remote_host_ip, $host_white_list) && !self::checkIpByMask($remote_host_ip, $host_white_list)) {
             if (in_array($remote_host_ip, $restricted_hosts) || self::checkIpByMask($remote_host_ip, $restricted_hosts)) {
                 if ($throw_exception) {
                     throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), 1);
@@ -2092,7 +2107,7 @@ class Helper
         }
     }
 
-    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null, $mime_type = '')
+    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null, $mime_type = '', $upload_mode = self::UPLOAD_MODE_DEFAULT)
     {
         $pdf_mime_types = [
             'application/pdf', 'application/x-pdf', 'application/acrobat',
@@ -2133,8 +2148,20 @@ class Helper
         // Check extension.
         $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
 
+        // Add underscore to the extension if file has restricted extension.
+        $rename = false;
         if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext) || mb_substr($file_name, 0, 1) == '.') {
-            // Add underscore to the extension if file has restricted extension.
+            $rename = true;
+        } elseif ($upload_mode == self::UPLOAD_MODE_BY_CUSTOMER) {
+            $customer_allowed_extensions = config('app.customer_allowed_extensions') ?? [];
+            $customer_allowed_mime_types = config('app.customer_allowed_mime_types') ?? [];
+
+            if (!in_array($ext, $customer_allowed_extensions) || ($mime_type && !in_array($mime_type, $customer_allowed_mime_types))) {
+                $rename = true;
+            }
+        }
+
+        if ($rename) { 
             $file_name = $file_name.'_';
         } elseif ($ext == 'pdf' || in_array(strtolower($mime_type), $pdf_mime_types)) {
             // Rename PDF to avoid running embedded JavaScript.

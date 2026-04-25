@@ -413,7 +413,7 @@ class FetchEmails extends Command
                 $duplicate_message_id = Thread::where('message_id', $message_id)->first();
             }
 
-            // Mailbox has been mentioned in Bcc.
+            // Mailbox has been mentioned in Bcc or email originates from within FreeScout.
             if (!$extra && $duplicate_message_id) {
 
                 $recipients = array_merge(
@@ -421,7 +421,10 @@ class FetchEmails extends Command
                     $this->formatEmailList($message->getCc())
                 );
 
-                if (!in_array(Email::sanitizeEmail($mailbox->email), $recipients)
+                // Check if the duplicate originates from FreeScout
+                // https://github.com/freescout-help-desk/freescout/issues/5368#issuecomment-4309140388
+                $is_outbound_from_fs = \MailHelper::isFsMessageId($duplicate_message_id->message_id);
+                if ((!in_array(Email::sanitizeEmail($mailbox->email), $recipients) || $is_outbound_from_fs)
                     // Make sure that previous email has been imported into other mailbox.
                     && $duplicate_message_id->conversation
                     && $duplicate_message_id->conversation->mailbox_id != $mailbox->id
@@ -698,12 +701,18 @@ class FetchEmails extends Command
                                     $original_id = trim(\MailHelper::getHeader($prev_thread->headers, 'Message-ID'));
                                     $correct_thread = null;
 
-                                    // Search the current mailbox for the original un-hashed ID
-                                    $correct_thread = Thread::where('message_id', $original_id)
-                                        ->whereHas('conversation', function ($q) use ($mailbox) {
-                                            $q->where('mailbox_id', $mailbox->id);
-                                        })->first();
+                                    // Search the current mailbox for BOTH the original ID and this mailbox's generated hash of the original ID
+                                    if ($original_id) {
+                                        $search_ids = [
+                                            $original_id,
+                                            \MailHelper::generateMessageId($original_id, $mailbox->id.$original_id),
+                                        ];
 
+                                        $correct_thread = Thread::whereIn('message_id', $search_ids)
+                                            ->whereHas('conversation', function ($q) use ($mailbox) {
+                                                $q->where('mailbox_id', $mailbox->id);
+                                            })->first();
+                                    }
                                     if ($correct_thread) {
                                         $prev_thread = $correct_thread;
                                     }

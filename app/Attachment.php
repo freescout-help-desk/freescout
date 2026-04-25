@@ -60,7 +60,7 @@ class Attachment extends Model
     /**
      * Save attachment to file and database.
      */
-    public static function create($file_name, $mime_type, $type, $content, $uploaded_file, $embedded = false, $thread_id = null, $user_id = null)
+    public static function create($file_name, $mime_type, $type, $content, $uploaded_file, $embedded = false, $thread_id = null, $user_id = null, $upload_mode = \Helper::UPLOAD_MODE_DEFAULT)
     {
         if (!$content && !$uploaded_file) {
             return false;
@@ -77,7 +77,7 @@ class Attachment extends Model
         $orig_extension = pathinfo($file_name, PATHINFO_EXTENSION);
 
         // Add underscore to the extension if file has restricted extension.
-        $file_name = \Helper::sanitizeUploadedFileName($file_name, $uploaded_file, $content, $mime_type);
+        $file_name = \Helper::sanitizeUploadedFileName($file_name, $uploaded_file, $content, $mime_type, $upload_mode);
 
         // Replace some symbols in file name.
         // Gmail can not load image if it contains spaces.

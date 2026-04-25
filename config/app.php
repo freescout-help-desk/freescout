@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.217',
+    'version' => '1.8.218',
 
     /*
     |--------------------------------------------------------------------------
@@ -280,6 +280,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allowed extensions and mime types for files uploaded by customers.
+    | Files with other extensions and mime types will be renamed.
+    |
+    | APP_CUSTOMER_UPLOADABLE_EXTENSIONS should contain comma separated list: jpg,jpeg,png,gif...
+    | Same for APP_CUSTOMER_UPLOADABLE_MIME_TYPES.
+    |-------------------------------------------------------------------------
+    */
+    'customer_allowed_extensions'    => env('APP_CUSTOMER_ALLOWED_EXTENSIONS') 
+                                ? explode(',', env('APP_CUSTOMER_ALLOWED_EXTENSIONS'))
+                                : ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'mp3', 'wav', 'ogg', 'wma', 'pdf', 'txt', 'csv', 'doc', 'docx', 'xls', 'xlsx'],
+
+    'customer_allowed_mime_types'    => env('APP_CUSTOMER_ALLOWED_MIME_TYPES') 
+                                ? explode(',', env('APP_CUSTOMER_ALLOWED_MIME_TYPES'))
+                                : ['image/jpg', 'image/jpeg', 'image/gif', 'image/bmp', 'image/x-ms-bmp', 'image/webp', 'audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/ogg', 'audio/x-ms-wma', 'application/pdf', 'text/plain', 'text/csv', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Case insensitive regular expression, containing a list of
     | mail server error responses, returned when a mail server can not deliver an email
     | to one or more recipients. If FreeScout receives one of the listed
@@ -359,14 +376,6 @@ return [
     |-------------------------------------------------------------------------
     */
     'fetching_bunch_size'    => env('APP_FETCHING_BUNCH_SIZE', 100),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Use new POP3 library which does not use PHP IMAP extantion.
-    |
-    |-------------------------------------------------------------------------
-    */
-    'use_new_pop3_lib'    => env('APP_USE_NEW_POP3_LIB', true),
 
      /*
     |--------------------------------------------------------------------------
