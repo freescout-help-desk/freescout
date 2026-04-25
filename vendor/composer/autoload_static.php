@@ -126,6 +126,8 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Psr\\Container\\' => 14,
             'PhpParser\\' => 10,
             'Patchwork\\' => 10,
+            'PHPUnit\\Util\\Xml\\' => 17,
+            'PHPUnit\\Util\\PHP\\' => 17,
             'PHPUnit\\Runner\\' => 15,
         ),
         'N' => 
@@ -561,6 +563,14 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Patchwork\\' => 
         array (
             0 => __DIR__ . '/..' . '/patchwork/utf8/src/Patchwork',
+        ),
+        'PHPUnit\\Util\\Xml\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/phpunit/phpunit/src/Util/Xml',
+        ),
+        'PHPUnit\\Util\\PHP\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/phpunit/phpunit/src/Util/PHP',
         ),
         'PHPUnit\\Runner\\' => 
         array (
@@ -3060,6 +3070,9 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Nwidart\\Modules\\Traits\\CanClearModulesCache' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/Traits/CanClearModulesCache.php',
         'Nwidart\\Modules\\Traits\\MigrationLoaderTrait' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/Traits/MigrationLoaderTrait.php',
         'Nwidart\\Modules\\Traits\\ModuleCommandTrait' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/Traits/ModuleCommandTrait.php',
+        'PHPUnit\\Runner\\PhptTestCase' => __DIR__ . '/../..' . '/overrides/phpunit/phpunit/src/Runner/PhptTestCase.php',
+        'PHPUnit\\Util\\PHP\\AbstractPhpProcess' => __DIR__ . '/../..' . '/overrides/phpunit/phpunit/src/Util/PHP/AbstractPhpProcess.php',
+        'PHPUnit\\Util\\Xml\\Loader' => __DIR__ . '/../..' . '/overrides/phpunit/phpunit/src/Util/Xml/Loader.php',
         'ParseError' => __DIR__ . '/..' . '/symfony/polyfill-php70/Resources/stubs/ParseError.php',
         'Parsedown' => __DIR__ . '/../..' . '/overrides/erusev/parsedown/Parsedown.php',
         'Patchwork\\PHP\\Shim\\Iconv' => __DIR__ . '/..' . '/patchwork/utf8/src/Patchwork/PHP/Shim/Iconv.php',
