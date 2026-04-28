@@ -2723,4 +2723,32 @@ class Helper
         // Default to true for modern browsers.
         return true;
     }
+
+    public static function checkBrowser($request = null)
+    {
+        $result = [
+            'status' => 'success',
+            'msg' => '',
+        ];
+
+        if (!$request) {
+            $request = request();
+        }
+
+        $user_agent = $request->server('HTTP_USER_AGENT') ?? '';
+
+        $allowed_user_agents = explode('|', strtolower(config('app.allowed_user_agents') ?? ''));
+
+        if (in_array(strtolower($user_agent), $allowed_user_agents)) {
+            return $result;
+        }
+
+        // Make sure that browser supports CSP (Content Security Policy).
+        if (!\Helper::isCspSupported($user_agent)) {
+            $result['status'] = 'error';
+            $result['msg'] = 'On '.$request->fullUrl().' page it was detected that your browser does not support Content Security Policy (CSP). Please send to FreeScout Team ('.config('app.freescout_url').'/contact-us/) your browser info: '.$user_agent;
+        }
+
+        return $result;
+    }
 }

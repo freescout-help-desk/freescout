@@ -19,17 +19,9 @@ class CheckBrowser
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        $user_agent = $request->server('HTTP_USER_AGENT') ?? '';
-
-        $allowed_user_agents = explode('|', strtolower(config('app.allowed_user_agents') ?? ''));
-
-        if (in_array(strtolower($user_agent), $allowed_user_agents)) {
-            return $next($request);
-        }
-
-        // Make sure that browser supports CSP (Content Security Policy).
-        if (!\Helper::isCspSupported($user_agent)) {
-            \Log::error($request->fullUrl().': It was detected that your browser does not support Content Security Policy (CSP). Please provide here https://github.com/freescout-help-desk/freescout/issues/5331 your User-Agent: '.$user_agent);
+        $result = \Helper::checkBrowser($request);
+        if ($result['msg']) {
+            \Log::error($result['msg']);
             //abort(403, __('Your browser does not support Content Security Policy (CSP) which is required for security. Please upgrade to a modern browser.[display]'));
         }
 

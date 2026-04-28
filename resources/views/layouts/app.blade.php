@@ -232,7 +232,9 @@
                 </div>
             </nav>
         @endif
-
+        @if (($browser_check = \Helper::checkBrowser()) && $browser_check['msg'])
+            <div class="alert alert-danger">{{ $browser_check['msg'] }}</div>
+        @endif
         @if ($__env->yieldContent('sidebar'))
             <div class="layout-2col">
                 <div class="sidebar-2col">
