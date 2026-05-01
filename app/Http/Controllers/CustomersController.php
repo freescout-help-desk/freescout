@@ -317,7 +317,7 @@ class CustomersController extends Controller
         if ($join_emails) {
             if ($limited_visibility) {
                 // https://github.com/freescout-help-desk/freescout/issues/5032
-                $select_list[] = \DB::raw('MAX(emails.email)');
+                $select_list[] = \DB::raw('MAX('.\DB::getTablePrefix().'emails.email)');
             } else {
                 $select_list[] = 'emails.email';
             }
