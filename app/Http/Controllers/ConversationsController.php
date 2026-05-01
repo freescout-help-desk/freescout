@@ -3082,7 +3082,7 @@ class ConversationsController extends Controller
         $like = '%'.mb_strtolower($q).'%';
 
         // We need to use aggregate function for email to avoid "Grouping error" error in PostgreSQL.
-        $query_customers = Customer::select(['customers.*', \DB::raw('MAX(emails.email)')])
+        $query_customers = Customer::select(['customers.*', \DB::raw('MAX('.\DB::getTablePrefix().'emails.email)')])
             ->groupby('customers.id')
             ->leftJoin('emails', function ($join) {
                 $join->on('customers.id', '=', 'emails.customer_id');
