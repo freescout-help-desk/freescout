@@ -1619,4 +1619,9 @@ class Thread extends Model
             ->where('payload', 'like', '{"displayName":"App\\\\\\\\Jobs\\\\\\\\SendReplyToCustomer"%{i:0;i:'.$this->id.';%')
             ->value('id');
     }
+
+    public static function getOpenTrackingHash($thread, $conversation, $mailbox)
+    {
+        return \Helper::hmacHash($thread->id.$thread->body.$thread->customer_id.$thread->created_at.$conversation->created_at.$mailbox->created_at);
+    }
 }

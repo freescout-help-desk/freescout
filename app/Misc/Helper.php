@@ -2751,4 +2751,12 @@ class Helper
 
         return $result;
     }
+
+    public static function hmacHash($data, $key = null)
+    {
+        if ($key === null) {
+            $key = config('app.key');
+        }
+        return hash_hmac('sha512', $data, $key);
+    }
 }

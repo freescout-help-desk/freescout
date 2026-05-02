@@ -139,22 +139,27 @@ class OpenController extends Controller
     /*
      * Set a thread as read by customer
      */
-    public function setThreadAsRead($conversation_id, $thread_id)
+    public function setThreadAsRead($conversation_id, $thread_id, $hash)
     {
+        $mark_as_read = true;
+
         $conversation = Conversation::findOrFail($conversation_id);
         $thread = Thread::findOrFail($thread_id);
 
         if ((int)$thread->conversation_id !== (int)$conversation_id) {
-            return \Helper::denyAccess();
+            $mark_as_read = false;
+        } elseif ($hash != Thread::getOpenTrackingHash($thread, $conversation, $conversation->mailbox)) {
+            $mark_as_read = false;
         }
 
         // We only track the first opening
-        if (empty($thread->opened_at)) {
+        if ($mark_as_read && empty($thread->opened_at)) {
             $thread->opened_at = date('Y-m-d H:i:s');
             $thread->save();
             \Eventy::action('thread.opened', $thread, $conversation);
         }
 
+        // We return always the same result for security purposes.
         // Create a 1x1 ttransparent pixel and return it
         $pixel = sprintf('%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c', 71, 73, 70, 56, 57, 97, 1, 0, 1, 0, 128, 255, 0, 192, 192, 192, 0, 0, 0, 33, 249, 4, 1, 0, 0, 0, 0, 44, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2, 2, 68, 1, 0, 59);
         $response = \Response::make($pixel, 200);
