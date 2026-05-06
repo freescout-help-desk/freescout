@@ -90,7 +90,7 @@ class OpenController extends Controller
         });
 
         if ($validator->fails()) {
-            return redirect()->route('user_setup', ['hash' => $hash])
+            return redirect()->route('user_setup', ['hash' => $hash, 'invite_sent_at' => $invite_sent_at])
                         ->withErrors($validator)
                         ->withInput();
         }
