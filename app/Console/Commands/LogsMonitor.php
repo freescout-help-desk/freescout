@@ -21,16 +21,19 @@ class LogsMonitor extends Command
     protected $description = 'Send new log records by email';
 
     /**
-     * Minimum identical-error occurrences required for `fetch_errors`
-     * entries to be included in the digest. Single-shot transient
-     * IMAP blips fall below this and are dropped.
+     * Default minimum identical-error occurrences required for
+     * `fetch_errors` entries to be included in the digest. Used when
+     * the `alert_logs_fetch_min_occurrences` option is not set. The
+     * default is 1, which matches upstream behaviour (no filtering);
+     * raise it via the alerts settings page to suppress transient
+     * single-shot fetch errors.
      */
-    const FETCH_ERRORS_MIN_OCCURRENCES = 3;
+    const FETCH_ERRORS_MIN_OCCURRENCES_DEFAULT = 1;
 
     /**
      * Substrings that mark a `fetch_errors` row as transient. Rows
      * matching any of these are dropped regardless of count, unless
-     * they appear at least FETCH_ERRORS_MIN_OCCURRENCES times.
+     * they appear at least the configured min-occurrences times.
      */
     const FETCH_ERRORS_TRANSIENT_PATTERNS = [
         'connection setup failed',
@@ -125,10 +128,19 @@ class LogsMonitor extends Command
      * Drop transient single-shot fetch errors. A fetch_errors row is
      * considered transient when its error message matches one of the
      * known transient patterns AND the same message appears fewer
-     * than FETCH_ERRORS_MIN_OCCURRENCES times within the window.
+     * than the configured min-occurrences threshold within the window.
      */
     protected function filterTransientFetchErrors($logs)
     {
+        $threshold = (int) \Option::get(
+            'alert_logs_fetch_min_occurrences',
+            self::FETCH_ERRORS_MIN_OCCURRENCES_DEFAULT
+        );
+
+        if ($threshold <= 1) {
+            return $logs;
+        }
+
         $fetchLogName = \App\ActivityLog::NAME_EMAILS_FETCHING;
 
         $counts = [];
@@ -141,7 +153,7 @@ class LogsMonitor extends Command
         }
 
         $dropped = 0;
-        $filtered = $logs->reject(function ($log) use ($fetchLogName, $counts, &$dropped) {
+        $filtered = $logs->reject(function ($log) use ($fetchLogName, $counts, $threshold, &$dropped) {
             if ($log->log_name !== $fetchLogName) {
                 return false;
             }
@@ -150,7 +162,7 @@ class LogsMonitor extends Command
                 return false;
             }
             $key = $this->fetchErrorFingerprint($log);
-            if (($counts[$key] ?? 0) >= self::FETCH_ERRORS_MIN_OCCURRENCES) {
+            if (($counts[$key] ?? 0) >= $threshold) {
                 return false;
             }
             $dropped++;
@@ -158,7 +170,7 @@ class LogsMonitor extends Command
         });
 
         if ($dropped > 0) {
-            $this->line('['.date('Y-m-d H:i:s').'] Suppressed '.$dropped.' transient fetch_errors entries');
+            $this->line('['.date('Y-m-d H:i:s').'] Suppressed '.$dropped.' transient fetch_errors entries (threshold '.$threshold.')');
         }
 
         return $filtered->values();
