@@ -89,7 +89,10 @@
 		@endif
 		<div style="height:0; font-size:0px; line-height:0px; color:#ffffff;">	                    	
 			@if (\App\Option::get('open_tracking'))
-				<img src="{{ route('open_tracking.set_read', ['conversation_id' => $threads->first()->conversation_id, 'thread_id' => $threads->first()->id, 'otr' => '1']) }}" alt="" />
+				@php
+					$first_thread = $threads->first();
+				@endphp
+				<img src="{{ route('open_tracking.set_read', ['conversation_id' => $first_thread->conversation_id, 'thread_id' => $first_thread->id, 'hash' => App\Thread::getOpenTrackingHash($first_thread, $conversation, $mailbox), 'otr' => '1']) }}" alt="" />
 			@endif
 			<span style="font-size: 0px; line-height: 0px; color:#ffffff !important;">{{-- Extra symbols not to show message marker in Gmail snippet preview --}} &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj; &zwnj;{{-- In addition to Message-ID header to detect relies --}}{{ \MailHelper::getMessageMarker($headers['Message-ID']) }}</span>
 		</div>

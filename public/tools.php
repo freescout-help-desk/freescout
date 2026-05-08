@@ -141,7 +141,7 @@ if (!empty($_POST)) {
                 // Make sure that it's actually $php_path points to PHP executable and not something else.
                 $version_output = shell_exec($php_path.' -r "echo phpversion();"');
 
-                if (!preg_match("#^\d+\.\d+\.\d+$#", $version_output)) {
+                if (!preg_match("#^\d+\.\d+\.\d+#", $version_output)) {
                     if ($php_path != 'php') {
                         $alerts[] = [
                             'type' => 'danger',
