@@ -152,28 +152,27 @@ class LogsMonitor extends Command
             $counts[$key] = ($counts[$key] ?? 0) + 1;
         }
 
+        $kept = [];
         $dropped = 0;
-        $filtered = $logs->reject(function ($log) use ($fetchLogName, $counts, $threshold, &$dropped) {
-            if ($log->log_name !== $fetchLogName) {
-                return false;
+        foreach ($logs as $log) {
+            if ($log->log_name === $fetchLogName) {
+                $message = $this->fetchErrorMessage($log);
+                if ($this->isTransientFetchError($message)) {
+                    $key = $this->fetchErrorFingerprint($log);
+                    if (($counts[$key] ?? 0) < $threshold) {
+                        $dropped++;
+                        continue;
+                    }
+                }
             }
-            $message = $this->fetchErrorMessage($log);
-            if (!$this->isTransientFetchError($message)) {
-                return false;
-            }
-            $key = $this->fetchErrorFingerprint($log);
-            if (($counts[$key] ?? 0) >= $threshold) {
-                return false;
-            }
-            $dropped++;
-            return true;
-        });
+            $kept[] = $log;
+        }
 
         if ($dropped > 0) {
             $this->line('['.date('Y-m-d H:i:s').'] Suppressed '.$dropped.' transient fetch_errors entries (threshold '.$threshold.')');
         }
 
-        return $filtered->values();
+        return collect($kept);
     }
 
     protected function fetchErrorMessage($log): string
