@@ -21,6 +21,31 @@ class LogsMonitor extends Command
     protected $description = 'Send new log records by email';
 
     /**
+     * Minimum identical-error occurrences required for `fetch_errors`
+     * entries to be included in the digest. Single-shot transient
+     * IMAP blips fall below this and are dropped.
+     */
+    const FETCH_ERRORS_MIN_OCCURRENCES = 3;
+
+    /**
+     * Substrings that mark a `fetch_errors` row as transient. Rows
+     * matching any of these are dropped regardless of count, unless
+     * they appear at least FETCH_ERRORS_MIN_OCCURRENCES times.
+     */
+    const FETCH_ERRORS_TRANSIENT_PATTERNS = [
+        'connection setup failed',
+        'failed to fetch messages',
+        'failed to authenticate',
+        'Connection closed',
+        'Connection reset',
+        'Connection timed out',
+        'Connection refused',
+        'stream_socket_client',
+        'SSL operation failed',
+        'Temporary failure',
+    ];
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -62,6 +87,8 @@ class LogsMonitor extends Command
             ->where('created_at', '<', $now->toDateTimeString())
             ->get();
 
+        $logs = $this->filterTransientFetchErrors($logs);
+
         if (!count($logs)) {
             $this->line('['.date('Y-m-d H:i:s').'] No new log records found for the last '.$options['alert_logs_period']);
 
@@ -92,5 +119,80 @@ class LogsMonitor extends Command
         $this->line($text);
 
         $this->info('['.date('Y-m-d H:i:s').'] Monitoring finished');
+    }
+
+    /**
+     * Drop transient single-shot fetch errors. A fetch_errors row is
+     * considered transient when its error message matches one of the
+     * known transient patterns AND the same message appears fewer
+     * than FETCH_ERRORS_MIN_OCCURRENCES times within the window.
+     */
+    protected function filterTransientFetchErrors($logs)
+    {
+        $fetchLogName = \App\ActivityLog::NAME_EMAILS_FETCHING;
+
+        $counts = [];
+        foreach ($logs as $log) {
+            if ($log->log_name !== $fetchLogName) {
+                continue;
+            }
+            $key = $this->fetchErrorFingerprint($log);
+            $counts[$key] = ($counts[$key] ?? 0) + 1;
+        }
+
+        $dropped = 0;
+        $filtered = $logs->reject(function ($log) use ($fetchLogName, $counts, &$dropped) {
+            if ($log->log_name !== $fetchLogName) {
+                return false;
+            }
+            $message = $this->fetchErrorMessage($log);
+            if (!$this->isTransientFetchError($message)) {
+                return false;
+            }
+            $key = $this->fetchErrorFingerprint($log);
+            if (($counts[$key] ?? 0) >= self::FETCH_ERRORS_MIN_OCCURRENCES) {
+                return false;
+            }
+            $dropped++;
+            return true;
+        });
+
+        if ($dropped > 0) {
+            $this->line('['.date('Y-m-d H:i:s').'] Suppressed '.$dropped.' transient fetch_errors entries');
+        }
+
+        return $filtered->values();
+    }
+
+    protected function fetchErrorMessage($log): string
+    {
+        $props = $log->properties;
+        if (is_object($props) && method_exists($props, 'toArray')) {
+            $props = $props->toArray();
+        } elseif (is_string($props)) {
+            $decoded = json_decode($props, true);
+            $props = is_array($decoded) ? $decoded : [];
+        }
+        return (string) ($props['error'] ?? '');
+    }
+
+    protected function fetchErrorFingerprint($log): string
+    {
+        $message = $this->fetchErrorMessage($log);
+        // Strip the trailing "; File: /path (line)" so the same error
+        // from different stack frames still groups together.
+        $message = preg_replace('/;\s*File:.*$/s', '', $message);
+        return trim($message);
+    }
+
+    protected function isTransientFetchError(string $message): bool
+    {
+        $lower = strtolower($message);
+        foreach (self::FETCH_ERRORS_TRANSIENT_PATTERNS as $needle) {
+            if (strpos($lower, strtolower($needle)) !== false) {
+                return true;
+            }
+        }
+        return false;
     }
 }
