@@ -582,11 +582,32 @@ class FetchEmails extends Command
                     continue;
                 }
                 // Is it a message from Customer or User replied to the notification
-                preg_match('/^'.$this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION)."\-(\d+)\-(\d+)\-/", $prev_message_id, $m);
+                preg_match('/^'.$this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION)."\-(\d+)\-(\d+)\-([a-z0-9]+)/", $prev_message_id, $m);
 
                 if (!$is_bounce && !empty($m[1]) && !empty($m[2])) {
-                    // Reply from User to the notification
+                    // Reply from User to the notification.
+                    $prev_thread_id = '';
+                    // Check hash.
+                    // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-6r38-6mcf-2ww3
+                    if (!empty($m[1]) && !empty($m[3])) {
+                        $message_id_hash = $m[3];
+                        if (strlen($message_id_hash) == 16) {
+                            if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
+                                $prev_thread_id = $m[1];
+                            }
+                        } else {
+                            // No backward compatibility for security reasons.
+                            //$prev_thread_id = $m[1];
+                        }
+                    }
+
+                    if (!$prev_thread_id) {
+                        $this->logError('Invalid hash in the Message-ID: '.$prev_message_id);
+                        $this->setSeen($message, $mailbox);
+                        return;
+                    }
                     $prev_thread = Thread::find($m[1]);
+
                     $user_id = $m[2];
                     $user = User::find($user_id);
                     $message_from_customer = false;
