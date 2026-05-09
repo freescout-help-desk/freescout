@@ -46,6 +46,7 @@ class LogsMonitor extends Command
         'stream_socket_client',
         'SSL operation failed',
         'Temporary failure',
+        'no response',
     ];
 
     /**
