@@ -54,13 +54,20 @@
                     </div>
                 @endforeach
                 <div class="control-group form-inline margin-top-10">
-                    <label for="alert_logs_period" class="control-label">{{ __('Check Frequency') }}</label> 
+                    <label for="alert_logs_period" class="control-label">{{ __('Check Frequency') }}</label>
                     <select name="settings[alert_logs_period]" class="form-control">
                         <option value="hour" @if (old('settings[alert_logs_period]', $settings['alert_logs_period']) == 'hour') selected @endif>{{ __('Hourly') }}</option>
                         <option value="day" @if (old('settings[alert_logs_period]', $settings['alert_logs_period']) == 'day') selected @endif>{{ __('Daily') }}</option>
                         <option value="week" @if (old('settings[alert_logs_period]', $settings['alert_logs_period']) == 'week') selected @endif>{{ __('Weekly') }}</option>
                         <option value="month" @if (old('settings[alert_logs_period]', $settings['alert_logs_period']) == 'month') selected @endif>{{ __('Monthly') }}</option>
                     </select>
+                </div>
+                <div class="control-group form-inline margin-top-10">
+                    <label for="alert_logs_fetch_min_occurrences" class="control-label">{{ __('Fetch Errors Threshold') }}</label>
+                    <input id="alert_logs_fetch_min_occurrences" type="number" min="1" class="form-control" name="settings[alert_logs_fetch_min_occurrences]" value="{{ old('settings[alert_logs_fetch_min_occurrences]', $settings['alert_logs_fetch_min_occurrences']) }}">
+                    <p class="help-block">
+                        {{ __('Suppress transient fetch errors (e.g. brief IMAP connection drops) unless the same error occurs at least this many times within the check frequency window. Set to 1 to disable filtering.') }}
+                    </p>
                 </div>
             </div>
         </div>

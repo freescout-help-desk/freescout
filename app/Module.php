@@ -35,6 +35,11 @@ class Module extends Model
         return self::$modules;
     }
 
+    public static function clearModulesCache()
+    {
+        self::$modules = null;
+    }
+
     public static function isActive($alias)
     {
         $module = self::getByAlias($alias);
@@ -50,7 +55,21 @@ class Module extends Model
         $module = self::getByAliasOrCreate($alias);
         $module->active = $active;
         if ($save) {
-            $module->save();
+            try {
+                $module->save();
+            } catch (\Exception $e) {
+                if (strstr($e->getMessage(), 'Integrity constraint violation')) {
+                    // SQLSTATE[23000]: Integrity constraint violation.
+                    self::clearModulesCache();
+                    $module = self::getByAliasOrCreate($alias);
+                    if ($module) {
+                        $module->active = $active;
+                        $module->save();
+                    }
+                } else {
+                    throw $e;
+                }
+            }
         }
 
         return true;

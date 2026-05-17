@@ -233,11 +233,13 @@ class SettingsController extends Controller
                     'alert_logs',
                     'alert_logs_names',
                     'alert_logs_period',
+                    'alert_logs_fetch_min_occurrences',
                     'subscription_defaults',
                 ], [
-                    'alert_logs_names'  => [],
-                    'alert_logs'        => config('app.alert_logs'),
-                    'alert_logs_period' => config('app.alert_logs_period'),
+                    'alert_logs_names'                 => [],
+                    'alert_logs'                       => config('app.alert_logs'),
+                    'alert_logs_period'                => config('app.alert_logs_period'),
+                    'alert_logs_fetch_min_occurrences' => \App\Console\Commands\LogsMonitor::FETCH_ERRORS_MIN_OCCURRENCES_DEFAULT,
                 ]);
                 break;
             default:

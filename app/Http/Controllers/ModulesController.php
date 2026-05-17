@@ -222,6 +222,7 @@ class ModulesController extends Controller
         switch ($request->action) {
 
             case 'install':
+                // Install module or activate license.
             case 'activate_license':
                 $license = $request->license;
                 $alias = $request->alias;
@@ -317,7 +318,12 @@ class ModulesController extends Controller
                         }
                     }
                 }
-                break;
+                // If everything is fine try to activate the Module.
+                if (empty($response['msg'])) {
+                    // Continue to activation.
+                } else {
+                    break;
+                }
 
             case 'activate':
                 $alias = $request->alias;
@@ -331,7 +337,7 @@ class ModulesController extends Controller
                 if (!$response['msg']) {
                     if (!empty($module->get('authorUrl')) && $module->isOfficial()) {
                         $params = [
-                            'license'      => $module->getLicense(),
+                            'license'      => $request->license ?: $module->getLicense(),
                             'module_alias' => $alias,
                             'url'          => \App\Module::getAppUrl(),
                         ];

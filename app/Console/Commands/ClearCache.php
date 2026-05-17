@@ -71,6 +71,12 @@ class ClearCache extends Command
         if (!$this->option('doNotGenerateVars')) {
             $this->call('freescout:generate-vars');
         }
+
+        // Clear JS and CSS builds (generated in prod environment).
+        \Helper::shellExec('find '.public_path('js/builds').' -type f -name "*.js" -exec rm -r -f {} \;');
+        \Helper::shellExec('find '.public_path('css/builds').' -type f -name "*.css" -exec rm -r -f {} \;');
+        $this->comment("Cleared: JS and CSS builds");
+
         // This should not be done during installation.
         if (\Helper::isInstalled()) {
             \Helper::queueWorkerRestart();
