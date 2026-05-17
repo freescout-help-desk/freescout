@@ -222,6 +222,7 @@ class ModulesController extends Controller
         switch ($request->action) {
 
             case 'install':
+                // Install module or activate license.
             case 'activate_license':
                 $license = $request->license;
                 $alias = $request->alias;
