@@ -221,8 +221,8 @@ class ModulesController extends Controller
 
         switch ($request->action) {
 
+            // Install module or activate license.
             case 'install':
-                // Install module or activate license.
             case 'activate_license':
                 $license = $request->license;
                 $alias = $request->alias;
@@ -319,12 +319,10 @@ class ModulesController extends Controller
                     }
                 }
                 // If everything is fine try to activate the Module.
-                if (empty($response['msg'])) {
-                    // Continue to activation.
-                } else {
+                if (!empty($response['msg'])) {
                     break;
                 }
-
+                // Continue to activation.
             case 'activate':
                 $alias = $request->alias;
                 $module = \Module::findByAlias($alias);
