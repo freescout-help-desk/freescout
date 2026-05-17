@@ -23,8 +23,9 @@ class Attachment extends Model
 
     const MIME_TYPE_MAX_LENGTH = 127;
 
-    // For backward compatibility.
-    const TOKEN_TYPE_LEGACY = 1;
+    // This token type was used for backward compatibility for some time
+    // and has been deprecated.
+    //const TOKEN_TYPE_LEGACY = 1;
     // For backward compatibility.
     const TOKEN_TYPE_MD5    = 2;
     // Current way.
