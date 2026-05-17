@@ -39,8 +39,13 @@ class ThreadPolicy
 
     public function delete(User $user, Thread $thread)
     {
+        // Admin also can delete only own notes.
         if ($thread->created_by_user_id == $user->id) {
-            return true;
+            if ($thread->conversation && !$thread->conversation->userHasAccessToMailbox($user->id)) {
+                return false;
+            } else {
+                return true;
+            }
         } else {
             return false;
         }
