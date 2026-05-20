@@ -49,11 +49,16 @@ class ReplyToCustomer extends Mailable
     public $threads_count;
 
     /**
+     * Needed to show proper signature when conversation is being moved between mailboxes.
+     */
+    public $mailbox_change_history;
+
+    /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($conversation, $threads, $headers, $mailbox, $subject, $threads_count = 1)
+    public function __construct($conversation, $threads, $headers, $mailbox, $subject, $threads_count = 1, $mailbox_change_history)
     {
         $this->conversation = $conversation;
         $this->threads = $threads;
@@ -61,6 +66,7 @@ class ReplyToCustomer extends Mailable
         $this->mailbox = $mailbox;
         $this->subject = $subject;
         $this->threads_count = $threads_count;
+        $this->mailbox_change_history = $mailbox_change_history;
     }
 
     /**

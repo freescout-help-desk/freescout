@@ -1184,9 +1184,12 @@ class Conversation extends Model
      * Replace vars in signature.
      * `data` contains extra info which can be used to build signature.
      */
-    public function getSignatureProcessed($data = [], $escape = false)
+    public function getSignatureProcessed($data = [], $escape = false, $mailbox = null)
     {
-        $replaced_text = $this->replaceTextVars($this->mailbox->signature, $data, $escape);
+        if (!$mailbox) {
+            $mailbox = $this->mailbox;
+        }
+        $replaced_text = $this->replaceTextVars($mailbox->signature, $data, $escape);
 
         // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-fffc-phh8-5h4v
         $replaced_text = \Helper::stripDangerousTags($replaced_text);
@@ -1347,6 +1350,8 @@ class Conversation extends Model
             'user_id'     => $this->user_id,
             'state'       => Thread::STATE_PUBLISHED,
             'action_type' => Thread::ACTION_TYPE_MOVED_FROM_MAILBOX,
+            // Store previous mailbox ID in action_data.
+            'action_data' => $prev_mailbox->id,
             'source_via'  => Thread::PERSON_USER,
             'source_type' => Thread::SOURCE_TYPE_WEB,
             'customer_id' => $this->customer_id,
