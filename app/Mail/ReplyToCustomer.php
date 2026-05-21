@@ -58,7 +58,7 @@ class ReplyToCustomer extends Mailable
      *
      * @return void
      */
-    public function __construct($conversation, $threads, $headers, $mailbox, $subject, $threads_count = 1, $mailbox_change_history)
+    public function __construct($conversation, $threads, $headers, $mailbox, $subject, $threads_count = 1, $mailbox_change_history = [])
     {
         $this->conversation = $conversation;
         $this->threads = $threads;
