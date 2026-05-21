@@ -620,10 +620,19 @@ class Helper
         $tags = array_diff($tags, $allowed_tags);
 
         foreach ($tags as $tag) {
-            $html = preg_replace('#<'.$tag.'(.*?)>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
+            // https://github.com/freescout-help-desk/freescout/issues/5424
+            //$html = preg_replace('#<'.$tag.'(.*?)>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
+            $new = preg_replace('#<'.$tag.'\b[^>]*>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
+            if ($new !== null) {
+                $html = $new;
+            }
 
             // Remove unclosed restricted tags.
-            $html = preg_replace('#<'.$tag.'(.*?)>#is', '', $html ?? '');
+            //$html = preg_replace('#<'.$tag.'(.*?)>#is', '', $html ?? '');
+            $new = preg_replace('#<'.$tag.'\b[^>]*>#is', '', $html ?? '');
+            if ($new !== null) {
+                $html = $new;
+            }
         }
 
         // If some tag is allowed make sure that it does not point to the file on the current server.
