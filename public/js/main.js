@@ -2040,8 +2040,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 			} else {
 				loaderHide();
 			}
-			console.log(textStatus+": "+errorThrown);
-			showFloatingAlert('error', Lang.get("messages.error_occurred"));
+			showFloatingAlert('error', Lang.get("messages.error_occurred")+' Error '+jqXHR.status+'. '+errorThrown);
 		}
 	});
 }
