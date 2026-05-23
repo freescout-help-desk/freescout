@@ -108,6 +108,7 @@ return array(
     'Illuminate\\Notifications\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Notifications'),
     'Illuminate\\Mail\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Mail'),
     'Illuminate\\Log\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Log'),
+    'Illuminate\\Http\\Exceptions\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Http/Exceptions'),
     'Illuminate\\Http\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Http'),
     'Illuminate\\Foundation\\Testing\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation/Testing'),
     'Illuminate\\Foundation\\Http\\Middleware\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Foundation/Http/Middleware'),

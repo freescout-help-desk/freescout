@@ -1467,7 +1467,6 @@ return array(
     'Illuminate\\Http\\Concerns\\InteractsWithFlashData' => $vendorDir . '/laravel/framework/src/Illuminate/Http/Concerns/InteractsWithFlashData.php',
     'Illuminate\\Http\\Concerns\\InteractsWithInput' => $vendorDir . '/laravel/framework/src/Illuminate/Http/Concerns/InteractsWithInput.php',
     'Illuminate\\Http\\Exceptions\\HttpResponseException' => $vendorDir . '/laravel/framework/src/Illuminate/Http/Exceptions/HttpResponseException.php',
-    'Illuminate\\Http\\Exceptions\\PostTooLargeException' => $vendorDir . '/laravel/framework/src/Illuminate/Http/Exceptions/PostTooLargeException.php',
     'Illuminate\\Http\\File' => $vendorDir . '/laravel/framework/src/Illuminate/Http/File.php',
     'Illuminate\\Http\\FileHelpers' => $vendorDir . '/laravel/framework/src/Illuminate/Http/FileHelpers.php',
     'Illuminate\\Http\\JsonResponse' => $vendorDir . '/laravel/framework/src/Illuminate/Http/JsonResponse.php',
