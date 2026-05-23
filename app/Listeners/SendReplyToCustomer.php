@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Conversation;
 use App\Customer;
+use App\Thread;
 
 class SendReplyToCustomer
 {
@@ -33,7 +34,11 @@ class SendReplyToCustomer
             }
         }
 
-        $replies = $conversation->getReplies();
+        // Get threads with line items, line items are needed
+        // to show proper signature when conversation is being moved
+        // between mailboxes.
+        //$replies = $conversation->getReplies();
+        $replies = $conversation->getThreads(null, null, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_LINEITEM]);
 
         // Ignore imported messages.
         if ($replies && $replies->first() && $replies->first()->imported) {
@@ -51,6 +56,25 @@ class SendReplyToCustomer
                 }
             }
         }
+
+        // Add mailbox_id to threads to show proper signature.
+        // https://github.com/freescout-help-desk/freescout/issues/5419
+        $mailbox_id = $conversation->mailbox_id;
+        $mailbox_change_history = [];
+        foreach ($replies as $i => $reply) {
+            if ($reply->action_type == Thread::ACTION_TYPE_MOVED_FROM_MAILBOX && is_numeric($reply->action_data)) {
+                $mailbox_id = (int)$reply->action_data;
+            }
+            $replies[$i]->mailbox_id = $mailbox_id;
+            if ($reply->action_type != Thread::ACTION_TYPE_MOVED_FROM_MAILBOX) {
+                if (!empty($replies[$i-2]) && $replies[$i-2]->mailbox_id != $mailbox_id) {
+                    $mailbox_change_history[$reply->id] = $mailbox_id;
+                }
+            }
+        }
+
+        // Now remove line items.
+        $replies = $replies->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE]);
 
         // Allow to cancel mail sending if needed.
         $skip_send = \Eventy::filter('conversation.skip_send_reply_to_customer', false, $conversation, $replies);
@@ -85,7 +109,7 @@ class SendReplyToCustomer
             }
         }
 
-        \App\Jobs\SendReplyToCustomer::dispatch($conversation, $replies, $recipient_customer)
+        \App\Jobs\SendReplyToCustomer::dispatch($conversation, $replies, $recipient_customer, $mailbox_change_history)
             ->delay($delay)
             ->onQueue('emails');
     }

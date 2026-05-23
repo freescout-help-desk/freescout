@@ -23,8 +23,13 @@ class ThreadPolicy
         if ((
                 $thread->created_by_user_id 
                 && in_array($thread->type, [Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
-                && ($user->isAdmin() || ($user->hasPermission(User::PERM_EDIT_CONVERSATIONS) && $thread->created_by_user_id == $user->id))
-            ) || (
+                && ($user->isAdmin() || (
+                        $user->hasPermission(User::PERM_EDIT_CONVERSATIONS)
+                        && $thread->created_by_user_id == $user->id
+                        && $thread->conversation
+                        && $thread->conversation->userHasAccessToMailbox($user->id)
+                    )
+                )) || (
                 $thread->created_by_customer_id
                 && in_array($thread->type, [Thread::TYPE_CUSTOMER])
                 && $thread->conversation
@@ -39,13 +44,20 @@ class ThreadPolicy
 
     public function delete(User $user, Thread $thread)
     {
+        // Admin also can delete only own notes.
         if ($thread->created_by_user_id == $user->id) {
-            return true;
+            if ($thread->conversation && !$thread->conversation->userHasAccessToMailbox($user->id)) {
+                return false;
+            } else {
+                return true;
+            }
         } else {
             return false;
         }
     }
 
+    // If user can see only assigned conversations,
+    // check if he/she has access to the conversation.
     public function checkIsOnlyAssigned($conversation, $user)
     {
         // Maybe user can see only assigned conversations.

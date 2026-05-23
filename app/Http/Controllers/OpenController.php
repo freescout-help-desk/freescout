@@ -203,8 +203,10 @@ class OpenController extends Controller
             return \Helper::denyAccess();
         }
 
-        // Only allow download if the attachment is public or if the token matches the hash of the contents
-        if ($token != $attachment->getToken() && $attachment->token_type != Attachment::TOKEN_TYPE_LEGACY) {
+        // Links to atachments without token have been disabled.
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-wg74-ww4w-2qpc
+        //if ($token != $attachment->getToken() && $attachment->token_type != Attachment::TOKEN_TYPE_LEGACY) {
+        if ($token != $attachment->getToken()) {
             return \Helper::denyAccess();
         }
 

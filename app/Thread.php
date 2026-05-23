@@ -977,6 +977,9 @@ class Thread extends Model
         if (!empty($data['action_type'])) {
             $thread->action_type = $data['action_type'];
         }
+        if (!empty($data['action_data'])) {
+            $thread->action_data = $data['action_data'];
+        }
         if (!empty($data['meta'])) {
             $thread->setMetas($data['meta']);
         }

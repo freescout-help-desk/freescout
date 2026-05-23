@@ -26,6 +26,8 @@ class SendReplyToCustomer implements ShouldQueue
     // Recipient.
     public $customer;
 
+    public $mailbox_change_history;
+
     private $failures = [];
     private $recipients = [];
     private $last_thread = null;
@@ -48,12 +50,14 @@ class SendReplyToCustomer implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($conversation, $threads, $customer)
+    public function __construct($conversation, $threads, $customer, $mailbox_change_history)
     {
         $this->conversation = $conversation;
         $this->threads = $threads;
         // Recipient.
         $this->customer = $customer;
+        // Needed to show proper signature when conversation is being moved between mailboxes.
+        $this->mailbox_change_history = $mailbox_change_history;
     }
 
     /**
@@ -304,7 +308,7 @@ class SendReplyToCustomer implements ShouldQueue
 
         $headers['X-FreeScout-Mail-Type'] = 'customer.message';
 
-        $reply_mail = new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox, $subject, $threads_count);
+        $reply_mail = new ReplyToCustomer($this->conversation, $this->threads, $headers, $mailbox, $subject, $threads_count, $this->mailbox_change_history);
 
         $smtp_queue_id = null;
         

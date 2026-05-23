@@ -224,7 +224,8 @@
             "Html2Text\\": "overrides/html2text/html2text/src/",
             "PHPUnit\\Runner\\": "overrides/phpunit/phpunit/src/Runner/",
             "PHPUnit\\Util\\PHP\\": "overrides/phpunit/phpunit/src/Util/PHP/",
-            "PHPUnit\\Util\\Xml\\": "overrides/phpunit/phpunit/src/Util/Xml/"
+            "PHPUnit\\Util\\Xml\\": "overrides/phpunit/phpunit/src/Util/Xml/",
+            "Illuminate\\Http\\Exceptions\\": "overrides/laravel/framework/src/Illuminate/Http/Exceptions/"
         },
         "exclude-from-classmap": [
             "Modules/",
@@ -520,7 +521,8 @@
             "vendor/html2text/html2text/src/Html2Text.php",
             "vendor/phpunit/phpunit/src/Runner/PhpTestCase.php",
             "vendor/phpunit/phpunit/src/Util/PHP/AbstractPhpProcess.php",
-            "vendor/phpunit/phpunit/src/Util/Xml/Loader.php"
+            "vendor/phpunit/phpunit/src/Util/Xml/Loader.php",
+            "vendor/laravel/framework/src/Illuminate/Http/Exceptions/PostTooLargeException.php"
         ]
     },
     "autoload-dev": {
