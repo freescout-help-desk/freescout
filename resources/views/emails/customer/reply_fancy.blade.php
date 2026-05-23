@@ -14,6 +14,7 @@
 	    @php
 	    	$is_forwarded = !empty($threads[0]) ? $threads[0]->isForwarded() : false;
 	    	$is_rtl = \Helper::isLocaleRtl();
+	    	$signature_mailbox = $mailbox;
 	    @endphp
 		@foreach ($threads as $thread)
 			@if ($loop->index == 1)<!-- originalMessage --><div class="gmail_quote" style="height:0; font-size:0px; line-height:0px; color:#ffffff;"></div>@endif
@@ -72,9 +73,6 @@
                         @action('reply_email.before_signature', $thread, $loop, $threads, $conversation, $mailbox, $threads_count)
                         @if ($thread->source_via == App\Thread::PERSON_USER && \Eventy::filter('reply_email.include_signature', true, $thread))
 							@php
-								if (!$signature_mailbox) {
-									$signature_mailbox = $mailbox;
-								}
 								if ($loop->index > 0 && !empty($mailbox_change_history[$thread->id])) {
 									$new_mailbox = App\Mailbox::find($mailbox_change_history[$thread->id]);
 									if ($new_mailbox) {
