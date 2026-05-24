@@ -77,9 +77,23 @@ class SendAutoReply implements ShouldQueue
         $failures = [];
         $exception = null;
 
+        // Reply from the alias the customer emailed (if "Allow to reply from aliases" is enabled).
+        $from_alias = '';
+        $aliases = $this->mailbox->getAliases(true, true);
+        if (count($aliases)) {
+            $original_recipients = array_merge($this->thread->getToArray(), $this->thread->getCcArray());
+            foreach ($original_recipients as $original_recipient) {
+                $original_recipient = \App\Email::sanitizeEmail($original_recipient);
+                if ($original_recipient && array_key_exists($original_recipient, $aliases)) {
+                    $from_alias = $original_recipient;
+                    break;
+                }
+            }
+        }
+
         try {
             Mail::to([['name' => $this->customer->getFullName(), 'email' => $customer_email]])
-                ->send(new AutoReply($this->conversation, $this->mailbox, $this->customer, $headers));
+                ->send(new AutoReply($this->conversation, $this->mailbox, $this->customer, $headers, $from_alias));
         } catch (\Exception $e) {
             // We come here in case SMTP server unavailable for example
             activity()
