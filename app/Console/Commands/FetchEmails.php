@@ -646,8 +646,8 @@ class FetchEmails extends Command
                                     $prev_thread_id = $m[1];
                                 }
                             } else {
-                                // Backward compatibility.
-                                $prev_thread_id = $m[1];
+                                // Backward compatibility (deprecated).
+                                //$prev_thread_id = $m[1];
                             }
                         }
 
@@ -661,8 +661,8 @@ class FetchEmails extends Command
                                         $prev_thread_id = $m[1];
                                     }
                                 } else {
-                                    // Backward compatibility.
-                                    $prev_thread_id = $m[1];
+                                    // Backward compatibility (deprecated).
+                                    //$prev_thread_id = $m[1];
                                 }
                             }
                         }
