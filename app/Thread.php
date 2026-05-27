@@ -1623,8 +1623,12 @@ class Thread extends Model
             ->value('id');
     }
 
+    // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-qjr9-6v9q-3r72
     public static function getOpenTrackingHash($thread, $conversation, $mailbox)
     {
-        return \Helper::hmacHash($thread->id.$thread->body.$thread->customer_id.$thread->created_at.$conversation->created_at.$mailbox->created_at);
+        // https://github.com/freescout-help-desk/freescout/issues/5431
+        $hash = \Helper::hmacHash($thread->id.$thread->body.$thread->customer_id.$thread->created_at.$conversation->created_at.$mailbox->created_at);
+
+        return substr($hash, 0, 16);
     }
 }
