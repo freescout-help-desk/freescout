@@ -366,7 +366,12 @@ class Html2Text
     {
         $this->convertBlockquotes($text);
         $this->convertPre($text);
+        $text_copy = $text;
         $text = preg_replace($this->search, $this->replace, $text);
+        if ($text === null) {
+            $text = $text_copy;
+            $text_copy = null;
+        }
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
         $text = $text ?? '';
         $text = strip_tags($text);
