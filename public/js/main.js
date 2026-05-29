@@ -2393,10 +2393,10 @@ function getQueryParam(name, qs) {
 
     	// Skip __proto__
     	// https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-rx6j-4c33-9h3r
-    	if (param.match(/^__proto__\[/i)) {
+		if (param.match(/__proto__/i)) {
     		continue;
     	}
-    	
+
     	// Two dimentional
     	var m = param.match(/^([^\[]+)\[([^\[]+)\]$/i);
 
