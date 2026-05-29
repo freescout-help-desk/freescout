@@ -421,9 +421,10 @@ class FetchEmails extends Command
                     $this->formatEmailList($message->getCc())
                 );
 
-                // Check if the duplicate originates from FreeScout
+                // $is_outbound_from_fs is needed to fetch messages sent from one FreeScout mailbox to another.
                 // https://github.com/freescout-help-desk/freescout/issues/5368#issuecomment-4309140388
                 $is_outbound_from_fs = \MailHelper::isFsMessageId($duplicate_message_id->message_id);
+
                 if ((!in_array(Email::sanitizeEmail($mailbox->email), $recipients) || $is_outbound_from_fs)
                     // Make sure that previous email has been imported into other mailbox.
                     && $duplicate_message_id->conversation
@@ -438,7 +439,11 @@ class FetchEmails extends Command
             if ($extra) {
                 // Generate artificial Message-ID.
                 $message_id = \MailHelper::generateMessageId(strstr($message_id, '@') ? $message_id : $from, $mailbox->id.$message_id);
+
                 $this->line('['.date('Y-m-d H:i:s').'] Generated artificial Message-ID: '.$message_id);
+
+                // https://github.com/freescout-help-desk/freescout/issues/5434
+                $duplicate_message_id = Thread::where('message_id', $message_id)->first();
             }
 
             // Check if message already fetched.
