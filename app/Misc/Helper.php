@@ -2454,6 +2454,9 @@ class Helper
         if ((int)ini_get('pcre.backtrack_limit') <= 1000000) {
             ini_set('pcre.backtrack_limit', 1000000000);
         }
+        if ((int)ini_get('pcre.recursion_limit') <= 1000000) {
+            ini_set('pcre.recursion_limit', 1000000000);
+        }
     }
 
     /**

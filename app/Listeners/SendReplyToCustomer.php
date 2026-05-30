@@ -57,19 +57,17 @@ class SendReplyToCustomer
             }
         }
 
-        // Add mailbox_id to threads to show proper signature.
+        // In order to show proper signature.
         // https://github.com/freescout-help-desk/freescout/issues/5419
-        $mailbox_id = $conversation->mailbox_id;
         $mailbox_change_history = [];
+        $new_mailbox_id = null;
         foreach ($replies as $i => $reply) {
             if ($reply->action_type == Thread::ACTION_TYPE_MOVED_FROM_MAILBOX && is_numeric($reply->action_data)) {
-                $mailbox_id = (int)$reply->action_data;
+                $new_mailbox_id = (int)$reply->action_data;
             }
-            $replies[$i]->mailbox_id = $mailbox_id;
-            if ($reply->action_type != Thread::ACTION_TYPE_MOVED_FROM_MAILBOX) {
-                if (!empty($replies[$i-2]) && $replies[$i-2]->mailbox_id != $mailbox_id) {
-                    $mailbox_change_history[$reply->id] = $mailbox_id;
-                }
+            if ($reply->isReply() && $new_mailbox_id !== null) {
+                $mailbox_change_history[$reply->id] = $new_mailbox_id;
+                $new_mailbox_id = null;
             }
         }
 
@@ -109,7 +107,7 @@ class SendReplyToCustomer
             }
         }
 
-        \App\Jobs\SendReplyToCustomer::dispatch($conversation, $replies, $recipient_customer, $mailbox_change_history)
+        \App\Jobs\SendReplyToCustomer::dispatch($conversation, $replies, $recipient_customer)
             ->delay($delay)
             ->onQueue('emails');
     }

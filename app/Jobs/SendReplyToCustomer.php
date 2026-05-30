@@ -26,7 +26,8 @@ class SendReplyToCustomer implements ShouldQueue
     // Recipient.
     public $customer;
 
-    public $mailbox_change_history;
+    // Needed to show proper signature when conversation is being moved between mailboxes.
+    public $mailbox_change_history = [];
 
     private $failures = [];
     private $recipients = [];
@@ -50,14 +51,12 @@ class SendReplyToCustomer implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($conversation, $threads, $customer, $mailbox_change_history)
+    public function __construct($conversation, $threads, $customer)
     {
         $this->conversation = $conversation;
         $this->threads = $threads;
         // Recipient.
         $this->customer = $customer;
-        // Needed to show proper signature when conversation is being moved between mailboxes.
-        $this->mailbox_change_history = $mailbox_change_history;
     }
 
     /**
@@ -88,7 +87,7 @@ class SendReplyToCustomer implements ShouldQueue
             if ($forward_child_thread->isForwarded() && $forward_child_thread->getForwardParentConversation()) {
 
                 // Add replies from original conversation.
-                $forwarded_replies = $forward_child_thread->getForwardParentConversation()->getReplies();
+                $forwarded_replies = $forward_child_thread->getForwardParentConversation()->getThreads(null, null, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_LINEITEM]);
                 $forwarded_replies = Thread::sortThreads($forwarded_replies);
                 $forward_parent_thread = Thread::find($forward_child_thread->getMetaFw(Thread::META_FORWARD_PARENT_THREAD_ID));
 
@@ -101,6 +100,22 @@ class SendReplyToCustomer implements ShouldQueue
                     }
                     $this->threads = $this->threads->merge($forwarded_replies);
                     $is_forward = true;
+
+                    // In order to show proper signature.
+                    // https://github.com/freescout-help-desk/freescout/issues/5419
+                    $new_mailbox_id = null;
+                    foreach ($this->threads as $reply) {
+                        if ($reply->action_type == Thread::ACTION_TYPE_MOVED_FROM_MAILBOX && is_numeric($reply->action_data)) {
+                            $new_mailbox_id = (int)$reply->action_data;
+                        }
+                        if ($reply->isReply() && $new_mailbox_id !== null) {
+                            $this->mailbox_change_history[$reply->id] = $new_mailbox_id;
+                            $new_mailbox_id = null;
+                        }
+                    }
+
+                    // Now remove line items.
+                    $this->threads = $this->threads->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE]);
                 }
             }
         }
