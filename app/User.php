@@ -37,6 +37,8 @@ class User extends Authenticatable
 
     const DEFAULT_TIMEZONE = 'UTC';
 
+    const INVITE_HASH_LENGTH = 60;
+
     /**
      * Roles.
      */
@@ -754,7 +756,7 @@ class User extends Authenticatable
      */
     public function setInviteHash()
     {
-        $this->invite_hash = Str::random(60);
+        $this->invite_hash = Str::random(self::INVITE_HASH_LENGTH);
     }
 
     /**
