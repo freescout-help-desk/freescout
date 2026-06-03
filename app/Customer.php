@@ -822,8 +822,12 @@ class Customer extends Model
             if (!$value || preg_match("/^http(s)?:?\/?\/?$/i", $value)) {
                 continue;
             }
-            if (!preg_match("/http(s)?:\/\//i", $value)) {
+            if (!preg_match("/^https?:\/\//i", $value)) {
                 $value = 'http://'.$value;
+            }
+            // Only allow http/https schemes to prevent javascript: URI XSS.
+            if (!preg_match("/^https?:\/\//i", $value)) {
+                continue;
             }
             $websites[] = (string) $value;
         }
