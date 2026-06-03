@@ -4,6 +4,11 @@
 	Header set Content-Disposition attachment
 </FilesMatch>
 
+# https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-27vp-fpg8-j8wv
+<FilesMatch "(?i)\.ph(p[0-9]?|t|tm|tml|ar|ps)$">
+	Require all denied
+</FilesMatch>
+
 # SVG image is the special case: it is an image but we can't
 # let it open in the browser as it may content malicious code
 # and it requires a special "image/svg+xml" content type to be set.

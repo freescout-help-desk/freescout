@@ -64,6 +64,10 @@ class Helper
      */
     public static $restricted_extensions = [
         'php.*',
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-27vp-fpg8-j8wv
+        'pht',
+        'phtm',
+        'phps',
         'sh',
         'pl',
         'phtml',
@@ -2159,7 +2163,7 @@ class Helper
 
         // Add underscore to the extension if file has restricted extension.
         $rename = false;
-        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext) || mb_substr($file_name, 0, 1) == '.') {
+        if (preg_match('/^('.implode('|', self::$restricted_extensions).')$/', $ext) || mb_substr($file_name, 0, 1) == '.') {
             $rename = true;
         } elseif ($upload_mode == self::UPLOAD_MODE_BY_CUSTOMER) {
             $customer_allowed_extensions = config('app.customer_allowed_extensions') ?? [];
