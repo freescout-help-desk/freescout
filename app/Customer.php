@@ -822,7 +822,7 @@ class Customer extends Model
             if (!$value || preg_match("/^http(s)?:?\/?\/?$/i", $value)) {
                 continue;
             }
-            if (!preg_match("/http(s)?:\/\//i", $value)) {
+            if (!preg_match("/^http(s)?:\/\//i", $value)) {
                 $value = 'http://'.$value;
             }
             $websites[] = (string) $value;
