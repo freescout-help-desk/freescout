@@ -550,6 +550,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Disable checking if visitor's browser supports CSP.
+    | It's NOT recommended to disable this check.
+    |--------------------------------------------------------------------------
+    */
+    'disable_browser_check' => env('APP_DISABLE_BROWSER_CHECK', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | If you get an error message saying that your browser doesn't support CSP,
     | list your User-Agent in this parameter (https://www.whatismybrowser.com/detect/what-is-my-user-agent/).
     | Use "|" symbol to separate multiple User-Agents.

@@ -2762,7 +2762,8 @@ class Helper
         // Make sure that browser supports CSP (Content Security Policy).
         if (!\Helper::isCspSupported($user_agent)) {
             $result['status'] = 'error';
-            $result['msg'] = 'On '.$request->fullUrl().' page it was detected that your browser does not support Content Security Policy (CSP). Please send to FreeScout Team ('.config('app.freescout_url').'/contact-us/) your browser info: '.$user_agent;
+            //$result['msg'] = 'On '.$request->fullUrl().' page it was detected that your browser does not support Content Security Policy (CSP). Please use a modern browser or send to FreeScout Team ('.config('app.freescout_url').'/contact-us/) your browser info: '.$user_agent;
+            $result['msg'] = 'On '.$request->fullUrl().' page it was detected that your browser does not support Content Security Policy (CSP): '.$user_agent.'. Please use a modern browser or contact administrator to disable the browser check.';
         }
 
         return $result;
