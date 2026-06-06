@@ -53,6 +53,7 @@
         "symfony/routing": "v3.4.18",
         "symfony/process": "v3.4.18",
         "symfony/polyfill-php70": "v1.10.*",
+        "symfony/polyfill-intl-idn": "v1.38.1",
         "symfony/http-foundation": "v3.4.18",
         "symfony/event-dispatcher": "v3.4.18",
         "psr/log": "1.0.*",
