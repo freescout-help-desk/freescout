@@ -62,7 +62,7 @@ Route::post('/users/ajax', ['uses' => 'UsersController@ajax', 'laroute' => true]
 // Conversations
 Route::get('/conversation/{id}', ['uses' => 'ConversationsController@view', 'laroute' => true])->name('conversations.view');
 Route::post('/conversation/ajax', ['uses' => 'ConversationsController@ajax', 'laroute' => true])->name('conversations.ajax');
-Route::post('/conversation/upload', ['uses' => 'ConversationsController@upload', 'laroute' => true])->name('conversations.upload');
+Route::post('/conversation/upload', ['uses' => 'ConversationsController@upload', 'laroute' => true])->middleware('throttle:100,1')->name('conversations.upload');
 Route::get('/mailbox/{mailbox_id}/new-ticket', 'ConversationsController@create')->name('conversations.create');
 Route::get('/mailbox/{mailbox_id}/clone-ticket/{from_thread_id}', 'ConversationsController@cloneConversation')->name('conversations.clone_conversation');
 //Route::get('/conversation/draft/{id}', 'ConversationsController@draft')->name('conversations.draft');
@@ -120,4 +120,4 @@ Route::post('/system/action', ['uses' => 'SystemController@action', 'middleware'
 Route::get('/system/ajax-html/{action}/{param?}', ['uses' => 'SystemController@ajaxHtml', 'middleware' => ['auth', 'roles'], 'roles' => ['admin']])->name('system.ajax_html');
 
 // Uploads
-Route::post('/uploads/upload', ['uses' => 'SecureController@upload', 'laroute' => true])->name('uploads.upload');
+Route::post('/uploads/upload', ['uses' => 'SecureController@upload', 'laroute' => true])->middleware('throttle:100,1')->name('uploads.upload');

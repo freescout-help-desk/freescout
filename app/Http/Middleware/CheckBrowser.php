@@ -21,8 +21,11 @@ class CheckBrowser
     {
         $result = \Helper::checkBrowser($request);
         if ($result['msg']) {
-            \Log::error($result['msg']);
-            //abort(403, __('Your browser does not support Content Security Policy (CSP) which is required for security. Please upgrade to a modern browser.[display]'));
+            if (config('app.disable_browser_check')) {
+                //\Log::error($result['msg']);
+            } else {
+                abort(403, __($result['msg'].'[display]'));
+            }
         }
 
         return $next($request);

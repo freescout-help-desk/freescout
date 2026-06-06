@@ -99,12 +99,19 @@ class LaravelLogViewer
      */
     public function pathToLogFile($file)
     {
+        $logsPath = $this->storage_path;
+        $logsPath .= ($this->folder) ? '/' . $this->folder : '';
 
-        if (app('files')->exists($file)) { // try the absolute path
-      
-            return $file;
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-858x-8f77-9vc5
+        if (app('files')->exists($file)) {
+            // Absolute path.
+        } else {
+            // Relative path.
+            $file = $logsPath . '/' . $file;
         }
-        if (is_array($this->storage_path)) {
+
+        // Comment for security reasons.
+        /*if (is_array($this->storage_path)) {
      
             foreach ($this->storage_path as $folder) {
                 if (app('files')->exists($folder . '/' . $file)) { // try the absolute path
@@ -113,11 +120,8 @@ class LaravelLogViewer
                 }
             }
             return $file;
-        }
+        }*/
 
-        $logsPath = $this->storage_path;
-        $logsPath .= ($this->folder) ? '/' . $this->folder : '';
-        $file = $logsPath . '/' . $file;
         // check if requested file is really in the logs directory
         if (dirname($file) !== $logsPath) {
             throw new \Exception('No such log file: '.$file);

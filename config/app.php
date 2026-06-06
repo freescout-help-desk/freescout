@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.223',
+    'version' => '1.8.224',
 
     /*
     |--------------------------------------------------------------------------
@@ -547,6 +547,14 @@ return [
     |--------------------------------------------------------------------------
     */
     'trusted_hosts' => env('APP_TRUSTED_HOSTS', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Disable checking if visitor's browser supports CSP.
+    | It's NOT recommended to disable this check.
+    |--------------------------------------------------------------------------
+    */
+    'disable_browser_check' => env('APP_DISABLE_BROWSER_CHECK', ''),
 
     /*
     |--------------------------------------------------------------------------

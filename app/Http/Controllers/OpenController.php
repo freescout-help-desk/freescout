@@ -32,7 +32,14 @@ class OpenController extends Controller
         if (auth()->user()) {
             return redirect()->route('dashboard');
         }
-        $user = User::where('invite_hash', $hash)->first();
+
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-jqj5-r72v-v29g
+        $hash = trim($hash);
+
+        $user = null;
+        if (strlen($hash) == User::INVITE_HASH_LENGTH) {
+            $user = User::where('invite_hash', $hash)->first();
+        }
 
         if ($user && $user->locale) {
             \Helper::setLocale($user->locale);
@@ -53,7 +60,14 @@ class OpenController extends Controller
         if (auth()->user()) {
             return redirect()->route('dashboard');
         }
-        $user = User::where('invite_hash', $hash)->first();
+
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-jqj5-r72v-v29g
+        $hash = trim($hash);
+
+        $user = null;
+        if (strlen($hash) == User::INVITE_HASH_LENGTH) {
+            $user = User::where('invite_hash', $hash)->first();
+        }
 
         if (!$user) {
             abort(404);
@@ -122,9 +136,13 @@ class OpenController extends Controller
         return redirect()->route('dashboard');
     }
 
-    public function isInviteExpirationValid($invite_sent_at, $user)
+    public function isInviteExpirationValid($invite_sent_at_encrypted, $user)
     {
-        $invite_sent_at = \Helper::decrypt($invite_sent_at, $user->password);
+        $invite_sent_at = \Helper::decrypt($invite_sent_at_encrypted, $user->password);
+
+        if ($invite_sent_at == $invite_sent_at_encrypted) {
+            return false;
+        }
 
         if (!$invite_sent_at 
             || !is_numeric($invite_sent_at) 

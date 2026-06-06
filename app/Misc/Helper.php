@@ -64,6 +64,10 @@ class Helper
      */
     public static $restricted_extensions = [
         'php.*',
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-27vp-fpg8-j8wv
+        'pht',
+        'phtm',
+        'phps',
         'sh',
         'pl',
         'phtml',
@@ -2159,7 +2163,7 @@ class Helper
 
         // Add underscore to the extension if file has restricted extension.
         $rename = false;
-        if (preg_match('/('.implode('|', self::$restricted_extensions).')/', $ext) || mb_substr($file_name, 0, 1) == '.') {
+        if (preg_match('/^('.implode('|', self::$restricted_extensions).')$/', $ext) || mb_substr($file_name, 0, 1) == '.') {
             $rename = true;
         } elseif ($upload_mode == self::UPLOAD_MODE_BY_CUSTOMER) {
             $customer_allowed_extensions = config('app.customer_allowed_extensions') ?? [];
@@ -2758,7 +2762,8 @@ class Helper
         // Make sure that browser supports CSP (Content Security Policy).
         if (!\Helper::isCspSupported($user_agent)) {
             $result['status'] = 'error';
-            $result['msg'] = 'On '.$request->fullUrl().' page it was detected that your browser does not support Content Security Policy (CSP). Please send to FreeScout Team ('.config('app.freescout_url').'/contact-us/) your browser info: '.$user_agent;
+            //$result['msg'] = 'On '.$request->fullUrl().' page it was detected that your browser does not support Content Security Policy (CSP). Please use a modern browser or send to FreeScout Team ('.config('app.freescout_url').'/contact-us/) your browser info: '.$user_agent;
+            $result['msg'] = 'On '.$request->fullUrl().' page it was detected that your browser does not support Content Security Policy (CSP): '.$user_agent.'. Please use a modern browser or contact administrator to disable the browser check.';
         }
 
         return $result;
