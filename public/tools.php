@@ -321,10 +321,10 @@ if (!empty($_POST)) {
                             <div class="buttons">
                                 <button class="button" type="submit" name="continue" value="continue">Continue</button>
                             </div>
-                        <?php else: ?>
+                        <?php else : ?>
 
-                            <input type="hidden" name="db_username" value="<?php echo ($app_key ? $db_username: sha1($db_username)); ?>" />
-                            <input type="hidden" name="db_password" value="<?php echo ($app_key  ? $db_password : sha1($db_password)); ?>" />
+                            <input type="hidden" name="db_username" value="<?php echo ($app_key ? $db_username : sha1($db_username)); ?>" />
+                            <input type="hidden" name="db_password" value="<?php echo ($app_key ? $db_password : sha1($db_password)); ?>" />
 
     						<div class="form-group <?php if (!empty($errors['app_key'])):?>has-error<?php endif ?>">
     		                    <label for="app_key">
