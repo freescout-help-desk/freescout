@@ -31,7 +31,11 @@ $vendor_files = [
     'vlucas/phpdotenv/src/Exception/InvalidCallbackException.php',
     'vlucas/phpdotenv/src/Exception/InvalidFileException.php',
     'vlucas/phpdotenv/src/Exception/InvalidPathException.php',
-    'vlucas/phpdotenv/src/Exception/ValidationException.php',
+    'symfony/http-foundation/Request.php',
+    'symfony/http-foundation/ParameterBag.php',
+    'symfony/http-foundation/FileBag.php',
+    'symfony/http-foundation/ServerBag.php',
+    'symfony/http-foundation/HeaderBag.php',
 ];
 foreach ($vendor_files as $vendor_file) {
     if (file_exists($root_dir.'vendor/'.$vendor_file)) {
@@ -39,6 +43,43 @@ foreach ($vendor_files as $vendor_file) {
     } else {
         require_once $root_dir.'overrides/'.$vendor_file;
     }
+}
+
+function throttle($max_requests = 10, $window_seconds = 60)
+{
+    $now = time();
+
+    // Create request from global PHP variables.
+    $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
+    $ip = $request->getClientIp();
+
+    $file = (sys_get_temp_dir() ?: '/tmp') . '/fs_tools_throttle_' . sha1($ip) . '.json';
+
+    $events = [];
+
+    if (file_exists($file)) {
+        $events = json_decode(file_get_contents($file), true) ?: [];
+    }
+
+    // Keep only timestamps inside the window
+    $filtered = [];
+    for ($i = 0; $i < count($events); $i++) {
+        if (($now - $events[$i]) < $window_seconds) {
+            $filtered[] = $events[$i];
+        }
+    }
+
+    $events = $filtered;
+
+    // Too many requests.
+    if (count($events) >= $max_requests) {
+        return true;
+    }
+
+    // Add current request
+    $events[] = $now;
+
+    file_put_contents($file, json_encode($events), LOCK_EX);
 }
 
 // Get app key
@@ -91,115 +132,140 @@ function clearCache($root_dir, $php_path)
     return shell_exec($php_path.' '.$root_dir.'artisan freescout:clear-cache');
 }
 
+$logged_in = false;
 $alerts = [];
 $errors = [];
-$app_key = $_POST['app_key'] ?? '';
-$db_password = $_POST['db_password'] ?? '';
+$app_key = trim($_POST['app_key'] ?? '');
+$db_username = trim($_POST['db_username'] ?? '');
+$db_password = trim($_POST['db_password'] ?? '');
 
 if (!empty($_POST)) {
 
-    $php_path = PHP_PATH ?: 'php';
+    if (throttle()) {
+        http_response_code(429);
+        exit('Too many requests. Please wait.');
+    }
 
-    // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-jx2w-fhmw-rg39
-    if (!empty($_POST['php_path'])) {
-        $php_path = trim($_POST['php_path']);
+    // First check DB credentials.
+    $env_db_username = trim(getEnvVar('DB_USERNAME', $root_dir));
+    $env_db_password = trim(getEnvVar('DB_PASSWORD', $root_dir));
 
-        $php_path = preg_replace("#[ ;\$<>:&\|`\t\r\n]#", '', $php_path);
-        if (!$php_path) {
-            $php_path = 'php';
-        }
+    if (($db_username !== $env_db_username && $db_username != (string)sha1($env_db_username))
+        || ($db_password !== $env_db_password && $db_password != (string)sha1($env_db_password))
+    ) {
+        $alerts[] = [
+            'type' => 'danger',
+            'text' => 'Invalid DB Username or Password',
+        ];
+    } else {
+        $logged_in = true;
+    }
 
-        // Is allowed PHP directory.
-        if (!PHP_PATH) {
-            $real_php_dir = dirname(realpath($php_path));
+    if ($logged_in && $app_key) {
+        $php_path = PHP_PATH ?: 'php';
 
-            if ($real_php_dir && !in_array($real_php_dir, ALLOWED_PHP_DIRS, true)) {
-                $errors['php_path'] = 'Directory is not allowed. Allowed directories: '.implode(', ', ALLOWED_PHP_DIRS).". You may need to set PHP_PATH parameter in /public/tools.php";
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-jx2w-fhmw-rg39
+        if (!empty($_POST['php_path'])) {
+            $php_path = trim($_POST['php_path']);
+
+            $php_path = preg_replace("#[ ;\$<>:&\|`\t\r\n]#", '', $php_path);
+            if (!$php_path) {
+                $php_path = 'php';
+            }
+
+            // Is allowed PHP directory.
+            if (!PHP_PATH) {
+                $real_php_dir = dirname(realpath($php_path));
+
+                if ($real_php_dir && !in_array($real_php_dir, ALLOWED_PHP_DIRS, true)) {
+                    $errors['php_path'] = 'Directory is not allowed. Allowed directories: '.implode(', ', ALLOWED_PHP_DIRS).". You may need to set PHP_PATH parameter in /public/tools.php";
+                }
+            }
+
+            // Sanitize path.
+            // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-7p9x-ch4c-vqj9
+            if (empty($errors['php_path'])) {
+                if (!file_exists($php_path) || stristr($php_path, 'php')) {
+                    $errors['php_path'] = 'Invalid Path to PHP';
+                }
             }
         }
 
-        // Sanitize path.
-        // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-7p9x-ch4c-vqj9
-        if (empty($errors['php_path']) && !file_exists($php_path)) {
-            $errors['php_path'] = 'PHP executable not found';
-        }
-    }
-
-    if (empty($errors)) {
-        if (trim($app_key) !== trim(getEnvVar('APP_KEY', $root_dir))) {
-            $errors['app_key'] = 'Invalid App Key';
-        } elseif (trim($db_password) !== trim(getEnvVar('DB_PASSWORD', $root_dir))) {
-            $errors['db_password'] = 'Invalid DB Password';
-        } else {
-            if (!function_exists('shell_exec')) {
-                $alerts[] = [
-                    'type' => 'danger',
-                    'text' => '<code>shell_exec</code> function is unavailable. Can not run updating.',
-                ];
+        if (empty($errors)) {
+            if (trim($app_key) !== trim(getEnvVar('APP_KEY', $root_dir))) {
+                $errors['app_key'] = 'Invalid App Key';
             } else {
-                
-                // Make sure that it's actually $php_path points to PHP executable and not something else.
-                $version_output = shell_exec($php_path.' -r "echo phpversion();"');
+                if (!function_exists('shell_exec')) {
+                    $alerts[] = [
+                        'type' => 'danger',
+                        'text' => '<code>shell_exec</code> function is unavailable. Can not run updating.',
+                    ];
+                } else {
 
-                if (!preg_match("#^\d+\.\d+\.\d+#", $version_output)) {
-                    if ($php_path != 'php') {
-                        $alerts[] = [
-                            'type' => 'danger',
-                            'text' => 'Invalid Path to PHP: '.$php_path,
-                        ];
-                    } else {
-                        $alerts[] = [
-                            'type' => 'danger',
-                            'text' => '"php" command could not be executed. You may need to set PHP_PATH parameter in /public/tools.php',
-                        ];
-                    }
-                }
+                    // Make sure that it's actually $php_path points to PHP executable and not something else.
+                    $version_output = shell_exec($php_path.' -r "echo phpversion();"');
 
-                if (!count($alerts)) {
-                    if ($_POST['action'] == 'cc') {
-                        $cc_output = clearCache($root_dir, $php_path);
-
-                        $alerts[] = [
-                            'type' => 'success',
-                            'text' => 'Cache cleared: <br/><pre>'.htmlspecialchars($cc_output).'</pre>',
-                        ];
-                    } else {
-                        try {
-                            // First check PHP version.
-                            if (!version_compare($version_output, '7.1', '>=')) {
-                                $alerts[] = [
-                                    'type' => 'danger',
-                                    'text' => 'Incorrect PHP version (7.1+ is required):<br/><br/><pre>'.htmlspecialchars($version_output).'</pre>',
-                                ];
-                            } else {
-                                if ($_POST['action'] == 'update') {
-                                    // Update Now
-                                    $output = shell_exec($php_path.' '.$root_dir.'artisan freescout:update --force');
-                                    if (strstr($output, 'Broadcasting queue restart signal')) {
-                                        $alerts[] = [
-                                            'type' => 'success',
-                                            'text' => 'Updating finished:<br/><pre>'.htmlspecialchars($output).'</pre>',
-                                        ];
-                                    } else {
-                                        $alerts[] = [
-                                            'type' => 'danger',
-                                            'text' => 'Something went wrong... Please <strong><a href="https://freescout.net/download/" target="_blank">download</a></strong> the latest version and extract it into your application folder replacing existing files. After that click "Migrate DB" button.<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
-                                        ];
-                                    }
-                                } else {
-                                    // Migreate DB
-                                    $output = shell_exec($php_path.' '.$root_dir.'artisan migrate --force');
-                                    $alerts[] = [
-                                        'type' => 'success',
-                                        'text' => 'Migrating finished:<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
-                                    ];
-                                }
-                            }
-                        } catch (\Exception $e) {
+                    if (!preg_match("#^\d+\.\d+\.\d+#", $version_output)) {
+                        if ($php_path != 'php') {
+                            // $alerts[] = [
+                            //     'type' => 'danger',
+                            //     'text' => 'Invalid Path to PHP: '.$php_path,
+                            // ];
+                            $errors['php_path'] = 'Invalid Path to PHP';
+                        } else {
                             $alerts[] = [
                                 'type' => 'danger',
-                                'text' => 'Error occurred: '.htmlspecialchars($e->getMessage()),
+                                'text' => '"php" command could not be executed. You may need to set PHP_PATH parameter in /public/tools.php',
                             ];
+                        }
+                    }
+
+                    if (!count($alerts) && empty($errors)) {
+                        if ($_POST['action'] == 'cc') {
+                            $cc_output = clearCache($root_dir, $php_path);
+
+                            $alerts[] = [
+                                'type' => 'success',
+                                'text' => 'Cache cleared: <br/><pre>'.htmlspecialchars($cc_output).'</pre>',
+                            ];
+                        } else {
+                            try {
+                                // First check PHP version.
+                                if (!version_compare($version_output, '7.1', '>=')) {
+                                    $alerts[] = [
+                                        'type' => 'danger',
+                                        'text' => 'Incorrect PHP version (7.1+ is required):<br/><br/><pre>'.htmlspecialchars($version_output).'</pre>',
+                                    ];
+                                } else {
+                                    if ($_POST['action'] == 'update') {
+                                        // Update Now
+                                        $output = shell_exec($php_path.' '.$root_dir.'artisan freescout:update --force');
+                                        if (strstr($output, 'Broadcasting queue restart signal')) {
+                                            $alerts[] = [
+                                                'type' => 'success',
+                                                'text' => 'Updating finished:<br/><pre>'.htmlspecialchars($output).'</pre>',
+                                            ];
+                                        } else {
+                                            $alerts[] = [
+                                                'type' => 'danger',
+                                                'text' => 'Something went wrong... Please <strong><a href="https://freescout.net/download/" target="_blank">download</a></strong> the latest version and extract it into your application folder replacing existing files. After that click "Migrate DB" button.<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
+                                            ];
+                                        }
+                                    } else {
+                                        // Migreate DB
+                                        $output = shell_exec($php_path.' '.$root_dir.'artisan migrate --force');
+                                        $alerts[] = [
+                                            'type' => 'success',
+                                            'text' => 'Migrating finished:<br/><br/><pre>'.htmlspecialchars($output).'</pre>',
+                                        ];
+                                    }
+                                }
+                            } catch (\Exception $e) {
+                                $alerts[] = [
+                                    'type' => 'danger',
+                                    'text' => 'Error occurred: '.htmlspecialchars($e->getMessage()),
+                                ];
+                            }
                         }
                     }
                 }
@@ -237,54 +303,66 @@ if (!empty($_POST)) {
                 	<?php endif ?>
 
                 	<form method="post" action="">
-						<div class="form-group <?php if (!empty($errors['app_key'])):?>has-error<?php endif ?>">
-		                    <label for="app_key">
-		                        <small style="color:red">*</small> <strong>App Key</strong> (APP_KEY from .env file)
-		                    </label>
-		                    <input type="password" name="app_key" value="<?php echo htmlentities($app_key); ?>" required="required"/>
-		                    <?php if (!empty($errors['app_key'])): ?>
-		                        <span class="error-block">
-		                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-		                            <?php echo htmlspecialchars($errors['app_key']); ?>
-		                        </span>
-		                    <?php endif ?>
-		                </div>
-                        <div class="form-group <?php if (!empty($errors['db_password'])):?>has-error<?php endif ?>">
-                            <label for="app_key">
-                                <small style="color:red">*</small> <strong>DB Password</strong> (DB_PASSWORD from .env file)
-                            </label>
-                            <input type="password" name="db_password" value="<?php echo htmlentities($db_password); ?>" required="required"/>
-                            <?php if (!empty($errors['db_password'])): ?>
-                                <span class="error-block">
-                                    <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-                                    <?php echo htmlspecialchars($errors['db_password']); ?>
-                                </span>
-                            <?php endif ?>
-                        </div>
-						<div class="form-group <?php if (!empty($errors['php_path'])):?>has-error<?php endif ?>">
-		                    <label for="php_path">
-		                        <strong>Path to PHP</strong> (example: /usr/local/php81/bin/php)
-		                    </label>
-		                    <input type="text" name="php_path" value="<?php echo htmlentities($_POST['php_path'] ?? ''); ?>" placeholder="(optional)"/>
-		                    <?php if (!empty($errors['php_path'])): ?>
-		                        <span class="error-block">
-		                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
-		                            <?php echo htmlspecialchars($errors['php_path']); ?>
-		                        </span>
-		                    <?php endif ?>
-		                </div>
-		                <div class="buttons">
-                            <button class="button" type="submit" name="action" value="cc">
-                                Clear Cache
-                            </button>
-		                    <br/>
-                            <button class="button" type="submit" name="action" value="update">
-                                Update Now
-                            </button>
-		                    <button class="button" type="submit" name="action" value="migrate">
-		                        Migrate DB
-		                    </button>
-		                </div>
+
+                        <?php if (!$logged_in): ?>
+                            <div class="form-group <?php if (!empty($errors['db_username'])):?>has-error<?php endif ?>">
+                                <label for="db_username">
+                                    <strong>DB Username</strong> (DB_USERNAME from .env file)
+                                </label>
+                                <input type="text" name="db_username" value="<?php echo htmlentities($db_username); ?>" required="required"/>
+                            </div>
+                            <div class="form-group <?php if (!empty($errors['db_password'])):?>has-error<?php endif ?>">
+                                <label for="db_password">
+                                    <strong>DB Password</strong> (DB_PASSWORD from .env file)
+                                </label>
+                                <input type="password" name="db_password" value="<?php echo htmlentities($db_password); ?>" required="required"/>
+                            </div>
+                           
+                            <div class="buttons">
+                                <button class="button" type="submit" name="continue" value="continue">Continue</button>
+                            </div>
+                        <?php else: ?>
+
+                            <input type="hidden" name="db_username" value="<?php echo ($app_key ? $db_username: sha1($db_username)); ?>" />
+                            <input type="hidden" name="db_password" value="<?php echo ($app_key  ? $db_password : sha1($db_password)); ?>" />
+
+    						<div class="form-group <?php if (!empty($errors['app_key'])):?>has-error<?php endif ?>">
+    		                    <label for="app_key">
+    		                        <small style="color:red">*</small> <strong>App Key</strong> (APP_KEY from .env file)
+    		                    </label>
+    		                    <input type="password" name="app_key" value="<?php echo htmlentities($app_key); ?>" required="required"/>
+    		                    <?php if (!empty($errors['app_key'])): ?>
+    		                        <span class="error-block">
+    		                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+    		                            <?php echo htmlspecialchars($errors['app_key']); ?>
+    		                        </span>
+    		                    <?php endif ?>
+    		                </div>
+    						<div class="form-group <?php if (!empty($errors['php_path'])):?>has-error<?php endif ?>">
+    		                    <label for="php_path">
+    		                        <strong>Path to PHP</strong> (example: /usr/local/php81/bin/php)
+    		                    </label>
+    		                    <input type="text" name="php_path" value="<?php echo htmlentities($_POST['php_path'] ?? ''); ?>" placeholder="(optional)"/>
+    		                    <?php if (!empty($errors['php_path'])): ?>
+    		                        <span class="error-block">
+    		                            <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
+    		                            <?php echo htmlspecialchars($errors['php_path']); ?>
+    		                        </span>
+    		                    <?php endif ?>
+    		                </div>
+    		                <div class="buttons">
+                                <button class="button" type="submit" name="action" value="cc">
+                                    Clear Cache
+                                </button>
+    		                    <br/>
+                                <button class="button" type="submit" name="action" value="update">
+                                    Update Now
+                                </button>
+    		                    <button class="button" type="submit" name="action" value="migrate">
+    		                        Migrate DB
+    		                    </button>
+    		                </div>
+                        <?php endif ?>
 	                </form>
                	</div>
             </div>
