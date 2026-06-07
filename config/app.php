@@ -475,20 +475,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Experimental feature allowing to specify users who can see only conversations 
-    | assigned to themselves. For such users only Mine folder shows actual number of conversations.
-    | This option does not affect admin users.
-    |
-    | The option should be specified as a comma separated list of user IDs which
-    | can be found in the their profile URL (/users/profile/7).
-    |
-    | Example: 7,5,31
-    |-------------------------------------------------------------------------
-    */
-    'show_only_assigned_conversations'    => env('APP_SHOW_ONLY_ASSIGNED_CONVERSATIONS', ''),
-
-    /*
-    |--------------------------------------------------------------------------
     | Limit non-admin users to only see customers with conversations
     | in mailboxes they are assigned to. This option does not affect admin users.
     |-------------------------------------------------------------------------
