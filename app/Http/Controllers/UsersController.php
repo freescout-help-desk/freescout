@@ -283,6 +283,12 @@ class UsersController extends Controller
 
         $user->setData($request_data);
 
+        if (!empty($request_data['only_assigned_tickets'])) {
+            $user->addPermission(User::PERM_ONLY_ASSIGNED_TICKETS, false);
+        } else {
+            $user->removePermission(User::PERM_ONLY_ASSIGNED_TICKETS, false);
+        }
+
         $user = \Eventy::filter('user.save_profile', $user, $request);
 
         $user->save();

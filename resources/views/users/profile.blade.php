@@ -185,6 +185,21 @@
                         </div>
                     </div>
 
+                    @if (!$user->isAdmin())
+                        <div class="form-group">
+                            <label for="only_assigned_tickets" class="col-sm-2 control-label">{{ __('Conversations') }}</label>
+
+                            <div class="col-sm-6">
+
+                                <div class="controls">
+                                    <label for="only_assigned_tickets" class="checkbox inline plain">
+                                        <input type="checkbox" name="only_assigned_tickets" value="1" id="only_assigned_tickets" @if (old('only_assigned_tickets', $user->hasPermission(\App\User::PERM_ONLY_ASSIGNED_TICKETS)))checked="checked"@endif> <span class="text-help">{{ $user->getUserPermissionName(\App\User::PERM_ONLY_ASSIGNED_TICKETS) }}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     @action('user.edit.before_photo', $user)
 
                     <div class="form-group{{ $errors->has('photo_url') ? ' has-error' : '' }}">
