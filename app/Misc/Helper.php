@@ -607,7 +607,7 @@ class Helper
         // <script src="/storage/attachment/8/1/1/test.js?id=7&token=c4786c4497db3c6254a0c310623a43c3">
         // <iframe src="/storage/attachment/8/1/1/1.html?id=95&token=3dced8dc80305031b358119f3d156204"></iframe>
         // <object data="/storage/attachment/8/1/1/1.html?id=95&token=3dced8dc80305031b358119f3d156204" type="text/html"></object>
-        $tags = [
+        $unsafe_tags = [
             'script',
             'form',
             'iframe',
@@ -621,7 +621,7 @@ class Helper
         ];
         $attrs = 'src|data';
 
-        $tags = array_diff($tags, $allowed_tags);
+        $tags = array_diff($unsafe_tags, $allowed_tags);
 
         foreach ($tags as $tag) {
             // https://github.com/freescout-help-desk/freescout/issues/5424
@@ -632,45 +632,51 @@ class Helper
             }
 
             // Remove unclosed restricted tags.
+            // And keep removing the tag until it's not found anymore.
+            // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-jpq8-j69f-mj98
             //$html = preg_replace('#<'.$tag.'(.*?)>#is', '', $html ?? '');
-            $new = preg_replace('#<'.$tag.'\b[^>]*>#is', '', $html ?? '');
-            if ($new !== null) {
-                $html = $new;
-            }
-        }
-
-        // If some tag is allowed make sure that it does not point to the file on the current server.
-        if (!empty($allowed_tags)) {
-            foreach ($allowed_tags as $tag) {
-                // Skip some tags.
-                if (in_array($tag, ['iframe'])) {
-                    continue;
+            do {
+                $found = false;
+                $new = preg_replace('#<'.$tag.'\b[^>]*>#is', '', $html ?? '');
+                if ($new !== null) {
+                    if ($new != $html) {
+                        $found = true;
+                    }
+                    $html = $new;
                 }
-                $html = preg_replace_callback('#<'.$tag.'(.*?)>#is', 
-                    function ($matches) use ($attrs) {
-                        preg_match("/(src|data)\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[1], $attr_match);
-                        if (!empty($attr_match[2])) {
-                            $url = trim($attr_match[2]);
-                            $parts = parse_url($url);
+            } while($found);
 
-                            // Remove tag.
-                            if (!preg_match("#^(https?:)?//#i", $url)
-                                || empty($parts['host'])
-                                || (strtolower($parts['host']) == strtolower(self::getDomain()))
-                                || preg_match("#/storage/attachment/.*token#", $parts['host'])
-                                || preg_match("#/storage/uploads/.*\.#", $parts['host'])
-                            ) {
-                                return '';
-                            }
-                        }
-
-                        return $matches[0];
-                    },
-                    $html
-                );
-            }
         }
-        
+
+        // Make sure that attributes do not point to the file on the current server.
+        foreach ($unsafe_tags as $tag) {
+            // Skip some tags.
+            if (in_array($tag, ['iframe'])) {
+                continue;
+            }
+            $html = preg_replace_callback('#<'.$tag.'(.*?)>#is', 
+                function ($matches) use ($attrs) {
+                    preg_match("/(src|data)\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[1], $attr_match);
+                    if (!empty($attr_match[2])) {
+                        $url = trim($attr_match[2]);
+                        $parts = parse_url($url);
+
+                        // Remove tag.
+                        if (!preg_match("#^(https?:)?//#i", $url)
+                            || empty($parts['host'])
+                            || (strtolower($parts['host']) == strtolower(self::getDomain()))
+                            || preg_match("#/storage/attachment/.*token#", $parts['host'])
+                            || preg_match("#/storage/uploads/.*\.#", $parts['host'])
+                        ) {
+                            return '';
+                        }
+                    }
+
+                    return $matches[0];
+                },
+                $html
+            );
+        }
 
         return $html;
     }
