@@ -273,8 +273,43 @@ class FetchEmails extends Command
 
             // Requesting emails by bunches allows to fetch large amounts of emails
             // without problems with memory.
-            $page = 0;
-            do {
+            //
+            // Compute how many bunches to fetch from a plain IMAP SEARCH count up
+            // front, instead of driving the loop off the per-bunch materialized count.
+            // That avoids two bugs:
+            //  (1) Silent loss of the NEWEST emails (#4624): a single message that fails
+            //      to materialize in a batch fetch makes a bunch come back short; the old
+            //      `while (count($messages) == $page_size)` then stopped before fetching
+            //      the later bunches. With fetch_order='asc' those later bunches hold the
+            //      newest emails, so they were dropped silently.
+            //  (2) Looping "until an empty page" instead would fetch one page past the
+            //      end, and the IMAP layer throws "Array to string conversion" when asked
+            //      to fetch an empty UID list.
+            // Webklex Query::limit()/forPage() are 1-indexed, so pages start at 1.
+            //
+            // NOTE: this assumes a stable search set across pages (fetch_unseen=0). With
+            // fetch_unseen=1, processMessage() marks messages \Seen mid-loop, shrinking
+            // the unseen set between pages and shifting forPage() — a separate,
+            // pre-existing drift (#4047), not addressed here.
+            try {
+                $count_query = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
+                if ($unseen) {
+                    $count_query->unseen();
+                }
+                if ($no_charset) {
+                    $count_query->setCharset(null);
+                }
+                $total_messages = $count_query->count();
+            } catch (\Exception $e) {
+                // If the SEARCH count fails (e.g. charset issues on some servers), fall
+                // back to a single bunch so we never silently fetch nothing. The
+                // per-bunch charset retry below still recovers the rest on such servers.
+                $total_messages = $page_size;
+                $this->logError('Folder: '.$folder->name.'; Count error: '.$e->getMessage());
+            }
+            $total_pages = ($page_size > 0) ? (int) ceil($total_messages / $page_size) : 1;
+
+            for ($page = 1; $page <= $total_pages; $page++) {
                 // Get messages.
                 $last_error = '';
                 $messages = collect([]);
@@ -339,8 +374,7 @@ class FetchEmails extends Command
                     $dest_mailbox = \Eventy::filter('fetch_emails.mailbox_to_save_message', $mailbox, $folder);
                     $this->processMessage($message, $message_id, $dest_mailbox, $this->mailboxes);
                 }
-                $page++;
-            } while (count($messages) == $page_size);
+            }
         }
 
         $client->disconnect();
