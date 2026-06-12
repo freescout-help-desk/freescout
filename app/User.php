@@ -373,6 +373,8 @@ class User extends Authenticatable
     /**
      * Main function to check if user has some exta access permission
      * for a given mailbox.
+     *
+     * $perm can be a single value or an array.
      */
     public function hasManageMailboxPermission($mailbox_id, $perm)
     {
@@ -397,8 +399,19 @@ class User extends Authenticatable
         } else {
             //$mailbox = $this->mailboxesCanViewWithSettings(true)->where('id', $mailbox_id)->first();
             $mailbox = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
-            if ($mailbox && !empty($mailbox->access) && in_array($perm, json_decode($mailbox->access))) {
-                return true;
+            $mailbox_access = json_decode($mailbox->access);
+            if ($mailbox && !empty($mailbox->access)) {
+                if (!is_array($perm)) {
+                    return in_array($perm, $mailbox_access);
+                } else {
+                    // Check if any of permissions is included in mailbox access.
+                    foreach ($perm as $perm_value) {
+                        if (in_array($perm_value, $mailbox_access)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
             } else {
                 return false;
             }

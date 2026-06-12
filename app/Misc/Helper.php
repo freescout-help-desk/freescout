@@ -644,7 +644,7 @@ class Helper
                     }
                     $html = $new;
                 }
-            } while($found);
+            } while ($found);
 
         }
 
