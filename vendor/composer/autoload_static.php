@@ -71,6 +71,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
             'Symfony\\Component\\Translation\\Loader\\' => 37,
             'Symfony\\Component\\Translation\\Formatter\\' => 40,
             'Symfony\\Component\\Translation\\' => 30,
+            'Symfony\\Component\\Routing\\Generator\\' => 36,
             'Symfony\\Component\\Routing\\' => 26,
             'Symfony\\Component\\Process\\' => 26,
             'Symfony\\Component\\HttpKernel\\HttpCache\\' => 39,
@@ -358,6 +359,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         array (
             0 => __DIR__ . '/../..' . '/overrides/symfony/translation',
             1 => __DIR__ . '/..' . '/symfony/translation',
+        ),
+        'Symfony\\Component\\Routing\\Generator\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/symfony/routing/generator',
         ),
         'Symfony\\Component\\Routing\\' => 
         array (
@@ -4026,7 +4031,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Symfony\\Component\\Routing\\Generator\\Dumper\\GeneratorDumper' => __DIR__ . '/..' . '/symfony/routing/Generator/Dumper/GeneratorDumper.php',
         'Symfony\\Component\\Routing\\Generator\\Dumper\\GeneratorDumperInterface' => __DIR__ . '/..' . '/symfony/routing/Generator/Dumper/GeneratorDumperInterface.php',
         'Symfony\\Component\\Routing\\Generator\\Dumper\\PhpGeneratorDumper' => __DIR__ . '/..' . '/symfony/routing/Generator/Dumper/PhpGeneratorDumper.php',
-        'Symfony\\Component\\Routing\\Generator\\UrlGenerator' => __DIR__ . '/..' . '/symfony/routing/Generator/UrlGenerator.php',
+        'Symfony\\Component\\Routing\\Generator\\UrlGenerator' => __DIR__ . '/../..' . '/overrides/symfony/routing/Generator/UrlGenerator.php',
         'Symfony\\Component\\Routing\\Generator\\UrlGeneratorInterface' => __DIR__ . '/..' . '/symfony/routing/Generator/UrlGeneratorInterface.php',
         'Symfony\\Component\\Routing\\Loader\\AnnotationClassLoader' => __DIR__ . '/..' . '/symfony/routing/Loader/AnnotationClassLoader.php',
         'Symfony\\Component\\Routing\\Loader\\AnnotationDirectoryLoader' => __DIR__ . '/..' . '/symfony/routing/Loader/AnnotationDirectoryLoader.php',

@@ -28,6 +28,7 @@ return array(
     'Symfony\\Component\\Translation\\Loader\\' => array($baseDir . '/overrides/symfony/translation/Loader'),
     'Symfony\\Component\\Translation\\Formatter\\' => array($baseDir . '/overrides/symfony/translation/Formatter'),
     'Symfony\\Component\\Translation\\' => array($baseDir . '/overrides/symfony/translation', $vendorDir . '/symfony/translation'),
+    'Symfony\\Component\\Routing\\Generator\\' => array($baseDir . '/overrides/symfony/routing/generator'),
     'Symfony\\Component\\Routing\\' => array($baseDir . '/overrides/symfony/routing', $vendorDir . '/symfony/routing'),
     'Symfony\\Component\\Process\\' => array($baseDir . '/overrides/symfony/process', $vendorDir . '/symfony/process'),
     'Symfony\\Component\\HttpKernel\\HttpCache\\' => array($baseDir . '/overrides/symfony/http-kernel/HttpCache'),

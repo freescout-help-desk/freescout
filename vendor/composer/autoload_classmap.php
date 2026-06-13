@@ -3010,7 +3010,7 @@ return array(
     'Symfony\\Component\\Routing\\Generator\\Dumper\\GeneratorDumper' => $vendorDir . '/symfony/routing/Generator/Dumper/GeneratorDumper.php',
     'Symfony\\Component\\Routing\\Generator\\Dumper\\GeneratorDumperInterface' => $vendorDir . '/symfony/routing/Generator/Dumper/GeneratorDumperInterface.php',
     'Symfony\\Component\\Routing\\Generator\\Dumper\\PhpGeneratorDumper' => $vendorDir . '/symfony/routing/Generator/Dumper/PhpGeneratorDumper.php',
-    'Symfony\\Component\\Routing\\Generator\\UrlGenerator' => $vendorDir . '/symfony/routing/Generator/UrlGenerator.php',
+    'Symfony\\Component\\Routing\\Generator\\UrlGenerator' => $baseDir . '/overrides/symfony/routing/Generator/UrlGenerator.php',
     'Symfony\\Component\\Routing\\Generator\\UrlGeneratorInterface' => $vendorDir . '/symfony/routing/Generator/UrlGeneratorInterface.php',
     'Symfony\\Component\\Routing\\Loader\\AnnotationClassLoader' => $vendorDir . '/symfony/routing/Loader/AnnotationClassLoader.php',
     'Symfony\\Component\\Routing\\Loader\\AnnotationDirectoryLoader' => $vendorDir . '/symfony/routing/Loader/AnnotationDirectoryLoader.php',
