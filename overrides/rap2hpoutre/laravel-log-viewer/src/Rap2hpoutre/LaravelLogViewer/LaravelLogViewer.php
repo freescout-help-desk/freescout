@@ -54,11 +54,16 @@ class LaravelLogViewer
      */
     public function setFolder($folder)
     {
+        // Sanitize folder.
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-9ph7-f3hc-95gg
+        // order of '..' is important
+        $folder = str_replace(['\\', '/', chr(0), ':', '..'], '', $folder ?? '');
+
         if (app('files')->exists($folder)) {
           
             $this->folder = $folder;
-        }
-        else if(is_array($this->storage_path)) {
+        /*
+        } else if(is_array($this->storage_path)) {
            
             foreach ($this->storage_path as $value) {
                 
@@ -68,7 +73,7 @@ class LaravelLogViewer
                     $this->folder = $folder;
                     break;
                 }
-            }
+            }*/
         } else {
             
                 $logsPath = $this->storage_path . '/' . $folder;
@@ -101,6 +106,11 @@ class LaravelLogViewer
     {
         $logsPath = $this->storage_path;
         $logsPath .= ($this->folder) ? '/' . $this->folder : '';
+
+        // Sanitize folder.
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-9ph7-f3hc-95gg
+        // order of '..' is important
+        $file = str_replace(['\\', '/', chr(0), ':', '..'], '', $file ?? '');
 
         // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-858x-8f77-9vc5
         if (app('files')->exists($file)) {

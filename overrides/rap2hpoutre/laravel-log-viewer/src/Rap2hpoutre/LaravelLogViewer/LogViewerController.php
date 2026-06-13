@@ -61,7 +61,7 @@ class LogViewerController extends BaseController
 
         $data = [
             'logs' => $this->log_viewer->all(),
-            'folders' => $this->log_viewer->getFolders(),
+            'folders' => [], //$this->log_viewer->getFolders(),
             'current_folder' => $this->log_viewer->getFolderName(),
             'folder_files' => $folderFiles,
             'files' => $this->log_viewer->getFiles(true),

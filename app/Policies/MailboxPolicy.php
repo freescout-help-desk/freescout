@@ -158,7 +158,7 @@ class MailboxPolicy
      */
     public function updateEmailSignature(User $user, Mailbox $mailbox)
     {
-        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, Mailbox::ACCESS_PERM_SIGNATURE)) {
+        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, [Mailbox::ACCESS_PERM_SIGNATURE, Mailbox::ACCESS_PERM_EDIT])) {
             return true;
         } else {
             return false;

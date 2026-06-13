@@ -82,7 +82,9 @@ class User extends Authenticatable
     const TIME_FORMAT_24 = 2;
 
     /**
-     * Global user permissions.
+     * User permissions.
+     * Core permissions have IDs below 100.
+     * Permissions in custom modules should use IDs above 1000.
      */
     const PERM_DELETE_CONVERSATIONS = 1;
     const PERM_EDIT_CONVERSATIONS   = 2;
@@ -90,6 +92,7 @@ class User extends Authenticatable
     const PERM_EDIT_TAGS            = 4;
     const PERM_EDIT_CUSTOM_FOLDERS  = 5;
     const PERM_EDIT_USERS           = 10;
+    const PERM_ONLY_ASSIGNED_TICKETS = 11;
 
     public static $user_permissions = [
         self::PERM_DELETE_CONVERSATIONS,
@@ -370,21 +373,24 @@ class User extends Authenticatable
     /**
      * Main function to check if user has some exta access permission
      * for a given mailbox.
+     *
+     * $perm can be a single value or an array.
      */
     public function hasManageMailboxPermission($mailbox_id, $perm)
     {
-        // Experimental feature.
+        // User can see only assigned conversations.
         // This option does not affect admin users.
         if ($perm == Mailbox::ACCESS_PERM_ASSIGNED) {
             if ($this->isAdmin()) {
                 return false;
             } else {
-                $show_only_assigned_conversations = config('app.show_only_assigned_conversations') ?? '';
+                return $this->hasPermission(self::PERM_ONLY_ASSIGNED_TICKETS);
+                /*$show_only_assigned_conversations = config('app.show_only_assigned_conversations') ?? '';
                 if (in_array($this->id, explode(',', $show_only_assigned_conversations))) {
                     return true;
                 } else {
                     return false;
-                }
+                }*/
             }
         }
 
@@ -393,8 +399,19 @@ class User extends Authenticatable
         } else {
             //$mailbox = $this->mailboxesCanViewWithSettings(true)->where('id', $mailbox_id)->first();
             $mailbox = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
-            if ($mailbox && !empty($mailbox->access) && in_array($perm, json_decode($mailbox->access))) {
-                return true;
+            $mailbox_access = json_decode($mailbox->access);
+            if ($mailbox && !empty($mailbox->access)) {
+                if (!is_array($perm)) {
+                    return in_array($perm, $mailbox_access);
+                } else {
+                    // Check if any of permissions is included in mailbox access.
+                    foreach ($perm as $perm_value) {
+                        if (in_array($perm_value, $mailbox_access)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
             } else {
                 return false;
             }
@@ -653,6 +670,7 @@ class User extends Authenticatable
             self::PERM_EDIT_TAGS            => __('Users are allowed to manage tags'),
             self::PERM_EDIT_CUSTOM_FOLDERS  => __('Users are allowed to manage custom folders'),
             self::PERM_EDIT_USERS           => __('Users are allowed to manage users'),
+            self::PERM_ONLY_ASSIGNED_TICKETS => __('User can see only assigned conversations'),
         ];
 
         if (!empty($user_permission_names[$user_permission])) {
@@ -922,6 +940,34 @@ class User extends Authenticatable
             Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
         $this->photo_url = '';
+    }
+
+    public function addPermission($permission_id, $save = true)
+    {
+        $permissions = $this->permissions;
+
+        $permissions[$permission_id] = 1;
+
+        $this->permissions = $permissions;
+
+        if ($save) {
+            $this->save();
+        }
+    }
+
+    public function removePermission($permission_id, $save = true)
+    {
+        $permissions = $this->permissions;
+
+        if (isset($permissions[$permission_id])) {
+            unset($permissions[$permission_id]);
+        }
+
+        $this->permissions = $permissions;
+
+        if ($save) {
+            $this->save();
+        }
     }
 
     public function hasPermission($permission, $check_own_permissions = true)
