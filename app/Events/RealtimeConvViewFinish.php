@@ -4,6 +4,7 @@
  */
 namespace App\Events;
 
+use App\Conversation;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -58,5 +59,23 @@ class RealtimeConvViewFinish implements ShouldBroadcastNow
     protected function channelName()
     {
         return 'conv';
+    }
+
+    // Check access.
+    // $notification_data = [
+    //     'conversation_id' => $conversation_id,
+    //     'user_id'         => $user_id,
+    // ];
+    public static function processPayload($payload)
+    {
+        $user = auth()->user();
+        $conversation = Conversation::find($payload->conversation_id);
+
+        // Check if user can listen to this event.
+        if (!$user || !$conversation || !$user->can('view', $conversation)) {
+            return [];
+        }
+
+        return $payload;
     }
 }

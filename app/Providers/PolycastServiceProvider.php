@@ -85,14 +85,18 @@ class PolycastServiceProvider extends ServiceProvider
                     $requested = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $request->get('time'));
                     $item->channels = json_decode($item->channels, false);
                     $item->payload = json_decode($item->payload, false);
-                    // Add extra data to the payload
+                    // Add extra data to the payload - used in RealtimeBroadcastNotificationCreated.
                     // This works only if payload has medius and thread_id
                     $item->data = BroadcastNotification::fetchPayloadData($item->payload);
 
                     $event_class = '\\'.$item->event;
                     if (method_exists($event_class, "processPayload")) {
-                        // If user is not allowed to access this event, data will be sent to empty array.
+                        // If user is not allowed to access this event, payload will be set to empty array.
                         $item->payload = $event_class::processPayload($item->payload);
+
+                        if (!$item->payload) {
+                            $item->data = [];
+                        }
                     }
 
                     $item->delay = $requested->diffInSeconds($created);
