@@ -63,6 +63,10 @@ class PolycastServiceProvider extends ServiceProvider
                 $channels = $request->get('channels', []);
 
                 foreach ($channels as $channel => $events) {
+
+                    // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-gh3r-jh6q-wrvj
+                    $channel = \Helper::sqlEscapeLike($channel);
+
                     foreach ($events as $event) {
                         // No need to add index to DB for this query.
                         $query->orWhere(function ($query) use ($channel, $event, $request) {

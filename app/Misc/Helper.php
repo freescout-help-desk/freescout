@@ -1823,6 +1823,16 @@ class Helper
         return self::isPgSql() ? 'ilike' : 'like';
     }
 
+    // Escape special characters for a LIKE query.
+    public static function sqlEscapeLike($value, $char = '\\')
+    {
+        return str_replace(
+            [$char, '%', '_'],
+            [$char.$char, $char.'%', $char.'_'],
+            $value
+        );
+    }
+
     // PostgreSQL truncates string if it contains \u0000 symbol starting from this symbol.
     // https://stackoverflow.com/questions/31671634/handling-unicode-sequences-in-postgresql
     // https://github.com/freescout-helpdesk/freescout/issues/3485
