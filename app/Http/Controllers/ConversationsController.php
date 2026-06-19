@@ -2561,10 +2561,22 @@ class ConversationsController extends Controller
             }
         }
 
+        $previous_thread = null;
+        if ($thread->conversation_id) {
+            $previous_thread = Thread::where('conversation_id', $thread->conversation_id)
+                ->where('id', '<', $thread->id)
+                ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE])
+                ->whereNotNull('body')
+                ->where('body', '!=', '')
+                ->orderBy('id', 'desc')
+                ->first();
+        }
+
         return view('conversations/ajax_html/show_original', [
             'thread' => $thread,
             'body_preview' => $body_preview,
             'fetched' => $fetched,
+            'previous_thread' => $previous_thread,
         ]);
     }
 
