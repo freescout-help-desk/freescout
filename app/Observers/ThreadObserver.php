@@ -26,7 +26,7 @@ class ThreadObserver
 
         if ($use_mail_date_on_fetching) {
             $now = $thread->created_at;
-        } else {
+        }else{
             $now = date('Y-m-d H:i:s');
         }
         
@@ -37,17 +37,19 @@ class ThreadObserver
             $conversation->user_updated_at = $now;
         }
         
-        if ((in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE]) 
-                || ($conversation->isPhone() && in_array($thread->type, [Thread::TYPE_NOTE]))
-                // https://github.com/freescout-help-desk/freescout/issues/5105
-                // This is not a normal situtaion: email conversation containing just one Note thread.
-                || ($conversation->threads_count == 0 && $thread->type == Thread::TYPE_NOTE)
-            )
+        if ((in_array($thread->type, [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE])
+            || ($conversation->isPhone() && in_array($thread->type, [Thread::TYPE_NOTE])))
             && $thread->state == Thread::STATE_PUBLISHED
         ) {
             // $conversation->cc = $thread->cc;
             // $conversation->bcc = $thread->bcc;
-            $conversation->last_reply_at = $now;
+            // Only update last_reply_at if the sender changed or it is not a consecutive
+            // customer message. This preserves the original "waiting since" time when
+            // multiple customer messages arrive without a staff reply (issue #5225).
+            if ($thread->source_via != Conversation::PERSON_CUSTOMER
+                || $conversation->last_reply_from != Conversation::PERSON_CUSTOMER) {
+                $conversation->last_reply_at = $now;
+            }
             $conversation->last_reply_from = $thread->source_via;
         }
         if ($conversation->source_via == Conversation::PERSON_CUSTOMER) {
