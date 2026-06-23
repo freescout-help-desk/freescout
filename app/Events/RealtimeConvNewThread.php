@@ -88,16 +88,21 @@ class RealtimeConvNewThread implements ShouldBroadcastNow
     public static function processPayload($payload)
     {
         $user = auth()->user();
-        $mailbox = Mailbox::rememberForever()->find($payload->mailbox_id);
 
-        // Check if user can listen to this event.
-        if (!$user || !$mailbox || !$user->can('viewCached', $mailbox)) {
+        if (!$user) {
             return [];
         }
 
         $thread = Thread::find($payload->thread_id);
-        if (!$thread) {
-            return $payload;
+
+        // Check if user can listen to this event.
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-w668-wq26-6c94
+        if (!$thread || !$thread->conversation) {
+            return [];
+        }
+
+        if (!$user->can('view', $thread->conversation)) {
+            return [];
         }
 
         // Add thread html to the payload.
