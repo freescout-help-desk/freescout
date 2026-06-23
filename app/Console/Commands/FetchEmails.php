@@ -1483,6 +1483,20 @@ class FetchEmails extends Command
             $htmls = [];
             preg_match_all("/<html[^>]*>(.*?)<\/html>/is", $body, $htmls);
 
+            // Some clients (e.g. Yahoo Android) top-post the customer's new reply as plain
+            // HTML fragments *before* the first <html> block, which wraps only the quoted
+            // prior message. Prepend that pre-<html> content so it enters $result and the
+            // reply-separator logic can extract it correctly.
+            if (!empty($htmls[0])) {
+                $first_html_pos = mb_strpos($body, '<html');
+                if ($first_html_pos > 0) {
+                    $pre_html = mb_substr($body, 0, $first_html_pos);
+                    if (trim(strip_tags($pre_html))) {
+                        $result .= $pre_html;
+                    }
+                }
+            }
+
             if (empty($htmls[0])) {
                 $htmls[0] = [$body];
             }
