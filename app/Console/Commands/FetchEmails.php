@@ -413,7 +413,7 @@ class FetchEmails extends Command
                 $duplicate_message_id = Thread::where('message_id', $message_id)->first();
             }
 
-            // Mailbox has been mentioned in Bcc or email originates from within FreeScout.
+            // Mailbox has been mentioned in Bcc.
             if (!$extra && $duplicate_message_id) {
 
                 $recipients = array_merge(
@@ -421,10 +421,7 @@ class FetchEmails extends Command
                     $this->formatEmailList($message->getCc())
                 );
 
-                // Check if the duplicate originates from FreeScout
-                // https://github.com/freescout-help-desk/freescout/issues/5368#issuecomment-4309140388
-                $is_outbound_from_fs = \MailHelper::isFsMessageId($duplicate_message_id->message_id);
-                if ((!in_array(Email::sanitizeEmail($mailbox->email), $recipients) || $is_outbound_from_fs)
+                if (!in_array(Email::sanitizeEmail($mailbox->email), $recipients)
                     // Make sure that previous email has been imported into other mailbox.
                     && $duplicate_message_id->conversation
                     && $duplicate_message_id->conversation->mailbox_id != $mailbox->id
@@ -485,11 +482,11 @@ class FetchEmails extends Command
 
             // Some mail service providers change Message-ID of the outgoing email,
             // so we are passing Message-ID in marker in body.
-            // $reply_prefixes = [
-            //     \MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION,
-            //     \MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER,
-            //     \MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY,
-            // ];
+            $reply_prefixes = [
+                \MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION,
+                \MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER,
+                \MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY,
+            ];
 
             // Try to get previous message ID from marker in body.
             $html_body = $message->getHTMLBody(false);
@@ -564,25 +561,10 @@ class FetchEmails extends Command
                 }
             }
 
-            // Add to prev messaged IDs auto-generated Message-IDs.
-            foreach ($prev_message_ids as $prev_message_id) {
-                $new_prev_message_id = \MailHelper::generateMessageId($prev_message_id, $mailbox->id.$prev_message_id);
-                if (!in_array($new_prev_message_id, $prev_message_ids)) {
-                    $prev_message_ids[] = $new_prev_message_id;
-                }
-            }
-
-            $prev_message_ids = array_values(array_unique($prev_message_ids));
-
             # Try to get the thread traversing the possible prev_message_ids
-            foreach ($prev_message_ids as $i => $prev_message_id) {
-
-                $is_reply = false;
-                if (!$prev_message_id) {
-                    continue;
-                }
+            foreach ($prev_message_ids as $prev_message_id) {
                 // Is it a message from Customer or User replied to the notification
-                preg_match('/^'.$this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION)."\-(\d+)\-(\d+)\-/", $prev_message_id, $m);
+                preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_NOTIFICATION."\-(\d+)\-(\d+)\-/", $prev_message_id, $m);
 
                 if (!$is_bounce && !empty($m[1]) && !empty($m[2])) {
                     // Reply from User to the notification
@@ -610,29 +592,14 @@ class FetchEmails extends Command
                     $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
 
                     if (!$is_bounce) {
-                        
-                        $prev_thread_id = '';
+                        if ($prev_message_id) {
+                            $prev_thread_id = '';
 
-                        // Customer replied to the email from user
-                        preg_match('/^'.$this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER)."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
-                        // Simply checking thread_id from message_id was causing an issue when 
-                        // customer was sending a message from FreeScout - the message was 
-                        // connected to the wrong conversation.
-                        if (!empty($m[1]) && !empty($m[2])) {
-                            $message_id_hash = $m[2];
-                            if (strlen($message_id_hash) == 16) {
-                                if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
-                                    $prev_thread_id = $m[1];
-                                }
-                            } else {
-                                // Backward compatibility.
-                                $prev_thread_id = $m[1];
-                            }
-                        }
-
-                        // Customer replied to the auto reply
-                        if (!$prev_thread_id) {
-                            preg_match('/^'.$this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY)."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
+                            // Customer replied to the email from user
+                            preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
+                            // Simply checking thread_id from message_id was causing an issue when 
+                            // customer was sending a message from FreeScout - the message was 
+                            // connected to the wrong conversation.
                             if (!empty($m[1]) && !empty($m[2])) {
                                 $message_id_hash = $m[2];
                                 if (strlen($message_id_hash) == 16) {
@@ -644,100 +611,75 @@ class FetchEmails extends Command
                                     $prev_thread_id = $m[1];
                                 }
                             }
-                        }
 
-                        if ($prev_thread_id) {
-                            $prev_thread = Thread::find($prev_thread_id);
-                        } else {
-                            // Customer replied to his own message
-                            $prev_thread = Thread::where('message_id', $prev_message_id)->first();
-                        }
+                            // Customer replied to the auto reply
+                            if (!$prev_thread_id) {
+                                preg_match('/^'.\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY."\-(\d+)\-([a-z0-9]+)@/", $prev_message_id, $m);
+                                if (!empty($m[1]) && !empty($m[2])) {
+                                    $message_id_hash = $m[2];
+                                    if (strlen($message_id_hash) == 16) {
+                                        if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
+                                            $prev_thread_id = $m[1];
+                                        }
+                                    } else {
+                                        // Backward compatibility.
+                                        $prev_thread_id = $m[1];
+                                    }
+                                }
+                            }
 
-                        // Reply from user to his reply to the notification
-                        if (!$prev_thread
-                            && ($prev_thread = Thread::where('message_id', $prev_message_id)->first())
-                            && $prev_thread->created_by_user_id
-                            && $prev_thread->created_by_user->hasEmail($from)
-                        ) {
-                            $user_id = $user->id;
-                            $message_from_customer = false;
-                            $is_reply = true;
+                            if ($prev_thread_id) {
+                                $prev_thread = Thread::find($prev_thread_id);
+                            } else {
+                                // Customer replied to his own message
+                                $prev_thread = Thread::where('message_id', $prev_message_id)->first();
+                            }
+
+                            // Reply from user to his reply to the notification
+                            if (!$prev_thread
+                                && ($prev_thread = Thread::where('message_id', $prev_message_id)->first())
+                                && $prev_thread->created_by_user_id
+                                && $prev_thread->created_by_user->hasEmail($from)
+                            ) {
+                                $user_id = $user->id;
+                                $message_from_customer = false;
+                                $is_reply = true;
+                            }
                         }
                     }
                 }
 
-                # If a thread is found, we keep it and check
+                # If a thread is found, we keep it and break
                 if (!empty($prev_thread)) {
                     $is_reply = true;
+                    break;
+                }
+            }
 
-                    // Make sure that prev_thread belongs to the current mailbox.
-                    // Problems may arise when forwarding conversation for example.
-                    //
-                    // For replies to email notifications it's allowed to have prev_thread in
-                    // another mailbox as conversation can be moved.
-                    // https://github.com/freescout-helpdesk/freescout/issues/3455
-                    if ($prev_thread && $message_from_customer) {
+            // Make sure that prev_thread belongs to the current mailbox.
+            // Problems may arise when forwarding conversation for example.
+            //
+            // For replies to email notifications it's allowed to have prev_thread in
+            // another mailbox as conversation can be moved.
+            // https://github.com/freescout-helpdesk/freescout/issues/3455
+            if ($prev_thread && $message_from_customer) {
+                if ($prev_thread->conversation->mailbox_id != $mailbox->id) {
+                    // https://github.com/freescout-helpdesk/freescout/issues/2807
+                    // Behaviour of email sent to multiple mailboxes:
+                    // If a user from either mailbox replies, then a new conversation is created
+                    // in the other mailbox with another new conversation ID.
+                    // 
+                    // Try to get thread by generated message ID.
+                    if ($in_reply_to) {
+                        $prev_thread = Thread::where('message_id', \MailHelper::generateMessageId($in_reply_to, $mailbox->id.$in_reply_to))->first();
 
-                        if ($prev_thread->conversation->mailbox_id != $mailbox->id) {
-
-                            // https://github.com/freescout-helpdesk/freescout/issues/2807
-                            // Behaviour of email sent to multiple mailboxes:
-                            // If a user from either mailbox replies, then a new conversation is created
-                            // in the other mailbox with another new conversation ID.
-                            // 
-                            // Try to get thread by generated message ID.
-                            if ($in_reply_to) {
-
-                                $message_ids = [\MailHelper::generateMessageId($in_reply_to, $mailbox->id.$in_reply_to), $in_reply_to];
-                                $prev_thread_tmp = Thread::whereIn('message_id', $message_ids)->whereHas('conversation', function ($q) use ($mailbox) {
-                                        $q->where('mailbox_id', $mailbox->id);
-                                })->first();
-
-                                if ($prev_thread_tmp) {
-                                    $prev_thread = $prev_thread_tmp;
-                                } elseif (\MailHelper::isGeneratedMessageId($prev_thread->message_id)) {
-                                    // Try to extract the original Message-ID from the mismatched thread's raw headers
-                                    // https://github.com/freescout-help-desk/freescout/issues/5308#issuecomment-4218652527
-                                    $original_id = trim(\MailHelper::getHeader($prev_thread->headers, 'Message-ID'));
-                                    $correct_thread = null;
-
-                                    // Search the current mailbox for BOTH the original ID and this mailbox's generated hash of the original ID
-                                    if ($original_id) {
-                                        $search_ids = [
-                                            $original_id,
-                                            \MailHelper::generateMessageId($original_id, $mailbox->id.$original_id),
-                                        ];
-
-                                        $correct_thread = Thread::whereIn('message_id', $search_ids)
-                                            ->whereHas('conversation', function ($q) use ($mailbox) {
-                                                $q->where('mailbox_id', $mailbox->id);
-                                            })->first();
-                                    }
-                                    if ($correct_thread) {
-                                        $prev_thread = $correct_thread;
-                                    }
-                                    if (!$correct_thread) {
-                                        $prev_thread = null;
-                                    }
-                                } else {
-                                    $prev_thread = null;
-                                }
-                                if (!$prev_thread) {
-                                    $prev_thread = null;
-                                    $is_reply = false;
-                                }
-                            } else {
-                                $prev_thread = null;
-                                $is_reply = false;
-                            }
+                        if (!$prev_thread) {
+                            $prev_thread = null;
+                            $is_reply = false;
                         }
-                    }
-
-                    if (!$prev_thread && $i < (count($prev_message_ids)-1)) {
-                        // Try another prev_message_id.
-                        continue;
                     } else {
-                        break;
+                        $prev_thread = null;
+                        $is_reply = false;
                     }
                 }
             }
@@ -757,7 +699,6 @@ class FetchEmails extends Command
                 $body = $message->getTextBody() ?? '';
                 $body = htmlspecialchars($body);
             }
-            $body = \Helper::utf8Encode($body);
 
             // We have to fetch absolutely all emails, even with empty body.
             // if (!$body) {
@@ -771,7 +712,7 @@ class FetchEmails extends Command
 
             // Convert subject encoding
             if (preg_match('/=\?[a-z\d-]+\?[BQ]\?.*\?=/i', $subject)) {
-                $subject = \Helper::iconvMimeDecode($subject);
+                $subject = iconv_mime_decode($subject, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, 'UTF-8');
             }
 
             $to = $this->formatEmailList($message->getTo());
@@ -807,11 +748,6 @@ class FetchEmails extends Command
                 if ($original_sender) {
                     // Check if sender is the existing user.
                     $sender_is_user = User::nonDeleted()->where('email', $from)->exists();
-                    // Check Alternate emails.
-                    // https://github.com/freescout-help-desk/freescout/issues/5047
-                    if (!$sender_is_user) {
-                        $sender_is_user = User::findByAlternateEmail($from);
-                    }
                     
                     if ($sender_is_user) {
                         // Substitute sender.
@@ -968,12 +904,6 @@ class FetchEmails extends Command
         }
     }
 
-    // Get prefix as regex (for backward compatibility).
-    public function formatMessageIdPrefix($prefix)
-    {
-        return str_replace('FS_', '(?:FS_)?', $prefix);
-    }
-
     // Try to get "From:" from body.
     public function getOriginalSenderFromFwd($body)
     {
@@ -1003,8 +933,8 @@ class FetchEmails extends Command
         $bounced_thread = null;
         if ($bounced_message_id) {
             $prefixes = [
-                $this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER),
-                $this->formatMessageIdPrefix(\MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY),
+                \MailHelper::MESSAGE_ID_PREFIX_REPLY_TO_CUSTOMER,
+                \MailHelper::MESSAGE_ID_PREFIX_AUTO_REPLY,
             ];
             preg_match('/^('.implode('|', $prefixes).')\-(\d+)\-/', $bounced_message_id, $matches);
             if (!empty($matches[2])) {
@@ -1079,7 +1009,7 @@ class FetchEmails extends Command
         $prev_customer_id = null;
         if ($use_mail_date_on_fetching) {
             $now = $date;
-        } else {
+        }else{
             $now = date('Y-m-d H:i:s');
         }
         $conv_cc = $cc;
@@ -1137,13 +1067,16 @@ class FetchEmails extends Command
             $conversation->setBcc($bcc);
         }
         $conversation->customer_email = $from;
-        // Reply from customer makes conversation active.
-        // If conversation is marked as Spam the status does not change.
-        // https://github.com/freescout-help-desk/freescout/issues/5005
-        if ($conversation->status != Conversation::STATUS_ACTIVE && $conversation->status != Conversation::STATUS_SPAM) {
+        // Reply from customer makes conversation active
+        if ($conversation->status != Conversation::STATUS_ACTIVE) {
             $conversation->status = \Eventy::filter('conversation.status_changing', Conversation::STATUS_ACTIVE, $conversation);
         }
-        $conversation->last_reply_at = $now;
+        // Only update last_reply_at if the customer was not already the last to reply.
+        // This preserves the original "waiting since" time when consecutive customer
+        // messages arrive without a staff reply in between (issue #5225).
+        if ($conversation->last_reply_from != Conversation::PERSON_CUSTOMER) {
+            $conversation->last_reply_at = $now;
+        }
         $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
         // Reply from customer to deleted conversation should undelete it.
         if ($conversation->state == Conversation::STATE_DELETED) {
@@ -1260,7 +1193,7 @@ class FetchEmails extends Command
         $conversation = null;
         if ($use_mail_date_on_fetching) {
             $now = $date;
-        } else {
+        }else{
             $now = date('Y-m-d H:i:s');
         }
         $user_id = $user->id;
@@ -1297,9 +1230,8 @@ class FetchEmails extends Command
 
         // Respect mailbox settings for "Status After Replying
         $prev_status = $conversation->status;
-        $new_status = ($mailbox->ticket_status == Mailbox::TICKET_STATUS_KEEP_CURRENT ? $conversation->status : $mailbox->ticket_status);
-        if ($new_status != $prev_status) {
-            $conversation->setStatus($new_status, $user, $update_folder = false);
+        $conversation->status = ($mailbox->ticket_status == Mailbox::TICKET_STATUS_KEEP_CURRENT ? $conversation->status : $mailbox->ticket_status);
+        if ($conversation->status != $mailbox->ticket_status) {
             \Eventy::action('conversation.status_changed', $conversation, $user, true, $prev_status);
         }
         $conversation->last_reply_at = $now;
@@ -1457,6 +1389,20 @@ class FetchEmails extends Command
             $htmls = [];
             preg_match_all("/<html[^>]*>(.*?)<\/html>/is", $body, $htmls);
 
+            // Some clients (e.g. Yahoo Android) top-post the customer's new reply as plain
+            // HTML fragments *before* the first <html> block, which wraps only the quoted
+            // prior message. Prepend that pre-<html> content so it enters $result and the
+            // reply-separator logic can extract it correctly.
+            if (!empty($htmls[0])) {
+                $first_html_pos = mb_strpos($body, '<html');
+                if ($first_html_pos > 0) {
+                    $pre_html = mb_substr($body, 0, $first_html_pos);
+                    if (trim(strip_tags($pre_html))) {
+                        $result .= $pre_html;
+                    }
+                }
+            }
+
             if (empty($htmls[0])) {
                 $htmls[0] = [$body];
             }
@@ -1466,8 +1412,7 @@ class FetchEmails extends Command
                 libxml_use_internal_errors(true);
                 //$dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
                 //$dom->loadHTML(\Helper::mbConvertEncodingHtmlEntities($html));
-                // LIBXML_PARSEHUGE - https://github.com/freescout-help-desk/freescout/issues/5304
-                $dom->loadHTML(\Symfony\Polyfill\Mbstring\Mbstring::mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8') ?: $html, LIBXML_PARSEHUGE);
+                $dom->loadHTML(\Symfony\Polyfill\Mbstring\Mbstring::mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8') ?: $html);
                 libxml_use_internal_errors(false);
                 $bodies = $dom->getElementsByTagName('body');
                 if ($bodies->length == 1) {
@@ -1659,7 +1604,7 @@ class FetchEmails extends Command
         if (!is_string($header)) {
             $header = $header->raw;
         }
-        return \Helper::utf8Encode($header);
+        return $header;
     }
 
     /**
@@ -1701,12 +1646,10 @@ class FetchEmails extends Command
             // }
             $data = [];
             if (!empty($item->personal)) {
-                $name_parts = Customer::parseName($item->personal);
-                if (!empty($name_parts['first_name'])) {
-                    $data['first_name'] = $name_parts['first_name'];
-                }
-                if (!empty($name_parts['last_name'])) {
-                    $data['last_name'] = $name_parts['last_name'];
+                $name_parts = explode(' ', $item->personal, 2);
+                $data['first_name'] = $name_parts[0];
+                if (!empty($name_parts[1])) {
+                    $data['last_name'] = $name_parts[1];
                 }
             }
             Customer::create($item->mail, $data);
