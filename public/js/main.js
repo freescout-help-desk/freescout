@@ -90,6 +90,15 @@ $.extend(window.ParsleyConfig, {
     errorTemplate: '<div></div>'
 });
 
+// Custom validator for HTML editor fields (Summernote leaves <p><br></p> when emptied).
+// Used via data-parsley-html-required on the body textarea.
+window.Parsley.addValidator('htmlRequired', {
+    validateString: function(value) {
+        return !!$.trim(value.replace(/<[^>]+>/g, '').replace(/&nbsp;/gi, ''));
+    },
+    messages: { en: 'This field is required.' }
+});
+
 // Push notifications
 /*Push.config({
     serviceWorker: './customServiceWorker.js', // Sets a custom service worker script
@@ -1659,12 +1668,8 @@ function showReplyForm(data, scroll_offset)
 		$('#body').summernote('focus');
 	}
 
-	if (!isChatMode()) {
-		// Select2 for CC/BCC
-		initRecipientSelector();
-	} else {
-		$('form.form-reply:first .field-cc').addClass('hidden');
-	}
+	// Select2 for CC/BCC
+	initRecipientSelector();
 
 	if (typeof(scroll_offset) == "undefined") {
 		scroll_offset = 0;
@@ -2216,6 +2221,26 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 		// After send
 		$('.after-send-change').click(function(e) {
 			triggerModal($(this));
+		});
+
+		// CMD+Enter (Mac) sends the reply — mirrors Ctrl+Enter on non-Mac.
+		// metaKey is explicitly skipped in the chat-mode Enter handler, so this
+		// separate handler is needed for regular reply/note forms (issue #4425).
+		$(document).on('keydown.cmd-enter-send', function(e) {
+			if (!e.metaKey || e.which != 13 || e.altKey || e.shiftKey) {
+				return;
+			}
+			if (isChatMode() || $('.modal:visible').length) {
+				return;
+			}
+			if (!$(':focus').hasClass('note-editable')) {
+				return;
+			}
+			var button = $('div.conv-reply-body:visible .btn-reply-submit:first');
+			if (button.length) {
+				e.preventDefault();
+				button.click();
+			}
 		});
 
 		// Send reply, new conversation or note
@@ -3117,7 +3142,6 @@ function initMergeConv()
 			fsAjax({
 					action: 'merge_search',
 					number: $('.merge-conv-number:visible:first').val(),
-					cur_conv_id: getGlobalAttr('conversation_id')
 				},
 				laroute.route('conversations.ajax'),
 				function(response) {
