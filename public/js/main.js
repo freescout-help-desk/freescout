@@ -90,15 +90,6 @@ $.extend(window.ParsleyConfig, {
     errorTemplate: '<div></div>'
 });
 
-// Custom validator for HTML editor fields (Summernote leaves <p><br></p> when emptied).
-// Used via data-parsley-html-required on the body textarea.
-window.Parsley.addValidator('htmlRequired', {
-    validateString: function(value) {
-        return !!$.trim(value.replace(/<[^>]+>/g, '').replace(/&nbsp;/gi, ''));
-    },
-    messages: { en: 'This field is required.' }
-});
-
 // Push notifications
 /*Push.config({
     serviceWorker: './customServiceWorker.js', // Sets a custom service worker script
@@ -1668,8 +1659,12 @@ function showReplyForm(data, scroll_offset)
 		$('#body').summernote('focus');
 	}
 
-	// Select2 for CC/BCC
-	initRecipientSelector();
+	if (!isChatMode()) {
+		// Select2 for CC/BCC
+		initRecipientSelector();
+	} else {
+		$('form.form-reply:first .field-cc').addClass('hidden');
+	}
 
 	if (typeof(scroll_offset) == "undefined") {
 		scroll_offset = 0;
@@ -2045,8 +2040,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 			} else {
 				loaderHide();
 			}
-			console.log(textStatus+": "+errorThrown);
-			showFloatingAlert('error', Lang.get("messages.error_occurred"));
+			showFloatingAlert('error', Lang.get("messages.error_occurred")+' Error '+jqXHR.status+'. '+errorThrown);
 		}
 	});
 }
@@ -2239,7 +2233,17 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 	    	// Validate before sending
 	    	form = $(".form-reply:first");
 
-	    	if (!form.parsley().validate()) {
+	    	// Sync Summernote's empty-HTML state to the textarea before validation so that
+    	// data-parsley-required treats visually-empty content (e.g. <div><br></div>)
+    	// the same as a truly empty field (issue #4590).
+    	if (typeof $.fn.summernote !== 'undefined' && $('#body').length) {
+    		var body_code = $('#body').summernote('code');
+    		if (!$.trim(body_code.replace(/<[^>]+>/g, '').replace(/&nbsp;/gi, ''))) {
+    			$('#body').val('');
+    		}
+    	}
+
+    	if (!form.parsley().validate()) {
 	    		fs_processing_send_reply = false;
 	    		return;
 	    	}
@@ -2399,10 +2403,10 @@ function getQueryParam(name, qs) {
 
     	// Skip __proto__
     	// https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-rx6j-4c33-9h3r
-    	if (param.match(/^__proto__\[/i)) {
+		if (param.match(/__proto__/i)) {
     		continue;
     	}
-    	
+
     	// Two dimentional
     	var m = param.match(/^([^\[]+)\[([^\[]+)\]$/i);
 
@@ -3122,6 +3126,7 @@ function initMergeConv()
 			fsAjax({
 					action: 'merge_search',
 					number: $('.merge-conv-number:visible:first').val(),
+					cur_conv_id: getGlobalAttr('conversation_id')
 				},
 				laroute.route('conversations.ajax'),
 				function(response) {
