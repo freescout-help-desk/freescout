@@ -2922,7 +2922,7 @@ class ConversationsController extends Controller
                 $conv_number = ltrim($q, '#');
                 if (is_numeric($conv_number)) {
                     $conversation = Conversation::where(Conversation::numberFieldName(), $conv_number)->first();
-                    if ($conversation) {
+                    if ($conversation && $user->can('view', $conversation)) {
                         $conversations[] = $conversation;
                     }
                 }
