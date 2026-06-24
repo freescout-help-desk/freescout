@@ -2233,6 +2233,16 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 	    	// Validate before sending
 	    	form = $(".form-reply:first");
 
+			// Sync Summernote's empty-HTML state to the textarea before validation so that
+			// data-parsley-required treats visually-empty content (e.g. <div><br></div>)
+			// the same as a truly empty field (issue #4590).
+			if (typeof $.fn.summernote !== 'undefined' && $('#body').length) {
+				var body_code = $('#body').summernote('code');
+				if (!$.trim(body_code.replace(/<[^>]+>/g, '').replace(/&nbsp;/gi, ''))) {
+					$('#body').val('');
+				}
+			}
+
 	    	if (!form.parsley().validate()) {
 	    		fs_processing_send_reply = false;
 	    		return;
