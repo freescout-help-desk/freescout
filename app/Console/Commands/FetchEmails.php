@@ -1203,7 +1203,13 @@ class FetchEmails extends Command
         if ($conversation->status != Conversation::STATUS_ACTIVE && $conversation->status != Conversation::STATUS_SPAM) {
             $conversation->status = \Eventy::filter('conversation.status_changing', Conversation::STATUS_ACTIVE, $conversation);
         }
-        $conversation->last_reply_at = $now;
+        // Only update last_reply_at if the customer was not already the last to reply.
+        // This preserves the original "waiting since" time when consecutive customer
+        // messages arrive without a staff reply in between.
+        // https://github.com/freescout-help-desk/freescout/issues/5225
+        if ($conversation->last_reply_from != Conversation::PERSON_CUSTOMER) {
+            $conversation->last_reply_at = $now;
+        }
         $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
         // Reply from customer to deleted conversation should undelete it.
         if ($conversation->state == Conversation::STATE_DELETED) {
