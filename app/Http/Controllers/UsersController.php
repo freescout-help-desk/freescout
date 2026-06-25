@@ -62,7 +62,7 @@ class UsersController extends Controller
 
         $rules = [
             'first_name' => 'required|string|max:20',
-            'last_name'  => 'required|string|max:30',
+            'last_name'  => 'max:30',
             'email'      => 'required|string|email|max:100|unique:users',
             //'role'       => ['required', Rule::in(array_keys(User::$roles))],
         ];
@@ -96,7 +96,7 @@ class UsersController extends Controller
 
         $data = [
             'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
+            'last_name' => $request->last_name ?? '',
             'email' => $request->email,
             'password' => $password,
         ];
@@ -177,7 +177,7 @@ class UsersController extends Controller
         // This is also present in PublicController::userSetup
         $validator = Validator::make($request->all(), [
             'first_name'  => 'required|string|max:20',
-            'last_name'   => 'required|string|max:30',
+            'last_name'   => 'max:30',
             'email'       => 'required|string|email|max:100|unique:users,email,'.$id,
             //'emails'      => 'max:100',
             'job_title'   => 'max:100',
