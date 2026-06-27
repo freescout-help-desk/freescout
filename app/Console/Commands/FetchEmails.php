@@ -273,8 +273,43 @@ class FetchEmails extends Command
 
             // Requesting emails by bunches allows to fetch large amounts of emails
             // without problems with memory.
-            $page = 0;
-            do {
+            //
+            // Compute how many bunches to fetch from a plain IMAP SEARCH count up
+            // front, instead of driving the loop off the per-bunch materialized count.
+            // That avoids two bugs:
+            //  (1) Silent loss of the NEWEST emails (#4624): a single message that fails
+            //      to materialize in a batch fetch makes a bunch come back short; the old
+            //      `while (count($messages) == $page_size)` then stopped before fetching
+            //      the later bunches. With fetch_order='asc' those later bunches hold the
+            //      newest emails, so they were dropped silently.
+            //  (2) Looping "until an empty page" instead would fetch one page past the
+            //      end, and the IMAP layer throws "Array to string conversion" when asked
+            //      to fetch an empty UID list.
+            // Webklex Query::limit()/forPage() are 1-indexed, so pages start at 1.
+            //
+            // NOTE: this assumes a stable search set across pages (fetch_unseen=0). With
+            // fetch_unseen=1, processMessage() marks messages \Seen mid-loop, shrinking
+            // the unseen set between pages and shifting forPage() — a separate,
+            // pre-existing drift (#4047), not addressed here.
+            try {
+                $count_query = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread();
+                if ($unseen) {
+                    $count_query->unseen();
+                }
+                if ($no_charset) {
+                    $count_query->setCharset(null);
+                }
+                $total_messages = $count_query->count();
+            } catch (\Exception $e) {
+                // If the SEARCH count fails (e.g. charset issues on some servers), fall
+                // back to a single bunch so we never silently fetch nothing. The
+                // per-bunch charset retry below still recovers the rest on such servers.
+                $total_messages = $page_size;
+                $this->logError('Folder: '.$folder->name.'; Count error: '.$e->getMessage());
+            }
+            $total_pages = ($page_size > 0) ? (int) ceil($total_messages / $page_size) : 1;
+
+            for ($page = 1; $page <= $total_pages; $page++) {
                 // Get messages.
                 $last_error = '';
                 $messages = collect([]);
@@ -339,8 +374,7 @@ class FetchEmails extends Command
                     $dest_mailbox = \Eventy::filter('fetch_emails.mailbox_to_save_message', $mailbox, $folder);
                     $this->processMessage($message, $message_id, $dest_mailbox, $this->mailboxes);
                 }
-                $page++;
-            } while (count($messages) == $page_size);
+            }
         }
 
         $client->disconnect();
@@ -1008,12 +1042,19 @@ class FetchEmails extends Command
         // Cut out the command, otherwise it will be recognized as an email.
         $body = preg_replace("/".self::FWD_AS_CUSTOMER_COMMAND."([\s<]+)/isu", '$1', $body);
 
+        // https://github.com/freescout-help-desk/freescout/issues/5480
+        // Strip mailto: prefix to avoid false positive match
+        $body = preg_replace("/mailto:/i", "", $body);
+        // Decode HTML entities so &lt;email&gt; becomes <email>
+        $body = html_entity_decode($body, ENT_QUOTES | ENT_HTML5, "UTF-8");
+        // Strip \@ prefix used in CSS CJK font names (e.g. \@DengXian) to avoid false positive match
+        $body = preg_replace("/\\\@/", "", $body);
+
         // Looks like email texts may appear in attributes:
         // https://github.com/freescout-helpdesk/freescout/issues/276
         // - :test@example.org
         // - <test@example.org>
         // - &lt;test@example.org&gt;
-
         preg_match("/[\"'<:;]([^\"'<:;!@\s]+@[^\"'>:&@\s]+)[\"'>:&]/", $body, $b);
 
         $email = $b[1] ?? '';
@@ -1169,7 +1210,13 @@ class FetchEmails extends Command
         if ($conversation->status != Conversation::STATUS_ACTIVE && $conversation->status != Conversation::STATUS_SPAM) {
             $conversation->status = \Eventy::filter('conversation.status_changing', Conversation::STATUS_ACTIVE, $conversation);
         }
-        $conversation->last_reply_at = $now;
+        // Only update last_reply_at if the customer was not already the last to reply.
+        // This preserves the original "waiting since" time when consecutive customer
+        // messages arrive without a staff reply in between.
+        // https://github.com/freescout-help-desk/freescout/issues/5225
+        if ($conversation->last_reply_from != Conversation::PERSON_CUSTOMER) {
+            $conversation->last_reply_at = $now;
+        }
         $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
         // Reply from customer to deleted conversation should undelete it.
         if ($conversation->state == Conversation::STATE_DELETED) {
@@ -1482,6 +1529,21 @@ class FetchEmails extends Command
             // Split by <html>
             $htmls = [];
             preg_match_all("/<html[^>]*>(.*?)<\/html>/is", $body, $htmls);
+
+            // Some clients (e.g. Yahoo Android) top-post the customer's new reply as plain
+            // HTML fragments before the first <html> block, which wraps only the quoted
+            // prior message. Here we prepend that pre-<html> content so it enters $result and the
+            // reply-separator logic can extract it correctly.
+            // https://github.com/freescout-help-desk/freescout/issues/5409
+            if (!empty($htmls[0])) {
+                $first_html_pos = mb_strpos($body, '<html');
+                if ($first_html_pos > 0) {
+                    $pre_html = mb_substr($body, 0, $first_html_pos);
+                    if (trim(strip_tags($pre_html))) {
+                        $result .= $pre_html;
+                    }
+                }
+            }
 
             if (empty($htmls[0])) {
                 $htmls[0] = [$body];

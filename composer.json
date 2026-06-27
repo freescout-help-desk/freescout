@@ -398,7 +398,7 @@
             "vendor/laravel/framework/src/Illuminate/Console/Application.php",
             "vendor/laravel/framework/src/Illuminate/Console/Command.php",
             "vendor/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/LaravelLogViewer.php",
-            "vendor/rap2hpoutre/laravel-log-viewer/src/controllers/LogViewerController.php",
+            "vendor/rap2hpoutre/laravel-log-viewer/src/Rap2hpoutre/LaravelLogViewer/LogViewerController.php",
             "vendor/symfony/console/Descriptor/TextDescriptor.php",
             "vendor/symfony/console/Input/ArgvInput.php",
             "vendor/symfony/console/Input/ArrayInput.php",

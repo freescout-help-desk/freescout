@@ -63,10 +63,10 @@ class PolycastBroadcaster extends Broadcaster
 
         // Check all channels
         foreach ($request->channels as $channel_name => $channel_info) {
-            // Copied from Illuminate\Broadcasting\Broadcasters\PusherBroadcaster
-            if (Str::startsWith($channel_name, ['private-', 'presence-']) &&
-                !$request->user()) {
 
+            // Copied from Illuminate\Broadcasting\Broadcasters\PusherBroadcaster
+            //if (Str::startsWith($channel_name, ['private-', 'presence-']) &&
+            if (!$request->user()) {
                 throw new AccessDeniedHttpException();
             }
 

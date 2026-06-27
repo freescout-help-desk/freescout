@@ -99,7 +99,10 @@ class ConversationsController extends Controller
 
                     \Session::reflash();
 
-                    return redirect()->away($conversation->url($folder->id, null, $params));
+                    // A user may have no Mine folder in this mailbox (e.g. admins / non-members),
+                    // so the lookup above can return null. Fall back to the conversation's own
+                    // folder instead of throwing "Attempt to read property id on null".
+                    return redirect()->away($conversation->url($folder ? $folder->id : $conversation->folder_id, null, $params));
                 }
             }
         }
@@ -117,7 +120,8 @@ class ConversationsController extends Controller
 
             \Session::reflash();
 
-            return redirect()->away($conversation->url($folder->id));
+            // The Mine-folder lookup (or $conversation->folder) can be null; fall back to folder_id.
+            return redirect()->away($conversation->url($folder ? $folder->id : $conversation->folder_id));
         }
 
         //$after_send = $conversation->mailbox->getUserSettings($user->id)->after_send;
@@ -2918,7 +2922,7 @@ class ConversationsController extends Controller
                 $conv_number = ltrim($q, '#');
                 if (is_numeric($conv_number)) {
                     $conversation = Conversation::where(Conversation::numberFieldName(), $conv_number)->first();
-                    if ($conversation) {
+                    if ($conversation && $user->can('view', $conversation)) {
                         $conversations[] = $conversation;
                     }
                 }

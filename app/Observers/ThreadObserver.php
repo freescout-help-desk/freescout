@@ -47,7 +47,15 @@ class ThreadObserver
         ) {
             // $conversation->cc = $thread->cc;
             // $conversation->bcc = $thread->bcc;
-            $conversation->last_reply_at = $now;
+            // Only update last_reply_at if the sender changed or it is not a consecutive
+            // customer message. This preserves the original "waiting since" time when
+            // multiple customer messages arrive without a staff reply.
+            // https://github.com/freescout-help-desk/freescout/issues/5225
+            if ($thread->source_via != Conversation::PERSON_CUSTOMER
+                || $conversation->last_reply_from != Conversation::PERSON_CUSTOMER
+            ) {
+                $conversation->last_reply_at = $now;
+            }
             $conversation->last_reply_from = $thread->source_via;
         }
         if ($conversation->source_via == Conversation::PERSON_CUSTOMER) {

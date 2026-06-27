@@ -83,7 +83,7 @@
                         <label for="last_name" class="col-sm-2 control-label">{{ __('Last Name') }}</label>
 
                         <div class="col-sm-6">
-                            <input id="last_name" type="text" class="form-control input-sized" name="last_name" value="{{ old('last_name', $user->last_name) }}" maxlength="30" required autofocus>
+                            <input id="last_name" type="text" class="form-control input-sized" name="last_name" value="{{ old('last_name', $user->last_name) }}" maxlength="30">
 
                             @include('partials/field_error', ['field'=>'last_name'])
                         </div>

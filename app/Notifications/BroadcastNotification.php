@@ -68,6 +68,8 @@ class BroadcastNotification extends Notification implements ShouldQueue
     {
         $data = [];
 
+        $user = auth()->user();
+
         if (empty($payload->thread_id) || empty($payload->mediums)) {
             return $data;
         }
@@ -77,7 +79,7 @@ class BroadcastNotification extends Notification implements ShouldQueue
 
         $thread = Thread::find($payload->thread_id);
 
-        if (empty($thread)) {
+        if (empty($thread) || !$user || !$thread->mailbox || !$user->can('viewCached', $thread->mailbox)) {
             return $data;
         }
 

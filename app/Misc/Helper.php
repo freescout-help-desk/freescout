@@ -1608,7 +1608,13 @@ class Helper
                     //$value = preg_replace_callback('%(\b(([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
                     // https://github.com/freescout-helpdesk/freescout/issues/3402
                     $nbsp = html_entity_decode('&nbsp;');
-                    $value = preg_replace_callback('%([>\r\n\s:;\( '.$nbsp.']|^)((([\w-]+)://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) { 
+                    // Use a tempered greedy token (?:(?!&(?:gt|lt);)[^\s()<>])+ so the URL
+                    // body stops before an HTML angle-bracket entity (&gt; / &lt;) that
+                    // purifyHtml() introduces for a literal > or < at the end of a plain-text
+                    // URL. The original [^\s()<>]+ treats &, g, t, ; as ordinary URL characters
+                    // (only the literal > is excluded), so &gt; ended up in the href (issue #5423).
+                    // $value = preg_replace_callback('%([>\r\n\s:;\( '.$nbsp.']|^)((([\w-]+)://?|www[.])(?:(?!&(?:gt|lt);)[^\s()<>])+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) {
+                    $value = preg_replace_callback('%([>\r\n\s:;\( '.$nbsp.']|^)((([\w-]+)://?|www[.])(?:(?!&(?:gt|lt);)[^\s()<>])+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))%s', function ($match) use ($protocol, &$links, $attr) {
                         if ($match[4]) {
                             $protocol = $match[4];
                         }
@@ -1821,6 +1827,16 @@ class Helper
     public static function sqlLikeOperator()
     {
         return self::isPgSql() ? 'ilike' : 'like';
+    }
+
+    // Escape special characters for a LIKE query.
+    public static function sqlEscapeLike($value, $char = '\\')
+    {
+        return str_replace(
+            [$char, '%', '_'],
+            [$char.$char, $char.'%', $char.'_'],
+            $value
+        );
     }
 
     // PostgreSQL truncates string if it contains \u0000 symbol starting from this symbol.
