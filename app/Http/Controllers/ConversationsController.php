@@ -2260,7 +2260,7 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
-                if (!empty($request->merge_conversation_id) && is_array($request->merge_conversation_id)) {
+                if (!$response['msg'] && !empty($request->merge_conversation_id) && is_array($request->merge_conversation_id)) {
                     
                     $sigle_conv = count($request->merge_conversation_id) == 1;
 
