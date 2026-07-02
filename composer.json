@@ -386,6 +386,7 @@
             "vendor/guzzlehttp/guzzle/src/Exception/ConnectException.php",
             "vendor/guzzlehttp/psr7/src/LazyOpenStream.php",
             "vendor/guzzlehttp/psr7/src/Uri.php",
+            "vendor/guzzlehttp/psr7/src/Message.php",
             "vendor/guzzlehttp/promises/src/RejectedPromise.php",
             "vendor/guzzlehttp/promises/src/PromiseInterface.php",
             "vendor/guzzlehttp/promises/src/FulfilledPromise.php",
