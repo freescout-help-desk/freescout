@@ -380,6 +380,7 @@
             "vendor/guzzlehttp/guzzle/src/Cookie/SetCookie.php",
             "vendor/guzzlehttp/guzzle/src/Handler/CurlMultiHandler.php",
             "vendor/guzzlehttp/guzzle/src/Handler/StreamHandler.php",
+            "vendor/guzzlehttp/guzzle/src/Handler/CurlFactory.php",
             "vendor/guzzlehttp/guzzle/src/HandlerStack.php",
             "vendor/guzzlehttp/guzzle/src/Middleware.php",
             "vendor/guzzlehttp/guzzle/src/Exception/RequestException.php",
