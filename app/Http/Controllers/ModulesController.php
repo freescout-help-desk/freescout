@@ -527,6 +527,8 @@ class ModulesController extends Controller
                             $response['status'] = 'success';
                         } elseif (!empty($result['error'])) {
                             $response['msg'] = \App\Module::getErrorMessage($result['error'], $result);
+                        } elseif (!empty($result['status']) && $result['status'] == 'error') {
+                            $response['msg'] = __('License key does not exist');
                         } else {
                             $response['msg'] = __('Error occurred. Please try again later.');
                         }
