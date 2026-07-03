@@ -214,14 +214,14 @@ class CurlFactory implements CurlFactoryInterface
         return \GuzzleHttp\Promise\rejection_for($error);
     }
 
-    private static function proxyScheme(string $proxy): ?string
+    private static function proxyScheme(string $proxy)
     {
         $position = \strpos($proxy, '://');
 
         return $position === false ? null : \strtolower(\substr($proxy, 0, $position));
     }
 
-    public static function supportsHttpsProxy(): bool
+    public static function supportsHttpsProxy()
     {
         $versionInfo = self::getVersionInfo();
 
@@ -237,7 +237,7 @@ class CurlFactory implements CurlFactoryInterface
     /**
      * @return array{version: string, features: int}|null
      */
-    private static function getVersionInfo(): ?array
+    private static function getVersionInfo()
     {
         if (self::$versionInfo === null) {
             if (!\function_exists('curl_version')) {
