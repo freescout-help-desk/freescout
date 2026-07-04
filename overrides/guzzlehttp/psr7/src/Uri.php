@@ -71,7 +71,13 @@ class Uri implements UriInterface
             if ($parts === false) {
                 throw new \InvalidArgumentException("Unable to parse URI: $uri");
             }
-            $this->applyParts($parts);
+            try {
+                $this->applyParts($parts);
+            } catch (MalformedUriException $e) {
+                throw $e;
+            } catch (\InvalidArgumentException $e) {
+                throw new MalformedUriException($e->getMessage(), 0, $e);
+            }
         }
     }
 
@@ -414,12 +420,34 @@ class Uri implements UriInterface
     public static function fromParts(array $parts)
     {
         $uri = new self();
-        $uri->applyParts($parts);
-        $uri->validateState();
+        try {
+            $uri->applyParts($parts);
+            $uri->validateState();
+        } catch (MalformedUriException $e) {
+            throw $e;
+        } catch (\InvalidArgumentException $e) {
+            throw new MalformedUriException($e->getMessage(), 0, $e);
+        }
 
         return $uri;
     }
 
+    /**
+     * @throws \InvalidArgumentException If the host is invalid.
+     *
+     * @internal
+     */
+    public static function assertValidHost(string $host): void
+    {
+        if ($host === '') {
+            return;
+        }
+
+        if (preg_match('/[\x00-\x20\x7F]/', $host)) {
+            throw new \InvalidArgumentException(sprintf('Invalid host: "%s"', $host));
+        }
+    }
+    
     public function getScheme()
     {
         return $this->scheme;
@@ -642,7 +670,8 @@ class Uri implements UriInterface
         }
 
         return preg_replace_callback(
-            '/(?:[^%' . self::$charUnreserved . self::$charSubDelims . ']+|%(?![A-Fa-f0-9]{2}))/',
+            //'/(?:[^%' . self::$charUnreserved . self::$charSubDelims . ']+|%(?![A-Fa-f0-9]{2}))/',
+            '/(?:[^%'.Rfc3986::CHAR_UNRESERVED.Rfc3986::CHAR_SUB_DELIMS.']+|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $component
         );
@@ -661,7 +690,10 @@ class Uri implements UriInterface
             throw new \InvalidArgumentException('Host must be a string');
         }
 
-        return \strtr($host, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
+        $host = \strtr($host, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
+        self::assertValidHost($host);
+
+        return $host;
     }
 
     /**
@@ -751,7 +783,8 @@ class Uri implements UriInterface
         }
 
         return preg_replace_callback(
-            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
+            //'/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
+            '/(?:[^'.Rfc3986::CHAR_UNRESERVED.Rfc3986::CHAR_SUB_DELIMS.'%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $path
         );
@@ -773,7 +806,8 @@ class Uri implements UriInterface
         }
 
         return preg_replace_callback(
-            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
+            //'/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
+            '/(?:[^'.Rfc3986::CHAR_UNRESERVED.Rfc3986::CHAR_SUB_DELIMS.'%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $str
         );

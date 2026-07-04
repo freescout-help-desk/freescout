@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.226',
+    'version' => '1.8.227',
 
     /*
     |--------------------------------------------------------------------------
@@ -417,8 +417,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | When proxy is specified, all requests to external resources are made vie this proxy.
+    |
     | Enter your proxy address in .env file if freescout.net is not available from your server
-    | (access to freescout.net is required to obtain official modules)
+    | (access to freescout.net is required to obtain official modules).
+    |
+    | Example: https://123.45.67.89:4321
     |--------------------------------------------------------------------------
     */
     'proxy' => env('APP_PROXY', ''),

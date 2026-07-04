@@ -174,11 +174,19 @@ class UrlGenerator implements UrlGeneratorInterface, ConfigurableRequirementsInt
         // the path segments "." and ".." are interpreted as relative reference when resolving a URI; see http://tools.ietf.org/html/rfc3986#section-3.3
         // so we need to encode them as they are not used for this purpose here
         // otherwise we would generate a URI that, when followed by a user agent (e.g. browser), does not match this route
-        $url = strtr($url, array('/../' => '/%2E%2E/', '/./' => '/%2E/'));
-        if ('/..' === substr($url, -3)) {
-            $url = substr($url, 0, -2).'%2E%2E';
-        } elseif ('/.' === substr($url, -2)) {
-            $url = substr($url, 0, -1).'%2E';
+        // 
+        // https://github.com/advisories/GHSA-h5x3-xfc9-m39h
+        // https://github.com/symfony/symfony/commit/4b63c3a3f7af04ecd79c89a594b0b02a01990b1d
+        if (str_contains($url, '/.')) {
+            $segments = explode('/', $url);
+            foreach ($segments as $i => $segment) {
+                if ('.' === $segment) {
+                    $segments[$i] = '%2E';
+                } elseif ('..' === $segment) {
+                    $segments[$i] = '%2E%2E';
+                }
+            }
+            $url = implode('/', $segments);
         }
 
         $schemeAuthority = '';
