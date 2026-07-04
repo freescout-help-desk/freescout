@@ -47,7 +47,7 @@
 					<button type="submit" class="btn btn-default deactivate-trigger" data-loading-text="{{ __('Deactivating') }}…">{{ __('Deactivate') }}</button>
 				@elseif (!empty($module['activated']))
 					<button type="submit" class="btn btn-primary activate-trigger" data-loading-text="{{ __('Activating') }}…">{{ __('Activate') }}</button>
-				@else
+				@elseif (empty($third_party))
 					<form action="" class="install-module-form" data-module-alias="{{ $module['alias'] }}">
 					<div class="input-group">
 						<input type="text" class="form-control license-key" placeholder="{{ __('License Key') }}" value="{{ App\Module::getLicense($module['alias']) }}" required="required">

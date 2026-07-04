@@ -497,7 +497,7 @@ class CurlFactory implements CurlFactoryInterface
 
         // https://github.com/guzzle/guzzle/security/advisories/GHSA-wpwq-4j6v-78m3
         // https://github.com/guzzle/guzzle/commit/0f4da82519b11936be53e11c57849c6f1fa95974
-        if (\is_string($conf[CURLOPT_PROXY]) && $conf[CURLOPT_PROXY] !== '') {
+        if (isset($conf[CURLOPT_PROXY]) && \is_string($conf[CURLOPT_PROXY]) && $conf[CURLOPT_PROXY] !== '') {
             // https://github.com/guzzle/guzzle/commit/fc7017417b46317b37f146f8fe520c287cb54f34
             $scheme = self::proxyScheme($conf[CURLOPT_PROXY]);
             if ($scheme !== null && \preg_match('/^[a-z][a-z0-9.+-]*$/D', $scheme) !== 1) {

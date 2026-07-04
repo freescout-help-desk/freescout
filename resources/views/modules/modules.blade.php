@@ -81,12 +81,12 @@
         </div>
 
         <div class="row-container margin-top">
-            <a href="#third-party-container" data-toggle="collapse" class="btn btn-default">{{ __('Show') }} »</a>
+            <a href="#third-party-container" data-toggle="collapse" class="btn-link">{{ __('Show') }} ({{ count($third_party_modules) }}) »</a>
         </div>
 
         <div class="row-container margin-top collapse" id="third-party-container">
             @foreach ($third_party_modules as $module)
-                @include('modules/partials/module_card')
+                @include('modules/partials/module_card', ['third_party' => true])
             @endforeach
         </div>
     @endif

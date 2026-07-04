@@ -96,17 +96,24 @@ class ModulesController extends Controller
         if (is_array($modules_directory)) {
             foreach ($modules_directory as $i_dir => $dir_module) {
 
-                $modules_directory[$i_dir] = \App\Module::formatModuleData($dir_module);
+                $dir_module = \App\Module::formatModuleData($dir_module);
+                $modules_directory[$i_dir] = $dir_module;
 
                 // Remove modules without aliases
                 if (empty($dir_module['alias'])) {
                     unset($modules_directory[$i_dir]);
                 }
+
                 $all_modules[$dir_module['alias']] = $dir_module['name'];
+
                 foreach ($installed_modules as $i_installed => $module) {
+
                     if ($dir_module['alias'] == $module['alias']) {
                         // Set image from director
                         $installed_modules[$i_installed]['img'] = $dir_module['img'];
+
+                        $installed_modules[$i_installed] = \App\Module::formatModuleData($installed_modules[$i_installed]);
+
                         // Remove installed modules from modules directory.
                         unset($modules_directory[$i_dir]);
 
@@ -120,11 +127,6 @@ class ModulesController extends Controller
                     }
                 }
 
-                if (empty($dir_module['authorUrl']) || !\App\Module::isOfficial($dir_module['authorUrl'])) {
-                    unset($modules_directory[$i_dir]);
-                    continue;
-                }
-
                 if (!empty($dir_module['requiredPhpExtensions'])) {
                     $modules_directory[$i_dir]['requiredPhpExtensionsMissing'] = \App\Module::getMissingExtensions($dir_module['requiredPhpExtensions']);
                 }
@@ -135,6 +137,9 @@ class ModulesController extends Controller
                 if (\App\Module::isThirdParty($dir_module)) {
                     $third_party_modules[] = $modules_directory[$i_dir];
                     unset($modules_directory[$i_dir]);
+                } elseif (empty($dir_module['authorUrl']) || !\App\Module::isOfficial($dir_module['authorUrl'])) {
+                    unset($modules_directory[$i_dir]);
+                    continue;
                 }
             }
         } else {
