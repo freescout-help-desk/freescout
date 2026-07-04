@@ -508,7 +508,7 @@ class CurlFactory implements CurlFactoryInterface
                 // wire.
                 throw new RequestException('The proxy URL is malformed.', $easy->request);
             }
-            if ($scheme === 'https' && !CurlVersion::supportsHttpsProxy()) {
+            if ($scheme === 'https' && !self::supportsHttpsProxy()) {
                 // libcurl before 7.50.2 silently downgrades an https:// proxy
                 // to a plaintext HTTP proxy; 7.50.2 through 7.51, and builds
                 // without HTTPS-proxy support, fail at connect time. Fail
