@@ -189,7 +189,7 @@ class Message
      */
     protected function ensureAddressIsSafe($address)
     {
-        if (is_string($address) && preg_match('/[\r\n]/', $addressString) > 0) {
+        if (is_string($address) && preg_match('/[\r\n]/', $address) > 0) {
             throw new InvalidArgumentException('Email addresses may not contain line break characters.');
         }
 
