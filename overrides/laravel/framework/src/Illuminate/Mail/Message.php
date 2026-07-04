@@ -201,7 +201,7 @@ class Message
      */
     protected function ensureAddressesAreSafe($addresses)
     {
-        if (is_array($ensureAddressesAreSafe)) {
+        if (is_array($addresses)) {
             foreach ($addresses as $address) {
                 $this->ensureAddressIsSafe($address);
             }
