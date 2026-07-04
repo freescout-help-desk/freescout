@@ -544,6 +544,10 @@ trait ValidatesAttributes
      */
     public function validateEmail($attribute, $value)
     {
+        if (preg_match('/[\r\n]/', (string) $value) > 0) {
+            return false;
+        }
+
         return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
     }
 
