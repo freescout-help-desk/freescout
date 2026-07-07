@@ -1281,6 +1281,14 @@ function initConversation()
 	    	$(this).addClass('conv-subj-editing');
 		});
 
+		// Save subject on Enter
+		jQuery("#conv-subj-value").on('keydown', function(e){
+			if (e.which == 13) {
+				e.preventDefault();
+				jQuery(".conv-subj-editor button:first").click();
+			}
+		});
+
 		// Save subject
 	    jQuery(".conv-subj-editor button:first").click(function(e){
 	    	var button = $(this);
