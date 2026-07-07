@@ -159,7 +159,7 @@ class Kernel extends ConsoleKernel
             // prevent fetching from not being executed when fetching command by some reason
             // does not remove the mutex from the cache.
             ->withoutOverlapping($expiresAt = self::FETCH_MAX_EXECUTION_TIME /* minutes */)
-            ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
+            ->appendOutputTo(storage_path().'/logs/fetch-emails.log');
 
         switch (config('app.fetch_schedule')) {
             case Mail::FETCH_SCHEDULE_EVERY_TWO_MINUTES:
@@ -264,7 +264,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('queue:work', $queue_work_params)
             ->everyMinute()
             ->withoutOverlapping()
-            ->sendOutputTo(storage_path().'/logs/queue-jobs.log');
+            ->appendOutputTo(storage_path().'/logs/queue-jobs.log');
     }
 
     /**
