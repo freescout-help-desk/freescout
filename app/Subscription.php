@@ -384,15 +384,22 @@ class Subscription extends Model
             || !empty($notify[self::MEDIUM_BROWSER])
             || !empty($notify[self::MEDIUM_MENU])
         ) {
+            // https://github.com/freescout-help-desk/freescout/issues/5491
+            $notify_menu = [];
             if (!empty($notify[self::MEDIUM_EMAIL])) {
                 $notify_menu = $notify[self::MEDIUM_EMAIL] ?? [];
-            } else {
-                $notify_menu = $notify[self::MEDIUM_BROWSER] ?? [];
+            }
+            foreach ($notify[self::MEDIUM_BROWSER] ?? [] as $conversation_id => $notify_info) {
+                if (empty($notify_menu[$conversation_id])) {
+                    $notify_menu[$conversation_id] = $notify_info;
+                }
             }
             $notify_menu = $notify_menu + ($notify[self::MEDIUM_MENU] ?? []);
+
             foreach ($notify_menu as $notify_info) {
                 $website_notification = new WebsiteNotification($notify_info['conversation'], self::chooseThread($notify_info['threads']));
                 $website_notification->delay($delay);
+
                 \Notification::send($notify_info['users'], $website_notification);
             }
         }
@@ -440,6 +447,8 @@ class Subscription extends Model
      */
     public static function chooseThread($threads)
     {
+        //$last_meaningful_thread = null;
+
         $actions_types = [
             Thread::ACTION_TYPE_USER_CHANGED,
         ];
@@ -448,9 +457,18 @@ class Subscription extends Model
             if ($thread->type == Thread::TYPE_LINEITEM && !in_array($thread->action_type, $actions_types)) {
                 continue;
             } else {
+                // if (!$last_meaningful_thread) {
+                //     $last_meaningful_thread = $thread;
+                // }
+
+                // // Make sure that user is not Deleted to filter out automatic messages.
+                // if (($thread->isUserMessage() || $thread->isNote()) && $thread->created_by_user && $thread->created_by_user->isDeleted()) {
+                //     continue;
+                // }
                 return $thread;
             }
         }
+        //return $last_meaningful_thread ?? $threads[0];
         return $threads[0];
     }
 
