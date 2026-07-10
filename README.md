@@ -91,6 +91,7 @@ Images & one-click installs:
 * [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
 * [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
+* [![Deploy with Zenith](https://cdn.zenith.hosting/buttons/deploy-with-zenith.svg)](https://zenith.hosting/host/freescout) one-click managed hosting, no server required
 * [Ubuntu](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) (bash script)
 
 ## Cloud Hosted
