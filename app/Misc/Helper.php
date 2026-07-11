@@ -47,6 +47,8 @@ class Helper
     const UPLOAD_MODE_DEFAULT = 'default';
     const UPLOAD_MODE_BY_CUSTOMER = 'customer';
 
+    const UNSAFE_URL_EXCEPTION_CODE = 10000;
+
     public static $csp_nonce = null;
 
     /**
@@ -922,6 +924,16 @@ class Helper
      */
     public static function downloadRemoteFile($url, $destinationFilePath)
     {
+        // Sanitize URL.
+        try {
+            if (!self::sanitizeRemoteUrl($url)) {
+                throw new \Exception('URL points to the local host', 1);
+            }
+        } catch (\Exception $e) {
+            \Helper::logException($e, 'Error downloading a remote file ('.$url.'): ');
+            return false;
+        }
+
         $client = new \GuzzleHttp\Client();
 
         try {
@@ -932,7 +944,10 @@ class Helper
             ]));
         } catch (\Exception $e) {
             self::logException($e);
+            return false;
         }
+
+        return true;
     }
 
     /**
@@ -1530,6 +1545,9 @@ class Helper
      */
     public static function checkPort($host, $port)
     {
+        // Sanitize URL.
+        self::sanitizeRemoteUrl('https://'.$host, true);
+
         $connection = @fsockopen($host, $port);
         if (is_resource($connection)) {
             fclose($connection);
@@ -1984,14 +2002,21 @@ class Helper
             return '';
         }
 
-        // Follow redirects and check final IP/host.
+        // Follow redirects and check all IPs/hosts.
         if ($follow_redirects) {
-            $last_redirected_url = self::curlGetLastRedirectedUrl($url);
+            for ($i = 0; $i < 20; $i++) { 
+                $redirected_url = self::curlGetNextRedirectedUrl($url);
 
-            if ($last_redirected_url != $url) {
-                if (!self::checkUrlIpAndHost($last_redirected_url, $throw_exception)) {
-                    return '';
+                if ($redirected_url == $url || !$redirected_url) {
+                    break;
                 }
+
+                if ($redirected_url != $url) {
+                    if (!self::checkUrlIpAndHost($redirected_url, $throw_exception)) {
+                        return '';
+                    }
+                }
+                $url = $redirected_url;
             }
         }
 
@@ -2024,14 +2049,15 @@ class Helper
         $restricted_hosts = [
             '::1', // IPv6 loopback
             '::ffff:127.0.0.1', // IPv4-mapped IPv6
-            '169.254.169.254', // AWS/GCP/Azure metadata
+            '169.254.169.254', '0xA9FEA9FE', // AWS/GCP/Azure metadata
             'fd00::/8', // IPv6 ULA
             '10.0.0.0/8', // RFC1918
             '172.16.0.0/12', // RFC1918
             'fd00::/8', // RFC1918
             '192.168.0.0/16',
-            '0.0.0.0',
-            '127.0.0.1',
+            '0.0.0.0', '0x00000000',
+            '127.0.0.0/8', // Loopback addresses
+            '127.0.0.1', '0x7f000001',
             'localhost',
             $hostname,
             $host_ip,
@@ -2043,7 +2069,7 @@ class Helper
         if (!in_array($parts['host'], $host_white_list) && !self::checkIpByMask($parts['host'], $host_white_list)) {
             if (in_array($parts['host'], $restricted_hosts) || self::checkIpByMask($parts['host'], $restricted_hosts)) {
                 if ($throw_exception) {
-                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $parts['host']]), 1);
+                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $parts['host']]), self::UNSAFE_URL_EXCEPTION_CODE);
                 } else {
                     return '';
                 }
@@ -2055,7 +2081,7 @@ class Helper
         if (!in_array($remote_host_ip, $host_white_list) && !self::checkIpByMask($remote_host_ip, $host_white_list)) {
             if (in_array($remote_host_ip, $restricted_hosts) || self::checkIpByMask($remote_host_ip, $restricted_hosts)) {
                 if ($throw_exception) {
-                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), 1);
+                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), self::UNSAFE_URL_EXCEPTION_CODE);
                 } else {
                     return '';
                 }
@@ -2065,25 +2091,27 @@ class Helper
         return $url;
     }
 
-    // Get last redicred URL.
-    public static function curlGetLastRedirectedUrl($url, $throw_exception = false)
+    // Get next redicred URL.
+    public static function curlGetNextRedirectedUrl($url, $throw_exception = false)
     {
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
         curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
 
         curl_setopt($ch, CURLOPT_URL, $url);
-        // Get last effective URL.
-        
         \Helper::setCurlDefaultOptions($ch);
         curl_setopt($ch, CURLOPT_TIMEOUT, 180);
-        curl_exec($ch);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($ch);
 
         $curl_errno = curl_errno($ch);
 
-        if ($curl_errno) {
+        $redirected_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+
+        if ($curl_errno && $curl_errno != CURLE_TOO_MANY_REDIRECTS && !$redirected_url) {
             if ($throw_exception) {
                 throw new \Exception('Could not check URL contents by following redirects: '.$curl_errno, 1);
             } else {
@@ -2091,12 +2119,22 @@ class Helper
             }
         }
 
-        $last_redirected_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        $info = curl_getinfo($ch);
+        if ($info['http_code'] >= 300 && $info['http_code'] < 400) {
+
+            // We've hit a redirect but couldn't follow it due to MAXREDIRS limit.
+            // Extract Location header from response.
+            preg_match('/Location: (.*)/', $response, $matches);
+            if (isset($matches[1])) {
+                $redirected_url = trim($matches[1]);
+            }
+        }
+
         if (PHP_VERSION_ID < 80000) {
             \curl_close($ch);
         }
 
-        return $last_redirected_url;
+        return $redirected_url;
     }
 
     // Returns mask or false.
@@ -2531,7 +2569,7 @@ class Helper
         curl_setopt($ch, CURLOPT_TIMEOUT, config('app.curl_timeout'));
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, config('app.curl_connect_timeout'));
         curl_setopt($ch, CURLOPT_PROXY, config('app.proxy'));        
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, config('app.curl_ssl_verifypeer'));        
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, config('app.curl_ssl_verifypeer'));
     }
 
     public static function setGuzzleDefaultOptions($params = [])
