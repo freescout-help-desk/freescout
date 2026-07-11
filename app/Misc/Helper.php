@@ -2596,11 +2596,13 @@ class Helper
 
     public static function cspMetaTag()
     {
-        // Disabled to improve security.
-        // if (!config('app.csp_enabled')) {
-        //     return '';
-        // }
+        $csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"".self::getCspValue()."\">";
 
+        return $csp;
+    }
+
+    public static function getCspValue()
+    {
         $nonce = \Helper::cspNonce();
 
         $script_src = config('app.csp_script_src').' '.\Eventy::filter('csp.script_src', '');
@@ -2622,9 +2624,9 @@ class Helper
 
         //  frame-src https://recaptcha.net; connect-src https://recaptcha.net;
         //  The frame-ancestors is ignored when delivered via a meta element.
-        $csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"base-uri 'none'; default-src 'self' ".self::sanitizeCsp($script_domains)."; img-src * 'self' data:; font-src * 'self' data:; style-src * 'self' 'unsafe-inline'; form-action 'self' ".self::sanitizeCsp(\Eventy::filter('csp.form_action', ''), true)."; frame-src * 'self'; script-src 'self' 'nonce-".$nonce."' "
+        $csp = "base-uri 'none'; default-src 'self' ".self::sanitizeCsp($script_domains)."; img-src * 'self' data:; font-src * 'self' data:; style-src * 'self' 'unsafe-inline'; form-action 'self' ".self::sanitizeCsp(\Eventy::filter('csp.form_action', ''), true)."; frame-src * 'self'; script-src 'self' 'nonce-".$nonce."' "
             .self::sanitizeCsp($script_src).";"
-            .self::sanitizeCsp(config('app.csp_custom').self::sanitizeCsp(\Eventy::filter('csp.custom', '')))."\">";
+            .self::sanitizeCsp(config('app.csp_custom').self::sanitizeCsp(\Eventy::filter('csp.custom', '')));
 
         return $csp;
     }
