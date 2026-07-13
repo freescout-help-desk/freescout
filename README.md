@@ -88,6 +88,7 @@ There are no minimum system requirements (CPU / RAM) – FreeScout will run on a
 Images & one-click installs:
 
 * [Docker Image](http://freescout.net/docker/)
+* [Hardened Docker Image](https://github.com/etkecc/freescout) (runs as non-root user with all Linux capabilities dropped on read-only rootfs)
 * [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
 * [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
