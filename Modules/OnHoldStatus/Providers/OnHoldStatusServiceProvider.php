@@ -79,6 +79,7 @@ class OnHoldStatusServiceProvider extends ServiceProvider
         // whitelist (Active/Pending) rather than real folders — without this,
         // On-Hold conversations vanish from Mine (fork patch, ARMS-12).
         \Eventy::addFilter('conversation.open_statuses', function ($statuses) {
+            $statuses = (array) $statuses;
             $statuses[] = self::STATUS_ONHOLD;
 
             return $statuses;

@@ -1117,7 +1117,7 @@ class Conversation extends Model
         if ($folder->type == Folder::TYPE_MINE) {
             $query_conversations = self::where('mailbox_id', $folder->mailbox_id)
                 // Allows modules to register extra open-type statuses (threls fork patch, ARMS-12).
-                ->whereIn('status', \Eventy::filter('conversation.open_statuses', [self::STATUS_ACTIVE, self::STATUS_PENDING]))
+                ->whereIn('status', (array) \Eventy::filter('conversation.open_statuses', [self::STATUS_ACTIVE, self::STATUS_PENDING]))
                 ->where('state', self::STATE_PUBLISHED);
 
                 // Applied below.
@@ -2531,7 +2531,7 @@ class Conversation extends Model
             ->where('mailbox_id', $mailbox_id)
             ->where('state', self::STATE_PUBLISHED)
             // Allows modules to register extra open-type statuses (threls fork patch, ARMS-12).
-            ->whereIn('status', \Eventy::filter('conversation.open_statuses', [self::STATUS_ACTIVE, self::STATUS_PENDING]))
+            ->whereIn('status', (array) \Eventy::filter('conversation.open_statuses', [self::STATUS_ACTIVE, self::STATUS_PENDING]))
             ->orderBy('last_reply_at', 'desc')
             ->offset($offset)
             ->limit($limit)
