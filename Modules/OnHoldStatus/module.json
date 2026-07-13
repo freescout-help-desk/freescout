@@ -1,0 +1,22 @@
+{
+    "name": "OnHoldStatus",
+    "alias": "onholdstatus",
+    "description": "Adds On-Hold as a first-class conversation status (ARMS-12). Registers status code 5 with core via the conversation.status_name filter carried on the threls fork.",
+    "version": "1.0.0",
+    "detailsUrl": "",
+    "author": "Threls",
+    "authorUrl": "https://threls.com",
+    "requiredAppVersion": "1.8.0",
+    "license": "AGPL-3.0",
+    "keywords": ["status", "on-hold"],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\OnHoldStatus\\Providers\\OnHoldStatusServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

@@ -527,7 +527,9 @@ class Thread extends Model
                 break;
 
             default:
-                return '';
+                // Allows modules to register extra statuses (threls fork patch, ARMS-12).
+                // Status codes are shared with conversations, so the same filter serves both.
+                return \Eventy::filter('conversation.status_name', '', $status);
                 break;
         }
     }

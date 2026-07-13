@@ -586,7 +586,8 @@ class Conversation extends Model
             //     break;
 
             default:
-                return '';
+                // Allows modules to register extra statuses (threls fork patch, ARMS-12).
+                return \Eventy::filter('conversation.status_name', '', $status);
                 break;
         }
     }
