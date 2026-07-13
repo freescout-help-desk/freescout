@@ -94,6 +94,30 @@ class OnHoldStatusTest extends TestCase
     }
 
     /**
+     * The Mine folder and chat list are live queries filtering on an
+     * "open statuses" whitelist — the module must extend it so On-Hold
+     * conversations do not vanish from the Mine folder (regression found
+     * live on the demo instance, 13 Jul).
+     */
+    public function test_open_statuses_whitelist_includes_on_hold()
+    {
+        // Without the module, On-Hold must not be in the whitelist.
+        // (assertNotContains rather than asserting the exact default array,
+        // so an unrelated module extending the whitelist doesn't break this.)
+        $this->assertNotContains(
+            self::ONHOLD,
+            \Eventy::filter('conversation.open_statuses', [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING])
+        );
+
+        $this->bootModule();
+
+        $this->assertContains(
+            self::ONHOLD,
+            \Eventy::filter('conversation.open_statuses', [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING])
+        );
+    }
+
+    /**
      * If the module is ever deactivated while status-5 rows exist,
      * getStatus() must fall back gracefully (core guard, Conversation.php:623)
      * so Blade's $status_classes[getStatus()] indexing cannot crash.

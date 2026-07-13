@@ -18,16 +18,23 @@ those arrays, so the status propagates with no further wiring.
 The status *name* resolves through the `conversation.status_name` Eventy
 filter, which this module answers with "On Hold".
 
-## ⚠ Depends on two fork patches — will not work on stock FreeScout
+## ⚠ Depends on fork patches — will not work on stock FreeScout
 
-`Conversation::statusCodeToName()` and `Thread::statusCodeToName()` are
-hardcoded switches in core. The threls fork patches their `default:` cases to
-call the `conversation.status_name` filter (see ARMS-12; grep for
-`threls fork patch` in `app/Conversation.php` / `app/Thread.php`).
+Two filters were added to core on the threls fork (grep for
+`threls fork patch` in `app/Conversation.php` / `app/Thread.php`):
 
-Installed on an unpatched core, the module still registers the status but
-every status name renders **blank** in the UI and audit trail. When merging
-upstream FreeScout releases into the fork, verify both patches survived.
+1. **`conversation.status_name`** — the `default:` cases of
+   `Conversation::statusCodeToName()` and `Thread::statusCodeToName()` are
+   hardcoded switches; without this patch every On-Hold status name renders
+   **blank** in the UI and audit trail.
+2. **`conversation.open_statuses`** — the Mine folder and chat list are
+   live queries with a hardcoded `status IN (Active, Pending)` whitelist
+   (`Conversation::getQueryByFolder()` and `Conversation::getChats()`);
+   without this patch, On-Hold conversations **vanish from the Mine folder**
+   (found live on the demo instance, 13 Jul).
+
+When merging upstream FreeScout releases into the fork, verify all four
+patched call sites survived.
 
 ## Activation
 
