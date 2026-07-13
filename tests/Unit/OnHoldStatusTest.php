@@ -101,9 +101,11 @@ class OnHoldStatusTest extends TestCase
      */
     public function test_open_statuses_whitelist_includes_on_hold()
     {
-        // Without the module: core default.
-        $this->assertSame(
-            [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING],
+        // Without the module, On-Hold must not be in the whitelist.
+        // (assertNotContains rather than asserting the exact default array,
+        // so an unrelated module extending the whitelist doesn't break this.)
+        $this->assertNotContains(
+            self::ONHOLD,
             \Eventy::filter('conversation.open_statuses', [Conversation::STATUS_ACTIVE, Conversation::STATUS_PENDING])
         );
 
