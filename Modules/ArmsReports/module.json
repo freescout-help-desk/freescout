@@ -1,0 +1,22 @@
+{
+    "name": "ArmsReports",
+    "alias": "armsreports",
+    "description": "ARMS reports catalogue (ARMS-13): KPI and agent-performance reports over the threads event table, with CSV/PDF export. Complements the paid Reports module; see local-specs customizations/custom-reports-layer.md.",
+    "version": "1.0.0",
+    "detailsUrl": "",
+    "author": "Threls",
+    "authorUrl": "https://threls.com",
+    "requiredAppVersion": "1.8.0",
+    "license": "AGPL-3.0",
+    "keywords": ["reports", "kpi", "arms"],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\ArmsReports\\Providers\\ArmsReportsServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}
