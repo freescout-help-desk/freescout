@@ -47,17 +47,45 @@ class OnHoldStatusServiceProvider extends ServiceProvider
 
     /**
      * Register the On-Hold status with core's status registries.
+     *
+     * Inserted after Pending (not appended) so every surface that iterates
+     * the registries — status dropdown, search filter, bulk actions, the
+     * Custom Folders checkboxes — renders the lifecycle order
+     * Active, Pending, On Hold, Closed, Spam (ARMS-14).
      */
     protected function registerStatus()
     {
-        Conversation::$statuses[self::STATUS_ONHOLD] = 'onhold';
-        Conversation::$status_icons[self::STATUS_ONHOLD] = 'pause';
-        Conversation::$status_classes[self::STATUS_ONHOLD] = 'warning';
-        Conversation::$status_colors[self::STATUS_ONHOLD] = '#f39c12';
+        Conversation::$statuses = self::insertAfter(Conversation::$statuses, Conversation::STATUS_PENDING, self::STATUS_ONHOLD, 'onhold');
+        Conversation::$status_icons = self::insertAfter(Conversation::$status_icons, Conversation::STATUS_PENDING, self::STATUS_ONHOLD, 'pause');
+        Conversation::$status_classes = self::insertAfter(Conversation::$status_classes, Conversation::STATUS_PENDING, self::STATUS_ONHOLD, 'warning');
+        Conversation::$status_colors = self::insertAfter(Conversation::$status_colors, Conversation::STATUS_PENDING, self::STATUS_ONHOLD, '#f39c12');
 
         // Status codes must match between conversations and threads
         // (see the comment above Conversation's status constants).
-        Thread::$statuses[self::STATUS_ONHOLD] = 'onhold';
+        Thread::$statuses = self::insertAfter(Thread::$statuses, Thread::STATUS_PENDING, self::STATUS_ONHOLD, 'onhold');
+    }
+
+    /**
+     * Insert $value under $new_key immediately after $after_key, preserving
+     * the order of everything else. Appends if $after_key is absent.
+     */
+    protected static function insertAfter(array $array, $after_key, $new_key, $value)
+    {
+        $result = [];
+        foreach ($array as $key => $existing) {
+            if ($key === $new_key) {
+                continue; // idempotency: drop a pre-existing entry, re-insert in position
+            }
+            $result[$key] = $existing;
+            if ($key === $after_key) {
+                $result[$new_key] = $value;
+            }
+        }
+        if (!array_key_exists($new_key, $result)) {
+            $result[$new_key] = $value;
+        }
+
+        return $result;
     }
 
     /**

@@ -81,6 +81,32 @@ class OnHoldStatusTest extends TestCase
         $this->assertTrue(array_key_exists(self::ONHOLD, Conversation::$statuses));
     }
 
+    /**
+     * Dropdowns render registry order — On Hold must sit after Pending,
+     * not at the end after Spam (ARMS-14).
+     */
+    public function test_on_hold_is_ordered_after_pending()
+    {
+        $this->bootModule();
+
+        $expected = [
+            Conversation::STATUS_ACTIVE,
+            Conversation::STATUS_PENDING,
+            self::ONHOLD,
+            Conversation::STATUS_CLOSED,
+            Conversation::STATUS_SPAM,
+        ];
+
+        $this->assertSame($expected, array_keys(Conversation::$statuses));
+        $this->assertSame($expected, array_keys(Conversation::$status_icons));
+        $this->assertSame($expected, array_keys(Conversation::$status_classes));
+        $this->assertSame($expected, array_keys(Conversation::$status_colors));
+
+        // Booting twice must not duplicate or move the entry (idempotency).
+        $this->bootModule();
+        $this->assertSame($expected, array_keys(Conversation::$statuses));
+    }
+
     public function test_existing_statuses_are_unaffected()
     {
         $this->bootModule();
