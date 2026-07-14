@@ -1,10 +1,10 @@
 # ArmsReports
 
 ARMS reports catalogue ([ARMS-13](https://threls.atlassian.net/browse/ARMS-13)):
-the §5.2/§5.3 report items from ARMS's discovery meeting that the paid
-Reports module doesn't provide, computed from the `conversations`/`threads`
-event tables. Full scope and catalogue mapping:
-`local-specs/arms-freescout/customizations/custom-reports-layer.md`.
+the reports ARMS requested in discovery that the paid Reports module
+doesn't provide — volume breakdowns, medians, per-assignee performance,
+time-in-status — computed from the `conversations`/`threads` event tables.
+Full scope and catalogue mapping are on the ARMS-13 ticket.
 
 ## Pages
 
@@ -31,13 +31,14 @@ ranges ever span 10k+ conversations.
 ## Requirements & dependencies
 
 - **MySQL required** — the volume queries use `HOUR()`/`DAYOFWEEK()`.
-  (Demo and production are pinned MySQL; see infrastructure.md. If a
+  (Both demo and production environments are pinned to MySQL. If a
   non-MySQL environment ever matters, those two queries can move to
   PHP-side bucketing.)
 - **dompdf** (`dompdf/dompdf` in composer.json) for PDF export — installed
   by the standard deploy's `composer install`. Note: dompdf emits a PHP
-  8.5-only deprecation on construct; irrelevant on the PHP 8.3 baseline
-  (see infrastructure.md for why the stack is pinned to 8.3).
+  8.5-only deprecation on construct; irrelevant on PHP 8.3, which this
+  stack is pinned to (FreeScout is not PHP 8.5-compatible — upstream
+  issue freescout#5114).
 - **Laravel 5.5 constraint**: CSV export uses `response()->stream()` —
   `streamDownload()` does not exist in 5.5.
 

@@ -12,7 +12,7 @@ use Modules\ArmsReports\Services\ReportFilters;
 class ArmsReportsController extends Controller
 {
     /**
-     * ARMS KPIs — §5.3 reports catalogue.
+     * ARMS KPIs — volume/lifecycle reports (ARMS-13).
      */
     public function kpis(Request $request)
     {
@@ -23,7 +23,7 @@ class ArmsReportsController extends Controller
     }
 
     /**
-     * Agent Performance — §5.2 per-assignee medians.
+     * Agent Performance — per-assignee medians (ARMS-13).
      */
     public function agents(Request $request)
     {

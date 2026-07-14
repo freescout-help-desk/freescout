@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * The "ARMS KPIs" page/export: §5.3 reports catalogue items that the paid
+ * The "ARMS KPIs" page/export: the volume/lifecycle reports ARMS requested (ARMS-13) that the paid
  * Reports module does not provide, computed from conversations + the
  * threads event table. All methods take ReportFilters so the December
  * portal API can reuse them verbatim.

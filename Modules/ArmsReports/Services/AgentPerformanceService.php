@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * The "Agent Performance" page/export: §5.2 — per-assignee first-reply
+ * The "Agent Performance" page/export (ARMS-13): per-assignee first-reply
  * median and first-resolution median.
  */
 class AgentPerformanceService
