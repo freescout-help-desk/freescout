@@ -392,6 +392,9 @@ class Subscription extends Model
             foreach ($notify[self::MEDIUM_BROWSER] ?? [] as $conversation_id => $notify_info) {
                 if (empty($notify_menu[$conversation_id])) {
                     $notify_menu[$conversation_id] = $notify_info;
+                } else {
+                    $notify_menu[$conversation_id]['users'] = collect($notify_menu[$conversation_id]['users'])
+                        ->merge($notify_info['users'])->unique('id')->values()->all();
                 }
             }
             $notify_menu = $notify_menu + ($notify[self::MEDIUM_MENU] ?? []);
