@@ -102,9 +102,22 @@ class OnHoldStatusTest extends TestCase
         $this->assertSame($expected, array_keys(Conversation::$status_classes));
         $this->assertSame($expected, array_keys(Conversation::$status_colors));
 
+        // Thread's registry has its own base order (incl. NOCHANGE) — On-Hold
+        // must land right after Pending there too.
+        $expectedThread = [
+            Thread::STATUS_ACTIVE,
+            Thread::STATUS_CLOSED,
+            Thread::STATUS_NOCHANGE,
+            Thread::STATUS_PENDING,
+            self::ONHOLD,
+            Thread::STATUS_SPAM,
+        ];
+        $this->assertSame($expectedThread, array_keys(Thread::$statuses));
+
         // Booting twice must not duplicate or move the entry (idempotency).
         $this->bootModule();
         $this->assertSame($expected, array_keys(Conversation::$statuses));
+        $this->assertSame($expectedThread, array_keys(Thread::$statuses));
     }
 
     public function test_existing_statuses_are_unaffected()
