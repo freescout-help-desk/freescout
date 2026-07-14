@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\DB;
  * Reports module does not provide, computed from conversations + the
  * threads event table. All methods take ReportFilters so the December
  * portal API can reuse them verbatim.
+ *
+ * Requires MySQL (HOUR()/DAYOFWEEK() in the volume queries) — see the
+ * module README. Timeline aggregation (reopened, time-in-status) happens
+ * in PHP over the filtered range: acceptable at ARMS volume, revisit with
+ * a rollup table if ranges ever span 10k+ conversations.
  */
 class KpiReportService
 {
@@ -47,47 +52,56 @@ class KpiReportService
         return $this->filters->applyToConversations(DB::table('conversations'));
     }
 
+    /**
+     * Threads of the filtered conversations, without materializing an ID
+     * list in PHP (joins scale where whereIn(ids) does not).
+     */
+    protected function threadsOfFilteredConversations()
+    {
+        return $this->filters->applyToConversations(
+            DB::table('threads')->join('conversations', 'conversations.id', '=', 'threads.conversation_id')
+        );
+    }
+
     protected function cards(array $statusEvents)
     {
         $today = Carbon::today();
 
-        $createdToday = DB::table('conversations')
-            ->where('state', Conversation::STATE_PUBLISHED)
-            ->where('created_at', '>=', $today)
-            ->when($this->filters->mailbox_id, function ($q) {
-                $q->where('mailbox_id', $this->filters->mailbox_id);
-            })
-            ->count();
+        $todayBase = function () use ($today) {
+            return DB::table('conversations')
+                ->where('state', Conversation::STATE_PUBLISHED)
+                ->when($this->filters->mailbox_id, function ($q) {
+                    $q->where('mailbox_id', $this->filters->mailbox_id);
+                })
+                ->when($this->filters->user_id, function ($q) {
+                    $q->where('user_id', $this->filters->user_id);
+                });
+        };
 
-        $resolvedToday = DB::table('conversations')
-            ->where('state', Conversation::STATE_PUBLISHED)
+        $createdToday = $todayBase()->where('created_at', '>=', $today)->count();
+
+        $resolvedToday = $todayBase()
             ->where('status', Conversation::STATUS_CLOSED)
             ->where('closed_at', '>=', $today)
-            ->when($this->filters->mailbox_id, function ($q) {
-                $q->where('mailbox_id', $this->filters->mailbox_id);
-            })
             ->count();
 
         $total = $this->conversations()->count();
         $days = $this->filters->days();
 
-        $closedIds = $this->conversations()
+        $closedCount = $this->conversations()
             ->where('conversations.status', Conversation::STATUS_CLOSED)
-            ->pluck('conversations.id');
+            ->count();
 
-        $oneTouch = 0;
-        if (count($closedIds)) {
-            $oneTouch = DB::table('threads')
-                ->select('conversation_id', DB::raw('COUNT(*) as replies'))
-                ->whereIn('conversation_id', $closedIds)
-                ->where('type', Thread::TYPE_MESSAGE)
-                ->where('state', Thread::STATE_PUBLISHED)
-                ->whereNotNull('created_by_user_id')
-                ->groupBy('conversation_id')
-                ->havingRaw('COUNT(*) = 1')
-                ->get()
-                ->count();
-        }
+        $oneTouch = $this->threadsOfFilteredConversations()
+            ->where('conversations.status', Conversation::STATUS_CLOSED)
+            ->where('threads.type', Thread::TYPE_MESSAGE)
+            ->where('threads.state', Thread::STATE_PUBLISHED)
+            ->whereNotNull('threads.created_by_user_id')
+            ->select('threads.conversation_id')
+            ->groupBy('threads.conversation_id')
+            ->havingRaw('COUNT(*) = 1')
+            ->get()
+            ->count();
 
         $reopened = $this->reopenedCount($statusEvents);
 
@@ -98,7 +112,7 @@ class KpiReportService
             ['label' => __('Resolved today'), 'value' => $resolvedToday],
             ['label' => __('Avg created / day'), 'value' => round($total / $days, 1)],
             ['label' => __('Avg created / week'), 'value' => round($total / $days * 7, 1)],
-            ['label' => __('One-touch tickets'), 'value' => $oneTouch.(count($closedIds) ? ' ('.round($oneTouch / count($closedIds) * 100).'%)' : '')],
+            ['label' => __('One-touch tickets'), 'value' => $oneTouch.($closedCount ? ' ('.round($oneTouch / $closedCount * 100).'%)' : '')],
             ['label' => __('Reopened tickets'), 'value' => $reopened],
             ['label' => __('First-response median'), 'value' => Stats::duration($firstResponseMedian)],
             ['label' => __('First-resolution median'), 'value' => Stats::duration($resolutionMedian)],
@@ -155,32 +169,25 @@ class KpiReportService
 
     protected function replyBrackets()
     {
+        // Name columns selected raw and concatenated in PHP for DB portability.
         $convRows = $this->conversations()
             ->leftJoin('users', 'users.id', '=', 'conversations.user_id')
-            ->select(
-                'conversations.id',
-                'conversations.user_id',
-                DB::raw("TRIM(CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, ''))) as agent")
-            )
+            ->select('conversations.id', 'users.first_name', 'users.last_name')
             ->get();
 
-        $replyCounts = [];
-        if ($convRows->count()) {
-            $replyCounts = DB::table('threads')
-                ->select('conversation_id', DB::raw('COUNT(*) as c'))
-                ->whereIn('conversation_id', $convRows->pluck('id'))
-                ->where('type', Thread::TYPE_MESSAGE)
-                ->where('state', Thread::STATE_PUBLISHED)
-                ->whereNotNull('created_by_user_id')
-                ->groupBy('conversation_id')
-                ->pluck('c', 'conversation_id')
-                ->all();
-        }
+        $replyCounts = $this->threadsOfFilteredConversations()
+            ->where('threads.type', Thread::TYPE_MESSAGE)
+            ->where('threads.state', Thread::STATE_PUBLISHED)
+            ->whereNotNull('threads.created_by_user_id')
+            ->select('threads.conversation_id', DB::raw('COUNT(*) as c'))
+            ->groupBy('threads.conversation_id')
+            ->pluck('c', 'conversation_id')
+            ->all();
 
         $brackets = Stats::bracketLabels();
         $byAgent = [];
         foreach ($convRows as $conv) {
-            $agent = $conv->agent ?: __('Unassigned');
+            $agent = trim(($conv->first_name ?? '').' '.($conv->last_name ?? '')) ?: __('Unassigned');
             $replies = $replyCounts[$conv->id] ?? 0;
             if ($replies === 0) {
                 continue; // no agent replies yet — not attributable to a bracket
@@ -212,24 +219,23 @@ class KpiReportService
     protected function statusEvents()
     {
         $conversations = $this->conversations()
-            ->select('conversations.id', 'conversations.created_at', 'conversations.status')
+            ->select('conversations.id', 'conversations.created_at')
             ->get();
 
         if (!$conversations->count()) {
             return [];
         }
 
-        $threads = DB::table('threads')
-            ->whereIn('conversation_id', $conversations->pluck('id'))
-            ->where('state', Thread::STATE_PUBLISHED)
+        $threads = $this->threadsOfFilteredConversations()
+            ->where('threads.state', Thread::STATE_PUBLISHED)
             ->where(function ($q) {
                 $q->where(function ($q2) {
-                    $q2->where('type', Thread::TYPE_LINEITEM)
-                        ->where('action_type', Thread::ACTION_TYPE_STATUS_CHANGED);
-                })->orWhereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE]);
+                    $q2->where('threads.type', Thread::TYPE_LINEITEM)
+                        ->where('threads.action_type', Thread::ACTION_TYPE_STATUS_CHANGED);
+                })->orWhereIn('threads.type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE]);
             })
-            ->orderBy('created_at')
-            ->get(['conversation_id', 'type', 'status', 'created_at']);
+            ->orderBy('threads.created_at')
+            ->get(['threads.conversation_id', 'threads.type', 'threads.status', 'threads.created_at']);
 
         $events = [];
         foreach ($conversations as $conv) {
@@ -270,6 +276,10 @@ class KpiReportService
 
     protected function timeInStatus(array $statusEvents)
     {
+        // For historical ranges, open-ended intervals end at the range end,
+        // not "now" — otherwise last month's report accrues time up to today.
+        $cap = Carbon::now()->min($this->filters->to);
+
         $totals = [];
         $counts = [];
 
@@ -277,12 +287,14 @@ class KpiReportService
             $perStatus = [];
             for ($i = 0; $i < count($timeline); $i++) {
                 $start = Carbon::parse($timeline[$i]['at']);
-                $end = isset($timeline[$i + 1]) ? Carbon::parse($timeline[$i + 1]['at']) : Carbon::now();
+                $end = isset($timeline[$i + 1]) ? Carbon::parse($timeline[$i + 1]['at']) : $cap->copy();
                 $status = $timeline[$i]['status'];
                 if ($status === Conversation::STATUS_CLOSED && !isset($timeline[$i + 1])) {
                     continue; // don't count open-ended time sitting closed
                 }
-                $perStatus[$status] = ($perStatus[$status] ?? 0) + max(0, $end->diffInSeconds($start));
+                // Signed diff: clock drift making $end < $start counts as 0,
+                // not as a positive duration (diffInSeconds defaults to abs).
+                $perStatus[$status] = ($perStatus[$status] ?? 0) + max(0, $start->diffInSeconds($end, false));
             }
             foreach ($perStatus as $status => $seconds) {
                 $totals[$status] = ($totals[$status] ?? 0) + $seconds;
@@ -329,13 +341,12 @@ class KpiReportService
             return [null, null];
         }
 
-        $derived = DB::table('threads')
-            ->select('conversation_id', DB::raw('MIN(created_at) as first_reply'))
-            ->whereIn('conversation_id', $conversations->pluck('id'))
-            ->where('type', Thread::TYPE_MESSAGE)
-            ->where('state', Thread::STATE_PUBLISHED)
-            ->whereNotNull('created_by_user_id')
-            ->groupBy('conversation_id')
+        $derived = $this->threadsOfFilteredConversations()
+            ->where('threads.type', Thread::TYPE_MESSAGE)
+            ->where('threads.state', Thread::STATE_PUBLISHED)
+            ->whereNotNull('threads.created_by_user_id')
+            ->select('threads.conversation_id', DB::raw('MIN(threads.created_at) as first_reply'))
+            ->groupBy('threads.conversation_id')
             ->pluck('first_reply', 'conversation_id');
 
         $responseDurations = [];
@@ -343,10 +354,10 @@ class KpiReportService
         foreach ($conversations as $conv) {
             $firstReply = $conv->first_reply_at ?: ($derived[$conv->id] ?? null);
             if ($firstReply) {
-                $responseDurations[] = Carbon::parse($firstReply)->diffInSeconds(Carbon::parse($conv->created_at));
+                $responseDurations[] = max(0, Carbon::parse($conv->created_at)->diffInSeconds(Carbon::parse($firstReply), false));
             }
             if ((int) $conv->status === Conversation::STATUS_CLOSED && $conv->closed_at) {
-                $resolutionDurations[] = Carbon::parse($conv->closed_at)->diffInSeconds(Carbon::parse($conv->created_at));
+                $resolutionDurations[] = max(0, Carbon::parse($conv->created_at)->diffInSeconds(Carbon::parse($conv->closed_at), false));
             }
         }
 

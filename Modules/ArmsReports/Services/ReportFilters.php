@@ -26,13 +26,9 @@ class ReportFilters
     {
         $filters = new self();
 
-        $filters->from = $request->filled('from')
-            ? Carbon::parse($request->input('from'))->startOfDay()
-            : Carbon::now()->subDays(29)->startOfDay();
-
-        $filters->to = $request->filled('to')
-            ? Carbon::parse($request->input('to'))->endOfDay()
-            : Carbon::now()->endOfDay();
+        // Invalid date input falls back to the defaults instead of a 500.
+        $filters->from = self::parseDate($request->input('from'), Carbon::now()->subDays(29))->startOfDay();
+        $filters->to = self::parseDate($request->input('to'), Carbon::now())->endOfDay();
 
         if ($filters->to->lt($filters->from)) {
             [$filters->from, $filters->to] = [$filters->to->copy()->startOfDay(), $filters->from->copy()->endOfDay()];
@@ -42,6 +38,21 @@ class ReportFilters
         $filters->user_id = $request->input('user_id') ? (int) $request->input('user_id') : null;
 
         return $filters;
+    }
+
+    /**
+     * Parse a date input defensively, falling back on anything unparseable.
+     */
+    protected static function parseDate($value, Carbon $fallback)
+    {
+        if (!$value) {
+            return $fallback;
+        }
+        try {
+            return Carbon::parse($value);
+        } catch (\Throwable $e) {
+            return $fallback;
+        }
     }
 
     /**

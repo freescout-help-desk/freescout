@@ -10,10 +10,11 @@ class Exporter
 {
     /**
      * Stream all sections (and stat cards, if any) as a single CSV download.
+     * Uses response()->stream() — streamDownload() does not exist in Laravel 5.5.
      */
     public static function csv(array $data, $filename)
     {
-        return response()->streamDownload(function () use ($data) {
+        return response()->stream(function () use ($data) {
             $out = fopen('php://output', 'w');
             // UTF-8 BOM so Excel opens it correctly.
             fwrite($out, "\xEF\xBB\xBF");
@@ -40,7 +41,10 @@ class Exporter
             }
 
             fclose($out);
-        }, $filename.'.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
+        }, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'.csv"',
+        ]);
     }
 
     /**

@@ -23,45 +23,48 @@ class AgentPerformanceService
 
     public function build()
     {
+        // Inner join: user_id is non-null here, and name columns are
+        // selected raw and concatenated in PHP for DB portability.
         $conversations = $this->filters
             ->applyToConversations(DB::table('conversations'))
             ->whereNotNull('conversations.user_id')
-            ->leftJoin('users', 'users.id', '=', 'conversations.user_id')
+            ->join('users', 'users.id', '=', 'conversations.user_id')
             ->select(
                 'conversations.id',
                 'conversations.created_at',
                 'conversations.closed_at',
                 'conversations.status',
                 'conversations.first_reply_at',
-                DB::raw("TRIM(CONCAT(COALESCE(users.first_name, ''), ' ', COALESCE(users.last_name, ''))) as agent")
+                'users.first_name',
+                'users.last_name'
             )
             ->get();
 
-        $derived = [];
-        if ($conversations->count()) {
-            $derived = DB::table('threads')
-                ->select('conversation_id', DB::raw('MIN(created_at) as first_reply'))
-                ->whereIn('conversation_id', $conversations->pluck('id'))
-                ->where('type', Thread::TYPE_MESSAGE)
-                ->where('state', Thread::STATE_PUBLISHED)
-                ->whereNotNull('created_by_user_id')
-                ->groupBy('conversation_id')
-                ->pluck('first_reply', 'conversation_id')
-                ->all();
-        }
+        $derived = $this->filters
+            ->applyToConversations(
+                DB::table('threads')->join('conversations', 'conversations.id', '=', 'threads.conversation_id')
+            )
+            ->whereNotNull('conversations.user_id')
+            ->where('threads.type', Thread::TYPE_MESSAGE)
+            ->where('threads.state', Thread::STATE_PUBLISHED)
+            ->whereNotNull('threads.created_by_user_id')
+            ->select('threads.conversation_id', DB::raw('MIN(threads.created_at) as first_reply'))
+            ->groupBy('threads.conversation_id')
+            ->pluck('first_reply', 'conversation_id')
+            ->all();
 
         $byAgent = [];
         foreach ($conversations as $conv) {
-            $agent = $conv->agent ?: __('Unknown');
+            $agent = trim(($conv->first_name ?? '').' '.($conv->last_name ?? '')) ?: __('Unknown');
             $byAgent[$agent] = $byAgent[$agent] ?? ['tickets' => 0, 'responses' => [], 'resolutions' => []];
             $byAgent[$agent]['tickets']++;
 
             $firstReply = $conv->first_reply_at ?: ($derived[$conv->id] ?? null);
             if ($firstReply) {
-                $byAgent[$agent]['responses'][] = Carbon::parse($firstReply)->diffInSeconds(Carbon::parse($conv->created_at));
+                $byAgent[$agent]['responses'][] = max(0, Carbon::parse($conv->created_at)->diffInSeconds(Carbon::parse($firstReply), false));
             }
             if ((int) $conv->status === Conversation::STATUS_CLOSED && $conv->closed_at) {
-                $byAgent[$agent]['resolutions'][] = Carbon::parse($conv->closed_at)->diffInSeconds(Carbon::parse($conv->created_at));
+                $byAgent[$agent]['resolutions'][] = max(0, Carbon::parse($conv->created_at)->diffInSeconds(Carbon::parse($conv->closed_at), false));
             }
         }
         ksort($byAgent);
