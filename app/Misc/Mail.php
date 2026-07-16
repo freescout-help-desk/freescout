@@ -71,6 +71,8 @@ class Mail
      * Regex separators has "regex:" in the beginning.
      */
     public static $alternative_reply_separators = [
+        // https://github.com/freescout-help-desk/freescout/issues/5504
+        'regex:/<\s*div[^>]+'.self::REPLY_SEPARATOR_HTML.'[^>]+>/',
         self::REPLY_SEPARATOR_HTML, // Our HTML separator
         self::REPLY_SEPARATOR_TEXT, // Our plain text separator
 
