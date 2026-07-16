@@ -166,9 +166,11 @@ class EmailAnonymizer
 
     /**
      * Whether anonymize() output can be reversed back to this address.
-     * False only when the folded local part would exceed the RFC limit
-     * (i.e. the original address itself is longer than 64 characters) and
-     * the transform must drop to the hash fallback.
+     * False when the folded local part would exceed the RFC limit (i.e.
+     * the original address itself is longer than 64 characters) and the
+     * transform must drop to the hash fallback, or when the domain has no
+     * dot (user@localhost) — a folded dotless domain is indistinguishable
+     * from a hash-fallback suffix, so reverse() refuses to parse it.
      */
     public static function isReversible($email)
     {
@@ -182,12 +184,21 @@ class EmailAnonymizer
 
         // The folded local part (local+domain) has exactly the original
         // address's length — the "@" becomes the "+".
-        return strlen($email) <= self::LOCAL_PART_MAX;
+        return strlen($email) <= self::LOCAL_PART_MAX
+            && strpos($domain, '.') !== false;
     }
 
     /**
      * Keep the local part within the RFC limit; past it, drop to a stable
      * short-hash suffix (uniqueness preserved, reversibility knowingly not).
+     *
+     * The hash covers the input as given, so for a >64-char original the
+     * sink form of the raw address differs from the sink form of its stored
+     * anonymised address (whose own hash suffix is all that survives of the
+     * original). Unavoidable — a hash-fallback form cannot be reversed to
+     * recover the original — and harmless in practice: each path stays
+     * unique per customer, and the runbook (scrub before testing) means all
+     * sends see the stored form.
      */
     protected static function capLocal($local, $original)
     {

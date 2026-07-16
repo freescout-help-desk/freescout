@@ -46,7 +46,9 @@ On the demo instance also consider allow-listing `threls.onmicrosoft.com` (the d
 php artisan test-email-guard:anonymize-stored
 ```
 
-Rewrites `emails.email`, `conversations.customer_email` and the `threads` from/to/cc/bcc fields. Refuses to run when `app.env` is `production`; prompts for confirmation unless `--force` is given. Agents (`users` table) are deliberately untouched. Addresses inside message body text are not rewritten — text in a body cannot cause a send; the outbound guard is the protection there.
+Rewrites `emails.email`, the `conversations` customer_email/cc/bcc fields, the `threads` from/to/cc/bcc fields, `send_logs.email`, and address tokens inside the raw stored email headers (`threads.headers`). Refuses to run when `app.env` is `production`; prompts for confirmation unless `--force` is given. If a row cannot be updated (e.g. a unique-key collision on `emails.email`), the command reports it, carries on with the rest, and exits non-zero — it never aborts half-done.
+
+Deliberately untouched: agents (`users` table); addresses inside message body text — free text cannot cause a send, the outbound guard is the protection there; and `Message-ID`/`References`/`In-Reply-To` header lines plus `threads.message_id` — threading identifiers that merely look like addresses, rewriting them would corrupt reply threading.
 
 **Runbook for a migration test:** import → `test-email-guard:anonymize-stored` → `test-email-guard:status` → hand over for testing.
 

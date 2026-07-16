@@ -147,6 +147,12 @@ class TestEmailGuardTest extends TestCase
         $long = str_repeat('a', 60).'@a-very-long-corporate-subdomain.example-company.co.uk';
         $this->assertFalse($this->anonymizer()::isReversible($long));
         $this->assertNull($this->anonymizer()::reverse($this->anonymizer()::anonymize($long)));
+
+        // A dotless domain folds into something indistinguishable from a
+        // hash-fallback suffix, so it is flagged irreversible too and
+        // reverse() refuses to parse it — the two methods must agree.
+        $this->assertFalse($this->anonymizer()::isReversible('user@localhost'));
+        $this->assertNull($this->anonymizer()::reverse($this->anonymizer()::anonymize('user@localhost')));
     }
 
     public function test_invalid_input_passes_through_unchanged()
