@@ -155,6 +155,44 @@ class TestEmailGuardTest extends TestCase
         $this->assertSame('not-an-email', $this->anonymizer()::anonymize('not-an-email'));
     }
 
+    /**
+     * Local parts can be internationalised (RFC 6531) — the hash fallback
+     * must trim to the RFC byte budget without splitting a UTF-8 character,
+     * or the result is malformed UTF-8.
+     */
+    public function test_hash_fallback_does_not_split_multibyte_characters()
+    {
+        // Maltese "għażiż" repeated — multibyte throughout, and long enough
+        // to force the fallback at every possible cut position.
+        $local = str_repeat('għażiż', 12);
+        $result = $this->anonymizer()::anonymize($local.'@gmail.com');
+
+        $result_local = substr($result, 0, strrpos($result, '@'));
+        $this->assertLessThanOrEqual(64, strlen($result_local));
+        $this->assertTrue(mb_check_encoding($result_local, 'UTF-8'));
+        $this->assertStringEndsWith('@example.com', $result);
+    }
+
+    /**
+     * Values set through the module config (merged by the provider) must be
+     * honoured — env() is only the fallback for provider-less contexts.
+     */
+    public function test_settings_are_readable_from_module_config()
+    {
+        config(['testemailguard.allow_domains' => 'arms.com.mt,threls.com,threls.onmicrosoft.com']);
+        config(['testemailguard.sink' => 'armssink@threls.onmicrosoft.com']);
+
+        try {
+            $this->assertSame(
+                'customercare@threls.onmicrosoft.com',
+                $this->anonymizer()::anonymize('customercare@threls.onmicrosoft.com')
+            );
+            $this->assertSame('armssink@threls.onmicrosoft.com', $this->anonymizer()::sink());
+        } finally {
+            config(['testemailguard.allow_domains' => null, 'testemailguard.sink' => null]);
+        }
+    }
+
     public function test_sink_mode_plus_addresses_into_the_sink_mailbox()
     {
         putenv('TEST_EMAIL_GUARD_SINK=armssink@threls.onmicrosoft.com');

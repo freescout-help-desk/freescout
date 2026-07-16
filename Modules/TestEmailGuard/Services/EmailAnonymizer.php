@@ -39,10 +39,16 @@ class EmailAnonymizer
      * Domains whose recipients receive real mail, untouched.
      * Comparison is by exact domain, not suffix — mail to a lookalike
      * subdomain must not slip through the guard.
+     *
+     * Read via the module config (Config/config.php, merged by the service
+     * provider) with a direct env fallback for contexts where the provider
+     * is not registered. Both are null-safe: a missing value falls back to
+     * the built-in ARMS/Threls defaults, so a cached config that cannot see
+     * .env still leaves the guard guarding.
      */
     public static function allowedDomains()
     {
-        $env = env('TEST_EMAIL_GUARD_ALLOW_DOMAINS');
+        $env = config('testemailguard.allow_domains') ?: env('TEST_EMAIL_GUARD_ALLOW_DOMAINS');
 
         $domains = $env ? explode(',', $env) : ['arms.com.mt', 'threls.com'];
 
@@ -57,7 +63,7 @@ class EmailAnonymizer
      */
     public static function sink()
     {
-        $sink = env('TEST_EMAIL_GUARD_SINK');
+        $sink = config('testemailguard.sink') ?: env('TEST_EMAIL_GUARD_SINK');
 
         if (!$sink || strpos($sink, '@') === false) {
             return null;
@@ -191,12 +197,16 @@ class EmailAnonymizer
 
         $hash = substr(sha1($original), 0, self::HASH_LENGTH);
 
-        return substr($local, 0, self::LOCAL_PART_MAX - self::HASH_LENGTH - 1).'+'.$hash;
+        // The RFC limit is octets, so the budget is measured in bytes —
+        // mb_strcut trims to the byte budget without splitting a UTF-8
+        // character in half (local parts can be internationalised).
+        return mb_strcut($local, 0, self::LOCAL_PART_MAX - self::HASH_LENGTH - 1, 'UTF-8').'+'.$hash;
     }
 
     protected static function domainOf($email)
     {
-        $pos = strrpos($email ?? '', '@');
+        $email = $email ?? '';
+        $pos = strrpos($email, '@');
 
         if ($pos === false || $pos === 0 || $pos === strlen($email) - 1) {
             return null;

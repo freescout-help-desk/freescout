@@ -42,7 +42,9 @@ class TestEmailGuardServiceProvider extends ServiceProvider
         // believing it protects the environment must find out that the
         // production gate has switched it off (Forge-style deploys default
         // to APP_ENV=production — test/demo instances must override it).
-        if (!self::guardActive()) {
+        // Throttled to once an hour so the alarm doesn't flood the logs
+        // on every request/queue/cron boot.
+        if (!self::guardActive() && \Cache::add('testemailguard_disabled_warning', true, 60)) {
             \Log::error('TestEmailGuard is activated but disabled: app.env is "production". Outbound email is NOT being rewritten. Set APP_ENV (e.g. to "demo") in this environment\'s .env if this is not a real production instance.');
         }
 
@@ -114,6 +116,10 @@ class TestEmailGuardServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        // env() calls live in the module config file, per Laravel convention;
+        // everything else reads config('testemailguard.*').
+        $this->mergeConfigFrom(__DIR__.'/../Config/config.php', 'testemailguard');
+
         $this->commands([
             \Modules\TestEmailGuard\Console\AnonymizeStoredEmails::class,
             \Modules\TestEmailGuard\Console\GuardStatus::class,
