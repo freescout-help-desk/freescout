@@ -15,7 +15,9 @@ The original domain is folded into the local part so distinct customers stay dis
 tanti.omar@gmail.com  →  tanti.omar+gmail.com@example.com
 ```
 
-A flat "replace the domain" would merge `john@gmail.com` and `john@yahoo.com` into one customer record. `example.com` is IANA-reserved, so anonymised addresses can never deliver. If `local+domain` would exceed the 64-character local-part limit, it falls back to `local…+<10-char-hash>` (uniqueness kept; reversibility knowingly dropped). Everything is lowercased. The transform is idempotent — re-running it is safe.
+A flat "replace the domain" would merge `john@gmail.com` and `john@yahoo.com` into one customer record. `example.com` is IANA-reserved, so anonymised addresses can never deliver. If `local+domain` would exceed the 64-character local-part limit, it falls back to `local…+<10-char-hash>` (uniqueness kept). Everything is lowercased. The transform is idempotent — re-running it is safe.
+
+**Reversibility:** an anonymised address parses back to the (lowercased) original by splitting the local part on its last `+` — `EmailAnonymizer::reverse()` implements this and is covered by tests. The only exception is the hash fallback, which triggers exclusively for originals longer than 64 characters (rare in real data). The anonymise command counts those cases and reports them; if any exist and you need them recoverable, run it with `--map=<path>` to also write an `original → anonymised` CSV covering every rewritten address. ⚠ The map file contains real customer addresses — move it off the server and delete the server copy as soon as possible, or the anonymisation exercise defeats itself.
 
 ## Enabling
 

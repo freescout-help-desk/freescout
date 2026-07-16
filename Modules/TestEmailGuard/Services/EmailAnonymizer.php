@@ -128,6 +128,58 @@ class EmailAnonymizer
     }
 
     /**
+     * Recover the original address from an anonymised one by splitting the
+     * folded local part on its last "+" (unambiguous — domains cannot
+     * contain "+"). Returns null when the input is not an anonymised
+     * address, or when the hash fallback was used (the one case that is
+     * not parseable — see isReversible()).
+     */
+    public static function reverse($anonymized)
+    {
+        $anonymized = mb_strtolower(trim($anonymized ?? ''), 'UTF-8');
+
+        if (self::domainOf($anonymized) !== self::SAFE_DOMAIN) {
+            return null;
+        }
+
+        $local = substr($anonymized, 0, strrpos($anonymized, '@'));
+        $pos = strrpos($local, '+');
+        if ($pos === false) {
+            return null;
+        }
+
+        $original_domain = substr($local, $pos + 1);
+
+        // A hash-fallback suffix is hex with no dot — not a real domain.
+        if (strpos($original_domain, '.') === false) {
+            return null;
+        }
+
+        return substr($local, 0, $pos).'@'.$original_domain;
+    }
+
+    /**
+     * Whether anonymize() output can be reversed back to this address.
+     * False only when the folded local part would exceed the RFC limit
+     * (i.e. the original address itself is longer than 64 characters) and
+     * the transform must drop to the hash fallback.
+     */
+    public static function isReversible($email)
+    {
+        $email = mb_strtolower(trim($email ?? ''), 'UTF-8');
+        $domain = self::domainOf($email);
+
+        // Addresses anonymize() leaves untouched are trivially "reversible".
+        if ($domain === null || $domain === self::SAFE_DOMAIN || self::isAllowed($email)) {
+            return true;
+        }
+
+        // The folded local part (local+domain) has exactly the original
+        // address's length — the "@" becomes the "+".
+        return strlen($email) <= self::LOCAL_PART_MAX;
+    }
+
+    /**
      * Keep the local part within the RFC limit; past it, drop to a stable
      * short-hash suffix (uniqueness preserved, reversibility knowingly not).
      */

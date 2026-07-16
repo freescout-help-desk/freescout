@@ -114,6 +114,41 @@ class TestEmailGuardTest extends TestCase
         $this->assertNotSame($result_a, $result_b);
     }
 
+    public function test_anonymized_addresses_reverse_to_the_original()
+    {
+        $originals = [
+            'tanti.omar@gmail.com',
+            'anna+work@gmail.com',        // "+" already in the local part
+            'john.doe@sub.example.co.uk', // multi-label domain
+        ];
+
+        foreach ($originals as $original) {
+            $this->assertSame(
+                $original,
+                $this->anonymizer()::reverse($this->anonymizer()::anonymize($original))
+            );
+            $this->assertTrue($this->anonymizer()::isReversible($original));
+        }
+
+        // Case is normalised, so recovery is the lowercased original.
+        $this->assertSame(
+            'john.doe@gmail.com',
+            $this->anonymizer()::reverse($this->anonymizer()::anonymize('John.DOE@Gmail.COM'))
+        );
+    }
+
+    public function test_reverse_rejects_non_anonymized_and_hash_fallback_addresses()
+    {
+        // Not an anonymised address.
+        $this->assertNull($this->anonymizer()::reverse('someone@gmail.com'));
+
+        // Hash fallback (original longer than 64 chars) is flagged as
+        // irreversible and reverse() refuses to guess.
+        $long = str_repeat('a', 60).'@a-very-long-corporate-subdomain.example-company.co.uk';
+        $this->assertFalse($this->anonymizer()::isReversible($long));
+        $this->assertNull($this->anonymizer()::reverse($this->anonymizer()::anonymize($long)));
+    }
+
     public function test_invalid_input_passes_through_unchanged()
     {
         $this->assertSame('', $this->anonymizer()::anonymize(''));
