@@ -1,0 +1,22 @@
+{
+    "name": "TestEmailGuard",
+    "alias": "testemailguard",
+    "description": "Test-environment email safety net (ARMS-16). Rewrites outbound recipients to anonymised safe addresses unless the recipient domain is allow-listed, and provides a console command to anonymise stored customer emails. Hard-disabled when app.env is production.",
+    "version": "1.0.0",
+    "detailsUrl": "",
+    "author": "Threls",
+    "authorUrl": "https://threls.com",
+    "requiredAppVersion": "1.8.0",
+    "license": "AGPL-3.0",
+    "keywords": ["testing", "email", "anonymisation"],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\TestEmailGuard\\Providers\\TestEmailGuardServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}
