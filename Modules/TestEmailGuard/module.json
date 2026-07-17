@@ -4,6 +4,7 @@
     "description": "Test-environment email safety net (ARMS-16). Rewrites outbound recipients to anonymised safe addresses unless the recipient domain is allow-listed, and provides a console command to anonymise stored customer emails. Hard-disabled when app.env is production.",
     "version": "1.1.0",
     "detailsUrl": "",
+    "img": "/modules/testemailguard/img/icon.svg",
     "author": "Threls",
     "authorUrl": "https://threls.com",
     "requiredAppVersion": "1.8.0",
