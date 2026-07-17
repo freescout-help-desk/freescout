@@ -252,7 +252,7 @@ class TestEmailGuardTest extends TestCase
 
     /**
      * In plain mode the original recipients survive where they cannot
-     * affect delivery: in the display names and the X-Original-To header.
+     * affect delivery: in the display names and the X-TestEmailGuard-Original-To header.
      * Collapsed recipients share the one sink address per field.
      */
     public function test_plain_sink_mode_keeps_originals_in_display_names_and_header()
@@ -283,7 +283,7 @@ class TestEmailGuardTest extends TestCase
         );
         $this->assertSame(
             'customer@gmail.com, friend@yahoo.com, other@hotmail.com',
-            $message->getHeaders()->get('X-Original-To')->getValue()
+            $message->getHeaders()->get('X-TestEmailGuard-Original-To')->getValue()
         );
     }
 

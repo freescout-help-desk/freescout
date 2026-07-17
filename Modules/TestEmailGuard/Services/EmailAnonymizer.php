@@ -23,7 +23,7 @@ namespace Modules\TestEmailGuard\Services;
  *                          the sink so it can be inspected instead of
  *                          bouncing. Default sink mode is "plain" (the bare
  *                          sink address; originals kept in display names
- *                          and X-Original-To — see sinkMode()); "plus" mode
+ *                          and X-TestEmailGuard-Original-To — see sinkMode()); "plus" mode
  *                          plus-addresses per customer:
  *                          armssink+tanti.omar+gmail.com@threls.onmicrosoft.com
  */
@@ -80,7 +80,7 @@ class EmailAnonymizer
      *
      * "plain" (default): the bare sink address — cannot fail to resolve on
      * any mail host; the original recipient is carried in the display name
-     * and an X-Original-To header (see the service provider).
+     * and an X-TestEmailGuard-Original-To header (see the service provider).
      *
      * "plus": plus-addressed (sink_local+original_local+domain@sink_domain)
      * so each customer gets a distinct sink address — requires the sink's
@@ -141,7 +141,7 @@ class EmailAnonymizer
         // Plain mode: every rewritten recipient becomes the bare sink
         // address (nothing a mail host can fail to resolve). Who the mail
         // was for is preserved by the provider in the display name and an
-        // X-Original-To header, and the subject's [#ticket] links back to
+        // X-TestEmailGuard-Original-To header, and the subject's [#ticket] links back to
         // the conversation.
         if (self::sinkMode() === 'plain') {
             return $sink;

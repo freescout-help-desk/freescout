@@ -82,7 +82,7 @@ class TestEmailGuardServiceProvider extends ServiceProvider
      * In plain sink mode every rewritten recipient collapses into the one
      * bare sink address, so the original addresses are preserved where
      * they cannot affect delivery: in the recipient display name (visible
-     * in the sink's message list) and in an X-Original-To header. In plus
+     * in the sink's message list) and in an X-TestEmailGuard-Original-To header. In plus
      * mode the sink address itself carries the original, so display names
      * pass through untouched.
      */
@@ -119,7 +119,9 @@ class TestEmailGuardServiceProvider extends ServiceProvider
                     // Collapsed recipients share the sink address; the
                     // display name lists every original this copy stands
                     // in for.
-                    $label = $name ? $name.' ('.$email.')' : $email;
+                    $label = ($name && strcasecmp($name, $email) !== 0)
+                        ? $name.' ('.$email.')'
+                        : $email;
                     $rewritten[$target] = isset($rewritten[$target])
                         ? $rewritten[$target].', '.$label
                         : $label;
@@ -134,8 +136,11 @@ class TestEmailGuardServiceProvider extends ServiceProvider
         }
 
         if ($originals) {
+            // Module-branded header name: the standard X-Original-To is
+            // set by delivery agents (e.g. Postfix, Exchange) and could
+            // collide or confuse once the message lands in the sink.
             $message->getHeaders()->addTextHeader(
-                'X-Original-To',
+                'X-TestEmailGuard-Original-To',
                 implode(', ', array_unique($originals))
             );
         }

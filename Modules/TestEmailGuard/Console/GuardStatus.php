@@ -40,7 +40,7 @@ class GuardStatus extends Command
         if ($sink) {
             $this->line('Rewrite target: sink mailbox '.$sink.(EmailAnonymizer::sinkMode() === 'plus'
                 ? ' (plus-addressed; requires the tenant to accept plus addressing)'
-                : ' (plain recipient; originals kept in display names and X-Original-To)'));
+                : ' (plain recipient; originals kept in display names and X-TestEmailGuard-Original-To)'));
         } else {
             $this->line('Rewrite target: '.EmailAnonymizer::SAFE_DOMAIN.' (mail will bounce)');
         }

@@ -36,7 +36,7 @@ return [
     |
     | "plain" (default): rewritten mail is addressed to the bare sink
     | address; the original recipient is carried in the display name and
-    | an X-Original-To header. Works on any mail host.
+    | an X-TestEmailGuard-Original-To header. Works on any mail host.
     |
     | "plus": rewritten mail is plus-addressed into the sink
     | (armssink+local+domain@...). Requires the sink's mail host to accept
