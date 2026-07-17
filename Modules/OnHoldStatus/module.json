@@ -4,6 +4,7 @@
     "description": "Adds On-Hold as a first-class conversation status (ARMS-12). Registers status code 5 with core via the conversation.status_name filter carried on the threls fork.",
     "version": "1.0.0",
     "detailsUrl": "",
+    "img": "/modules/onholdstatus/img/icon.svg",
     "author": "Threls",
     "authorUrl": "https://threls.com",
     "requiredAppVersion": "1.8.0",
