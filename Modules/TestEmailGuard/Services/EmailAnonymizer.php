@@ -19,9 +19,12 @@ namespace Modules\TestEmailGuard\Services;
  *                          (seeded/imported customer records).
  *  - rewriteRecipient()  → send-time target. Same as anonymize() unless a
  *                          sink mailbox is configured (TEST_EMAIL_GUARD_SINK),
- *                          in which case recipients are plus-addressed into
- *                          the sink so mail really delivers somewhere
- *                          inspectable instead of bouncing:
+ *                          in which case rewritten mail is delivered into
+ *                          the sink so it can be inspected instead of
+ *                          bouncing. Default sink mode is "plain" (the bare
+ *                          sink address; originals kept in display names
+ *                          and X-TestEmailGuard-Original-To — see sinkMode()); "plus" mode
+ *                          plus-addresses per customer:
  *                          armssink+tanti.omar+gmail.com@threls.onmicrosoft.com
  */
 class EmailAnonymizer
@@ -72,6 +75,25 @@ class EmailAnonymizer
         return strtolower(trim($sink));
     }
 
+    /**
+     * How rewritten mail is addressed into the sink.
+     *
+     * "plain" (default): the bare sink address — cannot fail to resolve on
+     * any mail host; the original recipient is carried in the display name
+     * and an X-TestEmailGuard-Original-To header (see the service provider).
+     *
+     * "plus": plus-addressed (sink_local+original_local+domain@sink_domain)
+     * so each customer gets a distinct sink address — requires the sink's
+     * host to accept plus addressing, which Exchange tenants sometimes
+     * refuse (that lesson cost an afternoon; see the README probe note).
+     */
+    public static function sinkMode()
+    {
+        $mode = config('testemailguard.sink_mode') ?: env('TEST_EMAIL_GUARD_SINK_MODE');
+
+        return strtolower(trim($mode ?? '')) === 'plus' ? 'plus' : 'plain';
+    }
+
     public static function isAllowed($email)
     {
         $domain = self::domainOf($email);
@@ -114,6 +136,15 @@ class EmailAnonymizer
 
         if ($domain === null || self::isAllowed($email)) {
             return $email;
+        }
+
+        // Plain mode: every rewritten recipient becomes the bare sink
+        // address (nothing a mail host can fail to resolve). Who the mail
+        // was for is preserved by the provider in the display name and an
+        // X-TestEmailGuard-Original-To header, and the subject's [#ticket] links back to
+        // the conversation.
+        if (self::sinkMode() === 'plain') {
+            return $sink;
         }
 
         $sink_local = substr($sink, 0, strrpos($sink, '@'));

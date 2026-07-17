@@ -36,9 +36,12 @@ which prints the effective state and a sample rewrite, and exits non-zero if the
 | Variable | Default | Meaning |
 |---|---|---|
 | `TEST_EMAIL_GUARD_ALLOW_DOMAINS` | `arms.com.mt,threls.com` | Comma-separated domains whose recipients receive real mail, untouched. Exact-domain match (subdomains and lookalike suffixes are rewritten). |
-| `TEST_EMAIL_GUARD_SINK` | *(empty)* | A real mailbox to plus-address rewritten mail into, e.g. `armssink@threls.onmicrosoft.com` → mail arrives as `armssink+tanti.omar+gmail.com@…` and can be inspected. When empty, rewrites target `example.com` and sends will bounce (NDR noise in the helpdesk — a sink is recommended for bulk testing). |
+| `TEST_EMAIL_GUARD_SINK` | *(empty)* | A real mailbox rewritten mail is delivered into, e.g. `armssink@threls.onmicrosoft.com`, so outgoing test mail can be opened and inspected. When empty, rewrites target `example.com` and sends will bounce (NDR noise in the helpdesk — a sink is recommended for bulk testing). |
+| `TEST_EMAIL_GUARD_SINK_MODE` | `plain` | How rewritten mail is addressed into the sink. `plain`: the bare sink address — works on any mail host; the original recipient is kept in the recipient **display name** (visible in the mailbox list), in an **X-TestEmailGuard-Original-To** header, and the subject's `[#ticket]` links back to the conversation. `plus`: plus-addressed per customer (`armssink+tanti.omar+gmail.com@…`) — distinct sink address per customer, but the sink's tenant must accept plus addressing. |
 
-On the demo instance also consider allow-listing `threls.onmicrosoft.com` (the demo mailboxes' own domain) so inter-mailbox test flows deliver.
+⚠ Before choosing `plus` mode, probe the tenant: send any external email to `<sink-local>+probe@<sink-domain>` and confirm it lands in the sink mailbox. Exchange Online tenants can silently refuse plus-addressed recipients (`DisallowPlusAddressInRecipients`), which makes every guarded send fail — that failure looks like mail vanishing (nothing in the sink, nothing anywhere), and cost us an afternoon on 17 Jul. Plain mode has no such dependency.
+
+On the demo instance also consider allow-listing `threls.onmicrosoft.com` (the demo mailboxes' own domain) so inter-mailbox test flows deliver. After any `.env` or module-activation change, run `php artisan queue:restart` and allow a minute or two — mail is sent by long-running queue workers that only pick up changes after they cycle.
 
 ## Anonymising stored data
 
