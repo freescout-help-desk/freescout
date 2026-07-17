@@ -28,6 +28,7 @@ Thumbs.db
 /Modules/**/.git
 # Threls custom modules are version-controlled (paid modules above stay runtime-installed)
 !/Modules/OnHoldStatus
+!/Modules/TestEmailGuard
 /public/modules
 /public/docs
 /public/.dh-diag
