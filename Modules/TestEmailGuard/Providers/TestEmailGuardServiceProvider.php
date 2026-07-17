@@ -77,10 +77,20 @@ class TestEmailGuardServiceProvider extends ServiceProvider
 
     /**
      * Rewrite non-allow-listed To/Cc/Bcc addresses on the outgoing
-     * Swift_Message, preserving display names.
+     * Swift_Message.
+     *
+     * In plain sink mode every rewritten recipient collapses into the one
+     * bare sink address, so the original addresses are preserved where
+     * they cannot affect delivery: in the recipient display name (visible
+     * in the sink's message list) and in an X-Original-To header. In plus
+     * mode the sink address itself carries the original, so display names
+     * pass through untouched.
      */
     public static function rewriteMessageRecipients($message)
     {
+        $plain = EmailAnonymizer::sink() && EmailAnonymizer::sinkMode() === 'plain';
+        $originals = [];
+
         foreach (['To', 'Cc', 'Bcc'] as $field) {
             $getter = 'get'.$field;
             $setter = 'set'.$field;
@@ -97,15 +107,37 @@ class TestEmailGuardServiceProvider extends ServiceProvider
                     ? $email
                     : EmailAnonymizer::rewriteRecipient($email);
 
-                if ($target !== $email) {
-                    $changed = true;
+                if ($target === $email) {
+                    $rewritten[$email] = $name;
+                    continue;
                 }
-                $rewritten[$target] = $name;
+
+                $changed = true;
+                $originals[] = $email;
+
+                if ($plain) {
+                    // Collapsed recipients share the sink address; the
+                    // display name lists every original this copy stands
+                    // in for.
+                    $label = $name ? $name.' ('.$email.')' : $email;
+                    $rewritten[$target] = isset($rewritten[$target])
+                        ? $rewritten[$target].', '.$label
+                        : $label;
+                } else {
+                    $rewritten[$target] = $name;
+                }
             }
 
             if ($changed) {
                 $message->$setter($rewritten);
             }
+        }
+
+        if ($originals) {
+            $message->getHeaders()->addTextHeader(
+                'X-Original-To',
+                implode(', ', array_unique($originals))
+            );
         }
     }
 

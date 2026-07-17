@@ -21,12 +21,31 @@ return [
     | Sink mailbox
     |--------------------------------------------------------------------------
     |
-    | Optional real mailbox to plus-address rewritten mail into, e.g.
+    | Optional real mailbox rewritten mail is delivered into, e.g.
     | armssink@threls.onmicrosoft.com. When empty, rewrites target
     | example.com and sends will bounce.
     |
     */
 
     'sink' => env('TEST_EMAIL_GUARD_SINK'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sink recipient mode
+    |--------------------------------------------------------------------------
+    |
+    | "plain" (default): rewritten mail is addressed to the bare sink
+    | address; the original recipient is carried in the display name and
+    | an X-Original-To header. Works on any mail host.
+    |
+    | "plus": rewritten mail is plus-addressed into the sink
+    | (armssink+local+domain@...). Requires the sink's mail host to accept
+    | plus addressing (Exchange Online: DisallowPlusAddressInRecipients
+    | must be false) - probe with a manual send to sink+test@... before
+    | relying on it.
+    |
+    */
+
+    'sink_mode' => env('TEST_EMAIL_GUARD_SINK_MODE'),
 
 ];

@@ -24,6 +24,7 @@ class TestEmailGuardTest extends TestCase
     {
         // Clear env overrides set via putenv() in individual tests.
         putenv('TEST_EMAIL_GUARD_SINK');
+        putenv('TEST_EMAIL_GUARD_SINK_MODE');
         putenv('TEST_EMAIL_GUARD_ALLOW_DOMAINS');
 
         parent::tearDown();
@@ -199,9 +200,40 @@ class TestEmailGuardTest extends TestCase
         }
     }
 
-    public function test_sink_mode_plus_addresses_into_the_sink_mailbox()
+    /**
+     * Plain mode is the default: every rewritten recipient becomes the
+     * bare sink address, which no mail host can fail to resolve (Exchange
+     * tenants sometimes refuse plus-addressed recipients).
+     */
+    public function test_plain_sink_mode_is_default_and_targets_the_bare_sink()
     {
         putenv('TEST_EMAIL_GUARD_SINK=armssink@threls.onmicrosoft.com');
+
+        $this->assertSame('plain', $this->anonymizer()::sinkMode());
+
+        $this->assertSame(
+            'armssink@threls.onmicrosoft.com',
+            $this->anonymizer()::rewriteRecipient('tanti.omar@gmail.com')
+        );
+
+        // Already-anonymised stored addresses collapse into the sink too.
+        $this->assertSame(
+            'armssink@threls.onmicrosoft.com',
+            $this->anonymizer()::rewriteRecipient('tanti.omar+gmail.com@example.com')
+        );
+
+        // Idempotent, and allow-listed recipients still deliver normally.
+        $this->assertSame(
+            'armssink@threls.onmicrosoft.com',
+            $this->anonymizer()::rewriteRecipient('armssink@threls.onmicrosoft.com')
+        );
+        $this->assertSame('anthea@arms.com.mt', $this->anonymizer()::rewriteRecipient('anthea@arms.com.mt'));
+    }
+
+    public function test_sink_plus_mode_plus_addresses_into_the_sink_mailbox()
+    {
+        putenv('TEST_EMAIL_GUARD_SINK=armssink@threls.onmicrosoft.com');
+        putenv('TEST_EMAIL_GUARD_SINK_MODE=plus');
 
         $this->assertSame(
             'armssink+tanti.omar+gmail.com@threls.onmicrosoft.com',
@@ -216,6 +248,43 @@ class TestEmailGuardTest extends TestCase
         $sunk = $this->anonymizer()::rewriteRecipient('tanti.omar+gmail.com@example.com');
         $this->assertSame('armssink+tanti.omar+gmail.com@threls.onmicrosoft.com', $sunk);
         $this->assertSame($sunk, $this->anonymizer()::rewriteRecipient($sunk));
+    }
+
+    /**
+     * In plain mode the original recipients survive where they cannot
+     * affect delivery: in the display names and the X-Original-To header.
+     * Collapsed recipients share the one sink address per field.
+     */
+    public function test_plain_sink_mode_keeps_originals_in_display_names_and_header()
+    {
+        putenv('TEST_EMAIL_GUARD_SINK=armssink@threls.onmicrosoft.com');
+        $this->bootModule();
+
+        $message = new \Swift_Message('Test');
+        $message->setTo([
+            'customer@gmail.com' => 'Some Customer',
+            'friend@yahoo.com'   => null,
+            'omar@threls.com'    => 'Omar',
+        ]);
+        $message->setCc(['other@hotmail.com' => null]);
+
+        \Eventy::filter('mail.process_swift_message', true, $message);
+
+        $this->assertSame(
+            [
+                'armssink@threls.onmicrosoft.com' => 'Some Customer (customer@gmail.com), friend@yahoo.com',
+                'omar@threls.com'                 => 'Omar',
+            ],
+            $message->getTo()
+        );
+        $this->assertSame(
+            ['armssink@threls.onmicrosoft.com' => 'other@hotmail.com'],
+            $message->getCc()
+        );
+        $this->assertSame(
+            'customer@gmail.com, friend@yahoo.com, other@hotmail.com',
+            $message->getHeaders()->get('X-Original-To')->getValue()
+        );
     }
 
     public function test_without_sink_rewrite_targets_example_com()

@@ -37,7 +37,13 @@ class GuardStatus extends Command
 
         $this->line('app.env: '.$env);
         $this->line('Allow-listed domains: '.implode(', ', EmailAnonymizer::allowedDomains()));
-        $this->line('Rewrite target: '.($sink ? 'sink mailbox '.$sink.' (plus-addressed, mail delivers)' : EmailAnonymizer::SAFE_DOMAIN.' (mail will bounce)'));
+        if ($sink) {
+            $this->line('Rewrite target: sink mailbox '.$sink.(EmailAnonymizer::sinkMode() === 'plus'
+                ? ' (plus-addressed; requires the tenant to accept plus addressing)'
+                : ' (plain recipient; originals kept in display names and X-Original-To)'));
+        } else {
+            $this->line('Rewrite target: '.EmailAnonymizer::SAFE_DOMAIN.' (mail will bounce)');
+        }
         $this->line('Sample: customer@gmail.com → '.EmailAnonymizer::rewriteRecipient('customer@gmail.com'));
 
         if ($active) {
