@@ -56,6 +56,11 @@ class SendNotificationToUsers
                 $event_type = Subscription::EVENT_TYPE_ASSIGNED;
                 break;
             case 'App\Events\CustomerReplied':
+                // Do not send notifications to users if customer sent a reply
+                // to the conversation marked as Spam.
+                if (!empty($event->conversation) && $event->conversation->isSpam()) {
+                    return;
+                }
                 $event_type = Subscription::EVENT_TYPE_CUSTOMER_REPLIED;
                 break;
         }

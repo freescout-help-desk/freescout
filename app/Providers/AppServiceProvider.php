@@ -41,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
                 if (!preg_match("#^https?://#", $value)) {
                     $url = 'https://'.$url;
                 }
-                \Helper::checkUrlIpAndHost($url, true);
+                \Helper::sanitizeRemoteUrl($url, true);
             } catch (\Exception $e) {
                 $msg = $e->getMessage();
             }

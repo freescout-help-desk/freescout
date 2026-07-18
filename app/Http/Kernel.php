@@ -45,6 +45,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\LogoutIfDeleted::class,
             \App\Http\Middleware\FrameGuard::class,
             \App\Http\Middleware\CustomHandle::class,
+            \App\Http\Middleware\ContentSecurityPolicy::class,
         ],
 
         'open' => [
