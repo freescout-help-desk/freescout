@@ -1,0 +1,25 @@
+tr.cf-conv-row.conv-row {
+    display: none;
+}
+
+@media (max-width: 1000px){
+    .custom-field-td {
+        display: none !important;
+    }
+    .custom-field-tr {
+        display: none !important;
+    }
+    tr.cf-conv-row.conv-row{
+          display: block !important;
+    }
+        
+}
+
+
+th.custom-field-th {
+    width:10%;
+}
+
+td.custom-field-td {
+    width:5%;
+}
