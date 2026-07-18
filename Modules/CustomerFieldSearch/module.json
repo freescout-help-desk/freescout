@@ -1,0 +1,17 @@
+{
+    "name": "Customer Field Search",
+    "alias": "customerfieldsearch",
+    "description": "Extends customer plain-text search (Search > Customers, Search > Conversations, and the shared ticket-sidebar/Change Customer/Merge/Cc-Bcc/New Ticket lookup) to also match customer custom field values such as Account Number and ID Card, added via the paid Crm module.",
+    "version": "1.0.0",
+    "author": "Threls",
+    "keywords": ["customers", "search", "custom-fields", "crm"],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\CustomerFieldSearch\\Providers\\CustomerFieldSearchServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+    ],
+    "requires": []
+}

@@ -357,14 +357,29 @@ class CustomersController extends Controller
                 }
                 $query->where('customers.phones', 'like', '%'.$phone_numeric.'%');
             }
+
+            // threls fork patch: lets modules OR in extra plain-text match
+            // conditions (e.g. customer custom fields) inside this same
+            // group. Gated to the unrestricted "all" mode so narrower
+            // searches (search_by=name/email/phone) aren't broadened. Must
+            // fire here, not from a later hook, for the same
+            // boolean-grouping/mailbox-scoping reason as
+            // search.customers.text_match in ConversationsController.
+            // Listeners must match via a whereExists() correlated subquery
+            // rather than joining another table: unlike searchCustomers()
+            // above, this query doesn't always groupBy('customers.id') (the
+            // select list can carry an unaggregated emails.email column),
+            // so a join here would multiply rows per matching value.
+            if ($request->search_by == 'all') {
+                $query = \Eventy::filter('search.customers.ajax_text_match', $query, $q);
+            }
         });
 
         if ($limited_visibility) {
             $mailbox_ids = $user->mailboxesIdsCanView();
-            
+
             $customers_query->join('conversations', 'conversations.customer_id', '=', 'customers.id');
             $customers_query->whereIn('conversations.mailbox_id', $mailbox_ids);
-            $customers_query->groupby('customers.id');
         }
 
         $customers = $customers_query->paginate(20);
