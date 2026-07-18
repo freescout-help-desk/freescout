@@ -27,6 +27,14 @@ which of those are sortable (a field can be worth glancing at without being
 worth sorting by). Choices are per-agent and follow them across devices,
 since agents aren't tied to one machine.
 
+**Opt-in by default**: a field an agent has never touched starts hidden and
+non-sortable, not shown. Starting from "everything visible" got cluttered
+fast as more fields were added (the original motivation for this control in
+the first place) — better for an agent to pick the handful they actually
+care about than to start from all of them and hide down. "Reset to default"
+in the popover clears back to this same all-hidden state, not
+all-visible.
+
 **New fork patch** (grep for `threls fork patch` across the codebase to find
 this and the other core patches this fork carries): a single always-visible
 `@action('conversations_table.toolbar', $folder ?? null)` hook added to
@@ -39,27 +47,33 @@ to hang one.
 **New table**: `sortablecustomfields_user_columns` (user_id, mailbox_id,
 custom_field_id, visible, sortable) — owned entirely by this module via its
 own migration (`Database/Migrations/`), not a core table. Absence of a row
-means "visible and sortable", matching pre-Columns-control behaviour, so
-nothing needed backfilling.
+means "hidden and not sortable" (see "Opt-in by default" above) — no
+backfill needed either way, since this is purely a rendering default with
+no other side effects.
 
-**New route**: `sortablecustomfields.columns.save` (POST), gated by the
-`auth` middleware and `MailboxPolicy::view` (an agent can only set
-preferences for mailboxes they can actually view; the given
-`custom_field_id` must belong to the given `mailbox_id` or the request is
-rejected). Registered from `SortableCustomFieldsServiceProvider::boot()`,
-same as any package registering its own routes — except this fork's
-`RouteCollection` only refreshes its name→route index once, at the end of
-the app's normal route-loading pass. A route registered from a module's
-`boot()` (which runs after that pass) still works, but `route('...')` on it
-resolves to nothing until `\Route::getRoutes()->refreshNameLookups()` is
-called again — worth knowing for any future module that registers its own
-named routes, not just this one.
+**New routes**: `sortablecustomfields.columns.save` (POST) and
+`sortablecustomfields.columns.reset` (POST), both gated by the `auth`
+middleware and `MailboxPolicy::view` (an agent can only set preferences for
+mailboxes they can actually view; `save`'s `custom_field_id` must also
+belong to the given `mailbox_id` or the request is rejected). Registered
+from `SortableCustomFieldsServiceProvider::boot()`, same as any package
+registering its own routes — except this fork's `RouteCollection` only
+refreshes its name→route index once, at the end of the app's normal
+route-loading pass. A route registered from a module's `boot()` (which runs
+after that pass) still works, but `route('...')` on it resolves to nothing
+until `\Route::getRoutes()->refreshNameLookups()` is called again — worth
+knowing for any future module that registers its own named routes, not just
+this one.
 
 The popover shows a checkbox per field (visible) and a small toggle
 (sortable); toggling either saves via AJAX and re-fetches the conversation
 list through the app's own existing `loadConversations()` (the same
 mechanism core's sort-header clicks already use), so the table reflects the
-change immediately without a full page reload.
+change immediately without a full page reload. "Reset to default" calls
+the `reset` route once to delete every saved preference for that
+user/mailbox, rather than one `save` call per field — since the default is
+already "no row", writing an explicit false/false row per field on reset
+would just be redundant storage, on top of firing one request per field.
 
 ## Fixed vs. upstream
 

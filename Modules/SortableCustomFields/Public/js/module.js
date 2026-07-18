@@ -39,6 +39,24 @@ $(document).ready(function() {
 		return deferred.promise();
 	}
 
+	// One request that deletes every saved preference for this
+	// user/mailbox, rather than one scfSaveColumnPref() call per field —
+	// avoids N concurrent requests (and N redundant false/false rows) when
+	// resetting a mailbox with several custom fields.
+	function scfResetColumnPrefs(control) {
+		var deferred = $.Deferred();
+		fsAjax(
+			{
+				mailbox_id: control.attr('data-mailbox_id')
+			},
+			control.attr('data-reset-url'),
+			function() { deferred.resolve(); },
+			true,
+			function() { deferred.reject(); }
+		);
+		return deferred.promise();
+	}
+
 	function scfUpdateHiddenBadge(control) {
 		var hiddenCount = control.find('.scf-visible-toggle:not(:checked)').length;
 		var badge = control.find('.scf-hidden-badge');
@@ -112,19 +130,22 @@ $(document).ready(function() {
 	$(document).on('click', '.scf-reset-columns', function(e) {
 		e.preventDefault();
 		var control = $(this).closest('.scf-columns-control');
-		var requests = [];
 
+		// "Default" is opt-in (nothing shown) — matches
+		// isVisibleToUser()/isSortableForUser()'s server-side default for a
+		// field with no saved preference. One request deletes every saved
+		// preference for this mailbox rather than saving false/false per
+		// field (see scfResetColumnPrefs).
 		control.find('.scf-columns-row').each(function() {
 			var row = $(this);
-			row.find('.scf-visible-toggle').prop('checked', true);
+			row.find('.scf-visible-toggle').prop('checked', false);
 			row.find('.scf-sortable-toggle')
-				.addClass('is-active')
-				.prop('disabled', false)
-				.attr('aria-pressed', 'true');
-			requests.push(scfSaveColumnPref(control, row.attr('data-custom_field_id'), true, true));
+				.removeClass('is-active')
+				.prop('disabled', true)
+				.attr('aria-pressed', 'false');
 		});
 
 		scfUpdateHiddenBadge(control);
-		$.when.apply($, requests).done(scfRefreshTable);
+		scfResetColumnPrefs(control).done(scfRefreshTable);
 	});
 });

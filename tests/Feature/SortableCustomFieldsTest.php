@@ -216,13 +216,22 @@ class SortableCustomFieldsTest extends TestCase
         $mailboxB = $this->makeMailbox();
         $folderA = $this->makeFolder($mailboxA->id);
 
-        $this->makeCustomField($mailboxA->id, 'Priority');
+        $fieldId = $this->makeCustomField($mailboxA->id, 'Priority');
         // Deliberately no "Priority" field on mailboxB, only "Category" — if
         // resolution ever fell back to mailboxB (the conflicting
         // request-derived id) instead of $folder->mailbox_id, "custom_priority"
         // would match nothing there and the filter would add no join at all,
         // which the assertions below would catch.
         $this->makeCustomField($mailboxB->id, 'Category');
+
+        // Sortable is opt-in now — this test is about slug/folder
+        // resolution, not the default, so give the field an explicit
+        // sortable preference rather than relying on it.
+        $user = $this->makeUser($mailboxA->id);
+        UserColumnPreference::setPreference($user->id, $mailboxA->id, $fieldId, [
+            'visible' => true, 'sortable' => true,
+        ]);
+        $this->actingAs($user);
 
         // Conflicting request-derived mailbox id (mailboxB) — $folder must win.
         request()->merge([
@@ -257,6 +266,15 @@ class SortableCustomFieldsTest extends TestCase
         $this->setCustomFieldValue($low->id, $fieldId, 'Low');
         $this->setCustomFieldValue($high->id, $fieldId, 'High');
         $this->setCustomFieldValue($medium->id, $fieldId, 'Medium');
+
+        // Sortable is opt-in now — this test is about the ORDER BY actually
+        // working, not about the default, so give the field an explicit
+        // sortable preference rather than relying on it.
+        $user = $this->makeUser($mailbox->id);
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $fieldId, [
+            'visible' => true, 'sortable' => true,
+        ]);
+        $this->actingAs($user);
 
         request()->merge(['sorting' => ['sort_by' => 'custom_priority', 'order' => 'asc']]);
 
@@ -305,7 +323,16 @@ class SortableCustomFieldsTest extends TestCase
         $mailbox = $this->makeMailbox();
         $folder = $this->makeFolder($mailbox->id);
         $fieldName = '<script>alert(1)</script>';
-        $this->makeCustomField($mailbox->id, $fieldName);
+        $fieldId = $this->makeCustomField($mailbox->id, $fieldName);
+
+        // Visible+sortable are opt-in now — this test is about the escaping
+        // fix, not the default, so give the field an explicit preference
+        // rather than relying on it (otherwise the whole <th> is skipped).
+        $user = $this->makeUser($mailbox->id);
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $fieldId, [
+            'visible' => true, 'sortable' => true,
+        ]);
+        $this->actingAs($user);
 
         // Real slug, not a guess — Str::slug strips '<script>' etc. down to
         // "scriptalert1script" (no separators inserted for the stripped
@@ -347,6 +374,14 @@ class SortableCustomFieldsTest extends TestCase
     public function test_route_is_guarded_by_auth_middleware()
     {
         $route = \Route::getRoutes()->getByName('sortablecustomfields.columns.save');
+
+        $this->assertNotNull($route);
+        $this->assertContains('auth', $route->middleware());
+    }
+
+    public function test_reset_route_is_guarded_by_auth_middleware()
+    {
+        $route = \Route::getRoutes()->getByName('sortablecustomfields.columns.reset');
 
         $this->assertNotNull($route);
         $this->assertContains('auth', $route->middleware());
@@ -431,6 +466,76 @@ class SortableCustomFieldsTest extends TestCase
         $this->assertSame(0, (int) $row->sortable);
     }
 
+    protected function callResetController($user, array $data)
+    {
+        \Auth::login($user);
+        $request = \Illuminate\Http\Request::create('/sortablecustomfields/columns/reset', 'POST', $data);
+        $request->setUserResolver(function () use ($user) {
+            return $user;
+        });
+
+        $controller = new \Modules\SortableCustomFields\Http\Controllers\ColumnPreferencesController();
+
+        return $controller->reset($request);
+    }
+
+    public function test_reset_rejects_user_without_mailbox_access()
+    {
+        $mailbox = $this->makeMailbox();
+        $outsider = $this->makeUser(); // no mailbox attached
+
+        $this->expectException(\Illuminate\Auth\Access\AuthorizationException::class);
+
+        $this->callResetController($outsider, ['mailbox_id' => $mailbox->id]);
+    }
+
+    /**
+     * The bulk-delete replaces the old per-field save() loop this endpoint
+     * was added to avoid — proves it actually clears saved preferences
+     * (both visible and hidden ones) rather than just returning success.
+     */
+    public function test_reset_deletes_all_preferences_for_user_and_mailbox()
+    {
+        $mailbox = $this->makeMailbox();
+        $fieldA = $this->makeCustomField($mailbox->id, 'Priority');
+        $fieldB = $this->makeCustomField($mailbox->id, 'Category');
+        $user = $this->makeUser($mailbox->id);
+
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $fieldA, ['visible' => true, 'sortable' => true]);
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $fieldB, ['visible' => false, 'sortable' => false]);
+        $this->assertSame(2, \DB::table('sortablecustomfields_user_columns')->count());
+
+        $response = $this->callResetController($user, ['mailbox_id' => $mailbox->id]);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(0, \DB::table('sortablecustomfields_user_columns')->count());
+    }
+
+    /**
+     * A reset for one mailbox must not touch another user's (or the same
+     * user's other mailbox's) saved preferences.
+     */
+    public function test_reset_only_clears_the_requested_users_mailbox()
+    {
+        $mailboxA = $this->makeMailbox();
+        $mailboxB = $this->makeMailbox();
+        $fieldA = $this->makeCustomField($mailboxA->id, 'Priority');
+        $fieldB = $this->makeCustomField($mailboxB->id, 'Priority');
+        $user = $this->makeUser($mailboxA->id);
+        $user->mailboxes()->attach($mailboxB->id);
+        $otherUser = $this->makeUser($mailboxA->id);
+
+        UserColumnPreference::setPreference($user->id, $mailboxA->id, $fieldA, ['visible' => true, 'sortable' => true]);
+        UserColumnPreference::setPreference($user->id, $mailboxB->id, $fieldB, ['visible' => true, 'sortable' => true]);
+        UserColumnPreference::setPreference($otherUser->id, $mailboxA->id, $fieldA, ['visible' => true, 'sortable' => true]);
+
+        $this->callResetController($user, ['mailbox_id' => $mailboxA->id]);
+
+        $this->assertSame(0, UserColumnPreference::forUserMailbox($user->id, $mailboxA->id)->count());
+        $this->assertSame(1, UserColumnPreference::forUserMailbox($user->id, $mailboxB->id)->count());
+        $this->assertSame(1, UserColumnPreference::forUserMailbox($otherUser->id, $mailboxA->id)->count());
+    }
+
     /**
      * Found live on the demo instance: Search (mode=conversations) lists
      * conversations across mailboxes in one table, so
@@ -489,10 +594,39 @@ class SortableCustomFieldsTest extends TestCase
         $this->assertStringNotContainsString('Priority', $thHtml);
 
         // A different, unauthenticated context (or another user with no
-        // preference row) still gets the default: visible.
+        // preference row) also gets the default: hidden (opt-in) — showing
+        // every field by default got cluttered fast, so an agent who's
+        // never touched the Columns control starts from nothing.
         \Auth::logout();
         $colHtmlDefault = $this->captureEventyAction('conversations_table.col_before_conv_number', $folder);
-        $this->assertStringContainsString('conv-priority', $colHtmlDefault);
+        $this->assertStringNotContainsString('conv-priority', $colHtmlDefault);
+    }
+
+    /**
+     * The flip side of the above: an agent who explicitly turns a field on
+     * does see it — opt-in works, this isn't just "always hidden now".
+     */
+    public function test_field_with_explicit_visible_preference_is_shown_by_default_sortable_state()
+    {
+        $mailbox = $this->makeMailbox();
+        $folder = $this->makeFolder($mailbox->id);
+        $fieldId = $this->makeCustomField($mailbox->id, 'Priority');
+        $user = $this->makeUser($mailbox->id);
+
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $fieldId, [
+            'visible' => true, 'sortable' => false,
+        ]);
+
+        $this->actingAs($user);
+
+        $colHtml = $this->captureEventyAction('conversations_table.col_before_conv_number', $folder);
+        $thHtml = $this->captureEventyAction('conversations_table.th_before_conv_number', $folder);
+
+        $this->assertStringContainsString('conv-priority', $colHtml);
+        $this->assertStringContainsString('Priority', $thHtml);
+        // Turning visibility on doesn't also turn sortability on — that's
+        // this test's explicit preference (visible=true, sortable=false).
+        $this->assertStringNotContainsString('data-sort-by', $thHtml);
     }
 
     public function test_non_sortable_preference_renders_static_header()
@@ -546,10 +680,16 @@ class SortableCustomFieldsTest extends TestCase
     {
         $mailbox = $this->makeMailbox();
         $folder = $this->makeFolder($mailbox->id);
-        $this->makeCustomField($mailbox->id, 'Priority');
+        $visibleFieldId = $this->makeCustomField($mailbox->id, 'Priority');
         $hiddenFieldId = $this->makeCustomField($mailbox->id, 'Category');
+        // A third field the user has never touched at all — proves the
+        // opt-in default (hidden), not just the explicit-hide path below.
+        $this->makeCustomField($mailbox->id, 'Topic');
         $user = $this->makeUser($mailbox->id);
 
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $visibleFieldId, [
+            'visible' => true, 'sortable' => true,
+        ]);
         UserColumnPreference::setPreference($user->id, $mailbox->id, $hiddenFieldId, [
             'visible' => false, 'sortable' => true,
         ]);
@@ -559,11 +699,20 @@ class SortableCustomFieldsTest extends TestCase
         $html = $this->captureEventyAction('conversations_table.toolbar', $folder);
 
         $this->assertStringContainsString('scf-hidden-badge', $html);
-        $this->assertMatchesRegularExpression('/scf-hidden-badge">1</', $html);
+        // Category (explicit hide) + Topic (never touched, opt-in default).
+        $this->assertMatchesRegularExpression('/scf-hidden-badge">2</', $html);
         $this->assertStringContainsString('Priority', $html);
         $this->assertStringContainsString('Category', $html);
+        $this->assertStringContainsString('Topic', $html);
 
-        // The hidden field's own <li> row must not carry "checked".
+        // The explicitly-visible field's row must carry "checked"...
+        $rowStart = strpos($html, 'data-custom_field_id="'.$visibleFieldId.'"');
+        $this->assertNotFalse($rowStart);
+        $rowEnd = strpos($html, '</li>', $rowStart);
+        $row = substr($html, $rowStart, $rowEnd - $rowStart);
+        $this->assertStringContainsString('checked', $row);
+
+        // ...but the explicitly-hidden field's row must not.
         $rowStart = strpos($html, 'data-custom_field_id="'.$hiddenFieldId.'"');
         $this->assertNotFalse($rowStart);
         $rowEnd = strpos($html, '</li>', $rowStart);

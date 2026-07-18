@@ -36,6 +36,11 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
             'Modules\SortableCustomFields\Http\Controllers\ColumnPreferencesController@save'
         )->name('sortablecustomfields.columns.save');
 
+        \Route::middleware(['web', 'auth'])->post(
+            'sortablecustomfields/columns/reset',
+            'Modules\SortableCustomFields\Http\Controllers\ColumnPreferencesController@reset'
+        )->name('sortablecustomfields.columns.reset');
+
         // This fork's RouteCollection only refreshes its name -> route index
         // once, at the end of the app's normal route-loading pass. A module
         // provider's boot() runs after that pass, so route('...') on a route
@@ -48,7 +53,8 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
     /**
      * Per-user column preferences for a mailbox, keyed by custom_field_id.
      * Empty (not missing-key) for guests/no mailbox — callers should treat
-     * an absent key as "visible and sortable", not this collection itself.
+     * an absent key as "hidden and not sortable" (opt-in), not this
+     * collection itself.
      */
     protected function userPreferences($mailboxId)
     {
@@ -59,18 +65,24 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
         return UserColumnPreference::forUserMailbox(auth()->id(), $mailboxId);
     }
 
+    /**
+     * Opt-in: a field an agent has never touched starts hidden, not shown.
+     * Showing every field by default got cluttered fast as more fields were
+     * added — better for an agent to pick the handful they actually care
+     * about than to start from "everything" and hide down from there.
+     */
     protected function isVisibleToUser($custom_field, $preferences)
     {
         $pref = $preferences->get($custom_field->id);
 
-        return $pref ? (bool) $pref->visible : true;
+        return $pref ? (bool) $pref->visible : false;
     }
 
     protected function isSortableForUser($custom_field, $preferences)
     {
         $pref = $preferences->get($custom_field->id);
 
-        return $pref ? (bool) $pref->sortable : true;
+        return $pref ? (bool) $pref->sortable : false;
     }
 
     public function hooks()
@@ -349,7 +361,7 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
 
             ob_start();
             ?>
-            <div class="scf-columns-control" data-mailbox_id="<?= (int) $mailbox_id ?>" data-save-url="<?= route('sortablecustomfields.columns.save') ?>">
+            <div class="scf-columns-control" data-mailbox_id="<?= (int) $mailbox_id ?>" data-save-url="<?= route('sortablecustomfields.columns.save') ?>" data-reset-url="<?= route('sortablecustomfields.columns.reset') ?>">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default scf-columns-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="<?= __('Columns') ?>">
                         <span class="glyphicon glyphicon-list-alt"></span>

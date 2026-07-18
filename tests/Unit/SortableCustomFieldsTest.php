@@ -28,6 +28,27 @@ class SortableCustomFieldsTest extends TestCase
         (new \Modules\SortableCustomFields\Providers\SortableCustomFieldsServiceProvider(app()))->boot();
     }
 
+    /**
+     * Fields are hidden by default now (opt-in Columns control) — these
+     * escaping tests care about what happens once a field IS visible, not
+     * about the default itself, and this class deliberately avoids a real
+     * database (see class docblock). Stubs userPreferences() to report the
+     * given field as visible, without a real UserColumnPreference row.
+     */
+    protected function bootModuleWithVisibleField($fieldId)
+    {
+        $provider = new class(app()) extends \Modules\SortableCustomFields\Providers\SortableCustomFieldsServiceProvider {
+            public $stubVisibleFieldId;
+
+            protected function userPreferences($mailboxId)
+            {
+                return collect([$this->stubVisibleFieldId => (object) ['visible' => true, 'sortable' => true]]);
+            }
+        };
+        $provider->stubVisibleFieldId = $fieldId;
+        $provider->boot();
+    }
+
     protected function provider()
     {
         return \Modules\SortableCustomFields\Providers\SortableCustomFieldsServiceProvider::class;
@@ -77,9 +98,10 @@ class SortableCustomFieldsTest extends TestCase
      */
     public function test_td_before_conv_number_escapes_malicious_field_value()
     {
-        $this->bootModule();
+        $this->bootModuleWithVisibleField(1);
 
         $conversation = new Conversation();
+        $conversation->mailbox_id = 1;
         $conversation->custom_fields = [
             $this->fakeCustomField('Priority', '<img src=x onerror=alert(1)>'),
         ];
@@ -97,9 +119,10 @@ class SortableCustomFieldsTest extends TestCase
      */
     public function test_row_class_only_emits_safe_slug_classes()
     {
-        $this->bootModule();
+        $this->bootModuleWithVisibleField(1);
 
         $conversation = new Conversation();
+        $conversation->mailbox_id = 1;
         $conversation->custom_fields = [
             $this->fakeCustomField('Priority', '"><script>alert(1)</script>'),
         ];
