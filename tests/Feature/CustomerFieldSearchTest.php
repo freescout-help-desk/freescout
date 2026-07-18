@@ -298,6 +298,93 @@ class CustomerFieldSearchTest extends TestCase
     }
 
     /**
+     * Same mailbox-scoping safety proof as the Customers-tab test, but for
+     * ajaxSearch()'s own $limited_visibility branch specifically — it has
+     * its own separate join/whereIn, added after the closure our hook fires
+     * inside, so it needs its own proof the hook can't leak past it.
+     */
+    public function test_ajax_search_respects_mailbox_scoping_for_custom_field_match()
+    {
+        config(['app.limit_user_customer_visibility' => true]);
+
+        $mailboxA = $this->makeMailbox();
+        $mailboxB = $this->makeMailbox();
+        $folderA = $this->makeFolder($mailboxA->id);
+        $folderB = $this->makeFolder($mailboxB->id);
+        $user = $this->makeUser($mailboxA->id);
+
+        $visibleCustomer = $this->makeCustomer();
+        $hiddenCustomer = $this->makeCustomer();
+        $this->setCustomerFieldValue($visibleCustomer->id, 1, '667788990');
+        $this->setCustomerFieldValue($hiddenCustomer->id, 1, '667788990');
+
+        $this->makeConversation($mailboxA->id, $folderA->id, $visibleCustomer->id, $user->id);
+        $this->makeConversation($mailboxB->id, $folderB->id, $hiddenCustomer->id, $user->id);
+
+        $this->actingAs($user);
+
+        $request = Request::create('/customers/ajax-search', 'GET', [
+            'q'                => '667788',
+            'search_by'        => 'all',
+            'use_id'           => 1,
+            'allow_non_emails' => 1,
+        ]);
+
+        $controller = new \App\Http\Controllers\CustomersController();
+        $response = json_decode($controller->ajaxSearch($request)->getContent(), true);
+
+        $ids = array_column($response['results'], 'id');
+
+        $this->assertContains($visibleCustomer->id, $ids);
+        $this->assertNotContains($hiddenCustomer->id, $ids);
+    }
+
+    /**
+     * Regression test: ajaxSearch()'s $limited_visibility branch joins
+     * conversations to restrict by mailbox, which multiplies result rows
+     * for a customer with several conversations across mailboxes the user
+     * can view — core has always deduped this with a groupBy('customers.id')
+     * inside that branch. Unrelated to custom-field search itself, but this
+     * groupBy was accidentally dropped while adding the custom-field hook
+     * to this method and needs to keep working regardless of whether a
+     * custom field is even involved — this test deliberately doesn't use
+     * one, to isolate the two concerns.
+     */
+    public function test_ajax_search_does_not_duplicate_customer_with_multiple_visible_conversations()
+    {
+        config(['app.limit_user_customer_visibility' => true]);
+
+        $mailboxA = $this->makeMailbox();
+        $mailboxB = $this->makeMailbox();
+        $folderA = $this->makeFolder($mailboxA->id);
+        $folderB = $this->makeFolder($mailboxB->id);
+
+        $user = $this->makeUser();
+        $user->mailboxes()->attach([$mailboxA->id, $mailboxB->id]);
+
+        $customer = $this->makeCustomer();
+        $this->makeConversation($mailboxA->id, $folderA->id, $customer->id, $user->id);
+        $this->makeConversation($mailboxB->id, $folderB->id, $customer->id, $user->id);
+
+        $this->actingAs($user);
+
+        $request = Request::create('/customers/ajax-search', 'GET', [
+            'q'         => $customer->first_name,
+            'search_by' => 'name',
+            'use_id'    => 1,
+        ]);
+
+        $controller = new \App\Http\Controllers\CustomersController();
+        $response = json_decode($controller->ajaxSearch($request)->getContent(), true);
+
+        $matches = array_filter($response['results'], function ($row) use ($customer) {
+            return $row['id'] == $customer->id;
+        });
+
+        $this->assertCount(1, $matches, 'a customer with multiple visible conversations must not be duplicated');
+    }
+
+    /**
      * Search > Conversations tab. No new core patch was needed for this
      * one — it reuses the existing search.conversations.or_where hook,
      * which already fires from inside the correctly-grouped native-match
@@ -320,6 +407,36 @@ class CustomerFieldSearchTest extends TestCase
         $ids = $query->pluck('id')->all();
 
         $this->assertContains($conversation->id, $ids);
+    }
+
+    /**
+     * Same safety property as the Customers-tab and ajaxSearch tests, for
+     * the reused search.conversations.or_where hook: Conversation::search()
+     * always restricts to $user->mailboxesIdsCanView() regardless of the
+     * app.limit_user_customer_visibility setting, applied before the
+     * closure this module's hook fires inside.
+     */
+    public function test_conversations_tab_respects_mailbox_scoping_for_custom_field_match()
+    {
+        $mailboxA = $this->makeMailbox();
+        $mailboxB = $this->makeMailbox();
+        $folderA = $this->makeFolder($mailboxA->id);
+        $folderB = $this->makeFolder($mailboxB->id);
+        $user = $this->makeUser($mailboxA->id);
+
+        $visibleCustomer = $this->makeCustomer();
+        $hiddenCustomer = $this->makeCustomer();
+        $this->setCustomerFieldValue($visibleCustomer->id, 1, 'IDCARD-9988771');
+        $this->setCustomerFieldValue($hiddenCustomer->id, 1, 'IDCARD-9988772');
+
+        $visibleConversation = $this->makeConversation($mailboxA->id, $folderA->id, $visibleCustomer->id, $user->id);
+        $hiddenConversation = $this->makeConversation($mailboxB->id, $folderB->id, $hiddenCustomer->id, $user->id);
+
+        $query = Conversation::search('IDCARD-998877', [], $user);
+        $ids = $query->pluck('id')->all();
+
+        $this->assertContains($visibleConversation->id, $ids);
+        $this->assertNotContains($hiddenConversation->id, $ids);
     }
 
     /**

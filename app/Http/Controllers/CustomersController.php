@@ -380,6 +380,12 @@ class CustomersController extends Controller
 
             $customers_query->join('conversations', 'conversations.customer_id', '=', 'customers.id');
             $customers_query->whereIn('conversations.mailbox_id', $mailbox_ids);
+            // Pre-existing, unrelated to the custom-field match above: joining
+            // conversations multiplies rows for a customer with several
+            // conversations across mailboxes they can view. Email is already
+            // aggregated via MAX() in this branch's select list (see above),
+            // so grouping here is safe.
+            $customers_query->groupby('customers.id');
         }
 
         $customers = $customers_query->paginate(20);
