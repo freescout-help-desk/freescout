@@ -42,25 +42,16 @@ td.custom-field-td {
 .scf-columns-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 8px;
     padding: 4px 14px;
 }
 
+/* .magic-checkbox+label (magic-check.css) already sets display/position/
+   padding-left for the checkbox glyph — only add what it doesn't cover. */
 .scf-columns-checkbox {
-    display: flex;
-    align-items: center;
-    font-weight: normal;
+    flex: 1;
     margin: 0;
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.scf-columns-checkbox input {
-    margin-right: 8px;
-    flex: none;
-}
-
-.scf-columns-checkbox span {
+    font-weight: normal;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
