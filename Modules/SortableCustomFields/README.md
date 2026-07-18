@@ -31,13 +31,36 @@ sort slug is now resolved against this mailbox's real `CustomField` names
 *before* anything touches SQL — untrusted input never reaches the query, and
 the join/alias are only ever built from the matched, trusted field name.
 
-Also escaped two spots that echoed custom-field name/value straight into the
-table markup without escaping (`e($custom_field->name)`, `e($custom_field->getAsText())`)
-— a mailbox admin could otherwise store an XSS payload in a custom field name
-or value and have it render unescaped for every agent viewing the list. And
-fixed a typo'd published-config filename (`srotablecustomfields.php` →
+Also fixed a second, independent reflected-XSS: `conversations_table.th_before_conv_number`
+echoed `sorting[order]` straight into a `data-order="..."` attribute
+unescaped — normalized to a strict `asc`/`desc` value at the point it's read
+from the request instead. And escaped two spots that echoed custom-field
+name/value straight into the table markup without escaping
+(`e($custom_field->name)`, `e($custom_field->getAsText())`) — a mailbox admin
+could otherwise store an XSS payload in a custom field name or value and have
+it render unescaped for every agent viewing the list.
+
+The sort filter also now reads the mailbox off the `$folder` object
+`Conversation::getQueryByFolder()` passes it, rather than guessing from the
+request URL like the rest of the module does. This required registering the
+filter with an explicit argument count (`addFilter(..., 20, 2)`) — Eventy's
+`Filter::fire()` truncates the arguments actually passed to a listener down
+to whatever count it was registered with (default 1), so `$folder` would
+silently always be `null` without it, even though the caller passes it.
+
+And fixed a typo'd published-config filename (`srotablecustomfields.php` →
 `sortablecustomfields.php`); the config itself is unused elsewhere so this is
 cosmetic.
+
+## Tests
+
+`tests/Unit/SortableCustomFieldsTest.php` covers the slug-safety invariant
+the injection fix depends on and the name/value escaping, without needing
+the Custom Fields module. `tests/Feature/SortableCustomFieldsTest.php`
+exercises the sort filter and the order-normalization fix against a real
+(fixture) `CustomField` model and ad hoc `custom_fields`/
+`conversation_custom_field` tables, since the real paid module isn't
+installed in this repo — see `tests/Fixtures/CustomFieldFixture.php`.
 
 ## Usage
 

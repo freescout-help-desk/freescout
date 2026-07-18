@@ -83,7 +83,10 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
             }
             return $query_conversations;
 
-        });
+        // 2 args: Eventy's Filter::fire() truncates to exactly this many
+        // regardless of how many the caller passes — without it, $folder
+        // would always be null here even though getQueryByFolder() passes it.
+        }, 20, 2);
 
 
         \Eventy::addAction('conversations_table.col_before_conv_number', function ($conversation) {
