@@ -189,6 +189,46 @@ class CustomerFieldSearchTest extends TestCase
     }
 
     /**
+     * searchCustomers() has a second, distinct mailbox-restriction path —
+     * an explicit ?f[mailbox]=X filter, taken instead of the
+     * $limited_visibility elseif branch when the filter mailbox is one the
+     * user can view (see the `if (!empty($filters['mailbox']) &&
+     * in_array(...))` branch). It builds its own separate join/where after
+     * the same closure our hook fires inside, so it needs its own proof —
+     * the safe-hook-placement reasoning doesn't automatically cover a
+     * second, differently-shaped AND'd condition without a test.
+     */
+    public function test_customers_tab_explicit_mailbox_filter_respects_custom_field_match_scoping()
+    {
+        $mailboxA = $this->makeMailbox();
+        $mailboxB = $this->makeMailbox();
+        $folderA = $this->makeFolder($mailboxA->id);
+        $folderB = $this->makeFolder($mailboxB->id);
+        $user = $this->makeUser($mailboxA->id);
+        $user->mailboxes()->attach($mailboxB->id); // can view both — filter, not visibility, does the restricting here
+
+        $inFilterCustomer = $this->makeCustomer();
+        $outOfFilterCustomer = $this->makeCustomer();
+        $this->setCustomerFieldValue($inFilterCustomer->id, 1, '334455661');
+        $this->setCustomerFieldValue($outOfFilterCustomer->id, 1, '334455661');
+
+        $this->makeConversation($mailboxA->id, $folderA->id, $inFilterCustomer->id, $user->id);
+        $this->makeConversation($mailboxB->id, $folderB->id, $outOfFilterCustomer->id, $user->id);
+
+        $request = Request::create('/conversations/search', 'GET', [
+            'q' => '334455',
+            'f' => ['mailbox' => $mailboxA->id],
+        ]);
+
+        $controller = new \App\Http\Controllers\ConversationsController();
+        $results = $controller->searchCustomers($request, $user);
+        $ids = collect($results->items())->pluck('id')->all();
+
+        $this->assertContains($inFilterCustomer->id, $ids);
+        $this->assertNotContains($outOfFilterCustomer->id, $ids);
+    }
+
+    /**
      * ARMS-22's explicit requirement: prefix match only. A value that
      * *contains* the term but doesn't *start* with it must not match — this
      * is what makes the index this module's migration adds actually usable.
@@ -273,8 +313,10 @@ class CustomerFieldSearchTest extends TestCase
 
     /**
      * The hook is gated on search_by == 'all' so intentionally-narrower
-     * modes (name/email/phone) aren't silently broadened to also match
-     * custom fields.
+     * modes aren't silently broadened to also match custom fields. Name
+     * mode here; see the companion phone-mode test below — they exercise
+     * different code paths (this one still joins emails, phone mode
+     * doesn't), so one doesn't stand in for the other.
      */
     public function test_ajax_search_does_not_broaden_narrower_search_by_modes()
     {
@@ -295,6 +337,75 @@ class CustomerFieldSearchTest extends TestCase
 
         $ids = array_column($response['results'], 'id');
         $this->assertNotContains($customer->id, $ids);
+    }
+
+    /**
+     * Companion to the name-mode test above for search_by == 'phone' — the
+     * PR description claims phone-only search isn't broadened, but only
+     * name mode actually had a test; this closes that gap. Phone mode also
+     * doesn't join emails at all ($join_emails stays false), a genuinely
+     * different code path from name mode.
+     */
+    public function test_ajax_search_does_not_broaden_phone_only_search_by_mode()
+    {
+        $customer = $this->makeCustomer();
+        $this->setCustomerFieldValue($customer->id, 1, '112233445');
+
+        $user = $this->makeUser();
+        $this->actingAs($user);
+
+        $request = Request::create('/customers/ajax-search', 'GET', [
+            'q'         => '112233445',
+            'search_by' => 'phone',
+            'use_id'    => 1,
+        ]);
+
+        $controller = new \App\Http\Controllers\CustomersController();
+        $response = json_decode($controller->ajaxSearch($request)->getContent(), true);
+
+        $ids = array_column($response['results'], 'id');
+        $this->assertNotContains($customer->id, $ids);
+    }
+
+    /**
+     * PRE-EXISTING NATIVE BEHAVIOR, confirmed via a raw toSql() probe before
+     * writing this test — not introduced by this PR. ajaxSearch()'s
+     * exclude_id/exclude_email conditions are added via where() (AND) while
+     * the name/phone/custom-field conditions use orWhere() at the same
+     * nesting level. SQL's AND-binds-tighter-than-OR precedence means the
+     * compiled clause is effectively "(email match AND NOT excluded) OR
+     * name-match OR phone-match OR our custom-field match" — NOT "(any
+     * match) AND NOT excluded". A customer passed as exclude_id can still
+     * be returned via a custom-field match (or via name/phone, pre-existing
+     * and unchanged by this PR). This test documents today's actual
+     * behavior for our new branch so a future fix to the underlying
+     * precedence bug doesn't silently change it without a test noticing —
+     * flagged separately for a scope decision, not fixed here (fixing it
+     * changes exclude_id/exclude_email behavior for every ajaxSearch caller,
+     * not just custom-field matches).
+     */
+    public function test_ajax_search_exclude_id_does_not_suppress_custom_field_match()
+    {
+        $customer = $this->makeCustomer();
+        $this->setCustomerFieldValue($customer->id, 1, '556677889');
+
+        $user = $this->makeUser();
+        $this->actingAs($user);
+
+        $request = Request::create('/customers/ajax-search', 'GET', [
+            'q'                => '556677',
+            'search_by'        => 'all',
+            'use_id'           => 1,
+            'allow_non_emails' => 1,
+            'exclude_id'       => $customer->id,
+        ]);
+
+        $controller = new \App\Http\Controllers\CustomersController();
+        $response = json_decode($controller->ajaxSearch($request)->getContent(), true);
+
+        $ids = array_column($response['results'], 'id');
+
+        $this->assertContains($customer->id, $ids, 'documents current (pre-existing) behavior — see docblock above');
     }
 
     /**
