@@ -3115,6 +3115,16 @@ class ConversationsController extends Controller
                 if ($phone_numeric) {
                     $query->orWhere('customers.phones', $like_op, '%"'.$phone_numeric.'"%');
                 }
+
+                // threls fork patch: lets modules OR in extra plain-text match
+                // conditions (e.g. customer custom fields) inside this same
+                // group, before mailbox scoping is applied outside it. Adding
+                // via the existing (later) search.customers.apply_filters
+                // hook would incorrectly bypass mailbox scoping — Laravel
+                // flattens sequential where()/orWhere() calls, so an orWhere
+                // added after an AND'd mailbox condition ORs against the
+                // whole expression, not just this group.
+                $query = \Eventy::filter('search.customers.text_match', $query, $q, $like_op);
             });
 
         if (!empty($filters['mailbox']) && in_array($filters['mailbox'], $mailbox_ids)) {
