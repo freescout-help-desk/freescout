@@ -48,7 +48,8 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
     /**
      * Per-user column preferences for a mailbox, keyed by custom_field_id.
      * Empty (not missing-key) for guests/no mailbox — callers should treat
-     * an absent key as "visible and sortable", not this collection itself.
+     * an absent key as "hidden and not sortable" (opt-in), not this
+     * collection itself.
      */
     protected function userPreferences($mailboxId)
     {
@@ -59,18 +60,24 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
         return UserColumnPreference::forUserMailbox(auth()->id(), $mailboxId);
     }
 
+    /**
+     * Opt-in: a field an agent has never touched starts hidden, not shown.
+     * Showing every field by default got cluttered fast as more fields were
+     * added — better for an agent to pick the handful they actually care
+     * about than to start from "everything" and hide down from there.
+     */
     protected function isVisibleToUser($custom_field, $preferences)
     {
         $pref = $preferences->get($custom_field->id);
 
-        return $pref ? (bool) $pref->visible : true;
+        return $pref ? (bool) $pref->visible : false;
     }
 
     protected function isSortableForUser($custom_field, $preferences)
     {
         $pref = $preferences->get($custom_field->id);
 
-        return $pref ? (bool) $pref->sortable : true;
+        return $pref ? (bool) $pref->sortable : false;
     }
 
     public function hooks()

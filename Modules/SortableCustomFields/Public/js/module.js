@@ -114,14 +114,17 @@ $(document).ready(function() {
 		var control = $(this).closest('.scf-columns-control');
 		var requests = [];
 
+		// "Default" is opt-in (nothing shown) — matches
+		// isVisibleToUser()/isSortableForUser()'s server-side default for a
+		// field with no saved preference.
 		control.find('.scf-columns-row').each(function() {
 			var row = $(this);
-			row.find('.scf-visible-toggle').prop('checked', true);
+			row.find('.scf-visible-toggle').prop('checked', false);
 			row.find('.scf-sortable-toggle')
-				.addClass('is-active')
-				.prop('disabled', false)
-				.attr('aria-pressed', 'true');
-			requests.push(scfSaveColumnPref(control, row.attr('data-custom_field_id'), true, true));
+				.removeClass('is-active')
+				.prop('disabled', true)
+				.attr('aria-pressed', 'false');
+			requests.push(scfSaveColumnPref(control, row.attr('data-custom_field_id'), false, false));
 		});
 
 		scfUpdateHiddenBadge(control);

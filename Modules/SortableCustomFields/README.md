@@ -27,6 +27,14 @@ which of those are sortable (a field can be worth glancing at without being
 worth sorting by). Choices are per-agent and follow them across devices,
 since agents aren't tied to one machine.
 
+**Opt-in by default**: a field an agent has never touched starts hidden and
+non-sortable, not shown. Starting from "everything visible" got cluttered
+fast as more fields were added (the original motivation for this control in
+the first place) — better for an agent to pick the handful they actually
+care about than to start from all of them and hide down. "Reset to default"
+in the popover clears back to this same all-hidden state, not
+all-visible.
+
 **New fork patch** (grep for `threls fork patch` across the codebase to find
 this and the other core patches this fork carries): a single always-visible
 `@action('conversations_table.toolbar', $folder ?? null)` hook added to
@@ -39,8 +47,9 @@ to hang one.
 **New table**: `sortablecustomfields_user_columns` (user_id, mailbox_id,
 custom_field_id, visible, sortable) — owned entirely by this module via its
 own migration (`Database/Migrations/`), not a core table. Absence of a row
-means "visible and sortable", matching pre-Columns-control behaviour, so
-nothing needed backfilling.
+means "hidden and not sortable" (see "Opt-in by default" above) — no
+backfill needed either way, since this is purely a rendering default with
+no other side effects.
 
 **New route**: `sortablecustomfields.columns.save` (POST), gated by the
 `auth` middleware and `MailboxPolicy::view` (an agent can only set
