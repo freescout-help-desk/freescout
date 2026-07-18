@@ -23,3 +23,71 @@ th.custom-field-th {
 td.custom-field-td {
     width:5%;
 }
+
+/* threls fork patch addition: the "Columns" control. */
+.scf-columns-control {
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.scf-columns-btn .scf-hidden-badge {
+    margin-left: 4px;
+}
+
+.scf-columns-menu {
+    padding: 4px 0;
+    min-width: 240px;
+}
+
+.scf-columns-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 14px;
+}
+
+.scf-columns-checkbox {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    margin: 0;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.scf-columns-checkbox input {
+    margin-right: 8px;
+    flex: none;
+}
+
+.scf-columns-checkbox span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.scf-sortable-toggle {
+    flex: none;
+    border: none;
+    background: none;
+    color: #ccc;
+    padding: 2px 4px;
+    margin-left: 8px;
+}
+
+.scf-sortable-toggle.is-active {
+    color: #337ab7;
+}
+
+.scf-sortable-toggle:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.scf-columns-footer {
+    padding: 4px 14px;
+}
+
+.custom-field-th-static {
+    cursor: default;
+}

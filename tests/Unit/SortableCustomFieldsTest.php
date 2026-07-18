@@ -110,16 +110,41 @@ class SortableCustomFieldsTest extends TestCase
         $this->assertMatchesRegularExpression('/^\s*cf_priority_[a-z0-9_]*\s*$/', $html);
     }
 
-    protected function fakeCustomField($name, $text)
+    /**
+     * Threls fork fix: td_before_conv_number/row_class never checked
+     * show_in_list upstream, so a field the admin excluded from the list
+     * still got a stray <td> with no matching <th>/<col>, misaligning every
+     * row. Both hooks now skip it, same as col/th already did.
+     */
+    public function test_td_and_row_class_skip_fields_not_shown_in_list()
     {
-        return new class($name, $text) {
+        $this->bootModule();
+
+        $conversation = new Conversation();
+        $conversation->custom_fields = [
+            $this->fakeCustomField('Internal Notes', 'secret', false),
+        ];
+
+        $tdHtml = $this->captureAction('conversations_table.td_before_conv_number', $conversation);
+        $rowClassHtml = $this->captureAction('conversations_table.row_class', $conversation);
+
+        $this->assertSame('', $tdHtml);
+        $this->assertSame('', $rowClassHtml);
+    }
+
+    protected function fakeCustomField($name, $text, $showInList = true)
+    {
+        return new class($name, $text, $showInList) {
+            public $id = 1;
             public $name;
+            public $show_in_list;
             private $text;
 
-            public function __construct($name, $text)
+            public function __construct($name, $text, $showInList)
             {
                 $this->name = $name;
                 $this->text = $text;
+                $this->show_in_list = $showInList;
             }
 
             public function getAsText()

@@ -19,4 +19,96 @@ $(document).ready(function() {
 			removeDateSort()
 			}
 	};
+
+	// threls fork patch addition: the "Columns" control (which custom fields
+	// show as columns, and which of those are sortable, per agent).
+	function scfSaveColumnPref(control, customFieldId, visible, sortable) {
+		var deferred = $.Deferred();
+		fsAjax(
+			{
+				mailbox_id: control.attr('data-mailbox_id'),
+				custom_field_id: customFieldId,
+				visible: visible ? 1 : 0,
+				sortable: sortable ? 1 : 0
+			},
+			control.attr('data-save-url'),
+			function() { deferred.resolve(); },
+			true,
+			function() { deferred.reject(); }
+		);
+		return deferred.promise();
+	}
+
+	function scfUpdateHiddenBadge(control) {
+		var hiddenCount = control.find('.scf-visible-toggle:not(:checked)').length;
+		var badge = control.find('.scf-hidden-badge');
+		if (hiddenCount > 0) {
+			if (!badge.length) {
+				badge = $('<span class="badge scf-hidden-badge"></span>');
+				control.find('.scf-columns-btn .caret').before(badge);
+			}
+			badge.text(hiddenCount);
+		} else {
+			badge.remove();
+		}
+	}
+
+	function scfRefreshTable() {
+		if (typeof loadConversations === 'function') {
+			loadConversations('', '', true);
+		}
+	}
+
+	$(document).on('change', '.scf-visible-toggle', function() {
+		var checkbox = $(this);
+		var control = checkbox.closest('.scf-columns-control');
+		var row = checkbox.closest('.scf-columns-row');
+		var sortToggle = row.find('.scf-sortable-toggle');
+		var visible = checkbox.is(':checked');
+		var sortable = sortToggle.hasClass('is-active');
+
+		sortToggle.prop('disabled', !visible);
+		scfUpdateHiddenBadge(control);
+
+		scfSaveColumnPref(control, row.attr('data-custom_field_id'), visible, sortable)
+			.done(scfRefreshTable);
+	});
+
+	$(document).on('click', '.scf-sortable-toggle', function(e) {
+		e.preventDefault();
+		var toggle = $(this);
+		if (toggle.is(':disabled')) {
+			return;
+		}
+		var control = toggle.closest('.scf-columns-control');
+		var row = toggle.closest('.scf-columns-row');
+		var visible = row.find('.scf-visible-toggle').is(':checked');
+		var sortable = !toggle.hasClass('is-active');
+
+		toggle.toggleClass('is-active', sortable);
+		toggle.attr('aria-pressed', sortable ? 'true' : 'false');
+		toggle.attr('title', sortable ? 'Sortable — click to make static' : 'Not sortable — click to allow sorting');
+
+		scfSaveColumnPref(control, row.attr('data-custom_field_id'), visible, sortable)
+			.done(scfRefreshTable);
+	});
+
+	$(document).on('click', '.scf-reset-columns', function(e) {
+		e.preventDefault();
+		var control = $(this).closest('.scf-columns-control');
+		var requests = [];
+
+		control.find('.scf-columns-row').each(function() {
+			var row = $(this);
+			row.find('.scf-visible-toggle').prop('checked', true);
+			row.find('.scf-sortable-toggle')
+				.addClass('is-active')
+				.prop('disabled', false)
+				.attr('aria-pressed', 'true');
+			requests.push(scfSaveColumnPref(control, row.attr('data-custom_field_id'), true, true));
+		});
+
+		scfUpdateHiddenBadge(control);
+		$.when.apply($, requests).done(scfRefreshTable);
+	});
 });
