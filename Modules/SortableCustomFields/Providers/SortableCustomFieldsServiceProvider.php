@@ -156,36 +156,58 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
         // would always be null here even though getQueryByFolder() passes it.
         }, 20, 2);
 
-        \Eventy::addAction('conversations_table.col_before_conv_number', function ($conversation) {
-
-            $mailbox_id = request()->mailbox_id ?? request()->id ?? 0;
-
-            if ($mailbox_id) {
-                $custom_fields = CustomField::where('mailbox_id', $mailbox_id)
-                    // groupBy('name') does not work in PostgreSQL; distinct('name')
-                    // alone would compile to SELECT DISTINCT * (id is always
-                    // unique, so it never dedupes) — unique() on the collection
-                    // actually works, and works the same on every DB driver.
-                    ->get()
-                    ->unique('name');
+        // threls fork patch: col/th declare ONE fixed set of columns for the
+        // whole table, but td/row_class render per-conversation. On a view
+        // that can span multiple mailboxes (Search, customer profile —
+        // conversations_table.blade.php's own dummy-Folder fallback has no
+        // mailbox_id there), different rows can belong to different
+        // mailboxes with different custom fields, so a request-guessed
+        // single mailbox_id for the header/colgroup no longer matches each
+        // row's actual cell count — <tr>s end up with more or fewer <td>s
+        // than <col>s/<th>s declare, and the browser renders it garbled
+        // (found live: Search > Conversations, columns overlapping).
+        // Fixed by trusting only $folder->mailbox_id (never set on those
+        // dummy-Folder views) and rendering nothing at all — for every one
+        // of these hooks — when it's absent, so column/cell counts always
+        // agree.
+        \Eventy::addAction('conversations_table.col_before_conv_number', function ($folder = null) {
+            $mailbox_id = $folder->mailbox_id ?? null;
+            if (!$mailbox_id) {
+                return;
             }
 
-            if (isset($custom_fields) && count($custom_fields)) {
-                $preferences = $this->userPreferences($mailbox_id);
-                foreach ($custom_fields as $custom_field) {
-                    if (!$custom_field->show_in_list) {
-                        continue;
-                    }
-                    if (!$this->isVisibleToUser($custom_field, $preferences)) {
-                        continue;
-                    }
-                    $slug = $this->createSlug($custom_field->name, '_');
-                    echo '<col class="conv-'.$slug.'">';
+            $custom_fields = CustomField::where('mailbox_id', $mailbox_id)
+                // groupBy('name') does not work in PostgreSQL; distinct('name')
+                // alone would compile to SELECT DISTINCT * (id is always
+                // unique, so it never dedupes) — unique() on the collection
+                // actually works, and works the same on every DB driver.
+                ->get()
+                ->unique('name');
+
+            if (!count($custom_fields)) {
+                return;
+            }
+
+            $preferences = $this->userPreferences($mailbox_id);
+            foreach ($custom_fields as $custom_field) {
+                if (!$custom_field->show_in_list) {
+                    continue;
                 }
+                if (!$this->isVisibleToUser($custom_field, $preferences)) {
+                    continue;
+                }
+                $slug = $this->createSlug($custom_field->name, '_');
+                echo '<col class="conv-'.$slug.'">';
             }
-        }, 20, 3);
+        // 1 arg: conversations_table.blade.php passes $folder ?? null.
+        }, 20, 1);
 
-        \Eventy::addAction('conversations_table.th_before_conv_number', function () {
+        \Eventy::addAction('conversations_table.th_before_conv_number', function ($folder = null) {
+            $mailbox_id = $folder->mailbox_id ?? null;
+            if (!$mailbox_id) {
+                return;
+            }
+
             $sorting = ['sort_by' => 'date', 'order' => 'asc'];
 
             $requestSortBy = request()->input('sorting.sort_by');
@@ -199,50 +221,52 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
                 $sorting['order'] = strtolower((string) (request()->input('sorting.order') ?? '')) === 'desc' ? 'desc' : 'asc';
             }
 
-            $mailbox_id = request()->mailbox_id ?? request()->id ?? 0;
+            $custom_fields = CustomField::where('mailbox_id', $mailbox_id)
+                // groupBy('name') does not work in PostgreSQL; distinct('name')
+                // alone would compile to SELECT DISTINCT * (id is always
+                // unique, so it never dedupes) — unique() on the collection
+                // actually works, and works the same on every DB driver.
+                ->get()
+                ->unique('name');
 
-            if ($mailbox_id) {
-                $custom_fields = CustomField::where('mailbox_id', $mailbox_id)
-                    // groupBy('name') does not work in PostgreSQL; distinct('name')
-                    // alone would compile to SELECT DISTINCT * (id is always
-                    // unique, so it never dedupes) — unique() on the collection
-                    // actually works, and works the same on every DB driver.
-                    ->get()
-                    ->unique('name');
+            if (!count($custom_fields)) {
+                return;
             }
 
-            if (isset($custom_fields) && count($custom_fields)) {
-                $preferences = $this->userPreferences($mailbox_id);
-                foreach ($custom_fields as $custom_field) {
-                    if (!$custom_field->show_in_list) {
-                        continue;
-                    }
-                    if (!$this->isVisibleToUser($custom_field, $preferences)) {
-                        continue;
-                    }
-                    $slug = $this->createSlug($custom_field->name, '_');
-                    $sortable = $this->isSortableForUser($custom_field, $preferences);
-                    $label = e(__($custom_field->name));
-
-                    echo '<th class="custom-field-th">';
-                    if ($sortable) {
-                        $orderAttr = ($sorting['sort_by'] == 'custom_'.$slug) ? $sorting['order'] : 'desc';
-                        $arrow = '';
-                        if ($sorting['sort_by'] == 'custom_'.$slug) {
-                            $arrow = $sorting['order'] == 'asc' ? '↓' : ($sorting['order'] == 'desc' ? '↑' : '');
-                        }
-                        echo '<span class="conv-col-sort custom-field-tr" data-sort-by="custom_'.$slug.'" data-order="'.$orderAttr.'">';
-                        echo $label.' '.$arrow;
-                        echo '</span>';
-                    } else {
-                        echo '<span class="custom-field-tr custom-field-th-static">'.$label.'</span>';
-                    }
-                    echo '</th>';
+            $preferences = $this->userPreferences($mailbox_id);
+            foreach ($custom_fields as $custom_field) {
+                if (!$custom_field->show_in_list) {
+                    continue;
                 }
-            }
-        }, 20, 3);
+                if (!$this->isVisibleToUser($custom_field, $preferences)) {
+                    continue;
+                }
+                $slug = $this->createSlug($custom_field->name, '_');
+                $sortable = $this->isSortableForUser($custom_field, $preferences);
+                $label = e(__($custom_field->name));
 
-        \Eventy::addAction('conversations_table.td_before_conv_number', function ($conversation) {
+                echo '<th class="custom-field-th">';
+                if ($sortable) {
+                    $orderAttr = ($sorting['sort_by'] == 'custom_'.$slug) ? $sorting['order'] : 'desc';
+                    $arrow = '';
+                    if ($sorting['sort_by'] == 'custom_'.$slug) {
+                        $arrow = $sorting['order'] == 'asc' ? '↓' : ($sorting['order'] == 'desc' ? '↑' : '');
+                    }
+                    echo '<span class="conv-col-sort custom-field-tr" data-sort-by="custom_'.$slug.'" data-order="'.$orderAttr.'">';
+                    echo $label.' '.$arrow;
+                    echo '</span>';
+                } else {
+                    echo '<span class="custom-field-tr custom-field-th-static">'.$label.'</span>';
+                }
+                echo '</th>';
+            }
+        // 1 arg: conversations_table.blade.php passes $folder ?? null.
+        }, 20, 1);
+
+        \Eventy::addAction('conversations_table.td_before_conv_number', function ($conversation, $folder = null) {
+            if (!($folder->mailbox_id ?? null)) {
+                return;
+            }
             if (isset($conversation->custom_fields)) {
                 $preferences = $this->userPreferences($conversation->mailbox_id);
                 foreach ($conversation->custom_fields as $custom_field) {
@@ -257,9 +281,13 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
                     echo '</td>';
                 }
             }
-        }, 20, 3);
+        // 2 args: conversations_table.blade.php passes $conversation, $folder ?? null.
+        }, 20, 2);
 
-        \Eventy::addAction('conversations_table.row_class', function ($conversation) {
+        \Eventy::addAction('conversations_table.row_class', function ($conversation, $folder = null) {
+            if (!($folder->mailbox_id ?? null)) {
+                return;
+            }
             if (isset($conversation->custom_fields)) {
                 $preferences = $this->userPreferences($conversation->mailbox_id);
                 foreach ($conversation->custom_fields as $custom_field) {
@@ -274,7 +302,9 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
                     echo ' ';
                 }
             }
-        });
+        // 2 args: conversations_table.blade.php passes $conversation, $folder ?? null
+        // — without this, $folder would default (arguments=1) and always be null.
+        }, 20, 2);
 
         // threls fork patch call site (conversations_table.blade.php): renders
         // the "Columns" control — which of this mailbox's custom fields show
