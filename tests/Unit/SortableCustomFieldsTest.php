@@ -84,7 +84,7 @@ class SortableCustomFieldsTest extends TestCase
             $this->fakeCustomField('Priority', '<img src=x onerror=alert(1)>'),
         ];
 
-        $html = $this->captureAction('conversations_table.td_before_conv_number', $conversation);
+        $html = $this->captureAction('conversations_table.td_before_conv_number', $conversation, $this->fakeFolder());
 
         $this->assertStringNotContainsString('<img src=x onerror=alert(1)>', $html);
         $this->assertStringContainsString('&lt;img src=x onerror=alert(1)&gt;', $html);
@@ -104,7 +104,7 @@ class SortableCustomFieldsTest extends TestCase
             $this->fakeCustomField('Priority', '"><script>alert(1)</script>'),
         ];
 
-        $html = $this->captureAction('conversations_table.row_class', $conversation);
+        $html = $this->captureAction('conversations_table.row_class', $conversation, $this->fakeFolder());
 
         $this->assertStringNotContainsString('<script>', $html);
         $this->assertMatchesRegularExpression('/^\s*cf_priority_[a-z0-9_]*\s*$/', $html);
@@ -124,12 +124,50 @@ class SortableCustomFieldsTest extends TestCase
         $conversation->custom_fields = [
             $this->fakeCustomField('Internal Notes', 'secret', false),
         ];
+        $folder = $this->fakeFolder();
 
-        $tdHtml = $this->captureAction('conversations_table.td_before_conv_number', $conversation);
-        $rowClassHtml = $this->captureAction('conversations_table.row_class', $conversation);
+        $tdHtml = $this->captureAction('conversations_table.td_before_conv_number', $conversation, $folder);
+        $rowClassHtml = $this->captureAction('conversations_table.row_class', $conversation, $folder);
 
         $this->assertSame('', $tdHtml);
         $this->assertSame('', $rowClassHtml);
+    }
+
+    /**
+     * Found live on the demo instance: Search results (and the customer
+     * profile) can list conversations from different mailboxes in the same
+     * table. conversations_table.blade.php's own dummy-Folder fallback
+     * (used when no real $folder is passed in) never sets mailbox_id —
+     * td/row_class must render nothing rather than guessing, or rows end up
+     * with a different cell count than the <colgroup>/<th> declare, which
+     * the browser renders as garbled, overlapping columns.
+     */
+    public function test_td_and_row_class_render_nothing_without_a_real_folder()
+    {
+        $this->bootModule();
+
+        $conversation = new Conversation();
+        $conversation->custom_fields = [
+            $this->fakeCustomField('Priority', 'High'),
+        ];
+
+        $tdHtml = $this->captureAction('conversations_table.td_before_conv_number', $conversation, null);
+        $rowClassHtml = $this->captureAction('conversations_table.row_class', $conversation, null);
+
+        $this->assertSame('', $tdHtml);
+        $this->assertSame('', $rowClassHtml);
+    }
+
+    protected function fakeFolder($mailboxId = 1)
+    {
+        return new class($mailboxId) {
+            public $mailbox_id;
+
+            public function __construct($mailboxId)
+            {
+                $this->mailbox_id = $mailboxId;
+            }
+        };
     }
 
     protected function fakeCustomField($name, $text, $showInList = true)

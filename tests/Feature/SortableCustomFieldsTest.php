@@ -303,6 +303,7 @@ class SortableCustomFieldsTest extends TestCase
     public function test_th_before_conv_number_normalizes_order_and_escapes_name()
     {
         $mailbox = $this->makeMailbox();
+        $folder = $this->makeFolder($mailbox->id);
         $fieldName = '<script>alert(1)</script>';
         $this->makeCustomField($mailbox->id, $fieldName);
 
@@ -318,11 +319,9 @@ class SortableCustomFieldsTest extends TestCase
         // th_before_conv_number reads request()->input('sorting...') (the
         // bound Request object), not the raw superglobal — merge() so it
         // actually sees it.
-        request()->merge(['mailbox_id' => $mailbox->id, 'sorting' => $sorting]);
+        request()->merge(['sorting' => $sorting]);
 
-        ob_start();
-        \Eventy::action('conversations_table.th_before_conv_number');
-        $html = ob_get_clean();
+        $html = $this->captureEventyAction('conversations_table.th_before_conv_number', $folder);
 
         $this->assertStringNotContainsString('alert(document.cookie)', $html);
         $this->assertMatchesRegularExpression('/data-order="(asc|desc)"/', $html);
@@ -432,6 +431,44 @@ class SortableCustomFieldsTest extends TestCase
         $this->assertSame(0, (int) $row->sortable);
     }
 
+    /**
+     * Found live on the demo instance: Search (mode=conversations) lists
+     * conversations across mailboxes in one table, so
+     * conversations_table.blade.php falls back to its own dummy Folder
+     * (mailbox_id never set) rather than a real one. col/th used to guess a
+     * mailbox_id from the request regardless, declaring custom-field
+     * columns for whichever mailbox happened to resolve — while td/row_class
+     * rendered a per-conversation cell count based on each row's own real
+     * mailbox. Different mailboxes have different custom fields, so rows
+     * ended up with a different number of <td>s than the <colgroup>/<th>
+     * declared, and table-layout: fixed rendered that as overlapping,
+     * garbled columns. col/th must render nothing without a real Folder,
+     * matching td/row_class (see the Unit test test_td_and_row_class_render_
+     * nothing_without_a_real_folder for that half).
+     */
+    public function test_col_and_th_render_nothing_without_a_real_folder()
+    {
+        $mailbox = $this->makeMailbox();
+        $this->makeCustomField($mailbox->id, 'Priority');
+        $user = $this->makeUser($mailbox->id);
+        $this->actingAs($user);
+
+        // Simulates conversations_table.blade.php's own dummy-folder
+        // fallback used on Search / the customer profile.
+        $dummyFolder = new Folder();
+        $dummyFolder->type = Folder::TYPE_ASSIGNED;
+
+        // A conflicting request id, matching the real mailbox — proves the
+        // guard is genuinely folder-based, not just "request had nothing".
+        request()->merge(['mailbox_id' => $mailbox->id]);
+
+        $colHtml = $this->captureEventyAction('conversations_table.col_before_conv_number', $dummyFolder);
+        $thHtml = $this->captureEventyAction('conversations_table.th_before_conv_number', $dummyFolder);
+
+        $this->assertSame('', $colHtml);
+        $this->assertSame('', $thHtml);
+    }
+
     public function test_hidden_field_is_skipped_in_col_th_td_for_that_user()
     {
         $mailbox = $this->makeMailbox();
@@ -444,10 +481,9 @@ class SortableCustomFieldsTest extends TestCase
         ]);
 
         $this->actingAs($user);
-        request()->merge(['mailbox_id' => $mailbox->id]);
 
-        $colHtml = $this->captureEventyAction('conversations_table.col_before_conv_number', null);
-        $thHtml = $this->captureEventyAction('conversations_table.th_before_conv_number');
+        $colHtml = $this->captureEventyAction('conversations_table.col_before_conv_number', $folder);
+        $thHtml = $this->captureEventyAction('conversations_table.th_before_conv_number', $folder);
 
         $this->assertStringNotContainsString('conv-priority', $colHtml);
         $this->assertStringNotContainsString('Priority', $thHtml);
@@ -455,13 +491,14 @@ class SortableCustomFieldsTest extends TestCase
         // A different, unauthenticated context (or another user with no
         // preference row) still gets the default: visible.
         \Auth::logout();
-        $colHtmlDefault = $this->captureEventyAction('conversations_table.col_before_conv_number', null);
+        $colHtmlDefault = $this->captureEventyAction('conversations_table.col_before_conv_number', $folder);
         $this->assertStringContainsString('conv-priority', $colHtmlDefault);
     }
 
     public function test_non_sortable_preference_renders_static_header()
     {
         $mailbox = $this->makeMailbox();
+        $folder = $this->makeFolder($mailbox->id);
         $fieldId = $this->makeCustomField($mailbox->id, 'Priority');
         $user = $this->makeUser($mailbox->id);
 
@@ -470,9 +507,8 @@ class SortableCustomFieldsTest extends TestCase
         ]);
 
         $this->actingAs($user);
-        request()->merge(['mailbox_id' => $mailbox->id]);
 
-        $thHtml = $this->captureEventyAction('conversations_table.th_before_conv_number');
+        $thHtml = $this->captureEventyAction('conversations_table.th_before_conv_number', $folder);
 
         $this->assertStringContainsString('Priority', $thHtml);
         $this->assertStringNotContainsString('data-sort-by', $thHtml);

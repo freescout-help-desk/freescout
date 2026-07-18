@@ -85,7 +85,7 @@
             @if ($show_assigned)
                 <col class="conv-owner">@php $col_counter++ ; @endphp
             @endif
-            @action('conversations_table.col_before_conv_number')
+            @action('conversations_table.col_before_conv_number', $folder ?? null)
             <col class="conv-number">
             <col class="conv-date">
         </colgroup>
@@ -120,7 +120,7 @@
                     </ul>
                 </th>--}}
             @endif
-            @action('conversations_table.th_before_conv_number')
+            @action('conversations_table.th_before_conv_number', $folder ?? null)
             <th class="conv-number">
                 <span class="conv-col-sort" data-sort-by="number" data-order="@if ($sorting['sort_by'] == 'number'){{ $sorting['order'] }}@else{{ 'asc' }}@endif">
                     {{ __("Number") }} 
@@ -139,7 +139,7 @@
         </thead>
         <tbody>
             @foreach ($conversations as $conversation)
-                <tr class="conv-row @action('conversations_table.row_class', $conversation) @if ($conversation->isActive()) conv-active @endif @if ($conversation->isSpam()) conv-spam @endif" data-conversation_id="{{ $conversation->id }}">
+                <tr class="conv-row @action('conversations_table.row_class', $conversation, $folder ?? null) @if ($conversation->isActive()) conv-active @endif @if ($conversation->isSpam()) conv-spam @endif" data-conversation_id="{{ $conversation->id }}">
                     @if (empty($no_checkboxes))<td class="conv-current">@if (!empty($viewers[$conversation->id]))
                                 <div class="viewer-badge @if (!empty($viewers[$conversation->id]['replying'])) viewer-replying @endif" data-toggle="tooltip" title="@if (!empty($viewers[$conversation->id]['replying'])){{ __(':user is replying', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@else{{ __(':user is viewing', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@endif"><div>
                             @endif</td>@else<td class="conv-current"></td>@endif
@@ -208,7 +208,7 @@
                             @if ($conversation->user_id)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty($params['target_blank'])) target="_blank" @endif> {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }} </a>@else &nbsp;@endif
                         </td>
                     @endif
-                    @action('conversations_table.td_before_conv_number', $conversation)
+                    @action('conversations_table.td_before_conv_number', $conversation, $folder ?? null)
                     <td class="conv-number">
                         <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty($params['target_blank'])) target="_blank" @endif><i>#</i>{{ $conversation->number }}</a>
                     </td>
