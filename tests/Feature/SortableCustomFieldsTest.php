@@ -5,17 +5,21 @@ namespace Tests\Feature;
 use App\Conversation;
 use App\Folder;
 use App\Mailbox;
+use App\User;
 use Illuminate\Support\Facades\Schema;
 use Modules\CustomFields\Entities\CustomField;
+use Modules\SortableCustomFields\Entities\UserColumnPreference;
 use Tests\TestCase;
 
 /**
- * Covers the DB-backed half of the SortableCustomFields module (ARMS-33):
- * the folder.conversations_query sort filter (the SQL-injection fix) and
- * th_before_conv_number's order-attribute normalization (the reflected-XSS
- * fix). Needs a CustomField model and its two tables, which belong to the
- * paid Custom Fields module and aren't installed in this repo — see
- * tests/Fixtures/CustomFieldFixture.php.
+ * Covers the DB-backed half of the SortableCustomFields module (ARMS-33 and
+ * the follow-up per-agent Columns control): the folder.conversations_query
+ * sort filter (the SQL-injection fix), th_before_conv_number's
+ * order-attribute normalization (the reflected-XSS fix), and the
+ * visible/sortable column preferences (storage, the save endpoint, and the
+ * rendering gates that respect them). Needs a CustomField model and its two
+ * tables, which belong to the paid Custom Fields module and aren't installed
+ * in this repo — see tests/Fixtures/CustomFieldFixture.php.
  *
  * Deliberately does NOT use DatabaseTransactions: creating the ad hoc
  * custom_fields/conversation_custom_field tables is DDL, which implicitly
@@ -26,17 +30,21 @@ class SortableCustomFieldsTest extends TestCase
 {
     protected $createdCustomFieldsTable = false;
     protected $createdConversationCustomFieldTable = false;
+    protected $createdUserColumnsTable = false;
 
     protected $mailboxIds = [];
     protected $folderIds = [];
     protected $conversationIds = [];
     protected $customFieldIds = [];
+    protected $userIds = [];
 
     protected function setUp(): void
     {
         parent::setUp();
 
         require_once __DIR__.'/../../Modules/SortableCustomFields/Providers/SortableCustomFieldsServiceProvider.php';
+        require_once __DIR__.'/../../Modules/SortableCustomFields/Entities/UserColumnPreference.php';
+        require_once __DIR__.'/../../Modules/SortableCustomFields/Http/Controllers/ColumnPreferencesController.php';
 
         if (!class_exists(CustomField::class)) {
             require_once __DIR__.'/../Fixtures/CustomFieldFixture.php';
@@ -62,17 +70,31 @@ class SortableCustomFieldsTest extends TestCase
             $this->createdConversationCustomFieldTable = true;
         }
 
+        // Real migration file, not a hand-rolled schema — exercises it directly
+        // rather than risking the test's schema drifting from what actually ships.
+        if (!Schema::hasTable('sortablecustomfields_user_columns')) {
+            require_once __DIR__.'/../../Modules/SortableCustomFields/Database/Migrations/2026_07_18_000001_create_sortablecustomfields_user_columns_table.php';
+            (new \CreateSortablecustomfieldsUserColumnsTable())->up();
+            $this->createdUserColumnsTable = true;
+        }
+
         (new \Modules\SortableCustomFields\Providers\SortableCustomFieldsServiceProvider(app()))->boot();
     }
 
     protected function tearDown(): void
     {
+        \DB::table('sortablecustomfields_user_columns')->whereIn('user_id', $this->userIds)->delete();
+        \DB::table('mailbox_user')->whereIn('user_id', $this->userIds)->delete();
+        \DB::table('users')->whereIn('id', $this->userIds)->delete();
         \DB::table('conversation_custom_field')->whereIn('conversation_id', $this->conversationIds)->delete();
         \DB::table('conversations')->whereIn('id', $this->conversationIds)->delete();
         \DB::table('custom_fields')->whereIn('id', $this->customFieldIds)->delete();
         \DB::table('folders')->whereIn('id', $this->folderIds)->delete();
         \DB::table('mailboxes')->whereIn('id', $this->mailboxIds)->delete();
 
+        if ($this->createdUserColumnsTable) {
+            Schema::dropIfExists('sortablecustomfields_user_columns');
+        }
         if ($this->createdConversationCustomFieldTable) {
             Schema::dropIfExists('conversation_custom_field');
         }
@@ -134,6 +156,18 @@ class SortableCustomFieldsTest extends TestCase
     protected function baseQuery($mailboxId)
     {
         return Conversation::where('conversations.mailbox_id', $mailboxId);
+    }
+
+    protected function makeUser($mailboxId = null)
+    {
+        $user = factory(User::class)->create(['role' => User::ROLE_USER]);
+        $this->userIds[] = $user->id;
+
+        if ($mailboxId) {
+            $user->mailboxes()->attach($mailboxId);
+        }
+
+        return $user;
     }
 
     /**
@@ -301,5 +335,219 @@ class SortableCustomFieldsTest extends TestCase
         $this->assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt;', $html);
 
         unset($_REQUEST['sorting']);
+    }
+
+    /**
+     * These four hit ColumnPreferencesController directly rather than via a
+     * real HTTP request through the full middleware stack. A real
+     * $this->post() here trips a pre-existing, unrelated environment issue:
+     * ResponseHeaders middleware's header_remove() fails with "headers
+     * already sent" once PHPUnit's own progress-dot printer has written to
+     * stdout — the same reason ConversationChangeCustomerTest.php guards its
+     * HTTP assertions behind `PHP_VERSION_ID >= 80400` (we run tests on
+     * 8.2). Skipping these tests the same way would mean they never
+     * actually run here, so instead they exercise the controller's real
+     * logic — validation, mailbox authorization, upsert — directly. What's
+     * NOT covered this way: that the route itself is guarded by the 'auth'
+     * middleware — checked structurally instead, below.
+     */
+    public function test_route_is_guarded_by_auth_middleware()
+    {
+        $route = \Route::getRoutes()->getByName('sortablecustomfields.columns.save');
+
+        $this->assertNotNull($route);
+        $this->assertContains('auth', $route->middleware());
+    }
+
+    protected function callSaveController($user, array $data)
+    {
+        \Auth::login($user);
+        $request = \Illuminate\Http\Request::create('/sortablecustomfields/columns', 'POST', $data);
+        $request->setUserResolver(function () use ($user) {
+            return $user;
+        });
+
+        $controller = new \Modules\SortableCustomFields\Http\Controllers\ColumnPreferencesController();
+
+        return $controller->save($request);
+    }
+
+    public function test_save_rejects_user_without_mailbox_access()
+    {
+        $mailbox = $this->makeMailbox();
+        $fieldId = $this->makeCustomField($mailbox->id, 'Priority');
+        $outsider = $this->makeUser(); // no mailbox attached
+
+        $this->expectException(\Illuminate\Auth\Access\AuthorizationException::class);
+
+        $this->callSaveController($outsider, [
+            'mailbox_id'      => $mailbox->id,
+            'custom_field_id' => $fieldId,
+            'visible'         => 0,
+            'sortable'        => 1,
+        ]);
+    }
+
+    public function test_save_rejects_custom_field_from_a_different_mailbox()
+    {
+        $mailboxA = $this->makeMailbox();
+        $mailboxB = $this->makeMailbox();
+        $fieldOnB = $this->makeCustomField($mailboxB->id, 'Category');
+        $user = $this->makeUser($mailboxA->id);
+
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class);
+
+        $this->callSaveController($user, [
+            'mailbox_id'      => $mailboxA->id,
+            'custom_field_id' => $fieldOnB,
+            'visible'         => 0,
+            'sortable'        => 1,
+        ]);
+    }
+
+    public function test_save_upserts_preference()
+    {
+        $mailbox = $this->makeMailbox();
+        $fieldId = $this->makeCustomField($mailbox->id, 'Priority');
+        $user = $this->makeUser($mailbox->id);
+
+        $response = $this->callSaveController($user, [
+            'mailbox_id'      => $mailbox->id,
+            'custom_field_id' => $fieldId,
+            'visible'         => 0,
+            'sortable'        => 1,
+        ]);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(1, \DB::table('sortablecustomfields_user_columns')->count());
+        $row = \DB::table('sortablecustomfields_user_columns')->first();
+        $this->assertSame(0, (int) $row->visible);
+
+        // Posting again for the same user/mailbox/field updates the existing
+        // row (unique constraint) rather than creating a second one.
+        $this->callSaveController($user, [
+            'mailbox_id'      => $mailbox->id,
+            'custom_field_id' => $fieldId,
+            'visible'         => 1,
+            'sortable'        => 0,
+        ]);
+
+        $this->assertSame(1, \DB::table('sortablecustomfields_user_columns')->count());
+        $row = \DB::table('sortablecustomfields_user_columns')->first();
+        $this->assertSame(1, (int) $row->visible);
+        $this->assertSame(0, (int) $row->sortable);
+    }
+
+    public function test_hidden_field_is_skipped_in_col_th_td_for_that_user()
+    {
+        $mailbox = $this->makeMailbox();
+        $folder = $this->makeFolder($mailbox->id);
+        $fieldId = $this->makeCustomField($mailbox->id, 'Priority');
+        $user = $this->makeUser($mailbox->id);
+
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $fieldId, [
+            'visible' => false, 'sortable' => true,
+        ]);
+
+        $this->actingAs($user);
+        request()->merge(['mailbox_id' => $mailbox->id]);
+
+        $colHtml = $this->captureEventyAction('conversations_table.col_before_conv_number', null);
+        $thHtml = $this->captureEventyAction('conversations_table.th_before_conv_number');
+
+        $this->assertStringNotContainsString('conv-priority', $colHtml);
+        $this->assertStringNotContainsString('Priority', $thHtml);
+
+        // A different, unauthenticated context (or another user with no
+        // preference row) still gets the default: visible.
+        \Auth::logout();
+        $colHtmlDefault = $this->captureEventyAction('conversations_table.col_before_conv_number', null);
+        $this->assertStringContainsString('conv-priority', $colHtmlDefault);
+    }
+
+    public function test_non_sortable_preference_renders_static_header()
+    {
+        $mailbox = $this->makeMailbox();
+        $fieldId = $this->makeCustomField($mailbox->id, 'Priority');
+        $user = $this->makeUser($mailbox->id);
+
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $fieldId, [
+            'visible' => true, 'sortable' => false,
+        ]);
+
+        $this->actingAs($user);
+        request()->merge(['mailbox_id' => $mailbox->id]);
+
+        $thHtml = $this->captureEventyAction('conversations_table.th_before_conv_number');
+
+        $this->assertStringContainsString('Priority', $thHtml);
+        $this->assertStringNotContainsString('data-sort-by', $thHtml);
+        $this->assertStringContainsString('custom-field-th-static', $thHtml);
+    }
+
+    /**
+     * The sort filter itself must also respect sortable=false — a user
+     * turning sorting off for a field should stop it from being sortable
+     * server-side too, not just hide the clickable header client-side.
+     */
+    public function test_sort_filter_ignores_field_the_user_marked_non_sortable()
+    {
+        $mailbox = $this->makeMailbox();
+        $folder = $this->makeFolder($mailbox->id);
+        $fieldId = $this->makeCustomField($mailbox->id, 'Priority');
+        $user = $this->makeUser($mailbox->id);
+
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $fieldId, [
+            'visible' => true, 'sortable' => false,
+        ]);
+
+        $this->actingAs($user);
+        $_REQUEST['sorting'] = ['sort_by' => 'custom_priority', 'order' => 'asc'];
+
+        $base = $this->baseQuery($mailbox->id);
+        $baseSql = $base->toSql();
+
+        $filtered = \Eventy::filter('folder.conversations_query', $this->baseQuery($mailbox->id), $folder, 1);
+
+        $this->assertSame($baseSql, $filtered->toSql());
+
+        unset($_REQUEST['sorting']);
+    }
+
+    public function test_toolbar_reflects_hidden_count_and_toggle_state()
+    {
+        $mailbox = $this->makeMailbox();
+        $folder = $this->makeFolder($mailbox->id);
+        $this->makeCustomField($mailbox->id, 'Priority');
+        $hiddenFieldId = $this->makeCustomField($mailbox->id, 'Category');
+        $user = $this->makeUser($mailbox->id);
+
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $hiddenFieldId, [
+            'visible' => false, 'sortable' => true,
+        ]);
+
+        $this->actingAs($user);
+
+        $html = $this->captureEventyAction('conversations_table.toolbar', $folder);
+
+        $this->assertStringContainsString('scf-hidden-badge', $html);
+        $this->assertMatchesRegularExpression('/scf-hidden-badge">1</', $html);
+        $this->assertStringContainsString('Priority', $html);
+        $this->assertStringContainsString('Category', $html);
+
+        // The hidden field's own <li> row must not carry "checked".
+        $rowStart = strpos($html, 'data-custom_field_id="'.$hiddenFieldId.'"');
+        $this->assertNotFalse($rowStart);
+        $rowEnd = strpos($html, '</li>', $rowStart);
+        $row = substr($html, $rowStart, $rowEnd - $rowStart);
+        $this->assertStringNotContainsString('checked', $row);
+    }
+
+    protected function captureEventyAction($hook, ...$args)
+    {
+        ob_start();
+        \Eventy::action($hook, ...$args);
+
+        return ob_get_clean();
     }
 }

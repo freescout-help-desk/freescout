@@ -68,6 +68,11 @@
         @include('/conversations/partials/bulk_actions')
     {{--@endif--}}
 
+    {{-- threls fork patch: always-visible toolbar slot (unlike bulk_actions above,
+         which core only shows once rows are selected). Used by SortableCustomFields
+         for its column-visibility control. --}}
+    @action('conversations_table.toolbar', $folder ?? null)
+
     <table class="table-conversations table @if (!empty($params['show_mailbox']))show-mailbox @endif" data-page="{{ (int)request()->get('page', 1) }}" @foreach ($params as $param_name => $param_value) data-param_{{ $param_name }}="{{ $param_value }}" @endforeach @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif @foreach ($sorting as $sorting_name => $sorting_value) data-sorting_{{ $sorting_name }}="{{ $sorting_value }}" @endforeach >
         <colgroup>
             {{-- todo: without this column table becomes not 100% wide --}}
