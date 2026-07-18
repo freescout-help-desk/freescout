@@ -59,6 +59,22 @@ $(document).ready(function() {
 		}
 	}
 
+	// loadConversations() (used by every core sort-header/pagination click,
+	// not just our own toggle-triggered refresh) re-renders the *entire*
+	// conversations_table.blade.php partial via AJAX
+	// (ConversationsController::ajaxConversationsPagination), but the client
+	// only ever replaces the <table> itself:
+	// public/js/main.js -> $(".table-conversations:first").replaceWith(...).
+	// Since our toolbar now lives in that same partial, every such refresh
+	// inserts a fresh copy without removing the old one. Prune down to the
+	// most recently inserted one after any AJAX call completes.
+	$(document).ajaxComplete(function () {
+		var controls = $('.scf-columns-control');
+		if (controls.length > 1) {
+			controls.slice(0, -1).remove();
+		}
+	});
+
 	$(document).on('change', '.scf-visible-toggle', function() {
 		var checkbox = $(this);
 		var control = checkbox.closest('.scf-columns-control');

@@ -334,11 +334,10 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
                                 $sortable = $this->isSortableForUser($custom_field, $preferences);
                                 $slug = self::createSlug($custom_field->name, '_');
                             ?>
+                            <?php $checkboxId = 'scf-visible-'.(int) $custom_field->id; ?>
                             <li class="scf-columns-row" data-custom_field_id="<?= (int) $custom_field->id ?>" data-slug="<?= $slug ?>">
-                                <label class="scf-columns-checkbox">
-                                    <input type="checkbox" class="scf-visible-toggle magic-checkbox" <?= $visible ? 'checked' : '' ?>>
-                                    <span><?= e($custom_field->name) ?></span>
-                                </label>
+                                <input type="checkbox" id="<?= $checkboxId ?>" class="scf-visible-toggle magic-checkbox" <?= $visible ? 'checked' : '' ?>>
+                                <label for="<?= $checkboxId ?>" class="scf-columns-checkbox"><?= e($custom_field->name) ?></label>
                                 <button type="button" class="scf-sortable-toggle<?= $sortable ? ' is-active' : '' ?>" <?= $visible ? '' : 'disabled' ?> aria-pressed="<?= $sortable ? 'true' : 'false' ?>" title="<?= $sortable ? __('Sortable — click to make static') : __('Not sortable — click to allow sorting') ?>">
                                     <span class="glyphicon glyphicon-sort"></span>
                                 </button>

@@ -533,6 +533,15 @@ class SortableCustomFieldsTest extends TestCase
         $rowEnd = strpos($html, '</li>', $rowStart);
         $row = substr($html, $rowStart, $rowEnd - $rowStart);
         $this->assertStringNotContainsString('checked', $row);
+
+        // FreeScout's magic-checkbox CSS only draws the checkbox via an
+        // adjacent-sibling selector (.magic-checkbox+label) — a label
+        // wrapping the input instead renders nothing visible at all. Assert
+        // the actual sibling structure, not just presence of the classes.
+        $this->assertMatchesRegularExpression(
+            '/<input type="checkbox" id="(scf-visible-\d+)" class="scf-visible-toggle magic-checkbox"[^>]*>\s*<label for="\1"/',
+            $html
+        );
     }
 
     /**
