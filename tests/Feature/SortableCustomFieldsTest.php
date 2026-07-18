@@ -535,6 +535,36 @@ class SortableCustomFieldsTest extends TestCase
         $this->assertStringNotContainsString('checked', $row);
     }
 
+    /**
+     * conversations_table.blade.php is also included from the customer
+     * profile and search views, which don't pass a real $folder — it falls
+     * back to `new App\Folder()` there (mailbox_id never set). Those views'
+     * route param named "id" is something else entirely (e.g. the
+     * customer's id), and could coincidentally match a real mailbox id.
+     * The toolbar must not render at all in that situation rather than
+     * guessing from the request and showing/saving against the wrong
+     * mailbox's fields.
+     */
+    public function test_toolbar_does_not_render_when_folder_has_no_mailbox_id()
+    {
+        $mailbox = $this->makeMailbox();
+        $this->makeCustomField($mailbox->id, 'Priority');
+        $user = $this->makeUser($mailbox->id);
+        $this->actingAs($user);
+
+        // Simulates conversations_table.blade.php's own dummy-folder fallback.
+        $dummyFolder = new Folder();
+        $dummyFolder->type = Folder::TYPE_ASSIGNED;
+
+        // Simulates the customer-profile route's {id} param coincidentally
+        // matching this real mailbox's id.
+        request()->merge(['id' => $mailbox->id]);
+
+        $html = $this->captureEventyAction('conversations_table.toolbar', $dummyFolder);
+
+        $this->assertSame('', $html);
+    }
+
     protected function captureEventyAction($hook, ...$args)
     {
         ob_start();

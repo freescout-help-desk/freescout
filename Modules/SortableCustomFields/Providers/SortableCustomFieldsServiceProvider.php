@@ -284,7 +284,18 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
                 return;
             }
 
-            $mailbox_id = ($folder->mailbox_id ?? null) ?: (request()->mailbox_id ?? request()->id ?? 0);
+            // Deliberately no request()->id fallback here (unlike the sort
+            // filter/col/th hooks): conversations_table.blade.php is also
+            // included from the customer profile and search views, neither of
+            // which pass a real $folder — it falls back to a dummy Folder
+            // with no mailbox_id there. request()->id in those contexts is
+            // some other route param entirely (e.g. the customer's id on
+            // /customers/{id}/), not a mailbox id, and could coincidentally
+            // match a real mailbox — showing/saving against the wrong
+            // mailbox's fields. A genuine mailbox view always sets
+            // $folder->mailbox_id, so trusting only that is both simpler and
+            // correct.
+            $mailbox_id = $folder->mailbox_id ?? null;
             if (!$mailbox_id) {
                 return;
             }
