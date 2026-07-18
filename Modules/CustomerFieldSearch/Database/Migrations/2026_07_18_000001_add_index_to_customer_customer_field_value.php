@@ -22,19 +22,24 @@ class AddIndexToCustomerCustomerFieldValue extends Migration
         }
 
         $table = DB::getTablePrefix().'customer_customer_field';
+        // Postgres index names are schema-scoped, not table-scoped — prefix
+        // it the same way the table itself is prefixed, so a second
+        // differently-prefixed FreeScout install sharing the same schema
+        // can't collide with this one.
+        $index = DB::getTablePrefix().self::INDEX_NAME;
 
         if (\Helper::isPgSql()) {
-            if (!$this->pgIndexExists(self::INDEX_NAME)) {
+            if (!$this->pgIndexExists($index)) {
                 // text_pattern_ops makes a prefix LIKE ('value%') sargable on
                 // Postgres, which a plain btree index on a text column is not.
-                DB::statement('CREATE INDEX '.self::INDEX_NAME.' ON '.$table.' (value text_pattern_ops)');
+                DB::statement('CREATE INDEX '.$index.' ON '.$table.' (value text_pattern_ops)');
             }
         } else {
-            if (!$this->mysqlIndexExists($table)) {
+            if (!$this->mysqlIndexExists($table, $index)) {
                 // value is a TEXT column — MySQL requires a prefix length to
                 // index it. 40 chars comfortably covers account numbers/ID
                 // card numbers while keeping the index small at 100k+ rows.
-                DB::statement('ALTER TABLE '.$table.' ADD INDEX '.self::INDEX_NAME.' (value(40))');
+                DB::statement('ALTER TABLE '.$table.' ADD INDEX '.$index.' (value(40))');
             }
         }
     }
@@ -51,21 +56,22 @@ class AddIndexToCustomerCustomerFieldValue extends Migration
         }
 
         $table = DB::getTablePrefix().'customer_customer_field';
+        $index = DB::getTablePrefix().self::INDEX_NAME;
 
         if (\Helper::isPgSql()) {
-            if ($this->pgIndexExists(self::INDEX_NAME)) {
-                DB::statement('DROP INDEX '.self::INDEX_NAME);
+            if ($this->pgIndexExists($index)) {
+                DB::statement('DROP INDEX '.$index);
             }
         } else {
-            if ($this->mysqlIndexExists($table)) {
-                DB::statement('ALTER TABLE '.$table.' DROP INDEX '.self::INDEX_NAME);
+            if ($this->mysqlIndexExists($table, $index)) {
+                DB::statement('ALTER TABLE '.$table.' DROP INDEX '.$index);
             }
         }
     }
 
-    protected function mysqlIndexExists($table)
+    protected function mysqlIndexExists($table, $indexName)
     {
-        $rows = DB::select('SHOW INDEX FROM '.$table.' WHERE Key_name = ?', [self::INDEX_NAME]);
+        $rows = DB::select('SHOW INDEX FROM '.$table.' WHERE Key_name = ?', [$indexName]);
 
         return count($rows) > 0;
     }

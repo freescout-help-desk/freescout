@@ -2,6 +2,7 @@
 
 namespace Modules\CustomerFieldSearch\Providers;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -74,10 +75,13 @@ class CustomerFieldSearchServiceProvider extends ServiceProvider
             return $query;
         }
 
+        // No manual case-folding here: LIKE/ILIKE already respect the
+        // column's collation, and the rest of ajaxSearch()'s own native
+        // matching (name/email/phone) doesn't lowercase the search term
+        // either — folding it here would actually break matching against a
+        // case-sensitive collation, since the column value itself isn't
+        // lowered.
         $value = $this->likeEscape($q);
-        if ($like_op !== 'ilike') {
-            $value = mb_strtolower($value);
-        }
 
         $query->orWhereExists(function ($sub) use ($customerIdColumn, $value, $like_op) {
             $sub->select(DB::raw(1))
@@ -99,9 +103,19 @@ class CustomerFieldSearchServiceProvider extends ServiceProvider
         return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
     }
 
+    /**
+     * This fires on every search keystroke, so a raw Schema::hasTable() call
+     * (an information_schema/pg_catalog query) on every request adds up.
+     * Cached with a bounded TTL rather than forever — the table only
+     * appears/disappears when the Crm module is installed/uninstalled, a
+     * rare event, but a permanent cache could go stale if that happens
+     * without an app-level cache clear in between.
+     */
     protected function customerFieldTableExists()
     {
-        return Schema::hasTable(self::TABLE);
+        return Cache::remember('customerfieldsearch.table_exists', now()->addMinutes(15), function () {
+            return Schema::hasTable(self::TABLE);
+        });
     }
 
     /**

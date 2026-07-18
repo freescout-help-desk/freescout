@@ -563,11 +563,12 @@ class CustomerFieldSearchTest extends TestCase
         $migration->up();
 
         $table = \DB::getTablePrefix().'customer_customer_field';
+        $index = \DB::getTablePrefix().'customer_customer_field_value_idx';
 
         if (\Helper::isPgSql()) {
-            $rows = \DB::select('SELECT 1 FROM pg_indexes WHERE indexname = ?', ['customer_customer_field_value_idx']);
+            $rows = \DB::select('SELECT 1 FROM pg_indexes WHERE indexname = ?', [$index]);
         } else {
-            $rows = \DB::select('SHOW INDEX FROM '.$table.' WHERE Key_name = ?', ['customer_customer_field_value_idx']);
+            $rows = \DB::select('SHOW INDEX FROM '.$table.' WHERE Key_name = ?', [$index]);
         }
 
         $this->assertNotEmpty($rows);
