@@ -51,12 +51,16 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
         // Fixed by resolving the request's slug against this mailbox's real
         // CustomField names first (untrusted input never reaches SQL) and
         // building the join/alias only from that trusted, already-slugged value.
-        \Eventy::addFilter('folder.conversations_query', function ($query_conversations) {
+        \Eventy::addFilter('folder.conversations_query', function ($query_conversations, $folder = null) {
 
-            if (isset($_REQUEST['sorting']['sort_by']) && strpos($_REQUEST['sorting']['sort_by'], 'custom_') === 0) {
+            if (isset($_REQUEST['sorting']['sort_by']) && is_string($_REQUEST['sorting']['sort_by']) && strpos($_REQUEST['sorting']['sort_by'], 'custom_') === 0) {
                 $requestedSlug = str_replace('custom_', '', $_REQUEST['sorting']['sort_by']);
                 $order = strtolower($_REQUEST['sorting']['order'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
-                $mailbox_id = request()->mailbox_id ?? request()->id ?? 0;
+                // Conversation::getQueryByFolder() always passes $folder here — use its
+                // mailbox_id directly rather than guessing from the request, which the
+                // rest of this module does (fragile: relies on the URL always carrying
+                // an `id`/`mailbox_id` param).
+                $mailbox_id = $folder->mailbox_id ?? (request()->mailbox_id ?? request()->id ?? 0);
 
                 $sortField = null;
                 if ($mailbox_id) {
@@ -113,11 +117,14 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
         \Eventy::addAction('conversations_table.th_before_conv_number', function () {
             $sorting=['sort_by'=>'date','order'=>'asc'];
 
-            if ( isset($_REQUEST['sorting'])){  
+            if (isset($_REQUEST['sorting']) && is_string($_REQUEST['sorting']['sort_by'] ?? null)) {
                 $sorting['sort_by'] = request()->sorting['sort_by'];
-                $sorting['order'] = request()->sorting['order'];
-              
-
+                // threls fork patch: $sorting['order'] is echoed into a data-order
+                // attribute below — normalize to a strict asc/desc enum here so an
+                // attacker-controlled value can never break out of the attribute
+                // (was reflected unescaped, a stored/reflected XSS via the sort
+                // param).
+                $sorting['order'] = strtolower((string) (request()->sorting['order'] ?? '')) === 'desc' ? 'desc' : 'asc';
             }
           
             $mailbox_id = request()->mailbox_id ?? request()->id ?? 0;
