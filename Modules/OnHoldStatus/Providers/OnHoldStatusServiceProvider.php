@@ -121,5 +121,11 @@ class OnHoldStatusServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        // ARMS-26: makes On-Hold selectable in the Workflows module's Status
+        // condition/action — see the command's own docblock for why this
+        // needs a runtime patch rather than an Eventy hook.
+        $this->commands([
+            \Modules\OnHoldStatus\Console\PatchWorkflowsStatuses::class,
+        ]);
     }
 }

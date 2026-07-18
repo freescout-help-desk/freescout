@@ -36,6 +36,46 @@ Two filters were added to core on the threls fork (grep for
 When merging upstream FreeScout releases into the fork, verify all four
 patched call sites survived.
 
+## On-Hold in Workflows (ARMS-26)
+
+On-Hold doesn't show up as a Workflow condition ("Status is equal to...") or
+action ("Change Status to...") by default — the paid Workflows module
+hardcodes the four core statuses as PHP array literals in
+`Modules/Workflows/Entities/Workflow.php` and exposes no Eventy hook to
+extend them, unlike core (which this module already answers via the two
+filters above).
+
+Workflows is a paid, runtime-installed module and — unlike this one — is
+**not tracked by this repo's git** (`.gitignore`'s blanket `/Modules/*` rule
+has no allowlist entry for it). A hand-edit to its file would be invisible
+to git and silently wiped by the next Workflows update or reinstall. So
+instead of editing it directly, `php artisan onholdstatus:patch-workflows`
+(registered by this module, `Console/PatchWorkflowsStatuses.php`) patches it
+programmatically:
+
+- **Idempotent** — a no-op if the On-Hold entry is already present, safe to
+  run on every deploy
+- **Guarded** — before writing anything, it checks the target text appears
+  exactly twice (once for the condition, once for the action); if Workflows
+  has changed shape since this was written, it refuses to modify the file
+  and exits non-zero rather than guessing
+- **Backed up** — writes `Workflow.php.bak` before any change
+- **Reversible** — `php artisan onholdstatus:patch-workflows --revert`
+  removes the entry again
+- **No-ops cleanly** if Workflows isn't installed at all
+
+Add `$FORGE_PHP artisan onholdstatus:patch-workflows` to the deploy script
+(after `artisan migrate --force` is a natural spot) so it self-heals after
+every Workflows module update, the same way migrations already do.
+
+The patch's exact expected text was transcribed from a live-server
+terminal paste, not verified byte-for-byte against the file — the
+occurrence-count guard above is what protects the real file if that
+transcription turns out to be slightly off (it'll just refuse to patch and
+report a count other than 2, rather than corrupting anything). **Run it
+once manually on the demo server and check the output before wiring it into
+the automatic deploy step.**
+
 ## Activation
 
 Manage → Modules → OnHoldStatus → Activate (or `php artisan freescout:module-install onholdstatus`
