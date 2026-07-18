@@ -379,6 +379,14 @@ class SortableCustomFieldsTest extends TestCase
         $this->assertContains('auth', $route->middleware());
     }
 
+    public function test_reset_route_is_guarded_by_auth_middleware()
+    {
+        $route = \Route::getRoutes()->getByName('sortablecustomfields.columns.reset');
+
+        $this->assertNotNull($route);
+        $this->assertContains('auth', $route->middleware());
+    }
+
     protected function callSaveController($user, array $data)
     {
         \Auth::login($user);
@@ -456,6 +464,76 @@ class SortableCustomFieldsTest extends TestCase
         $row = \DB::table('sortablecustomfields_user_columns')->first();
         $this->assertSame(1, (int) $row->visible);
         $this->assertSame(0, (int) $row->sortable);
+    }
+
+    protected function callResetController($user, array $data)
+    {
+        \Auth::login($user);
+        $request = \Illuminate\Http\Request::create('/sortablecustomfields/columns/reset', 'POST', $data);
+        $request->setUserResolver(function () use ($user) {
+            return $user;
+        });
+
+        $controller = new \Modules\SortableCustomFields\Http\Controllers\ColumnPreferencesController();
+
+        return $controller->reset($request);
+    }
+
+    public function test_reset_rejects_user_without_mailbox_access()
+    {
+        $mailbox = $this->makeMailbox();
+        $outsider = $this->makeUser(); // no mailbox attached
+
+        $this->expectException(\Illuminate\Auth\Access\AuthorizationException::class);
+
+        $this->callResetController($outsider, ['mailbox_id' => $mailbox->id]);
+    }
+
+    /**
+     * The bulk-delete replaces the old per-field save() loop this endpoint
+     * was added to avoid — proves it actually clears saved preferences
+     * (both visible and hidden ones) rather than just returning success.
+     */
+    public function test_reset_deletes_all_preferences_for_user_and_mailbox()
+    {
+        $mailbox = $this->makeMailbox();
+        $fieldA = $this->makeCustomField($mailbox->id, 'Priority');
+        $fieldB = $this->makeCustomField($mailbox->id, 'Category');
+        $user = $this->makeUser($mailbox->id);
+
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $fieldA, ['visible' => true, 'sortable' => true]);
+        UserColumnPreference::setPreference($user->id, $mailbox->id, $fieldB, ['visible' => false, 'sortable' => false]);
+        $this->assertSame(2, \DB::table('sortablecustomfields_user_columns')->count());
+
+        $response = $this->callResetController($user, ['mailbox_id' => $mailbox->id]);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(0, \DB::table('sortablecustomfields_user_columns')->count());
+    }
+
+    /**
+     * A reset for one mailbox must not touch another user's (or the same
+     * user's other mailbox's) saved preferences.
+     */
+    public function test_reset_only_clears_the_requested_users_mailbox()
+    {
+        $mailboxA = $this->makeMailbox();
+        $mailboxB = $this->makeMailbox();
+        $fieldA = $this->makeCustomField($mailboxA->id, 'Priority');
+        $fieldB = $this->makeCustomField($mailboxB->id, 'Priority');
+        $user = $this->makeUser($mailboxA->id);
+        $user->mailboxes()->attach($mailboxB->id);
+        $otherUser = $this->makeUser($mailboxA->id);
+
+        UserColumnPreference::setPreference($user->id, $mailboxA->id, $fieldA, ['visible' => true, 'sortable' => true]);
+        UserColumnPreference::setPreference($user->id, $mailboxB->id, $fieldB, ['visible' => true, 'sortable' => true]);
+        UserColumnPreference::setPreference($otherUser->id, $mailboxA->id, $fieldA, ['visible' => true, 'sortable' => true]);
+
+        $this->callResetController($user, ['mailbox_id' => $mailboxA->id]);
+
+        $this->assertSame(0, UserColumnPreference::forUserMailbox($user->id, $mailboxA->id)->count());
+        $this->assertSame(1, UserColumnPreference::forUserMailbox($user->id, $mailboxB->id)->count());
+        $this->assertSame(1, UserColumnPreference::forUserMailbox($otherUser->id, $mailboxA->id)->count());
     }
 
     /**

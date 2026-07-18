@@ -36,6 +36,11 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
             'Modules\SortableCustomFields\Http\Controllers\ColumnPreferencesController@save'
         )->name('sortablecustomfields.columns.save');
 
+        \Route::middleware(['web', 'auth'])->post(
+            'sortablecustomfields/columns/reset',
+            'Modules\SortableCustomFields\Http\Controllers\ColumnPreferencesController@reset'
+        )->name('sortablecustomfields.columns.reset');
+
         // This fork's RouteCollection only refreshes its name -> route index
         // once, at the end of the app's normal route-loading pass. A module
         // provider's boot() runs after that pass, so route('...') on a route
@@ -356,7 +361,7 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
 
             ob_start();
             ?>
-            <div class="scf-columns-control" data-mailbox_id="<?= (int) $mailbox_id ?>" data-save-url="<?= route('sortablecustomfields.columns.save') ?>">
+            <div class="scf-columns-control" data-mailbox_id="<?= (int) $mailbox_id ?>" data-save-url="<?= route('sortablecustomfields.columns.save') ?>" data-reset-url="<?= route('sortablecustomfields.columns.reset') ?>">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default scf-columns-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="<?= __('Columns') ?>">
                         <span class="glyphicon glyphicon-list-alt"></span>

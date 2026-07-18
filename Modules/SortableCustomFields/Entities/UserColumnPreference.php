@@ -17,8 +17,8 @@ class UserColumnPreference extends Model
 
     /**
      * Preferences for a user's mailbox, keyed by custom_field_id. Absent
-     * keys mean "visible and sortable" — the caller should default to that
-     * rather than treating a missing entry as hidden.
+     * keys mean "hidden and not sortable" (opt-in) — the caller should
+     * default to that rather than treating a missing entry as visible.
      */
     public static function forUserMailbox($userId, $mailboxId)
     {
@@ -34,5 +34,18 @@ class UserColumnPreference extends Model
             ['user_id' => $userId, 'mailbox_id' => $mailboxId, 'custom_field_id' => $customFieldId],
             $attributes
         );
+    }
+
+    /**
+     * Resets to the default (hidden, not sortable) by removing saved
+     * preferences entirely, rather than writing an explicit false/false row
+     * per field — the default already means "no row", so writing one would
+     * just be redundant storage for the same effective state.
+     */
+    public static function resetForUserMailbox($userId, $mailboxId)
+    {
+        return static::where('user_id', $userId)
+            ->where('mailbox_id', $mailboxId)
+            ->delete();
     }
 }

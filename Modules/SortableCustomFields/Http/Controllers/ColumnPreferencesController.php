@@ -44,4 +44,28 @@ class ColumnPreferencesController extends Controller
 
         return response()->json(['status' => 'success']);
     }
+
+    /**
+     * Resets every field back to the default (hidden, not sortable) for
+     * this user/mailbox in one request — a single delete rather than one
+     * save() call per field, which would otherwise fire N concurrent
+     * requests and write N redundant rows for a state the absence of a row
+     * already represents.
+     */
+    public function reset(Request $request)
+    {
+        $data = $request->validate([
+            'mailbox_id' => 'required|integer',
+        ]);
+
+        $mailbox = Mailbox::find($data['mailbox_id']);
+        if (!$mailbox) {
+            abort(404);
+        }
+        $this->authorize('view', $mailbox);
+
+        UserColumnPreference::resetForUserMailbox($request->user()->id, $data['mailbox_id']);
+
+        return response()->json(['status' => 'success']);
+    }
 }
