@@ -16,18 +16,20 @@ tr.cf-conv-row.conv-row {
 }
 
 
-th.custom-field-th {
-    width:10%;
-}
+/* Deliberately no fixed width here (unlike upstream's original 10%/5%).
+   .table-conversations uses table-layout: fixed (core style.css), where
+   space not claimed by an explicit width is split evenly among columns
+   that don't have one. A hardcoded width reserves that space even when
+   the column is hidden (Columns control) — nothing reclaims it, leaving a
+   dead gap next to Conversation. Leaving these unset means Conversation
+   (also unset) picks up whatever's freed automatically. */
 
-td.custom-field-td {
-    width:5%;
-}
-
-/* threls fork patch addition: the "Columns" control. */
+/* threls fork patch addition: the "Columns" control. Right-aligned above
+   the table, the conventional spot for a column-visibility control. */
 .scf-columns-control {
-    display: inline-block;
-    margin-left: 8px;
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 8px;
 }
 
 .scf-columns-btn .scf-hidden-badge {
