@@ -189,7 +189,7 @@ class SortableCustomFieldsTest extends TestCase
         ];
 
         foreach ($maliciousPayloads as $payload) {
-            $_REQUEST['sorting'] = ['sort_by' => $payload, 'order' => 'asc'];
+            request()->merge(['sorting' => ['sort_by' => $payload, 'order' => 'asc']]);
 
             $base = $this->baseQuery($mailbox->id);
             $baseSql = $base->toSql();
@@ -200,8 +200,6 @@ class SortableCustomFieldsTest extends TestCase
             $this->assertStringNotContainsString('UNION', $filtered->toSql());
             $this->assertStringNotContainsString($payload, $filtered->toSql());
         }
-
-        unset($_REQUEST['sorting']);
     }
 
     /**
@@ -227,8 +225,10 @@ class SortableCustomFieldsTest extends TestCase
         $this->makeCustomField($mailboxB->id, 'Category');
 
         // Conflicting request-derived mailbox id (mailboxB) — $folder must win.
-        request()->merge(['mailbox_id' => $mailboxB->id]);
-        $_REQUEST['sorting'] = ['sort_by' => 'custom_priority', 'order' => 'desc'];
+        request()->merge([
+            'mailbox_id' => $mailboxB->id,
+            'sorting'    => ['sort_by' => 'custom_priority', 'order' => 'desc'],
+        ]);
 
         $query = \Eventy::filter('folder.conversations_query', $this->baseQuery($mailboxA->id), $folderA, 1);
 
@@ -237,8 +237,6 @@ class SortableCustomFieldsTest extends TestCase
         $this->assertStringContainsString('sort_priority', $sql);
         $this->assertStringContainsString('order by', strtolower($sql));
         $this->assertStringContainsString('desc', strtolower($sql));
-
-        unset($_REQUEST['sorting']);
     }
 
     /**
@@ -260,7 +258,7 @@ class SortableCustomFieldsTest extends TestCase
         $this->setCustomFieldValue($high->id, $fieldId, 'High');
         $this->setCustomFieldValue($medium->id, $fieldId, 'Medium');
 
-        $_REQUEST['sorting'] = ['sort_by' => 'custom_priority', 'order' => 'asc'];
+        request()->merge(['sorting' => ['sort_by' => 'custom_priority', 'order' => 'asc']]);
 
         $results = \Eventy::filter('folder.conversations_query', $this->baseQuery($mailbox->id), $folder, 1)->get();
 
@@ -290,13 +288,11 @@ class SortableCustomFieldsTest extends TestCase
         $folder = $this->makeFolder($mailbox->id);
         $this->makeCustomField($mailbox->id, 'Priority');
 
-        $_REQUEST['sorting'] = ['sort_by' => ['custom_priority'], 'order' => ['asc']];
+        request()->merge(['sorting' => ['sort_by' => ['custom_priority'], 'order' => ['asc']]]);
 
         $filtered = \Eventy::filter('folder.conversations_query', $this->baseQuery($mailbox->id), $folder, 1);
 
         $this->assertNotNull($filtered);
-
-        unset($_REQUEST['sorting']);
     }
 
     /**
@@ -319,10 +315,10 @@ class SortableCustomFieldsTest extends TestCase
             'sort_by' => 'custom_'.$slug,
             'order'   => '"><script>alert(document.cookie)</script>',
         ];
-        // th_before_conv_number reads request()->sorting (the bound Request
-        // object), not the raw superglobal — merge() so it actually sees it.
+        // th_before_conv_number reads request()->input('sorting...') (the
+        // bound Request object), not the raw superglobal — merge() so it
+        // actually sees it.
         request()->merge(['mailbox_id' => $mailbox->id, 'sorting' => $sorting]);
-        $_REQUEST['sorting'] = $sorting;
 
         ob_start();
         \Eventy::action('conversations_table.th_before_conv_number');
@@ -333,8 +329,6 @@ class SortableCustomFieldsTest extends TestCase
 
         $this->assertStringNotContainsString('<script>alert(1)</script>', $html);
         $this->assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt;', $html);
-
-        unset($_REQUEST['sorting']);
     }
 
     /**
@@ -502,7 +496,7 @@ class SortableCustomFieldsTest extends TestCase
         ]);
 
         $this->actingAs($user);
-        $_REQUEST['sorting'] = ['sort_by' => 'custom_priority', 'order' => 'asc'];
+        request()->merge(['sorting' => ['sort_by' => 'custom_priority', 'order' => 'asc']]);
 
         $base = $this->baseQuery($mailbox->id);
         $baseSql = $base->toSql();
@@ -510,8 +504,6 @@ class SortableCustomFieldsTest extends TestCase
         $filtered = \Eventy::filter('folder.conversations_query', $this->baseQuery($mailbox->id), $folder, 1);
 
         $this->assertSame($baseSql, $filtered->toSql());
-
-        unset($_REQUEST['sorting']);
     }
 
     public function test_toolbar_reflects_hidden_count_and_toggle_state()

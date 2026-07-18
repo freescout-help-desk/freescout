@@ -101,9 +101,10 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
         // building the join/alias only from that trusted, already-slugged value.
         \Eventy::addFilter('folder.conversations_query', function ($query_conversations, $folder = null) {
 
-            if (isset($_REQUEST['sorting']['sort_by']) && is_string($_REQUEST['sorting']['sort_by']) && strpos($_REQUEST['sorting']['sort_by'], 'custom_') === 0) {
-                $requestedSlug = str_replace('custom_', '', $_REQUEST['sorting']['sort_by']);
-                $order = strtolower($_REQUEST['sorting']['order'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
+            $sortBy = request()->input('sorting.sort_by');
+            if (is_string($sortBy) && strpos($sortBy, 'custom_') === 0) {
+                $requestedSlug = str_replace('custom_', '', $sortBy);
+                $order = strtolower((string) (request()->input('sorting.order') ?? 'asc')) === 'desc' ? 'desc' : 'asc';
                 // Conversation::getQueryByFolder() always passes $folder here — use its
                 // mailbox_id directly rather than guessing from the request, which the
                 // rest of this module does (fragile: relies on the URL always carrying
@@ -112,9 +113,12 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
 
                 $sortField = null;
                 if ($mailbox_id) {
+                    // distinct('name') alone would compile to SELECT DISTINCT *
+                    // (id is always unique, so it never actually dedupes) —
+                    // dedup at the collection level instead.
                     $sortField = CustomField::where('mailbox_id', $mailbox_id)
-                        ->distinct('name')
                         ->get()
+                        ->unique('name')
                         ->first(function ($customField) use ($requestedSlug) {
                             return self::createSlug($customField->name, '_') === $requestedSlug;
                         });
@@ -130,8 +134,16 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
                 if ($sortField) {
                     $quotedName = \DB::connection()->getPdo()->quote($sortField->name);
                     $alias = 'sort_'.self::createSlug($sortField->name, '_');
+                    // Table names inside DB::raw() bypass the query builder's own
+                    // prefixing, so they need it applied manually (same pattern as
+                    // app/Conversation.php's raw CONCAT()/customers queries).
+                    $prefix = \DB::getTablePrefix();
+                    $joinSql = '(select '.$prefix.'conversation_custom_field.custom_field_id, '.$prefix.'conversation_custom_field.conversation_id, '.$prefix.'conversation_custom_field.value, '.$prefix.'custom_fields.name'
+                        .' from '.$prefix.'conversation_custom_field'
+                        .' left join '.$prefix.'custom_fields on '.$prefix.'conversation_custom_field.custom_field_id = '.$prefix.'custom_fields.id'
+                        .' where '.$prefix.'custom_fields.name = '.$quotedName.') a';
 
-                    $query_conversations = $query_conversations->leftJoin(\DB::raw('(select conversation_custom_field.custom_field_id, conversation_custom_field.conversation_id, conversation_custom_field.value, custom_fields.name from conversation_custom_field left join custom_fields on conversation_custom_field.custom_field_id = custom_fields.id where custom_fields.name = '.$quotedName.') a'), 'a.conversation_id', '=', 'conversations.id');
+                    $query_conversations = $query_conversations->leftJoin(\DB::raw($joinSql), 'a.conversation_id', '=', 'conversations.id');
                     $query_conversations = $query_conversations->selectRaw('conversations.*, a.value as '.$alias);
                     $query_conversations = $query_conversations->orderBy($alias, $order);
                 }
@@ -150,9 +162,12 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
 
             if ($mailbox_id) {
                 $custom_fields = CustomField::where('mailbox_id', $mailbox_id)
-                    // groupBy('name') does not work in PostgreSQL.
-                    ->distinct('name')
-                    ->get();
+                    // groupBy('name') does not work in PostgreSQL; distinct('name')
+                    // alone would compile to SELECT DISTINCT * (id is always
+                    // unique, so it never dedupes) — unique() on the collection
+                    // actually works, and works the same on every DB driver.
+                    ->get()
+                    ->unique('name');
             }
 
             if (isset($custom_fields) && count($custom_fields)) {
@@ -165,12 +180,7 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
                         continue;
                     }
                     $slug = $this->createSlug($custom_field->name, '_');
-                    ob_start()
-                        ?>
-                    <col class="conv-<?= $slug ?>">
-                    <?php
-                    $output = ob_get_clean();
-                    echo $output;
+                    echo '<col class="conv-'.$slug.'">';
                 }
             }
         }, 20, 3);
@@ -178,23 +188,27 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
         \Eventy::addAction('conversations_table.th_before_conv_number', function () {
             $sorting = ['sort_by' => 'date', 'order' => 'asc'];
 
-            if (isset($_REQUEST['sorting']) && is_string($_REQUEST['sorting']['sort_by'] ?? null)) {
-                $sorting['sort_by'] = request()->sorting['sort_by'];
+            $requestSortBy = request()->input('sorting.sort_by');
+            if (is_string($requestSortBy)) {
+                $sorting['sort_by'] = $requestSortBy;
                 // threls fork patch: $sorting['order'] is echoed into a data-order
                 // attribute below — normalize to a strict asc/desc enum here so an
                 // attacker-controlled value can never break out of the attribute
                 // (was reflected unescaped, a stored/reflected XSS via the sort
                 // param).
-                $sorting['order'] = strtolower((string) (request()->sorting['order'] ?? '')) === 'desc' ? 'desc' : 'asc';
+                $sorting['order'] = strtolower((string) (request()->input('sorting.order') ?? '')) === 'desc' ? 'desc' : 'asc';
             }
 
             $mailbox_id = request()->mailbox_id ?? request()->id ?? 0;
 
             if ($mailbox_id) {
                 $custom_fields = CustomField::where('mailbox_id', $mailbox_id)
-                    // groupBy('name') does not work in PostgreSQL.
-                    ->distinct('name')
-                    ->get();
+                    // groupBy('name') does not work in PostgreSQL; distinct('name')
+                    // alone would compile to SELECT DISTINCT * (id is always
+                    // unique, so it never dedupes) — unique() on the collection
+                    // actually works, and works the same on every DB driver.
+                    ->get()
+                    ->unique('name');
             }
 
             if (isset($custom_fields) && count($custom_fields)) {
@@ -208,22 +222,22 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
                     }
                     $slug = $this->createSlug($custom_field->name, '_');
                     $sortable = $this->isSortableForUser($custom_field, $preferences);
-                    ob_start()
-                        ?>
-                    <th class="custom-field-th">
-                        <?php if ($sortable): ?>
-                        <span class="conv-col-sort custom-field-tr" data-sort-by="custom_<?= $slug ?>" data-order="<?= ($sorting['sort_by'] == 'custom_'.$slug) ? $sorting['order'] : 'desc' ?>">
-                            <?= e(__($custom_field->name)) ?>
-                            <?= ($sorting['sort_by'] == 'custom_'.$slug && $sorting['order'] == 'asc') ? '↓' : '' ?>
-                            <?= ($sorting['sort_by'] == 'custom_'.$slug && $sorting['order'] == 'desc') ? '↑' : '' ?>
-                        </span>
-                        <?php else: ?>
-                        <span class="custom-field-tr custom-field-th-static"><?= e(__($custom_field->name)) ?></span>
-                        <?php endif; ?>
-                    </th>
-                    <?php
-                    $output = ob_get_clean();
-                    echo $output;
+                    $label = e(__($custom_field->name));
+
+                    echo '<th class="custom-field-th">';
+                    if ($sortable) {
+                        $orderAttr = ($sorting['sort_by'] == 'custom_'.$slug) ? $sorting['order'] : 'desc';
+                        $arrow = '';
+                        if ($sorting['sort_by'] == 'custom_'.$slug) {
+                            $arrow = $sorting['order'] == 'asc' ? '↓' : ($sorting['order'] == 'desc' ? '↑' : '');
+                        }
+                        echo '<span class="conv-col-sort custom-field-tr" data-sort-by="custom_'.$slug.'" data-order="'.$orderAttr.'">';
+                        echo $label.' '.$arrow;
+                        echo '</span>';
+                    } else {
+                        echo '<span class="custom-field-tr custom-field-th-static">'.$label.'</span>';
+                    }
+                    echo '</th>';
                 }
             }
         }, 20, 3);
@@ -238,14 +252,9 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
                     if (!$this->isVisibleToUser($custom_field, $preferences)) {
                         continue;
                     }
-                    ob_start()
-                        ?>
-                    <td class="custom-field-td <?= $this->createCSSClassForCustomField($custom_field) ?>">
-                    <a href="<?= $conversation->url() ?>" title="<?= __('View conversation') ?>"><?= e($custom_field->getAsText()) ?></a>
-                    </td>
-                    <?php
-                    $output = ob_get_clean();
-                    echo $output;
+                    echo '<td class="custom-field-td '.e($this->createCSSClassForCustomField($custom_field)).'">';
+                    echo '<a href="'.e($conversation->url()).'" title="'.e(__('View conversation')).'">'.e($custom_field->getAsText()).'</a>';
+                    echo '</td>';
                 }
             }
         }, 20, 3);
@@ -282,8 +291,8 @@ class SortableCustomFieldsServiceProvider extends ServiceProvider
 
             $custom_fields = CustomField::where('mailbox_id', $mailbox_id)
                 ->where('show_in_list', true)
-                ->distinct('name')
-                ->get();
+                ->get()
+                ->unique('name');
 
             if (!count($custom_fields)) {
                 return;
