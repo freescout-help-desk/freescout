@@ -1576,6 +1576,12 @@ table.table-conversations td.conv-attachment {
 .table-conversations .conv-date {
     width: 138px;
 }
+/* threls fork patch (ARMS-36): matches .conv-date's width — table-layout is
+   fixed, so an unstyled new column would otherwise take an uneven share of
+   the width redistributed from other columns. */
+.table-conversations .conv-last-reply-at {
+    width: 138px;
+}
 .table.table-conversations tfoot td {
     border: 0;
     color: #7a8da0;
