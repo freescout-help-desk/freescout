@@ -2418,6 +2418,11 @@ class ConversationsController extends Controller
 
                 if ($customer) {
 
+                    if (!$user->can('view', $customer)) {
+                        $response['msg'] = __('Not enough permissions');
+                        break;
+                    }
+
                     $mailbox = Mailbox::find($request->mailbox_id);
 
                     if (!$mailbox || !$mailbox->userHasAccess($user->id)) {
