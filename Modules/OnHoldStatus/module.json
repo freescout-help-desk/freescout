@@ -1,8 +1,8 @@
 {
     "name": "OnHoldStatus",
     "alias": "onholdstatus",
-    "description": "Adds On-Hold as a first-class conversation status (ARMS-12). Registers status code 5 with core via the conversation.status_name filter carried on the threls fork.",
-    "version": "1.0.0",
+    "description": "Adds On-Hold as a first-class conversation status (ARMS-12). Registers status code 5 with core via the conversation.status_name filter carried on the threls fork. Also patches the Workflows module (a separate, non-git-tracked paid module) so On-Hold is selectable as a condition/action (ARMS-26).",
+    "version": "1.1.0",
     "detailsUrl": "",
     "img": "/modules/onholdstatus/img/icon.svg",
     "author": "Threls",
