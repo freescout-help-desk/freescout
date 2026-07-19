@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Conversation;
 use App\Folder;
 use App\Mailbox;
+use App\Thread;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
@@ -180,5 +181,107 @@ class LastReplyAtColumnTest extends TestCase
         $this->assertStringContainsString('Last Replied At', $html);
         $this->assertStringContainsString('conv-last-reply-at', $html);
         $this->assertStringContainsString($conversation->getLastReplyAtHuman(), $html);
+    }
+
+    /**
+     * The cell's tooltip must show the absolute timestamp when there's a
+     * reply, and fall back to the generic "View conversation" title (no
+     * tooltip) when there isn't — found missing during self-review: the
+     * accessor's empty-string handling was unit-tested, but this Blade
+     * conditional wasn't checked at the render level at all.
+     */
+    public function test_table_cell_tooltip_reflects_reply_presence()
+    {
+        $mailbox = $this->makeMailbox();
+        $folder = $this->makeFolder($mailbox->id);
+        $user = $this->makeUser($mailbox->id);
+        $this->actingAs($user);
+
+        $withReply = $this->makeConversation($mailbox->id, $folder->id, '2026-01-01 00:00:00', $user->id);
+        $withoutReply = $this->makeConversation($mailbox->id, $folder->id, null, $user->id);
+
+        $conversations = Conversation::getQueryByFolder($folder, $user->id)->orderBy('conversations.id')->paginate(50);
+
+        $html = view('conversations/conversations_table', [
+            'folder'        => $folder,
+            'conversations' => $conversations,
+            'params'        => [],
+        ])->render();
+
+        $this->assertStringContainsString(
+            'title="'.\App\User::dateFormat($withReply->last_reply_at).'" data-toggle="tooltip"',
+            $html,
+            'a conversation with a reply must show the absolute timestamp on hover'
+        );
+
+        // The no-reply conversation's row must fall back to the generic
+        // title with no tooltip attribute, not an empty/broken title.
+        $rowStart = strpos($html, 'data-conversation_id="'.$withoutReply->id.'"');
+        $this->assertNotFalse($rowStart);
+        $rowEnd = strpos($html, '</tr>', $rowStart);
+        $row = substr($html, $rowStart, $rowEnd - $rowStart);
+
+        $this->assertStringContainsString('conv-last-reply-at', $row);
+        $this->assertStringNotContainsString('data-toggle="tooltip"', $this->lastReplyAtCell($row));
+    }
+
+    /**
+     * Only the conv-last-reply-at <td> in this row, isolated from the
+     * conv-date <td> right before it — both use "View conversation" as a
+     * title in some cases, so asserting against the whole row risks a
+     * false pass/fail from the wrong cell.
+     */
+    protected function lastReplyAtCell($rowHtml)
+    {
+        $start = strpos($rowHtml, 'class="conv-last-reply-at"');
+        $end = strpos($rowHtml, '</td>', $start);
+
+        return substr($rowHtml, $start, $end - $start);
+    }
+
+    /**
+     * Conversation::search() is a structurally different code path from
+     * the folder view (it calls orderBy() directly rather than going
+     * through Folder::getOrderByArray()) — the PR description claims
+     * sorting also works there, so it needs its own proof rather than
+     * relying on the folder-view test above.
+     */
+    public function test_search_sorts_by_last_reply_at()
+    {
+        $mailbox = $this->makeMailbox();
+        $folder = $this->makeFolder($mailbox->id);
+        $user = $this->makeUser($mailbox->id);
+
+        $oldest = $this->makeConversation($mailbox->id, $folder->id, '2026-01-01 00:00:00', $user->id);
+        $newest = $this->makeConversation($mailbox->id, $folder->id, '2026-01-03 00:00:00', $user->id);
+        $middle = $this->makeConversation($mailbox->id, $folder->id, '2026-01-02 00:00:00', $user->id);
+
+        // Conversation::search() inner-joins threads — a conversation with
+        // no thread row at all wouldn't be returned regardless of sort.
+        // ThreadObserver::created() bumps the parent's last_reply_at to
+        // "now" as a side effect (correct production behavior — a new
+        // reply should do that), so restore each conversation's intended
+        // test value afterward. A raw DB update, not Eloquent save(), is
+        // required here: the observer updates a *separate* Eloquent
+        // instance ($thread->conversation), so this $conversation object's
+        // own "original" snapshot never saw that change — setting the
+        // attribute back to the same value it already held in memory
+        // leaves save() with nothing "dirty" to persist, silently no-op'ing
+        // and leaving the observer's "now" value in place.
+        $conversations = ['oldest' => $oldest, 'newest' => $newest, 'middle' => $middle];
+        $lastReplyAts = ['oldest' => '2026-01-01 00:00:00', 'newest' => '2026-01-03 00:00:00', 'middle' => '2026-01-02 00:00:00'];
+        foreach ($conversations as $key => $conversation) {
+            factory(Thread::class)->create(['conversation_id' => $conversation->id]);
+            \DB::table('conversations')->where('id', $conversation->id)->update(['last_reply_at' => $lastReplyAts[$key]]);
+        }
+
+        request()->merge(['sorting' => ['sort_by' => 'last_reply_at', 'order' => 'asc']]);
+
+        $results = Conversation::search('', [], $user)->get();
+
+        $this->assertSame(
+            [$oldest->id, $middle->id, $newest->id],
+            $results->pluck('id')->all()
+        );
     }
 }
