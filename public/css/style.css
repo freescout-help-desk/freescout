@@ -1791,6 +1791,14 @@ button.conv-checkbox-clear {
         right: 0;
         text-align: right;
     }
+    /* threls fork patch (ARMS-36): unstyled here, this column would
+       otherwise fall through to the generic display:block; width:100%
+       rule above and flow into the row's fixed height, overlapping the
+       absolutely-positioned columns around it. Hidden on mobile rather
+       than repositioned since it's supplementary to conv-date. */
+    .conv-last-reply-at {
+        display: none!important;
+    }
     .conv-email {
         display: none;
     }

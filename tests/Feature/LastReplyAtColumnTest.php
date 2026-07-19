@@ -214,15 +214,18 @@ class LastReplyAtColumnTest extends TestCase
             'a conversation with a reply must show the absolute timestamp on hover'
         );
 
-        // The no-reply conversation's row must fall back to the generic
-        // title with no tooltip attribute, not an empty/broken title.
+        // The no-reply conversation's cell must render no <a> at all — an
+        // empty-but-focusable link is bad for keyboard/screen-reader users
+        // (gemini-code-assist review, PR #17) — not just fall back to a
+        // generic title on an empty link.
         $rowStart = strpos($html, 'data-conversation_id="'.$withoutReply->id.'"');
         $this->assertNotFalse($rowStart);
         $rowEnd = strpos($html, '</tr>', $rowStart);
         $row = substr($html, $rowStart, $rowEnd - $rowStart);
 
-        $this->assertStringContainsString('conv-last-reply-at', $row);
-        $this->assertStringNotContainsString('data-toggle="tooltip"', $this->lastReplyAtCell($row));
+        $cell = $this->lastReplyAtCell($row);
+        $this->assertStringNotContainsString('<a', $cell);
+        $this->assertStringContainsString('&nbsp;', $cell);
     }
 
     /**

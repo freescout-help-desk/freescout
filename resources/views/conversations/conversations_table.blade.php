@@ -231,9 +231,12 @@
                         @php $conv_waiting_since = $conversation->getWaitingSince($folder); @endphp<a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED]))@php $conv_date_title = $conversation->getDateTitle(); @endphp aria-label="{{ $conv_waiting_since }}" aria-description="{{ $conv_date_title }}" data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conv_date_title }}"@else title="{{ __('View conversation') }}" @endif @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conv_waiting_since }}</a>
                     </td>
                     {{-- threls fork patch (ARMS-36): "Last Replied At", always
-                         shows last_reply_at regardless of folder. --}}
+                         shows last_reply_at regardless of folder. No <a> at
+                         all when there's no reply yet (matches conv-owner's
+                         empty-state pattern) rather than an empty, still-
+                         focusable link with nothing in it. --}}
                     <td class="conv-last-reply-at">
-                        @php $conv_last_reply_at = $conversation->getLastReplyAtHuman(); @endphp<a href="{{ $conversation->url() }}" @if ($conversation->last_reply_at) title="{{ \App\User::dateFormat($conversation->last_reply_at) }}" data-toggle="tooltip" data-placement="left" @else title="{{ __('View conversation') }}" @endif @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conv_last_reply_at }}</a>
+                        @if ($conversation->last_reply_at)<a href="{{ $conversation->url() }}" title="{{ \App\User::dateFormat($conversation->last_reply_at) }}" data-toggle="tooltip" data-placement="left" @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conversation->getLastReplyAtHuman() }}</a>@else &nbsp;@endif
                     </td>
                 </tr>
                 @action('conversations_table.after_row', $conversation, $columns, $col_counter)
