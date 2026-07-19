@@ -66,7 +66,10 @@ class PatchWorkflowsStatuses extends Command
 
     protected function patch($path)
     {
-        $content = file_get_contents($path);
+        $content = $this->readFile($path);
+        if ($content === null) {
+            return 1;
+        }
 
         if (strpos($content, self::MARKER) !== false) {
             $this->info('Already patched — On Hold is already selectable in Workflows.');
@@ -85,10 +88,14 @@ class PatchWorkflowsStatuses extends Command
             return 1;
         }
 
-        $this->backup($path, $content);
+        if (!$this->backup($path, $content)) {
+            return 1;
+        }
 
         $patched = str_replace(self::ANCHOR, self::ANCHOR.self::INSERTED_LINE, $content);
-        file_put_contents($path, $patched);
+        if (!$this->writeFile($path, $patched)) {
+            return 1;
+        }
 
         $this->info('Patched Workflows: On Hold is now selectable as a Status condition and a Change Status action.');
 
@@ -97,7 +104,10 @@ class PatchWorkflowsStatuses extends Command
 
     protected function revert($path)
     {
-        $content = file_get_contents($path);
+        $content = $this->readFile($path);
+        if ($content === null) {
+            return 1;
+        }
 
         if (strpos($content, self::MARKER) === false) {
             $this->info('Not currently patched — nothing to revert.');
@@ -116,19 +126,58 @@ class PatchWorkflowsStatuses extends Command
             return 1;
         }
 
-        $this->backup($path, $content);
+        if (!$this->backup($path, $content)) {
+            return 1;
+        }
 
         $reverted = str_replace($needle, self::ANCHOR, $content);
-        file_put_contents($path, $reverted);
+        if (!$this->writeFile($path, $reverted)) {
+            return 1;
+        }
 
         $this->info('Reverted: On Hold removed from Workflows condition/action option lists.');
 
         return 0;
     }
 
+    /**
+     * Reads the file and normalizes CRLF to LF, since ANCHOR is written with
+     * plain \n — without this, a file that happens to carry Windows line
+     * endings (e.g. from a Windows-side git checkout or editor) would never
+     * match, and the occurrence-count guard would refuse it as if Workflows
+     * had genuinely changed shape. Returns null (after printing an error) on
+     * a read failure, rather than letting `false` reach strpos()/
+     * substr_count() — both throw a TypeError on `false` under PHP 8.
+     */
+    protected function readFile($path)
+    {
+        // @-suppressed: a read failure is handled explicitly below via the
+        // false return, not via PHP's warning (which this app's error
+        // handler escalates to a thrown ErrorException).
+        $content = @file_get_contents($path);
+        if ($content === false) {
+            $this->error("Failed to read {$path}.");
+
+            return null;
+        }
+
+        return str_replace("\r\n", "\n", $content);
+    }
+
+    protected function writeFile($path, $content)
+    {
+        if (@file_put_contents($path, $content) === false) {
+            $this->error("Failed to write {$path} — check permissions and disk space.");
+
+            return false;
+        }
+
+        return true;
+    }
+
     protected function backup($path, $content)
     {
-        file_put_contents($path.'.bak', $content);
+        return $this->writeFile($path.'.bak', $content);
     }
 
     /**

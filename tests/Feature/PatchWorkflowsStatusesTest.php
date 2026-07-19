@@ -165,4 +165,67 @@ class PatchWorkflowsStatusesTest extends TestCase
         $this->assertSame(0, substr_count($content, 'OnHoldStatusServiceProvider::STATUS_ONHOLD'));
         $this->assertSame($original, $content);
     }
+
+    /**
+     * ANCHOR is written with plain \n. A file carrying CRLF line endings
+     * (e.g. checked out or edited on Windows) must still match — gemini-
+     * code-assist review, PR #15.
+     */
+    public function test_patches_a_file_with_crlf_line_endings()
+    {
+        File::put($this->fixturePath, str_replace("\n", "\r\n", $this->fixtureContents()));
+
+        $this->assertSame(0, \Artisan::call('onholdstatus:patch-workflows'));
+
+        $content = File::get($this->fixturePath);
+        $this->assertSame(2, substr_count($content, 'OnHoldStatusServiceProvider::STATUS_ONHOLD'));
+    }
+
+    /**
+     * A read failure must be reported and exit non-zero, not throw an
+     * uncaught TypeError from passing `false` to strpos()/substr_count().
+     */
+    public function test_fails_gracefully_when_file_is_unreadable()
+    {
+        if (posix_getuid() === 0) {
+            $this->markTestSkipped('root bypasses file permissions, so this cannot be simulated running as root.');
+        }
+
+        chmod($this->fixturePath, 0000);
+
+        $this->assertSame(1, \Artisan::call('onholdstatus:patch-workflows'));
+
+        chmod($this->fixturePath, 0644); // restore so tearDown() can delete it
+    }
+
+    /**
+     * A backup-write failure must stop before the real file is ever
+     * touched, and be reported rather than silently "succeeding". Uses its
+     * own dedicated subdirectory (never the shared system temp root) so
+     * chmod-ing it to simulate the failure can't affect any other process.
+     */
+    public function test_fails_gracefully_when_backup_cannot_be_written()
+    {
+        if (posix_getuid() === 0) {
+            $this->markTestSkipped('root bypasses file permissions, so this cannot be simulated running as root.');
+        }
+
+        $dir = sys_get_temp_dir().'/scf_patch_test_'.uniqid();
+        mkdir($dir);
+        $path = $dir.'/Workflow.php';
+        File::put($path, $this->fixtureContents());
+        config(['onholdstatus.workflows_patch_target' => $path]);
+        $original = File::get($path);
+
+        chmod($dir, 0555); // read+execute only — can't create the .bak file here
+
+        try {
+            $this->assertSame(1, \Artisan::call('onholdstatus:patch-workflows'));
+            $this->assertSame($original, File::get($path), 'the real file must be untouched if the backup failed');
+        } finally {
+            chmod($dir, 0755);
+            File::delete($path);
+            rmdir($dir);
+        }
+    }
 }
