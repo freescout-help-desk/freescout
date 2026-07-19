@@ -3,9 +3,6 @@
  * Application installer.
  */
 
-// Set this parameter if PHP on your server can not be executed via "php" console command.
-define('PHP_PATH', '');
-
 define('ALLOWED_PHP_DIRS', [
     '/usr/bin',
     '/usr/local/bin',
@@ -115,6 +112,10 @@ function getEnvVar($var_name, $root_dir)
     }
 }
 
+// Set PHP_PATH in the .env file if PHP on your server can not be executed via "php" console command.
+// https://github.com/freescout-help-desk/freescout/issues/5507
+define('PHP_PATH', trim(getEnvVar('PHP_PATH', $root_dir)));
+
 function clearCache($root_dir, $php_path)
 {
     if (file_exists($root_dir.'bootstrap/cache/config.php')) {
@@ -185,7 +186,7 @@ if (!empty($_POST)) {
             // Sanitize path.
             // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-7p9x-ch4c-vqj9
             if (empty($errors['php_path'])) {
-                if (!file_exists($php_path) || stristr($php_path, 'php')) {
+                if (!file_exists($php_path) || !stristr($php_path, 'php')) {
                     $errors['php_path'] = 'Invalid Path to PHP';
                 }
             }
