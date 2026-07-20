@@ -498,6 +498,16 @@ class FetchEmails extends Command
             $attachments = $message->getAttachments();
             $html_body = '';
 
+            // Webklex/php-imap returns object instead of a string.
+            // Normalize the subject before threading detection so forwarded
+            // notification emails are not attached to the original conversation.
+            $subject = $message->getSubject()."";
+
+            // Convert subject encoding.
+            if (preg_match('/=\?[a-z\d-]+\?[BQ]\?.*\?=/i', $subject)) {
+                $subject = \Helper::iconvMimeDecode($subject);
+            }
+
             // Is it a bounce message
             $is_bounce = false;
 
@@ -535,6 +545,16 @@ class FetchEmails extends Command
             $marker_message_id = \MailHelper::fetchMessageMarkerValue($html_body);
             if ($marker_message_id) {
                 $prev_message_ids[] = $marker_message_id;
+            }
+
+            // If a support agent forwards a FreeScout notification to a mailbox,
+            // the forwarded message may still contain the notification Message-ID
+            // in In-Reply-To/References or in the hidden marker. Do not attach such
+            // forwards to the original conversation, otherwise the original
+            // customer may receive the forwarded internal message.
+            if ($this->shouldStartNewConversationForForward($subject, $prev_message_ids)) {
+                $this->line('['.date('Y-m-d H:i:s').'] Forwarded FreeScout notification detected. Creating a new conversation.');
+                $prev_message_ids = [];
             }
 
             // Bounce detection.
@@ -826,14 +846,6 @@ class FetchEmails extends Command
             //     continue;
             // }
 
-            // Webklex/php-imap returns object instead of a string.
-            $subject = $message->getSubject()."";
-
-            // Convert subject encoding
-            if (preg_match('/=\?[a-z\d-]+\?[BQ]\?.*\?=/i', $subject)) {
-                $subject = \Helper::iconvMimeDecode($subject);
-            }
-
             $to = $this->formatEmailList($message->getTo());
 
             $cc = $this->formatEmailList($message->getCc());
@@ -1032,6 +1044,32 @@ class FetchEmails extends Command
     public function formatMessageIdPrefix($prefix)
     {
         return str_replace('FS_', '(?:FS_)?', $prefix);
+    }
+
+    /**
+     * Determine whether a forwarded user notification must start a new conversation.
+     * Body text is deliberately not inspected: notification emails can contain
+     * arbitrary conversation history, including forwarded-message separators.
+     */
+    public function shouldStartNewConversationForForward($subject, array $prev_message_ids)
+    {
+        if (!preg_match('/^\s*(fwd?|fw|wg|vs|rv|tr|enc|red|doorst|vl|sv|转发|轉寄|転送)\s*:/iu', trim($subject ?? ''))) {
+            return false;
+        }
+
+        // Include notification IDs without the FS_ prefix for compatibility.
+        $prefix = $this->formatMessageIdPrefix(preg_quote(Mail::MESSAGE_ID_PREFIX_NOTIFICATION, '/'));
+        foreach ($prev_message_ids as $prev_message_id) {
+            preg_match('/^'.$prefix.'\-(\d+)\-\d+\-([a-z0-9]{16})@/i', $prev_message_id ?? '', $matches);
+            if (!empty($matches[1])
+                && !empty($matches[2])
+                && hash_equals(Mail::getMessageIdHash($matches[1]), $matches[2])
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Try to get "From:" from body.
