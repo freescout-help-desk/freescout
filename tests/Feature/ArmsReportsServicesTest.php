@@ -391,6 +391,22 @@ class ArmsReportsServicesTest extends TestCase
         $this->assertSame('2026-07-01 10:00:00', Carbon::parse($conversation->first_reply_at)->format('Y-m-d H:i:s'));
     }
 
+    // -- Nav asset ------------------------------------------------------------
+
+    /**
+     * The dropdown-merge script (folds "ARMS Reports" into the paid
+     * Reports module's own dropdown client-side) must actually be
+     * registered as a page asset, or the merge silently never runs.
+     */
+    public function test_dropdown_merge_script_is_registered()
+    {
+        $javascripts = \Eventy::filter('javascripts', []);
+
+        $this->assertNotEmpty(array_filter($javascripts, function ($path) {
+            return strpos($path, 'armsreports') !== false && strpos($path, 'module.js') !== false;
+        }));
+    }
+
     // -- Controller / export pipeline ----------------------------------------
 
     public function test_kpis_export_as_csv()

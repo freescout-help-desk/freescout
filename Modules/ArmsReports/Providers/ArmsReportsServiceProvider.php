@@ -4,6 +4,8 @@ namespace Modules\ArmsReports\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+define('ARMS_REPORTS_MODULE', 'armsreports');
+
 /**
  * ARMS reports catalogue (ARMS-13).
  *
@@ -46,6 +48,16 @@ class ArmsReportsServiceProvider extends ServiceProvider
             if ($user && $user->isAdmin()) {
                 echo \View::make('armsreports::menu')->render();
             }
+        });
+
+        // Folds the dropdown above into the paid Reports module's own
+        // dropdown client-side, so the two don't sit side by side looking
+        // like duplicates — see Public/js/module.js for why this is a DOM
+        // move rather than a server-side merge.
+        \Eventy::addFilter('javascripts', function ($javascripts) {
+            $javascripts[] = \Module::getPublicPath(ARMS_REPORTS_MODULE).'/js/module.js';
+
+            return $javascripts;
         });
 
         // Launch-critical: stamp first_reply_at on the first agent reply.
