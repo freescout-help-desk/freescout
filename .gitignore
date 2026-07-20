@@ -32,6 +32,7 @@ Thumbs.db
 !/Modules/TestEmailGuard
 !/Modules/SortableCustomFields
 !/Modules/CustomerFieldSearch
+!/Modules/ArmsReports
 /public/modules
 /public/docs
 /public/.dh-diag

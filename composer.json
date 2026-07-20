@@ -17,6 +17,7 @@
         "codedge/laravel-selfupdater": "1.4.3",
         "devfactory/minify": "1.0.7",
         "doctrine/dbal": "2.12.1",
+        "dompdf/dompdf": "^2.0",
         "egulias/email-validator": "2.1.10",
         "enshrined/svg-sanitize": "0.22.0",
         "fideloper/proxy": "3.3.4",
