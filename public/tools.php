@@ -341,7 +341,7 @@ if (!empty($_POST)) {
     		                </div>
     						<div class="form-group <?php if (!empty($errors['php_path'])):?>has-error<?php endif ?>">
     		                    <label for="php_path">
-    		                        <strong>Path to PHP</strong> (example: /usr/local/php81/bin/php)
+                                    <strong>Path to PHP</strong> (example: /usr/local/bin/php81)
     		                    </label>
     		                    <input type="text" name="php_path" value="<?php echo htmlentities($_POST['php_path'] ?? ''); ?>" placeholder="(optional)"/>
     		                    <?php if (!empty($errors['php_path'])): ?>
