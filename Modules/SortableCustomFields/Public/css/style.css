@@ -1,0 +1,86 @@
+tr.cf-conv-row.conv-row {
+    display: none;
+}
+
+@media (max-width: 1000px){
+    .custom-field-td {
+        display: none !important;
+    }
+    .custom-field-tr {
+        display: none !important;
+    }
+    tr.cf-conv-row.conv-row{
+          display: block !important;
+    }
+        
+}
+
+
+/* Deliberately no fixed width here (unlike upstream's original 10%/5%).
+   .table-conversations uses table-layout: fixed (core style.css), where
+   space not claimed by an explicit width is split evenly among columns
+   that don't have one. A hardcoded width reserves that space even when
+   the column is hidden (Columns control) — nothing reclaims it, leaving a
+   dead gap next to Conversation. Leaving these unset means Conversation
+   (also unset) picks up whatever's freed automatically. */
+
+/* threls fork patch addition: the "Columns" control. Right-aligned above
+   the table, the conventional spot for a column-visibility control. */
+.scf-columns-control {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 8px;
+}
+
+.scf-columns-btn .scf-hidden-badge {
+    margin-left: 4px;
+}
+
+.scf-columns-menu {
+    padding: 4px 0;
+    min-width: 240px;
+}
+
+.scf-columns-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 14px;
+}
+
+/* .magic-checkbox+label (magic-check.css) already sets display/position/
+   padding-left for the checkbox glyph — only add what it doesn't cover. */
+.scf-columns-checkbox {
+    flex: 1;
+    margin: 0;
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.scf-sortable-toggle {
+    flex: none;
+    border: none;
+    background: none;
+    color: #ccc;
+    padding: 2px 4px;
+    margin-left: 8px;
+}
+
+.scf-sortable-toggle.is-active {
+    color: #337ab7;
+}
+
+.scf-sortable-toggle:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.scf-columns-footer {
+    padding: 4px 14px;
+}
+
+.custom-field-th-static {
+    cursor: default;
+}

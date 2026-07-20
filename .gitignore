@@ -26,8 +26,12 @@ Thumbs.db
 /public/.well-known
 /Modules/*
 /Modules/**/.git
-# Threls custom modules are version-controlled (paid modules above stay runtime-installed)
+# Threls custom modules and patched free-license community modules are
+# version-controlled (paid modules above stay runtime-installed)
 !/Modules/OnHoldStatus
+!/Modules/TestEmailGuard
+!/Modules/SortableCustomFields
+!/Modules/CustomerFieldSearch
 !/Modules/ArmsReports
 /public/modules
 /public/docs

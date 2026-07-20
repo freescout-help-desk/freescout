@@ -1,0 +1,24 @@
+{
+    "name": "Sortable Custom Fields",
+    "alias": "sortablecustomfields",
+    "description": "Adds sortable, colour-codable columns for Custom Fields in the conversation list, with a per-agent Columns control for which fields show and which are sortable. Threls fork of the upstream MIT module, pinned to commit 74e958f — patches a SQL-injection bug in the custom-field sort filter and escapes custom-field output in the table.",
+    "img": "/modules/sortablecustomfields/img/icon.svg",
+    "version": "1.2.0",
+    "detailsUrl": "https://github.com/karrierekick-dev/freescout-sortable-custom-fields",
+    "author": "Edudzi; Karriere Kick",
+    "authorUrl": "https://karriere-kick.de",
+    "requiredAppVersion": "1.8.117",
+    "license": "MIT License",
+    "keywords": ["custom-fields", "sorting", "conversation-list"],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\SortableCustomFields\\Providers\\SortableCustomFieldsServiceProvider"
+    ],
+    "aliases": {
+        "CustomField": "Modules\\CustomFields\\Entities\\CustomField"
+    },
+    "files": [
+    ],
+    "requires": []
+}

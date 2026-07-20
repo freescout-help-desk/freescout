@@ -60,13 +60,22 @@
         }
         $columns[] = 'number';
         $columns[] = 'date';
+        // threls fork patch (ARMS-36): "Last Replied At" column, always
+        // visible (not conditional like the columns above), so it's baked
+        // into the base $col_counter below rather than incrementing it.
+        $columns[] = 'last_reply_at';
 
-        $col_counter = 6;
+        $col_counter = 7;
     @endphp
 
     {{--@if (!request()->get('page'))--}}
         @include('/conversations/partials/bulk_actions')
     {{--@endif--}}
+
+    {{-- threls fork patch: always-visible toolbar slot (unlike bulk_actions above,
+         which core only shows once rows are selected). Used by SortableCustomFields
+         for its column-visibility control. --}}
+    @action('conversations_table.toolbar', $folder ?? null)
 
     <table class="table-conversations table @if (!empty($params['show_mailbox']))show-mailbox @endif" data-page="{{ (int)request()->get('page', 1) }}" @foreach ($params as $param_name => $param_value) data-param_{{ $param_name }}="{{ $param_value }}" @endforeach @if (!empty($conversations_filter)) @foreach ($conversations_filter as $filter_field => $filter_value) data-filter_{{ $filter_field }}="{{ $filter_value }}" @endforeach @endif @foreach ($sorting as $sorting_name => $sorting_value) data-sorting_{{ $sorting_name }}="{{ $sorting_value }}" @endforeach >
         <colgroup>
@@ -80,9 +89,10 @@
             @if ($show_assigned)
                 <col class="conv-owner">@php $col_counter++ ; @endphp
             @endif
-            @action('conversations_table.col_before_conv_number')
+            @action('conversations_table.col_before_conv_number', $folder ?? null)
             <col class="conv-number">
             <col class="conv-date">
+            <col class="conv-last-reply-at">
         </colgroup>
         <thead>
         <tr>
@@ -115,7 +125,7 @@
                     </ul>
                 </th>--}}
             @endif
-            @action('conversations_table.th_before_conv_number')
+            @action('conversations_table.th_before_conv_number', $folder ?? null)
             <th class="conv-number">
                 <span class="conv-col-sort" data-sort-by="number" data-order="@if ($sorting['sort_by'] == 'number'){{ $sorting['order'] }}@else{{ 'asc' }}@endif">
                     {{ __("Number") }} 
@@ -130,11 +140,21 @@
                     </a>
                 </span>
             </th>
+            {{-- threls fork patch (ARMS-36): "Last Replied At", always
+                 visible, distinct from "Waiting Since" above since that
+                 column shows a different field per folder (closed_at,
+                 updated_at, etc.) while this always shows last_reply_at. --}}
+            <th class="conv-last-reply-at">
+                <span class="conv-col-sort" data-sort-by="last_reply_at" data-order="@if ($sorting['sort_by'] == 'last_reply_at'){{ $sorting['order'] }}@else{{ 'asc' }}@endif">
+                    {{ __("Last Replied At") }}
+                     @if ($sorting['sort_by'] == 'last_reply_at' && $sorting['order'] == 'desc')↑@elseif ($sorting['sort_by'] == 'last_reply_at' && $sorting['order'] == 'asc')↓@endif
+                </span>
+            </th>
           </tr>
         </thead>
         <tbody>
             @foreach ($conversations as $conversation)
-                <tr class="conv-row @action('conversations_table.row_class', $conversation) @if ($conversation->isActive()) conv-active @endif @if ($conversation->isSpam()) conv-spam @endif" data-conversation_id="{{ $conversation->id }}">
+                <tr class="conv-row @action('conversations_table.row_class', $conversation, $folder ?? null) @if ($conversation->isActive()) conv-active @endif @if ($conversation->isSpam()) conv-spam @endif" data-conversation_id="{{ $conversation->id }}">
                     @if (empty($no_checkboxes))<td class="conv-current">@if (!empty($viewers[$conversation->id]))
                                 <div class="viewer-badge @if (!empty($viewers[$conversation->id]['replying'])) viewer-replying @endif" data-toggle="tooltip" title="@if (!empty($viewers[$conversation->id]['replying'])){{ __(':user is replying', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@else{{ __(':user is viewing', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@endif"><div>
                             @endif</td>@else<td class="conv-current"></td>@endif
@@ -203,12 +223,20 @@
                             @if ($conversation->user_id)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty($params['target_blank'])) target="_blank" @endif> {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }} </a>@else &nbsp;@endif
                         </td>
                     @endif
-                    @action('conversations_table.td_before_conv_number', $conversation)
+                    @action('conversations_table.td_before_conv_number', $conversation, $folder ?? null)
                     <td class="conv-number">
                         <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty($params['target_blank'])) target="_blank" @endif><i>#</i>{{ $conversation->number }}</a>
                     </td>
                     <td class="conv-date">
                         @php $conv_waiting_since = $conversation->getWaitingSince($folder); @endphp<a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED]))@php $conv_date_title = $conversation->getDateTitle(); @endphp aria-label="{{ $conv_waiting_since }}" aria-description="{{ $conv_date_title }}" data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conv_date_title }}"@else title="{{ __('View conversation') }}" @endif @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conv_waiting_since }}</a>
+                    </td>
+                    {{-- threls fork patch (ARMS-36): "Last Replied At", always
+                         shows last_reply_at regardless of folder. No <a> at
+                         all when there's no reply yet (matches conv-owner's
+                         empty-state pattern) rather than an empty, still-
+                         focusable link with nothing in it. --}}
+                    <td class="conv-last-reply-at">
+                        @if ($conversation->last_reply_at)<a href="{{ $conversation->url() }}" title="{{ \App\User::dateFormat($conversation->last_reply_at) }}" data-toggle="tooltip" data-placement="left" @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conversation->getLastReplyAtHuman() }}</a>@else &nbsp;@endif
                     </td>
                 </tr>
                 @action('conversations_table.after_row', $conversation, $columns, $col_counter)
