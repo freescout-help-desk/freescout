@@ -60,8 +60,12 @@
         }
         $columns[] = 'number';
         $columns[] = 'date';
+        // threls fork patch (ARMS-36): "Last Replied At" column, always
+        // visible (not conditional like the columns above), so it's baked
+        // into the base $col_counter below rather than incrementing it.
+        $columns[] = 'last_reply_at';
 
-        $col_counter = 6;
+        $col_counter = 7;
     @endphp
 
     {{--@if (!request()->get('page'))--}}
@@ -88,6 +92,7 @@
             @action('conversations_table.col_before_conv_number', $folder ?? null)
             <col class="conv-number">
             <col class="conv-date">
+            <col class="conv-last-reply-at">
         </colgroup>
         <thead>
         <tr>
@@ -133,6 +138,16 @@
                     <span class="conv-col-sort" data-sort-by="date" data-order="@if ($sorting['sort_by'] == 'date'){{ $sorting['order'] }}@else{{ 'asc' }}@endif">
                         @if ($folder->type == App\Folder::TYPE_CLOSED)@php $column_title_date = __("Closed"); @endphp@elseif ($folder->type == App\Folder::TYPE_DRAFTS)@php $column_title_date = __("Last Updated"); @endphp@elseif ($folder->type == App\Folder::TYPE_DELETED)@php $column_title_date = __("Deleted"); @endphp@else@php $column_title_date = \Eventy::filter('conversations_table.column_title_date', __("Waiting Since"), $folder) @endphp@endif{{ $column_title_date }} @if ($sorting['sort_by'] == 'date' && $sorting['order'] == 'desc')↑@elseif ($sorting['sort_by'] == 'date' && $sorting['order'] == 'asc')↓@elseif ($sorting['sort_by'] == '' && $sorting['order'] =='')↓@endif
                     </a>
+                </span>
+            </th>
+            {{-- threls fork patch (ARMS-36): "Last Replied At", always
+                 visible, distinct from "Waiting Since" above since that
+                 column shows a different field per folder (closed_at,
+                 updated_at, etc.) while this always shows last_reply_at. --}}
+            <th class="conv-last-reply-at">
+                <span class="conv-col-sort" data-sort-by="last_reply_at" data-order="@if ($sorting['sort_by'] == 'last_reply_at'){{ $sorting['order'] }}@else{{ 'asc' }}@endif">
+                    {{ __("Last Replied At") }}
+                     @if ($sorting['sort_by'] == 'last_reply_at' && $sorting['order'] == 'desc')↑@elseif ($sorting['sort_by'] == 'last_reply_at' && $sorting['order'] == 'asc')↓@endif
                 </span>
             </th>
           </tr>
@@ -214,6 +229,14 @@
                     </td>
                     <td class="conv-date">
                         @php $conv_waiting_since = $conversation->getWaitingSince($folder); @endphp<a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED]))@php $conv_date_title = $conversation->getDateTitle(); @endphp aria-label="{{ $conv_waiting_since }}" aria-description="{{ $conv_date_title }}" data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conv_date_title }}"@else title="{{ __('View conversation') }}" @endif @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conv_waiting_since }}</a>
+                    </td>
+                    {{-- threls fork patch (ARMS-36): "Last Replied At", always
+                         shows last_reply_at regardless of folder. No <a> at
+                         all when there's no reply yet (matches conv-owner's
+                         empty-state pattern) rather than an empty, still-
+                         focusable link with nothing in it. --}}
+                    <td class="conv-last-reply-at">
+                        @if ($conversation->last_reply_at)<a href="{{ $conversation->url() }}" title="{{ \App\User::dateFormat($conversation->last_reply_at) }}" data-toggle="tooltip" data-placement="left" @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conversation->getLastReplyAtHuman() }}</a>@else &nbsp;@endif
                     </td>
                 </tr>
                 @action('conversations_table.after_row', $conversation, $columns, $col_counter)

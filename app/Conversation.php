@@ -1670,6 +1670,19 @@ class Conversation extends Model
     }
 
     /**
+     * threls fork patch (ARMS-36): "time ago" for the most recent reply,
+     * regardless of folder — distinct from getWaitingSince(), whose
+     * underlying field varies by folder (closed_at, updated_at, etc.).
+     * Empty if there's no reply yet (a conversation with only the initial
+     * message never gets a last_reply_at), matching how dateDiffForHumans()
+     * already handles a falsy date rather than inventing a fallback.
+     */
+    public function getLastReplyAtHuman()
+    {
+        return \App\User::dateDiffForHumans($this->last_reply_at);
+    }
+
+    /**
      * Get type name.
      */
     public function getTypeName()
@@ -2294,7 +2307,12 @@ class Conversation extends Model
         $result = \Eventy::filter('conversations.table_sorting', $result);
 
         if (!empty($request->sorting['sort_by']) && !empty($request->sorting['order']) &&
-            in_array($request->sorting['sort_by'], ['subject', 'number', 'date']) &&
+            // threls fork patch: 'last_reply_at' added (ARMS-36) so the new
+            // "Last Replied At" column can be sorted — Folder::getOrderByArray()
+            // and Conversation::search() both already handle any sort_by not
+            // equal to 'date' generically, so whitelisting it here is the only
+            // change needed for sorting to work end to end.
+            in_array($request->sorting['sort_by'], ['subject', 'number', 'date', 'last_reply_at']) &&
             in_array($request->sorting['order'], ['asc', 'desc'])
         ) {
             $result['sort_by'] = $request->sorting['sort_by'];
