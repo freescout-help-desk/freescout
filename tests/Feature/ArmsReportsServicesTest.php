@@ -407,21 +407,6 @@ class ArmsReportsServicesTest extends TestCase
         }));
     }
 
-    /**
-     * The print-to-PDF menu item's @media print rules (hides nav/sidebar/
-     * footer so the browser print dialog only outputs the report) have to
-     * actually be registered as a page asset, or "Print / Save as PDF"
-     * prints the whole page chrome along with the report.
-     */
-    public function test_print_stylesheet_is_registered()
-    {
-        $styles = \Eventy::filter('stylesheets', []);
-
-        $this->assertNotEmpty(array_filter($styles, function ($path) {
-            return strpos($path, 'armsreports') !== false && strpos($path, 'style.css') !== false;
-        }));
-    }
-
     // -- Controller / export pipeline ----------------------------------------
 
     public function test_kpis_export_as_csv()

@@ -23,11 +23,10 @@ $(document).ready(function () {
 		return;
 	}
 
-	// Read every data attribute before any DOM removal below - jQuery's
-	// remove() clears its own data cache from the elements it detaches, so
-	// anything read from $armsDropdown has to happen first.
+	// Read the label before any DOM removal below - jQuery's remove()
+	// clears its own data cache from the elements it detaches, so anything
+	// read from $armsDropdown has to happen first.
 	var reportsLabel = $armsDropdown.data('reports-label');
-	var printLabel = $armsDropdown.data('print-label');
 
 	var $reportsDropdown = $('.navbar-nav > li.dropdown').filter(function () {
 		return $(this).find('> a.dropdown-toggle').text().trim() === reportsLabel;
@@ -44,17 +43,4 @@ $(document).ready(function () {
 
 	$reportsMenu.append('<li role="separator" class="divider"></li>').append($armsItems);
 	$armsDropdown.remove();
-
-	// The native Reports pages (Conversations/Productivity/Satisfaction)
-	// have no PDF export of their own, and we can't add a real one without
-	// their source. A print-to-PDF entry gets there without touching their
-	// code at all: style.css hides the nav/sidebar/footer in @media print,
-	// so "Print" in the browser's dialog (which is also how you save as
-	// PDF) leaves just the report content.
-	var $printLink = $('<a href="#"><span class="glyphicon glyphicon-print"></span> </a>').append(document.createTextNode(printLabel || ''));
-	$printLink.on('click', function (e) {
-		e.preventDefault();
-		window.print();
-	});
-	$reportsMenu.append($('<li></li>').append($printLink));
 });

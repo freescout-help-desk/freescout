@@ -60,14 +60,6 @@ class ArmsReportsServiceProvider extends ServiceProvider
             return $javascripts;
         });
 
-        // The @media print rules the "Print / Save as PDF" item (added by
-        // the script above) relies on.
-        \Eventy::addFilter('stylesheets', function ($styles) {
-            $styles[] = \Module::getPublicPath(ARMS_REPORTS_MODULE).'/css/style.css';
-
-            return $styles;
-        });
-
         // Launch-critical: stamp first_reply_at on the first agent reply.
         // Medians read this column for new conversations and fall back to
         // deriving from threads for historical ones.
