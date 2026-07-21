@@ -26,7 +26,11 @@ class ContentSecurityPolicy
         $response = $next($request);
 
         if (str_contains($request->path(), '/ajax-html/')) {
-            $response->header('Content-Security-Policy', \Helper::getCspValue());
+            // ->header() only exists on Laravel's response wrappers, not a
+            // plain Symfony Response/BinaryFileResponse - ->headers->set()
+            // works on any response type this middleware might see
+            // (gemini-code-assist review, PR #23).
+            $response->headers->set('Content-Security-Policy', \Helper::getCspValue());
         }
 
         return $response;

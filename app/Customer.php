@@ -4,6 +4,7 @@ namespace App;
 
 use App\Email;
 use App\CustomerChannel;
+use App\Conversation;
 use App\Thread;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
@@ -1321,6 +1322,11 @@ class Customer extends Model
         // https://github.com/freescout-help-desk/freescout/issues/5505
         Thread::where('customer_id', $customer2->id)->update(['customer_id' => $this->id]);
         Thread::where('created_by_customer_id', $customer2->id)->update(['created_by_customer_id' => $this->id]);
+
+        // Upstream's own fix (issue #5505) covers threads but misses this
+        // same column on conversations, which is left pointing at $customer2
+        // after it's deleted below (gemini-code-assist review, PR #23).
+        Conversation::where('created_by_customer_id', $customer2->id)->update(['created_by_customer_id' => $this->id]);
 
         // Merge attributes
         // if (in_array('phone', $keepAttributes) && !$this->phone) {

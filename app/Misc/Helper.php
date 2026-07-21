@@ -1545,8 +1545,13 @@ class Helper
      */
     public static function checkPort($host, $port)
     {
-        // Sanitize URL.
-        self::sanitizeRemoteUrl('https://'.$host, true);
+        // Sanitize URL. $follow_redirects=false: this is a raw TCP port
+        // check (mail servers rarely run a web server on the port being
+        // tested), so following HTTP redirects here just means an
+        // unnecessary curl request with up to a 180s timeout, turning an
+        // instant connectivity check into one that can hang for minutes
+        // (gemini-code-assist review, PR #23).
+        self::sanitizeRemoteUrl('https://'.$host, true, false);
 
         $connection = @fsockopen($host, $port);
         if (is_resource($connection)) {
@@ -2097,6 +2102,10 @@ class Helper
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        // Headers have to be in the response for the Location: regex below
+        // to ever match - curl doesn't include them by default (gemini-
+        // code-assist review, PR #23).
+        curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
         curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
@@ -2104,7 +2113,10 @@ class Helper
         curl_setopt($ch, CURLOPT_URL, $url);
         \Helper::setCurlDefaultOptions($ch);
         curl_setopt($ch, CURLOPT_TIMEOUT, 180);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        // setCurlDefaultOptions() above already set CURLOPT_SSL_VERIFYPEER
+        // from config('app.curl_ssl_verifypeer') - forcing it to false here
+        // unconditionally disabled certificate verification for everyone
+        // regardless of that setting (gemini-code-assist review, PR #23).
         $response = curl_exec($ch);
 
         $curl_errno = curl_errno($ch);
