@@ -16,8 +16,10 @@ $(document).ready(function () {
 	// (gemini-code-assist review, PR #18).
 	//
 	// If a future Reports update changes its own label or dropdown shape,
-	// this just silently no-ops back to two separate menus rather than
-	// breaking anything.
+	// this just no-ops back to two separate menus (falling back to
+	// $armsDropdown.show() below) rather than breaking anything - it just
+	// won't be silent about it visually, since the item was hidden inline
+	// in menu.blade.php to avoid flashing visible before this runs.
 	var $armsDropdown = $('[data-arms-reports-dropdown]');
 	if (!$armsDropdown.length) {
 		return;
@@ -32,12 +34,14 @@ $(document).ready(function () {
 		return $(this).find('> a.dropdown-toggle').text().trim() === reportsLabel;
 	});
 	if (!$reportsDropdown.length) {
+		$armsDropdown.show();
 		return;
 	}
 
 	var $armsItems = $armsDropdown.find('> ul.dropdown-menu > li');
 	var $reportsMenu = $reportsDropdown.find('> ul.dropdown-menu');
 	if (!$armsItems.length || !$reportsMenu.length) {
+		$armsDropdown.show();
 		return;
 	}
 
