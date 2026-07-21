@@ -1,0 +1,20 @@
+/* ARMS-40 / ARMS-13: the native Reports pages have no PDF export of their
+ * own. Rather than editing that module's (closed-source) views, the "Print /
+ * Save as PDF" item added by module.js relies on the browser's print
+ * dialog, whose "Save as PDF" destination is standard in every major
+ * browser. This stylesheet just hides the surrounding chrome so the printed
+ * output is the report itself, not the whole page.
+ */
+@media print {
+    .navbar,
+    .sidebar-2col,
+    .footer {
+        display: none !important;
+    }
+
+    .content-2col,
+    .content {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}
