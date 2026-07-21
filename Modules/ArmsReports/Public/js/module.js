@@ -57,11 +57,26 @@ $(document).on('click', '#arms-reports-native-pdf-export', function (e) {
 		return;
 	}
 
-	// Only the metrics cards and tables that are already on screen - dompdf
-	// can't render the live Chart.js canvas, so it's left out rather than
-	// shipping a PDF with a blank box where the chart was.
 	var $capture = $('<div></div>');
 	$capture.append($report.find('.rpt-metrics').clone());
+
+	// dompdf can't execute Chart.js, but the browser has already drawn the
+	// chart's pixels onto the canvas by the time this runs - toDataURL()
+	// exports exactly that as a PNG, which dompdf renders like any other
+	// image. Swapped in as an <img> in place of the (otherwise empty to
+	// dompdf) <canvas>.
+	var $canvas = $report.find('#rpt-chart');
+	if ($canvas.length && $canvas[0].getContext) {
+		try {
+			var chartImage = $canvas[0].toDataURL('image/png');
+			$capture.append($('<div class="rpt-chart-image"></div>').append($('<img>').attr('src', chartImage)));
+		} catch (err) {
+			// Tainted canvas (cross-origin content drawn onto it) or an
+			// unsupported browser - omit the chart rather than fail the
+			// whole export, same as before this was added.
+		}
+	}
+
 	$capture.append($report.find('#rpt-tables').clone());
 
 	if (!$capture.children().length) {
