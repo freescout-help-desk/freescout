@@ -685,7 +685,10 @@ class User extends Authenticatable
     public function getInviteStateName()
     {
         $names = [
-            self::INVITE_STATE_ACTIVATED   => __('Active'),
+            // Deliberately not __('Active') - that string is also the
+            // conversation status label, and a translation override on one
+            // must not silently relabel the other.
+            self::INVITE_STATE_ACTIVATED   => __('Activated'),
             self::INVITE_STATE_SENT        => __('Invited'),
             self::INVITE_STATE_NOT_INVITED => __('Not Invited'),
         ];

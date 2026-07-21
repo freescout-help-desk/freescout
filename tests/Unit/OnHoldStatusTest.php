@@ -125,7 +125,10 @@ class OnHoldStatusTest extends TestCase
         $this->bootModule();
 
         $this->assertSame('Pending', Conversation::statusCodeToName(Conversation::STATUS_PENDING));
-        $this->assertSame('Active', Conversation::statusCodeToName(Conversation::STATUS_ACTIVE));
+        // "Active" reads as "New" via a resources/lang/en.json translation
+        // override - this asserts On-Hold registration doesn't disturb that
+        // resolution, not the literal English word.
+        $this->assertSame('New', Conversation::statusCodeToName(Conversation::STATUS_ACTIVE));
         $this->assertSame('Not changed', Thread::statusCodeToName(Thread::STATUS_NOCHANGE));
 
         // Truly unknown codes still render empty even with the module active.
