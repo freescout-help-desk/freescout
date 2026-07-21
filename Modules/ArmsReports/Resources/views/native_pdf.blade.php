@@ -18,6 +18,12 @@
         .rpt-metric-value { font-size: 16px; }
         .row { display: table; width: 100%; table-layout: fixed; }
         [class*="col-md-"] { display: table-cell; padding: 0 6px; vertical-align: top; }
+
+        /* The chart is a canvas.toDataURL() snapshot taken at export time -
+           constrained to the page width since the canvas's natural pixel
+           size can be wider than an A4 page. */
+        .rpt-chart-image { margin-bottom: 14px; text-align: center; }
+        .rpt-chart-image img { max-width: 100%; }
     </style>
 </head>
 <body>

@@ -517,4 +517,58 @@ class ArmsReportsServicesTest extends TestCase
         $this->assertStringStartsWith('%PDF', $response->getContent());
         $this->assertStringContainsString('conversations-report', $response->headers->get('Content-Disposition'));
     }
+
+    /**
+     * The chart is a canvas.toDataURL() PNG snapshot embedded as a data URI
+     * <img> (see Public/js/module.js) - confirms dompdf actually accepts
+     * that and still produces a valid PDF, not just that it accepts plain
+     * text/table HTML.
+     */
+    public function test_native_export_pdf_renders_embedded_chart_image()
+    {
+        if (!class_exists(\Dompdf\Dompdf::class)) {
+            $this->markTestSkipped('dompdf not installed');
+        }
+
+        $onePixelPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
+        $controller = new \Modules\ArmsReports\Http\Controllers\ArmsReportsController();
+        $request = Request::create('/arms-reports/native-export-pdf', 'POST', [
+            'title' => 'Conversations Report',
+            'html'  => '<div class="rpt-chart-image"><img src="data:image/png;base64,'.$onePixelPng.'"></div>',
+        ]);
+
+        $response = $controller->nativeExportPdf($request);
+
+        $this->assertSame('application/pdf', $response->headers->get('Content-Type'));
+        $this->assertStringStartsWith('%PDF', $response->getContent());
+    }
+
+    /**
+     * The two tests above each cover one fragment shape in isolation - this
+     * combines metrics + chart image + tables in one payload, matching what
+     * the real button actually assembles (module.js), to catch any CSS/
+     * layout conflict between the pieces that only shows up combined.
+     */
+    public function test_native_export_pdf_renders_metrics_chart_and_tables_together()
+    {
+        if (!class_exists(\Dompdf\Dompdf::class)) {
+            $this->markTestSkipped('dompdf not installed');
+        }
+
+        $onePixelPng = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
+        $controller = new \Modules\ArmsReports\Http\Controllers\ArmsReportsController();
+        $request = Request::create('/arms-reports/native-export-pdf', 'POST', [
+            'title' => 'Conversations Report',
+            'html'  => '<div class="rpt-metrics"><div class="rpt-metric">42</div></div>'
+                .'<div class="rpt-chart-image"><img src="data:image/png;base64,'.$onePixelPng.'"></div>'
+                .'<div id="rpt-tables"><table><tr><td>Row</td></tr></table></div>',
+        ]);
+
+        $response = $controller->nativeExportPdf($request);
+
+        $this->assertSame('application/pdf', $response->headers->get('Content-Type'));
+        $this->assertStringStartsWith('%PDF', $response->getContent());
+    }
 }
