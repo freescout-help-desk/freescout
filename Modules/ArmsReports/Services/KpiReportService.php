@@ -321,7 +321,7 @@ class KpiReportService
         return [
             'key' => 'ticket_brand',
             'title' => __('Ticket Brand'),
-            'headers' => [__('Note')],
+            'headers' => [__('Details')],
             'rows' => [[__('Pending ARMS definition of "Ticket Brand" — renders here once defined (see ARMS-13).')]],
         ];
     }
