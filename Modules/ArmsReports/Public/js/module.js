@@ -44,3 +44,38 @@ $(document).ready(function () {
 	$reportsMenu.append('<li role="separator" class="divider"></li>').append($armsItems);
 	$armsDropdown.remove();
 });
+
+// ARMS-40 follow-up: the native Reports pages' "Export to PDF" button
+// (rendered by this module via the reports.filters_button_append hook).
+// Delegated on document since the button is server-rendered as part of the
+// page, not injected dynamically like the dropdown merge above.
+$(document).on('click', '#arms-reports-native-pdf-export', function (e) {
+	e.preventDefault();
+
+	var $report = $('#rpt-report');
+	if (!$report.length) {
+		return;
+	}
+
+	// Only the metrics cards and tables that are already on screen - dompdf
+	// can't render the live Chart.js canvas, so it's left out rather than
+	// shipping a PDF with a blank box where the chart was.
+	var $capture = $('<div></div>');
+	$capture.append($report.find('.rpt-metrics').clone());
+	$capture.append($report.find('#rpt-tables').clone());
+
+	if (!$capture.children().length) {
+		return;
+	}
+
+	var $button = $(this);
+	var title = $.trim($('.rpt-title').first().text()) || document.title;
+
+	var $form = $('<form method="POST" target="_blank"></form>').attr('action', $button.data('export-url'));
+	$form.append($('<input type="hidden" name="_token">').val($button.data('csrf')));
+	$form.append($('<input type="hidden" name="title">').val(title));
+	$form.append($('<input type="hidden" name="html">').val($capture.html()));
+	$('body').append($form);
+	$form.submit();
+	$form.remove();
+});
