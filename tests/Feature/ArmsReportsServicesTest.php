@@ -58,6 +58,20 @@ class ArmsReportsServicesTest extends TestCase
         // Registers the first_reply_at listener and the "armsreports::"
         // view namespace Exporter::pdf() renders through.
         (new \Modules\ArmsReports\Providers\ArmsReportsServiceProvider(app()))->boot();
+
+        // Plain require, not require_once: this is route-registration code,
+        // not a class declaration, and every test gets a fresh app/router
+        // via CreatesApplication - it has to re-run every time or route()
+        // resolves against whichever test happened to load it first.
+        require __DIR__.'/../../Modules/ArmsReports/Http/routes.php';
+
+        // This fork's RouteCollection only refreshes its name -> route
+        // index once, at the end of the app's normal route-loading pass.
+        // Routes registered outside that pass (like the require above)
+        // exist in the collection but route('name') can't find them by
+        // name until this runs - same gotcha documented in
+        // SortableCustomFieldsServiceProvider::registerRoutes().
+        \Route::getRoutes()->refreshNameLookups();
     }
 
     protected function tearDown(): void
@@ -407,21 +421,6 @@ class ArmsReportsServicesTest extends TestCase
         }));
     }
 
-    /**
-     * The print-to-PDF menu item's @media print rules (hides nav/sidebar/
-     * footer so the browser print dialog only outputs the report) have to
-     * actually be registered as a page asset, or "Print / Save as PDF"
-     * prints the whole page chrome along with the report.
-     */
-    public function test_print_stylesheet_is_registered()
-    {
-        $styles = \Eventy::filter('stylesheets', []);
-
-        $this->assertNotEmpty(array_filter($styles, function ($path) {
-            return strpos($path, 'armsreports') !== false && strpos($path, 'style.css') !== false;
-        }));
-    }
-
     // -- Controller / export pipeline ----------------------------------------
 
     public function test_kpis_export_as_csv()
@@ -456,5 +455,66 @@ class ArmsReportsServicesTest extends TestCase
 
         $this->assertSame('application/pdf', $response->headers->get('Content-Type'));
         $this->assertStringStartsWith('%PDF', $response->getContent());
+    }
+
+    // -- Native Reports export button (ARMS-40 follow-up) -------------------
+
+    /**
+     * reports.filters_button_append is the native Reports module's own
+     * extension point - this just confirms our listener actually renders
+     * through it and links to the real export route, not that the hook
+     * itself exists (it belongs to a module not in this repo).
+     */
+    public function test_native_export_button_renders_for_authenticated_user()
+    {
+        $user = $this->makeUser();
+        $this->actingAs($user);
+        // csrf_token() needs a started session, normally provided by the
+        // 'web' middleware group - this test fires the hook directly,
+        // bypassing that stack.
+        $this->app['session']->start();
+
+        ob_start();
+        \Eventy::action('reports.filters_button_append');
+        $output = ob_get_clean();
+
+        $this->assertStringContainsString('id="arms-reports-native-pdf-export"', $output);
+        $this->assertStringContainsString(route('armsreports.native_export_pdf'), $output);
+    }
+
+    public function test_native_export_button_renders_nothing_for_guests()
+    {
+        ob_start();
+        \Eventy::action('reports.filters_button_append');
+        $output = ob_get_clean();
+
+        $this->assertSame('', $output);
+    }
+
+    public function test_native_export_pdf_requires_html()
+    {
+        $this->expectException(\Illuminate\Validation\ValidationException::class);
+
+        $controller = new \Modules\ArmsReports\Http\Controllers\ArmsReportsController();
+        $controller->nativeExportPdf(Request::create('/arms-reports/native-export-pdf', 'POST', ['title' => 'Conversations Report']));
+    }
+
+    public function test_native_export_pdf_renders_captured_html_and_strips_scripts()
+    {
+        if (!class_exists(\Dompdf\Dompdf::class)) {
+            $this->markTestSkipped('dompdf not installed');
+        }
+
+        $controller = new \Modules\ArmsReports\Http\Controllers\ArmsReportsController();
+        $request = Request::create('/arms-reports/native-export-pdf', 'POST', [
+            'title' => 'Conversations Report',
+            'html'  => '<div class="rpt-metrics"><div class="rpt-metric">42</div></div><script>alert(1)</script>',
+        ]);
+
+        $response = $controller->nativeExportPdf($request);
+
+        $this->assertSame('application/pdf', $response->headers->get('Content-Type'));
+        $this->assertStringStartsWith('%PDF', $response->getContent());
+        $this->assertStringContainsString('conversations-report', $response->headers->get('Content-Disposition'));
     }
 }

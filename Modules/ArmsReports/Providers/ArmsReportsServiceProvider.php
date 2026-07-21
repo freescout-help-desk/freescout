@@ -60,12 +60,17 @@ class ArmsReportsServiceProvider extends ServiceProvider
             return $javascripts;
         });
 
-        // The @media print rules the "Print / Save as PDF" item (added by
-        // the script above) relies on.
-        \Eventy::addFilter('stylesheets', function ($styles) {
-            $styles[] = \Module::getPublicPath(ARMS_REPORTS_MODULE).'/css/style.css';
-
-            return $styles;
+        // Native Reports pages (Conversations/Productivity/Satisfaction)
+        // have no PDF export of their own. reports.filters_button_append is
+        // a real, maintained extension point that module already exposes
+        // for exactly this (there's even a commented-out, never-wired
+        // "Export" button placeholder right next to where it fires in
+        // filters.blade.php), so this needs no edit to that module's own
+        // files - see Public/js/module.js for the click handler.
+        \Eventy::addAction('reports.filters_button_append', function () {
+            if (auth()->user()) {
+                echo \View::make('armsreports::native_export_button')->render();
+            }
         });
 
         // Launch-critical: stamp first_reply_at on the first agent reply.

@@ -72,4 +72,39 @@ class Exporter
             'Content-Disposition' => 'attachment; filename="'.$filename.'.pdf"',
         ]);
     }
+
+    /**
+     * PDF export of an already-rendered report fragment (ARMS-40 follow-up):
+     * the native Reports module has no export of its own, so its "Export to
+     * PDF" button posts back the metrics/tables HTML it already rendered on
+     * screen rather than us re-deriving that data through its controller.
+     */
+    public static function pdfFromHtml($html, $title, $filename)
+    {
+        if (!class_exists(\Dompdf\Dompdf::class)) {
+            abort(500, 'dompdf is not installed — run composer install.');
+        }
+
+        // Defense in depth: this HTML arrives via a POST body, which
+        // nothing server-side can guarantee is really an unmodified capture
+        // of the page (a user could tamper with it via devtools). Script
+        // tags have no legitimate reason to be in a metrics/tables capture,
+        // and dompdf doesn't execute them anyway.
+        $html = preg_replace('#<script\b[^>]*>.*?</script>#is', '', (string) $html);
+
+        $rendered = \View::make('armsreports::native_pdf', [
+            'html' => $html,
+            'title' => $title,
+        ])->render();
+
+        $dompdf = new \Dompdf\Dompdf(['isRemoteEnabled' => false]);
+        $dompdf->loadHtml($rendered);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'.pdf"',
+        ]);
+    }
 }
