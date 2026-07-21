@@ -43,7 +43,10 @@ class ArmsReportsController extends Controller
     public function nativeExportPdf(Request $request)
     {
         $request->validate([
-            'html'  => 'required|string',
+            // 5MB of characters: generous enough for metrics + a chart PNG
+            // + tables, a cap against a malformed/oversized payload rather
+            // than a tight budget for the normal case.
+            'html'  => 'required|string|max:5000000',
             'title' => 'nullable|string|max:200',
         ]);
 

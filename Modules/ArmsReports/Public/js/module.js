@@ -68,12 +68,25 @@ $(document).on('click', '#arms-reports-native-pdf-export', function (e) {
 	var $canvas = $report.find('#rpt-chart');
 	if ($canvas.length && $canvas[0].getContext) {
 		try {
+			// Chart.js animates its initial draw-in by default, so a click
+			// shortly after a refresh could otherwise snapshot a
+			// mid-transition frame instead of the finished chart. Forcing
+			// an animation-free redraw right before the snapshot removes
+			// that race instead of relying on the user waiting it out.
+			var chart = window.Chart && window.Chart.getChart ? window.Chart.getChart($canvas[0]) : null;
+			if (chart) {
+				chart.options.animation = false;
+				chart.update();
+			}
 			var chartImage = $canvas[0].toDataURL('image/png');
 			$capture.append($('<div class="rpt-chart-image"></div>').append($('<img>').attr('src', chartImage)));
 		} catch (err) {
 			// Tainted canvas (cross-origin content drawn onto it) or an
 			// unsupported browser - omit the chart rather than fail the
 			// whole export, same as before this was added.
+			if (window.console && window.console.warn) {
+				window.console.warn('ARMS Reports: chart export skipped', err);
+			}
 		}
 	}
 
