@@ -4,7 +4,7 @@ Relabels the conversation status **Active** to **New**, matching the term ARMS's
 
 ## How it works
 
-`resources/lang/en.json` (a plain Laravel translation override) carries `"Active": "New"`. Every place in this codebase that renders the label already calls `__('Active')` through `Conversation::statusCodeToName()` / `Thread::statusCodeToName()` (the same resolver ARMS-37's Closed → Solved rename relies on), so this one entry reaches the status dropdown, the bulk "change status" menu, thread history log lines, and notification emails with no further changes.
+`resources/lang/en.json` (a plain Laravel translation override) carries `"Active": "New"`. Every place in this codebase that renders the label already calls `__('Active')` through `Conversation::statusCodeToName()` / `Thread::statusCodeToName()` (the same resolver the existing Closed → Solved rename relies on), so this one entry reaches the status dropdown, the bulk "change status" menu, thread history log lines, and notification emails with no further changes.
 
 ## Why this needed more than a one-line lang file
 
@@ -14,6 +14,8 @@ Unlike "Closed," the word "Active" is reused for several things that have nothin
 - The mailbox connection-health indicator (`resources/views/mailboxes/connection_incoming.blade.php`) — now reads "Working."
 - The Modules admin page's enabled badge (`resources/views/modules/partials/module_card.blade.php`) — now reads "Enabled."
 - **Workflows' own "is this rule enabled" checkbox** — a paid, non-git-tracked module that uses the identical `__('Active')` call for something unrelated to conversation status. Can't be fixed with a translation key change (that file isn't ours to edit and wouldn't survive a Workflows update anyway), so this module runs `php artisan activetonewlabel:patch-workflows` to rewrite that one label directly. Idempotent and guarded the same way as the existing Workflows Status list patch (`Modules/OnHoldStatus`) — refuses to touch the file if it doesn't look exactly as expected, backs it up before writing, and reversible via `--revert`.
+
+  **Not yet verified byte-for-byte**: the command's expected text (`ORIGINAL`) was transcribed from a single terminal-paste grep of the real file, the same way the Workflows Status list patch's own expected text was. If that transcription is off in any way (different whitespace, a version of Workflows that phrases this differently), the occurrence-count guard will refuse to touch the file rather than guess — but that also means the patch just won't apply until someone checks. Run `php artisan activetonewlabel:patch-workflows` once manually on the demo server and confirm it reports success before relying on it or wiring it into the automatic deploy step.
 
 Two labels that share the same underlying concept were deliberately left alone: the mailbox "default status for new tickets" dropdown options (`Mailbox::TICKET_STATUS_ACTIVE`) — same concept as the conversation status, correct for them to read "New" too.
 

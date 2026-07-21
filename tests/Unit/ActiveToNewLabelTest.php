@@ -55,4 +55,45 @@ class ActiveToNewLabelTest extends TestCase
         $this->assertSame('Activated', $user->getInviteStateName());
         $this->assertNotSame('New', $user->getInviteStateName());
     }
+
+    /**
+     * The Modules admin page's enabled badge must keep reading "Enabled",
+     * not be swept up into "New" by the shared translation key.
+     */
+    public function test_module_card_enabled_badge_does_not_read_new()
+    {
+        $html = view('modules.partials.module_card', [
+            'module' => [
+                'alias'       => 'testmodule',
+                'name'        => 'Test Module',
+                'description' => 'A test module.',
+                'version'     => '1.0.0',
+                'active'      => true,
+                'installed'   => true,
+            ],
+        ])->render();
+
+        $this->assertStringContainsString(__('Enabled'), $html);
+        $this->assertStringNotContainsString('>New<', $html);
+    }
+
+    /**
+     * The mailbox connection-health indicator must keep reading "Working",
+     * not be swept up into "New" by the shared translation key. A full
+     * page render needs a real Mailbox plus the whole app layout for what
+     * is otherwise a one-line check, so this asserts directly against the
+     * Blade source instead: the isInActive() branch uses the new key, and
+     * the old shared key is gone from that branch specifically.
+     */
+    public function test_connection_incoming_view_does_not_use_shared_active_key()
+    {
+        $source = file_get_contents(resource_path('views/mailboxes/connection_incoming.blade.php'));
+
+        // The exact live Blade echo, not a bare substring match - this
+        // file's own explanatory comment mentions __('Active') by name as
+        // prose (why it's deliberately not used), which a plain substring
+        // check would misread as the call still being present.
+        $this->assertStringContainsString("{{ __('Working') }}", $source);
+        $this->assertStringNotContainsString("{{ __('Active') }}", $source);
+    }
 }
