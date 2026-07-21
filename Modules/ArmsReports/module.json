@@ -1,9 +1,10 @@
 {
     "name": "ArmsReports",
     "alias": "armsreports",
-    "description": "ARMS reports catalogue (ARMS-13): KPI and agent-performance reports over the threads event table, with CSV/PDF export. Complements the paid Reports module.",
+    "description": "ARMS reports catalogue: KPI and agent-performance reports over the threads event table, with CSV/PDF export. Complements the paid Reports module.",
     "version": "1.0.0",
     "detailsUrl": "",
+    "img": "/modules/armsreports/img/icon.svg",
     "author": "Threls",
     "authorUrl": "https://threls.com",
     "requiredAppVersion": "1.8.0",
