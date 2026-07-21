@@ -33,6 +33,7 @@ Thumbs.db
 !/Modules/SortableCustomFields
 !/Modules/CustomerFieldSearch
 !/Modules/ArmsReports
+!/Modules/ActiveToNewLabel
 /public/modules
 /public/docs
 /public/.dh-diag

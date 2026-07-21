@@ -35,7 +35,10 @@
                         <div class="col-sm-6">
                             <label class="control-label">
                                 @if ($mailbox->isInActive())
-                                    <span class="text-success"><i class="glyphicon glyphicon-ok"></i> {{ __('Active') }}</span>
+                                    {{-- Deliberately not __('Active') - that string is also the
+                                         conversation status label, and a translation override on
+                                         one must not silently relabel the other. --}}
+                                    <span class="text-success"><i class="glyphicon glyphicon-ok"></i> {{ __('Working') }}</span>
                                 @else
                                     <span class="text-warning"><i class="glyphicon glyphicon-ok"></i> {{ __('Inactive') }}</span>
                                 @endif

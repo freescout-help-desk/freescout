@@ -5,7 +5,10 @@
 		<img src="{{ App\Module::IMG_DEFAULT }}" />
 	@endif
 	<div class="module-wrap">
-	    <h4>{{ App\Module::formatName($module['name']) }}@if (empty($module['installed'])) <span class="label label-lightgrey">{{ __('Not Installed') }}</span>@elseif (empty($module['active'])) <span class="label label-lightgrey">{{ __('Inactive') }}</span>@else <span class="label label-success">{{ __('Active') }}</span>@endif</h4>
+	    {{-- Deliberately not __('Active') for the enabled badge - that string is also
+	         the conversation status label, and a translation override on one must
+	         not silently relabel the other. --}}
+	    <h4>{{ App\Module::formatName($module['name']) }}@if (empty($module['installed'])) <span class="label label-lightgrey">{{ __('Not Installed') }}</span>@elseif (empty($module['active'])) <span class="label label-lightgrey">{{ __('Inactive') }}</span>@else <span class="label label-success">{{ __('Enabled') }}</span>@endif</h4>
 	    <p>
 	    	{{ $module['description'] }}
 	    </p>
