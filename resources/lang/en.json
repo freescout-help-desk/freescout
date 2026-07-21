@@ -1,4 +1,19 @@
 {
     "Closed": "Solved",
-    "Active": "New"
+    "Active": "New",
+    "Note": "Internal Note",
+    "Add Note": "Add Internal Note",
+    "This reply will go to the customer. :%switch_start%Switch to a note:%switch_end% if you are replying to :user_name.": "This reply will go to the customer. :%switch_start%Switch to an internal note:%switch_end% if you are replying to :user_name.",
+    ":person added a note to conversation": ":person added an internal note to conversation",
+    ":person added a note": ":person added an internal note",
+    ":person added a note to conversation #:conversation_number": ":person added an internal note to conversation #:conversation_number",
+    ":%tag_start%Note added:%tag_end% :%view_start%View:%a_end%": ":%tag_start%Internal note added:%tag_end% :%view_start%View:%a_end%",
+    "Note added": "Internal note added",
+    "This setting gives you control over what page loads after you perform an action (send a reply, add a note, change conversation status or assignee).": "This setting gives you control over what page loads after you perform an action (send a reply, add an internal note, change conversation status or assignee).",
+    "Notify :person when another :app_name user replies or adds a note…": "Notify :person when another :app_name user replies or adds an internal note…",
+    "Notify me when another :app_name user replies or adds a note…": "Notify me when another :app_name user replies or adds an internal note…",
+    "Added a note": "Added an internal note",
+    "Note contains": "Internal note contains",
+    "Add a Note": "Add an Internal Note",
+    "Edit Note": "Edit Internal Note"
 }

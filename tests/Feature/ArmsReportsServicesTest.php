@@ -218,6 +218,23 @@ class ArmsReportsServicesTest extends TestCase
         $this->assertSame(2, $this->cardsByLabel($data)['Created today']['value']);
     }
 
+    /**
+     * The Ticket Brand placeholder's column header used to be __('Note') -
+     * once resources/lang/en.json renames "Note" to "Internal Note" for the
+     * conversation note feature (ARMS-42), this unrelated placeholder would
+     * have been swept up too. It was moved to its own "Details" key.
+     */
+    public function test_ticket_brand_placeholder_header_does_not_read_internal_note()
+    {
+        $data = (new \Modules\ArmsReports\Services\KpiReportService($this->filters()))->build();
+
+        $section = collect($data['sections'])->firstWhere('key', 'ticket_brand');
+
+        $this->assertNotNull($section);
+        $this->assertSame(['Details'], $section['headers']);
+        $this->assertNotContains('Internal Note', $section['headers']);
+    }
+
     public function test_kpi_by_hour_groups_by_creation_hour()
     {
         $mailbox = $this->makeMailbox();
