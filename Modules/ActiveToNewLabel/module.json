@@ -4,6 +4,7 @@
     "description": "Relabels the conversation status \"Active\" to \"New\" throughout the agent UI, and patches the Workflows module (a separate, non-git-tracked paid module) so its own \"is this rule enabled\" checkbox isn't swept up by the same label change.",
     "version": "1.0.0",
     "detailsUrl": "",
+    "img": "/modules/activetonewlabel/img/icon.svg",
     "author": "Threls",
     "authorUrl": "https://threls.com",
     "requiredAppVersion": "1.8.0",
