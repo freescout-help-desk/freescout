@@ -185,7 +185,7 @@
                         </div>
                     </div>
 
-                    @if (!$user->isAdmin())
+                    @if (!$user->isAdmin() && Auth::user()->isAdmin())
                         <div class="form-group">
                             <label for="only_assigned_tickets" class="col-sm-2 control-label">{{ __('Conversations') }}</label>
 

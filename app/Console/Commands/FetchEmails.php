@@ -1150,7 +1150,7 @@ class FetchEmails extends Command
             $now = date('Y-m-d H:i:s');
         }
         $conv_cc = $cc;
-        $prev_conv_cc = $conv_cc;
+        //$prev_conv_cc = $conv_cc;
 
         // Customers are created before with email and name
         $customer = Customer::create($from);
@@ -1307,17 +1307,20 @@ class FetchEmails extends Command
         }
 
         // Conversation customer changed
-        // if ($prev_customer_id) {
-        //     event(new ConversationCustomerChanged($conversation, $prev_customer_id, $prev_customer_email, null, $customer));
-        // }
-
-        // Return original customer back.
         if ($prev_customer_id) {
+            event(new ConversationCustomerChanged($conversation, $prev_customer_id, $prev_customer_email, null, $customer));
+        }
+
+        // Returning original customer is disabled for better security:
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-j49f-9g94-3wh4
+        // 
+        // Return original customer back.
+        /*if ($prev_customer_id) {
             $conversation->customer_id = $prev_customer_id;
             $conversation->customer_email = $prev_customer_email;
             $conversation->setCc(array_merge($prev_conv_cc, array_diff($to, $mailbox->getEmails())));
             $conversation->save();
-        }
+        }*/
 
         return $thread;
     }
@@ -1592,6 +1595,7 @@ class FetchEmails extends Command
             }
 
             // Try to separate customer reply using hashed reply separator.
+            // No other reply separators are used in this case.
             // In this case some extra text may appear below customer's reply:
             //     On Thu, Jan 4, 2024 at 8:41 AM John Doe | Demo <test@example.org> wrote:
             if (config('app.alternative_reply_separation')) {

@@ -730,8 +730,16 @@ class MailboxesController extends Controller
 
                 // Check if outgoing port is open.
                 if (!$response['msg'] && $mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
-                    $test_result = \Helper::checkPort($mailbox->out_server, $mailbox->out_port);
-                    if (!$test_result) {
+                    $test_result = false;
+                    try {
+                        $test_result = \Helper::checkPort($mailbox->out_server, $mailbox->out_port);
+                    } catch (\Exception $e) {
+                        if ($e->getCode() == \Helper::UNSAFE_URL_EXCEPTION_CODE) {
+                            $response['msg'] = $e->getMessage();
+                        }
+                    }
+
+                    if (empty($response['msg']) && !$test_result) {
                         $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->out_server.'</strong>', 'port' => '<strong>'.$mailbox->out_port.'</strong>']);
                     }
                 }
@@ -781,8 +789,15 @@ class MailboxesController extends Controller
 
                 // Check if outgoing port is open.
                 if (!$response['msg'] && !$tested) {
-                    $test_result = \Helper::checkPort($mailbox->in_server, $mailbox->in_port);
-                    if (!$test_result) {
+                    $test_result = false;
+                    try {
+                        $test_result = \Helper::checkPort($mailbox->in_server, $mailbox->in_port);
+                    } catch (\Exception $e) {
+                        if ($e->getCode() == \Helper::UNSAFE_URL_EXCEPTION_CODE) {
+                            $response['msg'] = $e->getMessage();
+                        }
+                    }
+                    if (empty($response['msg']) && !$test_result) {
                         $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->in_server.'</strong>', 'port' => '<strong>'.$mailbox->in_port.'</strong>']);
                     }
                 }
