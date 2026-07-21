@@ -421,6 +421,23 @@ class ArmsReportsServicesTest extends TestCase
         }));
     }
 
+    /**
+     * The dropdown must render hidden inline (not via a stylesheet, which
+     * would still race the first paint on a slow connection), or it flashes
+     * visible before module.js runs and merges/reveals it - found live on
+     * the demo. module.js is responsible for showing it again if the merge
+     * fails, but that half isn't testable here (no JS harness in this repo).
+     */
+    public function test_menu_dropdown_renders_hidden_inline()
+    {
+        $html = \View::make('armsreports::menu')->render();
+
+        $this->assertStringContainsString(
+            'data-arms-reports-dropdown data-reports-label="Reports" style="display: none;"',
+            $html
+        );
+    }
+
     // -- Controller / export pipeline ----------------------------------------
 
     public function test_kpis_export_as_csv()
