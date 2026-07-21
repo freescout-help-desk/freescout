@@ -8,17 +8,7 @@ use Tests\TestCase;
 
 class FetchEmailsForwardDetectionTest extends TestCase
 {
-    public function testForwardedNotificationStartsNewConversation()
-    {
-        $command = new FetchEmails();
-        $message_id = $this->notificationMessageId();
-
-        self::assertTrue($command->shouldStartNewConversationForForward('Fwd: Notification', [$message_id]));
-        self::assertTrue($command->shouldStartNewConversationForForward('FW: Notification', [$message_id]));
-        self::assertTrue($command->shouldStartNewConversationForForward('WG: Notification', [$message_id]));
-    }
-
-    public function testReplyToNotificationKeepsExistingThreadingBehavior()
+    public function testReplySubjectsKeepExistingThreadingBehavior()
     {
         $command = new FetchEmails();
         $message_id = $this->notificationMessageId();
@@ -27,27 +17,30 @@ class FetchEmailsForwardDetectionTest extends TestCase
         self::assertFalse($command->shouldStartNewConversationForForward('Aw: Notification', [$message_id]));
     }
 
-    public function testOnlyValidUserNotificationMessageIdsAreHandled()
+    public function testReplyKeepsOriginalForwardedSubjectWhenInReplyToIsPresent()
     {
         $command = new FetchEmails();
         $message_id = $this->notificationMessageId();
 
-        self::assertTrue($command->shouldStartNewConversationForForward('Fwd: Notification', [
-            'unrelated@example.org',
-            $message_id,
-        ]));
-        self::assertTrue($command->shouldStartNewConversationForForward('Fwd: Notification', [
-            preg_replace('/^FS_/', '', $message_id),
-        ]));
-        self::assertFalse($command->shouldStartNewConversationForForward('Fwd: Notification', [
-            'FS_notify-123-456-0000000000000000@example.org',
-        ]));
-        self::assertFalse($command->shouldStartNewConversationForForward('Fwd: Customer reply', [
-            'FS_reply-123-'.Mail::getMessageIdHash(123).'@example.org',
-        ]));
-        self::assertFalse($command->shouldStartNewConversationForForward('Fwd: Notification', [
-            'regular-message@example.org',
-        ]));
+        self::assertFalse($command->shouldStartNewConversationForForward(
+            'Fwd: Test',
+            [$message_id],
+            $message_id
+        ));
+    }
+
+    public function testOnlyValidUserNotificationMessageIdsAreAccepted()
+    {
+        $command = new FetchEmails();
+        $message_id = $this->notificationMessageId();
+
+        self::assertSame('123', $command->getUserNotificationThreadId($message_id));
+        self::assertSame('123', $command->getUserNotificationThreadId(preg_replace('/^FS_/', '', $message_id)));
+        self::assertNull($command->getUserNotificationThreadId('FS_notify-123-456-0000000000000000@example.org'));
+        self::assertNull($command->getUserNotificationThreadId(
+            'FS_reply-123-'.Mail::getMessageIdHash(123).'@example.org'
+        ));
+        self::assertNull($command->getUserNotificationThreadId('regular-message@example.org'));
     }
 
     private function notificationMessageId()

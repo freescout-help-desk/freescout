@@ -44,6 +44,7 @@ class ForwardedNotificationTest extends TestCase
             'folder_id'      => $this->mailbox_a->getFolderByType(Folder::TYPE_UNASSIGNED)->id,
             'customer_id'    => $customer->id,
             'customer_email' => 'customer@example.org',
+            'subject'        => 'Question about invoice 123',
             'status'         => Conversation::STATUS_ACTIVE,
         ]);
         $this->thread = factory(Thread::class)->create([
@@ -57,8 +58,9 @@ class ForwardedNotificationTest extends TestCase
     public function testForwardedNotificationWithSecondMailboxInCcCreatesNewConversation()
     {
         Queue::fake();
+        $forwarded_subject = 'Fwd: [#'.$this->conversation->number.'] Question about invoice 123';
         $message = $this->notificationResponseMessage(
-            'Fwd: Question about invoice 123',
+            $forwarded_subject,
             'Supervisor <supervisor@example.org>',
             'Mailbox B <'.$this->mailbox_b->email.'>'
         );
@@ -69,7 +71,7 @@ class ForwardedNotificationTest extends TestCase
             ->first();
 
         self::assertNotNull($new_conversation);
-        self::assertSame('Fwd: Question about invoice 123', $new_conversation->subject);
+        self::assertSame($forwarded_subject, $new_conversation->subject);
         self::assertSame('agent@example.org', $new_conversation->customer_email);
         self::assertContains('supervisor@example.org', $new_conversation->getCcArray());
         self::assertNotContains('customer@example.org', $new_conversation->getCcArray());
@@ -102,7 +104,9 @@ class ForwardedNotificationTest extends TestCase
             'Re: Question about invoice 123',
             'Mailbox A <'.$this->mailbox_a->email.'>',
             null,
-            'Reply to the customer. Begin forwarded message: quoted history.'
+            'Reply to the customer. Begin forwarded message: quoted history.',
+            true,
+            true
         );
         $this->processMessage($message, $this->mailbox_a, 'notification-reply@example.org');
 
@@ -117,6 +121,47 @@ class ForwardedNotificationTest extends TestCase
         });
     }
 
+    public function testReplyToCustomerMessageWhoseSubjectStartsWithForwardPrefix()
+    {
+        Queue::fake();
+        $this->conversation->subject = 'Fwd: Test';
+        $this->conversation->save();
+
+        $message = $this->notificationResponseMessage(
+            'Fwd: Test',
+            'Mailbox A <'.$this->mailbox_a->email.'>',
+            null,
+            'Reply to the customer.',
+            true,
+            false
+        );
+        $this->processMessage($message, $this->mailbox_a, 'forward-subject-reply@example.org');
+
+        self::assertSame(1, Conversation::whereIn('mailbox_id', [$this->mailbox_a->id, $this->mailbox_b->id])->count());
+        self::assertSame(2, $this->conversation->threads()->count());
+        Queue::assertPushed(SendReplyToCustomerJob::class, function ($job) {
+            return $job->conversation->id == $this->conversation->id;
+        });
+    }
+
+    public function testForwardOfCustomerMessageWhoseSubjectStartsWithForwardPrefix()
+    {
+        Queue::fake();
+        $this->conversation->subject = 'Fwd: Test';
+        $this->conversation->save();
+
+        $message = $this->notificationResponseMessage(
+            'Fwd: [#'.$this->conversation->number.'] Fwd: Test',
+            'Supervisor <supervisor@example.org>',
+            'Mailbox B <'.$this->mailbox_b->email.'>'
+        );
+        $this->processMessage($message, $this->mailbox_b, 'double-forward-subject@example.org');
+
+        self::assertNotNull(Conversation::where('mailbox_id', $this->mailbox_b->id)->first());
+        self::assertSame(1, $this->conversation->threads()->count());
+        Queue::assertNotPushed(SendReplyToCustomerJob::class);
+    }
+
     public function testReplyToNotificationStillWorksAfterConversationWasMoved()
     {
         Queue::fake();
@@ -126,7 +171,11 @@ class ForwardedNotificationTest extends TestCase
 
         $message = $this->notificationResponseMessage(
             'Re: Question about invoice 123',
-            'Mailbox A <'.$this->mailbox_a->email.'>'
+            'Mailbox A <'.$this->mailbox_a->email.'>',
+            null,
+            'Reply to the customer.',
+            true,
+            true
         );
         $this->processMessage($message, $this->mailbox_a, 'moved-conversation-reply@example.org');
 
@@ -148,7 +197,7 @@ class ForwardedNotificationTest extends TestCase
         return $mailbox;
     }
 
-    private function notificationResponseMessage($subject, $to, $cc = null, $new_body = 'Internal note for the supervisor.', $include_references = true)
+    private function notificationResponseMessage($subject, $to, $cc = null, $new_body = 'Internal note for the supervisor.', $include_references = true, $include_in_reply_to = false)
     {
         $notification_id = Mail::MESSAGE_ID_PREFIX_NOTIFICATION
             .'-'.$this->thread->id
@@ -158,11 +207,13 @@ class ForwardedNotificationTest extends TestCase
         $marker = Mail::getMessageMarker($notification_id);
         $cc_header = $cc ? "Cc: {$cc}\r\n" : '';
         $references_header = $include_references ? "References: <{$notification_id}>\r\n" : '';
+        $in_reply_to_header = $include_in_reply_to ? "In-Reply-To: <{$notification_id}>\r\n" : '';
         $eml = "From: Agent <{$this->agent->email}>\r\n"
             ."To: {$to}\r\n"
             .$cc_header
             ."Subject: {$subject}\r\n"
             ."Message-ID: <notification-response@example.org>\r\n"
+            .$in_reply_to_header
             .$references_header
             ."Date: Mon, 20 Jul 2026 12:00:00 +0000\r\n"
             ."MIME-Version: 1.0\r\n"

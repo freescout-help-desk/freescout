@@ -552,7 +552,7 @@ class FetchEmails extends Command
             // in In-Reply-To/References or in the hidden marker. Do not attach such
             // forwards to the original conversation, otherwise the original
             // customer may receive the forwarded internal message.
-            if ($this->shouldStartNewConversationForForward($subject, $prev_message_ids)) {
+            if ($this->shouldStartNewConversationForForward($subject, $prev_message_ids, $in_reply_to)) {
                 $this->line('['.date('Y-m-d H:i:s').'] Forwarded FreeScout notification detected. Creating a new conversation.');
                 $prev_message_ids = [];
             }
@@ -1051,25 +1051,60 @@ class FetchEmails extends Command
      * Body text is deliberately not inspected: notification emails can contain
      * arbitrary conversation history, including forwarded-message separators.
      */
-    public function shouldStartNewConversationForForward($subject, array $prev_message_ids)
+    public function shouldStartNewConversationForForward($subject, array $prev_message_ids, $in_reply_to = '')
     {
-        if (!preg_match('/^\s*(fwd?|fw|wg|vs|rv|tr|enc|red|doorst|vl|sv|转发|轉寄|転送)\s*:/iu', trim($subject ?? ''))) {
+        if (!preg_match('/^\s*(fwd?|fw|wg|vs|rv|tr|enc|red|doorst|vl|sv|转发|轉寄|転送)\s*:\s*(.*)$/iu', trim($subject ?? ''), $subject_matches)) {
             return false;
         }
 
-        // Include notification IDs without the FS_ prefix for compatibility.
-        $prefix = $this->formatMessageIdPrefix(preg_quote(Mail::MESSAGE_ID_PREFIX_NOTIFICATION, '/'));
+        // A reply can keep an original subject that already starts with "Fwd:".
+        // In-Reply-To pointing to the notification is a stronger reply signal
+        // than the subject prefix and must preserve the existing conversation.
+        if ($this->getUserNotificationThreadId($in_reply_to)) {
+            return false;
+        }
+
         foreach ($prev_message_ids as $prev_message_id) {
-            preg_match('/^'.$prefix.'\-(\d+)\-\d+\-([a-z0-9]{16})@/i', $prev_message_id ?? '', $matches);
-            if (!empty($matches[1])
-                && !empty($matches[2])
-                && hash_equals(Mail::getMessageIdHash($matches[1]), $matches[2])
-            ) {
+            $thread_id = $this->getUserNotificationThreadId($prev_message_id);
+            if (!$thread_id || !($prev_thread = Thread::find($thread_id)) || !$prev_thread->conversation) {
+                continue;
+            }
+
+            // A real forward adds a forward prefix to the notification subject.
+            // Merely having an original conversation subject beginning with "Fwd:"
+            // must not turn a normal reply into a new conversation.
+            $forwarded_subject = trim($subject_matches[2]);
+            $conversation = $prev_thread->conversation;
+            $forwarded_subject = preg_replace(
+                '/^\[#'.preg_quote($conversation->number, '/').'\]\s*/u',
+                '',
+                $forwarded_subject
+            );
+            if ($forwarded_subject === trim($conversation->subject ?? '')) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Validate a user notification Message-ID and return its thread ID.
+     * Includes IDs without the FS_ prefix for compatibility.
+     */
+    public function getUserNotificationThreadId($message_id)
+    {
+        $prefix = $this->formatMessageIdPrefix(preg_quote(Mail::MESSAGE_ID_PREFIX_NOTIFICATION, '/'));
+        preg_match('/^'.$prefix.'\-(\d+)\-\d+\-([a-z0-9]{16})@/i', $message_id ?? '', $matches);
+
+        if (!empty($matches[1])
+            && !empty($matches[2])
+            && hash_equals(Mail::getMessageIdHash($matches[1]), $matches[2])
+        ) {
+            return $matches[1];
+        }
+
+        return null;
     }
 
     // Try to get "From:" from body.
