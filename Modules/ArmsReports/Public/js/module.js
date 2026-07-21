@@ -51,7 +51,7 @@ $(document).ready(function () {
 	// code at all: style.css hides the nav/sidebar/footer in @media print,
 	// so "Print" in the browser's dialog (which is also how you save as
 	// PDF) leaves just the report content.
-	var $printLink = $('<a href="#"><span class="glyphicon glyphicon-print"></span> </a>').append(document.createTextNode(printLabel));
+	var $printLink = $('<a href="#"><span class="glyphicon glyphicon-print"></span> </a>').append(document.createTextNode(printLabel || ''));
 	$printLink.on('click', function (e) {
 		e.preventDefault();
 		window.print();
