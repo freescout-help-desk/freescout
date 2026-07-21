@@ -79,7 +79,9 @@ class BroadcastNotification extends Notification implements ShouldQueue
 
         $thread = Thread::find($payload->thread_id);
 
-        if (empty($thread) || !$user || !$thread->mailbox || !$user->can('viewCached', $thread->mailbox)) {
+        $mailbox = ($thread && $thread->conversation) ? $thread->conversation->mailbox : null;
+
+        if (empty($thread) || !$user || !$mailbox || !$user->can('viewCached', $mailbox)) {
             return $data;
         }
 
