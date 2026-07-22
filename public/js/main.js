@@ -1353,6 +1353,12 @@ function initConversation()
 		if (is_chat_mode && !$('.conv-action.inactive:first').length) {
 			$(".conv-reply").click();
 		}
+		// Auto-focus the reply editor by default when opening a ticket, so the agent
+		// can start typing without an extra click. Skipped if a stored note or an
+		// in-flight draft restore already claimed the block above.
+		if (!is_chat_mode && !$('.conv-action.inactive:first').length && !getQueryParam('show_draft')) {
+			$(".conv-reply").click();
+		}
 		// Send reply on ENTER press in chat mode
 		if (is_chat_mode) {
 
