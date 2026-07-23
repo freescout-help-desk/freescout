@@ -1664,9 +1664,11 @@ function showReplyForm(data, scroll_offset)
 	$("#to").removeClass('hidden');
 	$("#to_email").addClass('hidden').addClass('parsley-exclude').next('.select2:first').hide();
 
+	// Focus reply area. Do not focus when creating a new conversation.
 	//if (!$('#to').length) {
-	$('#body').summernote('focus');
-	//}
+	if (!$('#subject').length) {
+		$('#body').summernote('focus');
+	}
 
 	if (!isChatMode()) {
 		// Select2 for CC/BCC
