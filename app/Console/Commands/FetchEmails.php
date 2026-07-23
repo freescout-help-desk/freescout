@@ -726,6 +726,14 @@ class FetchEmails extends Command
                     }
                 }
 
+                // Webklex/php-imap returns object instead of a string.
+                $subject = $message->getSubject()."";
+
+                // Convert subject encoding
+                if (preg_match('/=\?[a-z\d-]+\?[BQ]\?.*\?=/i', $subject)) {
+                    $subject = \Helper::iconvMimeDecode($subject);
+                }
+
                 # If a thread is found, we keep it and check
                 if (!empty($prev_thread)) {
                     $is_reply = true;
@@ -793,6 +801,26 @@ class FetchEmails extends Command
                         }
                     }
 
+                    // Agent's reply to the email notification.
+                    // If agent forwards email notification to another mailbox, create
+                    // a new conversation instead of adding agent's reply to the existing conversation.
+                    // https://github.com/freescout-help-desk/freescout/pull/5517
+                    // https://github.com/freescout-help-desk/freescout/issues/4515
+                    if ($prev_thread && !$message_from_customer) {
+                        if (// Subject looks like FWD:
+                            preg_match("/^[[:alpha:]]{1,3}\s*:(.*)/i", trim($subject ?? ''))
+                            // And reply sent to another mailbox.
+                            && $prev_thread->conversation->mailbox_id != $mailbox->id
+                        ) {
+                            $prev_thread = null;
+                            $is_reply = false;
+                            $message_from_customer = true;
+
+                            $this->line('['.date('Y-m-d H:i:s').'] Forwarded email notification detected. Creating a new conversation.');
+                            break;
+                        }
+                    }
+
                     if (!$prev_thread && $i < (count($prev_message_ids)-1)) {
                         // Try another prev_message_id.
                         continue;
@@ -825,14 +853,6 @@ class FetchEmails extends Command
             //     $this->setSeen($message, $mailbox);
             //     continue;
             // }
-
-            // Webklex/php-imap returns object instead of a string.
-            $subject = $message->getSubject()."";
-
-            // Convert subject encoding
-            if (preg_match('/=\?[a-z\d-]+\?[BQ]\?.*\?=/i', $subject)) {
-                $subject = \Helper::iconvMimeDecode($subject);
-            }
 
             $to = $this->formatEmailList($message->getTo());
 
@@ -993,7 +1013,7 @@ class FetchEmails extends Command
                     return;
                 }
 
-                // Save user thread only if there prev_thread is set.
+                // Save user thread only if there is prev_thread set.
                 // https://github.com/freescout-helpdesk/freescout/issues/3455
                 if (!$prev_thread) {
                     $this->logError("Support agent's reply to the email notification could not be processed as previous thread could not be determined.");
