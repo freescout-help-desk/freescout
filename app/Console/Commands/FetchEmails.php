@@ -603,6 +603,14 @@ class FetchEmails extends Command
                 }
             }
 
+            // Webklex/php-imap returns object instead of a string.
+            $subject = $message->getSubject()."";
+
+            // Convert subject encoding
+            if (preg_match('/=\?[a-z\d-]+\?[BQ]\?.*\?=/i', $subject)) {
+                $subject = \Helper::iconvMimeDecode($subject);
+            }
+
             // Add to prev messaged IDs auto-generated Message-IDs.
             foreach ($prev_message_ids as $prev_message_id) {
                 $new_prev_message_id = \MailHelper::generateMessageId($prev_message_id, $mailbox->id.$prev_message_id);
@@ -724,14 +732,6 @@ class FetchEmails extends Command
                             $is_reply = true;
                         }
                     }
-                }
-
-                // Webklex/php-imap returns object instead of a string.
-                $subject = $message->getSubject()."";
-
-                // Convert subject encoding
-                if (preg_match('/=\?[a-z\d-]+\?[BQ]\?.*\?=/i', $subject)) {
-                    $subject = \Helper::iconvMimeDecode($subject);
                 }
 
                 # If a thread is found, we keep it and check
