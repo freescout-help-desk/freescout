@@ -4125,10 +4125,12 @@ function initSystemStatus()
 {
 	if (location.protocol == 'https:') {
 		$('#system-app-protocol').text('HTTPS');
+		if ($('#session_secure_cookie').data('session-secure') == '0') {
+			$('#session_secure_cookie').removeClass('hidden');
+		}
 	} else {
-		var html = 'HTTP'+
-			'<div class="alert alert-danger margin-top">'+Lang.get("messages.push_protocol_alert")+'</div>';
-		$('#system-app-protocol').html(html);
+		$('#system-app-protocol').text('HTTP');
+		$('#protocol_push_notifications').removeClass('hidden');
 	}
 
 	$('.update-trigger').click(function(e) {
