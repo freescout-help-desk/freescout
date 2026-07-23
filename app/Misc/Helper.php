@@ -549,8 +549,11 @@ class Helper
         // Remove all kinds of spaces after tags.
         // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
         // 
+        // Initially this function was used to prepare short previews for conversations.
+        // Now it's not clear why this preg_replace() was needed.
+        // 
         // Keep in mind that preg_replace() may return NULL if "u" flag is used.
-        $text = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $text ?? '');
+        //$text = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $text ?? '');
 
         // Remove <script> and <style> blocks.
         $text = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $text ?? '');
@@ -573,6 +576,7 @@ class Helper
         // }
         // $text = urldecode($text);
 
+        // Remove double spaces.
         $text = trim(preg_replace('/[ ]+/', ' ', $text ?? ''));
 
         return $text;
