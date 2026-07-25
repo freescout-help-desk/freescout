@@ -2070,6 +2070,10 @@ class Helper
             $_SERVER['LOCAL_ADDR'] ?? '',
         ];
 
+        // IPv6 URLs look like http://[::1].
+        // Remove square brackets from hosts (for IPv6 addresses).
+        $parts['host'] = str_replace(['[', ']'], '', $parts['host'] ?? '');
+
         if (!in_array($parts['host'], $host_white_list) && !self::checkIpByMask($parts['host'], $host_white_list)) {
             if (in_array($parts['host'], $restricted_hosts) || self::checkIpByMask($parts['host'], $restricted_hosts)) {
                 if ($throw_exception) {
