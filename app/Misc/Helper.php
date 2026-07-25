@@ -2105,9 +2105,10 @@ class Helper
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
+        //curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
         curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
 
         curl_setopt($ch, CURLOPT_URL, $url);
         \Helper::setCurlDefaultOptions($ch);
@@ -2117,9 +2118,10 @@ class Helper
 
         $curl_errno = curl_errno($ch);
 
-        $redirected_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        //$redirected_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 
-        if ($curl_errno && $curl_errno != CURLE_TOO_MANY_REDIRECTS && !$redirected_url) {
+        //if ($curl_errno && $curl_errno != CURLE_TOO_MANY_REDIRECTS && !$redirected_url) {
+        if ($curl_errno) {
             if ($throw_exception) {
                 throw new \Exception('Could not check URL contents by following redirects: '.$curl_errno, 1);
             } else {
@@ -2127,16 +2129,20 @@ class Helper
             }
         }
 
-        $info = curl_getinfo($ch);
-        if ($info['http_code'] >= 300 && $info['http_code'] < 400) {
+        //$info = curl_getinfo($ch);
+        //if ($info['http_code'] >= 300 && $info['http_code'] < 400) {
 
-            // We've hit a redirect but couldn't follow it due to MAXREDIRS limit.
-            // Extract Location header from response.
-            preg_match('/Location: (.*)/', $response, $matches);
-            if (isset($matches[1])) {
-                $redirected_url = trim($matches[1]);
-            }
+        // Extract Location header from response.
+        $redirected_url = '';
+
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers = substr($response ?? '', 0, $header_size);
+        preg_match('/Location: (.*)/i', $headers, $matches);
+
+        if (isset($matches[1])) {
+            $redirected_url = trim($matches[1]);
         }
+        //}
 
         if (PHP_VERSION_ID < 80000) {
             \curl_close($ch);
