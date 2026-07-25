@@ -200,8 +200,8 @@ class ExceptionHandler
      */
     public function getContent(FlattenException $exception)
     {
-        $title = $exception->getMessage();
-        
+        $title = $this->escapeHtml($exception->getMessage());
+
         if (\Str::endsWith($title, '[display]')) {
             $title = preg_replace("/\[display\]$/", '', $title);
         } else {
