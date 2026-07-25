@@ -1784,6 +1784,7 @@ class Helper
 
                 $svg_sanitizer = new \enshrined\svgSanitize\Sanitizer();
                 $clean_content = $svg_sanitizer->sanitize($content);
+                // If XML parsing fails, remove <script> tags. Other attributes will be protected by CSP.
                 if (!$clean_content)  {
                     $clean_content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
                 }
