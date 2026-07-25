@@ -58,7 +58,8 @@ Route::group(['prefix' => $prefix.'install','as' => 'LaravelInstaller::','namesp
 
 });
 
-Route::group(['prefix' => $prefix.'update','as' => 'LaravelUpdater::','namespace' => 'RachidLaasri\LaravelInstaller\Controllers','middleware' => 'web'],function() {
+// Not used.
+/*Route::group(['prefix' => $prefix.'update','as' => 'LaravelUpdater::','namespace' => 'RachidLaasri\LaravelInstaller\Controllers','middleware' => 'web'],function() {
     Route::group(['middleware' => 'update'], function() {
 
         Route::get('/', [
@@ -83,4 +84,4 @@ Route::group(['prefix' => $prefix.'update','as' => 'LaravelUpdater::','namespace
         'as' => 'final',
         'uses' => 'UpdateController@finish'
     ]);
-});
+});*/
