@@ -443,7 +443,7 @@ class User extends Authenticatable
     public function isDummyPassword()
     {
         $decrypted_password = \Helper::decrypt($this->password);
-        return preg_match("#^dummy_#", $decrypted_password);
+        return preg_match("#^dummy_#", $this->password) || preg_match("#^dummy_#", $decrypted_password);
         //return Hash::check($this->getDummyPassword(), $this->password);
     }
 

@@ -1008,7 +1008,7 @@ class Helper
      *
      * @return [type] [description]
      */
-    public static function decrypt($value, $password = null, $force_unserialize = false)
+    public static function decrypt($value, $password = null, $force_unserialize = false, $return_value_on_error = false)
     {
         $decrypted_value = $value;
 
@@ -1038,6 +1038,11 @@ class Helper
             }
         } catch (\Exception $e) {
             //self::logException($e);
+            if ($return_value_on_error) {
+                return $value;
+            } else {
+                return '';
+            }
         }
 
         return $decrypted_value;

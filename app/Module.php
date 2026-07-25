@@ -174,7 +174,7 @@ class Module extends Model
             return '';
         }
 
-        return \Helper::decrypt($value);
+        return \Helper::decrypt($value) ?: $value;
     }
 
     public static function normalizeAlias($alias)
