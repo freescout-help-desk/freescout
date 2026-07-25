@@ -100,7 +100,7 @@ class ForgotPasswordController extends Controller
 
     protected function throttleKey(Request $request)
     {
-        return strtolower($request->ip()) . '|reset_password';
+        return strtolower($request->ip()) . '|reset_email_password';
     }
 
     protected function sendLockoutResponse(Request $request)
