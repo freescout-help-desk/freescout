@@ -266,7 +266,9 @@ class MailboxesController extends Controller
             }
         }
 
-        $mailbox->signature = \Helper::stripDangerousTags($mailbox->signature);
+        // Purify signature HTML to avoid sending unsafe HTML to customers by email.
+        //$mailbox->signature = \Helper::stripDangerousTags($mailbox->signature);
+        $mailbox->signature = \Helper::purifyHtml($mailbox->signature);
 
         $mailbox->save();
 
