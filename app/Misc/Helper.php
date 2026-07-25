@@ -2113,7 +2113,7 @@ class Helper
         curl_setopt($ch, CURLOPT_URL, $url);
         \Helper::setCurlDefaultOptions($ch);
         curl_setopt($ch, CURLOPT_TIMEOUT, 180);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($ch);
 
         $curl_errno = curl_errno($ch);
