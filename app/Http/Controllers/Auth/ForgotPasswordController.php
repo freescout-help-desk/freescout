@@ -64,12 +64,11 @@ class ForgotPasswordController extends Controller
             $request->only('email')
         );
 
-        //if ($response !== Password::RESET_LINK_SENT) {
-        $this->incrementResetEmailAttempts($request);
-        //return $this->sendResetLinkFailedResponse($request, $response);
-        //}
-
-        //$this->clearResetEmailAttempts($request);
+        if ($response == Password::RESET_LINK_SENT) {
+            $this->clearResetEmailAttempts($request);
+        } else {
+            $this->incrementResetEmailAttempts($request);
+        }
 
         // For security purposes always return an identical response regardless of whether the email exists.
         // return $response == Password::RESET_LINK_SENT
