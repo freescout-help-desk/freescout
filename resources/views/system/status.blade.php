@@ -54,7 +54,15 @@
             </tr>
             <tr>
                 <th>{{ __('Protocol') }}</th>
-                <td class="table-main-col" id="system-app-protocol"></td>
+                <td class="table-main-col">
+                    <div id="system-app-protocol"></div>
+                    <div id="session_secure_cookie" data-session-secure="{{ (int)\Config::get('session.secure') }}" class="alert alert-danger margin-top hidden">
+                        .env &gt;&gt; SESSION_SECURE_COOKIE=true
+                    </div>
+                    <div id="protocol_push_notifications" class="alert alert-danger margin-top hidden">
+                        {{ __("HTTPS protocol is required for the browser push notifications to work.") }}
+                    </div>
+                </td>
             </tr>
             @if (\Helper::detectCloudFlare())
                 @php

@@ -22,6 +22,7 @@ var fs_filters = {};
 var fs_body_default = '<div><br></div>';
 var fs_prev_focus = true;
 var fs_checkbox_shift_last_checked = null;
+var upload_in_progress = false;
 
 var FS_STATUS_CLOSED = 3;
 
@@ -1663,7 +1664,9 @@ function showReplyForm(data, scroll_offset)
 	$("#to").removeClass('hidden');
 	$("#to_email").addClass('hidden').addClass('parsley-exclude').next('.select2:first').hide();
 
-	if (!$('#to').length) {
+	// Focus reply area. Do not focus when creating a new conversation.
+	//if (!$('#to').length) {
+	if (!$('#subject').length) {
 		$('#body').summernote('focus');
 	}
 
@@ -1990,6 +1993,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 	} else {
 		data.append("attach", 0);
 	}
+	upload_in_progress = true;
 	$.ajax({
 		url: laroute.route(route),
 		data: data,
@@ -2002,6 +2006,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 				showFloatingAlert('error', Lang.get("messages.error_occurred"));
 				loaderHide();
 				removeAttachment(attachment_dummy_id);
+				upload_in_progress = false;
 				return;
 			}
 			// Finish loading
@@ -2014,6 +2019,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 			if (typeof(response.status) == "undefined" || response.status != "success") {
 				showAjaxError(response);
 				removeAttachment(attachment_dummy_id);
+				upload_in_progress = false;
 				return;
 			}
 			if (attach) {
@@ -2041,6 +2047,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 				}
 				attachments_container.prepend(input_html);
 			}
+			upload_in_progress = false;
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			if (attach) {
@@ -2049,6 +2056,7 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 				loaderHide();
 			}
 			showFloatingAlert('error', Lang.get("messages.error_occurred")+' Error '+jqXHR.status+'. '+errorThrown);
+			upload_in_progress = false;
 		}
 	});
 }
@@ -2248,7 +2256,12 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 
 		// Send reply, new conversation or note
 	    $(".btn-reply-submit").click(function(e) {
-	
+
+			// Wait till all files uploaded.
+			if (upload_in_progress) {
+				return;
+			}
+
 	    	// This is extra protection from double click on Send button
 	    	// DOM operation are slow sometimes
 	    	if (fs_processing_send_reply) {
@@ -4112,10 +4125,12 @@ function initSystemStatus()
 {
 	if (location.protocol == 'https:') {
 		$('#system-app-protocol').text('HTTPS');
+		if ($('#session_secure_cookie').data('session-secure') == '0') {
+			$('#session_secure_cookie').removeClass('hidden');
+		}
 	} else {
-		var html = 'HTTP'+
-			'<div class="alert alert-danger margin-top">'+Lang.get("messages.push_protocol_alert")+'</div>';
-		$('#system-app-protocol').html(html);
+		$('#system-app-protocol').text('HTTP');
+		$('#protocol_push_notifications').removeClass('hidden');
 	}
 
 	$('.update-trigger').click(function(e) {

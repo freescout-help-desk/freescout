@@ -107,11 +107,17 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
             $release = $releaseCollection->where('name', $version)->first();
         }
 
-        $storageFilename = "{$release->name}.zip";
+        $release_name = preg_replace("#[^0-9\.]#", '', $version);
 
-        //if (!$this->isSourceAlreadyFetched($release->name)) {
-        if (File::exists($storagePath.DIRECTORY_SEPARATOR.$release->name)) {
-            File::deleteDirectory($storagePath.DIRECTORY_SEPARATOR.$release->name);
+        // Build Zipball URL instead of obtaining it from JSON ($release->zipball_url).
+        // https://api.github.com/repos/freescout-help-desk/freescout/zipball/refs/tags/1.8.230
+        $zipball_url = self::GITHUB_API_URL.'/repos/'.$this->config['repository_vendor'].'/'.$this->config['repository_name'].'/zipball/refs/tags/'.$release_name;
+
+        $storageFilename = "{$release_name}.zip";
+
+        //if (!$this->isSourceAlreadyFetched($release_name)) {
+        if (File::exists($storagePath.DIRECTORY_SEPARATOR.$release_name)) {
+            File::deleteDirectory($storagePath.DIRECTORY_SEPARATOR.$release_name);
         }
 
         $storageFile = $storagePath.DIRECTORY_SEPARATOR.$storageFilename;
@@ -119,7 +125,7 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
 
         $this->unzipArchive($storageFile, $storagePath);
 
-        $this->createReleaseFolder($storagePath, $release->name);
+        $this->createReleaseFolder($storagePath, $release_name);
     }
 
     /**

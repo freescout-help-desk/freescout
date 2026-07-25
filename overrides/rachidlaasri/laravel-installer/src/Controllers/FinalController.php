@@ -25,6 +25,7 @@ class FinalController extends Controller
         }
 
         $finalMessages = $finalInstall->runFinal();
+        // Create /storage/.installed file.
         $finalStatusMessage = $fileManager->update();
         $finalEnvFile = $environment->getEnvContent();
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This will install everything required to run a basic FreeScout installation.
 # This should be run on a clean Ubuntu server.

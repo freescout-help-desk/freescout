@@ -4,6 +4,7 @@ namespace App;
 
 use App\Email;
 use App\CustomerChannel;
+use App\Thread;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -1315,6 +1316,11 @@ class Customer extends Model
 
         // Move emails.
         $customer2->emails()->update(['customer_id' => $this->id]);
+
+        // Update customer in threads.
+        // https://github.com/freescout-help-desk/freescout/issues/5505
+        Thread::where('customer_id', $customer2->id)->update(['customer_id' => $this->id]);
+        Thread::where('created_by_customer_id', $customer2->id)->update(['created_by_customer_id' => $this->id]);
 
         // Merge attributes
         // if (in_array('phone', $keepAttributes) && !$this->phone) {
