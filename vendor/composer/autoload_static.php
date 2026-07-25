@@ -133,6 +133,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         ),
         'N' => 
         array (
+            'Nwidart\\Modules\\Generators\\' => 27,
             'Nwidart\\Modules\\' => 16,
         ),
         'M' => 
@@ -581,6 +582,10 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'PHPUnit\\Runner\\' => 
         array (
             0 => __DIR__ . '/../..' . '/overrides/phpunit/phpunit/src/Runner',
+        ),
+        'Nwidart\\Modules\\Generators\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/overrides/nwidart/laravel-modules/src/Generators',
         ),
         'Nwidart\\Modules\\' => 
         array (
@@ -1099,6 +1104,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\CheckBrowser' => __DIR__ . '/../..' . '/app/Http/Middleware/CheckBrowser.php',
         'App\\Http\\Middleware\\CheckRole' => __DIR__ . '/../..' . '/app/Http/Middleware/CheckRole.php',
+        'App\\Http\\Middleware\\ContentSecurityPolicy' => __DIR__ . '/../..' . '/app/Http/Middleware/ContentSecurityPolicy.php',
         'App\\Http\\Middleware\\CustomHandle' => __DIR__ . '/../..' . '/app/Http/Middleware/CustomHandle.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
         'App\\Http\\Middleware\\FrameGuard' => __DIR__ . '/../..' . '/app/Http/Middleware/FrameGuard.php',
@@ -3049,7 +3055,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Nwidart\\Modules\\Facades\\Module' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/Facades/Module.php',
         'Nwidart\\Modules\\Generators\\FileGenerator' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/Generators/FileGenerator.php',
         'Nwidart\\Modules\\Generators\\Generator' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/Generators/Generator.php',
-        'Nwidart\\Modules\\Generators\\ModuleGenerator' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/Generators/ModuleGenerator.php',
+        'Nwidart\\Modules\\Generators\\ModuleGenerator' => __DIR__ . '/../..' . '/overrides/nwidart/laravel-modules/src/Generators/ModuleGenerator.php',
         'Nwidart\\Modules\\Json' => __DIR__ . '/../..' . '/overrides/nwidart/laravel-modules/src/Json.php',
         'Nwidart\\Modules\\LaravelModulesServiceProvider' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/LaravelModulesServiceProvider.php',
         'Nwidart\\Modules\\Laravel\\Module' => __DIR__ . '/..' . '/nwidart/laravel-modules/src/Laravel/Module.php',

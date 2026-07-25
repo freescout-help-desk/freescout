@@ -81,6 +81,7 @@ return array(
     'PHPUnit\\Util\\Xml\\' => array($baseDir . '/overrides/phpunit/phpunit/src/Util/Xml'),
     'PHPUnit\\Util\\PHP\\' => array($baseDir . '/overrides/phpunit/phpunit/src/Util/PHP'),
     'PHPUnit\\Runner\\' => array($baseDir . '/overrides/phpunit/phpunit/src/Runner'),
+    'Nwidart\\Modules\\Generators\\' => array($baseDir . '/overrides/nwidart/laravel-modules/src/Generators'),
     'Nwidart\\Modules\\' => array($baseDir . '/overrides/nwidart/laravel-modules/src', $vendorDir . '/nwidart/laravel-modules/src'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Modules\\' => array($baseDir . '/Modules'),
