@@ -133,6 +133,12 @@ function clearCache($root_dir, $php_path)
     return shell_exec($php_path.' '.$root_dir.'artisan freescout:clear-cache');
 }
 
+function hashSecret($secret, $root_dir)
+{
+    $salt = getEnvVar('APP_KEY', $root_dir);
+    return (string)sha1($secret.$salt);
+}
+
 $logged_in = false;
 $alerts = [];
 $errors = [];
@@ -151,8 +157,8 @@ if (!empty($_POST)) {
     $env_db_username = trim(getEnvVar('DB_USERNAME', $root_dir));
     $env_db_password = trim(getEnvVar('DB_PASSWORD', $root_dir));
 
-    if (($db_username !== $env_db_username && $db_username != (string)sha1($env_db_username))
-        || ($db_password !== $env_db_password && $db_password != (string)sha1($env_db_password))
+    if (($db_username !== $env_db_username && $db_username != hashSecret($env_db_username, $root_dir))
+        || ($db_password !== $env_db_password && $db_password != hashSecret($env_db_password, $root_dir))
     ) {
         $alerts[] = [
             'type' => 'danger',
@@ -324,8 +330,8 @@ if (!empty($_POST)) {
                             </div>
                         <?php else : ?>
 
-                            <input type="hidden" name="db_username" value="<?php echo ($app_key ? $db_username : sha1($db_username)); ?>" />
-                            <input type="hidden" name="db_password" value="<?php echo ($app_key ? $db_password : sha1($db_password)); ?>" />
+                            <input type="hidden" name="db_username" value="<?php echo ($app_key ? $db_username : hashSecret($db_username, $root_dir)); ?>" />
+                            <input type="hidden" name="db_password" value="<?php echo ($app_key ? $db_password : hashSecret($db_password, $root_dir)); ?>" />
 
     						<div class="form-group <?php if (!empty($errors['app_key'])):?>has-error<?php endif ?>">
     		                    <label for="app_key">
