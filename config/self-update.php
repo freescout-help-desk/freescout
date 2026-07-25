@@ -38,7 +38,7 @@ return [
     'repository_types' => [
         'github' => [
             'type'              => 'github',
-            'repository_vendor' => 'freescout-helpdesk', //env('SELF_UPDATER_REPO_VENDOR', ''),
+            'repository_vendor' => 'freescout-help-desk', //env('SELF_UPDATER_REPO_VENDOR', ''),
             'repository_name'   => 'freescout', //env('SELF_UPDATER_REPO_NAME', ''),
             'repository_url'    => '',
             'github_api_url'    => 'https://freescout.net/github-api',
