@@ -734,7 +734,7 @@ class MailboxesController extends Controller
                     try {
                         $test_result = \Helper::checkPort($mailbox->out_server, $mailbox->out_port);
                     } catch (\Exception $e) {
-                        if ($e->getCode() == \Helper::UNSAFE_URL_EXCEPTION_CODE) {
+                        if ($e->getCode() == \Helper::EXCEPTION_UNSAFE_URL) {
                             $response['msg'] = $e->getMessage();
                         }
                     }
@@ -793,7 +793,7 @@ class MailboxesController extends Controller
                     try {
                         $test_result = \Helper::checkPort($mailbox->in_server, $mailbox->in_port);
                     } catch (\Exception $e) {
-                        if ($e->getCode() == \Helper::UNSAFE_URL_EXCEPTION_CODE) {
+                        if ($e->getCode() == \Helper::EXCEPTION_UNSAFE_URL) {
                             $response['msg'] = $e->getMessage();
                         }
                     }

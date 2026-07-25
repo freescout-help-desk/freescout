@@ -217,14 +217,24 @@ class SecureController extends Controller
 
         if (!$response['msg']) {
 
-            $upload = Helper::uploadFile($request->file);
-            $filename = basename($upload);
+            $uploaded_file_path = '';
+            try {
+                $uploaded_file_path = Helper::uploadFile($request->file);
+            } catch(\Exception $e) {
+                if ($e->getCode() == \Helper::EXCEPTION_NOT_ALLOWED_FILE_EXTENSION) {
+                    $response['msg'] = $e->getMessage();
+                }
+            }
 
-            if ($upload) {
-                $response['status'] = 'success';
-                $response['url'] = Helper::uploadedFileUrl($filename);
-            } else {
-                $response['msg'] = __('Error occurred uploading file');
+            if (!$response['msg']) {
+                $filename = basename($uploaded_file_path);
+
+                if ($uploaded_file_path) {
+                    $response['status'] = 'success';
+                    $response['url'] = Helper::uploadedFileUrl($filename);
+                } else {
+                    $response['msg'] = __('Error occurred uploading file');
+                }
             }
         }
 

@@ -47,7 +47,9 @@ class Helper
     const UPLOAD_MODE_DEFAULT = 'default';
     const UPLOAD_MODE_BY_CUSTOMER = 'customer';
 
-    const UNSAFE_URL_EXCEPTION_CODE = 10000;
+    const EXCEPTION_UNSAFE_URL = 10000;
+    const EXCEPTION_NOT_ALLOWED_FILE_EXTENSION = 10001;
+    const EXCEPTION_NOT_ALLOWED_FILE_MIME_TYPE = 10002;
 
     public static $csp_nonce = null;
 
@@ -1741,9 +1743,13 @@ class Helper
     {
         $ext = strtolower($file->getClientOriginalExtension());
 
+        if (empty($allowed_exts)) {
+            $allowed_exts = config('app.allowed_extensions');
+        }
+
         if ($allowed_exts) {
             if (!in_array($ext, $allowed_exts)) {
-                throw new \Exception(__('Unsupported file type'), 1);
+                throw new \Exception(__('Unsupported file type').' (.env » APP_ALLOWED_EXTENSIONS="...")', self::EXCEPTION_NOT_ALLOWED_FILE_EXTENSION);
             }
         }
 
@@ -1751,7 +1757,7 @@ class Helper
 
         if ($allowed_mimes) {
             if (!in_array($mime_type, $allowed_mimes)) {
-                throw new \Exception(__('Unsupported file type'), 1);
+                throw new \Exception(__('Unsupported file type'), self::EXCEPTION_NOT_ALLOWED_FILE_MIME_TYPE);
             }
         }
         $file_name = \Str::random(25).'.'.$ext;
@@ -2078,7 +2084,7 @@ class Helper
         if (!in_array($parts['host'], $host_white_list) && !self::checkIpByMask($parts['host'], $host_white_list)) {
             if (in_array($parts['host'], $restricted_hosts) || self::checkIpByMask($parts['host'], $restricted_hosts)) {
                 if ($throw_exception) {
-                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $parts['host']]), self::UNSAFE_URL_EXCEPTION_CODE);
+                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $parts['host']]), self::EXCEPTION_UNSAFE_URL);
                 } else {
                     return '';
                 }
@@ -2090,7 +2096,7 @@ class Helper
         if (!in_array($remote_host_ip, $host_white_list) && !self::checkIpByMask($remote_host_ip, $host_white_list)) {
             if (in_array($remote_host_ip, $restricted_hosts) || self::checkIpByMask($remote_host_ip, $restricted_hosts)) {
                 if ($throw_exception) {
-                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), self::UNSAFE_URL_EXCEPTION_CODE);
+                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), self::EXCEPTION_UNSAFE_URL);
                 } else {
                     return '';
                 }

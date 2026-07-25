@@ -2003,7 +2003,11 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 		type: 'POST',
 		success: function(response){
 			if (typeof(response.url) == "undefined" || !response.url) {
-				showFloatingAlert('error', Lang.get("messages.error_occurred"));
+				msg = Lang.get("messages.error_occurred");
+				if (typeof(response.msg) != "undefined" && response.msg) {
+					msg = response.msg;
+				}
+				showFloatingAlert('error', msg);
 				loaderHide();
 				removeAttachment(attachment_dummy_id);
 				upload_in_progress = false;
