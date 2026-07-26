@@ -18,7 +18,7 @@ class TokenAuth
     public function handle($request, Closure $next)
     {
         // This is needed to restore authentication when app session expires.
-        if (!$request->user() && !empty($request->auth_token) && \Helper::isInApp($request)) {
+        if (!$request->user() && !empty($request->auth_token) && is_string($request->auth_token) && \Helper::isInApp($request)) {
         
             // Decode token (format: urlencode(base64_encode(user_id:expiry:hash)))
             $parts = explode(':', urldecode(base64_decode($request->auth_token)));

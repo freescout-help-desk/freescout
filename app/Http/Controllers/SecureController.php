@@ -220,7 +220,7 @@ class SecureController extends Controller
             $uploaded_file_path = '';
             try {
                 $uploaded_file_path = Helper::uploadFile($request->file);
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 if ($e->getCode() == \Helper::EXCEPTION_NOT_ALLOWED_FILE_EXTENSION) {
                     $response['msg'] = $e->getMessage();
                 }
