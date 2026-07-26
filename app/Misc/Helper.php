@@ -1744,6 +1744,9 @@ class Helper
         return $pids;
     }
 
+    /**
+     * Upload file into /storage/app/public/uploads.
+     */
     public static function uploadFile($file, $allowed_exts = [], $allowed_mimes = [])
     {
         $ext = strtolower($file->getClientOriginalExtension());
@@ -1752,11 +1755,11 @@ class Helper
             $allowed_exts = config('app.allowed_extensions');
         }
 
-        if ($allowed_exts) {
+        /*if ($allowed_exts) {
             if (!in_array($ext, $allowed_exts)) {
                 throw new \Exception(__('Unsupported file type').' (.env » APP_ALLOWED_EXTENSIONS="...")', self::EXCEPTION_NOT_ALLOWED_FILE_EXTENSION);
             }
-        }
+        }*/
 
         $mime_type = $file->getMimeType();
 
@@ -1767,7 +1770,7 @@ class Helper
         }
         $file_name = \Str::random(25).'.'.$ext;
 
-        $file_name = \Helper::sanitizeUploadedFileName($file_name, $file, null, $mime_type);
+        $file_name = \Helper::sanitizeUploadedFileName($file_name, $file, null, $mime_type, self::UPLOAD_MODE_DEFAULT, $allowed_exts);
 
         $file->storeAs('uploads', $file_name);
 
@@ -2206,7 +2209,7 @@ class Helper
         }
     }
 
-    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null, $mime_type = '', $upload_mode = self::UPLOAD_MODE_DEFAULT)
+    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null, $mime_type = '', $upload_mode = self::UPLOAD_MODE_DEFAULT, $allowed_exts = [])
     {
         $pdf_mime_types = [
             'application/pdf', 'application/x-pdf', 'application/acrobat',
@@ -2249,7 +2252,10 @@ class Helper
 
         // Add underscore to the extension if file has restricted extension.
         $rename = false;
-        if (preg_match('/^('.implode('|', self::$restricted_extensions).')$/', $ext) || mb_substr($file_name, 0, 1) == '.') {
+        if (preg_match('/^('.implode('|', self::$restricted_extensions).')$/', $ext) 
+            || ($allowed_exts && !preg_match('/^('.implode('|', $allowed_exts).')$/', $ext) )
+            || mb_substr($file_name, 0, 1) == '.'
+        ) {
             $rename = true;
         } elseif ($upload_mode == self::UPLOAD_MODE_BY_CUSTOMER) {
             $customer_allowed_extensions = config('app.customer_allowed_extensions') ?? [];
