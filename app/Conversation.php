@@ -1657,14 +1657,59 @@ class Conversation extends Model
         }
         $waiting_since_field = $folder->getWaitingSinceField();
         if ($waiting_since_field) {
-            // For phone conversations.
-            if (empty($this->$waiting_since_field)) {
-                $waiting_since_field = 'updated_at';
+            // last_reply_at reflects the time of the last activity of any kind (it also
+            // drives folder list ordering), not specifically how long the customer has
+            // been waiting for a reply. When the customer is the last person to have
+            // replied, compute the actual wait start from thread history instead so that
+            // consecutive customer messages don't keep resetting the displayed time
+            // (#5225), without touching last_reply_at itself (#5501).
+            if ($waiting_since_field == 'last_reply_at' && $this->last_reply_from == self::PERSON_CUSTOMER) {
+                $waiting_since_value = $this->getCustomerWaitingSince();
+            } else {
+                $waiting_since_value = $this->$waiting_since_field;
             }
-            return \App\User::dateDiffForHumans($this->$waiting_since_field);
+
+            // For phone conversations, and as a general fallback.
+            if (empty($waiting_since_value)) {
+                $waiting_since_value = $this->updated_at;
+            }
+            return \App\User::dateDiffForHumans($waiting_since_value);
         } else {
             return '';
         }
+    }
+
+    /**
+     * Get the timestamp from which the customer has been waiting for a reply,
+     * i.e. the creation time of the first thread in the current, unbroken run
+     * of customer messages. Unlike last_reply_at (which advances on every new
+     * thread so that folder lists keep sorting by true recency), this walks
+     * the conversation's threads backwards and stops as soon as it hits a
+     * reply that wasn't from the customer.
+     */
+    public function getCustomerWaitingSince()
+    {
+        $waiting_since = $this->last_reply_at;
+
+        $types = [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE];
+        if ($this->isPhone()) {
+            $types[] = Thread::TYPE_NOTE;
+        }
+
+        $threads = $this->threads()
+            ->whereIn('type', $types)
+            ->where('state', Thread::STATE_PUBLISHED)
+            ->orderBy('created_at', 'desc')
+            ->get(['source_via', 'created_at']);
+
+        foreach ($threads as $thread) {
+            if ($thread->source_via != self::PERSON_CUSTOMER) {
+                break;
+            }
+            $waiting_since = $thread->created_at;
+        }
+
+        return $waiting_since;
     }
 
     /**

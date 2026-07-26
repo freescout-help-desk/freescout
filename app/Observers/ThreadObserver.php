@@ -48,18 +48,11 @@ class ThreadObserver
             // $conversation->cc = $thread->cc;
             // $conversation->bcc = $thread->bcc;
 
-            // This broke conversations order.
-            // https://github.com/freescout-help-desk/freescout/issues/5501#issuecomment-5084418616
-            //
-            // Only update last_reply_at if the sender changed or it is not a consecutive
-            // customer message. This preserves the original "waiting since" time when
-            // multiple customer messages arrive without a staff reply.
-            // https://github.com/freescout-help-desk/freescout/issues/5225
-            /*if ($thread->source_via != Conversation::PERSON_CUSTOMER
-                || $conversation->last_reply_from != Conversation::PERSON_CUSTOMER
-            ) {
-                $conversation->last_reply_at = $now;
-            }*/
+            // last_reply_at always reflects the true last activity time: it also drives
+            // folder list ordering (see Folder::getOrderByArray()), so it must advance on
+            // every new thread, even consecutive customer messages without a staff reply
+            // in between (see #5501). The "waiting since" display is computed separately
+            // from thread history in Conversation::getCustomerWaitingSince() (see #5225).
             $conversation->last_reply_at = $now;
             $conversation->last_reply_from = $thread->source_via;
         }
