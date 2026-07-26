@@ -69,9 +69,13 @@ class TranslateController extends BaseController
     public function postDownload()
     {
         $this->manager->exportTranslations('*', false);
-        $file_name = 'lang.zip';
+
         // Archive langs folder
-        $archive_path = \Helper::createZipArchive(base_path().DIRECTORY_SEPARATOR.'resources/lang', $file_name, 'lang');
+        $archive_path = \Helper::createZipArchive(base_path().DIRECTORY_SEPARATOR.'resources/lang', 'lang.zip', 'lang');
+
+        $hash = substr(\Helper::hmacHash($archive_path), 0, 10);
+        $file_name = 'lang_'.$hash.'.zip';
+
         $public_path = storage_path('app/public/'.$file_name);
 
         \File::copy($archive_path, $public_path);
