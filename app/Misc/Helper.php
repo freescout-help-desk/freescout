@@ -1002,11 +1002,7 @@ class Helper
     }
 
     /**
-     * Safely decrypt.
-     *
-     * @param [type] $e [description]
-     *
-     * @return [type] [description]
+     * Decrypt value with or without a password.
      */
     public static function decrypt($value, $password = null, $force_unserialize = false, $return_value_on_error = false)
     {
@@ -1046,6 +1042,14 @@ class Helper
         }
 
         return $decrypted_value;
+    }
+
+    /**
+     * This version of decrypt() returns original value if decryption error occurs.
+     */
+    public static function decryptSoft($value, $password = null)
+    {
+        return self::decrypt($value, $password, $force_unserialize = false, $return_value_on_error = true);
     }
 
     /**
