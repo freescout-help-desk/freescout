@@ -166,7 +166,7 @@ class OpenController extends Controller
 
         if ((int)$thread->conversation_id !== (int)$conversation_id) {
             $mark_as_read = false;
-        } elseif ($hash != Thread::getOpenTrackingHash($thread, $conversation, $conversation->mailbox)) {
+        } elseif (!hash_equals($hash, Thread::getOpenTrackingHash($thread, $conversation, $conversation->mailbox))) {
             $mark_as_read = false;
         }
 

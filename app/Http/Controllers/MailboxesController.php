@@ -1105,7 +1105,7 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($mailbox_id);
         $this->authorize('admin', $mailbox);
         
-        if (csrf_token() != $request->token) {
+        if (!hash_equals(csrf_token(), $request->token)) {
             throw new \Illuminate\Session\TokenMismatchException;
         }
 
