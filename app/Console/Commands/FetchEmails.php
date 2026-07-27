@@ -406,6 +406,7 @@ class FetchEmails extends Command
             }*/
 
             if ($from) {
+                // Also sanitizes email address.
                 $from = $this->formatEmailList($from);
             }
 
@@ -738,10 +739,12 @@ class FetchEmails extends Command
                 if (!empty($prev_thread)) {
                     $is_reply = true;
 
+                    // Reply from customer.
+                    //
                     // Make sure that prev_thread belongs to the current mailbox.
                     // Problems may arise when forwarding conversation for example.
                     //
-                    // For replies to email notifications it's allowed to have prev_thread in
+                    // For user replies to email notifications it's allowed to have prev_thread in
                     // another mailbox as conversation can be moved.
                     // https://github.com/freescout-helpdesk/freescout/issues/3455
                     if ($prev_thread && $message_from_customer) {

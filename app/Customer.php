@@ -495,11 +495,19 @@ class Customer extends Model
     }
 
     /**
-     * Get main email.
+     * Get emails as string.
      */
-    public static function getMainEmailStatic($customer_id)
+    public function getEmailsAsArray()
     {
-        return Email::select('email')->where('customer_id', $customer_id)->pluck('email');
+        return self::getCustomerEmailsAsArray($this->id);
+    }
+
+    /**
+     * Get emails as string.
+     */
+    public static function getCustomerEmailsAsArray($customer_id)
+    {
+        return Email::select('email')->where('customer_id', $customer_id)->pluck('email')->toArray();
     }
 
     /**
