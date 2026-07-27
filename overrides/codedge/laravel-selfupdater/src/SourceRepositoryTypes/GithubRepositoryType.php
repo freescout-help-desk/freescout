@@ -86,7 +86,7 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
     public function fetch($version = '')
     {
         $response = $this->getRepositoryReleases();
-        $releaseCollection = collect(\GuzzleHttp\json_decode($response->getBody()));
+        $releaseCollection = collect(json_decode($response->getBody()));
 
         if ($releaseCollection->isEmpty()) {
             throw new \Exception('Cannot find a release to update. Please check the repository you\'re pulling from');
@@ -286,7 +286,7 @@ class GithubRepositoryType extends AbstractRepositoryType implements SourceRepos
         //     $version = $prepend.$this->getVersionFile().$append;
         // } else {
         $response = $this->getRepositoryReleases();
-        $releaseCollection = collect(\GuzzleHttp\json_decode($response->getBody()));
+        $releaseCollection = collect(json_decode($response->getBody()));
         $version = $prepend.$releaseCollection->first()->name.$append;
         //}
 
