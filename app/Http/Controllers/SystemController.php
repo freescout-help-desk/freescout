@@ -409,6 +409,7 @@ class SystemController extends Controller
 
     /**
      * Ajax HTML.
+     * Content Security Policy header is sent via ContentSecurityPolicy middleware.
      */
     public function ajaxHtml(Request $request)
     {
