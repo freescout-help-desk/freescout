@@ -102,7 +102,7 @@ class Uri implements UriInterface
     {
         // If IPv6
         $prefix = '';
-        if (preg_match('%^(.*://\[[0-9:a-f]+\])(.*?)$%', $url, $matches)) {
+        if (preg_match('%\A([0-9A-Za-z+.-]+://\[[^\]\x00-\x20/?#@]+\])(.*)\z%s', $url, $matches)) {
             $prefix = $matches[1];
             $url = $matches[2];
         }
@@ -443,7 +443,11 @@ class Uri implements UriInterface
             return;
         }
 
-        if (preg_match('/[\x00-\x20\x7F]/', $host)) {
+        // Reject control characters and URI authority delimiters so getHost()
+        // cannot disagree with the on-wire authority.
+        // https://github.com/advisories/GHSA-c2w2-prh8-qm98
+        //if (preg_match('/[\x00-\x20\x7F]/', $host)) {
+        if (preg_match('/[\x00-\x20\x7F\/\?#@\\\\]/', $host)) {
             throw new \InvalidArgumentException(sprintf('Invalid host: "%s"', $host));
         }
     }
