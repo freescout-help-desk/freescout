@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "da1068393c4ab3db8b261fd14ab64f03",
+    "content-hash": "e597d601a6307036f019cd690319c679",
     "packages": [
         {
             "name": "anahkiasen/underscore-php",
@@ -998,23 +998,30 @@
         },
         {
             "name": "ezyang/htmlpurifier",
-            "version": "v4.12.0",
+            "version": "v4.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ezyang/htmlpurifier.git",
-                "reference": "a617e55bc62a87eec73bd456d146d134ad716f03"
+                "reference": "b287d2a16aceffbf6e0295559b39662612b77fcf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/a617e55bc62a87eec73bd456d146d134ad716f03",
-                "reference": "a617e55bc62a87eec73bd456d146d134ad716f03",
+                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/b287d2a16aceffbf6e0295559b39662612b77fcf",
+                "reference": "b287d2a16aceffbf6e0295559b39662612b77fcf",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.2"
+                "php": "~5.6.0 || ~7.0.0 || ~7.1.0 || ~7.2.0 || ~7.3.0 || ~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
             },
             "require-dev": {
-                "simpletest/simpletest": "dev-master#72de02a7b80c6bb8864ef9bf66d41d2f58f826bd"
+                "cerdic/css-tidy": "^1.7 || ^2.0",
+                "simpletest/simpletest": "dev-master"
+            },
+            "suggest": {
+                "cerdic/css-tidy": "If you want to use the filter 'Filter.ExtractStyleBlocks'.",
+                "ext-bcmath": "Used for unit conversion and imagecrash protection",
+                "ext-iconv": "Converts text to and from non-UTF-8 encodings",
+                "ext-tidy": "Used for pretty-printing HTML"
             },
             "type": "library",
             "autoload": {
@@ -1023,7 +1030,10 @@
                 ],
                 "psr-0": {
                     "HTMLPurifier": "library/"
-                }
+                },
+                "exclude-from-classmap": [
+                    "/library/HTMLPurifier/Language/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1043,9 +1053,9 @@
             ],
             "support": {
                 "issues": "https://github.com/ezyang/htmlpurifier/issues",
-                "source": "https://github.com/ezyang/htmlpurifier/tree/master"
+                "source": "https://github.com/ezyang/htmlpurifier/tree/v4.19.0"
             },
-            "time": "2019-10-28T03:44:26+00:00"
+            "time": "2025-10-17T16:34:55+00:00"
         },
         {
             "name": "fideloper/proxy",
@@ -2038,30 +2048,24 @@
         },
         {
             "name": "mews/purifier",
-            "version": "3.2.2",
+            "version": "dev-customized",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mewebstudio/Purifier.git",
-                "reference": "75e4d9a0553b31c1fd31aef65f9561c30dbe5e5e"
+                "url": "https://github.com/freescout-help-desk/Purifier.git",
+                "reference": "6ef282797274c62687aa31b5fc74665135bb8e7d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mewebstudio/Purifier/zipball/75e4d9a0553b31c1fd31aef65f9561c30dbe5e5e",
-                "reference": "75e4d9a0553b31c1fd31aef65f9561c30dbe5e5e",
+                "url": "https://api.github.com/repos/freescout-help-desk/Purifier/zipball/6ef282797274c62687aa31b5fc74665135bb8e7d",
+                "reference": "6ef282797274c62687aa31b5fc74665135bb8e7d",
                 "shasum": ""
             },
             "require": {
-                "ezyang/htmlpurifier": "4.12.*",
-                "illuminate/config": "^5.1|^6.0|^7.0",
-                "illuminate/filesystem": "^5.1|^6.0|^7.0",
-                "illuminate/support": "^5.1|^6.0|^7.0",
-                "php": "^7.2"
-            },
-            "require-dev": {
-                "graham-campbell/testbench": "^3.2",
-                "mockery/mockery": "0.9.*",
-                "phpunit/phpunit": "^4.8|^5.0",
-                "scrutinizer/ocular": "^1.3"
+                "ezyang/htmlpurifier": "^4.19.0",
+                "illuminate/config": "^5.5|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+                "illuminate/filesystem": "^5.5|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+                "illuminate/support": "^5.5|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+                "php": "^7.1|^8.0"
             },
             "suggest": {
                 "laravel/framework": "To test the Laravel bindings",
@@ -2070,23 +2074,27 @@
             "type": "package",
             "extra": {
                 "laravel": {
-                    "aliases": {
-                        "Purifier": "Mews\\Purifier\\Facades\\Purifier"
-                    },
                     "providers": [
                         "Mews\\Purifier\\PurifierServiceProvider"
-                    ]
+                    ],
+                    "aliases": {
+                        "Purifier": "Mews\\Purifier\\Facades\\Purifier"
+                    }
                 }
             },
             "autoload": {
-                "files": [
-                    "src/helpers.php"
-                ],
                 "psr-4": {
                     "Mews\\Purifier\\": "src/"
+                },
+                "files": [
+                    "src/helpers.php"
+                ]
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Mews\\Tests\\Purifier\\": "tests/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -2098,25 +2106,21 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Laravel 5/6/7 HtmlPurifier Package",
+            "description": "Laravel 5/6/7/8/9/10 HtmlPurifier Package",
             "homepage": "https://github.com/mewebstudio/purifier",
             "keywords": [
+                "HtmlPurifier",
+                "Laravel HtmlPurifier",
+                "Laravel Purifier",
+                "Laravel Security",
                 "Purifier",
-                "htmlpurifier",
-                "laravel5 HtmlPurifier",
-                "laravel5 Purifier",
-                "laravel5 Security",
-                "laravel6 HtmlPurifier",
-                "laravel6 Purifier",
-                "laravel6 Security",
                 "security",
                 "xss"
             ],
             "support": {
-                "issues": "https://github.com/mewebstudio/Purifier/issues",
-                "source": "https://github.com/mewebstudio/Purifier/tree/3.2.2"
+                "source": "https://github.com/freescout-help-desk/Purifier/tree/customized"
             },
-            "time": "2020-04-10T19:42:16+00:00"
+            "time": "2026-07-27T13:06:24+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -7419,7 +7423,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "codedge/laravel-selfupdater": 20
+        "codedge/laravel-selfupdater": 20,
+        "mews/purifier": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
