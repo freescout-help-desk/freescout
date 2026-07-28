@@ -2069,10 +2069,11 @@ class Helper
         $host_ip = gethostbyname($hostname);
 
         // Can also include IP masks.
+        // Items must be in lowercase.
         $restricted_hosts = [
             '::1', // IPv6 loopback
             '::ffff:127.0.0.1', // IPv4-mapped IPv6
-            '169.254.169.254', '0xA9FEA9FE', // AWS/GCP/Azure metadata
+            '169.254.169.254', '0xa9fea9fe', // AWS/GCP/Azure metadata
             'fd00::/8', // IPv6 ULA
             '10.0.0.0/8', // RFC1918
             '172.16.0.0/12', // RFC1918
