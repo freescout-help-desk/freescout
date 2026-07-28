@@ -179,7 +179,7 @@ if (!empty($_POST)) {
                 $real_php_dir = dirname(realpath($php_path));
 
                 if ($real_php_dir && !in_array($real_php_dir, ALLOWED_PHP_DIRS, true)) {
-                    $errors['php_path'] = 'Directory is not allowed. Allowed directories: '.implode(', ', ALLOWED_PHP_DIRS).". You may need to set PHP_PATH parameter in /public/tools.php";
+                    $errors['php_path'] = 'Directory is not allowed. Allowed directories: '.implode(', ', ALLOWED_PHP_DIRS).". You may need to set the variable PHP_PATH in .env";
                 }
             }
 
@@ -187,7 +187,7 @@ if (!empty($_POST)) {
             // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-7p9x-ch4c-vqj9
             if (empty($errors['php_path'])) {
                 if (!file_exists($php_path) || !stristr($php_path, 'php')) {
-                    $errors['php_path'] = 'Invalid Path to PHP';
+		  $errors['php_path'] = 'Invalid Path ('.$php_path.' does not exist or "php" not found in PHP_PATH';
                 }
             }
         }
@@ -212,11 +212,11 @@ if (!empty($_POST)) {
                             //     'type' => 'danger',
                             //     'text' => 'Invalid Path to PHP: '.$php_path,
                             // ];
-                            $errors['php_path'] = 'Invalid Path to PHP';
+                            $errors['php_path'] = 'Path to invalid PHP (Wrong or empty php version: "'. $version_output. '")';
                         } else {
                             $alerts[] = [
                                 'type' => 'danger',
-                                'text' => '"php" command could not be executed. You may need to set PHP_PATH parameter in /public/tools.php',
+                                'text' => '"php" command could not be executed. You may need to set the variable PHP_PATH in .env',
                             ];
                         }
                     }
