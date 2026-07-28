@@ -32,7 +32,14 @@ class UsersController extends Controller
     {
         $this->authorize('create', 'App\User');
 
-        $users = User::nonDeleted()->get();
+        $users_query = User::nonDeleted();
+
+        // Exclude admins from list for non-admins.
+        if (!auth()->user()->isAdmin()) {
+            $users_query->where('role', User::ROLE_USER);
+        }
+
+        $users = $users_query->get();
         $users = User::sortUsers($users);
 
         return view('users/users', ['users' => $users]);
