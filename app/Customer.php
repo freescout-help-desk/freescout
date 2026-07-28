@@ -1504,7 +1504,24 @@ class Customer extends Model
 
     public function setPhotoFromRemoteFile($url)
     {
-        $headers = get_headers($url);
+        // Sanitize URL.
+        try {
+            \Helper::sanitizeRemoteUrl($url, true);
+        } catch (\Exception $e) {
+            if ($e->getCode() == \Helper::EXCEPTION_UNSAFE_URL) {
+                \Helper::logException($e, 'Customer::setPhotoFromRemoteFile()');
+                return false;
+            } else {
+                throw $e;
+            }
+        }
+
+        try {
+            $headers = get_headers($url);
+        } catch (\Exception $e) {
+            \Helper::logException($e, 'Customer::setPhotoFromRemoteFile()');
+            return false;
+        }
 
         if (!preg_match("/200/", $headers[0])) {
             return false;
