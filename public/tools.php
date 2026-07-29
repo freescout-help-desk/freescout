@@ -193,7 +193,7 @@ if (!empty($_POST)) {
             // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-7p9x-ch4c-vqj9
             if (empty($errors['php_path'])) {
                 if (!file_exists($php_path) || !stristr($php_path, 'php')) {
-		  $errors['php_path'] = 'Invalid Path ('.$php_path.' does not exist or "php" not found in PHP_PATH';
+                    $errors['php_path'] = 'Invalid Path ('.$php_path.' does not exist or "php" not found in PHP_PATH';
                 }
             }
         }

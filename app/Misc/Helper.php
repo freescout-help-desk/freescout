@@ -7,6 +7,7 @@
 namespace App\Misc;
 
 use Carbon\Carbon;
+use App\Email;
 use App\Option;
 use App\User;
 use App\CustomerChannel;
@@ -2874,5 +2875,13 @@ class Helper
             $key = config('app.key');
         }
         return hash_hmac('sha512', $data, $key);
+    }
+
+    /**
+     * Sanitize email address.
+     */
+    public static function sanitizeEmail($email)
+    {
+        return Email::sanitizeEmail($email);
     }
 }
