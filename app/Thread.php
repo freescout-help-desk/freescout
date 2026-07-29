@@ -298,7 +298,7 @@ class Thread extends Model
      *
      * @return string
      */
-    public function getCleanBody($body = '')
+    public function getCleanBody($body = '', $escape_non_ascii_characters = false)
     {
         if (!$body) {
             $body = $this->body;
@@ -333,7 +333,19 @@ class Thread extends Model
         // Remove <!--[if !mso]><!--> and <!--<![endif]--> comments, preserving the data inside
         //$body = preg_replace('/(<!\-\-\[if [^>]+\]>|<!\[endif\]\-\->)/', '', $body);
 
-        return \Helper::purifyHtml($body);
+        // This option causes issues on some instances:
+        // https://github.com/freescout-help-desk/freescout/issues/5481#issuecomment-5113750894
+        if ($escape_non_ascii_characters) {
+            \Config::set('purifier.settings.default.Core.EscapeNonASCIICharacters', true);
+        }
+
+        $body = \Helper::purifyHtml($body);
+
+        if ($escape_non_ascii_characters) {
+            \Config::set('purifier.settings.default.Core.EscapeNonASCIICharacters', false);
+        }
+
+        return $body;
     }
 
     /**
