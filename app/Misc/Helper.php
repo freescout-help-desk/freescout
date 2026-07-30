@@ -2155,6 +2155,7 @@ class Helper
             }
 
             // Resolve DNS records.
+            $dns_records = [];
             try {
                 $dns_records = dns_get_record($host, DNS_A | DNS_AAAA);
             } catch (\Exception $e) {
@@ -2642,6 +2643,8 @@ class Helper
             'fpassthru (PHP)'  => function_exists('fpassthru'),
             'symlink (PHP)'    => function_exists('symlink'),
             'iconv (PHP)'      => function_exists('iconv'),
+            'dns_get_record (PHP)'  => function_exists('dns_get_record'),
+            'inet_pton (PHP)'  => function_exists('inet_pton'),
             // If posix_isatty() function is not enabled on the server the question in the
             // console command makes it wait infinitely and be aborted.
             // Commands should avoid using interctive functions or use special flags.
