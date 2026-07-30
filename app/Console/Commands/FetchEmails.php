@@ -1791,12 +1791,12 @@ class FetchEmails extends Command
     public function sortMessage($messages)
     {
         $messages = $messages->sortBy(function ($message, $key) {
-            $date = $message->getDate();
+            $date = $this->attrToDate($message->getDate());
             if ($date) {
-                if (isset($message->getDate()->timestamp)) {
-                    return $message->getDate()->timestamp;
+                if (isset($date->timestamp)) {
+                    return $date->timestamp;
                 } else {
-                    return (string)$message->getDate();
+                    return (string)$date;
                 }
             } else {
                 return 0;
