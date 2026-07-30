@@ -88,6 +88,46 @@ class Helper
     ];
 
     /**
+     * Hosts that are restricted blocked by SSRF protection.
+     * Items must be in lowercase.
+     */
+    public static $restricted_ssrf_hosts = [
+        '::1', // IPv6 loopback
+        '0:0:0:0:0:0:0:1', // IPv6 loopback
+        '0000:0000:0000:0000:0000:0000:0000:0001', // IPv6 loopback
+        '::ffff:127.0.0.1', // IPv4-mapped IPv6
+        '169.254.169.254', // AWS/GCP/Azure metadata
+        '::ffff:169.254.169.254', // AWS/GCP/Azure metadata
+        'fd00:ec2::254', // AWS/GCP/Azure metadata
+        '::ffff:a9fe:a9fe', // AWS/GCP/Azure metadata
+        '0000:0000:0000:0000:0000:ffff:a9fe:a9fe', // AWS/GCP/Azure metadata
+        '0x00000000000000000000ffffa9fea9fe', // AWS/GCP/Azure metadata
+        'fd00::/8', // IPv6 ULA
+        '10.0.0.0/8', // RFC1918
+        '172.16.0.0/12', // RFC1918
+        'fd00::/8', // RFC1918
+        '192.168.0.0/16',
+        '0.0.0.0',
+        '127.0.0.0/8', // Loopback addresses
+        '127.0.0.1',
+        'localhost',
+        '100.64.0.0/10', // Carrier-grade NAT
+        '169.254.0.0/16', // link-local
+        '::ffff:0:0/96', // IPv4-mapped IPv6
+        'fc00::/7', // all IPv6 ULA; fd00::/8 covers only half
+        'fe80::/10', // IPv6 link-local
+        '198.18.0.0/15', // benchmarking network
+        '224.0.0.0/4', // multicast
+        '::/128', // reserved
+        '192.0.0.0/29',
+        '192.0.2.0/24',
+        '192.88.99.0/24',
+        '198.51.100.0/24',
+        '203.0.113.0/24',
+        '240.0.0.0/4',
+    ];
+
+    /**
      * Menu structure used to display active menu item.
      * Array are mnemonic names, strings - route names.
      * Menu has 2 levels.
@@ -2050,6 +2090,8 @@ class Helper
     /**
      * If URL contains IPv6 and port the IPv6 address MUST be in brackets.
      * If there is no port specified the function will be able to digest the URL.
+     * Accepts only canonical IPs (inputs like 127.1 or 2130706433 are rejected).
+     * 
      * Returns URL if host can not be extracted.
      */
     public static function checkUrlIpAndHost($url, $throw_exception = false)
@@ -2076,31 +2118,15 @@ class Helper
         $hostname = gethostname();
         $host_ip = gethostbyname($hostname);
 
-        // Can also include IP masks.
-        // Items must be in lowercase.
         $restricted_hosts = [
-            '::1', // IPv6 loopback
-            '::ffff:127.0.0.1', // IPv4-mapped IPv6
-            '169.254.169.254', // AWS/GCP/Azure metadata
-            '::ffff:169.254.169.254', // AWS/GCP/Azure metadata
-            'fd00:ec2::254', // AWS/GCP/Azure metadata
-            '0000:0000:0000:0000:0000:ffff:a9fe:a9fe', // AWS/GCP/Azure metadata
-            '0x00000000000000000000ffffa9fea9fe', // AWS/GCP/Azure metadata
-            'fd00::/8', // IPv6 ULA
-            '10.0.0.0/8', // RFC1918
-            '172.16.0.0/12', // RFC1918
-            'fd00::/8', // RFC1918
-            '192.168.0.0/16',
-            '0.0.0.0',
-            '127.0.0.0/8', // Loopback addresses
-            '127.0.0.1',
-            'localhost',
             $hostname,
             $host_ip,
             mb_strtolower(self::getDomain()),
             $_SERVER['SERVER_ADDR'] ?? '',
             $_SERVER['LOCAL_ADDR'] ?? '',
         ];
+
+        $restricted_hosts = array_merge($restricted_hosts, self::$restricted_ssrf_hosts);
 
         // IPv6 URLs look like http://[::1].
         // Remove square brackets from hosts (for IPv6 addresses).
@@ -2119,31 +2145,89 @@ class Helper
             $hosts_to_check[] = $host_hex_to_ip;
         }
 
-        foreach ($hosts_to_check as $host_item) {
-            if (!in_array($host_item, $host_white_list) && !self::checkIpByMask($host_item, $host_white_list)) {
-                if (in_array($host_item, $restricted_hosts) || self::checkIpByMask($host_item, $restricted_hosts)) {
-                    if ($throw_exception) {
-                        throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $host_item]), self::EXCEPTION_UNSAFE_URL);
-                    } else {
-                        return '';
-                    }
-                }
-            }
+        // Check only if host name is passed in URL.
+        if (!self::isValidIp($host)) {
 
             // Sanitize host IP address.
-            $remote_host_ip = gethostbyname($host_item);
-            if (!in_array($remote_host_ip, $host_white_list) && !self::checkIpByMask($remote_host_ip, $host_white_list)) {
-                if (in_array($remote_host_ip, $restricted_hosts) || self::checkIpByMask($remote_host_ip, $restricted_hosts)) {
-                    if ($throw_exception) {
-                        throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), self::EXCEPTION_UNSAFE_URL);
-                    } else {
-                        return '';
+            $remote_host_ip = gethostbyname($host);
+            if ($remote_host_ip && !in_array($remote_host_ip, $hosts_to_check)) {
+                $hosts_to_check[] = $remote_host_ip;
+            }
+
+            // Resolve DNS records.
+            try {
+                $dns_records = dns_get_record($host, DNS_A | DNS_AAAA);
+            } catch (\Exception $e) {
+                // Do nothing.
+            }
+            if ($dns_records) {
+                foreach ($dns_records as $dns_record) {
+                    if (!empty($dns_record['ip']) && !in_array($dns_record['ip'], $hosts_to_check)) {
+                        $hosts_to_check[] = $dns_record['ip'];
+                    }
+                    if (!empty($dns_record['ipv6']) && !in_array($dns_record['ipv6'], $hosts_to_check)) {
+                        $hosts_to_check[] = $dns_record['ipv6'];
                     }
                 }
             }
         }
 
+        foreach ($hosts_to_check as $host_item) {
+            if (!self::isSafeHost($host_item, $restricted_hosts, $host_white_list)) {
+                if ($throw_exception) {
+                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $host_item]), self::EXCEPTION_UNSAFE_URL);
+                } else {
+                    return '';
+                }
+            }
+        }
+
         return $url;
+    }
+
+    public static function isSafeHost($host, $restricted_hosts = [], $host_white_list = [])
+    {
+        if (in_array($host, $host_white_list) || self::checkIpByMask($host, $host_white_list)) {
+            return true;
+        }
+
+        // Is IP restricted.
+        if (in_array($host, $restricted_hosts) || self::checkIpByMask($host, $restricted_hosts)) {
+            return false;
+        }
+
+        // Hex integer or 0x7f.0x0.0x0.0x1
+        if (substr($host, 0, 2) == '0x') {
+            return false;
+        }
+
+        if (self::isValidIp($host)) {
+            // Is IP canonical.
+            // This accepts only standard IPv4/IPv6 text forms.
+            // Values like 127.1 or 2130706433 are rejected.
+            if (inet_pton($host) === false) {
+                return false;
+            }
+        } else {
+            // If $host is an IP address, make sure that it's canonical.
+
+            // Convert IDN to ASCII.
+            $ascii = idn_to_ascii($host, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+
+            if ($ascii === false || filter_var($ascii, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) === false) {
+                // This is NOT a host name, this is IP - make sure that it's canonical.
+                if (inet_pton($host) === false) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public static function isValidIp($ip)
+    {
+        return filter_var($ip, FILTER_VALIDATE_IP);
     }
 
     // Normalize URLs with IPv6 addresses by adding brackets.
