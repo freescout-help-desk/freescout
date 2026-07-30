@@ -2047,9 +2047,16 @@ class Helper
         return $url;
     }
 
+    /**
+     * If URL contains IPv6 and port the IPv6 address MUST be in brackets.
+     * If there is no port specified the function will be able to digest the URL.
+     * Returns URL if host can not be extracted.
+     */
     public static function checkUrlIpAndHost($url, $throw_exception = false)
     {
-        $parts = parse_url($url ?? '');
+        $url = self::normalizeIPv6InUrl($url ?? '');
+
+        $parts = parse_url($url);
 
         // Sanitize protocol to avoid access to local files.
         if (empty($parts['scheme']) || !in_array($parts['scheme'], ['http', 'https'])) {
@@ -2065,7 +2072,7 @@ class Helper
         $host_white_list = explode(',', $host_white_list_str);
 
         // Sanitize host name.
-        $parts['host'] = mb_strtolower($parts['host']);
+        $host = mb_strtolower($parts['host'] ?? '');
         $hostname = gethostname();
         $host_ip = gethostbyname($hostname);
 
@@ -2074,15 +2081,19 @@ class Helper
         $restricted_hosts = [
             '::1', // IPv6 loopback
             '::ffff:127.0.0.1', // IPv4-mapped IPv6
-            '169.254.169.254', '0xa9fea9fe', // AWS/GCP/Azure metadata
+            '169.254.169.254', // AWS/GCP/Azure metadata
+            '::ffff:169.254.169.254', // AWS/GCP/Azure metadata
+            'fd00:ec2::254', // AWS/GCP/Azure metadata
+            '0000:0000:0000:0000:0000:ffff:a9fe:a9fe', // AWS/GCP/Azure metadata
+            '0x00000000000000000000ffffa9fea9fe', // AWS/GCP/Azure metadata
             'fd00::/8', // IPv6 ULA
             '10.0.0.0/8', // RFC1918
             '172.16.0.0/12', // RFC1918
             'fd00::/8', // RFC1918
             '192.168.0.0/16',
-            '0.0.0.0', '0x00000000',
+            '0.0.0.0',
             '127.0.0.0/8', // Loopback addresses
-            '127.0.0.1', '0x7f000001',
+            '127.0.0.1',
             'localhost',
             $hostname,
             $host_ip,
@@ -2093,31 +2104,60 @@ class Helper
 
         // IPv6 URLs look like http://[::1].
         // Remove square brackets from hosts (for IPv6 addresses).
-        $parts['host'] = str_replace(['[', ']'], '', $parts['host'] ?? '');
+        $host = str_replace(['[', ']'], '', $host);
 
-        if (!in_array($parts['host'], $host_white_list) && !self::checkIpByMask($parts['host'], $host_white_list)) {
-            if (in_array($parts['host'], $restricted_hosts) || self::checkIpByMask($parts['host'], $restricted_hosts)) {
-                if ($throw_exception) {
-                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $parts['host']]), self::EXCEPTION_UNSAFE_URL);
-                } else {
-                    return '';
-                }
-            }
+        // Host could not be determined.
+        if (!$host) {
+            return $url;
         }
 
-        // Sanitize host IP address.
-        $remote_host_ip = gethostbyname($parts['host']);
-        if (!in_array($remote_host_ip, $host_white_list) && !self::checkIpByMask($remote_host_ip, $host_white_list)) {
-            if (in_array($remote_host_ip, $restricted_hosts) || self::checkIpByMask($remote_host_ip, $restricted_hosts)) {
-                if ($throw_exception) {
-                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), self::EXCEPTION_UNSAFE_URL);
-                } else {
-                    return '';
+        $hosts_to_check = [$host];
+
+        // If this is hexadecimal representation of the IP address.
+        $host_hex_to_ip = self::hexToIp($host);
+        if ($host_hex_to_ip && $host_hex_to_ip != $host) {
+            $hosts_to_check[] = $host_hex_to_ip;
+        }
+
+        foreach ($hosts_to_check as $host_item) {
+            if (!in_array($host_item, $host_white_list) && !self::checkIpByMask($host_item, $host_white_list)) {
+                if (in_array($host_item, $restricted_hosts) || self::checkIpByMask($host_item, $restricted_hosts)) {
+                    if ($throw_exception) {
+                        throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $host_item]), self::EXCEPTION_UNSAFE_URL);
+                    } else {
+                        return '';
+                    }
+                }
+            }
+
+            // Sanitize host IP address.
+            $remote_host_ip = gethostbyname($host_item);
+            if (!in_array($remote_host_ip, $host_white_list) && !self::checkIpByMask($remote_host_ip, $host_white_list)) {
+                if (in_array($remote_host_ip, $restricted_hosts) || self::checkIpByMask($remote_host_ip, $restricted_hosts)) {
+                    if ($throw_exception) {
+                        throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), self::EXCEPTION_UNSAFE_URL);
+                    } else {
+                        return '';
+                    }
                 }
             }
         }
 
         return $url;
+    }
+
+    // Normalize URLs with IPv6 addresses by adding brackets.
+    // URLs with port must already have brackets.
+    public static function normalizeIPv6InUrl($url)
+    {
+        // Skip if already has brackets
+        if (preg_match('/\[[a-fA-F0-9:\.]+\]/', $url)) {
+            return $url;
+        }
+
+        $pattern = '/^(https?:\/\/)([^\/?#]+:[^\/?#]+)([\/?#]+|$)/';
+
+        return preg_replace($pattern, '$1[$2]$3', $url);
     }
 
     // Get next redicred URL.
@@ -2185,6 +2225,39 @@ class Helper
         }
         return false;
     }
+
+    /**
+     * Convert hexadecimal representation to IP address (IPv4 or IPv6):
+     * - 0x7f000001 >> 127.0.0.1
+     * 
+     * @param string $hex Hexadecimal string (with or without '0x' prefix)
+     * @return string|false IP address, or false on failure
+     */
+    public static function hexToIp($hex)
+    {
+        // Remove '0x' or '0X' prefix if present
+        $clean_hex = preg_replace('/^0x/i', '', $hex);
+
+        // Validate hex string
+        if (!preg_match('/^[0-9a-f]+$/i', $clean_hex)) {
+            return false;
+        }
+
+        // Pad to even length for bin2hex compatibility
+        if (strlen($clean_hex) % 2 !== 0) {
+            $clean_hex = '0' . $clean_hex;
+        }
+
+        $packed = hex2bin($clean_hex);
+        if ($packed === false) {
+            return false;
+        }
+
+        $ip = inet_ntop($packed);
+
+        return $ip !== false ? $ip : false;
+    }
+
     public static function getTempDir()
     {
         return sys_get_temp_dir() ?: '/tmp';
