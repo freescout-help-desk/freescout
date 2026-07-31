@@ -2376,7 +2376,7 @@ class Conversation extends Model
                     ->orWhere('threads.created_by_customer_id', '=', $customer_id);
             });
         }
-        if (!empty($filters['status'])) {
+        if (!empty($filters['status']) && is_array($filters['status'])) {
             if (count($filters['status']) == 1) {
                 // = is faster than IN.
                 $query_conversations->where('conversations.status', '=', $filters['status'][0]);
@@ -2384,7 +2384,7 @@ class Conversation extends Model
                 $query_conversations->whereIn('conversations.status', $filters['status']);
             }
         }
-        if (!empty($filters['state'])) {
+        if (!empty($filters['state']) && is_array($filters['state'])) {
             if (count($filters['state']) == 1) {
                 // = is faster than IN.
                 $query_conversations->where('conversations.state', '=', $filters['state'][0]);

@@ -266,7 +266,9 @@ class MailboxesController extends Controller
             }
         }
 
-        $mailbox->signature = \Helper::stripDangerousTags($mailbox->signature);
+        // Purify signature HTML to avoid sending unsafe HTML to customers by email.
+        //$mailbox->signature = \Helper::stripDangerousTags($mailbox->signature);
+        $mailbox->signature = \Helper::purifyHtml($mailbox->signature);
 
         $mailbox->save();
 
@@ -734,7 +736,7 @@ class MailboxesController extends Controller
                     try {
                         $test_result = \Helper::checkPort($mailbox->out_server, $mailbox->out_port);
                     } catch (\Exception $e) {
-                        if ($e->getCode() == \Helper::UNSAFE_URL_EXCEPTION_CODE) {
+                        if ($e->getCode() == \Helper::EXCEPTION_UNSAFE_URL) {
                             $response['msg'] = $e->getMessage();
                         }
                     }
@@ -793,7 +795,7 @@ class MailboxesController extends Controller
                     try {
                         $test_result = \Helper::checkPort($mailbox->in_server, $mailbox->in_port);
                     } catch (\Exception $e) {
-                        if ($e->getCode() == \Helper::UNSAFE_URL_EXCEPTION_CODE) {
+                        if ($e->getCode() == \Helper::EXCEPTION_UNSAFE_URL) {
                             $response['msg'] = $e->getMessage();
                         }
                     }
@@ -1103,7 +1105,7 @@ class MailboxesController extends Controller
         $mailbox = Mailbox::findOrFail($mailbox_id);
         $this->authorize('admin', $mailbox);
         
-        if (csrf_token() != $request->token) {
+        if (!hash_equals(csrf_token(), $request->token)) {
             throw new \Illuminate\Session\TokenMismatchException;
         }
 

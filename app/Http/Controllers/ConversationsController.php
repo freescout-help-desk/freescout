@@ -3063,6 +3063,12 @@ class ConversationsController extends Controller
                         $filters[$filter] = date('Y-m-d', strtotime($value));
                     }
                     break;
+                case 'status':
+                case 'state':
+                    if (!is_array($value)) {
+                        unset($filters[$filter]);
+                    }
+                    break;
             }
         }
 

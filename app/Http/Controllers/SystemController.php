@@ -392,7 +392,7 @@ class SystemController extends Controller
      */
     public function cron(Request $request)
     {
-        if (empty($request->hash) || $request->hash != \Helper::getWebCronHash()) {
+        if (empty($request->hash) || !hash_equals($request->hash, \Helper::getWebCronHash())) {
             abort(404);
         }
         $outputLog = new BufferedOutput();
@@ -409,6 +409,7 @@ class SystemController extends Controller
 
     /**
      * Ajax HTML.
+     * Content Security Policy header is sent via ContentSecurityPolicy middleware.
      */
     public function ajaxHtml(Request $request)
     {

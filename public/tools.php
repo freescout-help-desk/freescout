@@ -133,6 +133,12 @@ function clearCache($root_dir, $php_path)
     return shell_exec($php_path.' '.$root_dir.'artisan freescout:clear-cache');
 }
 
+function hashSecret($secret, $root_dir)
+{
+    $salt = getEnvVar('APP_KEY', $root_dir);
+    return (string)sha1($secret.$salt);
+}
+
 $logged_in = false;
 $alerts = [];
 $errors = [];
@@ -151,8 +157,8 @@ if (!empty($_POST)) {
     $env_db_username = trim(getEnvVar('DB_USERNAME', $root_dir));
     $env_db_password = trim(getEnvVar('DB_PASSWORD', $root_dir));
 
-    if (($db_username !== $env_db_username && $db_username != (string)sha1($env_db_username))
-        || ($db_password !== $env_db_password && $db_password != (string)sha1($env_db_password))
+    if (($db_username !== $env_db_username && $db_username != hashSecret($env_db_username, $root_dir))
+        || ($db_password !== $env_db_password && $db_password != hashSecret($env_db_password, $root_dir))
     ) {
         $alerts[] = [
             'type' => 'danger',
@@ -179,7 +185,7 @@ if (!empty($_POST)) {
                 $real_php_dir = dirname(realpath($php_path));
 
                 if ($real_php_dir && !in_array($real_php_dir, ALLOWED_PHP_DIRS, true)) {
-                    $errors['php_path'] = 'Directory is not allowed. Allowed directories: '.implode(', ', ALLOWED_PHP_DIRS).". You may need to set PHP_PATH parameter in /public/tools.php";
+                    $errors['php_path'] = 'Directory is not allowed. Allowed directories: '.implode(', ', ALLOWED_PHP_DIRS).". You may need to set the variable PHP_PATH in .env";
                 }
             }
 
@@ -187,7 +193,7 @@ if (!empty($_POST)) {
             // https://github.com/freescout-helpdesk/freescout/security/advisories/GHSA-7p9x-ch4c-vqj9
             if (empty($errors['php_path'])) {
                 if (!file_exists($php_path) || !stristr($php_path, 'php')) {
-                    $errors['php_path'] = 'Invalid Path to PHP';
+                    $errors['php_path'] = 'Invalid Path ('.$php_path.' does not exist or "php" not found in PHP_PATH';
                 }
             }
         }
@@ -212,11 +218,11 @@ if (!empty($_POST)) {
                             //     'type' => 'danger',
                             //     'text' => 'Invalid Path to PHP: '.$php_path,
                             // ];
-                            $errors['php_path'] = 'Invalid Path to PHP';
+                            $errors['php_path'] = 'Path to invalid PHP (Wrong or empty php version: "'. $version_output. '")';
                         } else {
                             $alerts[] = [
                                 'type' => 'danger',
-                                'text' => '"php" command could not be executed. You may need to set PHP_PATH parameter in /public/tools.php',
+                                'text' => '"php" command could not be executed. You may need to set the variable PHP_PATH in .env',
                             ];
                         }
                     }
@@ -324,8 +330,8 @@ if (!empty($_POST)) {
                             </div>
                         <?php else : ?>
 
-                            <input type="hidden" name="db_username" value="<?php echo ($app_key ? $db_username : sha1($db_username)); ?>" />
-                            <input type="hidden" name="db_password" value="<?php echo ($app_key ? $db_password : sha1($db_password)); ?>" />
+                            <input type="hidden" name="db_username" value="<?php echo ($app_key ? $db_username : hashSecret($db_username, $root_dir)); ?>" />
+                            <input type="hidden" name="db_password" value="<?php echo ($app_key ? $db_password : hashSecret($db_password, $root_dir)); ?>" />
 
     						<div class="form-group <?php if (!empty($errors['app_key'])):?>has-error<?php endif ?>">
     		                    <label for="app_key">

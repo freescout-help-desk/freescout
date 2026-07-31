@@ -230,7 +230,7 @@ class ModulesController extends Controller
             case 'install':
             case 'activate_license':
                 $license = $request->license;
-                $alias = $request->alias;
+                $alias = preg_replace("#[^a-zA-Z0-9_\-]#", '', $request->alias);
 
                 if (!$license) {
                     $response['msg'] = __('Empty license key');

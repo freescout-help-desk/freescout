@@ -406,6 +406,7 @@ class FetchEmails extends Command
             }*/
 
             if ($from) {
+                // Also sanitizes email address.
                 $from = $this->formatEmailList($from);
             }
 
@@ -738,10 +739,12 @@ class FetchEmails extends Command
                 if (!empty($prev_thread)) {
                     $is_reply = true;
 
+                    // Reply from customer.
+                    //
                     // Make sure that prev_thread belongs to the current mailbox.
                     // Problems may arise when forwarding conversation for example.
                     //
-                    // For replies to email notifications it's allowed to have prev_thread in
+                    // For user replies to email notifications it's allowed to have prev_thread in
                     // another mailbox as conversation can be moved.
                     // https://github.com/freescout-helpdesk/freescout/issues/3455
                     if ($prev_thread && $message_from_customer) {
@@ -1230,13 +1233,17 @@ class FetchEmails extends Command
         if ($conversation->status != Conversation::STATUS_ACTIVE && $conversation->status != Conversation::STATUS_SPAM) {
             $conversation->status = \Eventy::filter('conversation.status_changing', Conversation::STATUS_ACTIVE, $conversation);
         }
+        // This broke conversations order.
+        // https://github.com/freescout-help-desk/freescout/issues/5501#issuecomment-5084418616
+        //
         // Only update last_reply_at if the customer was not already the last to reply.
         // This preserves the original "waiting since" time when consecutive customer
         // messages arrive without a staff reply in between.
         // https://github.com/freescout-help-desk/freescout/issues/5225
-        if ($conversation->last_reply_from != Conversation::PERSON_CUSTOMER) {
+        /*if ($conversation->last_reply_from != Conversation::PERSON_CUSTOMER) {
             $conversation->last_reply_at = $now;
-        }
+        }*/
+        $conversation->last_reply_at = $now;
         $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
         // Reply from customer to deleted conversation should undelete it.
         if ($conversation->state == Conversation::STATE_DELETED) {
@@ -1784,12 +1791,12 @@ class FetchEmails extends Command
     public function sortMessage($messages)
     {
         $messages = $messages->sortBy(function ($message, $key) {
-            $date = $message->getDate();
+            $date = $this->attrToDate($message->getDate());
             if ($date) {
-                if (isset($message->getDate()->timestamp)) {
-                    return $message->getDate()->timestamp;
+                if (isset($date->timestamp)) {
+                    return $date->timestamp;
                 } else {
-                    return (string)$message->getDate();
+                    return (string)$date;
                 }
             } else {
                 return 0;

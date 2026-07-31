@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.231',
+    'version' => '1.8.232',
 
     /*
     |--------------------------------------------------------------------------
@@ -277,6 +277,19 @@ return [
     // Regular expressions (#...#)
     'viewable_mime_types'    => env('APP_VIEWABLE_MIME_TYPES', ['image/.*', 'application/pdf', 'text/plain', 'text/x-diff', 'application/json', 'audio/.*']),
     'non_viewable_mime_types'    => env('APP_NON_VIEWABLE_MIME_TYPES', ['image/svg.*']),
+
+    /*
+    |--------------------------------------------------------------------------
+    | File extensions that support agents are allowed to upload.
+    | Files with other extensions will be rejected.
+    | Must be in sync with corresponding parameter in .env.example.
+    |
+    | Should contain comma separated list: jpg,jpeg,png,gif...
+    |-------------------------------------------------------------------------
+    */
+    'allowed_extensions'    => env('APP_ALLOWED_EXTENSIONS') 
+                                ? explode(',', env('APP_ALLOWED_EXTENSIONS'))
+                                : ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'mp3', 'wav', 'ogg', 'wma', 'pdf', 'txt', 'csv', 'doc', 'docx', 'xls', 'xlsx'],
 
     /*
     |--------------------------------------------------------------------------

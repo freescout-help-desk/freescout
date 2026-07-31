@@ -166,7 +166,7 @@ class OpenController extends Controller
 
         if ((int)$thread->conversation_id !== (int)$conversation_id) {
             $mark_as_read = false;
-        } elseif ($hash != Thread::getOpenTrackingHash($thread, $conversation, $conversation->mailbox)) {
+        } elseif (!hash_equals($hash, Thread::getOpenTrackingHash($thread, $conversation, $conversation->mailbox))) {
             $mark_as_read = false;
         }
 
@@ -224,7 +224,7 @@ class OpenController extends Controller
         // Links to atachments without token have been disabled.
         // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-wg74-ww4w-2qpc
         //if ($token != $attachment->getToken() && $attachment->token_type != Attachment::TOKEN_TYPE_LEGACY) {
-        if ($token != $attachment->getToken()) {
+        if (!hash_equals($token, $attachment->getToken())) {
             return \Helper::denyAccess();
         }
 

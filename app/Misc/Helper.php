@@ -7,6 +7,7 @@
 namespace App\Misc;
 
 use Carbon\Carbon;
+use App\Email;
 use App\Option;
 use App\User;
 use App\CustomerChannel;
@@ -47,7 +48,9 @@ class Helper
     const UPLOAD_MODE_DEFAULT = 'default';
     const UPLOAD_MODE_BY_CUSTOMER = 'customer';
 
-    const UNSAFE_URL_EXCEPTION_CODE = 10000;
+    const EXCEPTION_UNSAFE_URL = 10000;
+    const EXCEPTION_NOT_ALLOWED_FILE_EXTENSION = 10001;
+    const EXCEPTION_NOT_ALLOWED_FILE_MIME_TYPE = 10002;
 
     public static $csp_nonce = null;
 
@@ -82,6 +85,46 @@ class Helper
         'aspx',
         'jsp',
         'config',
+    ];
+
+    /**
+     * Hosts that are restricted blocked by SSRF protection.
+     * Items must be in lowercase.
+     */
+    public static $restricted_ssrf_hosts = [
+        '::1', // IPv6 loopback
+        '0:0:0:0:0:0:0:1', // IPv6 loopback
+        '0000:0000:0000:0000:0000:0000:0000:0001', // IPv6 loopback
+        '::ffff:127.0.0.1', // IPv4-mapped IPv6
+        '169.254.169.254', // AWS/GCP/Azure metadata
+        '::ffff:169.254.169.254', // AWS/GCP/Azure metadata
+        'fd00:ec2::254', // AWS/GCP/Azure metadata
+        '::ffff:a9fe:a9fe', // AWS/GCP/Azure metadata
+        '0000:0000:0000:0000:0000:ffff:a9fe:a9fe', // AWS/GCP/Azure metadata
+        '0x00000000000000000000ffffa9fea9fe', // AWS/GCP/Azure metadata
+        'fd00::/8', // IPv6 ULA
+        '10.0.0.0/8', // RFC1918
+        '172.16.0.0/12', // RFC1918
+        'fd00::/8', // RFC1918
+        '192.168.0.0/16',
+        '0.0.0.0',
+        '127.0.0.0/8', // Loopback addresses
+        '127.0.0.1',
+        'localhost',
+        '100.64.0.0/10', // Carrier-grade NAT
+        '169.254.0.0/16', // link-local
+        '::ffff:0:0/96', // IPv4-mapped IPv6
+        'fc00::/7', // all IPv6 ULA; fd00::/8 covers only half
+        'fe80::/10', // IPv6 link-local
+        '198.18.0.0/15', // benchmarking network
+        '224.0.0.0/4', // multicast
+        '::/128', // reserved
+        '192.0.0.0/29',
+        '192.0.2.0/24',
+        '192.88.99.0/24',
+        '198.51.100.0/24',
+        '203.0.113.0/24',
+        '240.0.0.0/4',
     ];
 
     /**
@@ -1000,13 +1043,9 @@ class Helper
     }
 
     /**
-     * Safely decrypt.
-     *
-     * @param [type] $e [description]
-     *
-     * @return [type] [description]
+     * Decrypt value with or without a password.
      */
-    public static function decrypt($value, $password = null, $force_unserialize = false)
+    public static function decrypt($value, $password = null, $force_unserialize = false, $return_value_on_error = false)
     {
         $decrypted_value = $value;
 
@@ -1036,9 +1075,22 @@ class Helper
             }
         } catch (\Exception $e) {
             //self::logException($e);
+            if ($return_value_on_error) {
+                return $value;
+            } else {
+                return '';
+            }
         }
 
         return $decrypted_value;
+    }
+
+    /**
+     * This version of decrypt() returns original value if decryption error occurs.
+     */
+    public static function decryptSoft($value, $password = null)
+    {
+        return self::decrypt($value, $password, $force_unserialize = false, $return_value_on_error = true);
     }
 
     /**
@@ -1737,26 +1789,33 @@ class Helper
         return $pids;
     }
 
+    /**
+     * Upload file into /storage/app/public/uploads.
+     */
     public static function uploadFile($file, $allowed_exts = [], $allowed_mimes = [])
     {
         $ext = strtolower($file->getClientOriginalExtension());
 
-        if ($allowed_exts) {
-            if (!in_array($ext, $allowed_exts)) {
-                throw new \Exception(__('Unsupported file type'), 1);
-            }
+        if (empty($allowed_exts)) {
+            $allowed_exts = config('app.allowed_extensions');
         }
+
+        /*if ($allowed_exts) {
+            if (!in_array($ext, $allowed_exts)) {
+                throw new \Exception(__('Unsupported file type').' (.env » APP_ALLOWED_EXTENSIONS="...")', self::EXCEPTION_NOT_ALLOWED_FILE_EXTENSION);
+            }
+        }*/
 
         $mime_type = $file->getMimeType();
 
         if ($allowed_mimes) {
             if (!in_array($mime_type, $allowed_mimes)) {
-                throw new \Exception(__('Unsupported file type'), 1);
+                throw new \Exception(__('Unsupported file type'), self::EXCEPTION_NOT_ALLOWED_FILE_MIME_TYPE);
             }
         }
         $file_name = \Str::random(25).'.'.$ext;
 
-        $file_name = \Helper::sanitizeUploadedFileName($file_name, $file, null, $mime_type);
+        $file_name = \Helper::sanitizeUploadedFileName($file_name, $file, null, $mime_type, self::UPLOAD_MODE_DEFAULT, $allowed_exts);
 
         $file->storeAs('uploads', $file_name);
 
@@ -2028,9 +2087,18 @@ class Helper
         return $url;
     }
 
+    /**
+     * If URL contains IPv6 and port the IPv6 address MUST be in brackets.
+     * If there is no port specified the function will be able to digest the URL.
+     * Accepts only canonical IPs (inputs like 127.1 or 2130706433 are rejected).
+     * 
+     * Returns URL if host can not be extracted.
+     */
     public static function checkUrlIpAndHost($url, $throw_exception = false)
     {
-        $parts = parse_url($url ?? '');
+        $url = self::normalizeIPv6InUrl($url ?? '');
+
+        $parts = parse_url($url);
 
         // Sanitize protocol to avoid access to local files.
         if (empty($parts['scheme']) || !in_array($parts['scheme'], ['http', 'https'])) {
@@ -2046,24 +2114,11 @@ class Helper
         $host_white_list = explode(',', $host_white_list_str);
 
         // Sanitize host name.
-        $parts['host'] = mb_strtolower($parts['host']);
+        $host = mb_strtolower($parts['host'] ?? '');
         $hostname = gethostname();
         $host_ip = gethostbyname($hostname);
 
-        // Can also include IP masks.
         $restricted_hosts = [
-            '::1', // IPv6 loopback
-            '::ffff:127.0.0.1', // IPv4-mapped IPv6
-            '169.254.169.254', '0xA9FEA9FE', // AWS/GCP/Azure metadata
-            'fd00::/8', // IPv6 ULA
-            '10.0.0.0/8', // RFC1918
-            '172.16.0.0/12', // RFC1918
-            'fd00::/8', // RFC1918
-            '192.168.0.0/16',
-            '0.0.0.0', '0x00000000',
-            '127.0.0.0/8', // Loopback addresses
-            '127.0.0.1', '0x7f000001',
-            'localhost',
             $hostname,
             $host_ip,
             mb_strtolower(self::getDomain()),
@@ -2071,26 +2126,57 @@ class Helper
             $_SERVER['LOCAL_ADDR'] ?? '',
         ];
 
+        $restricted_hosts = array_merge($restricted_hosts, self::$restricted_ssrf_hosts);
+
         // IPv6 URLs look like http://[::1].
         // Remove square brackets from hosts (for IPv6 addresses).
-        $parts['host'] = str_replace(['[', ']'], '', $parts['host'] ?? '');
+        $host = str_replace(['[', ']'], '', $host);
 
-        if (!in_array($parts['host'], $host_white_list) && !self::checkIpByMask($parts['host'], $host_white_list)) {
-            if (in_array($parts['host'], $restricted_hosts) || self::checkIpByMask($parts['host'], $restricted_hosts)) {
-                if ($throw_exception) {
-                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $parts['host']]), self::UNSAFE_URL_EXCEPTION_CODE);
-                } else {
-                    return '';
+        // Host could not be determined.
+        if (!$host) {
+            return $url;
+        }
+
+        $hosts_to_check = [$host];
+
+        // If this is hexadecimal representation of the IP address.
+        $host_hex_to_ip = self::hexToIp($host);
+        if ($host_hex_to_ip && $host_hex_to_ip != $host) {
+            $hosts_to_check[] = $host_hex_to_ip;
+        }
+
+        // Check only if host name is passed in URL.
+        if (!self::isValidIp($host)) {
+
+            // Sanitize host IP address.
+            $remote_host_ip = gethostbyname($host);
+            if ($remote_host_ip && !in_array($remote_host_ip, $hosts_to_check)) {
+                $hosts_to_check[] = $remote_host_ip;
+            }
+
+            // Resolve DNS records.
+            $dns_records = [];
+            try {
+                $dns_records = dns_get_record($host, DNS_A | DNS_AAAA);
+            } catch (\Exception $e) {
+                // Do nothing.
+            }
+            if ($dns_records) {
+                foreach ($dns_records as $dns_record) {
+                    if (!empty($dns_record['ip']) && !in_array($dns_record['ip'], $hosts_to_check)) {
+                        $hosts_to_check[] = $dns_record['ip'];
+                    }
+                    if (!empty($dns_record['ipv6']) && !in_array($dns_record['ipv6'], $hosts_to_check)) {
+                        $hosts_to_check[] = $dns_record['ipv6'];
+                    }
                 }
             }
         }
 
-        // Sanitize host IP address.
-        $remote_host_ip = gethostbyname($parts['host']);
-        if (!in_array($remote_host_ip, $host_white_list) && !self::checkIpByMask($remote_host_ip, $host_white_list)) {
-            if (in_array($remote_host_ip, $restricted_hosts) || self::checkIpByMask($remote_host_ip, $restricted_hosts)) {
+        foreach ($hosts_to_check as $host_item) {
+            if (!self::isSafeHost($host_item, $restricted_hosts, $host_white_list)) {
                 if ($throw_exception) {
-                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $remote_host_ip]), self::UNSAFE_URL_EXCEPTION_CODE);
+                    throw new \Exception(__('Domain or IP address is not allowed: :%host%. Whitelist it via APP_REMOTE_HOST_WHITE_LIST .env parameter.', ['%host%' => $host_item]), self::EXCEPTION_UNSAFE_URL);
                 } else {
                     return '';
                 }
@@ -2098,6 +2184,65 @@ class Helper
         }
 
         return $url;
+    }
+
+    public static function isSafeHost($host, $restricted_hosts = [], $host_white_list = [])
+    {
+        if (in_array($host, $host_white_list) || self::checkIpByMask($host, $host_white_list)) {
+            return true;
+        }
+
+        // Is IP restricted.
+        if (in_array($host, $restricted_hosts) || self::checkIpByMask($host, $restricted_hosts)) {
+            return false;
+        }
+
+        // Hex integer or 0x7f.0x0.0x0.0x1
+        if (substr($host, 0, 2) == '0x') {
+            return false;
+        }
+
+        if (self::isValidIp($host)) {
+            // Is IP canonical.
+            // This accepts only standard IPv4/IPv6 text forms.
+            // Values like 127.1 or 2130706433 are rejected.
+            if (inet_pton($host) === false) {
+                return false;
+            }
+        } else {
+            // If $host is an IP address, make sure that it's canonical.
+
+            // Convert IDN to ASCII.
+            $ascii = idn_to_ascii($host, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+
+            if ($ascii === false || filter_var($ascii, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) === false) {
+                // This is NOT a host name, this is IP - make sure that it's canonical.
+                if (inet_pton($host) === false) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public static function isValidIp($ip)
+    {
+        return filter_var($ip, FILTER_VALIDATE_IP);
+    }
+
+    // Normalize URLs with IPv6 addresses by adding brackets.
+    // URLs with port must already have brackets.
+    public static function normalizeIPv6InUrl($url)
+    {
+        // Skip if already has brackets
+        if (preg_match('/\[[a-fA-F0-9:\.]+\]/', $url)) {
+            return $url;
+        }
+
+        $pattern = '/^(https?:\/\/)([^\/?#]+:[^\/?#]+)([\/?#]+|$)/';
+
+        return preg_replace($pattern, '$1[$2]$3', $url);
     }
 
     // Get next redicred URL.
@@ -2165,6 +2310,39 @@ class Helper
         }
         return false;
     }
+
+    /**
+     * Convert hexadecimal representation to IP address (IPv4 or IPv6):
+     * - 0x7f000001 >> 127.0.0.1
+     * 
+     * @param string $hex Hexadecimal string (with or without '0x' prefix)
+     * @return string|false IP address, or false on failure
+     */
+    public static function hexToIp($hex)
+    {
+        // Remove '0x' or '0X' prefix if present
+        $clean_hex = preg_replace('/^0x/i', '', $hex);
+
+        // Validate hex string
+        if (!preg_match('/^[0-9a-f]+$/i', $clean_hex)) {
+            return false;
+        }
+
+        // Pad to even length for bin2hex compatibility
+        if (strlen($clean_hex) % 2 !== 0) {
+            $clean_hex = '0' . $clean_hex;
+        }
+
+        $packed = hex2bin($clean_hex);
+        if ($packed === false) {
+            return false;
+        }
+
+        $ip = inet_ntop($packed);
+
+        return $ip !== false ? $ip : false;
+    }
+
     public static function getTempDir()
     {
         return sys_get_temp_dir() ?: '/tmp';
@@ -2195,7 +2373,7 @@ class Helper
         }
     }
 
-    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null, $mime_type = '', $upload_mode = self::UPLOAD_MODE_DEFAULT)
+    public static function sanitizeUploadedFileName($file_name, $uploaded_file = null, $contents = null, $mime_type = '', $upload_mode = self::UPLOAD_MODE_DEFAULT, $allowed_exts = [])
     {
         $pdf_mime_types = [
             'application/pdf', 'application/x-pdf', 'application/acrobat',
@@ -2238,7 +2416,10 @@ class Helper
 
         // Add underscore to the extension if file has restricted extension.
         $rename = false;
-        if (preg_match('/^('.implode('|', self::$restricted_extensions).')$/', $ext) || mb_substr($file_name, 0, 1) == '.') {
+        if (preg_match('/^('.implode('|', self::$restricted_extensions).')$/', $ext) 
+            || ($allowed_exts && !preg_match('/^('.implode('|', $allowed_exts).')$/', $ext) )
+            || mb_substr($file_name, 0, 1) == '.'
+        ) {
             $rename = true;
         } elseif ($upload_mode == self::UPLOAD_MODE_BY_CUSTOMER) {
             $customer_allowed_extensions = config('app.customer_allowed_extensions') ?? [];
@@ -2462,6 +2643,8 @@ class Helper
             'fpassthru (PHP)'  => function_exists('fpassthru'),
             'symlink (PHP)'    => function_exists('symlink'),
             'iconv (PHP)'      => function_exists('iconv'),
+            'dns_get_record (PHP)'  => function_exists('dns_get_record'),
+            'inet_pton (PHP)'  => function_exists('inet_pton'),
             // If posix_isatty() function is not enabled on the server the question in the
             // console command makes it wait infinitely and be aborted.
             // Commands should avoid using interctive functions or use special flags.
@@ -2852,5 +3035,13 @@ class Helper
             $key = config('app.key');
         }
         return hash_hmac('sha512', $data, $key);
+    }
+
+    /**
+     * Sanitize email address.
+     */
+    public static function sanitizeEmail($email)
+    {
+        return Email::sanitizeEmail($email);
     }
 }

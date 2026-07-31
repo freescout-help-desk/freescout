@@ -54,7 +54,8 @@ class UserPolicy
     {
         if ($user->isAdmin() 
             || $user->id == $model->id
-            || $user->hasPermission(User::PERM_EDIT_USERS)
+            // Do not allow regular users edit admin profiles.
+            || ($user->hasPermission(User::PERM_EDIT_USERS) && !$model->isAdmin())
         ) {
             return true;
         } else {

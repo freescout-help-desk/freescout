@@ -64,12 +64,11 @@ class ForgotPasswordController extends Controller
             $request->only('email')
         );
 
-        //if ($response !== Password::RESET_LINK_SENT) {
-        $this->incrementResetEmailAttempts($request);
-        //return $this->sendResetLinkFailedResponse($request, $response);
-        //}
-
-        //$this->clearResetEmailAttempts($request);
+        if ($response == Password::RESET_LINK_SENT) {
+            $this->clearResetEmailAttempts($request);
+        } else {
+            $this->incrementResetEmailAttempts($request);
+        }
 
         // For security purposes always return an identical response regardless of whether the email exists.
         // return $response == Password::RESET_LINK_SENT
@@ -101,7 +100,7 @@ class ForgotPasswordController extends Controller
 
     protected function throttleKey(Request $request)
     {
-        return strtolower($request->ip()) . '|reset_password';
+        return strtolower($request->ip()) . '|reset_email_password';
     }
 
     protected function sendLockoutResponse(Request $request)
