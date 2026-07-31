@@ -80,6 +80,7 @@ var LangMessages = {
             "new_message": "{{ __("New message") }}",
             "view_new_message": "{{ __("View new message") }}",
             "view_new_messages": "{{ __("View new messages (:count)") }}",
+            "autoplay": "{{ __("Autoplay is disabled in your browser. Click anywhere on this page to enable notification sounds, or allow Autoplay in your browser settings.") }}",
             @action('js.lang.messages')
             "update": "{{ __("Update") }}"
         }@if (!$loop->last),@endif

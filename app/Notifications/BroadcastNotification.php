@@ -76,12 +76,24 @@ class BroadcastNotification extends Notification implements ShouldQueue
 
         // Try to convert to array.
         $mediums = (array)$payload->mediums;
-
         $thread = Thread::find($payload->thread_id);
-
         $mailbox = ($thread && $thread->conversation) ? $thread->conversation->mailbox : null;
 
         if (empty($thread) || !$user || !$mailbox || !$user->can('viewCached', $mailbox)) {
+            return $data;
+        }
+
+        $conversation = $thread->conversation;
+
+        // Play audio notification if this is Chat conversation.
+        //$now = time();
+        if ($conversation->isChat() /*&& $conversation->last_reply_at && $conversation->last_reply_at->timestamp < ($now - 10*60)*/) {
+            $data['audio'] = [
+                'thread_id' => $thread->id,
+            ];
+        }
+
+        if (empty($payload->mediums)) {
             return $data;
         }
 
@@ -94,7 +106,7 @@ class BroadcastNotification extends Notification implements ShouldQueue
 
             // Get last reply or note of the conversation to display it's text
             $last_thread_body = '';
-            $last_thread = Thread::where('conversation_id', $thread->conversation_id)
+            $last_thread = Thread::where('conversation_id', $conversation)
                 // Select must contain all fields from orderBy() to avoid:
                 // General error: 3065 Expression #1 of ORDER BY clause is not in SELECT
                 ->select(['body', 'created_at'])
@@ -111,7 +123,7 @@ class BroadcastNotification extends Notification implements ShouldQueue
             $web_notifications_info['created_at'] = \Carbon\Carbon::now();
             // ['notification']->read_at
             // ['notification']->id
-            $web_notifications_info['conversation'] = $thread->conversation;
+            $web_notifications_info['conversation'] = $conversation;
             $web_notifications_info['thread'] = $thread;
             $web_notifications_info['last_thread_body'] = $last_thread_body;
 
@@ -122,8 +134,8 @@ class BroadcastNotification extends Notification implements ShouldQueue
 
         // Text and url for the browser push notification
         if (in_array(Subscription::MEDIUM_BROWSER, $mediums)) {
-            $data['browser']['text'] = \Helper::stripTags($thread->getActionDescription($thread->conversation->number));
-            $data['browser']['url'] = $thread->conversation->url(null, $thread->id, ['mark_as_read' => $db_notification->id]);
+            $data['browser']['text'] = \Helper::stripTags($thread->getActionDescription($conversation->number));
+            $data['browser']['url'] = $conversation->url(null, $thread->id, ['mark_as_read' => $db_notification->id]);
         }
 
         return $data;

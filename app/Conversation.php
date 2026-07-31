@@ -2274,8 +2274,8 @@ class Conversation extends Model
     public static function refreshConversations($conversation, $thread)
     {
         \App\Events\RealtimeConvNewThread::dispatchSelf($thread);
-        \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id);
-        \App\Events\RealtimeChat::dispatchSelf($conversation->mailbox_id);
+        \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id, $thread->id, (int)$conversation->isChat());
+        \App\Events\RealtimeChat::dispatchSelf($conversation->mailbox_id, $thread->id, (int)$conversation->isChat());
     }
 
     public static function getConvTableSorting($request = null)

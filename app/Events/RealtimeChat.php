@@ -69,13 +69,15 @@ class RealtimeChat implements ShouldBroadcastNow
     /**
      * Helper funciton.
      */
-    public static function dispatchSelf($mailbox_id)
+    public static function dispatchSelf($mailbox_id, $thread_id, $is_chat)
     {
         if (!\Helper::isChatModeAvailable()) {
             return;
         }
         $notification_data = [
-            'mailbox_id'      => $mailbox_id
+            'mailbox_id' => $mailbox_id,
+            'thread_id'  => $thread_id,
+            'is_chat'    => (int)$is_chat,
         ];
         event(new \App\Events\RealtimeChat($notification_data));
     }
@@ -96,6 +98,13 @@ class RealtimeChat implements ShouldBroadcastNow
         ];
 
         $payload->chats_html = \View::make('mailboxes/partials/chat_list')->with($template_data)->render();
+
+        // Audio notification for chats.
+        if ((int)$payload->is_chat && $payload->thread_id) {
+            $payload->audio = [
+                'thread_id' => $payload->thread_id,
+            ];
+        }
 
         return $payload;
     }

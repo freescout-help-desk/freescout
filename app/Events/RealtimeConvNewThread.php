@@ -97,26 +97,39 @@ class RealtimeConvNewThread implements ShouldBroadcastNow
 
         // Check if user can listen to this event.
         // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-w668-wq26-6c94
-        if (!$thread || !$thread->conversation) {
+        if (!$thread) {
             return [];
         }
 
-        if (!$user->can('view', $thread->conversation)) {
+        $conversation = $thread->conversation;
+
+        if (!$conversation) {
+            return [];
+        }
+
+        if (!$user->can('view', $conversation)) {
             return [];
         }
 
         // Add thread html to the payload.
         $template_data = [
-            'conversation' => $thread->conversation,
-            'mailbox'      => $thread->conversation->mailbox,
+            'conversation' => $conversation,
+            'mailbox'      => $conversation->mailbox,
             'threads'      => [$thread],
         ];
 
         $payload->thread_html = \View::make('conversations/partials/threads')->with($template_data)->render();
-        $payload->conversation_user_id = $thread->conversation->user_id;
-        $payload->conversation_status = $thread->conversation->status;
-        $payload->conversation_status_class = Conversation::$status_classes[$thread->conversation->status];
-        $payload->conversation_status_icon = Conversation::$status_icons[$thread->conversation->status];
+        $payload->conversation_user_id = $conversation->user_id;
+        $payload->conversation_status = $conversation->status;
+        $payload->conversation_status_class = Conversation::$status_classes[$conversation->status];
+        $payload->conversation_status_icon = Conversation::$status_icons[$conversation->status];
+
+        // Audio notification for chats.
+        if ($conversation->isChat()) {
+            $payload->audio = [
+                'thread_id' => $thread->id,
+            ];
+        }
 
         return $payload;
     }
