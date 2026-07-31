@@ -71,7 +71,7 @@ class HTMLPurifier_URIFilter_Munge extends HTMLPurifier_URIFilter
         } // ignore unknown schemes, maybe another postfilter did it
         if (!$scheme_obj->browsable) {
             return true;
-        } // ignore non-browseable schemes, since we can't munge those in a reasonable way
+        } // ignore non-browsable schemes, since we can't munge those in a reasonable way
         if ($uri->isBenign($config, $context)) {
             return true;
         } // don't redirect if a benign URL
@@ -100,11 +100,11 @@ class HTMLPurifier_URIFilter_Munge extends HTMLPurifier_URIFilter
         $string = $uri->toString();
         // always available
         $this->replace['%s'] = $string;
-        $this->replace['%r'] = $context->get('EmbeddedURI', true);
-        $token = $context->get('CurrentToken', true);
-        $this->replace['%n'] = $token ? $token->name : null;
-        $this->replace['%m'] = $context->get('CurrentAttr', true);
-        $this->replace['%p'] = $context->get('CurrentCSSProperty', true);
+        $this->replace['%r'] = $context->get('EmbeddedURI', true) ?: '';
+        $token = $context->get('CurrentToken', true) ?: '';
+        $this->replace['%n'] = $token ? $token->name : '';
+        $this->replace['%m'] = $context->get('CurrentAttr', true) ?: '';
+        $this->replace['%p'] = $context->get('CurrentCSSProperty', true) ?: '';
         // not always available
         if ($this->secretKey) {
             $this->replace['%t'] = hash_hmac("sha256", $string, $this->secretKey);

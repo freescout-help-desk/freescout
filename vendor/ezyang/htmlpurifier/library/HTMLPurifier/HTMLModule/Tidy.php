@@ -112,9 +112,8 @@ class HTMLPurifier_HTMLModule_Tidy extends HTMLPurifier_HTMLModule
             return;
         }
         if (!isset($this->fixesForLevel[$this->defaultLevel])) {
-            trigger_error(
-                'Default level ' . $this->defaultLevel . ' does not exist',
-                E_USER_ERROR
+            throw new Exception(
+                'Default level ' . $this->defaultLevel . ' does not exist'
             );
             return;
         }
@@ -146,10 +145,7 @@ class HTMLPurifier_HTMLModule_Tidy extends HTMLPurifier_HTMLModule
                         $type = "info_$type";
                         $e = $this;
                     }
-                    // PHP does some weird parsing when I do
-                    // $e->$type[$attr], so I have to assign a ref.
-                    $f =& $e->$type;
-                    $f[$attr] = $fix;
+                    $e->{$type}[$attr] = $fix;
                     break;
                 case 'tag_transform':
                     $this->info_tag_transform[$params['element']] = $fix;
@@ -165,8 +161,7 @@ class HTMLPurifier_HTMLModule_Tidy extends HTMLPurifier_HTMLModule
                     $e->$type = $fix;
                     break;
                 default:
-                    trigger_error("Fix type $type not supported", E_USER_ERROR);
-                    break;
+                    throw new Exception("Fix type $type not supported");
             }
         }
     }
@@ -224,6 +219,7 @@ class HTMLPurifier_HTMLModule_Tidy extends HTMLPurifier_HTMLModule
      */
     public function makeFixes()
     {
+        return array();
     }
 }
 
