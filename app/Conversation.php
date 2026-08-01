@@ -499,6 +499,22 @@ class Conversation extends Model
         }
     }
 
+    public function setLastReplyAt($value)
+    {
+        // Treat Waiting Since column as "Time of the first unanswered customer message"
+        // instead of "Time of the last customer activity".
+        // https://github.com/freescout-help-desk/freescout/issues/5225
+        if (config('app.waiting_since_as_first_unanswered_customer_message')) {
+            if ($this->last_reply_from != Conversation::PERSON_CUSTOMER) {
+                $this->last_reply_at = $value;
+            } else {
+                $this->setMeta(Conversation::META_LAST_CUSTOMER_REPLY_AT, $value);
+            }
+        } else {
+            $this->last_reply_at = $value;
+        }
+    }
+
     /**
      * Set preview text.
      *
