@@ -3,9 +3,6 @@
 <div align="center">
 
 <img src="https://raw.githubusercontent.com/freescout-help-desk/freescout/master/public/img/logo-300.png" width="180" height="180" />
-<br/><br/>
-
-[![PHP version](https://freescout-helpdesk.github.io/img/badges/PHP-7.1%2B-blue.svg)](https://github.com/freescout-help-desk/freescout#requirements)
 
 </div>
 
@@ -36,13 +33,12 @@ If you want to support the project feel free to **star this repository**. It hel
 
   * Multichannel: email, [WhatsApp](https://freescout.net/whatsapp/), Telegram, Facebook, Slack, Live Chat and more.
   * Unlimited support agents, tickets, mailboxes, etc.
-  * Secure by design.
+  * [Secure](https://freescout.net/security) by design.
   * 100% Mobile-friendly.
   * Multilingual: English, Catalan, Chinese (Simplified), Chinese (Traditional), Croatian, Czech, Danish, Dutch, Finnish, French, German, Hebrew, Hungarian, Italian, Japanese, Kazakh, Korean, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Slovak, Slovenian, Swedish, Turkish, Ukrainian.
   * Seamless email integration.
   * Supports modern Microsoft Exchange authentication.
   * Fully supports screen readers (for visually impaired).
-  * Built with strong focus on [security](https://freescout.net/security).
   * Web installer & updater.
   * Starred conversations.
   * Forwarding conversations.
@@ -53,15 +49,14 @@ If you want to support the project feel free to **star this repository**. It hel
   * Collision detection – notice is shown when two agents open the same conversation.
   * Push notifications.
   * Following a conversation.
-  * Auto reply.
+  * Auto replies.
   * Internal notes.
   * Automatic refreshing of the conversations list without the need to reload the page.
   * Pasting screenshots from the clipboard into the reply area.
   * Configuring notifications on a per user basis.
   * Open tracking.
-  * Editing threads.
   * Search.
-  * And more…
+  * And [more](https://github.com/freescout-help-desk/freescout/wiki/FreeScout-Modules)…
 
 Need anything else? Suggest features [here](https://freescout.net/request-feature/).
 
