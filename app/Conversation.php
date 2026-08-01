@@ -51,6 +51,12 @@ class Conversation extends Model
     const PERSON_CUSTOMER = 1;
     const PERSON_USER = 2;
 
+    /**
+     * Name of the meta parameter storing actual time of the last customer reply
+     * when "waiting_since_as_first_unanswered_customer_message" mode is enabled.
+     */
+    const META_LAST_CUSTOMER_REPLY_AT = 'lcr';
+
     public static $persons = [
         self::PERSON_CUSTOMER => 'customer',
         self::PERSON_USER     => 'user',
@@ -466,6 +472,31 @@ class Conversation extends Model
             }
         }
         return $query->first();
+    }
+
+    /**
+     * Get time of the last customer reply taking into account value stored in the meta.
+     *
+     * When "waiting_since_as_first_unanswered_customer_message" mode is enabled,
+     * the $last_reply_at field does not store time of each customer reply,
+     * instead it's stored in the meta.
+     */
+    public function getLastCustomerReplyAt()
+    {
+        $meta_time = $this->getMeta(self::META_LAST_CUSTOMER_REPLY_AT);
+
+        if ($meta_time) {
+            $carbon_meta_time = \Helper::createCarbonDateFromFormat($meta_time);
+            if ($carbon_meta_time && $carbon_meta_time->gt($this->last_reply_at)) {
+                return $carbon_meta_time;
+            }
+        }
+
+        if ($this->last_reply_from == self::PERSON_CUSTOMER) {
+            return $this->last_reply_at;
+        } else {
+            return null;
+        }
     }
 
     /**

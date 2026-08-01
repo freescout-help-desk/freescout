@@ -500,6 +500,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Treat Waiting Since column as "Time of the first unanswered customer message"
+    | instead of "Time of the last customer activity".
+    |-------------------------------------------------------------------------
+    */
+    'waiting_since_as_first_unanswered_customer_message'    => env('WAITING_SINCE_AS_FIRST_UNANSWERED_CUSTOMER_MESSAGE', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | By default X-Frame-Options header is enabled and set to SAMEORIGIN.
     | Via this option you can disable it (APP_X_FRAME_OPTIONS=false) or set custom value:
     | - DENY

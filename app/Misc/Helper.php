@@ -3044,4 +3044,13 @@ class Helper
     {
         return Email::sanitizeEmail($email);
     }
+
+    public static function createCarbonDateFromFormat($string)
+    {
+        try {
+            return Carbon::createFromFormat('Y-m-d H:i:s', $string);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }

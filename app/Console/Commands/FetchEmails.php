@@ -1168,7 +1168,7 @@ class FetchEmails extends Command
         $conversation = null;
         $prev_customer_id = null;
         if ($use_mail_date_on_fetching) {
-            $now = $date;
+            $now = $date->format('Y-m-d H:i:s');
         } else {
             $now = date('Y-m-d H:i:s');
         }
@@ -1233,17 +1233,19 @@ class FetchEmails extends Command
         if ($conversation->status != Conversation::STATUS_ACTIVE && $conversation->status != Conversation::STATUS_SPAM) {
             $conversation->status = \Eventy::filter('conversation.status_changing', Conversation::STATUS_ACTIVE, $conversation);
         }
-        // This broke conversations order.
-        // https://github.com/freescout-help-desk/freescout/issues/5501#issuecomment-5084418616
-        //
-        // Only update last_reply_at if the customer was not already the last to reply.
-        // This preserves the original "waiting since" time when consecutive customer
-        // messages arrive without a staff reply in between.
+
+        // Treat Waiting Since column as "Time of the first unanswered customer message"
+        // instead of "Time of the last customer activity".
         // https://github.com/freescout-help-desk/freescout/issues/5225
-        /*if ($conversation->last_reply_from != Conversation::PERSON_CUSTOMER) {
+        if (config('app.waiting_since_as_first_unanswered_customer_message')) {
+            if ($conversation->last_reply_from != Conversation::PERSON_CUSTOMER) {
+                $conversation->last_reply_at = $now;
+            } elseif ($conversation->last_reply_from == Conversation::PERSON_CUSTOMER) {
+                $conversation->setMeta(Conversation::META_LAST_CUSTOMER_REPLY_AT, $now);
+            }
+        } else {
             $conversation->last_reply_at = $now;
-        }*/
-        $conversation->last_reply_at = $now;
+        }
         $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
         // Reply from customer to deleted conversation should undelete it.
         if ($conversation->state == Conversation::STATE_DELETED) {
