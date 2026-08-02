@@ -1187,8 +1187,8 @@ class ConversationsController extends Controller
                     \Eventy::action('thread.before_save_from_request', $thread, $request);
                     $thread->save();
 
-                    // Save forwarded thread.
                     if ($is_forward) {
+                        // Save forwarded threads.
                         foreach ($forwarded_conversations as $i => $forwarded_conversation) {
                             $forwarded_thread = $forwarded_threads[$i];
 
@@ -1203,6 +1203,16 @@ class ConversationsController extends Controller
                             $forwarded_thread->setMeta(Thread::META_FORWARD_PARENT_THREAD_ID, $thread->id);
                             \Eventy::action('send_reply.before_save_forwarded_thread', $forwarded_thread, $request);
                             $forwarded_thread->save();
+
+                            // In the current conversation create Forward-notes corresponding to each recipient.
+                            // Forward-note for the last recipient is already created.
+                            if ($i != count($forwarded_conversations)-1) {
+                                $forward_note = $thread->replicate();
+                                $forward_note->setTo($forwarded_conversation->customer_email);
+                                $forward_note->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER, $forwarded_conversation->number);
+                                $forward_note->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_ID, $forwarded_conversation->id);
+                                $forward_note->save();
+                            }
                         }
                     }
 
