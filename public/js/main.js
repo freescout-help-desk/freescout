@@ -1634,6 +1634,7 @@ function showReplyForm(data, scroll_offset)
 			if (field == 'body') {
 				// Display body value in editor
 				$('#body').summernote("code", data[field]);
+				$('#body').summernote('commit');
 			}
 			// Happens when opening draft or after Undo
 			if (field == 'to_email' || field == 'cc' || field == 'bcc') {
