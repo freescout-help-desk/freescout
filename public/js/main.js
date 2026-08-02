@@ -575,6 +575,16 @@ function summernoteInit(selector, new_options)
 		    ['actions-select', ['insertvar']]
 		],
 		buttons: buttons,
+		// Disable inserting HR tag.
+		// https://github.com/freescout-help-desk/freescout/issues/4909
+	    keyMap: {
+	        pc: {
+	            'CTRL+ENTER': '' // Disable the shortcut on Windows/Linux
+	        },
+	        mac: {
+	            'CTRL+ENTER': '' // Disable the shortcut on Mac
+	        }
+	    },
 	    callbacks: {
 		    onInit: function() {
 		    	// Remove statusbar
@@ -1764,6 +1774,16 @@ function convEditorInit()
 		followingToolbar: false,
 		toolbar: fsApplyFilter('conversation.editor_toolbar', fs_conv_editor_toolbar),
 		buttons: fs_conv_editor_buttons,
+		// Disable inserting HR tag.
+		// https://github.com/freescout-help-desk/freescout/issues/4909
+	    keyMap: {
+	        pc: {
+	            'CTRL+ENTER': '' // Disable the shortcut on Windows/Linux
+	        },
+	        mac: {
+	            'CTRL+ENTER': '' // Disable the shortcut on Mac
+	        }
+	    },
 		callbacks: {
 	 		onImageUpload: function(files) {
 	 			if (!files) {
