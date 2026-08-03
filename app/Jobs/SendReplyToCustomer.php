@@ -182,7 +182,36 @@ class SendReplyToCustomer implements ShouldQueue
                 $i++;
             }
             if ($references_array) {
-                $references = '<'.implode('> <', array_reverse($references_array)).'>';
+                // Trim the list of References: some SMTP relays reject messages
+                // whose headers block exceeds 4096 chars.
+                // Preserve the first and the last reference.
+                // https://github.com/freescout-help-desk/freescout/issues/5542
+                $max_references_length = 1500;
+                $recent = [];
+                $recent[] = $references_array[0];
+                $length = strlen($references_array[0]) + 3;
+
+                foreach ($references_array as $i => $reference) {
+                    // The first and the last Reference are added manually.
+                    if ($i == 0 || $i == count($references_array)-1) {
+                        continue;
+                    }
+                    $length += strlen($reference) + 3;
+                    if ($length > $max_references_length) {
+                        break;
+                    }
+                    $recent[] = $reference;
+                }
+
+                // Append the last.
+                if (!empty($references_array[count($references_array)-1])) {
+                    $recent[] = $references_array[count($references_array)-1];
+                }
+
+                // Oldest first, per RFC 5322 3.6.4.
+                $references_array = array_reverse($recent);
+
+                $references = '<'.implode('> <', $references_array).'>';
             }
             if ($references) {
                 $headers['References'] = $references;
