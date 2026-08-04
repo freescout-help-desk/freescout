@@ -1234,7 +1234,7 @@ class FetchEmails extends Command
             $conversation->status = \Eventy::filter('conversation.status_changing', Conversation::STATUS_ACTIVE, $conversation);
         }
 
-        $conversation->setLastReplyAt($now);
+        $conversation->setLastReplyAt($now, Conversation::PERSON_CUSTOMER);
         $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
         // Reply from customer to deleted conversation should undelete it.
         if ($conversation->state == Conversation::STATE_DELETED) {

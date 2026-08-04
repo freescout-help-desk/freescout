@@ -3053,4 +3053,12 @@ class Helper
             return null;
         }
     }
+
+    public static function isCarbon($date)
+    {
+        if (!is_object($date)) {
+            return false;
+        }
+        return get_class($date) == 'Carbon\Carbon';
+    }
 }

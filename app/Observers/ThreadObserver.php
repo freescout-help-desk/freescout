@@ -48,22 +48,7 @@ class ThreadObserver
             // $conversation->cc = $thread->cc;
             // $conversation->bcc = $thread->bcc;
 
-            // Treat Waiting Since column as "Time of the first unanswered customer message"
-            // instead of "Time of the last customer activity".
-            // https://github.com/freescout-help-desk/freescout/issues/5225
-            if (config('app.waiting_since_as_first_unanswered_customer_message')) {
-                if ($thread->source_via != Conversation::PERSON_CUSTOMER
-                    || $conversation->last_reply_from != Conversation::PERSON_CUSTOMER
-                ) {
-                    $conversation->last_reply_at = $now;
-                } elseif ($conversation->last_reply_from == Conversation::PERSON_CUSTOMER) {
-                    // Here it may set meta when "last_reply_from" is already set by FetchEmails.
-                    // But this is not critical as "last_reply_at" value is set properly in FetchEmails.
-                    $conversation->setMeta(Conversation::META_LAST_CUSTOMER_REPLY_AT, $now);
-                }
-            } else {
-                $conversation->last_reply_at = $now;
-            }
+            $conversation->setLastReplyAt($now, $thread->source_via);
             // "last_reply_from" may be already set at this stage (by FetchEmails for example).
             $conversation->last_reply_from = $thread->source_via;
         }

@@ -51,12 +51,6 @@ class Conversation extends Model
     const PERSON_CUSTOMER = 1;
     const PERSON_USER = 2;
 
-    /**
-     * Name of the meta parameter storing actual time of the last customer reply
-     * when "waiting_since_as_first_unanswered_customer_message" mode is enabled.
-     */
-    const META_LAST_CUSTOMER_REPLY_AT = 'lcr';
-
     public static $persons = [
         self::PERSON_CUSTOMER => 'customer',
         self::PERSON_USER     => 'user',
@@ -475,43 +469,46 @@ class Conversation extends Model
     }
 
     /**
-     * Get time of the last customer reply taking into account value stored in the meta.
-     *
      * When "waiting_since_as_first_unanswered_customer_message" mode is enabled,
      * the $last_reply_at field does not store time of each customer reply,
-     * instead it's stored in the meta.
+     * But "last_customer_reply_at" always stores the time of the last customer reply.
      */
     public function getLastCustomerReplyAt()
     {
-        $meta_time = $this->getMeta(self::META_LAST_CUSTOMER_REPLY_AT);
-
-        if ($meta_time) {
-            $carbon_meta_time = \Helper::createCarbonDateFromFormat($meta_time);
-            if ($carbon_meta_time && $carbon_meta_time->gt($this->last_reply_at)) {
-                return $carbon_meta_time;
-            }
+        if ($this->last_customer_reply_at) {
+            return $this->last_customer_reply_at;
         }
 
         if ($this->last_reply_from == self::PERSON_CUSTOMER) {
             return $this->last_reply_at;
         } else {
+            // Undefined.
             return null;
         }
     }
 
-    public function setLastReplyAt($value)
+    // Takes into account "app.waiting_since_as_first_unanswered_customer_message".
+    // And also also sets "last_customer_reply_at".
+    // $this->last_reply_from MUST store previous value.
+    public function setLastReplyAt($value, $new_last_reply_from)
     {
-        // Treat Waiting Since column as "Time of the first unanswered customer message"
-        // instead of "Time of the last customer activity".
-        // https://github.com/freescout-help-desk/freescout/issues/5225
+        if (\Helper::isCarbon($value)) {
+            $value = $date->format('Y-m-d H:i:s');
+        }
         if (config('app.waiting_since_as_first_unanswered_customer_message')) {
+            // Treat Waiting Since column as "Time of the first unanswered customer message"
+            // instead of "Time of the last customer activity".
+            // https://github.com/freescout-help-desk/freescout/issues/5225
             if ($this->last_reply_from != Conversation::PERSON_CUSTOMER) {
                 $this->last_reply_at = $value;
-            } else {
-                $this->setMeta(Conversation::META_LAST_CUSTOMER_REPLY_AT, $value);
             }
         } else {
             $this->last_reply_at = $value;
+        }
+
+        // "last_customer_reply_at" always stores the time of the last customer reply.
+        if ($new_last_reply_from == Conversation::PERSON_CUSTOMER) {
+            $this->last_customer_reply_at = $value;
         }
     }
 
