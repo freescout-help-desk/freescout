@@ -18,6 +18,7 @@ If you want to support the project feel free to **star this repository**. It hel
    * [Mobile Apps](#mobile-apps)
    * [Requirements](#requirements)
    * [Installation](#installation)
+   * [Images & One-Click Installs](#images--one-click-installs)
    * [Cloud Hosted](#cloud-hosted)
    * [Modules](#modules)
    * [Tools & Integrations](#tools--integrations)
@@ -82,13 +83,17 @@ There are no minimum system requirements (CPU / RAM) – FreeScout will run on a
 
 [Installation Guide](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide)
 
-Images & one-click installs:
+## Images & One-Click Installs
 
-* [Docker Image](http://freescout.net/docker/)
-* [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
-* [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
+* [Docker Image](https://freescout.net/docker/)
+* [Pikapods](https://freescout.net/pikapods/) — Instant open-source apps hosting (Fully Managed)
+* [Zenith](https://freescout.net/zenith/) — Instant open-source apps hosting (Fully Managed)
+* [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) — cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx
+* [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) — cPanel, DirectAdmin, ISP Manager, ISP Config
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
-* [Ubuntu](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) (bash script)
+* [Ubuntu](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) — Bash script
+
+[More](https://freescout.net/cloud-hosted/)
 
 ## Cloud Hosted
 
