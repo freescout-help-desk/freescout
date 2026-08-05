@@ -1633,6 +1633,14 @@ class FetchEmails extends Command
                     $parts = explode($reply_separator, $result);
                 }
                 if (count($parts) > 1) {
+                    // When replying to an email notification Outlook places its reply header
+                    // (<hr> + div#divRplyFwdMsg containing From/Sent/To/Subject) above the
+                    // quoted notification, i.e. above the separator, so it has to be removed
+                    // from the extracted reply separately.
+                    // https://github.com/freescout-help-desk/freescout/issues/5545
+                    if ($user_reply_to_notification) {
+                        $parts[0] = preg_replace('/<hr[^>]*>\s*<div[^>]+id="(?:x_)?divRplyFwdMsg".*$/is', '', $parts[0]) ?: $parts[0];
+                    }
                     // Check if part contains any real text.
                     $text = \Helper::htmlToText($parts[0]);
                     $text = trim($text);
