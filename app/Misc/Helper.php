@@ -3045,10 +3045,25 @@ class Helper
         return Email::sanitizeEmail($email);
     }
 
-    public static function createCarbonDateFromFormat($string)
+    public static function createCarbonDateFromFormat($string, $format = 'Y-m-d H:i:s')
     {
+        if (empty($string)) {
+            return null;
+        }
         try {
-            return Carbon::createFromFormat('Y-m-d H:i:s', $string);
+            return Carbon::createFromFormat($format, $string);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public static function carbonDateParse($string)
+    {
+        if (empty($string)) {
+            return null;
+        }
+        try {
+            return Carbon::parse($string);
         } catch (\Exception $e) {
             return null;
         }
