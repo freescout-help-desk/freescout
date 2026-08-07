@@ -3,13 +3,10 @@
 <div align="center">
 
 <img src="https://raw.githubusercontent.com/freescout-help-desk/freescout/master/public/img/logo-300.png" width="180" height="180" />
-<br/><br/>
-
-[![PHP version](https://freescout-helpdesk.github.io/img/badges/PHP-7.1%2B-blue.svg)](https://github.com/freescout-help-desk/freescout#requirements)
 
 </div>
 
-**FreeScout** is the super lightweight and powerful free open source help desk and shared inbox built with PHP (Laravel framework). Now you can enjoy free Zendesk & Help Scout without giving up privacy or locking yourself into a service you don't control. FreeScout has been developed from scratch and is not using any copyrighted Help Scout or Zendesk materials.
+**FreeScout** is the super lightweight and powerful free open source help desk and shared inbox built with PHP (Laravel framework). Now you can enjoy free Zendesk & Help Scout without giving up privacy or locking yourself into a service you don't control. FreeScout is multichannel — it centralizes all customer conversations from various channels in one place. FreeScout has been developed from scratch and does not use any copyrighted Help Scout or Zendesk materials.
 
 If you want to support the project feel free to **star this repository**. It helps to increase the visibility of the project and let people know that it is valuable. Thanks for your support!
 
@@ -21,6 +18,7 @@ If you want to support the project feel free to **star this repository**. It hel
    * [Mobile Apps](#mobile-apps)
    * [Requirements](#requirements)
    * [Installation](#installation)
+   * [Images & One-Click Installs](#images--one-click-installs)
    * [Cloud Hosted](#cloud-hosted)
    * [Modules](#modules)
    * [Tools & Integrations](#tools--integrations)
@@ -34,13 +32,14 @@ If you want to support the project feel free to **star this repository**. It hel
 
 ## Features
 
-  * No limitations on the number of users, tickets, mailboxes, etc.
+  * Multichannel: email, [WhatsApp](https://freescout.net/whatsapp/), Telegram, Facebook, Slack, Live Chat and more.
+  * Unlimited support agents, tickets, mailboxes, etc.
+  * [Secure](https://freescout.net/security) by design.
   * 100% Mobile-friendly.
   * Multilingual: English, Catalan, Chinese (Simplified), Chinese (Traditional), Croatian, Czech, Danish, Dutch, Finnish, French, German, Hebrew, Hungarian, Italian, Japanese, Kazakh, Korean, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Slovak, Slovenian, Swedish, Turkish, Ukrainian.
   * Seamless email integration.
   * Supports modern Microsoft Exchange authentication.
   * Fully supports screen readers (for visually impaired).
-  * Built with strong focus on [security](https://freescout.net/security).
   * Web installer & updater.
   * Starred conversations.
   * Forwarding conversations.
@@ -51,15 +50,14 @@ If you want to support the project feel free to **star this repository**. It hel
   * Collision detection – notice is shown when two agents open the same conversation.
   * Push notifications.
   * Following a conversation.
-  * Auto reply.
+  * Auto replies.
   * Internal notes.
   * Automatic refreshing of the conversations list without the need to reload the page.
   * Pasting screenshots from the clipboard into the reply area.
   * Configuring notifications on a per user basis.
   * Open tracking.
-  * Editing threads.
   * Search.
-  * And more…
+  * And [more](https://github.com/freescout-help-desk/freescout/wiki/FreeScout-Modules)…
 
 Need anything else? Suggest features [here](https://freescout.net/request-feature/).
 
@@ -85,13 +83,17 @@ There are no minimum system requirements (CPU / RAM) – FreeScout will run on a
 
 [Installation Guide](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide)
 
-Images & one-click installs:
+## Images & One-Click Installs
 
-* [Docker Image](http://freescout.net/docker/)
-* [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) (cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx)
-* [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) (cPanel, DirectAdmin, ISP Manager, ISP Config)
+* [Docker Image](https://freescout.net/docker/)
+* [Pikapods](https://freescout.net/pikapods/) — Instant open-source apps hosting (Fully Managed)
+* [Zenith](https://freescout.net/zenith/) — Instant open-source apps hosting (Fully Managed)
+* [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) — cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx
+* [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) — cPanel, DirectAdmin, ISP Manager, ISP Config
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
-* [Ubuntu](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) (bash script)
+* [Ubuntu](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) — Bash script
+
+[More](https://freescout.net/cloud-hosted/)
 
 ## Cloud Hosted
 

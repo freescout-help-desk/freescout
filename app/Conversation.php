@@ -469,6 +469,50 @@ class Conversation extends Model
     }
 
     /**
+     * When "waiting_since_as_first_unanswered_customer_message" mode is enabled,
+     * the $last_reply_at field does not store time of each customer reply,
+     * But "last_customer_reply_at" always stores the time of the last customer reply.
+     */
+    public function getLastCustomerReplyAt()
+    {
+        if ($this->last_customer_reply_at) {
+            return $this->last_customer_reply_at;
+        }
+
+        if ($this->last_reply_from == self::PERSON_CUSTOMER) {
+            return $this->last_reply_at;
+        } else {
+            // Undefined.
+            return null;
+        }
+    }
+
+    // Takes into account "app.waiting_since_as_first_unanswered_customer_message".
+    // And also also sets "last_customer_reply_at".
+    // $this->last_reply_from MUST store previous value.
+    public function setLastReplyAt($value, $new_last_reply_from)
+    {
+        if (\Helper::isCarbon($value)) {
+            $value = $date->format('Y-m-d H:i:s');
+        }
+        if (config('app.waiting_since_as_first_unanswered_customer_message')) {
+            // Treat Waiting Since column as "Time of the first unanswered customer message"
+            // instead of "Time of the last customer activity".
+            // https://github.com/freescout-help-desk/freescout/issues/5225
+            if ($this->last_reply_from != Conversation::PERSON_CUSTOMER) {
+                $this->last_reply_at = $value;
+            }
+        } else {
+            $this->last_reply_at = $value;
+        }
+
+        // "last_customer_reply_at" always stores the time of the last customer reply.
+        if ($new_last_reply_from == Conversation::PERSON_CUSTOMER) {
+            $this->last_customer_reply_at = $value;
+        }
+    }
+
+    /**
      * Set preview text.
      *
      * @param string $text
@@ -2274,8 +2318,8 @@ class Conversation extends Model
     public static function refreshConversations($conversation, $thread)
     {
         \App\Events\RealtimeConvNewThread::dispatchSelf($thread);
-        \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id);
-        \App\Events\RealtimeChat::dispatchSelf($conversation->mailbox_id);
+        \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id, $thread->id, (int)$conversation->isChat());
+        \App\Events\RealtimeChat::dispatchSelf($conversation->mailbox_id, $thread->id, (int)$conversation->isChat());
     }
 
     public static function getConvTableSorting($request = null)

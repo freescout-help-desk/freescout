@@ -1168,7 +1168,7 @@ class FetchEmails extends Command
         $conversation = null;
         $prev_customer_id = null;
         if ($use_mail_date_on_fetching) {
-            $now = $date;
+            $now = $date->format('Y-m-d H:i:s');
         } else {
             $now = date('Y-m-d H:i:s');
         }
@@ -1233,17 +1233,8 @@ class FetchEmails extends Command
         if ($conversation->status != Conversation::STATUS_ACTIVE && $conversation->status != Conversation::STATUS_SPAM) {
             $conversation->status = \Eventy::filter('conversation.status_changing', Conversation::STATUS_ACTIVE, $conversation);
         }
-        // This broke conversations order.
-        // https://github.com/freescout-help-desk/freescout/issues/5501#issuecomment-5084418616
-        //
-        // Only update last_reply_at if the customer was not already the last to reply.
-        // This preserves the original "waiting since" time when consecutive customer
-        // messages arrive without a staff reply in between.
-        // https://github.com/freescout-help-desk/freescout/issues/5225
-        /*if ($conversation->last_reply_from != Conversation::PERSON_CUSTOMER) {
-            $conversation->last_reply_at = $now;
-        }*/
-        $conversation->last_reply_at = $now;
+
+        $conversation->setLastReplyAt($now, Conversation::PERSON_CUSTOMER);
         $conversation->last_reply_from = Conversation::PERSON_CUSTOMER;
         // Reply from customer to deleted conversation should undelete it.
         if ($conversation->state == Conversation::STATE_DELETED) {
@@ -1541,7 +1532,7 @@ class FetchEmails extends Command
         $result = '';
 
         // Can fix broken HTML, remove sensitive parts and etc.
-        $body = \Eventy::filter('fetch_emails.separate_reply.preprocess_body', $body);
+        $body = \Eventy::filter('fetch_emails.separate_reply.preprocess_body', $body ?? '');
 
         if ($is_html) {
             // Extract body content from HTML
@@ -1642,6 +1633,14 @@ class FetchEmails extends Command
                     $parts = explode($reply_separator, $result);
                 }
                 if (count($parts) > 1) {
+                    // When replying to an email notification Outlook places its reply header
+                    // (<hr> + div#divRplyFwdMsg containing From/Sent/To/Subject) above the
+                    // quoted notification, i.e. above the separator, so it has to be removed
+                    // from the extracted reply separately.
+                    // https://github.com/freescout-help-desk/freescout/issues/5545
+                    if ($user_reply_to_notification) {
+                        $parts[0] = preg_replace('/<hr[^>]*>\s*<div[^>]+id="(?:x_)?divRplyFwdMsg".*$/is', '', $parts[0]) ?: $parts[0];
+                    }
                     // Check if part contains any real text.
                     $text = \Helper::htmlToText($parts[0]);
                     $text = trim($text);

@@ -2721,6 +2721,20 @@ var History = /** @class */ (function () {
         this.applySnapshot(this.stack[this.stackOffset]);
     };
     /**
+    *  @method commit
+    *  Resets history stack, but keeps current editor's content.
+    */
+    History.prototype.commit = function () {
+        // Clear the stack.
+        this.stack = [];
+
+        // Restore stackOffset to its original value.
+        this.stackOffset = -1;
+
+        // Record our first snapshot (of nothing).
+        this.recordUndo();
+    }
+    /**
     * @method reset
     * Resets the history stack completely; reverting to an empty editor.
     */
@@ -4170,6 +4184,14 @@ var Editor = /** @class */ (function () {
         this.history.undo();
         this.context.triggerEvent('change', this.$editable.html());
     };
+    /*
+    * commit
+    */
+    Editor.prototype.commit = function () {
+        this.context.triggerEvent('before.command', this.$editable.html());
+        this.history.commit();
+        this.context.triggerEvent('change', this.$editable.html());
+    }
     /**
      * redo
      */

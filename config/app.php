@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.232',
+    'version' => '1.8.233',
 
     /*
     |--------------------------------------------------------------------------
@@ -497,6 +497,14 @@ return [
     |-------------------------------------------------------------------------
     */
     'limit_user_customer_visibility'    => env('APP_LIMIT_USER_CUSTOMER_VISIBILITY', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Treat Waiting Since column as "Time of the first unanswered customer message"
+    | instead of "Time of the last customer activity".
+    |-------------------------------------------------------------------------
+    */
+    'waiting_since_as_first_unanswered_customer_message'    => env('WAITING_SINCE_AS_FIRST_UNANSWERED_CUSTOMER_MESSAGE', false),
 
     /*
     |--------------------------------------------------------------------------

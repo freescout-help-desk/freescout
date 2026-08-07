@@ -25,7 +25,7 @@ class ThreadObserver
         $use_mail_date_on_fetching = config('app.use_mail_date_on_fetching');
 
         if ($use_mail_date_on_fetching) {
-            $now = $thread->created_at;
+            $now = $thread->created_at->format('Y-m-d H:i:s');
         } else {
             $now = date('Y-m-d H:i:s');
         }
@@ -48,19 +48,8 @@ class ThreadObserver
             // $conversation->cc = $thread->cc;
             // $conversation->bcc = $thread->bcc;
 
-            // This broke conversations order.
-            // https://github.com/freescout-help-desk/freescout/issues/5501#issuecomment-5084418616
-            //
-            // Only update last_reply_at if the sender changed or it is not a consecutive
-            // customer message. This preserves the original "waiting since" time when
-            // multiple customer messages arrive without a staff reply.
-            // https://github.com/freescout-help-desk/freescout/issues/5225
-            /*if ($thread->source_via != Conversation::PERSON_CUSTOMER
-                || $conversation->last_reply_from != Conversation::PERSON_CUSTOMER
-            ) {
-                $conversation->last_reply_at = $now;
-            }*/
-            $conversation->last_reply_at = $now;
+            $conversation->setLastReplyAt($now, $thread->source_via);
+            // "last_reply_from" may be already set at this stage (by FetchEmails for example).
             $conversation->last_reply_from = $thread->source_via;
         }
         if ($conversation->source_via == Conversation::PERSON_CUSTOMER) {

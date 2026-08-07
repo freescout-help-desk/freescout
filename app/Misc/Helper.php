@@ -3044,4 +3044,36 @@ class Helper
     {
         return Email::sanitizeEmail($email);
     }
+
+    public static function createCarbonDateFromFormat($string, $format = 'Y-m-d H:i:s')
+    {
+        if (empty($string)) {
+            return null;
+        }
+        try {
+            return Carbon::createFromFormat($format, $string);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public static function carbonDateParse($string)
+    {
+        if (empty($string)) {
+            return null;
+        }
+        try {
+            return Carbon::parse($string);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public static function isCarbon($date)
+    {
+        if (!is_object($date)) {
+            return false;
+        }
+        return get_class($date) == 'Carbon\Carbon';
+    }
 }
