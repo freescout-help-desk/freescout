@@ -78,7 +78,8 @@ class Conversation extends Model
     const STATUS_PENDING = 2;
     const STATUS_CLOSED = 3;
     const STATUS_SPAM = 4;
-    // Not used
+    // Not used in conversations.
+    const STATUS_NOCHANGE = 6;
     //const STATUS_OPEN = 5;
 
     public static $statuses = [
@@ -88,6 +89,13 @@ class Conversation extends Model
         self::STATUS_SPAM    => 'spam',
         //self::STATUS_OPEN => 'open',
     ];
+    
+    public static $standard_statuses = [];
+
+    // Just to improve performance.
+    public static $status_names = [];
+
+    public static $get_status_callbacks = [];
 
     /**
      * https://glyphicons.bootstrapcheatsheets.com/.
@@ -561,22 +569,22 @@ class Conversation extends Model
 
     public function isActive()
     {
-        return $this->status == self::STATUS_ACTIVE;
+        return $this->getMainStatus() == self::STATUS_ACTIVE;
     }
 
     public function isPending()
     {
-        return $this->status == self::STATUS_PENDING;
+        return $this->getMainStatus() == self::STATUS_PENDING;
     }
 
     public function isSpam()
     {
-        return $this->status == self::STATUS_SPAM;
+        return $this->getMainStatus() == self::STATUS_SPAM;
     }
 
     public function isClosed()
     {
-        return $this->status == self::STATUS_CLOSED;
+        return $this->getMainStatus() == self::STATUS_CLOSED;
     }
 
     public function isPublished()
@@ -588,7 +596,7 @@ class Conversation extends Model
     {
         return $this->state == self::STATE_DRAFT;
     }
-    
+
     /**
      * Get status name.
      *
@@ -600,7 +608,7 @@ class Conversation extends Model
     }
 
     /**
-     * Convert status code to name.
+     * Convert status ID to name.
      *
      * @param int $status
      *
@@ -608,31 +616,47 @@ class Conversation extends Model
      */
     public static function statusCodeToName($status)
     {
+        $name = '';
+
+        if (count(self::$get_status_callbacks)) {
+            $locale = app()->getLocale();
+
+            if (!empty(self::$status_names[$locale][$status])) {
+                return self::$status_names[$locale][$status];
+            }
+        }
+
         switch ($status) {
             case self::STATUS_ACTIVE:
-                return __('Active');
+                $name = __('Active');
                 break;
 
             case self::STATUS_PENDING:
-                return __('Pending');
+                $name = __('Pending');
                 break;
 
             case self::STATUS_CLOSED:
-                return __('Closed');
+                $name = __('Closed');
                 break;
 
             case self::STATUS_SPAM:
-                return __('Spam');
+                $name = __('Spam');
                 break;
 
             // case self::STATUS_OPEN:
-            //     return __('Open');
+            //     $name = __('Open');
             //     break;
 
-            default:
-                return '';
-                break;
+            //default:
+                //break;
         }
+
+        if (count(self::$get_status_callbacks)) {
+            $name = \Eventy::filter('conversation.status_name', $name, $status);
+            self::$status_names[$locale][$status] = $name;
+        }
+
+        return $name;
     }
 
     /**
@@ -663,13 +687,55 @@ class Conversation extends Model
         }
     }
 
-    public function getStatus()
+    public function getStatusAttribute($value)
     {
-        if (array_key_exists($this->status, self::$statuses)) {
-            return $this->status;
-        } else {
-            return self::STATUS_ACTIVE;
+        // Use custom callback for better performance.
+        //return \Eventy::filter('conversation.get_status', $value, $this);
+        if (count(self::$get_status_callbacks)) {
+            foreach (self::$get_status_callbacks as $callback) {
+                if (is_callable($callback)) {
+                    $value = $callback($value, $this);
+                }
+            }
         }
+        return $value;
+    }
+
+    public function setStatusAttribute($status)
+    {
+        $status = \Eventy::filter('conversation.set_status', $status, $this);
+
+        $this->attributes['status'] = $status;
+    }
+
+    // Get normalized status.
+    public function getMainStatus()
+    {
+        return self::toMainStatus($this->status) ?: self::STATUS_ACTIVE;
+    }
+
+    public static function isStandardStatus($status)
+    {
+        return is_numeric($status) && (int)$status < 10;
+    }
+
+    public static function toMainStatus($status)
+    {
+        return (int)substr($status.'', 0, 1) ?: self::STATUS_ACTIVE;
+    }
+
+    public static function compareStatus($status, $status_list)
+    {
+        if (is_array($status_list)) {
+            return in_array(self::toMainStatus($status), $status_list);
+        } else {
+            return self::toMainStatus($status) == (int)$status_list;
+        }
+    }
+
+    public function hasStatus($list)
+    {
+        return in_array($this->getMainStatus(), $list);
     }
 
     /**
@@ -682,15 +748,76 @@ class Conversation extends Model
         $now = date('Y-m-d H:i:s');
 
         $this->status = $status;
+
         if ($update_folder) {
             $this->updateFolder();
         }
         $this->user_updated_at = $now;
 
-        if ($user && $status == self::STATUS_CLOSED) {
+        if ($user && self::toMainStatus($status) == self::STATUS_CLOSED) {
             $this->closed_by_user_id = $user->id;
             $this->closed_at = $now;
         }
+    }
+
+    // Override self::$statuses.
+    public static function setStatuses($statuses)
+    {
+        self::$statuses = $statuses;
+    }
+
+    public static function getStatuses($exclude_ids = [])
+    {
+        $statuses = self::$statuses;
+        if (count($exclude_ids)) {
+            $statuses = array_diff_key($statuses, array_flip($exclude_ids));
+        }
+        return $statuses;
+    }
+
+    public static function getStandardStatuses()
+    {
+        return self::$standard_statuses ?: self::$statuses;
+    }
+
+    // Returns array of status ids as keys and names as values.
+    public static function getStatusesWithNames($exclude_ids = [])
+    {
+        $statuses = self::$statuses;
+        if (count($exclude_ids)) {
+            $statuses = array_diff_key($statuses, array_flip($exclude_ids));
+        }
+        foreach ($statuses as $status_id => $status_code) {
+            $statuses[$status_id] = self::statusCodeToName($status_id);
+        }
+        return $statuses;
+    }
+
+    public static function statusCode($status_id)
+    {
+        return self::$statuses[$status_id] ?? '';
+    }
+
+    public function getStatusIcon()
+    {
+        return self::$status_icons[$this->getMainStatus()].'';
+    }
+
+    public static function statusIcon($status)
+    {
+        //return \Eventy::filter('conversation.get_status_icon', self::$status_icons[$this->getStatus()], $this).'';
+        return self::$status_icons[self::toMainStatus($status)].'';
+    }
+
+    public function getStatusClass()
+    {
+        //return \Eventy::filter('conversation.get_status_class', self::$status_classes[$this->getStatus()], $this).'';
+        return self::$status_classes[$this->getMainStatus()].'';
+    }
+
+    public static function statusClass($status)
+    {
+        return self::$status_classes[self::toMainStatus($status)].'';
     }
 
     /**
@@ -717,6 +844,22 @@ class Conversation extends Model
                 ->first();
             if ($follower) {
                 $follower->delete();
+            }
+        }
+    }
+
+    public static function addStatusCondition($query, $status_list, $table_name = 'conversations')
+    {
+        $query_changed = \Eventy::filter('conversations.query_status_in', false, $query, $status_list, $table_name);
+        if (!$query_changed) {
+            if (is_array($status_list)) {
+                if (count($status_list) == 1) {
+                    $query->where('conversations.status', $status_list[0]);
+                } else {
+                    $query->whereIn('conversations.status', $status_list);
+                }
+            } else {
+                $query->where('conversations.status', $status_list);
             }
         }
     }
@@ -844,9 +987,9 @@ class Conversation extends Model
             $folder_type = Folder::TYPE_DRAFTS;
         } elseif ($this->state == self::STATE_DELETED) {
             $folder_type = Folder::TYPE_DELETED;
-        } elseif ($this->status == self::STATUS_SPAM) {
+        } elseif ($this->isSpam()) {
             $folder_type = Folder::TYPE_SPAM;
-        } elseif ($this->status == self::STATUS_CLOSED) {
+        } elseif ($this->isClosed()) {
             $folder_type = Folder::TYPE_CLOSED;
         } elseif ($this->user_id) {
             $folder_type = Folder::TYPE_ASSIGNED;
@@ -1001,7 +1144,17 @@ class Conversation extends Model
      */
     public function getStatusColor()
     {
-        return self::$status_colors[$this->status];
+        return self::$status_colors[$this->getMainStatus()].'';
+    }
+
+    public function statusColor($status)
+    {
+        return self::$status_colors[self::toMainStatus($status)].'';
+    }
+
+    public static function statusName($status)
+    {
+        return self::statusCodeToName($status);
     }
 
     /**
@@ -1872,10 +2025,14 @@ class Conversation extends Model
         \Eventy::action('conversation.state_changed', $this, $user, $prev_state);
     }
 
-    public function changeStatus($new_status, $user, $create_thread = true)
+    public function changeStatus($new_status, $user = null, $create_thread = true)
     {
-        if (!array_key_exists($new_status, self::$statuses)) {
+        if (!array_key_exists((int)$new_status, self::$statuses)) {
             return;
+        }
+
+        if (!$user) {
+            $user = new User();
         }
         
         $prev_status = $this->status;
@@ -1896,12 +2053,12 @@ class Conversation extends Model
             // todo: this need to be changed for API
             $thread->source_type = Thread::SOURCE_TYPE_WEB;
             $thread->customer_id = $this->customer_id;
-            $thread->created_by_user_id = $user->id;
+            $thread->created_by_user_id = $user ? $user->id : null;
             $thread->save();
         }
 
         event(new ConversationStatusChanged($this));
-        \Eventy::action('conversation.status_changed', $this, $user, $changed_on_reply = false, $prev_status);
+        \Eventy::action('conversation.status_changed', $this, $user ?? null, $changed_on_reply = false, $prev_status);
     }
 
     public function changeUser($new_user_id, $user, $create_thread = true)
@@ -2421,12 +2578,7 @@ class Conversation extends Model
             });
         }
         if (!empty($filters['status']) && is_array($filters['status'])) {
-            if (count($filters['status']) == 1) {
-                // = is faster than IN.
-                $query_conversations->where('conversations.status', '=', $filters['status'][0]);
-            } else {
-                $query_conversations->whereIn('conversations.status', $filters['status']);
-            }
+            self::addStatusCondition($query_conversations, $filters['status']);
         }
         if (!empty($filters['state']) && is_array($filters['state'])) {
             if (count($filters['state']) == 1) {
@@ -2607,8 +2759,7 @@ class Conversation extends Model
             $mailbox = $this->mailbox;
         }
         if (!empty($mailbox->meta['chat_start_new'])
-            && ($this->status == Conversation::STATUS_CLOSED
-                || $this->state == Conversation::STATE_DELETED)
+            && ($this->isClosed() || $this->state == Conversation::STATE_DELETED)
         ) {
             return true;
         } else {

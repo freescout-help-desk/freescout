@@ -47,7 +47,7 @@ class SendNotificationToUsers
                 break;
             case 'App\Events\CustomerCreatedConversation':
                 // Do not send notification if conversation is spam.
-                if ($event->conversation->status != Conversation::STATUS_SPAM) {
+                if (!$event->conversation->isSpam()) {
                     $event_type = Subscription::EVENT_TYPE_NEW;
                 }
                 break;

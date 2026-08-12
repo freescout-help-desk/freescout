@@ -517,31 +517,13 @@ class Thread extends Model
      */
     public static function statusCodeToName($status)
     {
-        switch ($status) {
-            case self::STATUS_ACTIVE:
-                return __('Active');
-                break;
+        return Conversation::statusCodeToName($status);
+    }
 
-            case self::STATUS_PENDING:
-                return __('Pending');
-                break;
-
-            case self::STATUS_CLOSED:
-                return __('Closed');
-                break;
-
-            case self::STATUS_SPAM:
-                return __('Spam');
-                break;
-
-            case self::STATUS_NOCHANGE:
-                return __('Not changed');
-                break;
-
-            default:
-                return '';
-                break;
-        }
+    // Get normalized status.
+    public function getMainStatus()
+    {
+        return Conversation::toMainStatus($this->status) ?: self::STATUS_ACTIVE;
     }
 
     /**
@@ -742,6 +724,9 @@ class Thread extends Model
             $did_this = strip_tags($did_this);
         }
 
+        if (!$person) {
+            $person = __('System');
+        }
         if ($person) {
             // This causes double escaping.
             // if ($escape) {
@@ -1190,7 +1175,7 @@ class Thread extends Model
                     }
                     $conversation->status = $data['status'];
                 } else {
-                    if ((int)$conversation->status != Conversation::STATUS_ACTIVE) {
+                    if (!$conversation->isActive()) {
                         $update_folder = true;
                     }
                     // Reply from customer makes conversation active
@@ -1206,7 +1191,7 @@ class Thread extends Model
                     }
                     $conversation->status = $data['status'];
                 } else {
-                    if ((int)$conversation->status != Conversation::STATUS_PENDING) {
+                    if (!$conversation->isPending()) {
                         $update_folder = true;
                     }
                     // Reply from customer makes conversation active

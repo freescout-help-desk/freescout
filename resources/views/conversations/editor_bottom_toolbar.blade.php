@@ -10,9 +10,9 @@
 	<span class="editor-btm-text">{{ __('Status') }}:</span> 
     {{-- Note keeps status--}}
 	<select name="status" class="form-control parsley-exclude" data-reply-status="@if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_KEEP_CURRENT){{ $conversation->status }}@else{{ $mailbox->ticket_status }}@endif" data-note-status="{{ $conversation->status }}">
-        <option value="{{ App\Mailbox::TICKET_STATUS_ACTIVE }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_ACTIVE || ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_KEEP_CURRENT && $conversation->status == App\Mailbox::TICKET_STATUS_ACTIVE))selected="selected"@endif>{{ __('Active') }}</option>
-        <option value="{{ App\Mailbox::TICKET_STATUS_PENDING }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_PENDING || ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_KEEP_CURRENT && $conversation->status == App\Mailbox::TICKET_STATUS_PENDING))selected="selected"@endif>{{ __('Pending') }}</option>
-        <option value="{{ App\Mailbox::TICKET_STATUS_CLOSED }}" @if ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_CLOSED || ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_KEEP_CURRENT && $conversation->status == App\Mailbox::TICKET_STATUS_CLOSED))selected="selected"@endif>{{ __('Closed') }}</option>
+        @foreach (App\Conversation::getStatusesWithNames([App\Conversation::STATUS_SPAM]) as $status_id => $status_name)
+            <option value="{{ $status_id }}" @if ($mailbox->ticket_status == $status_id || ($mailbox->ticket_status == App\Mailbox::TICKET_STATUS_KEEP_CURRENT && $conversation->status == $status_id))selected="selected"@endif>{{ $status_name }}</option>
+        @endforeach
     </select> 
     <small class="note-bottom-div"></small> 
     <span class="editor-btm-text">{{ __('Assign to') }}:</span> 
