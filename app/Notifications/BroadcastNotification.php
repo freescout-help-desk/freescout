@@ -106,7 +106,7 @@ class BroadcastNotification extends Notification implements ShouldQueue
 
             // Get last reply or note of the conversation to display it's text
             $last_thread_body = '';
-            $last_thread = Thread::where('conversation_id', $conversation)
+            $last_thread = Thread::where('conversation_id', $conversation->id)
                 // Select must contain all fields from orderBy() to avoid:
                 // General error: 3065 Expression #1 of ORDER BY clause is not in SELECT
                 ->select(['body', 'created_at'])
