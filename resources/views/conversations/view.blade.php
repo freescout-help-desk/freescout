@@ -155,12 +155,12 @@
                     <li>
                         <div class="btn-group" id="conv-status" data-toggle="tooltip" title="{{ __("Status") }}: {{ $conversation->getStatusName() }}">
                             @if ($conversation->state != App\Conversation::STATE_DELETED)
-                                <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->getStatus()] }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __("Status") }}: {{ $conversation->getStatusName() }}"><i class="glyphicon glyphicon-{{ App\Conversation::$status_icons[$conversation->getStatus()] }}"></i></button>
-                                <button type="button" class="btn btn-{{ App\Conversation::$status_classes[$conversation->getStatus()] }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __("Status") }}">
+                                <button type="button" class="btn btn-{{ $conversation->getStatusClass() }} btn-light conv-info-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __("Status") }}: {{ $conversation->getStatusName() }}"><i class="glyphicon glyphicon-{{ $conversation->getStatusIcon() }}"></i></button>
+                                <button type="button" class="btn btn-{{ $conversation->getStatusClass() }} btn-light dropdown-toggle conv-info-val" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __("Status") }}">
                                     <span>{{ $conversation->getStatusName() }}</span> <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu conv-status">
-                                    @if ($conversation->status != App\Conversation::STATUS_SPAM)
+                                    @if (!$conversation->isSpam())
                                         @foreach (App\Conversation::$statuses as $status => $dummy)
                                             <li @if ($conversation->status == $status) class="active" @endif><a href="#" data-status="{{ $status }}">{{ App\Conversation::statusCodeToName($status) }}</a></li>
                                         @endforeach

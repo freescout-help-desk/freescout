@@ -5894,6 +5894,11 @@ function closeAllModals()
 	$('.modal').modal('hide');
 }
 
+function closeVisibleModal()
+{
+	$('.modal:visible:first').modal('hide');
+}
+
 function isModalOpen()
 {
 	return $('.modal.in').length;

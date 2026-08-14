@@ -32,34 +32,33 @@ If you want to support the project feel free to **star this repository**. It hel
 
 ## Features
 
-  * Multichannel: email, [WhatsApp](https://freescout.net/whatsapp/), Telegram, Facebook, Slack, Live Chat and more.
+  * Multichannel — email, [WhatsApp](https://freescout.net/whatsapp/), Telegram, Facebook, Slack, Live Chat and more.
   * Unlimited support agents, tickets, mailboxes, etc.
   * [Secure](https://freescout.net/security) by design.
   * 100% Mobile-friendly.
-  * Multilingual: English, Catalan, Chinese (Simplified), Chinese (Traditional), Croatian, Czech, Danish, Dutch, Finnish, French, German, Hebrew, Hungarian, Italian, Japanese, Kazakh, Korean, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Slovak, Slovenian, Swedish, Turkish, Ukrainian.
-  * Seamless email integration.
-  * Supports modern Microsoft Exchange authentication.
+  * Multilingual — English, Catalan, Chinese Simplified, Chinese Traditional, Croatian, Czech, Danish, Dutch, Finnish, French, German, Hebrew, Hungarian, Italian, Japanese, Kazakh, Korean, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Slovak, Slovenian, Swedish, Turkish, Ukrainian.
+  * Seamless email integration (via SMTP, IMAP, POP3, etc).
+  * Modern OAuth authentication for Microsoft Office 365 and Google Workspace.
   * Fully supports screen readers (for visually impaired).
   * Web installer & updater.
   * Starred conversations.
-  * Forwarding conversations.
-  * Merging conversations.
-  * Moving conversations between mailboxes.
+  * Push notifications.
+  * Following conversations.
+  * Auto replies.
+  * Internal notes.
+  * Forwarding / Merging / Moving conversations.
   * Phone conversations.
   * Sending new conversations to multiple recipients at once.
   * Collision detection – notice is shown when two agents open the same conversation.
-  * Push notifications.
-  * Following a conversation.
-  * Auto replies.
-  * Internal notes.
   * Automatic refreshing of the conversations list without the need to reload the page.
   * Pasting screenshots from the clipboard into the reply area.
-  * Configuring notifications on a per user basis.
+  * Flexible notifications for user agents.
   * Open tracking.
-  * Search.
-  * And [more](https://github.com/freescout-help-desk/freescout/wiki/FreeScout-Modules)…
+  * Powerful Search.
 
-Need anything else? Suggest features [here](https://freescout.net/request-feature/).
+A full list of features is available [here](https://freescout.net/#custom_html-3).
+
+Need anything else? [Suggest features](https://freescout.net/request-feature/).
 
 ## Mobile Apps
 
@@ -93,7 +92,7 @@ There are no minimum system requirements (CPU / RAM) – FreeScout will run on a
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
 * [Ubuntu](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) — Bash script
 
-[More](https://freescout.net/cloud-hosted/)
+ [More options…](https://freescout.net/cloud-hosted/)
 
 ## Cloud Hosted
 

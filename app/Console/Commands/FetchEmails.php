@@ -1230,7 +1230,7 @@ class FetchEmails extends Command
         // Reply from customer makes conversation active.
         // If conversation is marked as Spam the status does not change.
         // https://github.com/freescout-help-desk/freescout/issues/5005
-        if ($conversation->status != Conversation::STATUS_ACTIVE && $conversation->status != Conversation::STATUS_SPAM) {
+        if (!$conversation->isActive() && !$conversation->isSpam()) {
             $conversation->status = \Eventy::filter('conversation.status_changing', Conversation::STATUS_ACTIVE, $conversation);
         }
 

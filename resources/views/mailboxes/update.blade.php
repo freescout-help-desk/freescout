@@ -118,9 +118,9 @@
                             <div class="col-sm-6">
                                 <select id="ticket_status" class="form-control input-sized" name="ticket_status" required autofocus>
                                     <option value="{{ App\Mailbox::TICKET_STATUS_KEEP_CURRENT }}" @if (old('ticket_status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_KEEP_CURRENT)selected="selected"@endif>{{ __('Keep Current') }}</option>
-                                    <option value="{{ App\Mailbox::TICKET_STATUS_ACTIVE }}" @if (old('ticket_status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_ACTIVE)selected="selected"@endif>{{ __('Active') }}</option>
-                                    <option value="{{ App\Mailbox::TICKET_STATUS_PENDING }}" @if (old('ticket_status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_PENDING)selected="selected"@endif>{{ __('Pending') }}</option>
-                                    <option value="{{ App\Mailbox::TICKET_STATUS_CLOSED }}" @if (old('ticket_status', $mailbox->ticket_status) == App\Mailbox::TICKET_STATUS_CLOSED)selected="selected"@endif>{{ __('Closed') }}</option>
+                                    @foreach (App\Conversation::getStatusesWithNames([App\Conversation::STATUS_SPAM]) as $status_id => $status_name)
+                                        <option value="{{ $status_id }}" @if (old('ticket_status', $mailbox->ticket_status) == $status_id)selected="selected"@endif>{{ $status_name }}</option>
+                                    @endforeach
                                 </select>
 
                                 @include('partials/field_error', ['field'=>'ticket_status'])
