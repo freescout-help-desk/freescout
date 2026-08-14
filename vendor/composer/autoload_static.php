@@ -2523,6 +2523,7 @@ class ComposerStaticInitbf8dc242a640d7c740f283f226d0bdb4
         'Illuminate\\Http\\Concerns\\InteractsWithFlashData' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Http/Concerns/InteractsWithFlashData.php',
         'Illuminate\\Http\\Concerns\\InteractsWithInput' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Http/Concerns/InteractsWithInput.php',
         'Illuminate\\Http\\Exceptions\\HttpResponseException' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Http/Exceptions/HttpResponseException.php',
+        'Illuminate\\Http\\Exceptions\\PostTooLargeException' => __DIR__ . '/../..' . '/overrides/laravel/framework/src/Illuminate/Http/Exceptions/PostTooLargeException.php',
         'Illuminate\\Http\\File' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Http/File.php',
         'Illuminate\\Http\\FileHelpers' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Http/FileHelpers.php',
         'Illuminate\\Http\\JsonResponse' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Http/JsonResponse.php',
