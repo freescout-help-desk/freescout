@@ -3213,6 +3213,10 @@ class ConversationsController extends Controller
             }
         }
 
+        if ($user->canSeeOnlyAssignedConversations()) {
+            $query_conversations->where('conversations.user_id', $user->id);
+        }
+
         if (!empty($request->params['user_id'])) {
             $query_conversations->where('conversations.user_id', (int)$request->params['user_id']);
         }
