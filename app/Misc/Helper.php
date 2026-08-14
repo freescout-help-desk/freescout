@@ -2037,17 +2037,15 @@ class Helper
                 throw new \Exception('Curl Error Number: '.$curl_errno, 1);
             }
 
+            $https_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if (PHP_VERSION_ID < 80000) {
+                \curl_close($ch);
+            }
+
             if ($contents == '') {
-                $https_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                if (PHP_VERSION_ID < 80000) {
-                    \curl_close($ch);
-                }
                 throw new \Exception('Empty Response. Curl Error Number: '.$curl_errno.'. Response Status Code: '.$https_status, 1);
-                //return false;
-            } else {
-                if (PHP_VERSION_ID < 80000) {
-                    \curl_close($ch);
-                }
+            } elseif ($https_status != 200) {
+                throw new \Exception('Curl HTTP Code: '.$https_status, 1);
             }
 
             return $contents;
