@@ -739,6 +739,8 @@ class Helper
             '</div>' => ' </div>',
             '</p>' => ' </p>'
         ]);
+        // Replace <br> with spaces.
+        $text = preg_replace('/<br\s*\/?>/i', ' ', $text);
 
         $text = self::stripTags($text);
 
