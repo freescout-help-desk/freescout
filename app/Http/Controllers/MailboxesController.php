@@ -268,13 +268,7 @@ class MailboxesController extends Controller
 
         // Purify signature HTML to avoid sending unsafe HTML to customers by email.
         //$mailbox->signature = \Helper::stripDangerousTags($mailbox->signature);
-        $mailbox->signature = \Helper::purifyHtml($mailbox->signature);
-        // Decode URL encoded variables back.
-        // https://github.com/freescout-help-desk/freescout/issues/5565
-        $mailbox->signature = strtr($mailbox->signature, [
-            '%7B%25' => '{%',
-            '%25%7D' => '%}',
-        ]);
+        $mailbox->signature = Mailbox::sanitizeSignature($mailbox->signature);
 
         $mailbox->save();
 
