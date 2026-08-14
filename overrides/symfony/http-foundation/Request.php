@@ -894,6 +894,8 @@ class Request
         if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])
             && $_SERVER['REMOTE_ADDR'] != $_SERVER["HTTP_CF_CONNECTING_IP"]
             && config('app.cloudflare_is_used')
+            // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-9cm3-qvj2-8hg4
+            && \Helper::isValidIp($_SERVER["HTTP_CF_CONNECTING_IP"])
         ) {
             $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
             $this->server->set('REMOTE_ADDR', $_SERVER["HTTP_CF_CONNECTING_IP"]);

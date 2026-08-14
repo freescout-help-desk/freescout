@@ -103,18 +103,18 @@ class LogsMonitor extends Command
         $text = 'Logs having new records for the last '.$options['alert_logs_period'].':<ul>';
         foreach ($names as $name) {
             $text .= '<li>';
-            $text .= '<strong>'.\App\ActivityLog::getLogTitle($name).'</strong>';
+            $text .= '<strong>'.htmlspecialchars(\App\ActivityLog::getLogTitle($name)).'</strong>';
             $text .= '</li>';
         }
         $text .= '</ul>';
 
         foreach ($names as $name) {
-            $text .= '<br/><strong>'.\App\ActivityLog::getLogTitle($name).'</strong><br/>';
+            $text .= '<br/><strong>'.htmlspecialchars(\App\ActivityLog::getLogTitle($name)).'</strong><br/>';
             foreach ($logs as $log) {
                 if ($log->log_name != $name) {
                     continue;
                 }
-                $text .= '● ['.$log->created_at.'] '.$log->getEventDescription().' <code>'.$log->properties.'</code><br/>';
+                $text .= '● ['.$log->created_at.'] '.htmlspecialchars($log->getEventDescription()).' <code>'.htmlspecialchars($log->properties).'</code><br/>';
             }
         }
         // Send alert.
