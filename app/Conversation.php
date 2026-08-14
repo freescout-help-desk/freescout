@@ -711,7 +711,7 @@ class Conversation extends Model
     // Get normalized status.
     public function getMainStatus()
     {
-        return self::toMainStatus($this->status) ?: self::STATUS_ACTIVE;
+        return self::toMainStatus($this->status);
     }
 
     public static function isStandardStatus($status)
@@ -721,7 +721,7 @@ class Conversation extends Model
 
     public static function toMainStatus($status)
     {
-        return (int)substr($status.'', 0, 1) ?: self::STATUS_ACTIVE;
+        return (int)substr($status.'', 0, 1);
     }
 
     public static function compareStatus($status, $status_list)

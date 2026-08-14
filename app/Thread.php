@@ -523,7 +523,7 @@ class Thread extends Model
     // Get normalized status.
     public function getMainStatus()
     {
-        return Conversation::toMainStatus($this->status) ?: self::STATUS_ACTIVE;
+        return Conversation::toMainStatus($this->status);
     }
 
     /**

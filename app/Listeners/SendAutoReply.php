@@ -44,7 +44,7 @@ class SendAutoReply
             }
 
             // Do not send auto replies to spam messages.
-            if ($conversation->getMainStatus() == Conversation::STATUS_SPAM) {
+            if ($conversation->isSpam()) {
                 return;
             }
 
