@@ -491,7 +491,9 @@ class Message {
      */
     private function parseHeader() {
         $sequence_id = $this->getSequenceId();
-        $headers = $this->client->getConnection()->headers([$sequence_id], "RFC822", $this->sequence === IMAP::ST_UID);
+
+        $headers = $this->client->getConnection()->headers([$sequence_id], "RFC822", $this->sequence);
+
         if (!isset($headers[$sequence_id])) {
             throw new MessageHeaderFetchingException("no headers found", 0);
         }
