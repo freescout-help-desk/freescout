@@ -1025,6 +1025,14 @@ class FetchEmails extends Command
                     return;
                 }
 
+                // Check user access to the mailbox and conversation.
+                if (!$user->can('view', $prev_thread->conversation)) {
+                    $this->logError("Support agent (ID: ".$user->id.") has no accesss to the conversation #".$prev_thread->conversation->number." anymore and can not reply to the conversation.");
+                    $this->setSeen($message, $mailbox);
+
+                    return;
+                }
+
                 if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
                     $new_thread = $this->saveUserThread($data['mailbox'], $data['message_id'], $data['prev_thread'], $data['user'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['body'], $data['attachments'], $data['message']->getHeader(), $data['date']);
                 } else {
