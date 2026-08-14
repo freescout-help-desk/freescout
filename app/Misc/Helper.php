@@ -3076,4 +3076,9 @@ class Helper
         }
         return get_class($date) == 'Carbon\Carbon';
     }
+
+    public static function hashEquals($known_string, $string_to_check)
+    {
+        return hash_equals((string)$known_string, (string)$string_to_check);
+    }
 }

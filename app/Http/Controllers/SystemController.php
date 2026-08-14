@@ -392,7 +392,7 @@ class SystemController extends Controller
      */
     public function cron(Request $request)
     {
-        if (empty($request->hash) || !hash_equals($request->hash, \Helper::getWebCronHash())) {
+        if (empty($request->hash) || !\Helper::hashEquals($request->hash, \Helper::getWebCronHash())) {
             abort(404);
         }
         $outputLog = new BufferedOutput();
