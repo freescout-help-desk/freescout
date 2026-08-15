@@ -108,7 +108,7 @@
                                 || ($thread->isCustomerMessage() && isset($customer) && count($customer->emails) > 1)
                                 || ($thread->isCustomerMessage() && ($from_header = $thread->getFromHeader()) && isset($customer) && !$customer->hasEmail($from_header) )
                             )
-                                <div>
+                                <div @if (!empty($from_header)) class="text-warning" @endif>
                                     <strong>
                                         {{ __("From") }}:
                                     </strong>
