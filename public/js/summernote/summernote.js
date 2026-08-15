@@ -179,7 +179,7 @@ var checkbox = renderer.create('<div class="checkbox"></div>', function ($node, 
 });
 var icon = function (iconClassName, tagName) {
     tagName = tagName || 'i';
-    return '<' + tagName + ' class="' + iconClassName + '"/>';
+    return '<' + tagName + ' class="' + iconClassName + '"></' + tagName +'>';
 };
 var ui = {
     editor: editor,

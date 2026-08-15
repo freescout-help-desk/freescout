@@ -1106,4 +1106,18 @@ class Mailbox extends Model
 
         $this->delete();
     }
+
+    // Purify signature HTML to avoid sending unsafe HTML to customers by email.
+    public static function sanitizeSignature($signature)
+    {
+        $signature = \Helper::purifyHtml($signature);
+        // Decode URL encoded variables back.
+        // https://github.com/freescout-help-desk/freescout/issues/5565
+        $signature = strtr($signature, [
+            '%7B%25' => '{%',
+            '%25%7D' => '%}',
+        ]);
+
+        return $signature;
+    }
 }

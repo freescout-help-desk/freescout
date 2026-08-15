@@ -745,10 +745,13 @@ class Thread extends Model
     {
         // Person
         $person = $this->getActionPerson($conversation_number);
-        $did_this = $this->getActionText($conversation_number, false, false, null, '', $viewed_by_user);
-
         if ($escape) {
             $person = htmlspecialchars($person);
+        }
+
+        $did_this = $this->getActionText($conversation_number, false, false, null, $person, $viewed_by_user);
+
+        if ($escape) {
             $did_this = htmlspecialchars($did_this);
         }
 

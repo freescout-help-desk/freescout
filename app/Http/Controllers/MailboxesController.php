@@ -268,7 +268,7 @@ class MailboxesController extends Controller
 
         // Purify signature HTML to avoid sending unsafe HTML to customers by email.
         //$mailbox->signature = \Helper::stripDangerousTags($mailbox->signature);
-        $mailbox->signature = \Helper::purifyHtml($mailbox->signature);
+        $mailbox->signature = Mailbox::sanitizeSignature($mailbox->signature);
 
         $mailbox->save();
 

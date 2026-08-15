@@ -2721,14 +2721,20 @@ class Conversation extends Model
 
     public static function getChats($mailbox_id, $offset = 0, $limit = self::CHATS_LIST_SIZE+1)
     {
-        $chats = Conversation::where('type', self::TYPE_CHAT)
+        $query = Conversation::where('type', self::TYPE_CHAT)
             ->where('mailbox_id', $mailbox_id)
             ->where('state', self::STATE_PUBLISHED)
             ->whereIn('status', [self::STATUS_ACTIVE, self::STATUS_PENDING])
             ->orderBy('last_reply_at', 'desc')
             ->offset($offset)
-            ->limit($limit)
-            ->get();
+            ->limit($limit);
+
+        // Check access.
+        $user = auth()->user();
+        if ($user->canSeeOnlyAssignedConversations()) {
+            $query->where('conversations.user_id', $user->id);
+        }
+        $chats = $query->get();
 
         // Preload customers.
         if (count($chats)) {

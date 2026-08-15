@@ -21,6 +21,7 @@ class ThreadPolicy
     public function edit(User $user, Thread $thread)
     {
         if ((
+                // Thread created by user.
                 $thread->created_by_user_id 
                 && in_array($thread->type, [Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
                 && ($user->isAdmin() || (
@@ -28,8 +29,10 @@ class ThreadPolicy
                         && $thread->created_by_user_id == $user->id
                         && $thread->conversation
                         && $thread->conversation->userHasAccessToMailbox($user->id)
+                        && $this->checkIsOnlyAssigned($thread->conversation, $user)
                     )
                 )) || (
+                // Thread created by customer.
                 $thread->created_by_customer_id
                 && in_array($thread->type, [Thread::TYPE_CUSTOMER])
                 && $thread->conversation
@@ -46,7 +49,9 @@ class ThreadPolicy
     {
         // Admin also can delete only own notes.
         if ($thread->created_by_user_id == $user->id) {
-            if ($thread->conversation && !$thread->conversation->userHasAccessToMailbox($user->id)) {
+            if ($thread->conversation 
+                && (!$thread->conversation->userHasAccessToMailbox($user->id) || !$this->checkIsOnlyAssigned($thread->conversation, $user))
+            ) {
                 return false;
             } else {
                 return true;
