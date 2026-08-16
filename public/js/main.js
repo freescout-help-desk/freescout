@@ -1152,6 +1152,7 @@ function initConversation()
 	    		// Show
 	    		prepareReplyForm();
 				showReplyForm();
+				fsDoAction('conversation.show_reply_form');
 			} /*else {
 				// Hide
 				$(".conv-action-block").addClass('hidden');
@@ -4853,6 +4854,8 @@ function getReplyBody()
 function setReplyBody(text)
 {
 	$('#body').summernote("code", text);
+	// Commit is needed for proper CTRL+Z functioning
+	$('#body').summernote('commit');
 	if (text == fs_body_default) {
 		text = '';
 	}
@@ -4863,6 +4866,7 @@ function setReplyBody(text)
 function setSummernoteText(jtextarea, text)
 {
 	jtextarea.summernote("code", text);
+	jtextarea.summernote("commit");
 }
 
 function convListSortingInit()
