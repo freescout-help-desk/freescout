@@ -1,5 +1,7 @@
 # Security Policy
 
+Read about **[FreeScout's Security](https://freescout.net/security/)**.
+
 ## Reporting a Vulnerability
 
   * Report a security vulnerability in the **Application Core**: https://github.com/freescout-help-desk/freescout/security/advisories
