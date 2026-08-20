@@ -2177,8 +2177,13 @@ class ConversationsController extends Controller
 
                 if (!$folder) {
                     $response['msg'] = __('Folder not found');
+                    return \Response::json($response);
                 }
-                if (!$response['msg'] && !$folder->mailbox->userHasAccess($user->id)) {
+                if (!in_array($folder->type, [Folder::TYPE_SPAM, Folder::TYPE_DELETED])) {
+                    $response['msg'] = __('Folder not found');
+                    return \Response::json($response);
+                }
+                if (!$folder->mailbox->userHasAccess($user->id)) {
                     $response['msg'] = __('Not enough permissions');
                     return \Response::json($response);
                 }
