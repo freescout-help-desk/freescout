@@ -140,7 +140,7 @@ class FetchEmails extends Command
                 // (when there are many mailboxes for example),
                 // we increase connection sleep time and retry after sleep.
                 // https://github.com/freescout-help-desk/freescout/issues/4227
-                if (trim($e->getMessage()) == 'connection setup failed') {
+                if (stristr($e->getMessage(), 'connection setup failed')) {
                     $sleep += 500000;
 
                     usleep(self::MAX_SLEEP);
