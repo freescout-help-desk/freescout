@@ -4859,7 +4859,7 @@ function setReplyBody(text)
 {
 	$('#body').summernote("code", text);
 	// Commit is needed for proper CTRL+Z functioning
-	$('#body').summernote('commit');
+	//$('#body').summernote('commit');
 	if (text == fs_body_default) {
 		text = '';
 	}
