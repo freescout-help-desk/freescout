@@ -2775,4 +2775,9 @@ class Conversation extends Model
             return false;
         }
     }
+
+    public function isAssignedToUser($user)
+    {
+        return \Eventy::filter('conversation.is_user_assignee', $this->user_id == $user->id, $this, $user->id);
+    }
 }

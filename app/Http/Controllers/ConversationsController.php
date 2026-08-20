@@ -2200,7 +2200,22 @@ class ConversationsController extends Controller
                     }
 
                     if (!$response['msg']) {
-                        $conversation_ids = Conversation::where('folder_id', $folder->id)->pluck('id')->toArray();
+                        // Do not allow users who can see only assigned conversations
+                        // delete any conversations in the folder.
+                        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-6mhr-m8m9-6q6h
+                        if (!$user->isAdmin() && $user->canSeeOnlyAssignedConversations()) {
+                            // User can see (and selete) only assigned conversations. 
+                            $conversation_ids = Conversation::where('folder_id', $folder->id)
+                                ->get()
+                                ->filter(function ($conversation) use ($user) {
+                                    return $conversation->isAssignedToUser($user);
+                                })
+                                ->pluck('id')
+                                ->toArray();
+                        } else {
+                            $conversation_ids = Conversation::where('folder_id', $folder->id)->pluck('id')->toArray();
+                        }
+
                         Conversation::deleteConversationsForever($conversation_ids);
                         if ($folder->mailbox) {
                             Conversation::clearStarredByUserCache($user->id, $folder->mailbox_id);
