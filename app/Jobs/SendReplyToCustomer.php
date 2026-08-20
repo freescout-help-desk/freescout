@@ -373,6 +373,8 @@ class SendReplyToCustomer implements ShouldQueue
                     ->causedBy($this->customer)
                     ->withProperties([
                         'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
+                        'to'       => $this->customer_email,
+                        'conversation'   => '#'.$this->conversation->number.'-'.$this->last_thread->id,
                      ])
                     ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
                     ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
@@ -632,6 +634,7 @@ class SendReplyToCustomer implements ShouldQueue
            ->withProperties([
                 'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
                 'to'       => $this->customer_email,
+                'conversation'   => '#'.$this->conversation->number.'-'.$this->last_thread->id,
             ])
            ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
            ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);
