@@ -594,8 +594,12 @@ class FetchEmails extends Command
 
             if ($is_bounce && !$bounced_message_id) {
                 foreach ($attachments as $attachment_msg) {
-                    // 7.3.1 The Message/rfc822 (primary) subtype. A Content-Type of "message/rfc822" indicates that the body contains an encapsulated message, with the syntax of an RFC 822 message
-                    if ($attachment_msg->content_type == 'message/rfc822') {
+                    // message/rfc822: 7.3.1 The Message/rfc822 (primary) subtype.
+                    // A Content-Type of "message/rfc822" indicates that the body contains an encapsulated message,
+                    // with the syntax of an RFC 822 message.
+                    // 
+                    // text/rfc822-headers: https://github.com/freescout-help-desk/freescout/issues/5583
+                    if (in_array($attachment_msg->content_type, ['message/rfc822', 'text/rfc822-headers'])) {
                         $bounced_message_id = \MailHelper::getHeader($attachment_msg->getContent(), 'message_id');
                         if ($bounced_message_id) {
                             break;
