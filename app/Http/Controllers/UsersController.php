@@ -51,7 +51,7 @@ class UsersController extends Controller
     public function create()
     {
         $this->authorize('create', 'App\User');
-        $mailboxes = Mailbox::all();
+        $mailboxes = auth()->user()->mailboxesCanView();
 
         return view('users/create', ['mailboxes' => $mailboxes]);
     }
@@ -121,7 +121,15 @@ class UsersController extends Controller
         $user = \Eventy::filter('user.create_save', $user, $request);
         $user->save();
 
-        $user->mailboxes()->sync($request->mailboxes ?: []);
+        $mailbox_ids = $request->mailboxes ?: [];
+
+        if (!$auth_user->isAdmin()) {
+            // Exlude mailboxes to which current user has no access.
+            // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-w36p-9vhj-x273
+            $mailbox_ids = array_intersect($mailbox_ids, $auth_user->mailboxesIdsCanView());
+        }
+
+        $user->mailboxes()->sync($mailbox_ids);
         $user->syncPersonalFolders($request->mailboxes);
 
         // Send invite
