@@ -470,8 +470,19 @@ class FetchEmails extends Command
                 }
             }
 
-            // Gnerate artificial Message-ID if importing same email into several mailboxes.
-            if ($extra) {
+            // Is this a new email having the same Message-ID.
+            // https://github.com/freescout-help-desk/freescout/issues/5591
+            $new_email_with_same_message_id = false;
+            if (!$extra && $duplicate_message_id) {
+                // Compare headers
+                if ($duplicate_message_id->headers == $this->headerToStr($message->getHeader())) {
+                    $new_email_with_same_message_id = true;
+                }
+            }
+
+            // Gnerate artificial Message-ID if importing same email into several mailboxes
+            // or this is a new email having the same Message-ID.
+            if ($extra || $new_email_with_same_message_id) {
                 // Generate artificial Message-ID.
                 $message_id = \MailHelper::generateMessageId(strstr($message_id, '@') ? $message_id : $from, $mailbox->id.$message_id);
 
