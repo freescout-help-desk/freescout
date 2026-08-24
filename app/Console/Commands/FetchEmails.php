@@ -747,22 +747,20 @@ class FetchEmails extends Command
                     //
                     // Make sure that prev_thread belongs to the current mailbox.
                     // Problems may arise when forwarding conversation for example.
-                    //
-                    // For user replies to email notifications it's allowed to have prev_thread in
-                    // another mailbox as conversation can be moved.
-                    // https://github.com/freescout-helpdesk/freescout/issues/3455
                     if ($prev_thread && $message_from_customer) {
 
                         if ($prev_thread->conversation->mailbox_id != $mailbox->id) {
 
-                            // https://github.com/freescout-helpdesk/freescout/issues/2807
-                            // Behaviour of email sent to multiple mailboxes:
-                            // If a user from either mailbox replies, then a new conversation is created
-                            // in the other mailbox with another new conversation ID.
-                            // 
-                            // Try to get thread by generated message ID.
+                            // Try to get thread by artificial message ID.
                             if ($in_reply_to) {
 
+                                // If customer sends an email to multiple mailboxes:
+                                // - A conversation is created for each mailbox.
+                                // - An agent responds from each mailbox and includes other mailboxes in CC.
+                                // - The customer replies to each email.
+                                // https://github.com/freescout-help-desk/freescout/issues/5308
+
+                                // Is this a reply to the message with artificial Message-ID.
                                 $message_ids = [\MailHelper::generateMessageId($in_reply_to, $mailbox->id.$in_reply_to), $in_reply_to];
                                 $prev_thread_tmp = Thread::whereIn('message_id', $message_ids)->whereHas('conversation', function ($q) use ($mailbox) {
                                         $q->where('mailbox_id', $mailbox->id);
@@ -795,8 +793,36 @@ class FetchEmails extends Command
                                         $prev_thread = null;
                                     }
                                 } else {
-                                    $prev_thread = null;
+                                    // Prev Thread SHOULD BE PRESERVED in the following case:
+                                    // - Existing conversation is moved from Mailbox A to Mailbox B.
+                                    // - Customer replies to some earlier received reply from an agent.
+                                    // - The email is fetched into Mailbox A (as To in in the email points to Mailbox A).
+                                    // - The reply creates a new conversation in Mailbox A instead of 
+                                    //   being linked to the existing conversation in Mailbox B.
+                                    // https://github.com/freescout-help-desk/freescout/issues/5590
+                                    //
+                                    // Search for LINE_ITEM threads and check if this conversations
+                                    // was in Mailbox A at some point (action_data contains prev mailbox IDs).
+                                    $prev_mailbox_ids = Thread::where('conversation_id', $prev_thread->conversation_id)
+                                        //->where('state', Thread::STATE_PUBLISHED)
+                                        ->where('action_type', Thread::ACTION_TYPE_MOVED_FROM_MAILBOX)
+                                        ->pluck('action_data')
+                                        ->toArray();
+
+                                    if (!in_array($mailbox->id, $prev_mailbox_ids)) {
+                                        // Prev Thread has to be reset in the following case:
+                                        // - Customer sends an email to Mailbox A and B.
+                                        // - Support agent replies in Mailbox A and CCs Mailbox B.
+                                        // - Customer replies to this email keeping Mailbox B in copy.
+                                        // - Mailbox B fetches customer reply and sees that In-Reply-To is linked to a thread from Mailbox A
+                                        //   (as Message-ID of agent email contains -thread_id- in it and thread_id belongs to Mailbox A).
+                                        // - FreeScout links this agent's reply to the conversation in Mailbox A instead of creating a new
+                                        //   conversation in Mailbox B.
+                                        // https://github.com/freescout-help-desk/freescout/issues/5350
+                                        $prev_thread = null;
+                                    }
                                 }
+
                                 if (!$prev_thread) {
                                     $prev_thread = null;
                                     $is_reply = false;
@@ -809,10 +835,15 @@ class FetchEmails extends Command
                     }
 
                     // Agent's reply to the email notification.
+                    // 
                     // If agent forwards email notification to another mailbox, create
                     // a new conversation instead of adding agent's reply to the existing conversation.
                     // https://github.com/freescout-help-desk/freescout/pull/5517
                     // https://github.com/freescout-help-desk/freescout/issues/4515
+                    // 
+                    // For user replies to email notifications it's allowed to have prev_thread in
+                    // another mailbox as conversation can be moved.
+                    // https://github.com/freescout-helpdesk/freescout/issues/3455
                     if ($prev_thread && !$message_from_customer) {
                         if (// Subject looks like FWD:
                             preg_match("/^[[:alpha:]]{1,3}\s*:(.*)/i", trim($subject ?? ''))
@@ -962,6 +993,7 @@ class FetchEmails extends Command
 
             $new_thread = null;
             if ($message_from_customer) {
+                // SAVE CUSTOMER MESSAGE.
 
                 // We should import the message into other mailboxes even if previous thread is set.
                 // https://github.com/freescout-helpdesk/freescout/issues/3473
@@ -1008,6 +1040,8 @@ class FetchEmails extends Command
                     return;
                 }
             } else {
+                // SAVE SUPPORT AGENT MESSAGE.
+
                 // Check if From is the same as user's email.
                 // If not we send an email with information to the sender.
                 if (!$user->hasEmail($from)) {
