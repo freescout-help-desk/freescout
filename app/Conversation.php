@@ -14,6 +14,7 @@ use App\Events\UserReplied;
 use App\Events\ConversationStatusChanged;
 use App\Events\ConversationUserChanged;
 use App\Events\ConversationCustomerChanged;
+use App\Events\UserMovedConversation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
 use Watson\Rememberable\Rememberable;
@@ -1558,6 +1559,8 @@ class Conversation extends Model
         $prev_mailbox->updateFoldersCounters();
         $mailbox->updateFoldersCounters();
 
+        event(new UserMovedConversation($this, $this->getLastReply(), $user->id, $prev_mailbox));
+
         \Eventy::action('conversation.moved', $this, $user, $prev_mailbox);
 
         return true;
@@ -2771,5 +2774,10 @@ class Conversation extends Model
         } else {
             return false;
         }
+    }
+
+    public function isAssignedToUser($user)
+    {
+        return \Eventy::filter('conversation.is_user_assignee', $this->user_id == $user->id, $this, $user->id);
     }
 }

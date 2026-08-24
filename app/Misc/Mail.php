@@ -753,16 +753,19 @@ class Mail
         }
     }
 
+    // Accepts both header name with "-" and "_".
     public static function getHeader($headers_str, $header)
     {
         $headers_str = $headers_str ?? '';
+
+        $header = strtolower($header);
         
-        // Quick check to same resources.
+        // Quick check to save resources.
+        $header = str_replace('_', '-', $header);
         if (!stristr($headers_str, $header)) {
             return '';
         }
 
-        $header = strtolower($header);
         $header = str_replace('-', '_', $header);
 
         $headers = self::parseHeaders($headers_str);

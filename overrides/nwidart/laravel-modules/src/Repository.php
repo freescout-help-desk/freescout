@@ -202,7 +202,11 @@ abstract class Repository implements RepositoryInterface, Countable
         $modules = [];
 
         foreach ($cached as $name => $module) {
-            $path = $module['path'];
+            // Prefer the path the module has been scanned from, with symlinks
+            // not resolved yet - the constructor resolves it again, so getPath()
+            // stays the same, but the module also knows its original location.
+            // Modules cached before this was stored only have 'path'.
+            $path = !empty($module['scanned_path']) ? $module['scanned_path'] : $module['path'];
 
             $modules[$name] = $this->createModule($this->app, $name, $path);
         }
@@ -223,12 +227,21 @@ abstract class Repository implements RepositoryInterface, Countable
 
         return $this->app['cache']->remember($this->config('cache.key'), $this->config('cache.lifetime'), function () {
 
+            $modules = $this->scan();
+
             // By some reason when Nwidart\Modules\Module is converted into array
-            $array = $this->toCollection()->toArray();
+            $array = (new Collection($modules))->toArray();
             // Set `active` flag from DB for each module
             foreach ($array as $key => $item) {
                 if (!empty($item['alias'])) {
                     $item['active'] = (int) \App\Module::isActive($item['alias']);
+                }
+
+                // Collection::toArray() only keeps the resolved path, but the
+                // path the module has been scanned from is needed to build
+                // migration paths relative to base_path().
+                if (isset($modules[$key]) && method_exists($modules[$key], 'getScannedPath')) {
+                    $array[$key]['scanned_path'] = $modules[$key]->getScannedPath();
                 }
             }
 

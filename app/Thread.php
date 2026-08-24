@@ -1476,8 +1476,49 @@ class Thread extends Model
         if (empty($this->headers)) {
             return '';
         }
-        preg_match("#From:\s*.*[^\s]*\s*<\s*(.*[^\s])\s*>\s*\n#", $this->headers ?? '', $m);
-        return $m[1] ?? '';
+        preg_match("#From:\s*(?:.*?<\s*)?([^\s<>]+)(?:\s*>)?\s*\n#i", $this->headers ?? '', $m);
+        return \Helper::sanitizeEmail($m[1] ?? '');
+    }
+
+    // Used to highlight sender when From is different from Reply-To.
+    public function getFromIfDifferentFromReplyTo($customer = null)
+    {
+        if (empty($this->headers) || !$this->isCustomerMessage()) {
+            return '';
+        }
+        preg_match("#Reply\-To:\s*(?:.*?<\s*)?([^\s<>]+)(?:\s*>)?\s*\n#i", $this->headers ?? '', $m);
+
+        $reply_to = \Helper::sanitizeEmail($m[1] ?? '');
+
+        if (!$reply_to) {
+            return '';
+        }
+
+        $from = $this->getFromHeader();
+        if (!$from) {
+            return '';
+        }
+
+        if ($from == $reply_to) {
+            return '';
+        }
+
+        if (!$this->created_by_customer_id) {
+            return '';
+        }
+
+        if ($this->created_by_customer_id != $customer->id) {
+            if (!$this->created_by_customer) {
+                return '';
+            }
+            $customer = $this->created_by_customer;
+        }
+
+        if (!$customer->hasEmail($from)) {
+            return $from;
+        }
+
+        return '';
     }
 
     public function getMailDate()

@@ -119,7 +119,7 @@ class ConversationPolicy
     public function checkIsOnlyAssigned($conversation, $user)
     {
         // Maybe user can see only assigned conversations.
-        if (!\Eventy::filter('conversation.is_user_assignee', $conversation->user_id == $user->id, $conversation, $user->id)
+        if (!$conversation->isAssignedToUser($user)
             && $conversation->created_by_user_id != $user->id
             && $user->canSeeOnlyAssignedConversations()
         ) {

@@ -22,6 +22,12 @@
         @endif
         @php
             $trans_params = ['person' => '<strong style="color:#000000;">'.htmlspecialchars($thread->getCreatedBy()->getFullName(true)).'</strong>'];
+            // Highlight sender when From is different from Reply-To.
+            if ($thread->isCustomerMessage() &&
+                ($from_header = $thread->getFromIfDifferentFromReplyTo($customer ?? null))
+            ) {
+                $trans_params['person'] .= ' <span style="color:#b37100;">&lt;'.$from_header.'&gt;</span>';
+            }
             if ($thread->isForwarded()) {
                 $trans_params['forward_parent_conversation_number'] = '<a href="'.route('conversations.view', ['id' => $thread->getMetaFw(App\Thread::META_FORWARD_PARENT_CONVERSATION_ID)]).'#thread-'.htmlspecialchars($thread->getMetaFw(App\Thread::META_FORWARD_PARENT_THREAD_ID)).'">#'.htmlspecialchars($thread->getMetaFw(App\Thread::META_FORWARD_PARENT_CONVERSATION_NUMBER)).'</a>';
             }

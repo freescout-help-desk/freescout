@@ -306,6 +306,8 @@
             "vendor/laravel/framework/src/Illuminate/Session/FileSessionHandler.php",
             "vendor/laravel/framework/src/Illuminate/Session/NullSessionHandler.php",
             "vendor/laravel/framework/src/Illuminate/Session/CacheBasedSessionHandler.php",
+            "vendor/laravel/framework/src/Illuminate/Session/CookieSessionHandler.php",
+            "vendor/laravel/framework/src/Illuminate/Session/DatabaseSessionHandler.php",
             "vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php",
             "vendor/laravel/framework/src/Illuminate/Queue/Listener.php",
             "vendor/laravel/framework/src/Illuminate/Queue/SerializesModels.php",

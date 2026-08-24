@@ -7286,7 +7286,7 @@ $$1.summernote = $$1.extend($$1.summernote, {
                 'CTRL+NUM4': 'formatH4',
                 'CTRL+NUM5': 'formatH5',
                 'CTRL+NUM6': 'formatH6',
-                'CTRL+ENTER': 'insertHorizontalRule',
+                //'CTRL+ENTER': 'insertHorizontalRule',
                 'CTRL+K': 'linkDialog.show'
             },
             mac: {

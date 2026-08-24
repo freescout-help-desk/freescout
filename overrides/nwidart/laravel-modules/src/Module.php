@@ -33,6 +33,15 @@ abstract class Module extends ServiceProvider
     protected $path;
 
     /**
+     * The module path as it has been scanned, before realpath() resolved it.
+     * When the Modules folder is a symlink leading outside of the application
+     * folder, this is the only path which is still relative to base_path().
+     *
+     * @var string
+     */
+    protected $scanned_path;
+
+    /**
      * @var array of cached Json objects, keyed by filename
      */
     protected $moduleJson = [];
@@ -49,6 +58,7 @@ abstract class Module extends ServiceProvider
         parent::__construct($app);
         $this->name = $name;
         $this->path = realpath($path);
+        $this->scanned_path = $path;
     }
 
     /**
@@ -149,6 +159,16 @@ abstract class Module extends ServiceProvider
     public function getPath()
     {
         return $this->path;
+    }
+
+    /**
+     * Get the path the module has been scanned from, with symlinks not resolved.
+     *
+     * @return string
+     */
+    public function getScannedPath()
+    {
+        return $this->scanned_path ?: $this->path;
     }
 
     /**

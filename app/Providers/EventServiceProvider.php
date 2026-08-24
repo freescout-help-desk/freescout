@@ -94,6 +94,10 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\SendNotificationToUsers',
             'App\Listeners\RefreshConversations',
         ],
+
+        'App\Events\UserMovedConversation' => [
+            'App\Listeners\SendNotificationToUsers',
+        ],
     ];
 
     /**

@@ -41,6 +41,17 @@
                         @foreach ($cols as $col)
                             <td class="break-words">
                                 @if (isset($row[$col]))
+                                    @php
+                                        if ($col == 'conversation' && preg_match("/^#[0-9]+\-([0-9]+)$/", $row[$col], $m)) {
+                                            $thread_id = $m[1] ?? '';
+                                            if ($thread_id) {
+                                                $row[$col] = App\Thread::find($thread_id) ?: $row[$col];
+                                            }
+                                        }
+                                        if ($col == 'thread') {
+                                            $row[$col] = App\Thread::find($row[$col]) ?: $row[$col];
+                                        }
+                                    @endphp
                                     @if ($col == 'user' || $col == 'customer')
                                         <a href="{{ $row[$col]->url() }}">{{ $row[$col]->getFullName(true) }}</a>
                                     @elseif ($col == 'date')

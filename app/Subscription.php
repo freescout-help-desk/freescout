@@ -20,6 +20,7 @@ class Subscription extends Model
     const EVENT_TYPE_CUSTOMER_REPLIED = 4;
     const EVENT_TYPE_USER_REPLIED = 5;
     const EVENT_TYPE_USER_ADDED_NOTE = 6;
+    const EVENT_TYPE_USER_MOVED = 7;
 
     // Events
     // Notify me when…
@@ -187,6 +188,7 @@ class Subscription extends Model
 
         switch ($event_type) {
             case self::EVENT_TYPE_NEW:
+            case self::EVENT_TYPE_USER_MOVED:
                 $events[] = self::EVENT_NEW_CONVERSATION;
                 break;
 
@@ -221,7 +223,7 @@ class Subscription extends Model
 
         // Check if assigned user changed
         $user_changed = false;
-        if ($event_type != self::EVENT_TYPE_ASSIGNED && $event_type != self::EVENT_TYPE_NEW) {
+        if (!in_array($event_type, [self::EVENT_TYPE_ASSIGNED, self::EVENT_TYPE_NEW, self::EVENT_TYPE_USER_MOVED])) {
             if ($thread->type == Thread::TYPE_LINEITEM && $thread->action_type == Thread::ACTION_TYPE_USER_CHANGED) {
                 $user_changed = true;
             } elseif ($prev_thread) {
@@ -243,7 +245,7 @@ class Subscription extends Model
         $events = array_unique($events);
 
         // Detect subscribed users
-        if (!$mailbox_user_ids) {
+        if ($mailbox_user_ids === null) {
             $mailbox_user_ids = $conversation->mailbox->userIdsHavingAccess();
         }
 
@@ -255,7 +257,7 @@ class Subscription extends Model
 
         // Filter subscribers
         foreach ($subscriptions as $i => $subscription) {
-            // Actions on conversation where user is assignee
+            // Actions on conversation where user must be assignee
             if (in_array($subscription->event, [self::EVENT_CONVERSATION_ASSIGNED_TO_ME, self::EVENT_CUSTOMER_REPLIED_TO_MY, self::EVENT_USER_REPLIED_TO_MY]) 
                 && ($conversation->user_id != $subscription->user_id && !\Eventy::filter('subscription.is_user_assignee', false, $subscription, $conversation))
             ) {
@@ -316,17 +318,29 @@ class Subscription extends Model
 
         // Collect into notify array information about all users who need to be notified
         foreach (self::$occurred_events as $event) {
-            // Get mailbox users ids
-            $mailbox_user_ids = [];
+            // Get mailbox users ids (from previous $notify record).
+            /*$mailbox_user_ids = null;
             foreach (self::$mediums as $medium) {
                 if (!empty($notify[$medium])) {
-                    foreach ($notify[$medium] as $conversation_id => $notify_info) {
-                        if ($notify_info['conversation']->mailbox_id == $event['conversation']->mailbox_id) {
-                            $mailbox_user_ids = $notify_info['mailbox_user_ids'];
+                    foreach ($notify[$medium] as $conversation_id => $notify_row) {
+                        if ($notify_row['conversation']->mailbox_id == $event['conversation']->mailbox_id) {
+                            $mailbox_user_ids = $notify_row['mailbox_user_ids'];
                             break 2;
                         }
                     }
                 }
+            }
+            if ($mailbox_user_ids === null) {
+                $mailbox_user_ids = $event['conversation']->mailbox->userIdsHavingAccess();
+            }*/
+            $mailbox_user_ids = $event['conversation']->mailbox->userIdsHavingAccess();
+
+            // When conversation is moved to another mailbox
+            // notify only users NOT having access to the original mailbox.
+            // https://github.com/freescout-help-desk/freescout/issues/5580
+            if ($event['event_type'] == self::EVENT_TYPE_USER_MOVED && !empty($event['extra_data']['mailbox'])) {
+                $original_mailbox_user_ids = $event['extra_data']['mailbox']->userIdsHavingAccess();
+                $mailbox_user_ids = array_diff($mailbox_user_ids, $original_mailbox_user_ids);
             }
 
             // Get users and threads from previous results to avoid repeated SQL queries.
@@ -364,7 +378,7 @@ class Subscription extends Model
                         'users'            => array_unique(array_merge($users[$medium] ?? [], $medium_users_to_notify)),
                         'conversation'     => $event['conversation'],
                         'threads'          => $threads,
-                        'mailbox_user_ids' => $mailbox_user_ids,
+                        //'mailbox_user_ids' => $mailbox_user_ids,
                     ];
                 }
             }
@@ -478,12 +492,13 @@ class Subscription extends Model
     /**
      * Remember event type to process in ProcessSubscriptionEvents middleware on terminate.
      */
-    public static function registerEvent($event_type, $conversation, $caused_by_user_id, $process_now = false)
+    public static function registerEvent($event_type, $conversation, $caused_by_user_id, $extra_data = [], $process_now = false)
     {
         self::$occurred_events[] = [
             'event_type'        => $event_type,
             'conversation'      => $conversation,
             'caused_by_user_id' => $caused_by_user_id,
+            'extra_data'        => $extra_data,
         ];
 
         // Automatically add EVENT_TYPE_UPDATED
@@ -492,6 +507,7 @@ class Subscription extends Model
                 'event_type'        => self::EVENT_TYPE_UPDATED,
                 'conversation'      => $conversation,
                 'caused_by_user_id' => $caused_by_user_id,
+                'extra_data'        => $extra_data,
             ];
         }
         if ($process_now) {
