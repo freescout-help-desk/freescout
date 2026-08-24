@@ -793,54 +793,6 @@ class Mail
     public static function getMailboxClient($mailbox)
     {
         $oauth = $mailbox->oauthEnabled();
-        /*$new_library = config('app.new_fetching_library');
-
-        if (!$new_library) {
-            // Old.
-            return new \Webklex\IMAP\Client([
-                'host'          => $mailbox->in_server,
-                'port'          => $mailbox->in_port,
-                'encryption'    => $mailbox->getInEncryptionName(),
-                'validate_cert' => $mailbox->in_validate_cert,
-                'username'      => $mailbox->in_username,
-                'password'      => $mailbox->in_password,
-                'protocol'      => $mailbox->getInProtocolName(),
-            ]);
-        } else {*/
-        // New
-        if ($oauth) {
-            \Config::set('imap.accounts.default', [
-                'host'          => $mailbox->in_server,
-                'port'          => $mailbox->in_port,
-                'encryption'    => $mailbox->getInEncryptionName(),
-                'validate_cert' => $mailbox->in_validate_cert,
-                'username'      => $mailbox->getInOauthUsername(),
-                'password'      => $mailbox->oauthGetParam('a_token'),
-                'protocol'      => $mailbox->getInProtocolName(),
-                'authentication' => 'oauth',
-            ]);
-        } else {
-            \Config::set('imap.accounts.default', [
-                'host'          => $mailbox->in_server,
-                'port'          => $mailbox->in_port,
-                'encryption'    => $mailbox->getInEncryptionName(),
-                'validate_cert' => $mailbox->in_validate_cert,
-                // 'username'      => $mailbox->email,
-                // 'password'      => $mailbox->oauthGetParam('a_token'),
-                // 'protocol'      => $mailbox->getInProtocolName(),
-                // 'authentication' => 'oauth',
-                'username'      => $mailbox->in_username,
-                'password'      => $mailbox->in_password,
-                'protocol'      => $mailbox->getInProtocolName(),
-            ]);
-        }
-        // To enable debug: /vendor/webklex/php-imap/src/Connection/Protocols
-        // Debug in console
-        if (app()->runningInConsole()) {
-            \Config::set('imap.options.debug', config('app.debug'));
-        }
-
-        $cm = new \Webklex\PHPIMAP\ClientManager(config('imap'));
 
         // Refresh Access Token.
         if ($oauth) {
@@ -871,6 +823,42 @@ class Mail
                 }
             }
         }
+
+        // Set config.
+        if ($oauth) {
+            \Config::set('imap.accounts.default', [
+                'host'          => $mailbox->in_server,
+                'port'          => $mailbox->in_port,
+                'encryption'    => $mailbox->getInEncryptionName(),
+                'validate_cert' => $mailbox->in_validate_cert,
+                'username'      => $mailbox->getInOauthUsername(),
+                'password'      => $mailbox->oauthGetParam('a_token'),
+                'protocol'      => $mailbox->getInProtocolName(),
+                'authentication' => 'oauth',
+            ]);
+        } else {
+            \Config::set('imap.accounts.default', [
+                'host'          => $mailbox->in_server,
+                'port'          => $mailbox->in_port,
+                'encryption'    => $mailbox->getInEncryptionName(),
+                'validate_cert' => $mailbox->in_validate_cert,
+                // 'username'      => $mailbox->email,
+                // 'password'      => $mailbox->oauthGetParam('a_token'),
+                // 'protocol'      => $mailbox->getInProtocolName(),
+                // 'authentication' => 'oauth',
+                'username'      => $mailbox->in_username,
+                'password'      => $mailbox->in_password,
+                'protocol'      => $mailbox->getInProtocolName(),
+            ]);
+        }
+
+        // To enable debug: /vendor/webklex/php-imap/src/Connection/Protocols
+        // Debug in console
+        if (app()->runningInConsole()) {
+            \Config::set('imap.options.debug', config('app.debug'));
+        }
+        
+        $cm = new \Webklex\PHPIMAP\ClientManager(config('imap'));
 
         // This makes it authenticate two times.
         //$cm->setTimeout(60);
