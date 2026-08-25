@@ -1,1 +1,3 @@
+# Documentation
+
 Documentation: https://github.com/freescout-help-desk/freescout/wiki
