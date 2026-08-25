@@ -338,8 +338,8 @@ class Subscription extends Model
             // When conversation is moved to another mailbox
             // notify only users NOT having access to the original mailbox.
             // https://github.com/freescout-help-desk/freescout/issues/5580
-            if ($event['event_type'] == self::EVENT_TYPE_USER_MOVED && !empty($event['extra_data']['mailbox'])) {
-                $original_mailbox_user_ids = $event['extra_data']['mailbox']->userIdsHavingAccess();
+            if ($event['event_type'] == self::EVENT_TYPE_USER_MOVED && !empty($event['extra_data']['from_mailbox'])) {
+                $original_mailbox_user_ids = $event['extra_data']['from_mailbox']->userIdsHavingAccess();
                 $mailbox_user_ids = array_diff($mailbox_user_ids, $original_mailbox_user_ids);
             }
 
