@@ -3081,4 +3081,17 @@ class Helper
     {
         return hash_equals((string)$known_string, (string)$string_to_check);
     }
+
+    public static function curlClose($ch)
+    {
+        try {
+            if (PHP_VERSION_ID >= 80000) {
+                unset($ch);
+            } else {
+                curl_close($ch);
+            }
+        } catch (\Exception $e) {
+            // Do nothing.
+        }
+    }
 }
