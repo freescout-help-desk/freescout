@@ -19,7 +19,6 @@ If you want to support the project feel free to **star this repository**. It hel
    * [Requirements](#requirements)
    * [Installation](#installation)
    * [Images & One-Click Installs](#images--one-click-installs)
-   * [Cloud Hosted](#cloud-hosted)
    * [Modules](#modules)
    * [Tools & Integrations](#tools--integrations)
    * [News & Updates](#news--updates)
@@ -92,11 +91,7 @@ There are no minimum system requirements (CPU / RAM) – FreeScout will run on a
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
 * [Ubuntu](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) — Bash script
 
- [More options…](https://freescout.net/cloud-hosted/)
-
-## Cloud Hosted
-
-[Cloud Hosted FreeScout](https://freescout.net/cloud-hosted/)
+[More one-click installs…](https://freescout.net/one-click-installs/)
 
 ## Modules
 
