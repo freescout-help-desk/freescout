@@ -475,7 +475,7 @@ class FetchEmails extends Command
             $new_email_with_same_message_id = false;
             if (!$extra && $duplicate_message_id) {
                 // Compare headers
-                if ($duplicate_message_id->headers == $this->headerToStr($message->getHeader())) {
+                if ($duplicate_message_id->headers != $this->headerToStr($message->getHeader())) {
                     $new_email_with_same_message_id = true;
                 }
             }
