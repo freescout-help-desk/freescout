@@ -494,6 +494,9 @@ return [
     |--------------------------------------------------------------------------
     | Limit non-admin users to only see customers with conversations
     | in mailboxes they are assigned to. This option does not affect admin users.
+    | 
+    | Before creating an Security Advisory make sure to read about this parameter in Guidelines:
+    | https://github.com/freescout-help-desk/freescout/security/policy
     |-------------------------------------------------------------------------
     */
     'limit_user_customer_visibility'    => env('APP_LIMIT_USER_CUSTOMER_VISIBILITY', false),
