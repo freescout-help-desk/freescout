@@ -260,10 +260,23 @@ class OpenController extends Controller
 
         // CSP header for exatra security.
         $csp_header_value = "script-src 'none'; frame-src 'none'; object-src 'none'; font-src 'none'; connect-src 'none'; media-src 'self'; form-action 'none'; base-uri 'none'; sandbox";
+
+        // Headers added only when the attachment is shown in the browser.
+        $view_headers = [];
+
         // https://github.com/freescout-help-desk/freescout/issues/5281
+        // The bare sandbox directive gives the attachment document an opaque
+        // ("null") origin. The media element the browser's built-in player creates
+        // then requests the file cross-origin and is blocked by CORS, so the player
+        // appears but never plays. allow-same-origin keeps the real origin.
+        // nosniff replaces the protection sandbox was providing here: the browser
+        // is not allowed to reinterpret an audio/* response as HTML.
         if (preg_match('#^audio/.*$#', $attachment->mime_type)) {
-            $csp_header_value .= ' allow-scripts';
+            $csp_header_value .= ' allow-same-origin';
+            $view_headers['X-Content-Type-Options'] = 'nosniff';
         }
+
+        $view_headers['Content-Security-Policy'] = $csp_header_value;
 
         if (config('app.download_attachments_via') == 'apache') {
             // Send using Apache mod_xsendfile.
@@ -274,7 +287,9 @@ class OpenController extends Controller
             if (!$view_attachment) {
                 $response->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"');
             } else {
-                $response->header('Content-Security-Policy', $csp_header_value);
+                foreach ($view_headers as $header_name => $header_value) {
+                    $response->header($header_name, $header_value);
+                }
             }
         } elseif (config('app.download_attachments_via') == 'nginx') {
             // Send using Nginx.
@@ -285,14 +300,24 @@ class OpenController extends Controller
             if (!$view_attachment) {
                 $response->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"');
             } else {
-                $response->header('Content-Security-Policy', $csp_header_value);
+                foreach ($view_headers as $header_name => $header_value) {
+                    $response->header($header_name, $header_value);
+                }
             }
         } else {
-            $headers = [];
-            if ($view_attachment) {
-                $headers['Content-Security-Policy'] = $csp_header_value;
+            // Storage::download() returns a StreamedResponse, which does not
+            // implement HTTP Range requests: no Accept-Ranges, no 206 responses.
+            // Browsers disable seeking without it, so audio and video attachments
+            // can not be rewound or fast forwarded. BinaryFileResponse handles
+            // Range requests, so use it whenever the file is shown in the browser.
+            if ($view_attachment && $attachment->fileExists()) {
+                $response = response()->file(
+                    $attachment->getLocalFilePath(),
+                    $view_headers + ['Content-Type' => $attachment->mime_type]
+                );
+            } else {
+                $response = $attachment->download($view_attachment, $view_attachment ? $view_headers : []);
             }
-            $response = $attachment->download($view_attachment, $headers);
         }
 
         return $response;
