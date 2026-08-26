@@ -203,6 +203,7 @@ class SettingsController extends Controller
                     'user_permissions'     => User::getGlobalUserPermissions(),
                     'email_branding'       => Option::get('email_branding'),
                     'open_tracking'        => Option::get('open_tracking'),
+                    'audio_player'         => Option::get('audio_player'),
                     'email_conv_history'   => config('app.email_conv_history'),
                     'max_message_size'     => config('app.max_message_size'),
                     'email_user_history'   => config('app.email_user_history'),

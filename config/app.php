@@ -247,6 +247,7 @@ return [
         'alert_fetch_period' => ['default' => 15], // min
         'email_branding'     => ['default' => true],
         'open_tracking'      => ['default' => true],
+        'audio_player'       => ['default' => true],
         'subscription_defaults' => ['default' => []],
     ],
 

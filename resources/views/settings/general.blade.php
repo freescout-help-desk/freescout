@@ -131,6 +131,23 @@
         </div>
     </div>
 
+    <div class="form-group{{ $errors->has('settings[audio_player]') ? ' has-error' : '' }}">
+        <label for="audio_player" class="col-sm-2 control-label">{{ __('Audio Player') }}</label>
+
+        <div class="col-sm-6">
+            <div class="controls">
+                <div class="onoffswitch-wrap">
+                    <div class="onoffswitch">
+                        <input type="checkbox" name="settings[audio_player]" value="1" id="audio_player" class="onoffswitch-checkbox" @if (old('settings[audio_player]', $settings['audio_player']))checked="checked"@endif >
+                        <label class="onoffswitch-label" for="audio_player"></label>
+                    </div>
+                </div>
+                <p class="form-help">{{ __('Play audio attachments in the conversation instead of opening them in a new browser tab.') }}</p>
+            </div>
+            @include('partials/field_error', ['field'=>'settings.audio_player'])
+        </div>
+    </div>
+
     <div class="form-group{{ $errors->has('settings[email_branding]') ? ' has-error' : '' }}">
         <label for="email_branding" class="col-sm-2 control-label">{{ __('Spread the Word', ['app_name' => \Config::get('app.name')]) }}</label>
 

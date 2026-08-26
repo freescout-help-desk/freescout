@@ -2386,6 +2386,16 @@ button.conv-checkbox-clear {
     text-decoration: none;
     cursor: default;
 }
+.thread-attachments li.attachment-with-player {
+    display: block;
+    max-width: 420px;
+}
+.thread-attachments .attachment-player {
+    display: block;
+    width: 100%;
+    height: 32px;
+    margin-top: 6px;
+}
 .thread-editor-container {
     padding: 20px;
 }

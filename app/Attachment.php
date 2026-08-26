@@ -344,6 +344,23 @@ class Attachment extends Model
     }
 
     /**
+     * Check if the attachment is an audio file which the browser receives
+     * inline rather than as a download, and can therefore be played by an
+     * <audio> element. Mirrors the conditions in
+     * OpenController::downloadAttachment().
+     */
+    public function isPlayableAudio()
+    {
+        if (!preg_match('#^audio/.*$#', (string) $this->mime_type)) {
+            return false;
+        }
+
+        $extension = strtolower(pathinfo($this->file_name, PATHINFO_EXTENSION));
+
+        return in_array($extension, config('app.viewable_attachments'));
+    }
+
+    /**
      * Check if the attachment file actually exists on the disk.
      */
     public function fileExists()
