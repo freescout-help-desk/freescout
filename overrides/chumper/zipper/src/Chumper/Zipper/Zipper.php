@@ -618,6 +618,7 @@ class Zipper
         $realBase = realpath($path);
         $realDest = realpath(pathinfo($path . DIRECTORY_SEPARATOR . $tmpPath)['dirname'] ?? '');
         // On some systems $realDest is empty for valid paths.
+        // if ($realDest === false || strpos($realDest, $realBase) !== 0) {
         if ($realBase && $realDest && strpos($realDest, $realBase) !== 0) {
             \Log::error('[Zipper] Path traversal detected - path: '.$path.'; fileName: '.$fileName.'; realBase: '.$realBase.'; tmpPath: '.$tmpPath.'; realDest: '.$realDest);
             throw new \RuntimeException('Zipper: Path traversal detected');
@@ -632,5 +633,13 @@ class Zipper
         $toPath = $path.DIRECTORY_SEPARATOR.$tmpPath;
         $fileStream = $this->getRepository()->getFileStream($fileName);
         $this->getFileHandler()->put($toPath, $fileStream);
+
+        // Unsafe symlink.
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-rw7g-qq32-c669
+        if (is_link($toPath) && ($link_target = readlink($toPath)) && !\Str::startsWith($link_target, $path)) {
+            $msg = '[Zipper] Unsafe symlink detected - symlink '.$tmpPath.' points to the file/folder outside of the destination path: '.$link_target;
+            \Log::error($msg);
+            throw new \RuntimeException($msg);
+        }
     }
 }
