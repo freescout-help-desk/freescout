@@ -172,7 +172,7 @@ sudo echo 'server {
         expires 2d;
         access_log off;
         add_header Cache-Control "public, must-revalidate";
-        # For non-static content Laravel adds nosniff by itself
+        # For non-static content application adds nosniff by itself
         add_header X-Content-Type-Options "nosniff";
     }
     # The list should be in sync with /storage/app/public/uploads/.htaccess and /config/app.php
@@ -185,7 +185,7 @@ sudo echo 'server {
         expires 1M;
         access_log off;
         add_header Cache-Control "public";
-        # For non-static content Laravel adds nosniff by itself
+        # For non-static content application adds nosniff by itself
         add_header X-Content-Type-Options "nosniff";
     }
     location ~ /\. {

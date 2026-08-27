@@ -20,5 +20,5 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
-# For non-static content Laravel adds 'nosniff' by itself
+# For non-static content application adds 'nosniff' by itself
 Header set X-Content-Type-Options nosniff

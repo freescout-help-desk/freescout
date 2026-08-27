@@ -2482,6 +2482,7 @@ class Helper
         return mb_strtolower(parse_url($url ?: config('app.url'), PHP_URL_SCHEME) ?: 'http');
     }
 
+    // Check if APP_URL contains https:// protocol.
     public static function isHttps($url = '')
     {
         if (\Helper::isInstaller()) {
