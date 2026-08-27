@@ -65,4 +65,9 @@ class Job extends Model
             return null;
         }
     }
+
+    public static function getTriggerActionName($payload)
+    {
+        return preg_replace('/^.*?action";s:\d+:"([^"]+)".*$/s', '$1', $payload['data']['command'] ?? '');
+    }
 }

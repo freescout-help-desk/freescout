@@ -279,7 +279,12 @@
                                 <table class="table">
                                     <tbody>
                                         <tr>
-                                            <th>{{ $loop->index+1 }}. {{ $payload['displayName'] }}</th>
+                                            <th>
+                                                {{ $loop->index+1 }}. {{ $payload['displayName'] }} 
+                                                @if ($payload['displayName'] == 'App\Jobs\TriggerAction' && !empty($payload['data']['command']))
+                                                    ({{ App\Job::getTriggerActionName($payload) }})
+                                                @endif
+                                            </th>
                                             <th>
                                                 <form action="{{ route('system.action') }}" method="POST" class="text-right">
                                                     {{ csrf_field() }}
@@ -375,7 +380,11 @@
                             <table class="table">
                                 <tbody>
                                     <tr>
-                                        <th colspan="2">{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }} – <small><a href="{{ route('system.ajax_html', ['action' => 'job_details', 'param' => $job->id]) }}" data-trigger="modal" data-modal-title="{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}" data-modal-no-footer="true">{{ __('View Details') }}</a></small></th>
+                                        <th colspan="2">{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}
+                                            @if ($payload['displayName'] == 'App\Jobs\TriggerAction' && !empty($payload['data']['command']))
+                                                ({{ App\Job::getTriggerActionName($payload) }})
+                                            @endif
+                                         – <small><a href="{{ route('system.ajax_html', ['action' => 'job_details', 'param' => $job->id]) }}" data-trigger="modal" data-modal-title="{{ $loop->index+1 }}. {{ json_decode($job->payload, true)['displayName'] }}" data-modal-no-footer="true">{{ __('View Details') }}</a></small></th>
                                     </tr>
                                     <tr>
                                         <td>{{ __('Queue') }}</td>
