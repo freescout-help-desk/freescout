@@ -15,7 +15,7 @@ class CustomerCreatedConversation
      *
      * @return void
      */
-    public function __construct(Conversation $conversation, Thread $last_thread)
+    public function __construct(Conversation $conversation, $last_thread)
     {
         $this->conversation = $conversation;
         $this->last_thread = $last_thread;

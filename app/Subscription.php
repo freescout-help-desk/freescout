@@ -16,6 +16,7 @@ class Subscription extends Model
     // Changing ticket status does not fire event
     const EVENT_TYPE_NEW = 1;
     const EVENT_TYPE_ASSIGNED = 2;
+    // This event type exists but not used anywhere for now.
     const EVENT_TYPE_UPDATED = 3;
     const EVENT_TYPE_CUSTOMER_REPLIED = 4;
     const EVENT_TYPE_USER_REPLIED = 5;
