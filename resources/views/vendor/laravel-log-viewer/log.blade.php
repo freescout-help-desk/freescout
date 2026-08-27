@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('Logs'))
+@section('title_full', __('Logs').' - '.__('App Logs'))
 
 @section('sidebar')
     @include('partials/sidebar_menu_toggle')
