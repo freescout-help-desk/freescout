@@ -877,11 +877,21 @@ class User extends Authenticatable
         \Cache::forget('user_web_notifications_'.$this->id);
     }
 
+    /**
+     * Disk used to store the user's photo. Same disk as Attachment::disk() and
+     * Customer::photoDisk() (config('filesystems.persistent_disk'), PERSISTENT_DISK
+     * env var) so all durable, user-generated files live in one place.
+     */
+    public static function photoDisk()
+    {
+        return config('filesystems.persistent_disk', 'private');
+    }
+
     public function getPhotoUrl($default_if_empty = true)
     {
         if (!empty($this->photo_url) || !$default_if_empty) {
             if (!empty($this->photo_url)) {
-                return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+                return Storage::disk(self::photoDisk())->url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
             } else {
                 return '';
             }
@@ -913,22 +923,22 @@ class User extends Authenticatable
         }
 
         $file_name = md5(Hash::make($this->id)).'.jpg';
-        $dest_path = Storage::path(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
-
-        $dest_dir = pathinfo($dest_path, PATHINFO_DIRNAME);
-        if (!file_exists($dest_dir)) {
-            \File::makeDirectory($dest_dir, 0755);
-        }
 
         // Remove current photo
         if ($this->photo_url) {
-            Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+            Storage::disk(self::photoDisk())->delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
 
-        imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
-        // $photo_url = $request->file('photo_url')->storeAs(
-        //     User::PHOTO_DIRECTORY, !Hash::make($user->id).'.jpg'
-        // );
+        // Encode into a stream instead of writing directly to a local path (imagejpeg($img,
+        // $path, ...)), so this also works when the photo disk is non-local (e.g. S3). Spills
+        // to a real temp file past 2 MB instead of holding the whole image in memory.
+        $stream = fopen('php://temp', 'r+');
+        imagejpeg($resized_image, $stream, self::PHOTO_QUALITY);
+        rewind($stream);
+
+        Storage::disk(self::photoDisk())->put(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name, $stream);
+
+        fclose($stream);
 
         return $file_name;
     }
@@ -939,7 +949,7 @@ class User extends Authenticatable
     public function removePhoto()
     {
         if ($this->photo_url) {
-            Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+            Storage::disk(self::photoDisk())->delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
         $this->photo_url = '';
     }
