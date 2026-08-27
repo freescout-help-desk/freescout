@@ -2210,6 +2210,9 @@ button.conv-checkbox-clear {
 .thread-recipients strong {
     color: #72808e;
 }
+.thread-recipients .text-warning strong {
+    color: inherit;
+}
 .thread-recipients div {
     margin-top: 2px;
 }
