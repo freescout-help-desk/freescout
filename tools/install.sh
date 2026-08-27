@@ -167,20 +167,26 @@ sudo echo 'server {
         access_log off;
         try_files $uri $uri/ /index.php?$query_string;
     }
+    # Short expiration for .css and .js files
     location ~* ^/(?:css|js)/.*\.(?:css|js)$ {
         expires 2d;
         access_log off;
         add_header Cache-Control "public, must-revalidate";
+        # For non-static content Laravel adds nosniff by itself
+        add_header X-Content-Type-Options "nosniff";
     }
     # The list should be in sync with /storage/app/public/uploads/.htaccess and /config/app.php
     location ~* ^/storage/.*\.((?!(jpg|jpeg|jfif|pjpeg|pjp|apng|bmp|gif|ico|cur|png|tif|tiff|webp|pdf|txt|diff|patch|json|mp3|wav|ogg|wma)).)*$ {
         add_header Content-disposition "attachment; filename=$2";
         default_type application/octet-stream;
-    }   
-    location ~* ^/(?:css|fonts|img|installer|js|modules|[^\\\]+\..*)$ {
+    }
+    # Long expiration for files in /storage or any files having dot in their names
+    location ~* ^/(storage/|.*\.).*$ {
         expires 1M;
         access_log off;
         add_header Cache-Control "public";
+        # For non-static content Laravel adds nosniff by itself
+        add_header X-Content-Type-Options "nosniff";
     }
     location ~ /\. {
         deny  all;
