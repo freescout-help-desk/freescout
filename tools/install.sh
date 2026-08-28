@@ -178,6 +178,7 @@ sudo echo 'server {
     # The list should be in sync with /storage/app/public/uploads/.htaccess and /config/app.php
     location ~* ^/storage/.*\.((?!(jpg|jpeg|jfif|pjpeg|pjp|apng|bmp|gif|ico|cur|png|tif|tiff|webp|pdf|txt|diff|patch|json|mp3|wav|ogg|wma)).)*$ {
         add_header Content-disposition "attachment; filename=$2";
+        add_header X-Content-Type-Options "nosniff";
         default_type application/octet-stream;
     }
     # Long expiration for files in /storage or any files having dot in their names
