@@ -50,7 +50,8 @@ class GenerateVars extends Command
 
             //$file_path = public_path('js/vars.js');
             //$file_path = '/public/js/builds/vars.js';
-            $file_path = public_path('js/builds/vars.js');
+            $relative_path = 'js/builds/vars.js';
+            $file_path = public_path($relative_path);
 
             $content = view('js/vars', $params)->render();
 
@@ -83,7 +84,7 @@ class GenerateVars extends Command
                 // Before vars.js was stored in /storage/app/public/js/vars.js
                 \Storage::put('js/vars.js', $content);
 
-                $this->info("Created: ".$file_path);
+                $this->info("Created: /".$relative_path);
             } catch (\Exception $e) {
                 $msg = "Error occurred saving $file_path. ".\Helper::formatException($e);
                 \Log::error($msg);
