@@ -1299,7 +1299,8 @@ class Customer extends Model
 
     public static function getPhotoUrlByFileName($file_name)
     {
-        return Storage::disk(self::photoDisk())->url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
+        // Streamed through the app so this works on S3 with private visibility too.
+        return route('photo.download', ['type' => 'customers', 'file_name' => $file_name]);
     }
 
     /**

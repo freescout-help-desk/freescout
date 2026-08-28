@@ -891,7 +891,8 @@ class User extends Authenticatable
     {
         if (!empty($this->photo_url) || !$default_if_empty) {
             if (!empty($this->photo_url)) {
-                return Storage::disk(self::photoDisk())->url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+                // Streamed through the app so this works on S3 with private visibility too.
+                return route('photo.download', ['type' => 'users', 'file_name' => $this->photo_url]);
             } else {
                 return '';
             }
