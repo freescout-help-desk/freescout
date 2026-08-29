@@ -220,6 +220,7 @@ return [
     */
     'fetch_schedule'    => env('APP_FETCH_SCHEDULE', 1),
     'fetch_unseen'      => env('APP_FETCH_UNSEEN', 1),
+    'fetch_max_execution_time' => env('APP_FETCH_MAX_EXECUTION_TIME', 30), // minutes
 
     /*
     |--------------------------------------------------------------------------
