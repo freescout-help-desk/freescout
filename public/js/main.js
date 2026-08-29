@@ -761,7 +761,7 @@ function mailboxConnectionIncomingInit()
 					var options_html = '';
 					if (typeof(response.folders) != "undefined" && response.folders.length) {
 						for (i in response.folders) {
-							var imap_folder = response.folders[i];
+							var imap_folder = htmlEscape(response.folders[i]);
 							if (select.find("option[value='"+imap_folder.replaceAll("'", "\\'")+"']").length) {
 								continue;
 							}

@@ -260,15 +260,27 @@ class OpenController extends Controller
 
         // CSP header for exatra security.
         $csp_header_value = "script-src 'none'; frame-src 'none'; object-src 'none'; font-src 'none'; connect-src 'none'; media-src 'self'; form-action 'none'; base-uri 'none'; sandbox";
+
         // https://github.com/freescout-help-desk/freescout/issues/5281
+        //
+        // The bare sandbox directive gives the attachment document an opaque
+        // ("null") origin. The media element the browser's built-in player creates
+        // then requests the file cross-origin and is blocked by CORS, so the player
+        // appears but never plays. allow-same-origin keeps the real origin.
+        // nosniff replaces the protection sandbox was providing here: the browser
+        // is not allowed to reinterpret an audio/* response as HTML.
+        // https://github.com/freescout-help-desk/freescout/pull/5597
         if (preg_match('#^audio/.*$#', $attachment->mime_type)) {
-            $csp_header_value .= ' allow-scripts';
+             //$csp_header_value .= ' allow-scripts';
+            $csp_header_value .= ' allow-same-origin';
         }
 
         if (config('app.download_attachments_via') == 'apache') {
             // Send using Apache mod_xsendfile.
             $response = response(null)
                ->header('Content-Type', $attachment->mime_type)
+               // Laravel adds 'nosniff' by itself.
+               //->header('X-Content-Type-Options', 'nosniff')
                ->header('X-Sendfile', $attachment->getLocalFilePath());
 
             if (!$view_attachment) {
@@ -280,6 +292,8 @@ class OpenController extends Controller
             // Send using Nginx.
             $response = response(null)
                ->header('Content-Type', $attachment->mime_type)
+               // Laravel adds 'nosniff' by itself.
+               //->header('X-Content-Type-Options', 'nosniff')
                ->header('X-Accel-Redirect', $attachment->getLocalFilePath(false));
                
             if (!$view_attachment) {
@@ -288,11 +302,30 @@ class OpenController extends Controller
                 $response->header('Content-Security-Policy', $csp_header_value);
             }
         } else {
-            $headers = [];
+            // Send via PHP.
+            // In this case downloading or showing the attachment
+            // is controlled via web server config or /storage/app/public/.htaccess.
+            $headers = [
+                'Content-Type' => $attachment->mime_type,
+                // Laravel adds 'nosniff' by itself.
+                //'X-Content-Type-Options' => 'nosniff',
+            ];
             if ($view_attachment) {
                 $headers['Content-Security-Policy'] = $csp_header_value;
             }
-            $response = $attachment->download($view_attachment, $headers);
+            // Storage::download() returns a StreamedResponse, which does not
+            // implement HTTP Range requests: no Accept-Ranges, no 206 responses.
+            // Browsers disable seeking without it, so audio and video attachments
+            // can not be rewound or fast forwarded. BinaryFileResponse handles
+            // Range requests, so use it whenever the file is shown in the browser.
+            if ($view_attachment && $attachment->fileExists()) {
+                $response = response()->file(
+                    $attachment->getLocalFilePath(),
+                    $headers
+                );
+            } else {
+                $response = $attachment->download($view_attachment, $headers);
+            }
         }
 
         return $response;

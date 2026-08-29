@@ -61,13 +61,18 @@ class ConversationsController extends Controller
 
         // Mark notifications as read
         if (!empty($request->mark_as_read)) {
-            $mark_read_result = $user->unreadNotifications()->where('id', $request->mark_as_read)->update(['read_at' => now()]);
+            $user->unreadNotifications()->where('id', $request->mark_as_read)->update(['read_at' => now()]);
             $user->clearWebsiteNotificationsCache();
         } else {
-            $mark_read_result = $user->unreadNotifications()->where('data', 'like', '%"conversation_id":'.$conversation->id.'%')->update(['read_at' => now()]);
-        }
-        if ($mark_read_result) {
-            $user->clearWebsiteNotificationsCache();
+            // Build quiery manually instad of unreadNotifications() in order to use indexes.
+            //$mark_read_result = $user->unreadNotifications()->where('data', 'like', '%"conversation_id":'.$conversation->id.'%')->update(['read_at' => now()]);
+            $mark_read_result = $user->morphMany(\Illuminate\Notifications\DatabaseNotification::class, 'notifiable')
+                ->where('conversation_id', $conversation->id)
+                ->whereNull('read_at')
+                ->update(['read_at' => now()]);
+            if ($mark_read_result) {
+                $user->clearWebsiteNotificationsCache();
+            }
         }
 
         // Detect folder and redirect if needed

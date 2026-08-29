@@ -56,6 +56,10 @@ class PolycastBroadcaster extends Broadcaster
      */
     public function auth($request)
     {
+        if (!$request->user()) {
+            throw new AccessDeniedHttpException();
+        }
+
         // For connect request
         if (empty($request->channels)) {
             return true;
@@ -66,9 +70,6 @@ class PolycastBroadcaster extends Broadcaster
 
             // Copied from Illuminate\Broadcasting\Broadcasters\PusherBroadcaster
             //if (Str::startsWith($channel_name, ['private-', 'presence-']) &&
-            if (!$request->user()) {
-                throw new AccessDeniedHttpException();
-            }
 
             if (Str::startsWith($channel_name, ['private-', 'presence-'])) {
                 $channelName = Str::startsWith($channel_name, 'private-')

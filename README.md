@@ -19,7 +19,6 @@ If you want to support the project feel free to **star this repository**. It hel
    * [Requirements](#requirements)
    * [Installation](#installation)
    * [Images & One-Click Installs](#images--one-click-installs)
-   * [Cloud Hosted](#cloud-hosted)
    * [Modules](#modules)
    * [Tools & Integrations](#tools--integrations)
    * [News & Updates](#news--updates)
@@ -73,7 +72,7 @@ Mobile apps support the same functionality and modules as the web version of you
 FreeScout is a pure PHP/MySQL application, so it can be easily deployed even on a [shared hosting](https://github.com/freescout-help-desk/freescout/wiki/Choosing-a-Server).
 
   * Nginx / Apache / IIS
-  * PHP 7.1 - 8.x
+  * PHP 7.4 - 8.x
   * MySQL 5.0+ / MariaDB 5.0+ / PostgreSQL
 
 There are no minimum system requirements (CPU / RAM) – FreeScout will run on any system.
@@ -92,11 +91,7 @@ There are no minimum system requirements (CPU / RAM) – FreeScout will run on a
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
 * [Ubuntu](https://github.com/freescout-help-desk/freescout/wiki/Installation-Guide#interactive-installation-bash-script-ubuntu) — Bash script
 
- [More options…](https://freescout.net/cloud-hosted/)
-
-## Cloud Hosted
-
-[Cloud Hosted FreeScout](https://freescout.net/cloud-hosted/)
+[More one-click installs…](https://freescout.net/one-click-installs/)
 
 ## Modules
 

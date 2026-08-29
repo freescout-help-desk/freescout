@@ -53,7 +53,7 @@ body.user-is-guest {
     width: 260px;
     /*background-color: #f4f5f5;*/
     background-color: #fff;
-    padding-right: 12px;
+    padding-right: 0;
 }
 .content-2col {
     background-color: #fff;
@@ -64,8 +64,10 @@ body.user-is-guest {
     border-right:1px solid #dedede;
     border-bottom:1px solid #dedede;
     border-left:1px solid #dedede;*/
-    -webkit-box-shadow:0 0 10px rgba(0,0,0,.2);
-    box-shadow:0 0 10px rgba(0,0,0,.2);
+    /*-webkit-box-shadow:0 0 10px rgba(0,0,0,.2);
+    box-shadow:0 0 10px rgba(0,0,0,.2);*/
+    border-left: 1px solid #d6dde3;
+    border-bottom: 1px solid #e3e8eb;
     box-sizing: border-box;
     flex: 1;
     flex-basis: auto;
@@ -122,7 +124,7 @@ body.user-is-guest {
     line-height: 18px;
     display: list-item;
     text-align: -webkit-match-parent;
-    border-radius: 0 17px 17px 0;
+    /*border-radius: 0 17px 17px 0;*/
 }
 .sidebar-menu > li.alert {
     padding: 0;
@@ -146,7 +148,7 @@ body.user-is-guest {
     padding: 11px 20px 9px 50px;
     position: relative;
     word-wrap: break-word;
-    border-radius: 0 17px 17px 0;
+    /*border-radius: 0 17px 17px 0;*/
     height: 36px;
 }
 .sidebar-menu > li.menu-link > a {
@@ -225,7 +227,7 @@ body.user-is-guest {
 }
 .sidebar-buttons {
     padding-left: 15px;
-    padding-right: 5px;
+    padding-right: 15px;
 }
 .sidebar-buttons .btn {
     font-size: 16px;
@@ -391,6 +393,9 @@ a.navbar-brand:hover img {
 }
 .navbar-brand i {
     color: #fff;
+}
+.dropdown-menu {
+    border-radius: 5px;
 }
 .dropdown-menu .dropdown-header {
 	font-size: 14px;
@@ -2204,6 +2209,9 @@ button.conv-checkbox-clear {
 }
 .thread-recipients strong {
     color: #72808e;
+}
+.thread-recipients .text-warning strong {
+    color: inherit;
 }
 .thread-recipients div {
     margin-top: 2px;
@@ -4589,4 +4597,11 @@ a.disabled:focus {
     .col3-hidden {
         display: none;
     }
+}
+
+.btn {
+    border-radius: 5px;
+}
+.panel-group .panel {
+    border-radius: 5px;
 }

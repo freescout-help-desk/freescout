@@ -104,15 +104,30 @@
                     @if ($thread->type != App\Thread::TYPE_NOTE || $thread->isForward())
                         <div class="thread-recipients">
                             @action('thread.before_recipients', $thread, $loop, $threads, $conversation, $mailbox)
+                            @php
+                                // Highlight "From" field if "From" header is different from "Reply-To".
+                                $from_header = $thread->isCustomerMessage() ? $thread->getFromIfDifferentFromReplyTo($customer ?? null) : '';
+                                // The thread's actual author may differ from the customer the conversation is currently attributed to.
+                                $owner_mismatch = $thread->isCustomerMessage() && isset($conversation) && $thread->customer_id != $conversation->customer_id;
+                            @endphp
                             @if (($thread->isUserMessage() && $thread->from && array_key_exists($thread->from, $mailbox->getAliases()))
                                 || ($thread->isCustomerMessage() && isset($customer) && count($customer->emails) > 1)
-                                || ($thread->isCustomerMessage() && ($from_header = $thread->getFromIfDifferentFromReplyTo($customer ?? null)))
+                                || !empty($from_header)
+                                || $owner_mismatch
                             )
-                                <div @if (!empty($from_header)) class="text-warning" @endif>
+                                <div @if (!empty($from_header) || $owner_mismatch) class="text-warning" @endif>
                                     <strong>
                                         {{ __("From") }}:
                                     </strong>
-                                    {{ $from_header ?? $thread->from }}
+                                    @if ($from_header)
+                                        @if ($from_header == $thread->from)
+                                            {{ $thread->from }}
+                                        @else
+                                            {{ $from_header }} → {{ $thread->from }}
+                                        @endif
+                                    @else
+                                        {{ $thread->from }}
+                                    @endif
                                 </div>
                             @endif
                             @if (($thread->isForward()
@@ -284,7 +299,7 @@
 
                 @if ($thread->body_original)
                     <div class='thread-meta'>
-                        <i class="glyphicon glyphicon-pencil"></i> {{ __("Edited by :whom :when", ['whom' => $thread->getEditedByUserName(), 'when' => App\User::dateDiffForHumansWithHours($thread->edited_at)]) }} &nbsp;<a href="#" class="thread-original-show help-link link-underlined">{{ __("Show original") }}</a><a href="#" class="thread-original-hide help-link link-underlined hidden">{{ __("Hide") }}</a>
+                        <i class="glyphicon glyphicon-pencil"></i> {{ __("Edited by :whom :when", ['whom' => $thread->getEditedByUserName(), 'when' => App\User::dateDiffForHumansWithHours($thread->edited_at)]) }} &nbsp;<a href="#" class="thread-original-show help-link link-underlined">{{ __("Show Original") }}</a><a href="#" class="thread-original-hide help-link link-underlined hidden">{{ __("Hide") }}</a>
                         <div class="thread-original thread-text hidden">{!! safe_raw_html($thread->getCleanBodyOriginal()) !!}</div>
                     </div>
                 @endif

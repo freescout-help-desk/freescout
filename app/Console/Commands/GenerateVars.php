@@ -49,7 +49,9 @@ class GenerateVars extends Command
             //$filesystem = new Filesystem();
 
             //$file_path = public_path('js/vars.js');
-            $file_path = storage_path('app/public/js/vars.js');
+            //$file_path = '/public/js/builds/vars.js';
+            $relative_path = 'js/builds/vars.js';
+            $file_path = public_path($relative_path);
 
             $content = view('js/vars', $params)->render();
 
@@ -63,19 +65,28 @@ class GenerateVars extends Command
                 $content
             );
 
-            // Save vars only if content has changed.
             try {
-                if (\Storage::exists('js/vars.js')) {
-                    $old_content = \Storage::get('js/vars.js');
+                if (!\File::exists(dirname($file_path))) {
+                    \File::makeDirectory(dirname($file_path), \Helper::DIR_PERMISSIONS);
+                }
+
+                // Save vars only if content has changed.
+                if (\File::exists($file_path)) {
+                    $old_content = \File::get($file_path);
                     if ($content != $old_content) {
-                        \Storage::put('js/vars.js', $content);
+                        \File::put($file_path, $content);
                     }
                 } else {
-                    \Storage::put('js/vars.js', $content);
+                    \File::put($file_path, $content);
                 }
-                $this->info("Created: ".substr($file_path, strlen(base_path())+1));
+
+                // Backward compatibility.
+                // Before vars.js was stored in /storage/app/public/js/vars.js
+                \Storage::put('js/vars.js', $content);
+
+                $this->info("Created: /".$relative_path);
             } catch (\Exception $e) {
-                $msg = "Error occurred saving /storage/app/public/js/vars.js. ".\Helper::formatException($e);
+                $msg = "Error occurred saving $file_path. ".\Helper::formatException($e);
                 \Log::error($msg);
                 $this->error($msg);
             }

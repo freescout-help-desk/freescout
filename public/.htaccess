@@ -19,3 +19,6 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# For non-static content application adds 'nosniff' by itself
+Header set X-Content-Type-Options nosniff

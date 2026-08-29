@@ -22,9 +22,13 @@ class ResponseHeaders
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         // $response->headers->set('X-XSS-Protection', '1; mode=block');
         // $response->headers->set('X-Frame-Options', 'DENY');
-        //$response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         //$response->headers->set('Content-Security-Policy', "style-src 'self'");
         
+        // Instruct browsers to always use HTTPS for all future requests.
+        if (\Helper::isHttps()) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+        }
+
         // Disable caching.
         if (method_exists($response, 'header')) {
             $response->header('Pragma', 'no-cache');

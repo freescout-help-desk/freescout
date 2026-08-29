@@ -50,6 +50,8 @@ class PolycastServiceProvider extends ServiceProvider
 
             // establish connection and send current time
             $this->app['router']->post('polycast/connect', function (Request $request) {
+                \Broadcast::auth($request);
+
                 return ['status' => 'success', 'time' => Carbon::now()->toDateTimeString()];
             });
 
@@ -61,6 +63,12 @@ class PolycastServiceProvider extends ServiceProvider
                     ->select('*');
 
                 $channels = $request->get('channels', []);
+
+                // $request->channels must contain a list of channels.
+                // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-7x4c-p73f-67x5
+                if (empty($channels)) {
+                    \Helper::denyAccess();
+                }
 
                 foreach ($channels as $channel => $events) {
 

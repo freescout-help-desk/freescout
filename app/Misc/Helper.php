@@ -2482,6 +2482,7 @@ class Helper
         return mb_strtolower(parse_url($url ?: config('app.url'), PHP_URL_SCHEME) ?: 'http');
     }
 
+    // Check if APP_URL contains https:// protocol.
     public static function isHttps($url = '')
     {
         if (\Helper::isInstaller()) {
@@ -3080,5 +3081,18 @@ class Helper
     public static function hashEquals($known_string, $string_to_check)
     {
         return hash_equals((string)$known_string, (string)$string_to_check);
+    }
+
+    public static function curlClose($ch)
+    {
+        try {
+            if (PHP_VERSION_ID >= 80000) {
+                unset($ch);
+            } else {
+                curl_close($ch);
+            }
+        } catch (\Exception $e) {
+            // Do nothing.
+        }
     }
 }

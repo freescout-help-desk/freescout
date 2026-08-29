@@ -25,6 +25,9 @@ class RefreshConversations
      */
     public function handle($event)
     {
-        Conversation::refreshConversations($event->conversation, $event->thread ?? $event->last_thread);
+        $thread = $event->thread ?? $event->last_thread;
+        if ($thread) {
+            Conversation::refreshConversations($event->conversation, $thread);
+        }
     }
 }

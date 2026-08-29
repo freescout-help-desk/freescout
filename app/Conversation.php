@@ -1480,7 +1480,7 @@ class Conversation extends Model
      */
     public function moveToMailbox($mailbox, $user)
     {
-        $prev_mailbox = $this->mailbox;
+        $prev_mailbox = clone $this->mailbox;
 
         // Make conversation Unassigned if current assignee does not have
         // access to the target mailbox.
@@ -1559,7 +1559,9 @@ class Conversation extends Model
         $prev_mailbox->updateFoldersCounters();
         $mailbox->updateFoldersCounters();
 
-        event(new UserMovedConversation($this, $this->getLastReply(), $user->id, $prev_mailbox));
+        $this->load('mailbox');
+
+        event(new UserMovedConversation($this, /*$this->getLastReply(true),*/ $user->id, $prev_mailbox));
 
         \Eventy::action('conversation.moved', $this, $user, $prev_mailbox);
 
