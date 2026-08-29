@@ -1192,7 +1192,15 @@ https://github.com/freescout-help-desk/freescout/issues/4354
         display: none;
     }
 }
-
+@media (min-width:583px) {
+    .conv-reply-body .note-style {
+        margin-right: 110px!important;
+    }
+    .conv-reply-body .note-actions {
+        position: absolute;
+        right: 0;
+    }
+}
 /**
  * Customer
  */
