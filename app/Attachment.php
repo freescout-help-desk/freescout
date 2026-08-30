@@ -311,15 +311,9 @@ class Attachment extends Model
         return $this->getDisk()->download($this->getStorageFilePath(), $file_name, $headers);
     }
 
-    /**
-     * Disk used to store attachment files. Configurable via the
-     * "filesystems.persistent_disk" config value (PERSISTENT_DISK env var),
-     * so attachments can be moved off local disk (e.g. to S3) without
-     * touching application code.
-     */
     public static function disk()
     {
-        return config('filesystems.persistent_disk', 'private');
+        return \App\Misc\Helper::persistentDisk();
     }
 
     private function getDisk()

@@ -13,8 +13,6 @@
 
 // Download attachments
 Route::get('/storage/attachment/{dir_1}/{dir_2}/{dir_3}/{file_name}', 'OpenController@downloadAttachment')->name('attachment.download');
-// Avatar photos
-Route::get('/storage/photo/{type}/{file_name}', 'OpenController@photo')->name('photo.download');
 // Open tracking
 Route::get('/thread/read/{conversation_id}/{thread_id}/{hash}', 'OpenController@setThreadAsRead')->name('open_tracking.set_read');
 // Web Cron

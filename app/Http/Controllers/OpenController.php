@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Attachment;
 use App\Conversation;
-use App\Customer;
 use App\Option;
 use App\Thread;
 use App\User;
@@ -330,32 +329,6 @@ class OpenController extends Controller
         }
 
         return $response;
-    }
-
-    /**
-     * Stream a user's or customer's avatar photo, so this works regardless of
-     * which disk (local or S3) is configured.
-     */
-    public function photo($type, $file_name)
-    {
-        $file_name = basename($file_name);
-
-        if ($type == 'users') {
-            $disk = User::photoDisk();
-            $path = User::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name;
-        } elseif ($type == 'customers') {
-            $disk = Customer::photoDisk();
-            $path = Customer::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name;
-        } else {
-            abort(404);
-        }
-
-        if (!\Storage::disk($disk)->exists($path)) {
-            abort(404);
-        }
-
-        return response(\Storage::disk($disk)->get($path))
-            ->header('Content-Type', \Storage::disk($disk)->mimeType($path));
     }
 
     /**

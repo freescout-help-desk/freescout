@@ -877,22 +877,16 @@ class User extends Authenticatable
         \Cache::forget('user_web_notifications_'.$this->id);
     }
 
-    /**
-     * Disk used to store the user's photo. Same disk as Attachment::disk() and
-     * Customer::photoDisk() (config('filesystems.persistent_disk'), PERSISTENT_DISK
-     * env var) so all durable, user-generated files live in one place.
-     */
     public static function photoDisk()
     {
-        return config('filesystems.persistent_disk', 'private');
+        return \App\Misc\Helper::persistentDisk();
     }
 
     public function getPhotoUrl($default_if_empty = true)
     {
         if (!empty($this->photo_url) || !$default_if_empty) {
             if (!empty($this->photo_url)) {
-                // Streamed through the app so this works on S3 with private visibility too.
-                return route('photo.download', ['type' => 'users', 'file_name' => $this->photo_url]);
+                return \App\Misc\Helper::urlForDiskPath(self::photoDisk(), self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
             } else {
                 return '';
             }
@@ -930,10 +924,7 @@ class User extends Authenticatable
             Storage::disk(self::photoDisk())->delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
 
-        // Encode into a stream instead of writing directly to a local path (imagejpeg($img,
-        // $path, ...)), so this also works when the photo disk is non-local (e.g. S3). Spills
-        // to a real temp file past 2 MB instead of holding the whole image in memory.
-        $stream = fopen('php://temp', 'r+');
+        $stream = \App\Misc\Helper::tempStream();
         imagejpeg($resized_image, $stream, self::PHOTO_QUALITY);
         rewind($stream);
 

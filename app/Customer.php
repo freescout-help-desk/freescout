@@ -1299,18 +1299,12 @@ class Customer extends Model
 
     public static function getPhotoUrlByFileName($file_name)
     {
-        // Streamed through the app so this works on S3 with private visibility too.
-        return route('photo.download', ['type' => 'customers', 'file_name' => $file_name]);
+        return \App\Misc\Helper::urlForDiskPath(self::photoDisk(), self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
     }
 
-    /**
-     * Disk used to store the customer's photo. Same disk as Attachment::disk() and
-     * User::photoDisk() (config('filesystems.persistent_disk'), PERSISTENT_DISK env
-     * var) so all durable, user-generated files live in one place.
-     */
     public static function photoDisk()
     {
-        return config('filesystems.persistent_disk', 'private');
+        return \App\Misc\Helper::persistentDisk();
     }
 
     /**
@@ -1421,10 +1415,7 @@ class Customer extends Model
             Storage::disk(self::photoDisk())->delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
 
-        // Encode into a stream instead of writing directly to a local path (imagejpeg($img,
-        // $path, ...)), so this also works when the photo disk is non-local (e.g. S3). Spills
-        // to a real temp file past 2 MB instead of holding the whole image in memory.
-        $stream = fopen('php://temp', 'r+');
+        $stream = \App\Misc\Helper::tempStream();
         imagejpeg($resized_image, $stream, self::PHOTO_QUALITY);
         rewind($stream);
 
