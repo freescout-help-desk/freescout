@@ -948,6 +948,11 @@ class Helper
         return config('filesystems.persistent_disk', 'private');
     }
 
+    public static function isLocalDisk($disk)
+    {
+        return \Storage::disk($disk)->getDriver()->getAdapter() instanceof \League\Flysystem\Adapter\Local;
+    }
+
     /**
      * URL to deliver a file directly to the browser, without routing it through
      * the app: a plain URL for local disks, a temporary signed URL for disks
@@ -957,7 +962,7 @@ class Helper
     {
         $storage = \Storage::disk($disk);
 
-        if ($storage->getDriver()->getAdapter() instanceof \League\Flysystem\Adapter\Local) {
+        if (self::isLocalDisk($disk)) {
             return $storage->url($path);
         }
 
