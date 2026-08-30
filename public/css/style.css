@@ -3144,6 +3144,7 @@ ul.sidebar-block-list {
 .modal-loader img {
     position: absolute;
     top: 50%;
+    margin-left: -15px;
     height: 31px;
     margin-top: -15px;
 }
