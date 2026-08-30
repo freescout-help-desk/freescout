@@ -261,18 +261,7 @@ class Attachment extends Model
      */
     public function url()
     {
-        $file_path = $this->getStorageFilePath();
-
-        // URL must contain only forward slashes.
-        $file_path = str_replace(DIRECTORY_SEPARATOR, '/', $file_path);
-
-        $file_url = Storage::url($file_path);
-
-        // Fix percents.
-        // https://github.com/freescout-helpdesk/freescout/issues/3530
-        $file_url = str_replace('%', '%25', $file_url);
-
-        return $file_url.'?id='.$this->id.'&token='.$this->getToken();
+        return route('attachment.download.by_id', ['id' => $this->id, 'token' => $this->getToken()]);
     }
 
     /**
