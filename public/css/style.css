@@ -2,6 +2,11 @@
  * Custom styles
  */
 
+/* Remove black outline when clicking on links in Chrome */
+a:focus:not(:focus-visible) {
+    outline: none;
+}
+
 /**
  * Layout
  */
