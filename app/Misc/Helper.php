@@ -1283,6 +1283,11 @@ class Helper
         return $app_locales;
     }
 
+    public static function getAppLocale()
+    {
+        return config('app.locale');
+    }
+
     /**
      *  app()->setLocale() in Localize middleware also changes config('app.locale'),
      *  so we are keeping real app locale in real_locale parameter.
