@@ -10,8 +10,6 @@ use App\Option;
 
 class Kernel extends ConsoleKernel
 {
-    const FETCH_MAX_EXECUTION_TIME = 30; // minutes
-
     /**
      * The Artisan commands provided by your application.
      *
@@ -127,8 +125,8 @@ class Kernel extends ConsoleKernel
             $mutex_name = \Cache::get('fetch_mutex_name') ?? '';
 
             // If there is no cache mutext but there are running fetch commands
-            // it means the mutex had expired after self::FETCH_MAX_EXECUTION_TIME
-            // and the existing command(s) is running longer than self::FETCH_MAX_EXECUTION_TIME.
+            // it means the mutex had expired after 'fetch_max_execution_time'
+            // and the existing command(s) is running longer than 'fetch_max_execution_time'.
             if (count($fetch_command_pids) > 0 && !\Cache::get($mutex_name)) {
                 // Kill freescout:fetch-emails commands running for too long
                 shell_exec('kill '.implode(' | kill ', $fetch_command_pids));
@@ -158,7 +156,7 @@ class Kernel extends ConsoleKernel
             // So we are passing an 'expiresAt' parameter to withoutOverlapping() to
             // prevent fetching from not being executed when fetching command by some reason
             // does not remove the mutex from the cache.
-            ->withoutOverlapping($expiresAt = self::FETCH_MAX_EXECUTION_TIME /* minutes */)
+            ->withoutOverlapping($expiresAt = (int)config('app.fetch_max_execution_time') /* minutes */)
             ->sendOutputTo(storage_path().'/logs/fetch-emails.log');
 
         switch (config('app.fetch_schedule')) {
@@ -187,7 +185,7 @@ class Kernel extends ConsoleKernel
                 $fetch_command->everyMinute();
                 break;
         }
-        \Cache::put('fetch_mutex_name', $fetch_command->mutexName(), self::FETCH_MAX_EXECUTION_TIME);
+        \Cache::put('fetch_mutex_name', $fetch_command->mutexName(), (int)config('app.fetch_max_execution_time'));
 
         $schedule = \Eventy::filter('schedule', $schedule);
 

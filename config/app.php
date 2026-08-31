@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.237',
+    'version' => '1.8.238',
 
     /*
     |--------------------------------------------------------------------------
@@ -220,6 +220,7 @@ return [
     */
     'fetch_schedule'    => env('APP_FETCH_SCHEDULE', 1),
     'fetch_unseen'      => env('APP_FETCH_UNSEEN', 1),
+    'fetch_max_execution_time' => env('APP_FETCH_MAX_EXECUTION_TIME', 30), // minutes
 
     /*
     |--------------------------------------------------------------------------

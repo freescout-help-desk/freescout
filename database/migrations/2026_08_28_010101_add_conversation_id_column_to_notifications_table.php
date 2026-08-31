@@ -22,21 +22,36 @@ class AddConversationIdColumnToNotificationsTable extends Migration
         });
 
         // Populate "conversation_id" field for notifications.
-        $total = DatabaseNotification::whereNull('conversation_id')
-            ->where('data', 'like', '%"conversation_id":%')
-            ->count();
-        $bunch_size = 500;
-        for ($bunch_i = 0; $bunch_i < ceil($total / $bunch_size); $bunch_i++) { 
-            $notifications = DatabaseNotification::whereNull('conversation_id')
+        
+        try {
+            // Try to populate "converesation_id" in one query.
+            if (\Helper::isPgSql()) {
+                $expression = "(data::json->>'conversation_id')::bigint";
+            } else {
+                $expression = "data->>'$.conversation_id'";
+            }
+            DatabaseNotification::whereNull('conversation_id')
+                    ->where('data', 'like', '%"conversation_id":%')
+                    ->update(['conversation_id' => \DB::raw($expression)]);
+        } catch (\Exception $e) {
+            // Fallback to row-by-row approach.
+            // But it may fail on large datasets.
+            $total = DatabaseNotification::whereNull('conversation_id')
                 ->where('data', 'like', '%"conversation_id":%')
-                ->orderBy('id')
-                //->skip($bunch_i*$bunch_size)
-                ->limit($bunch_size)
-                ->get();
-            foreach ($notifications as $notification) {
-                if (!empty($notification->data['conversation_id']) && (int)$notification->data['conversation_id']) {
-                    $notification->conversation_id = (int)$notification->data['conversation_id'];
-                    $notification->save();
+                ->count();
+            $bunch_size = 500;
+            for ($bunch_i = 0; $bunch_i < ceil($total / $bunch_size); $bunch_i++) { 
+                $notifications = DatabaseNotification::whereNull('conversation_id')
+                    ->where('data', 'like', '%"conversation_id":%')
+                    ->orderBy('id')
+                    //->skip($bunch_i*$bunch_size)
+                    ->limit($bunch_size)
+                    ->get();
+                foreach ($notifications as $notification) {
+                    if (!empty($notification->data['conversation_id']) && (int)$notification->data['conversation_id']) {
+                        $notification->conversation_id = (int)$notification->data['conversation_id'];
+                        $notification->save();
+                    }
                 }
             }
         }

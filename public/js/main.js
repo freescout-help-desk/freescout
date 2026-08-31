@@ -1035,7 +1035,7 @@ function showFloatingAlert(type, msg, no_autohide)
 	}
 
 	var html = '<div class="alert alert-'+alert_class+' alert-floating">'+
-        '<div><i class="glyphicon glyphicon-'+icon+'"></i>'+msg+'</div>'+
+        '<div><i class="glyphicon glyphicon-'+icon+'"></i>'+htmlEscape(msg)+'</div>'+
         '</div>';
     $('body:first').append(html);
     fsFloatingAlertsInit();
@@ -2579,6 +2579,13 @@ function triggerModal(a, params)
     if (typeof(params.footer) != "undefined") {
     	footer = params.footer;
     }
+    var loader = a.attr('data-modal-loader');
+    if (typeof(params.loader) != "undefined") {
+    	loader = params.loader;
+    }
+    if (!loader) {
+    	loader = '/img/loader-grey.gif';
+    }
     if (typeof(params.no_close_btn) == "undefined") {
     	params.no_close_btn = a.attr('data-no-close-btn');
     }
@@ -2638,7 +2645,7 @@ function triggerModal(a, params)
                     '<button type="button" class="close" data-dismiss="modal" aria-label="'+Lang.get("messages.close")+'"><span>&times;</span></button>',
                     '<h3 class="modal-title" id="jsmodal-label">'+htmlEscape(title)+'</h3>',
                 '</div>',
-                '<div class="modal-body '+(fit == 'true' ? 'modal-body-fit' : '')+'"><div class="text-center modal-loader"><img src="'+Vars.public_url+'/img/loader-grey.gif" width="31" height="31"/></div></div>',
+                '<div class="modal-body '+(fit == 'true' ? 'modal-body-fit' : '')+'"><div class="text-center modal-loader"><img src="'+Vars.public_url+loader+'" width="31" height="31"/></div></div>',
                 '<div class="modal-footer '+(params.no_footer == 'true' ? 'hidden' : '')+'">',
                     (params.no_close_btn == 'true' ? '': '<button type="button" class="btn btn-default" data-dismiss="modal">'+Lang.get("messages.close")+'</button>'),
                     footer,
