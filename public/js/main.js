@@ -2599,6 +2599,9 @@ function triggerModal(a, params)
     	params.no_fade = a.attr('data-modal-no-fade');
     }
     var modal_class = a.attr('data-modal-class');
+    if (typeof(params.class) != "undefined") {
+    	modal_class = params.class;
+    }
     if (typeof(modal_class) == "undefined") {
     	modal_class = '';
     }
