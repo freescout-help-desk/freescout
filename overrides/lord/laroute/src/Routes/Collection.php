@@ -71,7 +71,6 @@ class Collection extends \Illuminate\Support\Collection
         
         $host    = $route->domain();
         $methods = $route->methods();
-        $uri     = $uri;
         $name    = $route->getName();
         $action  = $route->getActionName();
         $laroute = array_get($route->getAction(), 'laroute', null);
