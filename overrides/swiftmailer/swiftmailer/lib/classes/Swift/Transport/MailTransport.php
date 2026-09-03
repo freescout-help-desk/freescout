@@ -157,7 +157,15 @@ class Swift_Transport_MailTransport implements Swift_Transport
 
         if ("\r\n" != PHP_EOL) {
             // Non-windows (not using SMTP)
-            $headers = str_replace("\r\n", PHP_EOL, $headers);
+            // Do NOT convert CRLF to LF in $headers: mail() emits the To:
+            // and Subject: headers it builds from $to/$subject using CRLF,
+            // so rewriting the remaining headers to bare LF yields a mix of
+            // both endings. Exim (and other MTAs) then read an LF-separated
+            // line as an obs-fold continuation of the previous header and
+            // prepend a space, which demotes Content-Type: multipart/... to
+            // a folded part of Message-ID:. The message loses its MIME type
+            // and clients render the raw source (boundaries, quoted-printable)
+            // instead of the body. See RFC 5322 2.2 and PHP >= 7.2 mail().
             $subject = str_replace("\r\n", PHP_EOL, $subject);
             $body = str_replace("\r\n", PHP_EOL, $body);
         } else {
