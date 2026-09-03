@@ -592,6 +592,12 @@ class CssVariablesMinifierPlugin extends aCssMinifierPlugin
 			for ($i = 0, $l = count($m[0]); $i < $l; $i++)
 			{
 				$variable	= trim($m[1][$i]);
+				// Native CSS custom properties are resolved by the browser and must
+				// not be treated as variables from CssMin's @variables syntax.
+				if (substr($variable, 0, 2) === "--")
+				{
+					continue;
+				}
 				foreach ($mediaTypes as $mediaType)
 				{
 					if (isset($this->variables[$mediaType], $this->variables[$mediaType][$variable]))
