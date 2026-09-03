@@ -238,10 +238,10 @@ if (!empty($_POST)) {
                         } else {
                             try {
                                 // First check PHP version.
-                                if (!version_compare($version_output, '7.1', '>=')) {
+                                if (!version_compare($version_output, '7.4.3', '>=')) {
                                     $alerts[] = [
                                         'type' => 'danger',
-                                        'text' => 'Incorrect PHP version (7.1+ is required):<br/><br/><pre>'.htmlspecialchars($version_output).'</pre>',
+                                        'text' => 'Incorrect PHP version (7.4.3+ is required):<br/><br/><pre>'.htmlspecialchars($version_output).'</pre>',
                                     ];
                                 } else {
                                     if ($_POST['action'] == 'update') {

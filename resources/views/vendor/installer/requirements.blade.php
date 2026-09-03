@@ -18,8 +18,7 @@
                 @if($type == 'php')
                     <strong>
                         <small>
-                            <?php /*(version {{ $phpSupportInfo['minimum'] }} required)*/ ?>
-                            (7.1 - 8.x)
+                            ({{ $phpSupportInfo['minimum'] }} - 8.x)
                         </small>
                     </strong>
                     <span class="float-right">

@@ -20,10 +20,9 @@
         }
     ],
     "require": {
-        "php": ">=7.1.0",
+        "php": ">=7.4.3",
 
         "symfony/debug": "v3.4.18",
-        "devfactory/minify": "1.0.7",
         "fideloper/proxy": "3.3.4",
         "laravel/framework": "v5.5.40",
         "laravel/tinker": "v1.0.7",
@@ -46,8 +45,10 @@
         "javoscript/laravel-macroable-models": "1.0.4",
         "ramsey/uuid": "3.9.6",
         "symfony/polyfill-mbstring": "v1.24.0",
+        "tedivm/jshrink": "1.4.0",
         "webklex/php-imap": "4.1.1",
-        "enshrined/svg-sanitize": "0.22.0"
+        "enshrined/svg-sanitize": "0.22.0",
+        "wikimedia/minify": "2.9.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v3.2.0",
@@ -77,7 +78,6 @@
         "erusev/parsedown": "1.7.2",
         "doctrine/inflector": "v1.2.*",
         "guzzlehttp/guzzle": "8.0.1",
-        "tedivm/jshrink": "1.4.0",
         "nikic/php-parser": "^4.1",
         "doctrine/annotations": "v1.4.*",
         "doctrine/cache": "v1.6.*",
@@ -91,7 +91,6 @@
         "classmap": [
             "database/seeds",
             "database/factories",
-            "overrides/natxet/cssmin/src/",
             "overrides/erusev/parsedown/"
         ],
         "psr-0": {
@@ -185,7 +184,6 @@
             "Symfony\\Component\\Routing\\Generator\\": "overrides/symfony/routing/generator/",
             "Symfony\\Component\\VarDumper\\Cloner\\": "overrides/symfony/var-dumper/Cloner/",
             "Symfony\\Component\\VarDumper\\Dumper\\": "overrides/symfony/var-dumper/Dumper/",
-            "Devfactory\\Minify\\Providers\\": "overrides/devfactory/minify/src/Providers/",
             "Barryvdh\\Debugbar\\": "overrides/barryvdh/laravel-debugbar/src/",
             "Barryvdh\\Debugbar\\DataFormatter\\": "overrides/barryvdh/laravel-debugbar/src/DataFormatter/",
             "Barryvdh\\Debugbar\\DataCollector\\": "overrides/barryvdh/laravel-debugbar/src/DataCollector/",
@@ -363,7 +361,6 @@
             "vendor/symfony/var-dumper/Cloner/Stub.php",
             "vendor/symfony/var-dumper/Cloner/AbstractCloner.php",
             "vendor/symfony/var-dumper/Dumper/HtmlDumper.php",
-            "vendor/devfactory/minify/src/Providers/BaseProvider.php",
             "vendor/barryvdh/laravel-debugbar/src/DataFormatter/QueryFormatter.php",
             "vendor/barryvdh/laravel-debugbar/src/DataCollector/QueryCollector.php",
             "vendor/barryvdh/laravel-debugbar/src/DataCollector/ViewCollector.php",
@@ -440,7 +437,6 @@
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/ArrayKeyCache.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/DiskKeyCache.php",
             "vendor/swiftmailer/swiftmailer/lib/classes/Swift/KeyCache/SimpleKeyCacheInputStream.php",
-            "vendor/natxet/cssmin/src/CssMin.php",
             "vendor/webklex/php-imap/src/Header.php",
             "vendor/webklex/php-imap/src/Structure.php",
             "vendor/webklex/php-imap/src/Message.php",
@@ -524,9 +520,6 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate"
-        ],
-        "pre-install-cmd": [
-            "@php -r \"@mkdir('vendor/natxet/cssmin/src', 775);\""
         ],
         "pre-autoload-dump": [
             "@php -r \"file_put_contents('vendor/psy/psysh/src/functions.php', '<?php require_once __DIR__ . \\'/../../../../overrides/psy/psysh/src/functions.php\\';');\"",

@@ -1,8 +1,8 @@
 <?php
 
 // Check PHP version
-if (!version_compare(phpversion(), '7.4.0', '>=')) {
-    echo 'PHP 7.4+ is required to run FreeScout. Your PHP version: '.phpversion();
+if (!version_compare(phpversion(), '7.4.3', '>=')) {
+    echo 'PHP 7.4.3+ is required to run FreeScout. Your PHP version: '.phpversion();
     exit();
 }
 
