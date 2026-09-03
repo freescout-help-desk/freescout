@@ -5355,7 +5355,7 @@ function stripTags(html)
 function htmlEscape(text)
 {
 	return text
-         .replace(/&/g, "&amp;")
+         .replace(/&(?!amp;|lt;|gt;|quot;|#039;)/g, "&amp;")
          .replace(/</g, "&lt;")
          .replace(/>/g, "&gt;")
          .replace(/"/g, "&quot;")
