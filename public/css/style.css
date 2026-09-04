@@ -1565,15 +1565,15 @@ table.table-conversations td.conv-attachment {
     border-radius: 4px;
 }
 .conv-counter {
-    /*border: 1px solid #d6dde3;
-    background: #f8f9f9;*/
-    color: #a5b2bd;
+    background: #0078d7;
+    color: #fff;
     line-height: 17px;
     position: relative;
-    margin-left: 3px;
-    /*top: -1px;*/
+    padding: 1px 5px;
+    margin-left: 2px;
+    opacity: 0.8;
     font-size: 12px;
-    /*padding: 0 3px;*/
+    border-radius: 9999px;
 }
 .table-conversations .conv-thread-count a {
     padding: 0;
@@ -1777,11 +1777,9 @@ button.conv-checkbox-clear {
         font-weight: normal;
     }
     .conv-counter {
-        border: 1px solid #d6dde3;
-        background: #f8f9f9;
         top: -1px;
         font-size: 10px;
-        padding: 0 3px;
+        padding: 1px 5px 0;
     }
     /*.conv-subject-number {
         display: inline;

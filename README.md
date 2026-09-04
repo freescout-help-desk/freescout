@@ -87,7 +87,7 @@ There are no minimum system requirements (CPU / RAM) – FreeScout will run on a
 * [Docker Image](https://freescout.net/docker/)
 * [Pikapods](https://freescout.net/pikapods/) — Open-source apps hosting (Fully managed)
 * [Zenith](https://freescout.net/zenith/) — Open-source apps hosting (Fully managed)
-* [Hostinger](https://www.hostinger.com/applications/freescout) — VPS, automatic backups
+* [Hostinger](https://freescout.net/hostinger/) — VPS with automatic backups included
 * [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) — cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx
 * [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) — cPanel, DirectAdmin, ISP Manager, ISP Config
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
