@@ -129,10 +129,9 @@ Conversation:
 
 ![Conversation](https://freescout-helpdesk.github.io/img/screenshots/conversation.png)
 
+Drafting reply with AI:
 
-Mailbox connection settings page:
-
-![Mailbox connection settings page](https://freescout-helpdesk.github.io/img/screenshots/mailbox-connection.png)
+![Mailbox connection settings page](https://freescout-helpdesk.github.io/img/screenshots/draft-reply-with-ai.png)
 
 Notifications:
 
