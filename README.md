@@ -32,7 +32,7 @@ If you want to support the project feel free to **star this repository**. It hel
 ## Features
 
   * Omnichannel — it centralizes in one place all customer conversations received by email, [WhatsApp](https://freescout.net/whatsapp/), Telegram, Facebook, Slack, Live Chat and more.
-  * [AI-powered](https://freescout.net/module/ai-integration/) and super efficient.
+  * [AI-powered](https://github.com/freescout-help-desk/AiIntegration) and super efficient.
   * Unlimited support agents, tickets, mailboxes, etc.
   * [Secure](https://freescout.net/security) by design.
   * Mobile-friendly.
