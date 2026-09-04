@@ -1156,7 +1156,6 @@ class ConversationsController extends Controller
                             }
                             $forwarded_conversation->updateFolder();
                             $forwarded_conversation->save();
-
                             $forwarded_thread = $thread->replicate();
                             $forwarded_thread->setTo($recipient_email);
 
@@ -1167,8 +1166,8 @@ class ConversationsController extends Controller
                         // Set forwarding meta data.
                         // todo: store array of numbers and IDs.
                         $thread->subtype = Thread::SUBTYPE_FORWARD;
-                        $thread->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER, $forwarded_conversation->number);
-                        $thread->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_ID, $forwarded_conversation->id);
+                        $thread->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER, $forwarded_conversations[0]->number);
+                        $thread->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_ID, $forwarded_conversations[0]->id);
                     }
 
                     // Conversation history.
@@ -1210,8 +1209,9 @@ class ConversationsController extends Controller
                             $forwarded_thread->save();
 
                             // In the current conversation create Forward-notes corresponding to each recipient.
-                            // Forward-note for the last recipient is already created.
-                            if ($i != count($forwarded_conversations)-1) {
+                            // Forward-note for the first recipient is already created.
+                            if ($i != 0) {
+                                // $thread contains note created in the original conversation.
                                 $forward_note = $thread->replicate();
                                 $forward_note->setTo($forwarded_conversation->customer_email);
                                 $forward_note->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER, $forwarded_conversation->number);

@@ -399,6 +399,12 @@ class Thread extends Model
         return $this->getCleanBody($this->body_original);
     }
 
+    // Get "to" as array.
+    public function getTo($exclude_array = [])
+    {
+        return $this->getToArray($exclude_array);
+    }
+
     /**
      * Get thread recipients.
      *
