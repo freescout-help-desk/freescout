@@ -280,13 +280,14 @@ class Attachment extends Model
      */
     public function getToken()
     {
-        if ($this->token_type == self::TOKEN_TYPE_MD5) {
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-89ww-mfww-5vr6
+        /*if ($this->token_type == self::TOKEN_TYPE_MD5) {
             // Backward compatibility.
             // \Hash::make() may contain . and / symbols which may cause problems.
             return md5(config('app.key').$this->id.$this->size);
-        } else {
-            return hash_hmac('sha256', $this->id.$this->size.$this->file_name, config('app.key'));
-        }
+        } else {*/
+
+        return hash_hmac('sha256', $this->id.$this->size.$this->file_name, config('app.key'));
     }
 
     /**

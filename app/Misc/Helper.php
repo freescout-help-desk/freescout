@@ -125,6 +125,15 @@ class Helper
         '198.51.100.0/24',
         '203.0.113.0/24',
         '240.0.0.0/4',
+        // IPv6 transition mechanisms that embed IPv4 addresses.
+        // Prefix-only blocking here is a first line of defense; the
+        // embedded IPv4 address is separately decoded and re-checked
+        // against this same list in isSafeHost() via extractEmbeddedIPv4().
+        // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-v5xm-qw3f-qm98
+        '2002::/16', // 6to4 (RFC 3056)
+        '2001:0000::/32', // Teredo (RFC 4380)
+        '64:ff9b::/96', // NAT64 Well-Known Prefix (RFC 6052)
+        '64:ff9b:1::/48', // NAT64 Local-Use Prefix (RFC 8215)
     ];
 
     /**
@@ -1283,6 +1292,11 @@ class Helper
         return $app_locales;
     }
 
+    public static function getAppLocale()
+    {
+        return config('app.locale');
+    }
+
     /**
      *  app()->setLocale() in Localize middleware also changes config('app.locale'),
      *  so we are keeping real app locale in real_locale parameter.
@@ -2197,6 +2211,19 @@ class Helper
             return false;
         }
 
+        // IPv6 transition mechanisms (6to4, Teredo, NAT64) embed an IPv4
+        // address inside an IPv6 address. Prefix-only blocking of
+        // 2002::/16, 2001:0000::/32, 64:ff9b::/96, etc. above only stops
+        // this host from routing the address as a transition address —
+        // it does not stop a downstream proxy/CDN/gateway that DOES
+        // support 6to4/NAT64/Teredo from resolving it back to the
+        // embedded internal IPv4 address. Decode and re-check it here.
+        foreach (self::extractEmbeddedIPv4($host) as $embedded_ip) {
+            if (in_array($embedded_ip, $restricted_hosts) || self::checkIpByMask($embedded_ip, $restricted_hosts)) {
+                return false;
+            }
+        }
+
         // Hex integer or 0x7f.0x0.0x0.0x1
         if (substr($host, 0, 2) == '0x') {
             return false;
@@ -2309,6 +2336,106 @@ class Helper
             }
         }
         return false;
+    }
+
+    /**
+     * Extract IPv4 address(es) embedded in an IPv6 transition-mechanism
+     * address (6to4, Teredo, NAT64), so the embedded address can be
+     * re-checked against the SSRF blocklist.
+     *
+     * https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-v5xm-qw3f-qm98
+     *
+     * @param  string $ip
+     * @return array List of embedded IPv4 addresses found (may be empty;
+     *                Teredo can yield two: server and client).
+     */
+    public static function extractEmbeddedIPv4($ip)
+    {
+        $embedded = [];
+
+        // Strip brackets / zone id (e.g. 'fe80::1%eth0') before parsing.
+        $ip = trim($ip ?? '', '[]');
+        $ip = preg_replace('/%.*$/', '', $ip);
+
+        if (strpos($ip, ':') === false) {
+            return $embedded; // Not IPv6, nothing to extract.
+        }
+
+        $packed = @inet_pton($ip);
+        if ($packed === false || strlen($packed) !== 16) {
+            return $embedded; // Not a valid, canonical IPv6 address.
+        }
+
+        $hex = bin2hex($packed); // 32 hex chars = 128 bits.
+
+        // 6to4 (2002::/16): 2002:WWXX:YYZZ::/16 - the IPv4 is packed into
+        // the 32 bits immediately following the 2002 prefix.
+        if (substr($hex, 0, 4) === '2002') {
+            $v4 = self::hexToIPv4(substr($hex, 4, 8));
+            if ($v4) {
+                $embedded[] = $v4;
+            }
+        }
+
+        // Teredo (2001:0000::/32): 2001:0000:SERVER-V4:FLAGS:PORT:CLIENT-V4
+        // (client IPv4 is XOR-obfuscated with 0xFFFFFFFF per RFC 4380).
+        // Both the server and client addresses are attacker-influenced
+        // input here, so check both.
+        if (substr($hex, 0, 8) === '20010000') {
+            $server_v4 = self::hexToIPv4(substr($hex, 8, 8));
+            if ($server_v4) {
+                $embedded[] = $server_v4;
+            }
+
+            $client_hex = substr($hex, 24, 8);
+            if (strlen($client_hex) === 8) {
+                $client_int = hexdec($client_hex) ^ 0xFFFFFFFF;
+                $embedded[] = long2ip($client_int);
+            }
+        }
+
+        // NAT64 Well-Known Prefix (64:ff9b::/96, RFC 6052):
+        // 64:ff9b:0000:0000:0000:0000:xxxx:xxxx - last 32 bits = IPv4.
+        if (substr($hex, 0, 24) === '0064ff9b0000000000000000') {
+            $v4 = self::hexToIPv4(substr($hex, 24, 8));
+            if ($v4) {
+                $embedded[] = $v4;
+            }
+        }
+
+        // NAT64 Local-Use Prefix (64:ff9b:1::/48, RFC 8215). Operators may
+        // choose any prefix length from /32 to /96 within this block, so
+        // the exact position of the embedded IPv4 isn't fixed. As a
+        // conservative heuristic, decode the last 32 bits whenever the
+        // /48 local-use prefix matches.
+        if (substr($hex, 0, 12) === '0064ff9b0001') {
+            $v4 = self::hexToIPv4(substr($hex, 24, 8));
+            if ($v4) {
+                $embedded[] = $v4;
+            }
+        }
+
+        return array_unique($embedded);
+    }
+
+    /**
+     * Convert 8 hex characters (32 bits) to dotted-quad IPv4 notation.
+     *
+     * @param  string $hex
+     * @return string|null
+     */
+    public static function hexToIPv4($hex)
+    {
+        if (strlen($hex) !== 8 || !ctype_xdigit($hex)) {
+            return null;
+        }
+
+        return implode('.', [
+            hexdec(substr($hex, 0, 2)),
+            hexdec(substr($hex, 2, 2)),
+            hexdec(substr($hex, 4, 2)),
+            hexdec(substr($hex, 6, 2)),
+        ]);
     }
 
     /**

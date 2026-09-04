@@ -223,7 +223,13 @@ class SendReplyToCustomer implements ShouldQueue
         if ($last_customer_thread) {
             $outloook_thread_index = $last_customer_thread->getHeader('Thread-Index');
             if (!empty($outloook_thread_index)) {
-                $headers['Thread-Index'] = $outloook_thread_index;
+                // A reply must extend the parent's conversation index with
+                // a 5-byte child block (MS-OXOMSG 2.2.1.3) rather than echo
+                // it verbatim, otherwise Outlook files the reply as a new
+                // conversation and the customer's original message is left
+                // on its own. Falls back to the verbatim copy if the value
+                // does not decode as a conversation index.
+                $headers['Thread-Index'] = self::extendThreadIndex($outloook_thread_index);
                 $outloook_thread_topic = $last_customer_thread->getHeader('Thread-Topic');
                 if ($outloook_thread_topic) {
                     $headers['Thread-Topic'] = $outloook_thread_topic;
@@ -662,5 +668,42 @@ class SendReplyToCustomer implements ShouldQueue
             }
             SendLog::log($this->last_thread->id, $this->message_id, $recipient, SendLog::MAIL_TYPE_EMAIL_TO_CUSTOMER, $status, $customer_id, null, $status_message, $smtp_queue_id);
         }
+    }
+
+    /**
+     * Append a 5-byte child block to an Outlook conversation index
+     * (Thread-Index header, MS-OXOMSG 2.2.1.3) so the reply nests under the
+     * customer's message instead of being read by Outlook as a new
+     * conversation. Header = 0x01 + 5 bytes of FILETIME (bits 16-55) + 16-byte
+     * GUID; each child = code(1 bit) + time delta(31) + random(4) + sequence(4).
+     * Returns the input unchanged when it does not decode as a valid index.
+     * https://github.com/freescout-help-desk/freescout/issues/4922
+     */
+    public static function extendThreadIndex($thread_index)
+    {
+        $raw = base64_decode(trim((string)$thread_index), true);
+        if ($raw === false || strlen($raw) < 22 || (strlen($raw) - 22) % 5 !== 0) {
+            return $thread_index;
+        }
+        // Header timestamp: FILETIME bits 16-55, big-endian, in bytes 1-5.
+        $hdr = unpack('Nhi/Clo', substr($raw, 1, 5));
+        $hdr_bits = ($hdr['hi'] << 8) | $hdr['lo'];
+        $now_ft = (int) round((microtime(true) + 11644473600) * 10000000);
+        $now_bits = ($now_ft >> 16) & 0xFFFFFFFFFF;
+        $delta = ($now_bits - $hdr_bits) << 16;
+        if ($delta < 0) {
+            $delta = 0;
+        }
+        $code = 0;
+        $diff = $delta >> 18;
+        if ($diff > 0x7FFFFFFF) {
+            $code = 1;
+            $diff = min($delta >> 23, 0x7FFFFFFF);
+        }
+        // 40-bit child block: code(1) | diff(31) | random(4) | sequence(4)=0
+        $block = (($code << 39) | ($diff << 8) | (random_int(0, 15) << 4)) & 0xFFFFFFFFFF;
+        $bytes = pack('C5', ($block >> 32) & 0xFF, ($block >> 24) & 0xFF, ($block >> 16) & 0xFF, ($block >> 8) & 0xFF, $block & 0xFF);
+
+        return base64_encode($raw.$bytes);
     }
 }
