@@ -1299,7 +1299,12 @@ class Customer extends Model
 
     public static function getPhotoUrlByFileName($file_name)
     {
-        return Storage::url(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
+        return \App\Misc\Helper::urlForDiskPath(self::photoDisk(), self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
+    }
+
+    public static function photoDisk()
+    {
+        return \App\Misc\Helper::persistentDisk();
     }
 
     /**
@@ -1404,19 +1409,19 @@ class Customer extends Model
         }
 
         $file_name = md5(Hash::make($this->id)).'.jpg';
-        $dest_path = Storage::path(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
-
-        $dest_dir = pathinfo($dest_path, PATHINFO_DIRNAME);
-        if (!file_exists($dest_dir)) {
-            \File::makeDirectory($dest_dir, \Helper::DIR_PERMISSIONS);
-        }
 
         // Remove current photo
         if ($this->photo_url) {
-            Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+            Storage::disk(self::photoDisk())->delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
 
-        imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
+        $stream = \App\Misc\Helper::tempStream();
+        imagejpeg($resized_image, $stream, self::PHOTO_QUALITY);
+        rewind($stream);
+
+        Storage::disk(self::photoDisk())->put(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name, $stream);
+
+        fclose($stream);
 
         return $file_name;
     }
@@ -1427,7 +1432,7 @@ class Customer extends Model
     public function removePhoto()
     {
         if ($this->photo_url) {
-            Storage::delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
+            Storage::disk(self::photoDisk())->delete(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$this->photo_url);
         }
         $this->photo_url = '';
     }
