@@ -562,7 +562,7 @@ class Mailbox extends Model
      *
      * @return array
      */
-    public function getMailFrom($from_user = null, $conversation = null)
+    public function getMailFrom($from_user = null, $conversation = null, $thread = null)
     {
         // Mailbox name by default
         $name = $this->name;
@@ -580,8 +580,8 @@ class Mailbox extends Model
         }
 
         return [
-            'address' => \Eventy::filter('mailbox.get_mail_from_address', $this->email, $from_user, $conversation),
-            'name' => \Eventy::filter('mailbox.get_mail_from_name', $name, $from_user, $conversation)
+            'address' => \Eventy::filter('mailbox.get_mail_from_address', $this->email, $from_user, $conversation, $thread, $this),
+            'name' => \Eventy::filter('mailbox.get_mail_from_name', $name, $from_user, $conversation, $thread, $this)
         ];
     }
 

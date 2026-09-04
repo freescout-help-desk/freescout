@@ -278,7 +278,7 @@ class SendReplyToCustomer implements ShouldQueue
         }
 
         // Configure mail driver according to Mailbox settings
-        \MailHelper::setMailDriver($mailbox, $this->last_thread->created_by_user, $this->conversation);
+        \MailHelper::setMailDriver($mailbox, $this->last_thread->created_by_user, $this->conversation, $this->last_thread);
 
         // https://github.com/freescout-helpdesk/freescout/issues/3330
         if (!\MailHelper::$smtp_queue_id_plugin_registered) {
