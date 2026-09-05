@@ -4357,6 +4357,9 @@ a.disabled:focus {
     top: 1px;
     font-size: 16px;
 }
+.sidebar-title-real.mailbox-name small.glyphicon {
+    font-size: 0.7em;
+}
 .subheader {
     background-color: #F1F3F5;
     padding: 10px;
