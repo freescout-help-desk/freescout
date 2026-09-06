@@ -36,7 +36,7 @@ If you want to support the project feel free to **star this repository**. It hel
   * Unlimited support agents, tickets, mailboxes, etc.
   * [Secure](https://freescout.net/security) by design.
   * Mobile-friendly.
-  * Multilingual — English, Catalan, Chinese Simplified, Chinese Traditional, Croatian, Czech, Danish, Dutch, Finnish, French, German, Hebrew, Hungarian, Italian, Japanese, Kazakh, Korean, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Slovak, Slovenian, Swedish, Turkish, Ukrainian.
+  * Multilingual (translated into 33 languages).
   * Seamless email integration (via SMTP, IMAP, POP3, etc).
   * Modern OAuth authentication for Microsoft Office 365 and Google Workspace.
   * Fully supports screen readers (for visually impaired).
