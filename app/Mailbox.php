@@ -16,6 +16,12 @@ class Mailbox extends Model
     public $rememberCacheDriver = 'array';
 
     /**
+     * State.
+     */
+    const STATE_ACTIVE = 1;
+    const STATE_ARCHIVED = 2;
+
+    /**
      * From Name: name that will appear in the From field when a customer views your email.
      */
     const FROM_NAME_MAILBOX = 1;
@@ -219,6 +225,23 @@ class Mailbox extends Model
     }
 
     /**
+     * Get mailbox state: stored in meta for now.
+     */
+    public function getStateAttribute()
+    {
+        return $this->getMeta('st', self::STATE_ACTIVE);
+    }
+
+    public function setStateAttribute($value)
+    {
+        $value = (int)$value;
+        if (!in_array($value, [self::STATE_ACTIVE, self::STATE_ARCHIVED])) {
+            $value = self::STATE_ACTIVE;
+        }
+        $this->setMeta('st', $value);
+    }
+
+    /**
      * Get users having access to the mailbox.
      */
     public function users()
@@ -403,12 +426,22 @@ class Mailbox extends Model
         }
     }
 
+    public function isActive()
+    {
+        return $this->state == self::STATE_ACTIVE;
+    }
+
+    public function isArchived()
+    {
+        return $this->state == self::STATE_ARCHIVED;
+    }
+
     /**
      * Is mailbox available for using.
      *
      * @return bool
      */
-    public function isActive()
+    public function isConnected()
     {
         return $this->isInActive() && $this->isOutActive();
     }
@@ -811,7 +844,7 @@ class Mailbox extends Model
     }
 
     /**
-     * Get all active mailboxes.
+     * Get all active & connected mailboxes.
      *
      * @return [type] [description]
      */
@@ -822,7 +855,7 @@ class Mailbox extends Model
         // It is more effective to retrive all mailboxes and filter them in PHP.
         $mailboxes = self::all();
         foreach ($mailboxes as $mailbox) {
-            if ($mailbox->isActive()) {
+            if ($mailbox->isActive() && $mailbox->isConnected()) {
                 $active[] = $mailbox;
             }
         }
@@ -1119,5 +1152,24 @@ class Mailbox extends Model
         ]);
 
         return $signature;
+    }
+
+    public static function excludeArchived($mailboxes)
+    {
+        if (is_array($mailboxes)) {
+            // Array.
+            foreach ($mailboxes as $i => $mailbox) {
+                if ($mailbox->isArchived()) {
+                    unset($mailboxes[$i]);
+                }
+            }
+        } else {
+            // Collection.
+            $mailboxes = $mailboxes->reject(function ($mailbox) {
+                return $mailbox->isArchived();
+            });
+        }
+
+        return $mailboxes;
     }
 }

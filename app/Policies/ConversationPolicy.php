@@ -25,6 +25,10 @@ class ConversationPolicy
             return true;
         } else {
             if ($conversation->userHasAccessToMailbox($user->id)) {
+                // Regular users can not see Archived mailboxes.
+                if ($conversation->mailbox->isArchived()) {
+                    return false;
+                }
                 // Maybe user can see only assigned conversations.
                 return $this->checkIsOnlyAssigned($conversation, $user);
             } else {
@@ -46,6 +50,10 @@ class ConversationPolicy
             return true;
         } else {
             if ($conversation->mailbox->users_cached->contains($user)) {
+                // Regular users can not see Archived mailboxes.
+                if ($conversation->mailbox->isArchived()) {
+                    return false;
+                }
                 // Maybe user can see only assigned conversations.
                 return $this->checkIsOnlyAssigned($conversation, $user);
             } else {
@@ -68,6 +76,10 @@ class ConversationPolicy
             return true;
         } else {
             if ($conversation->userHasAccessToMailbox($user->id)) {
+                // Regular users can not see Archived mailboxes.
+                if ($conversation->mailbox->isArchived()) {
+                    return false;
+                }
                 // Maybe user can see only assigned conversations.
                 return $this->checkIsOnlyAssigned($conversation, $user);
             } else {
@@ -91,6 +103,10 @@ class ConversationPolicy
                 return true;
             }
             if ($conversation->userHasAccessToMailbox($user->id)) {
+                // Regular users can not see Archived mailboxes.
+                if ($conversation->mailbox->isArchived()) {
+                    return false;
+                }
                 // Maybe user can see only assigned conversations.
                 return $this->checkIsOnlyAssigned($conversation, $user);
             } else {

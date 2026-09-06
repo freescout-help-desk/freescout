@@ -36,7 +36,7 @@ class MailboxesController extends Controller
 
         if (!\Eventy::filter('user.can_view_mailbox_menu', false, $user)) {
             foreach ($mailboxes as $i => $mailbox) {
-                if (!$user->canManageMailbox($mailbox->id)) {
+                if (!$user->canManageMailbox($mailbox)) {
                     $mailboxes->forget($i);
                 }
             }
@@ -186,7 +186,7 @@ class MailboxesController extends Controller
             ]);
 
             // if not admin, the text only fields don't pass so spike them into the request.
-            if (!auth()->user()->isAdmin()) {
+            if (!$user->isAdmin()) {
                 $request->merge([
                     'name' => $mailbox->name,
                     'email' => $mailbox->email,
@@ -256,6 +256,15 @@ class MailboxesController extends Controller
         }
 
         $mailbox->fill($fields);
+
+        // Save state.
+        if ($user->isAdmin()) {
+            if ($request->filled('state')) {
+                $mailbox->state = Mailbox::STATE_ARCHIVED;
+            } else {
+                $mailbox->state = Mailbox::STATE_ACTIVE;
+            }
+        }
 
         // Chat: Start a new conversation when receiving a reply to the closed / deleted Chat conversation.
         if ($can_update_settings) {
@@ -609,7 +618,7 @@ class MailboxesController extends Controller
             if (Route::currentRouteName() != 'mailboxes.connection.incoming' && !$mailbox->isInActive()) {
                 $flashes[] = [
                     'type'      => 'warning',
-                    'text'      => __('Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address').' ('.__('Connection Settings').' » <a href="'.route('mailboxes.connection.incoming', ['id' => $mailbox->id]).'">'.__('Fetching Emails').'</a>)',
+                    'text'      => __('<i class="glyphicon glyphicon-flash"></i> Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address').' ('.__('Connection Settings').' » <a href="'.route('mailboxes.connection.incoming', ['id' => $mailbox->id]).'">'.__('Fetching Emails').'</a>)',
                     'unescaped' => true,
                 ];
             }

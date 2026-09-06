@@ -1565,13 +1565,12 @@ table.table-conversations td.conv-attachment {
     border-radius: 4px;
 }
 .conv-counter {
-    background: #3b5263;
+    background: #728490;
     color: #fff;
     line-height: 17px;
     position: relative;
     padding: 1px 5px;
     margin-left: 2px;
-    opacity: 0.8;
     font-size: 12px;
     font-weight: 700;
     border-radius: 9999px;
@@ -4357,7 +4356,8 @@ a.disabled:focus {
     top: 1px;
     font-size: 16px;
 }
-.sidebar-title-real.mailbox-name small.glyphicon {
+.sidebar-title-real.mailbox-name small.glyphicon,
+.smaller {
     font-size: 0.7em;
 }
 .subheader {

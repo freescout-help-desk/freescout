@@ -38,7 +38,7 @@ class MailboxPolicy
         if ($user->isAdmin()) {
             return true;
         } else {
-            if ($mailbox->users->contains($user)) {
+            if ($mailbox->users->contains($user) && !$mailbox->isArchived()) {
                 return true;
             } else {
                 return false;
@@ -59,7 +59,7 @@ class MailboxPolicy
             return true;
         } else {
             // Use cached users for Realtime events
-            if ($mailbox->users_cached->contains($user)) {
+            if ($mailbox->users_cached->contains($user) && !$mailbox->isArchived()) {
                 return true;
             } else {
                 return false;
@@ -90,7 +90,8 @@ class MailboxPolicy
      */
     public function update(User $user, Mailbox $mailbox)
     {
-        if ($user->isAdmin() || $user->canManageMailbox($mailbox->id)) {
+        // canManageMailbox() checks if mailbox is archived.
+        if ($user->isAdmin() || $user->canManageMailbox($mailbox)) {
             return true;
         } else {
             return false;
@@ -107,10 +108,16 @@ class MailboxPolicy
      */
     public function updateAutoReply(User $user, Mailbox $mailbox)
     {
-        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, Mailbox::ACCESS_PERM_AUTO_REPLIES)) {
+        if ($user->isAdmin()) {
             return true;
         } else {
-            return false;
+            if ($user->hasManageMailboxPermission($mailbox->id, Mailbox::ACCESS_PERM_AUTO_REPLIES)
+                && !$mailbox->isArchived()
+            ) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -124,10 +131,16 @@ class MailboxPolicy
      */
     public function updatePermissions(User $user, Mailbox $mailbox)
     {
-        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, Mailbox::ACCESS_PERM_PERMISSIONS)) {
+        if ($user->isAdmin()) {
             return true;
         } else {
-            return false;
+            if ($user->hasManageMailboxPermission($mailbox->id, Mailbox::ACCESS_PERM_PERMISSIONS) 
+                && !$mailbox->isArchived()
+            ) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -141,10 +154,16 @@ class MailboxPolicy
      */
     public function updateSettings(User $user, Mailbox $mailbox)
     {
-        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, Mailbox::ACCESS_PERM_EDIT)) {
+        if ($user->isAdmin()) {
             return true;
         } else {
-            return false;
+            if ($user->hasManageMailboxPermission($mailbox->id, Mailbox::ACCESS_PERM_EDIT) 
+                && !$mailbox->isArchived()
+            ) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -158,10 +177,16 @@ class MailboxPolicy
      */
     public function updateEmailSignature(User $user, Mailbox $mailbox)
     {
-        if ($user->isAdmin() || $user->hasManageMailboxPermission($mailbox->id, [Mailbox::ACCESS_PERM_SIGNATURE, Mailbox::ACCESS_PERM_EDIT])) {
+        if ($user->isAdmin()) {
             return true;
         } else {
-            return false;
+            if ($user->hasManageMailboxPermission($mailbox->id, [Mailbox::ACCESS_PERM_SIGNATURE, Mailbox::ACCESS_PERM_EDIT])
+                && !$mailbox->isArchived()
+            ) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
