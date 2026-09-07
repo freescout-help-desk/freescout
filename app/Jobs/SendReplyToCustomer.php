@@ -167,7 +167,9 @@ class SendReplyToCustomer implements ShouldQueue
         $references = '';
         if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
 
-            $headers['In-Reply-To'] = '<'.$last_customer_thread->message_id.'>';
+            // Always put real Message-ID into In-Reply-To field.
+            // https://github.com/freescout-help-desk/freescout/issues/5620
+            $headers['In-Reply-To'] = '<'.$last_customer_thread->getMessageId().'>';
             //$headers['References'] = '<'.$last_customer_thread->message_id.'>';
             // https://github.com/freescout-helpdesk/freescout/issues/3175
             $i = 0;

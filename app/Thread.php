@@ -1592,10 +1592,20 @@ class Thread extends Model
         return $body;
     }
 
+    // For customer messages: returns Message-ID from headers (if message_id is artificial).
+    // For user threads: hashed 'FS_reply_' prefixed message ID.
     public function getMessageId($mailbox = null)
     {
-        if ($this->isCustomerMessage() && $this->message_id) {
-            return $this->message_id;
+        if ($this->isCustomerMessage()) {
+            $message_id = '';
+            if (\MailHelper::isGeneratedMessageId($this->message_id)) {
+                // Use Message-ID from customer message headers.
+                $message_id = $this->getHeader('Message-Id');
+            }
+            if (!$message_id) {
+                $message_id = $this->message_id;
+            }
+            return $message_id;
         }
         if ($this->isUserMessage()) {
             if (!$mailbox) {
