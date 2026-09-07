@@ -1912,6 +1912,13 @@ class Helper
         \Session::flash('flashes_floating', $flashes);
     }
 
+    // Show floating flash message.
+    // Type: success, warning, error
+    public static function floatingFlash($text, $type = 'success')
+    {
+        \Session::flash('flash_'.$type.'_floating', $text);
+    }
+
     public static function isMySql()
     {
         return \DB::connection()->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql';
