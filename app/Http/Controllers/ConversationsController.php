@@ -1374,7 +1374,7 @@ class ConversationsController extends Controller
                         $show_view_link = false;
                     }
 
-                    $flash_vars = ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.undo', ['thread_id' => $thread->id]).'" class="text-danger">'];
+                    $flash_vars = ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.undo', ['thread_id' => $thread->id, 'token' => csrf_token()]).'" class="text-danger">'];
 
                     if ($is_phone) {
                         $flash_type = 'warning';
@@ -3309,7 +3309,7 @@ class ConversationsController extends Controller
     /**
      * Undo reply.
      */
-    public function undoReply(Request $request, $thread_id)
+    public function undoReply(Request $request, $thread_id, $token)
     {
         $thread = Thread::findOrFail($thread_id);
 
@@ -3325,10 +3325,15 @@ class ConversationsController extends Controller
         $conversation = $thread->conversation;
         $this->authorize('view', $conversation);
 
+        if (csrf_token() != $token) {
+            //return throw new \Illuminate\Session\TokenMismatchException;
+            \Session::flash('flash_error_floating', __('Sending can not be undone'));
+            return redirect()->away($conversation->url($conversation->folder_id));
+        }
+
         // Check undo timeout
         if ($thread->created_at->diffInSeconds(now()) > Conversation::UNDO_TIMOUT) {
             \Session::flash('flash_error_floating', __('Sending can not be undone'));
-
             return redirect()->away($conversation->url($conversation->folder_id));
         }
 
