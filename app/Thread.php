@@ -1597,13 +1597,10 @@ class Thread extends Model
     public function getMessageId($mailbox = null)
     {
         if ($this->isCustomerMessage()) {
-            $message_id = '';
-            if (\MailHelper::isGeneratedMessageId($this->message_id)) {
+            $message_id = $this->message_id;
+            if (\MailHelper::isGeneratedMessageId($message_id)) {
                 // Use Message-ID from customer message headers.
-                $message_id = $this->getHeader('Message-Id');
-            }
-            if (!$message_id) {
-                $message_id = $this->message_id;
+                $message_id = $this->getHeader('Message-Id') ?: $message_id;
             }
             return $message_id;
         }
