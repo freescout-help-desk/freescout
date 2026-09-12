@@ -65,6 +65,12 @@ class Mail
     const OAUTH_GOOGLE_SMTP = 'smtp.gmail.com';
 
     /**
+     * Number of messages to fetch the headers of at a time
+     * when scanning a folder in findMessageByHeaders().
+     */
+    const SCAN_CHUNK_SIZE = 50;
+
+    /**
      * If reply is not extracted properly from the incoming email, add here a new separator.
      * Order is not important.
      * Idially separators must contain < or > to avoid false positives.
@@ -157,7 +163,7 @@ class Mail
      * @param App\User $user_from
      * @param App\Conversation $conversation
      */
-    public static function setMailDriver($mailbox = null, $user_from = null, $conversation = null, $thread = null)
+    public static function setMailDriver($mailbox = null, $user_from = null, $conversation = null)
     {
         if ($mailbox) {
             // Configure mail driver according to Mailbox settings.
@@ -192,7 +198,7 @@ class Mail
             }
 
             \Config::set('mail.driver', $mailbox->getMailDriverName());
-            \Config::set('mail.from', $mailbox->getMailFrom($user_from, $conversation, $thread));
+            \Config::set('mail.from', $mailbox->getMailFrom($user_from, $conversation));
 
             // SMTP.
             if ($mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
@@ -924,9 +930,8 @@ class Mail
 
                 // Limit using date to speed up the search.
                 if ($message_date) {
-                    $query->since($message_date->subDays(7));
-                    // Here we should add 14 days, as previous line subtracts 7 days.
-                    $query->before($message_date->addDays(14));
+                    $query->since($message_date->copy()->subDays(7));
+                    $query->before($message_date->copy()->addDays(7));
                 }
 
                 if ($no_charset) {
@@ -946,8 +951,8 @@ class Mail
                     //$query = $folder->query()->text('<'.$message_id.'>')->leaveUnread()->limit(1)->setCharset(null);
                     $query = $folder->query()->whereMessageId('"<'.$search_message_id.'>"')->leaveUnread()->limit(1)->setCharset(null);
                     if ($message_date) {
-                        $query->since($message_date->subDays(7));
-                        $query->before($message_date->addDays(14));
+                        $query->since($message_date->copy()->subDays(7));
+                        $query->before($message_date->copy()->addDays(7));
                     }
                     $messages = $query->get();
                     $no_charset = true;
@@ -962,7 +967,117 @@ class Mail
             }
         }
 
+        return self::findMessageByHeaders($mailbox, $client, $imap_folders, $message_id, $message_date);
+    }
+
+    /**
+     * Find an IMAP message by Message-ID without using IMAP search.
+     *
+     * Some IMAP servers don't return search results by Message-ID: imap.yandex.ru
+     * for example responds with "NO [UNAVAILABLE] UID SEARCH Backend error".
+     * For those we fetch the headers of the messages received around the date of
+     * the message and compare Message-IDs locally.
+     */
+    public static function findMessageByHeaders($mailbox, $client, $imap_folders, $message_id, $message_date)
+    {
+        // Without a date we would have to scan the whole mailbox.
+        if (!$message_date) {
+            return null;
+        }
+
+        $limit = (int) \Eventy::filter('mail.fetch_message.scan_limit', 500, $mailbox);
+
+        if ($limit <= 0) {
+            return null;
+        }
+
+        $message_id = trim($message_id);
+
+        // IMAP searches by INTERNALDATE which may differ from the date in the
+        // headers, so if the message is not found on its own date, try the
+        // neighbouring days too.
+        $date_ranges = [
+            [$message_date->copy(), $message_date->copy()->addDay()],
+            [$message_date->copy()->subDay(), $message_date->copy()->addDays(2)],
+        ];
+
+        $connection = $client->getConnection();
+
+        foreach ($imap_folders as $folder_name) {
+            try {
+                $folder = self::getImapFolder($client, $folder_name);
+
+                if (!$folder) {
+                    continue;
+                }
+
+                $limit_reached = false;
+
+                foreach ($date_ranges as $date_range) {
+                    $client->openFolder($folder->path);
+
+                    $uids = array_values($connection->search([
+                        'SINCE "'.$date_range[0]->format('d-M-Y').'"'
+                        .' BEFORE "'.$date_range[1]->format('d-M-Y').'"'
+                    ]));
+
+                    // Calling the protocol directly here, so the server response
+                    // has to be checked here as well.
+                    if (!count($uids)
+                        && method_exists($connection, 'getLastError')
+                        && $connection->getLastError()
+                    ) {
+                        \Log::error('('.$mailbox->name.') Show Original - IMAP search rejected by the server'
+                            .' in "'.$folder_name.'"; server response: '.$connection->getLastError());
+                    }
+
+                    if (count($uids) > $limit) {
+                        $uids = array_slice($uids, 0, $limit);
+                        $limit_reached = true;
+                    }
+
+                    // Fetching the headers only and in chunks, to stop as soon as
+                    // the message is found. Note that fetching RFC822.HEADER does
+                    // not set the \Seen flag.
+                    foreach (array_chunk($uids, self::SCAN_CHUNK_SIZE) as $uids_chunk) {
+                        $headers = $connection->headers($uids_chunk);
+
+                        foreach ($headers as $uid => $header) {
+                            if (self::getMessageIdFromHeaders($header) != $message_id) {
+                                continue;
+                            }
+
+                            return $folder->query()->leaveUnread()->getMessageByUid($uid);
+                        }
+                    }
+                }
+
+                if ($limit_reached) {
+                    \Log::error('('.$mailbox->name.') Show Original - the number of messages to scan in "'
+                        .$folder_name.'" exceeds the limit ('.$limit.'), message not found: '.$message_id);
+                }
+            } catch (\Exception $e) {
+                \Helper::logException($e, '('.$mailbox->name.') Could not find specific message by Message-ID in headers:');
+            }
+        }
+
         return null;
+    }
+
+    /**
+     * Get the value of the Message-ID header from a raw headers string.
+     * Parsing just this one header, as parsing them all is expensive
+     * when scanning a lot of messages.
+     */
+    public static function getMessageIdFromHeaders($headers_str)
+    {
+        if (!preg_match('/^Message\-ID\s*:((?:[^\r\n]|\r?\n[ \t])*)/im', $headers_str ?? '', $m)) {
+            return '';
+        }
+
+        // Message-ID can't contain spaces, so it's safe to remove them
+        // along with the line folding.
+        return str_replace(['<', '>', "\r", "\n", "\t", ' '], '', $m[1]);
     }
 
     public static function oauthGetAuthorizationUrl($provider_code, $params)
