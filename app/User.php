@@ -262,6 +262,8 @@ class User extends Authenticatable
             } else {
                 $mailboxes = $this->mailboxes;
             }
+            // Exclude archived mailboxes.
+            $mailboxes = Mailbox::excludeArchived($mailboxes);
         }
 
         return $mailboxes->sortBy('name');
@@ -288,10 +290,17 @@ class User extends Authenticatable
                         });
         }
         if ($cache) {
-            return $query->rememberForever()->get();
+            $mailboxes = $query->rememberForever()->get();
         } else {
-            return $query->get();
+            $mailboxes = $query->get();
         }
+
+        if (!$this->isAdmin()) {
+            // Exclude archived mailboxes.
+            $mailboxes = Mailbox::excludeArchived($mailboxes);
+        }
+
+        return $mailboxes;
     }
 
     public function mailboxesSettings($cache = true)
@@ -357,17 +366,24 @@ class User extends Authenticatable
     /**
      * Check to see if the user can manage a specific mailbox
      */
-    public function canManageMailbox($mailbox_id)
+    public function canManageMailbox($mailbox)
     {
         if ($this->isAdmin()) {
             return true;
         } else {
             //$mailbox = $this->mailboxesCanViewWithSettings(true)->where('id', $mailbox_id)->first();
-            $mailbox = $this->mailboxesSettings()->where('mailbox_id', $mailbox_id)->first();
-            if ($mailbox && !empty(json_decode($mailbox->access ?? ''))) {
-                return true;
+            $mailbox_settings = $this->mailboxesSettings()->where('mailbox_id', $mailbox->id)->first();
+            if ($mailbox_settings) {
+                if ($mailbox->isArchived()) {
+                    return false;
+                }
+                if (!empty(json_decode($mailbox_settings->access ?? ''))) {
+                    return true;
+                }
             }
         }
+
+        return false;
     }
 
     /**

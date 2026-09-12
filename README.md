@@ -31,12 +31,12 @@ If you want to support the project feel free to **star this repository**. It hel
 
 ## Features
 
-  * Omnichannel — it centralizes in one place all customer conversations received by email, [WhatsApp](https://freescout.net/whatsapp/), Telegram, Facebook, Slack, Live Chat and more.
+  * Omnichannel — FreeScout centralizes in one place all customer conversations received by email, [WhatsApp](https://freescout.net/whatsapp/), Telegram, Facebook, Slack, Live Chat and more.
   * [AI-powered](https://github.com/freescout-help-desk/AiIntegration) and super efficient.
   * Unlimited support agents, tickets, mailboxes, etc.
   * [Secure](https://freescout.net/security) by design.
   * Mobile-friendly.
-  * Multilingual — English, Catalan, Chinese Simplified, Chinese Traditional, Croatian, Czech, Danish, Dutch, Finnish, French, German, Hebrew, Hungarian, Italian, Japanese, Kazakh, Korean, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Slovak, Slovenian, Swedish, Turkish, Ukrainian.
+  * Multilingual (translated into 33 languages).
   * Seamless email integration (via SMTP, IMAP, POP3, etc).
   * Modern OAuth authentication for Microsoft Office 365 and Google Workspace.
   * Fully supports screen readers (for visually impaired).
@@ -54,7 +54,7 @@ If you want to support the project feel free to **star this repository**. It hel
   * Pasting screenshots from the clipboard into the reply area.
   * Flexible notifications for user agents.
   * Open tracking.
-  * Powerful Search.
+  * Powerful search.
 
 A full list of features is available [here](https://freescout.net/#custom_html-3).
 
@@ -85,8 +85,9 @@ There are no minimum system requirements (CPU / RAM) – FreeScout will run on a
 ## Images & One-Click Installs
 
 * [Docker Image](https://freescout.net/docker/)
-* [Pikapods](https://freescout.net/pikapods/) — Instant open-source apps hosting (Fully Managed)
-* [Zenith](https://freescout.net/zenith/) — Instant open-source apps hosting (Fully Managed)
+* [Pikapods](https://freescout.net/pikapods/) — Open-source apps hosting (Fully managed)
+* [Zenith](https://freescout.net/zenith/) — Open-source apps hosting (Fully managed)
+* [Hostinger](https://freescout.net/hostinger/) — VPS with automatic backups included
 * [Softaculous](http://www.softaculous.com/apps/customersupport/FreeScout) — cPanel, Plesk, ISPmanager, H-Sphere, DirectAdmin, InterWorx
 * [Fantastico](http://ff3.netenberg.com/visitors/scripts/freescout/view) — cPanel, DirectAdmin, ISP Manager, ISP Config
 * [Cloudron](https://cloudron.io/store/net.freescout.cloudronapp.html)
@@ -129,10 +130,9 @@ Conversation:
 
 ![Conversation](https://freescout-helpdesk.github.io/img/screenshots/conversation.png)
 
+Drafting reply with AI:
 
-Mailbox connection settings page:
-
-![Mailbox connection settings page](https://freescout-helpdesk.github.io/img/screenshots/mailbox-connection.png)
+![Mailbox connection settings page](https://freescout-helpdesk.github.io/img/screenshots/draft-reply-with-ai.png)
 
 Notifications:
 

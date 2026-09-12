@@ -55,6 +55,10 @@ class SendReplyToCustomer
                     $replies->forget($i);
                 }
             }
+        } else {
+            // If thread is not provided - stop.
+            // It allows to trigger event but avoid sending an email to customer.
+            return;
         }
 
         // In order to show proper signature.

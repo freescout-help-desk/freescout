@@ -1,0 +1,84 @@
+Received: from mail.example.com (mail.example.com [])
+	by mail.example.com () with LMTPS id HABHq08gKm6Y-oHB2oQ4G
+	for <support@example.com>; Tue, 08 Sep 2026 11:49:06 +0300
+Received: from mail.example.com (mail.example.com [])
+	by mail.example.com (postfix) with ESMTPS id 9888DC00C8
+	for <support@example.com>; Tue, 08 Sep 2026 11:49:06 +0300 (MSK)
+Received: from mail2.example.com (mail2.example.com [])
+	by mail.example.com (mx) with ESMTPS id 5nIWX9V;
+	Tue, 08 Sep 2026 11:49:06 +0300
+Authentication-Results: mail.example.com; spf=pass (mail.example.com: domain of example.com designates  as permitted sender, rule=[ip4:]) smtp.mail=prvs=1711…=costumer@example.com; dkim=pass header.i=costumer@example.com
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=example.com;
+	s=MDaemon; t=1788857345; x=1789462145;
+	i=costumer@example.com; q=dns/txt; h=Content-Type:
+	Message-ID:Date:MIME-Version:User-Agent:Reply-To:Subject:To:
+	References:Content-Language:From:Organization:In-Reply-To; bh=lp
+	60D4=; b=fGzFhzy3Uqk11O4=
+X-MDAV-Result: clean
+X-MDAV-Processed: mail2.example.com, Tue, 08 Sep 2026 15:49:05 +0700
+Received: by mail2.example.com () with ESMTPSA id md50038.msg; 
+	Tue, 08 Sep 2026 15:49:04 +0700
+X-Spam-Processed: mail2.example.com, Tue, 08 Sep 2026 15:49:04 +0700
+	(not processed: message from trusted or authenticated source)
+X-MDRemoteIP: 
+X-MDArrival-Date: Tue, 08 Sep 2026 15:49:04 +0700
+X-Authenticated-Sender: costumer@example.com
+X-Return-Path: prvs=1711…=costumer@example.com
+X-Envelope-From: costumer@example.com
+X-MDaemon-Deliver-To: support@example.com
+Content-Type: multipart/alternative;
+ boundary="------------c141PQyZlgOaY0xUqE0ydJUA"
+Message-ID: <7f9b1a39-536b-47de-a7c3-22aab4aa0964@example.com>
+Date: Tue, 8 Sep 2026 15:46:52 +0700
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Reply-To: costumer@example.com
+Subject: 
+
+To: Support <support@example.com>
+References: <65973645-d93c-4201-b3b4-c4ef9c787b82@example.com>
+ <FS_reply-337039-c6cc3dd84ce553a0@example.com>
+ <9fb55cc5-e6f9-495d-8f1c-c0e9ba096f47@example.com>
+ <FS_reply-337339-b7945c5b6cd64922@example.com>
+ <1f8ae57f-a7e0-45be-89be-f7dd45dc08db@example.com>
+ <FS_reply-337548-4aa4aab25d947649@example.com>
+ <793d757c-d6e2-4772-979a-3f8273fea555@example.com>
+ <75cb3d5a-ad3d-42bb-8ae6-c038707ee00e@example.com>
+ <FS_reply-337878-2648f5b32b701773@example.com>
+ <FS_reply-338880-230548eaa7b8832a@example.com>
+ <8daa3999-2cc6-47ea-a3a7-f4491f3a3d86@example.com>
+ <bc9e0d9e-cc0c-40ad-b594-e6be4c02737c@example.com>
+ <FS_reply-340703-90d96e0ecd15c83d@example.com>
+ <FS_reply-340748-1ff64c3e719499b7@example.com>
+ <861e1c21-6c50-4ce9-bd3f-8b6b1251477f@example.com>
+ <FS_reply-341598-60477023547cc0f0@example.com>
+ <a5b65b3d-26ea-4767-b6a9-ef9810b5ecd6@example.com>
+ <FS_reply-341817-d940c94391b9e93a@example.com>
+Content-Language: ru
+From: <costumer@example.com>
+Organization: 
+In-Reply-To: <FS_reply-341817-d940c94391b9e93a@example.com>
+X-MDCFSigsAdded: example.com
+Return-Path: prvs=1711…=costumer@example.com
+
+This is a multi-part message in MIME format.
+--------------c141PQyZlgOaY0xUqE0ydJUA
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+Илья,
+спасибо за оперативный ответ.
+
+> 2. Сможем исправить, но на доработку потребуется доп. оплачиваемое 
+> время - 3600 руб. Сообщите, если согласны.
+> По доступу - сделаем отдельную ссылку для загрузки весов, а с самого 
+> дашборда уберем.
+Да, подтверждаю.
+
+> 4. Да, можно будет сделать отдельную ссылку, где не учитываются 
+> отказавшиеся. Стоимость составит 7200 руб.
+Да, давайте сделаем.
+
+
+
+--

@@ -9,10 +9,10 @@
     @if (count($mailboxes))
         <div class="dash-cards margin-top">
             @foreach ($mailboxes as $mailbox)
-                <div class="dash-card @if (!$mailbox->isActive()) dash-card-inactive @endif" data-mailbox-id="{{ $mailbox->id }}">
+                <div class="dash-card @if (!$mailbox->isConnected() || $mailbox->isArchived()) dash-card-inactive @endif" data-mailbox-id="{{ $mailbox->id }}">
                     <div class="dash-card-content">
                         @action('dash_card.before_mailbox_name', $mailbox)
-                        <h3 class="text-wrap-break "><a href="{{ $mailbox->url() }}" class="mailbox-name">@include('mailboxes/partials/mute_icon', ['mailbox' => $mailbox]){{ $mailbox->name }}</a></h3>
+                        <h3 class="text-wrap-break "><a href="{{ $mailbox->url() }}" class="mailbox-name">@include('mailboxes/partials/mute_icon', ['mailbox' => $mailbox])@if ($mailbox->isArchived())<i class="glyphicon glyphicon-lock"></i> @endif{{ $mailbox->name }}</a></h3>
                         <div class="dash-card-link text-truncate">
                             <a href="{{ $mailbox->url() }}" class="text-truncate help-link">{{ $mailbox->email }}</a>
                         </div>
@@ -51,7 +51,7 @@
                                     </ul>
                                 </div>
                             @endif
-                            @if (\Eventy::filter('mailbox.show_buttons', true, $mailbox) && $mailbox->isActive())
+                            @if (\Eventy::filter('mailbox.show_buttons', true, $mailbox) && $mailbox->isConnected())
                                 <a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("New Conversation") }}" aria-label="{{ __("New Conversation") }}" role="button"><i class="glyphicon glyphicon-envelope"></i></a>
                             @endif
                             <a href="{{ $mailbox->url() }}" class="btn btn-trans" data-toggle="tooltip" title="{{ __("Open Mailbox") }}"><i class="glyphicon glyphicon-arrow-right"></i></a>

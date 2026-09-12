@@ -386,6 +386,53 @@ class ModulesController extends Controller
                                 }
                             }
                         }
+                    } else {
+                        // Check folder names for custom modules o avoid errors after activation:
+                        // Class "Modules\CustomModule\Providers\CustomModuleServiceProvider" not found.
+                        try {
+                            $old_path = '';
+                            $correct_path = '';
+                            foreach (\Module::getScanPaths() as $key => $path) {
+                                $manifests = \Module::getFiles()->glob("{$path}/module.json");
+
+                                is_array($manifests) || $manifests = [];
+
+                                // Determine correct module folder name from providers in module.json.
+                                // Each module must have at least on "provider" specified.
+                                foreach ($manifests as $manifest) {
+                                    $manifest_json = \Nwidart\Modules\Json::make($manifest);
+                                    if ($manifest_json->get('alias') != $alias) {
+                                        continue;
+                                    }
+
+                                    $providers = $manifest_json->get('providers');
+                                    $correct_folder_name = $providers[0] ?? '';
+                                    $correct_folder_name = preg_replace('#^Modules\\\\([^\\\\]+)\\\\.*#', '$1', $correct_folder_name);
+                                    if (!$correct_folder_name) {
+                                        break;
+                                    }
+                                    // Rename module's folder into correct name.
+                                    $old_path = str_replace('/module.json', '', $manifest);
+                                    $correct_path = \Module::getPath().'/'.$correct_folder_name;
+
+                                    if (\File::exists($old_path) && !\File::exists($correct_path)) {
+                                        \File::move($old_path, $correct_path);
+                                         // Re-scan and re-cache modules.
+                                        \Module::scan();
+                                    }
+                                    break;
+                                }
+                            }
+                        } catch (\Exception $e) {
+                            if ($old_path && $correct_path) {
+                                $response['msg'] = __('Rename ":old_path" into ":new_path"', [
+                                    'old_path' => str_replace(\Module::getPath(), '/Modules', $old_path),
+                                    'new_path' => str_replace(\Module::getPath(), '/Modules', $correct_path),
+                                ]);
+                            } else {
+                                \Helper::logException($e, '[Modules] Error occured checking module folder name on activation');
+                            }
+                        }
                     }
                 }
 

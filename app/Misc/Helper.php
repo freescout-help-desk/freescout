@@ -246,8 +246,8 @@ class Helper
         'ar-BH' => ['name'          => 'العربية',
                     'name_en'       => 'Arabic (Bahrain)',
         ],
-        'az' => ['name'          => 'Azerbaijani',
-                    'name_en'       => 'Azerbaijani',
+        'az' => ['name'          => 'Azərbaycan',
+                 'name_en'       => 'Azerbaijani',
         ],
         'eu' => ['name'          => 'Euskara',
                  'name_en'       => 'Basque',
@@ -1912,6 +1912,13 @@ class Helper
         \Session::flash('flashes_floating', $flashes);
     }
 
+    // Show floating flash message.
+    // Type: success, warning, error
+    public static function floatingFlash($text, $type = 'success')
+    {
+        \Session::flash('flash_'.$type.'_floating', $text);
+    }
+
     public static function isMySql()
     {
         return \DB::connection()->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'mysql';
@@ -2950,7 +2957,8 @@ class Helper
 
         //  frame-src https://recaptcha.net; connect-src https://recaptcha.net;
         //  The frame-ancestors is ignored when delivered via a meta element.
-        $csp = "base-uri 'none'; default-src 'self' ".self::sanitizeCsp($script_domains)."; img-src * 'self' data:; font-src * 'self' data:; style-src * 'self' 'unsafe-inline'; form-action 'self' ".self::sanitizeCsp(\Eventy::filter('csp.form_action', ''), true)."; frame-src * 'self'; script-src 'self' 'nonce-".$nonce."' "
+        //  "data:" in framce-src: https://github.com/freescout-help-desk/freescout/issues/5630
+        $csp = "base-uri 'none'; default-src 'self' ".self::sanitizeCsp($script_domains)."; img-src * 'self' data:; font-src * 'self' data:; style-src * 'self' 'unsafe-inline'; form-action 'self' ".self::sanitizeCsp(\Eventy::filter('csp.form_action', ''), true)."; frame-src * 'self' data:; script-src 'self' 'nonce-".$nonce."' "
             .self::sanitizeCsp($script_src).";"
             .self::sanitizeCsp(config('app.csp_custom').self::sanitizeCsp(\Eventy::filter('csp.custom', '')));
 

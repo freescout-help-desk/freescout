@@ -1,6 +1,7 @@
 <option value="Pacific/Samoa" @if ($current_timezone == 'Pacific/Samoa')selected="selected"@endif>(GMT-11:00) Midway Island, Samoa</option>
 <option value="Pacific/Honolulu" @if ($current_timezone == 'Pacific/Honolulu')selected="selected"@endif>(GMT-10:00) Hawaiian/Aleutian Time</option>
 <option value="America/Anchorage" @if ($current_timezone == 'America/Anchorage')selected="selected"@endif>(GMT-08:00) Alaska Time</option>
+<option value="America/Vancouver" @if ($current_timezone == 'America/Vancouver')selected="selected"@endif>(GMT-07:00) Pacific Time (Vancouver)</option>
 <option value="America/Los_Angeles" @if ($current_timezone == 'America/Los_Angeles')selected="selected"@endif>(GMT-07:00) Pacific Time (US)</option>
 <option value="America/Phoenix" @if ($current_timezone == 'America/Phoenix')selected="selected"@endif>(GMT-07:00) Mountain Time (Arizona)</option>
 <option value="America/Denver" @if ($current_timezone == 'America/Denver')selected="selected"@endif>(GMT-06:00) Mountain Time (US)</option>

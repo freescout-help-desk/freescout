@@ -399,6 +399,12 @@ class Thread extends Model
         return $this->getCleanBody($this->body_original);
     }
 
+    // Get "to" as array.
+    public function getTo($exclude_array = [])
+    {
+        return $this->getToArray($exclude_array);
+    }
+
     /**
      * Get thread recipients.
      *
@@ -1586,10 +1592,17 @@ class Thread extends Model
         return $body;
     }
 
+    // For customer messages: returns Message-ID from headers (if message_id is artificial).
+    // For user threads: hashed 'FS_reply_' prefixed message ID.
     public function getMessageId($mailbox = null)
     {
-        if ($this->isCustomerMessage() && $this->message_id) {
-            return $this->message_id;
+        if ($this->isCustomerMessage()) {
+            $message_id = $this->message_id;
+            if (\MailHelper::isGeneratedMessageId($message_id)) {
+                // Use Message-ID from customer message headers.
+                $message_id = $this->getHeader('Message-Id') ?: $message_id;
+            }
+            return $message_id;
         }
         if ($this->isUserMessage()) {
             if (!$mailbox) {

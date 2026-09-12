@@ -157,4 +157,13 @@ class WebklexTest extends FixtureWebklexMessage {
 
         self::assertStringEndsWith("※ アマゾン 配送部", $message->getTextBody());
     }
+
+    // Read email containing only text body.
+    // https://github.com/freescout-help-desk/freescout/issues/5624
+    public function testPlainBodyRead() {
+        $message = $this->getFixture("message-6.eml");
+
+        self::assertStringContainsString("7200", $message->getTextBody() ?? '');
+        self::assertStringNotContainsString('7200', $message->getHtmlBody() ?? '');
+    }
 }

@@ -157,7 +157,7 @@ class Mail
      * @param App\User $user_from
      * @param App\Conversation $conversation
      */
-    public static function setMailDriver($mailbox = null, $user_from = null, $conversation = null)
+    public static function setMailDriver($mailbox = null, $user_from = null, $conversation = null, $thread = null)
     {
         if ($mailbox) {
             // Configure mail driver according to Mailbox settings.
@@ -192,7 +192,7 @@ class Mail
             }
 
             \Config::set('mail.driver', $mailbox->getMailDriverName());
-            \Config::set('mail.from', $mailbox->getMailFrom($user_from, $conversation));
+            \Config::set('mail.from', $mailbox->getMailFrom($user_from, $conversation, $thread));
 
             // SMTP.
             if ($mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {

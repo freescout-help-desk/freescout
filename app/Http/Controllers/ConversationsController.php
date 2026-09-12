@@ -1156,7 +1156,6 @@ class ConversationsController extends Controller
                             }
                             $forwarded_conversation->updateFolder();
                             $forwarded_conversation->save();
-
                             $forwarded_thread = $thread->replicate();
                             $forwarded_thread->setTo($recipient_email);
 
@@ -1167,8 +1166,8 @@ class ConversationsController extends Controller
                         // Set forwarding meta data.
                         // todo: store array of numbers and IDs.
                         $thread->subtype = Thread::SUBTYPE_FORWARD;
-                        $thread->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER, $forwarded_conversation->number);
-                        $thread->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_ID, $forwarded_conversation->id);
+                        $thread->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER, $forwarded_conversations[0]->number);
+                        $thread->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_ID, $forwarded_conversations[0]->id);
                     }
 
                     // Conversation history.
@@ -1210,8 +1209,9 @@ class ConversationsController extends Controller
                             $forwarded_thread->save();
 
                             // In the current conversation create Forward-notes corresponding to each recipient.
-                            // Forward-note for the last recipient is already created.
-                            if ($i != count($forwarded_conversations)-1) {
+                            // Forward-note for the first recipient is already created.
+                            if ($i != 0) {
+                                // $thread contains note created in the original conversation.
                                 $forward_note = $thread->replicate();
                                 $forward_note->setTo($forwarded_conversation->customer_email);
                                 $forward_note->setMeta(Thread::META_FORWARD_CHILD_CONVERSATION_NUMBER, $forwarded_conversation->number);
@@ -1374,7 +1374,7 @@ class ConversationsController extends Controller
                         $show_view_link = false;
                     }
 
-                    $flash_vars = ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.undo', ['thread_id' => $thread->id]).'" class="text-danger">'];
+                    $flash_vars = ['%tag_start%' => '<strong>', '%tag_end%' => '</strong>', '%view_start%' => '&nbsp;<a href="'.$conversation->url().'">', '%a_end%' => '</a>&nbsp;', '%undo_start%' => '&nbsp;<a href="'.route('conversations.undo', ['thread_id' => $thread->id, 'token' => csrf_token()]).'" class="text-danger">'];
 
                     if ($is_phone) {
                         $flash_type = 'warning';
@@ -3309,7 +3309,7 @@ class ConversationsController extends Controller
     /**
      * Undo reply.
      */
-    public function undoReply(Request $request, $thread_id)
+    public function undoReply(Request $request, $thread_id, $token)
     {
         $thread = Thread::findOrFail($thread_id);
 
@@ -3325,10 +3325,15 @@ class ConversationsController extends Controller
         $conversation = $thread->conversation;
         $this->authorize('view', $conversation);
 
+        if (csrf_token() != $token) {
+            //return throw new \Illuminate\Session\TokenMismatchException;
+            \Session::flash('flash_error_floating', __('Sending can not be undone'));
+            return redirect()->away($conversation->url($conversation->folder_id));
+        }
+
         // Check undo timeout
         if ($thread->created_at->diffInSeconds(now()) > Conversation::UNDO_TIMOUT) {
             \Session::flash('flash_error_floating', __('Sending can not be undone'));
-
             return redirect()->away($conversation->url($conversation->folder_id));
         }
 

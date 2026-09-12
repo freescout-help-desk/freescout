@@ -114,7 +114,7 @@ class FetchEmails extends Command
         );
 
         foreach ($this->mailboxes as $mailbox) {
-            if (!$mailbox->isInActive()) {
+            if (!$mailbox->isInActive() || !$mailbox->isActive()) {
                 continue;
             }
             if ($mailboxIds !== [] && !in_array($mailbox->id, $mailboxIds, true)) {

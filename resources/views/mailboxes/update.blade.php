@@ -24,6 +24,36 @@
                     
 	                @action('mailbox.update.before_name', $mailbox, $errors)
 
+                    @if (Auth::user()->isAdmin())
+                        <div class="form-group{{ $errors->has('state') ? ' has-error' : '' }}">
+                            <label class="col-sm-2 control-label">{{ __('Archived') }}</label>
+
+                            <div class="col-sm-6">
+                                {{--<div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-default @if (old('state', $mailbox->state) == App\Mailbox::STATE_ACTIVE) active @endif">
+                                        <input type="radio" name="state" value="{{ App\Mailbox::STATE_ACTIVE }}" autocomplete="off" @if (old('state', $mailbox->state) == App\Mailbox::STATE_ACTIVE)checked="checked"@endif>
+                                        <i class="glyphicon glyphicon-ok text-success"></i> {{ __('Active') }}
+                                    </label>
+
+                                    <label class="btn btn-default">
+                                        <input type="radio" name="state" value="{{ App\Mailbox::STATE_ARCHIVED }}" autocomplete="off">
+                                        <i class="glyphicon glyphicon-lock"></i> {{ __('Archived') }}
+                                    </label>
+                                </div>--}}
+                                <div class="controls">
+                                    <div class="onoffswitch-wrap">
+                                        <div class="onoffswitch">
+                                            <input type="checkbox" name="state" value="{{ App\Mailbox::STATE_ARCHIVED }}" id="mailbox_state" class="onoffswitch-checkbox"  @if (old('state', $mailbox->state) == App\Mailbox::STATE_ARCHIVED) checked="checked" @endif>
+                                            <label class="onoffswitch-label" for="mailbox_state"></label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @include('partials/field_error', ['field'=>'name'])
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                         <label for="name" class="col-sm-2 control-label">{{ __('Mailbox Name') }}</label>
 
