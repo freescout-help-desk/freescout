@@ -73,6 +73,7 @@ var LangMessages = {
             "confirm_delete_module": "{{ __("Delete this module?") }}",
             "confirm_update": "{{ __("Please backup application files and database before you continue.") }}",
             "remove_format": "{{ __("Remove Formatting") }}",
+            "paste_as_plain_text": "{{ __("Paste as Plain Text") }}",
             "list": "{{ __("List") }}",
             "add_lower": "{{ __("add") }}",
             "user_viewing": "{{ __(":user is viewing") }}",

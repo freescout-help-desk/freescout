@@ -1165,6 +1165,16 @@ https://github.com/freescout-help-desk/freescout/issues/4354
     min-width: 83px;
     padding-left: 5px;
 }
+.panel-heading.note-toolbar .note-remove-format-btn {
+    padding-right: 7px;
+}
+.panel-heading.note-toolbar .note-remove-format .dropdown-toggle {
+    width: 20px;
+    padding-left: 5px;
+}
+.note-remove-format .dropdown-menu {
+    padding-right: 5px;
+}
 @media (max-width:390px) {
     .note-bottom-div {
         display: none;
@@ -1206,6 +1216,7 @@ https://github.com/freescout-help-desk/freescout/issues/4354
         right: 0;
     }
 }
+
 /**
  * Customer
  */
