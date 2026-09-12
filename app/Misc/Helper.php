@@ -949,6 +949,40 @@ class Helper
         return \Storage::disk('public');
     }
 
+    /**
+     * Disk configured for attachments and avatar photos (PERSISTENT_DISK env var).
+     */
+    public static function persistentDisk()
+    {
+        return config('filesystems.persistent_disk', 'private');
+    }
+
+    public static function isLocalDisk($disk)
+    {
+        return \Storage::disk($disk)->getDriver()->getAdapter() instanceof \League\Flysystem\Adapter\Local;
+    }
+
+    /**
+     * URL to deliver a file directly to the browser, without routing it through
+     * the app: a plain URL for local disks, a temporary signed URL for disks
+     * (e.g. S3) that require one because they aren't publicly readable.
+     */
+    public static function urlForDiskPath($disk, $path)
+    {
+        $storage = \Storage::disk($disk);
+
+        if (self::isLocalDisk($disk)) {
+            return $storage->url($path);
+        }
+
+        return $storage->temporaryUrl($path, now()->addHour());
+    }
+
+    public static function tempStream()
+    {
+        return fopen('php://temp', 'r+');
+    }
+
     public static function formatException($e)
     {
         return 'Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')';
