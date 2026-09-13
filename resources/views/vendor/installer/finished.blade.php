@@ -64,7 +64,7 @@ php artisan migrate</code></pre>
 	<p>{{ trans('installer_messages.final.log') }}</p>
 	<pre><code>{{ $finalStatusMessage }}</code></pre>
 
-	<p>{{ trans('installer_messages.final.env') }}</p>
-	<pre><code>{{ $finalEnvFile }}</code></pre>
+	{{--<p>{{ trans('installer_messages.final.env') }}</p>
+	<pre><code>{{ $finalEnvFile }}</code></pre>--}}
 
 @endsection
