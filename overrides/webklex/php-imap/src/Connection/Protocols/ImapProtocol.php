@@ -45,6 +45,12 @@ class ImapProtocol extends Protocol {
     public static $last_connected_check = 0;
 
     /**
+     * Last NO/BAD/BYE response received from the server.
+     * @var string
+     */
+    public static $last_error = '';
+
+    /**
      * Imap constructor.
      * @param bool $cert_validation set to false to skip SSL certificate validation
      * @param mixed $encryption Connection encryption method
@@ -171,6 +177,15 @@ class ImapProtocol extends Protocol {
 
     public static function getDebugLog() {
         return self::$debug_log;
+    }
+
+    /**
+     * Get the last NO/BAD/BYE response received from the server.
+     * It is reset on every readResponse() call, so it has to be read
+     * right after the request which is being checked.
+     */
+    public static function getLastError() {
+        return self::$last_error;
     }
 
     /**
@@ -329,6 +344,9 @@ class ImapProtocol extends Protocol {
     public function readResponse(string $tag, bool $dontParse = false) {
         $lines = [];
         $tokens = null; // define $tokens variable before first use
+
+        self::$last_error = '';
+
         do {
             $readAll = $this->readLine($tokens, $tag, $dontParse);
             $lines[] = $tokens;
@@ -343,6 +361,13 @@ class ImapProtocol extends Protocol {
         if ($tokens[0] == 'OK') {
             return $lines ? $lines : true;
         } elseif ($tokens[0] == 'NO' || $tokens[0] == 'BAD' || $tokens[0] == 'BYE') {
+            // Remember the response, otherwise it's lost completely: callers
+            // receive just "false" and can't tell a rejected command from an
+            // empty result.
+            self::$last_error = trim(implode(' ', array_filter($tokens, function ($token) {
+                return is_scalar($token);
+            })));
+
             return false;
         }
 
