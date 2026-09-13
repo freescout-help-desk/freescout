@@ -762,31 +762,47 @@ class Mail
     // Accepts both header name with "-" and "_".
     public static function getHeader($headers_str, $header)
     {
+        $value = '';
         $headers_str = $headers_str ?? '';
 
         $header = strtolower($header);
-        
-        // Quick check to save resources.
-        $header = str_replace('_', '-', $header);
-        if (!stristr($headers_str, $header)) {
-            return '';
-        }
-
         $header = str_replace('-', '_', $header);
 
-        $headers = self::parseHeaders($headers_str);
-        if (!$headers) {
-            return;
-        }
-        $value = null;
-        if (property_exists($headers, $header)) {
-            $value = $headers->$header;
-        } else {
+        $header_dashed = str_replace('_', '-', $header);
+        // Quick check to save resources.
+        if (!stristr($headers_str, $header_dashed)) {
             return '';
         }
+
+        // For single-line headers try to get haeder by using regular expression.
+        if ($header == 'message_id') {
+            if (preg_match('/^'.preg_quote($header_dashed).'\s*:((?:[^\r\n]|\r?\n[ \t])*)/im', $headers_str ?? '', $m)
+                && !empty($m[1])
+            ) {
+                $value = $m[1];
+            }
+        }
+
+        if (!$value) {
+            $headers = self::parseHeaders($headers_str);
+            if (!$headers) {
+                return;
+            }
+
+            $value = null;
+            if (property_exists($headers, $header)) {
+                $value = $headers->$header;
+            } else {
+                return '';
+            }
+        }
+
+        // Sanitize.
         switch ($header) {
             case 'message_id':
-                $value = str_replace(['<', '>'], '', $value);
+                // Message-ID can't contain spaces, so it's safe to remove them
+                // along with the line folding.
+                $value = str_replace(['<', '>', "\r", "\n", "\t", ' '], '', $value);
                 break;
         }
 
@@ -1043,7 +1059,7 @@ class Mail
                         $headers = $connection->headers($uids_chunk);
 
                         foreach ($headers as $uid => $header) {
-                            if (self::getMessageIdFromHeaders($header) != $message_id) {
+                            if (self::getHeader($header, 'Message-ID') != $message_id) {
                                 continue;
                             }
 
@@ -1053,7 +1069,7 @@ class Mail
                 }
 
                 if ($limit_reached) {
-                    \Log::error('('.$mailbox->name.') Show Original - the number of messages to scan in "'
+                    \Log::error('('.$mailbox->name.') MailHelper::findMessageByHeaders(): the number of messages to scan in "'
                         .$folder_name.'" exceeds the limit ('.$limit.'), message not found: '.$message_id);
                 }
             } catch (\Exception $e) {
@@ -1062,22 +1078,6 @@ class Mail
         }
 
         return null;
-    }
-
-    /**
-     * Get the value of the Message-ID header from a raw headers string.
-     * Parsing just this one header, as parsing them all is expensive
-     * when scanning a lot of messages.
-     */
-    public static function getMessageIdFromHeaders($headers_str)
-    {
-        if (!preg_match('/^Message\-ID\s*:((?:[^\r\n]|\r?\n[ \t])*)/im', $headers_str ?? '', $m)) {
-            return '';
-        }
-
-        // Message-ID can't contain spaces, so it's safe to remove them
-        // along with the line folding.
-        return str_replace(['<', '>', "\r", "\n", "\t", ' '], '', $m[1]);
     }
 
     public static function oauthGetAuthorizationUrl($provider_code, $params)
