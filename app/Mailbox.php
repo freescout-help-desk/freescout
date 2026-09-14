@@ -577,6 +577,9 @@ class Mailbox extends Model
                 $user = User::find($user_id);
             }
         }
+        if (!$user->isAdmin() && !$this->isActive()) {
+            return false;
+        }
         $filter = \Eventy::filter('mailbox.user_has_access', -1, $this, $user);
         if ($filter != -1) {
             return (bool)$filter;
