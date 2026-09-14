@@ -1423,6 +1423,7 @@ class ConversationsController extends Controller
                 }
 
                 $conversation = null;
+                // Conversation does not exist yet.
                 $new = true;
                 if (!$response['msg'] && !empty($request->conversation_id)) {
                     $conversation = Conversation::find($request->conversation_id);
@@ -1433,6 +1434,7 @@ class ConversationsController extends Controller
                     }
                 }
 
+                // Draft saved from "New Conversation" page.
                 $is_create = false;
                 if (!empty($request->is_create)) {
                     $is_create = true;
@@ -1476,8 +1478,19 @@ class ConversationsController extends Controller
                     }
                 }
 
+                // Make sure that conversation is in Draft state.
+                // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-6ff4-3w2c-mjj8
+                if (!$response['msg']
+                    && $conversation
+                    && !$conversation->isDraft()
+                    && ($new || $is_create)
+                ) {
+                    $response['msg'] = __('Message has been already sent. Please discard this draft.');
+                }
+
                 // Validation is not needed on draft create, fields can be empty
 
+                // Update conversation data.
                 if (!$response['msg']) {
 
                     // Get attachments info
