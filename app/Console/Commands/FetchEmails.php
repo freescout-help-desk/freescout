@@ -225,11 +225,22 @@ class FetchEmails extends Command
         } catch (\Exception $e) {
             $error = $e->getMessage();
 
-            // POP3 uses LegacyProtocol.php
+            // For POP3. Before it used LegacyProtocol.php.
+            // Keeping it in case PopProtocol.php also throws such error.
             // https://github.com/freescout-helpdesk/freescout/issues/4060
             if ($error && \Str::startsWith($error, 'Mailbox is empty')) {
                 $this->line('['.date('Y-m-d H:i:s').'] Fetched: 0');
                 return;
+            }
+
+            // Retry one transient TLS handshake failure.
+            // https://github.com/freescout-help-desk/freescout/pull/5626
+            if ($error
+                && \Str::startsWith($error, 'connection failed - stream_socket_client(): SSL operation failed')
+                && stripos($error, 'SSL routines::wrong version number') !== false
+            ) {
+                usleep(self::MAX_SLEEP);
+                $client->connect();
             } else {
                 throw $e;
             }
