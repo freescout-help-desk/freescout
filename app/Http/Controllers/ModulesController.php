@@ -203,6 +203,10 @@ class ModulesController extends Controller
         // Sort all modules.
         asort($all_modules);
 
+        usort($third_party_modules, function ($a, $b) {
+            return strcasecmp($a['name'], $b['name']);
+        });
+
         return view('modules/modules', [
             'installed_modules' => $installed_modules,
             'modules_directory' => $modules_directory,
