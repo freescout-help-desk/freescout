@@ -866,7 +866,7 @@ class User extends Authenticatable
                 $notifications = $user->getWebsiteNotifications();
 
                 $info = [
-                    'data'          => WebsiteNotification::fetchNotificationsData($notifications),
+                    'data'          => WebsiteNotification::fetchNotificationsData($notifications, $this),
                     'notifications' => $notifications,
                     'unread_count'  => $user->unreadNotifications()->count(),
                 ];
@@ -879,7 +879,7 @@ class User extends Authenticatable
             $notifications = $this->getWebsiteNotifications();
 
             $info = [
-                'data'          => WebsiteNotification::fetchNotificationsData($notifications),
+                'data'          => WebsiteNotification::fetchNotificationsData($notifications, $this),
                 'notifications' => $notifications,
                 'unread_count'  => $this->unreadNotifications()->count(),
             ];
