@@ -40,6 +40,11 @@ class ImapProtocol extends Protocol {
      */
     public $host = '';
 
+    /**
+     * Greeting text received from remote IMAP server.
+     */
+    public $greeting = '';
+
     public static $output_debug_log = true;
     public static $debug_log = '';
     public static $last_connected_check = 0;
@@ -91,7 +96,8 @@ class ImapProtocol extends Protocol {
         $port = $port === null ? 143 : $port;
         try {
             $this->stream = $this->createStream($transport, $host, $port, $this->connection_timeout);
-            if (!$this->assumedNextLine('* OK')) {
+            $this->greeting = $this->nextLine();
+            if (!$this->assumedNextLine('* OK', $this->greeting)) {
                 throw new ConnectionFailedException('connection refused');
             }
             if ($encryption == 'starttls') {
@@ -195,8 +201,8 @@ class ImapProtocol extends Protocol {
      * @return bool
      * @throws RuntimeException
      */
-    protected function assumedNextLine(string $start): bool {
-        return strpos($this->nextLine(), $start) === 0;
+    protected function assumedNextLine(string $start, $next_line = ''): bool {
+        return strpos($next_line ?: $this->nextLine(), $start) === 0;
     }
 
     /**
@@ -789,10 +795,17 @@ class ImapProtocol extends Protocol {
      * @throws RuntimeException
      */
     public function content($uids, string $rfc = "RFC822", $uid = IMAP::ST_UID): array {
-        // iCloud requires BODY[TEXT] instead of RFC822.TEXT.
-        // https://github.com/freescout-help-desk/freescout/issues/4202#issuecomment-2315369990
-        // https://github.com/Webklex/php-imap/commit/d4df579fbbe22bb5eca10b7bb3c0192b1f9a5bf7
-        if (strtolower(trim($this->host)) == 'imap.mail.me.com') {
+        // Some servers do not support RFC822.TEXT or return header+text_body.
+        // BODY[TEXT] may automatically mark emails as read.
+        if (
+            // iCloud requires BODY[TEXT] instead of RFC822.TEXT.
+            // https://github.com/freescout-help-desk/freescout/issues/4202#issuecomment-2315369990
+            // https://github.com/Webklex/php-imap/commit/d4df579fbbe22bb5eca10b7bb3c0192b1f9a5bf7
+            (strtolower(trim($this->host)) == 'imap.mail.me.com')
+            // Stalwart.
+            // https://github.com/freescout-help-desk/freescout/issues/5581
+            || ($this->greeting && stripos($this->greeting, 'Stalwart') !== false)
+        ) {
             $item = "BODY[TEXT]";
         } else {
             $item = "$rfc.TEXT";
