@@ -26,7 +26,7 @@ class ConversationPolicy
         } else {
             if ($conversation->userHasAccessToMailbox($user->id)) {
                 // Regular users can not see Archived mailboxes.
-                if ($conversation->mailbox->isArchived()) {
+                if ($conversation->isMailboxArchived()) {
                     return false;
                 }
                 // Maybe user can see only assigned conversations.
@@ -51,7 +51,7 @@ class ConversationPolicy
         } else {
             if ($conversation->mailbox->users_cached->contains($user)) {
                 // Regular users can not see Archived mailboxes.
-                if ($conversation->mailbox->isArchived()) {
+                if ($conversation->isMailboxArchived()) {
                     return false;
                 }
                 // Maybe user can see only assigned conversations.
@@ -72,20 +72,7 @@ class ConversationPolicy
      */
     public function update(User $user, Conversation $conversation)
     {
-        if ($user->isAdmin()) {
-            return true;
-        } else {
-            if ($conversation->userHasAccessToMailbox($user->id)) {
-                // Regular users can not see Archived mailboxes.
-                if ($conversation->mailbox->isArchived()) {
-                    return false;
-                }
-                // Maybe user can see only assigned conversations.
-                return $this->checkIsOnlyAssigned($conversation, $user);
-            } else {
-                return false;
-            }
-        }
+        return $this->view($user, $conversation);
     }
 
     /**
@@ -104,7 +91,7 @@ class ConversationPolicy
             }
             if ($conversation->userHasAccessToMailbox($user->id)) {
                 // Regular users can not see Archived mailboxes.
-                if ($conversation->mailbox->isArchived()) {
+                if ($conversation->isMailboxArchived()) {
                     return false;
                 }
                 // Maybe user can see only assigned conversations.

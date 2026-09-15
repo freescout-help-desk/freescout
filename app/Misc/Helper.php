@@ -65,6 +65,16 @@ class Helper
     public static $datepicker_included = false;
 
     /**
+     * Cache isConsole() result.
+     */
+    public static $is_console = null;
+
+    /**
+     * Memory cache used in non-console and non-background mode.
+     */
+    public static $memory_cache = [];
+
+    /**
      * Files with such extensions are being renamed on upload.
      */
     public static $restricted_extensions = [
@@ -2796,7 +2806,11 @@ class Helper
 
     public static function isConsole()
     {
-        return app()->runningInConsole();
+        if (self::$is_console === null) {
+            self::$is_console = app()->runningInConsole();
+        }
+
+        return self::$is_console;
     }
 
     public static function isCron()
@@ -3229,5 +3243,28 @@ class Helper
         } catch (\Exception $e) {
             // Do nothing.
         }
+    }
+
+    public static function memoryCacheEnabled()
+    {
+        return !self::isConsole();
+    }
+
+    // "key" may use "dot" notation: conversation.id
+    public static function memoryCacheGet($key)
+    {
+        if (!\Helper::memoryCacheEnabled()) {
+            return null;
+        }
+        return array_get(self::$memory_cache, $key);
+    }
+
+    // "key" may use "dot" notation: conversation.id
+    public static function memoryCachePut($key, $value)
+    {
+        if (!\Helper::memoryCacheEnabled()) {
+            return false;
+        }
+        array_set(self::$memory_cache, $key, $value);
     }
 }
