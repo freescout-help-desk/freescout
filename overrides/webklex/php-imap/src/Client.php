@@ -747,4 +747,15 @@ class Client {
 
         throw new MaskNotFoundException("Unknown mask provided: ".$mask);
     }
+
+    /**
+     * Gets the last IMAP error that occurred during this page request
+     */
+    public function getLastError() {
+        if ($this->connection && method_exists($this->connection, 'getLastError')) {
+            return $this->connection->getLastError();
+        }
+        return '';
+    }
+
 }

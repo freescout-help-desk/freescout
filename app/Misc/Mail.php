@@ -510,20 +510,13 @@ class Mail
             // Get unseen messages for a period
             $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->get();
 
-            $last_error = '';
-            if (method_exists($client, 'getLastError')) {
-                $last_error = $client->getLastError();
-            }
+            $last_error = $client->getLastError();
             
             if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
                 // Solution for MS mailboxes.
                 // https://github.com/freescout-helpdesk/freescout/issues/176
                 $messages = $folder->query()->unseen()->since(now()->subDays(1))->leaveUnread()->setCharset(null)->get();
-                if (count($client->getErrors()) > 1) {
-                    $last_error = $client->getLastError();
-                } else {
-                    $last_error = null;
-                }
+                $last_error = $client->getLastError();
             }
 
             if ($last_error) {

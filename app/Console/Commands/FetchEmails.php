@@ -337,9 +337,7 @@ class FetchEmails extends Command
 
                     $messages = $messages_query->get();
 
-                    if (method_exists($client, 'getLastError')) {
-                        $last_error = $client->getLastError();
-                    }
+                    $last_error = $client->getLastError();
                 } catch (\Exception $e) {
                     $last_error = $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')'.')';
                 }
@@ -355,11 +353,7 @@ class FetchEmails extends Command
                     $messages = $messages_query->get();
 
                     $no_charset = true;
-                    if (count($client->getErrors()) > $errors_count) {
-                        $last_error = $client->getLastError();
-                    } else {
-                        $last_error = null;
-                    }
+                    $last_error = $client->getLastError();
                 }
 
                 if ($last_error && !\Str::startsWith($last_error, 'Mailbox is empty')) {
