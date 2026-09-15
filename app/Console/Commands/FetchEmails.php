@@ -432,6 +432,7 @@ class FetchEmails extends Command
             }
 
             $duplicate_message_id = false;
+            $duplicate_mailbox_id = null;
 
             // Special hack to allow threading into conversations Jira messages.
             // https://github.com/freescout-helpdesk/freescout/issues/2927
@@ -470,6 +471,7 @@ class FetchEmails extends Command
                     && $duplicate_message_id->conversation
                     && $duplicate_message_id->conversation->mailbox_id != $mailbox->id
                 ) {
+                    $duplicate_mailbox_id = $duplicate_message_id->conversation->mailbox_id;
                     $extra = true;
                     $duplicate_message_id = null;
                 }
@@ -484,6 +486,9 @@ class FetchEmails extends Command
                     $new_email_with_same_message_id = true;
                 }
             }
+
+            // Keep Message-ID before making it mailbox-specific.
+            $extra_import_message_id = $message_id;
 
             // Gnerate artificial Message-ID if importing same email into several mailboxes
             // or this is a new email having the same Message-ID.
@@ -1029,6 +1034,10 @@ class FetchEmails extends Command
                         if ($check_mailbox->id == $mailbox->id) {
                             continue;
                         }
+                        // Original Message-ID has already been imported into this mailbox.
+                        if ($duplicate_mailbox_id && $check_mailbox->id == $duplicate_mailbox_id) {
+                            continue;
+                        }
                         if (!$check_mailbox->isInActive()) {
                             continue;
                         }
@@ -1038,7 +1047,7 @@ class FetchEmails extends Command
                                 $this->extra_import[] = [
                                     'mailbox'    => $check_mailbox,
                                     'message'    => $message,
-                                    'message_id' => $message_id,
+                                    'message_id' => $extra ? $extra_import_message_id : $message_id,
                                 ];
                                 break;
                             }
