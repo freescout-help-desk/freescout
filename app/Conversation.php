@@ -2300,13 +2300,15 @@ class Conversation extends Model
                     // can be deleted along with attachments.
                     $new_attachment->save();
 
-                    try {
-                        $attachment_file = new \Illuminate\Http\UploadedFile(
-                            $attachment->getLocalFilePath(), $attachment->file_name,
-                            null, null, true
-                        );
+                    $stream = null;
 
-                        $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, '', $attachment_file);
+                    try {
+                        // Read via the Storage disk abstraction as a stream (not
+                        // getLocalFilePath()) so this also works when attachments are stored
+                        // on a non-local disk (e.g. S3), without loading the whole file into
+                        // memory.
+                        $stream = $attachment->getFileStream();
+                        $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, $stream, null);
 
                         if (!empty($file_info['file_dir'])) {
                             $new_attachment->file_dir = $file_info['file_dir'];
@@ -2317,6 +2319,10 @@ class Conversation extends Model
                         }
                     } catch (\Exception $e) {
                         \Helper::logException($e);
+                    } finally {
+                        if (is_resource($stream)) {
+                            fclose($stream);
+                        }
                     }
                 }
                 if ($thread_has_attachments) {

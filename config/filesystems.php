@@ -30,6 +30,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Persistent Storage Disk
+    |--------------------------------------------------------------------------
+    |
+    | Disk used for data that must survive redeployments and be shareable
+    | across multiple app instances: conversation attachments and user/
+    | customer avatars. Defaults to the "private" local disk, preserving
+    | today's behavior. Set to "s3" (or any other configured disk) to move
+    | this data off local disk, e.g. for horizontally-scaled deployments.
+    |
+    */
+
+    'persistent_disk' => env('PERSISTENT_DISK', 'private'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |
@@ -71,6 +86,10 @@ return [
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'url' => env('AWS_URL'),
+            'visibility' => 'private',
         ],
 
     ],
