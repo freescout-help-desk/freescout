@@ -1889,8 +1889,15 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
-                if (!$response['msg'] && $target_customer && !$user->can('view', $target_customer)) {
-                    $response['msg'] = __('Not enough permissions');
+                // Allow to change customer when user creates a customer
+                // while changing conversation's customer
+                // and APP_LIMIT_USER_CUSTOMER_VISIBILITY is enabled.
+                if (session()->get('user_created_customer') == $target_customer->id) {
+                    session()->forget('user_created_customer');
+                } else {
+                    if (!$response['msg']  && $target_customer && !$user->can('view', $target_customer)) {
+                        $response['msg'] = __('Not enough permissions');
+                    }
                 }
 
                 if (!$response['msg']) {

@@ -444,6 +444,8 @@ class CustomersController extends Controller
                 if (!$response['msg']) {
                     $customer = Customer::create($request->email, $request->all());
                     if ($customer) {
+                        session()->put('user_created_customer', $customer->id);
+
                         $response['email']  = $request->email;
                         $response['status'] = 'success';
                     }
