@@ -751,7 +751,7 @@ class MailboxesController extends Controller
                     }
 
                     if (empty($response['msg']) && !$test_result) {
-                        $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->out_server.'</strong>', 'port' => '<strong>'.$mailbox->out_port.'</strong>']);
+                        $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => $mailbox->out_server, 'port' => $mailbox->out_port]);
                     }
                 }
 
@@ -809,7 +809,7 @@ class MailboxesController extends Controller
                         }
                     }
                     if (empty($response['msg']) && !$test_result) {
-                        $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->in_server.'</strong>', 'port' => '<strong>'.$mailbox->in_port.'</strong>']);
+                        $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => $mailbox->in_server, 'port' => $mailbox->in_port]);
                     }
                 }
 
