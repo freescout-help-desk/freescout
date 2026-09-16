@@ -2407,6 +2407,7 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 	    	fs_processing_send_reply = true;
 
 	    	var button = $(this);
+			var editor = $('#body');
 
 	    	// Validate before sending
 	    	form = $(".form-reply:first");
@@ -2414,11 +2415,11 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 			// Sync Summernote's empty-HTML state to the textarea before validation so that
 			// data-parsley-required treats visually-empty content (e.g. <div><br></div>)
 			// the same as a truly empty field (issue #4590).
-			if (typeof $.fn.summernote !== 'undefined' && $('#body').length) {
-				var body_code = $('#body').summernote('code');
+			if (typeof $.fn.summernote !== 'undefined' && editor.length) {
+				var body_code = editor.summernote('code');
 				body_code = body_code.replace(/<(?!img\b)[^>]+>/gi, '').replace(/&nbsp;/gi, '');
 				if (!$.trim(body_code)) {
-					$('#body').val('');
+					editor.val('');
 				}
 			}
 
@@ -2444,6 +2445,25 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 	    		return;
 	    	}
 
+			// Convert last entered text into link if needed.
+			// https://github.com/freescout-help-desk/freescout/issues/5280
+			var word = editor.summernote('createRange').getWordRange();
+			var url = word.toString();
+			if (/^https?:\/\/\S+$/i.test(url)) {
+				var focused_element = document.activeElement;
+				editor.summernote('createLink', {
+					range: word,
+					text: url,
+					url,
+					isNewWindow: false
+				});
+				// Unselect the word
+				window.getSelection().removeAllRanges();
+				if (focused_element && typeof focused_element.focus === 'function') {
+				    focused_element.focus();
+				}
+			}
+
 			data = form.serialize();
 	    	data += '&action=send_reply';
 
@@ -2452,7 +2472,7 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 	    	var is_chat = isChatMode();
 	    	var disable_editor = isChatMode() && !is_note;
 	    	if (disable_editor) {
-	    		$('#body').summernote('disable');
+	    		editor.summernote('disable');
 	    	}
 
 			fsAjax(data, laroute.route('conversations.ajax'), function(response) {
@@ -2471,7 +2491,7 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 						showAjaxError(response);
 						button.button('reset');
 						if (disable_editor) {
-							$('#body').summernote('enable');
+							editor.summernote('enable');
 						}
 					}
 					loaderHide();
