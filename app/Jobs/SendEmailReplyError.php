@@ -24,6 +24,8 @@ class SendEmailReplyError implements ShouldQueue
 
     public $mailbox;
 
+    public $text;
+
     /**
      * The number of seconds the job can run before timing out.
      * fwrite() function in /vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport/StreamBuffer.php
@@ -37,11 +39,12 @@ class SendEmailReplyError implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($from, $user, $mailbox)
+    public function __construct($from, $user, $mailbox, $text = null)
     {
         $this->from = $from;
         $this->user = $user;
         $this->mailbox = $mailbox;
+        $this->text = $text;
     }
 
     /**
@@ -58,7 +61,7 @@ class SendEmailReplyError implements ShouldQueue
 
         try {
             Mail::to([['name' => '', 'email' => $this->from]])
-                ->send(new UserEmailReplyError());
+                ->send(new UserEmailReplyError($this->text));
         } catch (\Exception $e) {
             // We come here in case SMTP server unavailable for example
             activity()

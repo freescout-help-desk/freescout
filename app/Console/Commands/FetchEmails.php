@@ -10,6 +10,7 @@ use App\Events\ConversationCustomerChanged;
 use App\Events\CustomerCreatedConversation;
 use App\Events\CustomerReplied;
 use App\Events\UserReplied;
+use App\Jobs\SendEmailReplyError;
 use App\Mailbox;
 use App\Misc\Mail;
 use App\Option;
@@ -1065,7 +1066,7 @@ class FetchEmails extends Command
                     $this->setSeen($message, $mailbox);
 
                     // Send "Unable to process your update email" to user
-                    \App\Jobs\SendEmailReplyError::dispatch($from, $user, $mailbox)->onQueue('emails');
+                    SendEmailReplyError::dispatch($from, $user, $mailbox)->onQueue('emails');
 
                     return;
                 }
@@ -1075,7 +1076,7 @@ class FetchEmails extends Command
                 if (!$prev_thread) {
                     $this->logError("Support agent's reply to the email notification could not be processed as previous thread could not be determined.");
                     $this->setSeen($message, $mailbox);
-
+                    SendEmailReplyError::dispatch($from, $user, $mailbox, __("The conversation you replied to could not be found."))->onQueue('emails');
                     return;
                 }
 
@@ -1083,7 +1084,7 @@ class FetchEmails extends Command
                 if (!$user->can('view', $prev_thread->conversation)) {
                     $this->logError("Support agent (ID: ".$user->id.") has no accesss to the conversation #".$prev_thread->conversation->number." anymore and can not reply to the conversation.");
                     $this->setSeen($message, $mailbox);
-
+                    SendEmailReplyError::dispatch($from, $user, $mailbox, __("You no longer have access to the conversation you replied to. Please contact your administrator."))->onQueue('emails');
                     return;
                 }
 

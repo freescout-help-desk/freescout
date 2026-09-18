@@ -1895,7 +1895,7 @@ class ConversationsController extends Controller
                 if (session()->get('user_created_customer') == $target_customer->id) {
                     session()->forget('user_created_customer');
                 } else {
-                    if (!$response['msg']  && $target_customer && !$user->can('view', $target_customer)) {
+                    if (!$response['msg'] && $target_customer && !$user->can('view', $target_customer)) {
                         $response['msg'] = __('Not enough permissions');
                     }
                 }

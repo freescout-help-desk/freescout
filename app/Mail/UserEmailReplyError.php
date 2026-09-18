@@ -9,13 +9,16 @@ use Illuminate\Mail\Mailable;
 
 class UserEmailReplyError extends Mailable
 {
+    public $text;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($text = null)
     {
+        $this->text = $text;
     }
 
     /**
