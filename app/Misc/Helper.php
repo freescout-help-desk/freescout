@@ -654,9 +654,7 @@ class Helper
                 continue;
             }
             if (is_array($data[$field])) {
-                foreach ($data[$field] as $sub_field => $sub_data) {
-                    $data[$field][$sub_field] = self::stripTagsFromArray($sub_data);
-                }
+                $data[$field] = self::stripTagsFromArray($data[$field], $fields);
             } else {
                 if ($data[$field] !== null) {
                     $data[$field] = \Helper::stripTags($data[$field]);
