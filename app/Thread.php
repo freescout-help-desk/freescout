@@ -751,15 +751,22 @@ class Thread extends Model
     {
         // Person
         $person = $this->getActionPerson($conversation_number);
-        if ($escape) {
-            $person = htmlspecialchars($person);
+        if (!$person) {
+            $person = __('System');
         }
 
-        $did_this = $this->getActionText($conversation_number, false, false, null, $person, $viewed_by_user);
+        // Keep the :person placeholder in the text and insert the person name
+        // into the text after escaping. Otherwise the name is escaped twice:
+        // first alone and then as a part of the whole text, so quotes and
+        // other special characters in the name are displayed as &amp;quot;
+        $did_this = $this->getActionText($conversation_number, false, false, null, ':person', $viewed_by_user);
 
         if ($escape) {
             $did_this = htmlspecialchars($did_this);
+            $person = htmlspecialchars($person);
         }
+
+        $did_this = str_replace(':person', $person, $did_this);
 
         return __($did_this, [
             'person'           => '<strong>'.$person.'</strong>',

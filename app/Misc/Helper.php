@@ -761,6 +761,15 @@ class Helper
 
         $text = self::stripTags($text);
 
+        // Decode HTML entities, otherwise they are displayed as is
+        // in the preview: &quot; &amp; &#039; etc.
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        // Decoded &nbsp; and other spaces have to be normalized as they
+        // were not present in the text when stripTags() did it.
+        // Keep in mind that preg_replace() may return NULL if "u" flag is used.
+        $text = trim(preg_replace('/[\s\x{00A0}]+/u', ' ', $text) ?? $text);
+
         $text = mb_substr($text, 0, $length);
 
         return $text;
