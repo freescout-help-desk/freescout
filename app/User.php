@@ -232,7 +232,7 @@ class User extends Authenticatable
      */
     public function getFullName()
     {
-        return \Eventy::filter('user.full_name', $this->first_name.' '.$this->last_name, $this);
+        return \Eventy::filter('user.full_name', trim($this->first_name.' '.$this->last_name), $this);
     }
 
     /**
