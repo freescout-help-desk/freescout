@@ -160,15 +160,51 @@ class ReplyToCustomer extends Mailable
 
         if ($thread->has_attachments) {
             foreach ($thread->attachments as $attachment) {
-                if ($attachment->fileExists()) {
-                    $message->attach($attachment->getLocalFilePath());
-                } else {
-                    \Log::error('[ReplyToCustomer] Thread: '.$thread->id.'. Attachment file not find on disk: '.$attachment->getLocalFilePath());
-                }
+                $this->attachToMessage($message, $attachment, $thread->id);
             }
         }
 
         return $message;
+    }
+
+    /**
+     * Mailable::attachData() needs the whole attachment as an in-memory string;
+     * Mailable::attach() avoids that by reading a local path in chunks, but only
+     * accepts a real path. Swift_ByteStream_TemporaryFileByteStream gives us both:
+     * a real (temporary) local path SwiftMailer can stream from, and automatic
+     * cleanup via its own __destruct() once the message (and this attachment) is
+     * no longer referenced - no coordination with the caller/job needed.
+     */
+    private function attachToMessage($message, $attachment, $thread_id)
+    {
+        if (!$attachment->fileExists()) {
+            \Log::error('[ReplyToCustomer] Thread: '.$thread_id.'. Attachment file not find on disk: '.$attachment->getStorageFilePath());
+
+            return;
+        }
+
+        $stream = $attachment->getFileStream();
+        if (!is_resource($stream)) {
+            \Log::error('[ReplyToCustomer] Thread: '.$thread_id.'. Could not open attachment stream: '.$attachment->getStorageFilePath());
+
+            return;
+        }
+
+        $temp_file = new \Swift_ByteStream_TemporaryFileByteStream();
+        while (!feof($stream)) {
+            $temp_file->write(fread($stream, 8192));
+        }
+        $temp_file->commit();
+        fclose($stream);
+
+        $swift_attachment = (new \Swift_Attachment())->setFile($temp_file, $attachment->mime_type);
+        $swift_attachment->setFilename($attachment->file_name);
+
+        $message->withSwiftMessage(function ($swiftmessage) use ($swift_attachment) {
+            $swiftmessage->attach($swift_attachment);
+
+            return $swiftmessage;
+        });
     }
 
     /*

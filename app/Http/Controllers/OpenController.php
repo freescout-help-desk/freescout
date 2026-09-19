@@ -275,7 +275,12 @@ class OpenController extends Controller
             $csp_header_value .= ' allow-same-origin';
         }
 
-        if (config('app.download_attachments_via') == 'apache') {
+        // X-Sendfile, X-Accel-Redirect and the BinaryFileResponse fallback below all need
+        // a real local path, which Attachment::getLocalFilePath() can't give them for a
+        // non-local disk (e.g. S3) - fall through to streaming via Flysystem instead.
+        $is_local_disk = \App\Misc\Helper::isLocalDisk(Attachment::disk());
+
+        if ($is_local_disk && config('app.download_attachments_via') == 'apache') {
             // Send using Apache mod_xsendfile.
             $response = response(null)
                ->header('Content-Type', $attachment->mime_type)
@@ -288,14 +293,14 @@ class OpenController extends Controller
             } else {
                 $response->header('Content-Security-Policy', $csp_header_value);
             }
-        } elseif (config('app.download_attachments_via') == 'nginx') {
+        } elseif ($is_local_disk && config('app.download_attachments_via') == 'nginx') {
             // Send using Nginx.
             $response = response(null)
                ->header('Content-Type', $attachment->mime_type)
                // Laravel adds 'nosniff' by itself.
                //->header('X-Content-Type-Options', 'nosniff')
                ->header('X-Accel-Redirect', $attachment->getLocalFilePath(false));
-               
+
             if (!$view_attachment) {
                 $response->header('Content-Disposition', 'attachment; filename="'.$attachment->file_name.'"');
             } else {
@@ -318,7 +323,8 @@ class OpenController extends Controller
             // Browsers disable seeking without it, so audio and video attachments
             // can not be rewound or fast forwarded. BinaryFileResponse handles
             // Range requests, so use it whenever the file is shown in the browser.
-            if ($view_attachment && $attachment->fileExists()) {
+            // Only possible on a local disk, for the same reason as above.
+            if ($is_local_disk && $view_attachment && $attachment->fileExists()) {
                 $response = response()->file(
                     $attachment->getLocalFilePath(),
                     $headers

@@ -19,8 +19,6 @@ class Attachment extends Model
 
     const DIRECTORY = 'attachment';
 
-    const DISK = 'private';
-
     const MIME_TYPE_MAX_LENGTH = 127;
 
     // This token type was used for backward compatibility for some time
@@ -135,7 +133,7 @@ class Attachment extends Model
         $file_info = self::saveFileToDisk($attachment, $file_name, $content, $uploaded_file);
 
         $attachment->file_dir = $file_info['file_dir'];
-        $attachment->size = Storage::disk(self::DISK)->size($file_info['file_path']);
+        $attachment->size = Storage::disk(self::disk())->size($file_info['file_path']);
         $attachment->save();
 
         return $attachment;
@@ -155,21 +153,26 @@ class Attachment extends Model
         do {
             $i++;
             $file_path = self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir.$i.DIRECTORY_SEPARATOR.$file_name;
-        } while (Storage::disk(self::DISK)->exists($file_path));
+        } while (Storage::disk(self::disk())->exists($file_path));
 
         $file_dir .= $i.DIRECTORY_SEPARATOR;
 
         try {
             if ($uploaded_file) {
-                $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name, ['disk' => self::DISK]);
+                $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name, ['disk' => self::disk()]);
             } else {
-                Storage::disk(self::DISK)->put($file_path, $content);
+                // Storage::put() detects a stream resource and writes it via writeStream(),
+                // so callers can pass either a string or a stream without extra handling here.
+                Storage::disk(self::disk())->put($file_path, $content);
             }
         } catch (\Exception $e) {
             \Helper::logException($e, '[Attachment::saveFileToDisk()]');
         }
 
-        \Helper::sanitizeUploadedFileData($file_path, \Helper::getPrivateStorage(), $content);
+        // $content may be a stream resource rather than a string; the SVG sanitizer needs
+        // actual string content, so let it re-read the just-written file in that case instead
+        // of treating the resource as file content.
+        \Helper::sanitizeUploadedFileData($file_path, \Helper::getPrivateStorage(), is_resource($content) ? null : $content);
 
         return [
             'file_dir'  => $file_dir,
@@ -309,9 +312,14 @@ class Attachment extends Model
         return $this->getDisk()->download($this->getStorageFilePath(), $file_name, $headers);
     }
 
+    public static function disk()
+    {
+        return \App\Misc\Helper::persistentDisk();
+    }
+
     private function getDisk()
     {
-        return Storage::disk(self::DISK);
+        return Storage::disk(self::disk());
     }
 
     /**
@@ -447,13 +455,14 @@ class Attachment extends Model
 
         $new_attachment->save();
 
-        try {
-            $attachment_file = new \Illuminate\Http\UploadedFile(
-                $this->getLocalFilePath(), $this->file_name,
-                null, null, true
-            );
+        $stream = null;
 
-            $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, '', $attachment_file);
+        try {
+            // Read via the Storage disk abstraction as a stream (not getLocalFilePath()) so
+            // this also works when attachments are stored on a non-local disk (e.g. S3),
+            // without loading the whole file into memory.
+            $stream = $this->getFileStream();
+            $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, $stream, null);
 
             if (!empty($file_info['file_dir'])) {
                 $new_attachment->file_dir = $file_info['file_dir'];
@@ -461,6 +470,10 @@ class Attachment extends Model
             }
         } catch (\Exception $e) {
             \Helper::logException($e);
+        } finally {
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
         }
 
         return $new_attachment;
@@ -469,5 +482,15 @@ class Attachment extends Model
     public function getFileContents()
     {
         return $this->getDisk()->get($this->getStorageFilePath());
+    }
+
+    /**
+     * Same as getFileContents(), but as a stream instead of loading the whole
+     * file into memory -- use this when the bytes are only being copied
+     * elsewhere (e.g. duplicating/forwarding an attachment).
+     */
+    public function getFileStream()
+    {
+        return $this->getDisk()->readStream($this->getStorageFilePath());
     }
 }
