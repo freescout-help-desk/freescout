@@ -318,7 +318,16 @@ class OpenController extends Controller
             // Browsers disable seeking without it, so audio and video attachments
             // can not be rewound or fast forwarded. BinaryFileResponse handles
             // Range requests, so use it whenever the file is shown in the browser.
-            if ($view_attachment && $attachment->fileExists()) {
+            //
+            // BinaryFileResponse reads from the local filesystem, so this only
+            // works on a disk that has real local paths. On a remote disk (S3 or Azure)
+            // Storage::path() returns a storage-relative path that
+            // no filesystem call can resolve, so stream the file back instead and
+            // accept the loss of Range support.
+            if ($view_attachment
+                && \Storage::disk(Attachment::DISK)->getDriver()->getAdapter() instanceof \League\Flysystem\Adapter\Local
+                && $attachment->fileExists()
+            ) {
                 $response = response()->file(
                     $attachment->getLocalFilePath(),
                     $headers
