@@ -2759,9 +2759,18 @@ class Conversation extends Model
 
     public function userHasAccessToMailbox($user_id)
     {
-        return MailboxUser::where('mailbox_id', $this->mailbox_id)
+        $has_access = \Helper::memoryCacheGet('mailbox_access.'.$this->mailbox_id.'_'.$user_id);
+        if (!is_null($has_access)) {
+            return $has_access;
+        }
+
+        $has_access = MailboxUser::where('mailbox_id', $this->mailbox_id)
             ->where('user_id', $user_id)
             ->exists();
+
+        \Helper::memoryCachePut('mailbox_access.'.$this->mailbox_id.'_'.$user_id, $has_access);
+
+        return $has_access;
     }
 
     public function chatShouldStartNew($mailbox = null)
@@ -2781,5 +2790,20 @@ class Conversation extends Model
     public function isAssignedToUser($user)
     {
         return \Eventy::filter('conversation.is_user_assignee', $this->user_id == $user->id, $this, $user->id);
+    }
+
+    // Check if conversation mailbox is archived using caching.
+    public function isMailboxArchived()
+    {
+        $is_archived = \Helper::memoryCacheGet('is_archived.'.$this->mailbox_id);
+        if (!is_null($is_archived)) {
+            return $is_archived;
+        }
+
+        $is_archived = $this->mailbox->isArchived();
+
+        \Helper::memoryCachePut('is_archived.'.$this->mailbox_id, $is_archived);
+
+        return $is_archived;
     }
 }

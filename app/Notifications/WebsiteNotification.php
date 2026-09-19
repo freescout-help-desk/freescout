@@ -64,7 +64,7 @@ class WebsiteNotification extends Notification implements ShouldQueue
     /**
      * Fetch data from DB for notifications list to display it.
      */
-    public static function fetchNotificationsData($notifications)
+    public static function fetchNotificationsData($notifications, $auth_user = null)
     {
         $data = [];
 
@@ -143,6 +143,13 @@ class WebsiteNotification extends Notification implements ShouldQueue
             //}
             if (empty($conversation)) {
                 continue;
+            }
+
+            // Check access to the conversation
+            // and reset $last_thread_body if there is no access anymore.
+            // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-6545-8c3f-pp6w
+            if (!$auth_user->can('view', $conversation)) {
+                $last_thread_body = '…';
             }
 
             $data[] = [

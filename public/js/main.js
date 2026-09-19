@@ -238,6 +238,108 @@ var EditorRemoveFormatButton = function (context) {
 	return button.render();   // return button as jquery object
 }
 
+function editorPlainTextPasteStorageKey()
+{
+	var user_id = getGlobalAttr('auth_user_id');
+
+	if (!user_id) {
+		return '';
+	}
+
+	return 'editor_plain_text_paste_'+user_id;
+}
+
+function editorPlainTextPasteEnabled()
+{
+	var key = editorPlainTextPasteStorageKey();
+
+	if (!key) {
+		return false;
+	}
+
+	return localStorageGet(key) == '1';
+}
+
+function editorPlainTextPasteSet(enabled)
+{
+	var key = editorPlainTextPasteStorageKey();
+
+	if (!key) {
+		return;
+	}
+
+	if (enabled) {
+		localStorageSet(key, '1');
+	} else {
+		localStorageRemove(key);
+	}
+}
+
+var EditorRemoveFormatPasteButton = function (context) {
+	if (convIsChat()) {
+		return EditorRemoveFormatButton(context);
+	}
+
+	var ui = $.summernote.ui;
+	var plain_text_enabled = editorPlainTextPasteEnabled();
+
+	var button = ui.buttonGroup({
+		className: 'note-remove-format',
+	    children: [
+			ui.button({
+				className: 'note-remove-format-btn',
+				contents: '<i class="note-icon-close"></i>',
+				tooltip: Lang.get("messages.remove_format"),
+				container: 'body',
+				click: function () {
+					context.invoke('removeFormat');
+				}
+			}),
+			ui.button({
+				className: 'dropdown-toggle',
+				contents: '<span class="note-icon-caret"></span>',
+				tooltip: Lang.get("messages.paste_as_plain_text"),
+				container: 'body',
+				data: {
+					toggle: 'dropdown'
+				}
+			}),
+			ui.dropdown([
+				ui.button({
+					className: 'editor-plain-text-paste-toggle',
+					contents: '<span class="editor-plain-text-paste-state">'+(plain_text_enabled ? '&#9745;' : '&#9744;')+'</span> '+htmlEscape(Lang.get("messages.paste_as_plain_text")),
+					click: function (e) {
+						var enabled = !editorPlainTextPasteEnabled();
+						editorPlainTextPasteSet(enabled);
+						$(e.currentTarget).find('.editor-plain-text-paste-state:first').html(enabled ? '&#9745;' : '&#9744;');
+					}
+				})
+			])
+		]
+	});
+
+	return button.render();
+}
+
+function editorConversationToolbar(toolbar)
+{
+	var result = [];
+
+	for (var group_i = 0; group_i < toolbar.length; group_i++) {
+		var buttons = toolbar[group_i][1].slice(0);
+
+		for (var button_i = 0; button_i < buttons.length; button_i++) {
+			if (buttons[button_i] == 'removeformat') {
+				buttons[button_i] = 'removeformatpaste';
+			}
+		}
+
+		result.push([toolbar[group_i][0], buttons]);
+	}
+
+	return result;
+}
+
 var EditorListsButton = function (context) {
 	var ui = $.summernote.ui;
 
@@ -1765,6 +1867,7 @@ function convEditorInit()
 	    savedraft: EditorSaveDraftButton,
 	    discard: EditorDiscardButton,
 	    removeformat: EditorRemoveFormatButton,
+	    removeformatpaste: EditorRemoveFormatPasteButton,
 	    lists: EditorListsButton
 	});
 
@@ -1775,7 +1878,7 @@ function convEditorInit()
 		dialogsFade: true,
 		disableResizeEditor: true,
 		followingToolbar: false,
-		toolbar: fsApplyFilter('conversation.editor_toolbar', fs_conv_editor_toolbar),
+		toolbar: editorConversationToolbar(fsApplyFilter('conversation.editor_toolbar', fs_conv_editor_toolbar)),
 		buttons: fs_conv_editor_buttons,
 		// Disable inserting HR tag.
 		// https://github.com/freescout-help-desk/freescout/issues/4909
@@ -1811,14 +1914,15 @@ function convEditorInit()
 	    }
 	};
 
-	// Allow to insert only plain text in chats
-	if (convIsChat()) {
-		options.callbacks.onPaste = function (e) {
-	        var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
-	        e.preventDefault();
-	        document.execCommand('insertText', false, bufferText);
-	    };
-	}
+	// Allow plain-text paste in chats and when enabled by the user.
+	options.callbacks.onPaste = function (e) {
+		if (!convIsChat() && !editorPlainTextPasteEnabled()) {
+			return;
+		}
+		var bufferText = ((e.originalEvent || e).clipboardData || window.clipboardData).getData('Text');
+		e.preventDefault();
+		document.execCommand('insertText', false, bufferText);
+	};
 
 	options = fsApplyFilter('editor.options', options);
 
@@ -2303,6 +2407,7 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 	    	fs_processing_send_reply = true;
 
 	    	var button = $(this);
+			var editor = $('#body');
 
 	    	// Validate before sending
 	    	form = $(".form-reply:first");
@@ -2310,11 +2415,11 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 			// Sync Summernote's empty-HTML state to the textarea before validation so that
 			// data-parsley-required treats visually-empty content (e.g. <div><br></div>)
 			// the same as a truly empty field (issue #4590).
-			if (typeof $.fn.summernote !== 'undefined' && $('#body').length) {
-				var body_code = $('#body').summernote('code');
+			if (typeof $.fn.summernote !== 'undefined' && editor.length) {
+				var body_code = editor.summernote('code');
 				body_code = body_code.replace(/<(?!img\b)[^>]+>/gi, '').replace(/&nbsp;/gi, '');
 				if (!$.trim(body_code)) {
-					$('#body').val('');
+					editor.val('');
 				}
 			}
 
@@ -2340,6 +2445,25 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 	    		return;
 	    	}
 
+			// Convert last entered text into link if needed.
+			// https://github.com/freescout-help-desk/freescout/issues/5280
+			var word = editor.summernote('createRange').getWordRange();
+			var url = word.toString();
+			if (/^https?:\/\/\S+$/i.test(url)) {
+				var focused_element = document.activeElement;
+				editor.summernote('createLink', {
+					range: word,
+					text: url,
+					url,
+					isNewWindow: false
+				});
+				// Unselect the word
+				window.getSelection().removeAllRanges();
+				if (focused_element && typeof focused_element.focus === 'function') {
+				    focused_element.focus();
+				}
+			}
+
 			data = form.serialize();
 	    	data += '&action=send_reply';
 
@@ -2348,7 +2472,7 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 	    	var is_chat = isChatMode();
 	    	var disable_editor = isChatMode() && !is_note;
 	    	if (disable_editor) {
-	    		$('#body').summernote('disable');
+	    		editor.summernote('disable');
 	    	}
 
 			fsAjax(data, laroute.route('conversations.ajax'), function(response) {
@@ -2367,7 +2491,7 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 						showAjaxError(response);
 						button.button('reset');
 						if (disable_editor) {
-							$('#body').summernote('enable');
+							editor.summernote('enable');
 						}
 					}
 					loaderHide();

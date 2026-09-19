@@ -611,14 +611,14 @@ class MailboxesController extends Controller
             if (Route::currentRouteName() != 'mailboxes.connection' && !$mailbox->isOutActive()) {
                 $flashes[] = [
                     'type'      => 'warning',
-                    'text'      => __('Sending emails need to be configured for the mailbox in order to send emails to customers and support agents').' ('.__('Connection Settings').' » <a href="'.route('mailboxes.connection', ['id' => $mailbox->id]).'">'.__('Sending Emails').'</a>)',
+                    'text'      => '<i class="glyphicon glyphicon-flash"></i> '.__('Sending emails need to be configured for the mailbox in order to send emails to customers and support agents').' ('.__('Connection Settings').' » <a href="'.route('mailboxes.connection', ['id' => $mailbox->id]).'">'.__('Sending Emails').'</a>)',
                     'unescaped' => true,
                 ];
             }
             if (Route::currentRouteName() != 'mailboxes.connection.incoming' && !$mailbox->isInActive()) {
                 $flashes[] = [
                     'type'      => 'warning',
-                    'text'      => __('<i class="glyphicon glyphicon-flash"></i> Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address').' ('.__('Connection Settings').' » <a href="'.route('mailboxes.connection.incoming', ['id' => $mailbox->id]).'">'.__('Fetching Emails').'</a>)',
+                    'text'      => '<i class="glyphicon glyphicon-flash"></i> '.__('Receiving emails need to be configured for the mailbox in order to fetch emails from your support email address').' ('.__('Connection Settings').' » <a href="'.route('mailboxes.connection.incoming', ['id' => $mailbox->id]).'">'.__('Fetching Emails').'</a>)',
                     'unescaped' => true,
                 ];
             }
@@ -751,7 +751,7 @@ class MailboxesController extends Controller
                     }
 
                     if (empty($response['msg']) && !$test_result) {
-                        $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->out_server.'</strong>', 'port' => '<strong>'.$mailbox->out_port.'</strong>']);
+                        $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => $mailbox->out_server, 'port' => $mailbox->out_port]);
                     }
                 }
 
@@ -809,7 +809,7 @@ class MailboxesController extends Controller
                         }
                     }
                     if (empty($response['msg']) && !$test_result) {
-                        $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => '<strong>'.$mailbox->in_server.'</strong>', 'port' => '<strong>'.$mailbox->in_port.'</strong>']);
+                        $response['msg'] = __(':host is not available on :port port. Make sure that :host address is correct and that outgoing port :port on YOUR server is open.', ['host' => $mailbox->in_server, 'port' => $mailbox->in_port]);
                     }
                 }
 

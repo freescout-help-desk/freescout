@@ -13,7 +13,7 @@
 
     @if (count($installed_modules))
         <div class="section-heading" id="installed">
-            {{ __('Installed Modules') }}
+            {{ __('Installed Modules') }}@if (count($installed_modules)) <small>({{ count($installed_modules) }})</small>@endif
 
             <span class="section-heading-right">
                 <a href="#" data-trigger="modal" data-modal-body="#deactivate_license_modal" data-modal-size="sm" data-modal-no-footer="true" data-modal-title="{{ __('Deactivate License') }}" data-modal-on-show="deactivateLicenseModal" class="small">{{ __('Deactivate License') }}</a> | 
@@ -58,7 +58,7 @@
     @endif
     
     <div class="section-heading" id="directory">
-        {{ __('Modules Directory') }}
+        <i class="glyphicon glyphicon-briefcase"></i> {{ __('Modules Directory') }}@if (count($modules_directory)) <small>({{ count($modules_directory) }})</small>@endif
         @if (!count($installed_modules))
             <a href="#" data-trigger="modal" data-modal-body="#deactivate_license_modal" data-modal-size="sm" data-modal-no-footer="true" data-modal-title="{{ __('Deactivate License') }}" data-modal-on-show="deactivateLicenseModal" class="small pull-right">{{ __('Deactivate License') }}</a>
         @endif
@@ -77,7 +77,7 @@
 
     @if (count($third_party_modules))
         <div class="section-heading" id="third-party">
-            {{ __('Third-Party Modules') }} <small>({{ count($third_party_modules) }})</small>
+            <i class="glyphicon glyphicon-shopping-cart"></i> {{ __('Marketplace') }}@if (count($third_party_modules)) <small>({{ count($third_party_modules) }})</small>@endif
         </div>
 
         <div class="row-container margin-top">

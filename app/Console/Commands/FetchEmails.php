@@ -10,6 +10,7 @@ use App\Events\ConversationCustomerChanged;
 use App\Events\CustomerCreatedConversation;
 use App\Events\CustomerReplied;
 use App\Events\UserReplied;
+use App\Jobs\SendEmailReplyError;
 use App\Mailbox;
 use App\Misc\Mail;
 use App\Option;
@@ -225,11 +226,22 @@ class FetchEmails extends Command
         } catch (\Exception $e) {
             $error = $e->getMessage();
 
-            // POP3 uses LegacyProtocol.php
+            // For POP3. Before it used LegacyProtocol.php.
+            // Keeping it in case PopProtocol.php also throws such error.
             // https://github.com/freescout-helpdesk/freescout/issues/4060
             if ($error && \Str::startsWith($error, 'Mailbox is empty')) {
                 $this->line('['.date('Y-m-d H:i:s').'] Fetched: 0');
                 return;
+            }
+
+            // Retry one transient TLS handshake failure.
+            // https://github.com/freescout-help-desk/freescout/pull/5626
+            if ($error
+                && \Str::startsWith($error, 'connection failed - stream_socket_client(): SSL operation failed')
+                && stripos($error, 'SSL routines::wrong version number') !== false
+            ) {
+                usleep(self::MAX_SLEEP);
+                $client->connect();
             } else {
                 throw $e;
             }
@@ -326,9 +338,7 @@ class FetchEmails extends Command
 
                     $messages = $messages_query->get();
 
-                    if (method_exists($client, 'getLastError')) {
-                        $last_error = $client->getLastError();
-                    }
+                    $last_error = $client->getLastError();
                 } catch (\Exception $e) {
                     $last_error = $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')'.')';
                 }
@@ -344,11 +354,7 @@ class FetchEmails extends Command
                     $messages = $messages_query->get();
 
                     $no_charset = true;
-                    if (count($client->getErrors()) > $errors_count) {
-                        $last_error = $client->getLastError();
-                    } else {
-                        $last_error = null;
-                    }
+                    $last_error = $client->getLastError();
                 }
 
                 if ($last_error && !\Str::startsWith($last_error, 'Mailbox is empty')) {
@@ -1060,7 +1066,7 @@ class FetchEmails extends Command
                     $this->setSeen($message, $mailbox);
 
                     // Send "Unable to process your update email" to user
-                    \App\Jobs\SendEmailReplyError::dispatch($from, $user, $mailbox)->onQueue('emails');
+                    SendEmailReplyError::dispatch($from, $user, $mailbox)->onQueue('emails');
 
                     return;
                 }
@@ -1070,7 +1076,7 @@ class FetchEmails extends Command
                 if (!$prev_thread) {
                     $this->logError("Support agent's reply to the email notification could not be processed as previous thread could not be determined.");
                     $this->setSeen($message, $mailbox);
-
+                    SendEmailReplyError::dispatch($from, $user, $mailbox, __("The conversation you replied to could not be found."))->onQueue('emails');
                     return;
                 }
 
@@ -1078,7 +1084,7 @@ class FetchEmails extends Command
                 if (!$user->can('view', $prev_thread->conversation)) {
                     $this->logError("Support agent (ID: ".$user->id.") has no accesss to the conversation #".$prev_thread->conversation->number." anymore and can not reply to the conversation.");
                     $this->setSeen($message, $mailbox);
-
+                    SendEmailReplyError::dispatch($from, $user, $mailbox, __("You no longer have access to the conversation you replied to. Please contact your administrator."))->onQueue('emails');
                     return;
                 }
 

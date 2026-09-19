@@ -192,7 +192,26 @@ class Query {
         $this->generate_query();
 
         try {
-            $available_messages = $this->client->getConnection()->search([$this->getRawQuery()], $this->sequence);
+            $connection = $this->client->getConnection();
+
+            $available_messages = $connection->search([$this->getRawQuery()], $this->sequence);
+
+            // A NO/BAD/BYE response is turned into an empty result by the protocol,
+            // so without this a rejected or unsupported search command looks exactly
+            // like "nothing found".
+            if (!count($available_messages)
+                && method_exists($connection, 'getLastError')
+                && $connection->getLastError()
+            ) {
+                // Not using the words "failed", "error" etc. followed by a colon
+                // here: the log viewer treats them as log levels and shows the
+                // same record twice.
+                \Log::error('IMAP search rejected by the server. This is not necessarily a problem'
+                    .' - where possible FreeScout falls back to finding the message by other means,'
+                    .' by scanning message headers for example. Search query: '.$this->getRawQuery()
+                    .'; server response: '.$connection->getLastError());
+            }
+
             return new Collection($available_messages);
         } catch (RuntimeException $e) {
             throw new GetMessagesFailedException("failed to fetch messages", 0, $e);
