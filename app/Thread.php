@@ -1489,7 +1489,7 @@ class Thread extends Model
     // Used to highlight sender when From is different from Reply-To.
     public function getFromIfDifferentFromReplyTo($customer = null)
     {
-        if (empty($this->headers) || !$this->isCustomerMessage()) {
+        if (empty($this->headers) || !$this->isCustomerMessage() || !$customer) {
             return '';
         }
         preg_match("#Reply\-To:\s*(?:.*?<\s*)?([^\s<>]+)(?:\s*>)?\s*\n#i", $this->headers ?? '', $m);
