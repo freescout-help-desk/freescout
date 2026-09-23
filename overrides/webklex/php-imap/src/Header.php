@@ -775,6 +775,12 @@ class Header {
                 //     $address->personal = str_replace("'", "", $address->personal);
                 // }
 
+                // Quotes are just a delimiter of the quoted-string, they are not
+                // a part of the display name itself, so they have to be removed:
+                // From: "Tatiana Ivanova" <ti@example.org>
+                // https://datatracker.ietf.org/doc/html/rfc5322#section-3.2.4
+                $address->personal = \MailHelper::unquotePersonalName($address->personal);
+                
                 $personal_slices = explode(" ", $address->personal);
                 $address->personal = "";
                 $prev_slice = null;
