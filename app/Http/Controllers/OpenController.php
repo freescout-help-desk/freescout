@@ -258,7 +258,7 @@ class OpenController extends Controller
             }
         }
 
-        // CSP header for exatra security.
+        // CSP header for extra security.
         $csp_header_value = "script-src 'none'; frame-src 'none'; object-src 'none'; font-src 'none'; connect-src 'none'; media-src 'self'; form-action 'none'; base-uri 'none'; sandbox";
 
         // https://github.com/freescout-help-desk/freescout/issues/5281
@@ -275,6 +275,7 @@ class OpenController extends Controller
             $csp_header_value .= ' allow-same-origin';
         }
 
+        // Send file.
         if (config('app.download_attachments_via') == 'apache') {
             // Send using Apache mod_xsendfile.
             $response = response(null)
@@ -303,8 +304,8 @@ class OpenController extends Controller
             }
         } else {
             // Send via PHP.
-            // In this case downloading or showing the attachment
-            // is controlled via web server config or /storage/app/public/.htaccess.
+            // In this case whether the file is viewed or downloaded is controlled
+            // via the web server config or /storage/app/public/.htaccess.
             $headers = [
                 'Content-Type' => $attachment->mime_type,
                 // Laravel adds 'nosniff' by itself.
@@ -318,7 +319,7 @@ class OpenController extends Controller
             // Browsers disable seeking without it, so audio and video attachments
             // can not be rewound or fast forwarded. BinaryFileResponse handles
             // Range requests, so use it whenever the file is shown in the browser.
-            if ($view_attachment && $attachment->fileExists()) {
+            if ($view_attachment && \Helper::isLocalStorage() && $attachment->fileExists()) {
                 $response = response()->file(
                     $attachment->getLocalFilePath(),
                     $headers

@@ -1813,12 +1813,14 @@ class ConversationsController extends Controller
                                         $attachment_copy = $attachment;
                                     }
 
-                                    $attachments[] = [
-                                        'id'   => encrypt($attachment_copy->id),
-                                        'name' => $attachment_copy->file_name,
-                                        'size' => $attachment_copy->size,
-                                        'url'  => $attachment_copy->url(),
-                                    ];
+                                    if ($attachment_copy) {
+                                        $attachments[] = [
+                                            'id'   => encrypt($attachment_copy->id),
+                                            'name' => $attachment_copy->file_name,
+                                            'size' => $attachment_copy->size,
+                                            'url'  => $attachment_copy->url(),
+                                        ];
+                                    }
                                 }
                             }
                         }

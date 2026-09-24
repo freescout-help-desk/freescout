@@ -929,7 +929,8 @@ class User extends Authenticatable
         }
 
         $file_name = md5(Hash::make($this->id)).'.jpg';
-        $dest_path = Storage::path(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
+        $storage_path = self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name;
+        $dest_path = Storage::disk('local')->path($storage_path);
 
         $dest_dir = pathinfo($dest_path, PATHINFO_DIRNAME);
         if (!file_exists($dest_dir)) {
@@ -945,6 +946,8 @@ class User extends Authenticatable
         // $photo_url = $request->file('photo_url')->storeAs(
         //     User::PHOTO_DIRECTORY, !Hash::make($user->id).'.jpg'
         // );
+
+        $file_name = \Eventy::filter('user.save_photo', $file_name, $this, $dest_path, $storage_path);
 
         return $file_name;
     }

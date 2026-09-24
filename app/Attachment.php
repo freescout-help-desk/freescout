@@ -19,8 +19,6 @@ class Attachment extends Model
 
     const DIRECTORY = 'attachment';
 
-    const DISK = 'private';
-
     const MIME_TYPE_MAX_LENGTH = 127;
 
     // This token type was used for backward compatibility for some time
@@ -135,7 +133,7 @@ class Attachment extends Model
         $file_info = self::saveFileToDisk($attachment, $file_name, $content, $uploaded_file);
 
         $attachment->file_dir = $file_info['file_dir'];
-        $attachment->size = Storage::disk(self::DISK)->size($file_info['file_path']);
+        $attachment->size = Storage::size($file_info['file_path']);
         $attachment->save();
 
         return $attachment;
@@ -143,6 +141,7 @@ class Attachment extends Model
 
     /**
      * Save file to the disk and return file_dir.
+     * $content may be a resource pointing to the file in remote storage.
      */
     public static function saveFileToDisk($attachment, $file_name, $content, $uploaded_file)
     {
@@ -155,21 +154,24 @@ class Attachment extends Model
         do {
             $i++;
             $file_path = self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir.$i.DIRECTORY_SEPARATOR.$file_name;
-        } while (Storage::disk(self::DISK)->exists($file_path));
+        } while (Storage::exists($file_path));
 
         $file_dir .= $i.DIRECTORY_SEPARATOR;
 
         try {
             if ($uploaded_file) {
-                $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name, ['disk' => self::DISK]);
+                $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name);
             } else {
-                Storage::disk(self::DISK)->put($file_path, $content);
+                Storage::put($file_path, $content);
             }
         } catch (\Exception $e) {
             \Helper::logException($e, '[Attachment::saveFileToDisk()]');
         }
 
-        \Helper::sanitizeUploadedFileData($file_path, \Helper::getPrivateStorage(), $content);
+        // $content may be a stream resource rather than a string; the SVG sanitizer needs
+        // actual string content, so let it re-read the just-written file in that case instead
+        // of treating the resource as file content.
+        \Helper::sanitizeUploadedFileData($file_path, is_resource($content) ? null : $content);
 
         return [
             'file_dir'  => $file_dir,
@@ -266,7 +268,7 @@ class Attachment extends Model
         // URL must contain only forward slashes.
         $file_path = str_replace(DIRECTORY_SEPARATOR, '/', $file_path);
 
-        $file_url = Storage::url($file_path);
+        $file_url = Storage::disk('local')->url($file_path);
 
         // Fix percents.
         // https://github.com/freescout-helpdesk/freescout/issues/3530
@@ -306,12 +308,10 @@ class Attachment extends Model
             $file_name = $file_name.'.eml';
         }
 
-        return $this->getDisk()->download($this->getStorageFilePath(), $file_name, $headers);
-    }
+        // Cache attachments in browser - 1 month.
+        $headers['Cache-Control'] = 'max-age=2592000';
 
-    private function getDisk()
-    {
-        return Storage::disk(self::DISK);
+        return Storage::download($this->getStorageFilePath(), $file_name, $headers);
     }
 
     /**
@@ -338,7 +338,7 @@ class Attachment extends Model
     public function getLocalFilePath($full = true)
     {
         if ($full) {
-            return $this->getDisk()->path(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
+            return Storage::path(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
         } else {
             return DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name;
         }
@@ -349,7 +349,7 @@ class Attachment extends Model
      */
     public function fileExists()
     {
-        return $this->getDisk()->exists(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
+        return Storage::exists(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
     }
 
     public static function formatBytes($size, $precision = 0)
@@ -400,7 +400,7 @@ class Attachment extends Model
     {
         // Delete from disk
         foreach ($attachments as $attachment) {
-            $attachment->getDisk()->delete($attachment->getStorageFilePath());
+            Storage::delete($attachment->getStorageFilePath());
         }
 
         // Delete from DB
@@ -448,12 +448,20 @@ class Attachment extends Model
         $new_attachment->save();
 
         try {
-            $attachment_file = new \Illuminate\Http\UploadedFile(
-                $this->getLocalFilePath(), $this->file_name,
-                null, null, true
-            );
+            $content_stream = '';
+            $attachment_file = null;
 
-            $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, '', $attachment_file);
+            if (\Helper::isLocalStorage()) {
+                $attachment_file = new \Illuminate\Http\UploadedFile(
+                    $this->getLocalFilePath(), $this->file_name,
+                    null, null, true
+                );
+            } else {
+                // File in remote storage.
+                $content_stream = $this->getFileStream();
+            }
+
+            $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, $content_stream, $attachment_file);
 
             if (!empty($file_info['file_dir'])) {
                 $new_attachment->file_dir = $file_info['file_dir'];
@@ -468,6 +476,16 @@ class Attachment extends Model
 
     public function getFileContents()
     {
-        return $this->getDisk()->get($this->getStorageFilePath());
+        return Storage::get($this->getStorageFilePath());
+    }
+
+    /**
+     * Same as getFileContents(), but as a stream instead of loading the whole
+     * file into memory - use this when the bytes are only being copied
+     * elsewhere (e.g. duplicating/forwarding an attachment).
+     */
+    public function getFileStream()
+    {
+        return Storage::readStream($this->getStorageFilePath());
     }
 }

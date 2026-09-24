@@ -2301,12 +2301,20 @@ class Conversation extends Model
                     $new_attachment->save();
 
                     try {
-                        $attachment_file = new \Illuminate\Http\UploadedFile(
-                            $attachment->getLocalFilePath(), $attachment->file_name,
-                            null, null, true
-                        );
+                        $content_stream = '';
+                        $attachment_file = null;
 
-                        $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, '', $attachment_file);
+                        if (\Helper::isLocalStorage()) {
+                            $attachment_file = new \Illuminate\Http\UploadedFile(
+                                $attachment->getLocalFilePath(), $attachment->file_name,
+                                null, null, true
+                            );
+                        } else {
+                            // File in remote storage.
+                            $content_stream = $this->getFileStream();
+                        }
+
+                        $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, $content_stream, $attachment_file);
 
                         if (!empty($file_info['file_dir'])) {
                             $new_attachment->file_dir = $file_info['file_dir'];

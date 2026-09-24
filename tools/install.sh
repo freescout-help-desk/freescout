@@ -175,6 +175,7 @@ sudo echo 'server {
         # For non-static content application adds nosniff by itself
         add_header X-Content-Type-Options "nosniff";
     }
+    # Force /storage/* files to be downloaded instead of showing them in the browser.
     # The list should be in sync with /storage/app/public/uploads/.htaccess and /config/app.php
     location ~* ^/storage/.*\.((?!(jpg|jpeg|jfif|pjpeg|pjp|apng|bmp|gif|ico|cur|png|tif|tiff|webp|pdf|txt|diff|patch|json|mp3|wav|ogg|wma)).)*$ {
         add_header Content-disposition "attachment; filename=$2";
