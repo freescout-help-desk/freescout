@@ -441,6 +441,10 @@ class Attachment extends Model
      */
     public function duplicate($thread_id = null)
     {
+        if (!$this->fileExists()) {
+            return null;
+        }
+
         $new_attachment = $this->replicate();
         
         $new_attachment->thread_id = $thread_id;
