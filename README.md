@@ -39,6 +39,7 @@ If you want to support the project feel free to **star this repository**. It hel
   * Multilingual (translated into 33 languages).
   * Seamless email integration (via SMTP, IMAP, POP3, etc).
   * Modern OAuth authentication for Microsoft Office 365 and Google Workspace.
+  * Native [S3 storage](https://github.com/freescout-help-desk/S3Storage) support.
   * Fully supports screen readers (for visually impaired).
   * Web installer & updater.
   * Starred conversations.
