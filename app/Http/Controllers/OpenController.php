@@ -217,7 +217,7 @@ class OpenController extends Controller
         }
 
         // Check attachment name.
-        if (trim($attachment->file_name) != trim($file_name)) {
+        if (strcasecmp(trim($attachment->file_name), trim($file_name)) !== 0) {
             return \Helper::denyAccess();
         }
 
