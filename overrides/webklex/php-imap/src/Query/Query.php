@@ -431,19 +431,18 @@ class Query {
                 $last_exception = $e;
                 \Helper::logException($e);
 
-                // Try to mark the message as read not to fetch it again.
-                try {
-                    $message->markAsRead();
-                } catch (\Exception $e) {
-                    // Do nothing.
-                }
-                
+                // Leave a failed message unread so the next fetch can retry it.
+                // Marking it read here silently loses it when fetching UNSEEN mail.
+                // The error is logged above for investigation.
                 // The body of the message could not be parsed - remove message from the list.
                 $messages->forget($i);
             }
         }
 
-        if ($last_exception) {
+        // One malformed message must not prevent the other messages in this
+        // batch from reaching FreeScout. If none could be parsed, preserve the
+        // fetch error as well as the unread flags so the failure stays visible.
+        if ($last_exception && $messages->isEmpty()) {
             throw $last_exception;
         }
 
