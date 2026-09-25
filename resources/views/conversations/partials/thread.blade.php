@@ -323,7 +323,7 @@
                 @endif
                 <li><a href="{{ route('conversations.create', ['mailbox_id' => $mailbox->id]) }}?from_thread_id={{ $thread->id }}" title="{{ __("Start a conversation from this thread") }}" class="new-conv" role="button">{{ __("New Conversation") }}</a></li>
                 @if ($thread->isCustomerMessage())
-                    <li><a href="{{ route('conversations.clone_conversation', ['mailbox_id' => $mailbox->id, 'from_thread_id' => $thread->id]) }}" title="{{ __("Clone a conversation from this thread") }}" class="new-conv" role="button">{{ __("Clone Conversation") }}</a></li>
+                    <li><a href="{{ route('conversations.clone_conversation', ['mailbox_id' => $mailbox->id, 'from_thread_id' => $thread->id, 'token' => csrf_token()]) }}" title="{{ __("Clone a conversation from this thread") }}" class="new-conv" role="button">{{ __("Clone Conversation") }}</a></li>
                 @endif
                 @action('thread.menu', $thread)
                 @if (Auth::user()->isAdmin())
