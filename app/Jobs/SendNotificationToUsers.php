@@ -166,6 +166,7 @@ class SendNotificationToUsers implements ShouldQueue
                     ->causedBy($user)
                     ->withProperties([
                         'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
+                        'conversation'   => '#'.$this->conversation->number.'-'.($last_thread ? $last_thread->id : ''),
                      ])
                     ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
                     ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_USER);
