@@ -949,12 +949,12 @@ class Helper
 
     public static function getPrivateStorage()
     {
-        return \Storage::disk('private');
+        return \Storage::disk('local');
     }
 
     public static function getPublicStorage()
     {
-        return \Storage::disk('public');
+        return \Storage::disk('local');
     }
 
     public static function formatException($e)
@@ -1843,22 +1843,22 @@ class Helper
 
         $file->storeAs('uploads', $file_name);
 
-        self::sanitizeUploadedFileData('uploads'.DIRECTORY_SEPARATOR.$file_name, self::getPublicStorage());
+        self::sanitizeUploadedFileData('uploads'.DIRECTORY_SEPARATOR.$file_name);
 
         return self::uploadedFilePath($file_name);
     }
 
-    public static function sanitizeUploadedFileData($file_path, $storage, $content = null)
+    public static function sanitizeUploadedFileData($file_path, $content = null)
     {
         // Remove <script>, href="", iframe, etc from SVG files.
         // Any image can be interpreted as SVG by browser,
         // so checking extension is not enough.
-        if ($storage->exists($file_path)
-            && ($storage->mimeType($file_path) == 'image/svg+xml' 
+        if (Storage::exists($file_path)
+            && (Storage::mimeType($file_path) == 'image/svg+xml'
                 || strtolower(pathinfo($file_path, PATHINFO_EXTENSION)) == 'svg')
         ) {
             if (!$content) {
-                $content = $storage->get($file_path);
+                $content = Storage::get($file_path);
             }
             if ($content) {
                 // Remove comments from SVG content.
@@ -1871,7 +1871,7 @@ class Helper
                 if (!$clean_content)  {
                     $clean_content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
                 }
-                $storage->put($file_path, $clean_content);
+                Storage::put($file_path, $clean_content);
             }
         }
     }
@@ -3264,5 +3264,14 @@ class Helper
             return false;
         }
         array_set(self::$memory_cache, $key, $value);
+    }
+
+    public static function isLocalStorage($disk = '')
+    {
+        if ($disk) {
+            return \Storage::disk($disk)->getDriver()->getAdapter() instanceof \League\Flysystem\Adapter\Local;
+        } else {
+            return config('filesystems.default') == 'local';
+        }
     }
 }

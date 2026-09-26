@@ -1161,16 +1161,21 @@ class Mailbox extends Model
     {
         if (is_array($mailboxes)) {
             // Array.
+            $found = false;
             foreach ($mailboxes as $i => $mailbox) {
                 if ($mailbox->isArchived()) {
+                    $found = true;
                     unset($mailboxes[$i]);
                 }
+            }
+            if ($found) {
+                $mailboxes = array_values($mailboxes);
             }
         } else {
             // Collection.
             $mailboxes = $mailboxes->reject(function ($mailbox) {
                 return $mailbox->isArchived();
-            });
+            })->values();
         }
 
         return $mailboxes;

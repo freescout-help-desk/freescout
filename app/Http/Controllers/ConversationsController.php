@@ -482,7 +482,7 @@ class ConversationsController extends Controller
     /**
      * Clone conversation.
      */
-    public function cloneConversation(Request $request, $mailbox_id, $from_thread_id)
+    public function cloneConversation(Request $request, $mailbox_id, $from_thread_id, $token)
     {
         $mailbox = Mailbox::findOrFail($mailbox_id);
         $this->authorize('view', $mailbox);
@@ -494,6 +494,10 @@ class ConversationsController extends Controller
                 $orign_conv = $orig_thread->conversation;
                 $this->authorize('view', $orign_conv);
 
+                if (csrf_token() != $token) {
+                    \Session::flash('flash_error_floating', __('Not enough permissions'));
+                    return redirect()->away($orign_conv->url($orign_conv->folder_id));
+                }
 
 		        // $thread = $orig_thread->replicate();
 		        // $thread->id = '';
@@ -1813,12 +1817,14 @@ class ConversationsController extends Controller
                                         $attachment_copy = $attachment;
                                     }
 
-                                    $attachments[] = [
-                                        'id'   => encrypt($attachment_copy->id),
-                                        'name' => $attachment_copy->file_name,
-                                        'size' => $attachment_copy->size,
-                                        'url'  => $attachment_copy->url(),
-                                    ];
+                                    if ($attachment_copy) {
+                                        $attachments[] = [
+                                            'id'   => encrypt($attachment_copy->id),
+                                            'name' => $attachment_copy->file_name,
+                                            'size' => $attachment_copy->size,
+                                            'url'  => $attachment_copy->url(),
+                                        ];
+                                    }
                                 }
                             }
                         }

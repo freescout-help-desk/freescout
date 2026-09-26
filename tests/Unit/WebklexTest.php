@@ -166,4 +166,13 @@ class WebklexTest extends FixtureWebklexMessage {
         self::assertStringContainsString("7200", $message->getTextBody() ?? '');
         self::assertStringNotContainsString('7200', $message->getHtmlBody() ?? '');
     }
+
+    // https://github.com/freescout-help-desk/freescout/pull/5659
+    public function testFromToCc() {
+        $message = $this->getFixture("message-7.eml");
+
+        self::assertSame('Smith, John', $message->getFrom()[0]->personal);
+        self::assertSame('Company Test', $message->getTo()[0]->personal);
+        self::assertSame('Test', $message->getCc()[0]->personal);
+    }
 }

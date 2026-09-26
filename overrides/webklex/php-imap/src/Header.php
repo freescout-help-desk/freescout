@@ -775,8 +775,15 @@ class Header {
                 //     $address->personal = str_replace("'", "", $address->personal);
                 // }
 
+                // Quotes are just a delimiter of the quoted-string, they are not
+                // a part of the display name itself, so they have to be removed:
+                // From: "Tatiana Ivanova" <ti@example.org>
+                // https://datatracker.ietf.org/doc/html/rfc5322#section-3.2.4
+                $address->personal = \MailHelper::unquotePersonalName($address->personal);
+                
                 $personal_slices = explode(" ", $address->personal);
                 $address->personal = "";
+                $prev_slice = null;
                 foreach ($personal_slices as $slice) {
                     $personalParts = $this->mime_header_decode($slice);
 
@@ -791,7 +798,30 @@ class Header {
                         $personal = str_replace("'", "", $personal);
                     }
                     $personal = \MailHelper::decodeSubject($personal);
-                    $address->personal .= $personal . " ";
+
+                    if ($prev_slice !== null) {
+                        // A long name does not fit into a single encoded word, so the
+                        // sender splits it and folds the parts onto separate lines:
+                        // =?UTF-8?B?0KLRgNCw0LvQsNC70LXQu9C+INCi0YDQsNC70LA=?=
+                        //  =?UTF-8?B?0LvQtdC70L7QstC90LA=?=
+                        // According to RFC 2047 (6.2) the whitespace separating two
+                        // adjacent encoded words has to be ignored, otherwise an extra
+                        // space appears in the middle of the name.
+                        // We are doing it only when the preceding encoded word is long
+                        // enough to have been split because of the line length limit
+                        // (75 chars max per encoded word). Senders also encode names
+                        // word by word: "=?UTF-8?B?0JjQstCw0L0=?= =?UTF-8?B?0J/QtdGC?="
+                        // and in this case the space has to be preserved.
+                        $folded = \Str::endsWith($prev_slice, "?=")
+                            && \Str::startsWith($slice, "=?")
+                            && mb_strlen($prev_slice) >= 60;
+
+                        if (!$folded) {
+                            $address->personal .= " ";
+                        }
+                    }
+                    $address->personal .= $personal;
+                    $prev_slice = $slice;
                 }
                 $address->personal = trim(rtrim($address->personal));
             }

@@ -160,10 +160,14 @@ class ReplyToCustomer extends Mailable
 
         if ($thread->has_attachments) {
             foreach ($thread->attachments as $attachment) {
-                if ($attachment->fileExists()) {
-                    $message->attach($attachment->getLocalFilePath());
+                if (\Helper::isLocalStorage()) {
+                    if ($attachment->fileExists()) {
+                        $message->attach($attachment->getLocalFilePath());
+                    } else {
+                        \Log::error('[ReplyToCustomer] Thread: '.$thread->id.'. Attachment file not find on disk: '.$attachment->getLocalFilePath());
+                    }
                 } else {
-                    \Log::error('[ReplyToCustomer] Thread: '.$thread->id.'. Attachment file not find on disk: '.$attachment->getLocalFilePath());
+                    \Eventy::filter('email.reply_to_customer.attach', false, $message, $attachment, $thread->id);
                 }
             }
         }

@@ -637,12 +637,18 @@ class SendReplyToCustomer implements ShouldQueue
      */
     public function failed(\Exception $e)
     {
+        // failed() is called by unserializing the original queue payload.
+        if (!$this->last_thread && $this->threads && count($this->threads)) {
+            $this->threads = Thread::sortThreads($this->threads);
+            $this->last_thread = $this->threads->first();
+        }
+
         activity()
            ->causedBy($this->customer)
            ->withProperties([
                 'error'    => $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')',
                 'to'       => $this->customer_email,
-                'conversation'   => '#'.$this->conversation->number.'-'.$this->last_thread->id,
+                'conversation'   => '#'.$this->conversation->number.'-'.($this->last_thread ? $this->last_thread->id : ''),
             ])
            ->useLog(\App\ActivityLog::NAME_EMAILS_SENDING)
            ->log(\App\ActivityLog::DESCRIPTION_EMAILS_SENDING_ERROR_TO_CUSTOMER);

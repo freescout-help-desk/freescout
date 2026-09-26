@@ -1404,7 +1404,8 @@ class Customer extends Model
         }
 
         $file_name = md5(Hash::make($this->id)).'.jpg';
-        $dest_path = Storage::path(self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name);
+        $storage_path = self::PHOTO_DIRECTORY.DIRECTORY_SEPARATOR.$file_name;
+        $dest_path = Storage::disk('local')->path($storage_path);
 
         $dest_dir = pathinfo($dest_path, PATHINFO_DIRNAME);
         if (!file_exists($dest_dir)) {
@@ -1417,6 +1418,8 @@ class Customer extends Model
         }
 
         imagejpeg($resized_image, $dest_path, self::PHOTO_QUALITY);
+
+        $file_name = \Eventy::filter('customer.save_photo', $file_name, $this, $dest_path, $storage_path);
 
         return $file_name;
     }

@@ -1495,6 +1495,33 @@ class Mail
         return $string;
     }
 
+    /**
+     * Remove quotes surrounding a display name in an email address.
+     *
+     * In `From: "Tatiana Ivanova" <ti@example.org>` the quotes are just
+     * a delimiter of the quoted-string, they are not a part of the name itself:
+     * https://datatracker.ietf.org/doc/html/rfc5322#section-3.2.4
+     */
+    public static function unquotePersonalName($name)
+    {
+        $name = trim((string)$name);
+
+        if (strlen($name) < 2 || !\Str::startsWith($name, '"') || !\Str::endsWith($name, '"')) {
+            return $name;
+        }
+
+        $unquoted = substr($name, 1, -1);
+
+        // Make sure that it's a single quoted-string and not something like
+        // `"Foo" bar "Baz"` - all quotes inside have to be escaped.
+        if (!preg_match('/^(?:[^"\\\\]|\\\\.)*$/s', $unquoted)) {
+            return $name;
+        }
+
+        // Unescape quoted-pairs: \" => " and \\ => \
+        return trim(preg_replace('/\\\\(.)/s', '$1', $unquoted));
+    }
+
     public static function isFsMessageId($message_id)
     {
         return preg_match('/^('.implode('|', self::$all_message_id_prefixes).')/i', $message_id);
