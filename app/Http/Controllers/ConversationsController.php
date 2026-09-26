@@ -845,7 +845,7 @@ class ConversationsController extends Controller
                 }
 
                 // Check max. message size.
-                if (!$response['msg']) {
+                if (!$response['msg'] && !$is_note) {
 
                     $max_message_size = (int)config('app.max_message_size');
                     if ($max_message_size) {
@@ -857,13 +857,17 @@ class ConversationsController extends Controller
                         $attachments_ids = $this->decodeAttachmentsIds($attachments_ids);
 
                         if (count($attachments_ids)) {
-                            $attachments_to_check = Attachment::select('size')->whereIn('id', $attachments_ids)->get();
-                            foreach ($attachments_to_check as $attachment) {
+                            $attachments_query = Attachment::select('size')->whereIn('id', $attachments_ids);
+                            // Skip embedded images.
+                            if (!\Eventy::filter('attachments.embedded.check_size', false)) {
+                                $attachments_query->where('embedded', false);
+                            }
+                            foreach ($attachments_query->get() as $attachment) {
                                 $message_size += (int)$attachment->size;
                             }
                         }
 
-                        if ($message_size > $max_message_size*1024*1024) {
+                        if ($message_size*1.37 > $max_message_size*1024*1024) {
                             $response['msg'] = __('Message is too large — :info. Please shorten your message or remove some attachments.', ['info' => __('Max. Message Size').': '.$max_message_size.' MB']);
                         }
                     }

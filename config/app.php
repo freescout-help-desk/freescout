@@ -318,10 +318,11 @@ return [
     | to avoid sending multiple duplicate emails to other recipients.
     |
     | https://github.com/freescout-helpdesk/freescout/issues/870#issuecomment-786477909
+    | https://github.com/freescout-help-desk/freescout/issues/5666
     |
     |-------------------------------------------------------------------------
     */
-    'no_retry_mail_errors'    => env('APP_NO_RETRY_MAIL_ERRORS', '(no valid recipients|does not comply with RFC|message file too big|malformed address)'),
+    'no_retry_mail_errors'    => env('APP_NO_RETRY_MAIL_ERRORS', '(no valid recipients|does not comply with RFC|message file too big|malformed address|message size|message too large|size exceeded)'),
 
     /*
     |--------------------------------------------------------------------------
