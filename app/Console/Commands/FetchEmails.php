@@ -336,7 +336,40 @@ class FetchEmails extends Command
                     }
                     $messages_query->limit($page_size, $page);
 
-                    $messages = $messages_query->get();
+                    if ($unseen) {
+                        $messages = $messages_query->get();
+                    } else {
+                        // Reconciliation must not download every previously imported
+                        // body and attachment on each scheduled run. Headers suffice
+                        // to identify messages which may still need importing.
+                        $headers = $messages_query->setFetchBody(false)->get();
+                        foreach ($headers as $message_id => $header) {
+                            $existing = $message_id
+                                ? Thread::with('conversation')->where('message_id', $message_id)->first()
+                                : null;
+                            if ($existing && $existing->conversation
+                                && $existing->conversation->mailbox_id == $mailbox->id
+                                && $existing->headers == $this->headerToStr($header->getHeader())
+                            ) {
+                                continue;
+                            }
+                            $message = $folder->query()->leaveUnread()->getMessageByUid($header->getUid());
+                            // Webklex includes the full raw body when generating an ID
+                            // for mail without Message-ID. The headers-only key was
+                            // generated with an empty body, so replace it now.
+                            if (!(string)$header->getMessageId()) {
+                                $from = $message->getFrom();
+                                $from = $from ? $from->get() : null;
+                                $from = is_array($from) && !empty($from[0])
+                                    ? Email::sanitizeEmail($from[0]->mail ?? '')
+                                    : '';
+                                $message_id = $from
+                                    ? \MailHelper::generateMessageId($from, $message->getRawBody().$header->getUid())
+                                    : '';
+                            }
+                            $messages->put($message_id, $message);
+                        }
+                    }
 
                     $last_error = $client->getLastError();
                 } catch (\Exception $e) {
@@ -501,7 +534,9 @@ class FetchEmails extends Command
             // Check if message already fetched.
             if ($duplicate_message_id) {
                 $this->line('['.date('Y-m-d H:i:s').'] Message with such Message-ID has been fetched before: '.$message_id);
-                $this->setSeen($message, $mailbox);
+                if ($message->getFlags()->get('seen') === null) {
+                    $this->setSeen($message, $mailbox);
+                }
                 return;
             }
 
