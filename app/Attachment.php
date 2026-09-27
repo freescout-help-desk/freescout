@@ -480,7 +480,13 @@ class Attachment extends Model
 
     public function getFileContents()
     {
-        return Storage::get($this->getStorageFilePath());
+        try {
+            return Storage::get($this->getStorageFilePath());
+        } catch (\Exception $e) {
+            // File not found at path:...
+            \Helper::logException($e, '[Attachment::getFileContents()]');
+            return '';
+        }
     }
 
     /**
@@ -490,6 +496,11 @@ class Attachment extends Model
      */
     public function getFileStream()
     {
-        return Storage::readStream($this->getStorageFilePath());
+        try {
+            return Storage::readStream($this->getStorageFilePath());
+        } catch (\Exception $e) {
+            \Helper::logException($e, '[Attachment::getFileStream()]');
+            return null;
+        }
     }
 }
