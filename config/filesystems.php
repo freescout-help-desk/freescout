@@ -43,6 +43,7 @@ return [
 
     'disks' => [
 
+        // /storage/app/public
         'local' => [
             'driver'     => 'local',
             'root'       => storage_path('app/public'),
@@ -55,15 +56,16 @@ return [
             'root'       => storage_path('app/public'),
             'url'        => env('APP_URL').'/storage',
             'visibility' => 'public',
-        ],
+        ],*/
 
-        // To store file in the storage/app folder
-        'private' => [
+        // To store files in the storage/app folder not available from browser:
+        // /storage/app
+        'local_app' => [
             'driver'     => 'local',
             'root'       => storage_path('app'),
             'url'        => env('APP_URL').'/storage',
             'visibility' => 'public',
-        ],*/
+        ],
 
         's3' => [
             'driver' => 's3',

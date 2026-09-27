@@ -136,7 +136,7 @@
             @foreach ($conversations as $conversation)
                 <tr class="conv-row @action('conversations_table.row_class', $conversation) @if ($conversation->isActive()) conv-active @endif @if ($conversation->isSpam()) conv-spam @endif" data-conversation_id="{{ $conversation->id }}">
                     @if (empty($no_checkboxes))<td class="conv-current">@if (!empty($viewers[$conversation->id]))
-                                <div class="viewer-badge @if (!empty($viewers[$conversation->id]['replying'])) viewer-replying @endif" data-toggle="tooltip" title="@if (!empty($viewers[$conversation->id]['replying'])){{ __(':user is replying', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@else{{ __(':user is viewing', ['user' => $viewers[$conversation->id]['user']->getFullName()]) }}@endif"><div>
+                                <div class="viewer-badge @if (!empty($viewers[$conversation->id]['replying'])) viewer-replying @endif" data-toggle="tooltip" data-html="true" title="{{ implode('<br/>', array_map(function ($viewer) { return e(__($viewer['replying'] ? ':user is replying' : ':user is viewing', ['user' => $viewer['user']->getFullName()])); }, $viewers[$conversation->id]['users'])) }}"><div>
                             @endif</td>@else<td class="conv-current"></td>@endif
                     @if (empty($no_checkboxes))
                         <td class="conv-cb">
