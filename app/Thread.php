@@ -159,6 +159,8 @@ class Thread extends Model
     // Metas.
     const META_CONVERSATION_HISTORY = 'ch';
     const META_PREV_CONVERSATION = 'pc';
+    const META_PREV_CONV_CC = 'pcc';
+    const META_PREV_CONV_BCC = 'pbcc';
     const META_MERGED_WITH_CONV = 'mwc';
     const META_MERGED_INTO_CONV = 'mic';
     const META_FORWARD_PARENT_CONVERSATION_NUMBER = 'fw_pcn';

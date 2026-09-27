@@ -1029,6 +1029,10 @@ class ConversationsController extends Controller
                         }
                     }
 
+                    // Remember conversation CC/BCC to restore them if sending is undone.
+                    $prev_conv_cc = $conversation->cc;
+                    $prev_conv_bcc = $conversation->bcc;
+
                     if (!$is_note && !$is_forward) {
                         // Save extra recipients to CC
                         $cc = Conversation::sanitizeEmails($request->cc);
@@ -1127,6 +1131,10 @@ class ConversationsController extends Controller
                     // We save CC and BCC as is and filter emails when sending replies
                     $thread->setCc($request->cc);
                     $thread->setBcc($request->bcc);
+                    if (!$is_note && !$is_forward) {
+                        $thread->setMeta(Thread::META_PREV_CONV_CC, $prev_conv_cc);
+                        $thread->setMeta(Thread::META_PREV_CONV_BCC, $prev_conv_bcc);
+                    }
                     if ($attachments_info['has_attachments'] && !$is_forward) {
                         $thread->has_attachments = true;
                     }
@@ -3393,10 +3401,24 @@ class ConversationsController extends Controller
 
         $folder_id = $conversation->folder_id;
 
+        // Restore conversation CC/BCC saved before sending.
+        $metas = $thread->getMetas() ?: [];
+        $restored_cc = false;
+        if (array_key_exists(Thread::META_PREV_CONV_CC, $metas)) {
+            $conversation->cc = $metas[Thread::META_PREV_CONV_CC];
+            $conversation->bcc = $metas[Thread::META_PREV_CONV_BCC] ?? null;
+            $thread->unsetMeta(Thread::META_PREV_CONV_CC);
+            $thread->unsetMeta(Thread::META_PREV_CONV_BCC);
+            $thread->save();
+            $restored_cc = true;
+        }
+
         // Restore conversation data from penultimate thread
         if ($last_thread) {
-            $conversation->setCc($last_thread->cc);
-            $conversation->setBcc($last_thread->bcc);
+            if (!$restored_cc) {
+                $conversation->setCc($last_thread->getCcArray());
+                $conversation->setBcc($last_thread->getBccArray());
+            }
             $conversation->last_reply_at = $last_thread->created_at;
             $conversation->last_reply_from = $last_thread->source_via;
             $conversation->user_updated_at = date('Y-m-d H:i:s');
