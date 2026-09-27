@@ -1955,6 +1955,7 @@ class Conversation extends Model
 
     /**
      * Get information on viewers for conversation table.
+     * Returns users in "users" key with the current user excluded: replying users first, then viewing users.
      */
     public static function getViewersInfo($conversations, $fields = ['id', 'first_name', 'last_name'], $exclude_user_ids = [])
     {
@@ -1963,6 +1964,7 @@ class Conversation extends Model
         $user_ids = [];
         // Skip stale records not yet removed by freescout:check-conv-viewers.
         // Dates have 'Y-m-d H:i:s' format, so they can be compared as strings.
+        // https://github.com/freescout-help-desk/freescout/pull/5670
         $min_date = \Carbon\Carbon::now()->subSeconds(30)->toDateTimeString();
         foreach ($conversations as $conversation) {
             if (empty($viewers_cache[$conversation->id]) || !is_array($viewers_cache[$conversation->id])) {
@@ -1972,7 +1974,8 @@ class Conversation extends Model
             $viewing = [];
             foreach ($viewers_cache[$conversation->id] as $user_id => $viewer) {
                 if (in_array($user_id, $exclude_user_ids)
-                    || empty($viewer['t']) || $viewer['t'] < $min_date
+                    || empty($viewer['t'])
+                    || $viewer['t'] < $min_date
                 ) {
                     continue;
                 }
@@ -2006,17 +2009,20 @@ class Conversation extends Model
                     if (!empty($users[$item['user_id']])) {
                         $viewers[$conversation_id]['users'][$i]['user'] = $users[$item['user_id']];
                     } else {
+                        // User not found in DB.
                         unset($viewers[$conversation_id]['users'][$i]);
                     }
                 }
+                // Remove not found users.
                 $viewers[$conversation_id]['users'] = array_values($viewers[$conversation_id]['users']);
                 if (!$viewers[$conversation_id]['users']) {
                     unset($viewers[$conversation_id]);
                     continue;
                 }
-                $viewers[$conversation_id]['user'] = $viewers[$conversation_id]['users'][0]['user'];
-                $viewers[$conversation_id]['user_id'] = $viewers[$conversation_id]['users'][0]['user_id'];
-                $viewers[$conversation_id]['replying'] = $viewers[$conversation_id]['users'][0]['replying'];
+                $first_user = $viewers[$conversation_id]['users'][0];
+                $viewers[$conversation_id]['user'] = $first_user['user'];
+                $viewers[$conversation_id]['user_id'] = $first_user['user_id'];
+                $viewers[$conversation_id]['replying'] = $first_user['replying'];
             }
         }
         return $viewers;
