@@ -1961,46 +1961,62 @@ class Conversation extends Model
         $viewers_cache = \Cache::get('conv_view');
         $viewers = [];
         $user_ids = [];
+        // Skip stale records not yet removed by freescout:check-conv-viewers.
+        // Dates have 'Y-m-d H:i:s' format, so they can be compared as strings.
+        $min_date = \Carbon\Carbon::now()->subSeconds(30)->toDateTimeString();
         foreach ($conversations as $conversation) {
-            $first_user_id = null;
-            if (!empty($viewers_cache[$conversation->id])) {
-                // Get replying viewers
-                foreach ($viewers_cache[$conversation->id] as $user_id => $viewer) {
-                    if (!$first_user_id) {
-                        $first_user_id = $user_id;
-                    }
-                    if (!empty($viewer['r']) && !in_array($user_id, $exclude_user_ids)) {
-                        $viewers[$conversation->id] = [
-                            'user'     => null,
-                            'user_id'  => $user_id,
-                            'replying' => true,
-                        ];
-                        $user_ids[] = $user_id;
-                        break;
-                    }
+            if (empty($viewers_cache[$conversation->id]) || !is_array($viewers_cache[$conversation->id])) {
+                continue;
+            }
+            $replying = [];
+            $viewing = [];
+            foreach ($viewers_cache[$conversation->id] as $user_id => $viewer) {
+                if (in_array($user_id, $exclude_user_ids)
+                    || empty($viewer['t']) || $viewer['t'] < $min_date
+                ) {
+                    continue;
                 }
-                // Get first non-replying viewer
-                if (empty($viewers[$conversation->id]) && !in_array($user_id, $exclude_user_ids)) {
-                    $viewers[$conversation->id] = [
-                        'user'     => null,
-                        'user_id'  => $first_user_id,
-                        'replying' => false,
-                    ];
-                    $user_ids[] = $first_user_id;
+                $item = [
+                    'user'     => null,
+                    'user_id'  => $user_id,
+                    'replying' => !empty($viewer['r']),
+                ];
+                if ($item['replying']) {
+                    $replying[] = $item;
+                } else {
+                    $viewing[] = $item;
                 }
+                $user_ids[] = $user_id;
+            }
+            // Replying viewers go first.
+            $list = array_merge($replying, $viewing);
+            if ($list) {
+                // First viewer is kept on the top level for backward compatibility.
+                $viewers[$conversation->id] = $list[0];
+                $viewers[$conversation->id]['users'] = $list;
             }
         }
         // Get all viewing users in one query
         if ($user_ids) {
             $user_ids = array_unique($user_ids);
-            $users = User::select($fields)->whereIn('id', $user_ids)->get();
+            $users = User::select($fields)->whereIn('id', $user_ids)->get()->keyBy('id');
 
-            foreach ($viewers as $i => $viewer) {
-                foreach ($users as $user) {
-                    if ($user->id == $viewer['user_id']) {
-                        $viewers[$i]['user'] = $user;
+            foreach ($viewers as $conversation_id => $viewer) {
+                foreach ($viewer['users'] as $i => $item) {
+                    if (!empty($users[$item['user_id']])) {
+                        $viewers[$conversation_id]['users'][$i]['user'] = $users[$item['user_id']];
+                    } else {
+                        unset($viewers[$conversation_id]['users'][$i]);
                     }
                 }
+                $viewers[$conversation_id]['users'] = array_values($viewers[$conversation_id]['users']);
+                if (!$viewers[$conversation_id]['users']) {
+                    unset($viewers[$conversation_id]);
+                    continue;
+                }
+                $viewers[$conversation_id]['user'] = $viewers[$conversation_id]['users'][0]['user'];
+                $viewers[$conversation_id]['user_id'] = $viewers[$conversation_id]['users'][0]['user_id'];
+                $viewers[$conversation_id]['replying'] = $viewers[$conversation_id]['users'][0]['replying'];
             }
         }
         return $viewers;
