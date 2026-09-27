@@ -19,6 +19,8 @@ class Attachment extends Model
 
     const DIRECTORY = 'attachment';
 
+    const DISK = 'local_app';
+
     const MIME_TYPE_MAX_LENGTH = 127;
 
     // This token type was used for backward compatibility for some time
@@ -133,7 +135,7 @@ class Attachment extends Model
         $file_info = self::saveFileToDisk($attachment, $file_name, $content, $uploaded_file);
 
         $attachment->file_dir = $file_info['file_dir'];
-        $attachment->size = Storage::size($file_info['file_path']);
+        $attachment->size = self::getDisk()->size($file_info['file_path']);
         $attachment->save();
 
         return $attachment;
@@ -154,15 +156,15 @@ class Attachment extends Model
         do {
             $i++;
             $file_path = self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir.$i.DIRECTORY_SEPARATOR.$file_name;
-        } while (Storage::exists($file_path));
+        } while (self::getDisk()->exists($file_path));
 
         $file_dir .= $i.DIRECTORY_SEPARATOR;
 
         try {
             if ($uploaded_file) {
-                $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name);
+                $uploaded_file->storeAs(self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir, $file_name, self::getDiskName());
             } else {
-                Storage::put($file_path, $content);
+                self::getDisk()->put($file_path, $content);
             }
         } catch (\Exception $e) {
             \Helper::logException($e, '[Attachment::saveFileToDisk()]');
@@ -268,7 +270,7 @@ class Attachment extends Model
         // URL must contain only forward slashes.
         $file_path = str_replace(DIRECTORY_SEPARATOR, '/', $file_path);
 
-        $file_url = Storage::disk('local')->url($file_path);
+        $file_url = self::getDisk()->url($file_path);
 
         // Fix percents.
         // https://github.com/freescout-helpdesk/freescout/issues/3530
@@ -298,7 +300,7 @@ class Attachment extends Model
     public function download($view = false, $headers = [])
     {
         // #533
-        //return $this->getDisk()->download($this->getStorageFilePath(), \Str::ascii($this->file_name));
+        //return self::getDisk()->download($this->getStorageFilePath(), \Str::ascii($this->file_name));
         if ($view) {
             $headers['Content-Disposition'] = '';
         }
@@ -311,7 +313,7 @@ class Attachment extends Model
         // Cache attachments in browser - 1 month.
         $headers['Cache-Control'] = 'max-age=2592000';
 
-        return Storage::download($this->getStorageFilePath(), $file_name, $headers);
+        return self::getDisk()->download($this->getStorageFilePath(), $file_name, $headers);
     }
 
     /**
@@ -338,7 +340,7 @@ class Attachment extends Model
     public function getLocalFilePath($full = true)
     {
         if ($full) {
-            return Storage::path(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
+            return self::getDisk()->path(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
         } else {
             return DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name;
         }
@@ -349,7 +351,7 @@ class Attachment extends Model
      */
     public function fileExists()
     {
-        return Storage::exists(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
+        return self::getDisk()->exists(self::DIRECTORY.DIRECTORY_SEPARATOR.$this->file_dir.$this->file_name);
     }
 
     public static function formatBytes($size, $precision = 0)
@@ -400,7 +402,7 @@ class Attachment extends Model
     {
         // Delete from disk
         foreach ($attachments as $attachment) {
-            Storage::delete($attachment->getStorageFilePath());
+            self::getDisk()->delete($attachment->getStorageFilePath());
         }
 
         // Delete from DB
@@ -481,7 +483,7 @@ class Attachment extends Model
     public function getFileContents()
     {
         try {
-            return Storage::get($this->getStorageFilePath());
+            return self::getDisk()->get($this->getStorageFilePath());
         } catch (\Exception $e) {
             // File not found at path:...
             \Helper::logException($e, '[Attachment::getFileContents()]');
@@ -497,10 +499,24 @@ class Attachment extends Model
     public function getFileStream()
     {
         try {
-            return Storage::readStream($this->getStorageFilePath());
+            return self::getDisk()->readStream($this->getStorageFilePath());
         } catch (\Exception $e) {
             \Helper::logException($e, '[Attachment::getFileStream()]');
             return null;
         }
+    }
+
+    public static function getDiskName()
+    {
+        if (\Helper::isLocalStorage()) {
+            return self::DISK;
+        } else {
+            return config('filesystems.default');
+        }
+    }
+
+    public static function getDisk()
+    {
+        return Storage::disk(self::getDiskName());
     }
 }
