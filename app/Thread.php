@@ -329,6 +329,11 @@ class Thread extends Model
         // https://github.com/freescout-helpdesk/freescout/pull/3865#issuecomment-1990758149
         $body = preg_replace('/<!\-\-\[if [^>]+\]><!\-\->(.*?)<![ ]+\-\-<!\[endif\]\-\->/s', '$1', $body);
 
+        // Remove Outlook "downlevel-revealed" conditional comments (<![if !vml]>...<![endif]>),
+        // preserving the data inside. Browsers ignore them, but the purifier escapes them as text.
+        // Emails fetched before the fix have them already escaped (&lt;![if !vml]&gt;) in the DB.
+        $body = preg_replace('/(?:<|&lt;)!\[(?:if\s[^\]]*|endif)\](?:>|&gt;)/i', '', $body) ?: $body;
+
         // https://github.com/freescout-helpdesk/freescout/issues/3894
         // Remove <!--[if !mso]><!--> and <!--<![endif]--> comments, preserving the data inside
         //$body = preg_replace('/(<!\-\-\[if [^>]+\]>|<!\[endif\]\-\->)/', '', $body);

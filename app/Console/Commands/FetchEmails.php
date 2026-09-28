@@ -1598,8 +1598,12 @@ class FetchEmails extends Command
         $body = \Eventy::filter('fetch_emails.separate_reply.preprocess_body', $body ?? '');
 
         if ($is_html) {
+            // Remove Outlook "downlevel-revealed" conditional comments (<![if !vml]>...<![endif]>),
+            // preserving the data inside. Otherwise DOMDocument turns them into escaped text.
+            $body = preg_replace('/<!\[(?:if\s[^\]]*|endif)\]>/i', '', $body) ?: $body;
+
             // Extract body content from HTML
-            
+
             // Proton has it's own unique way of placing replies:
             // https://github.com/freescout-help-desk/freescout/issues/4537#issuecomment-2629836738
             if ($is_reply
