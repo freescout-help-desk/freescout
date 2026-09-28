@@ -25,6 +25,8 @@ var fs_checkbox_shift_last_checked = null;
 var upload_in_progress = false;
 var audio_chat;
 var autoplay_msg_shown = false;
+// Remember recipients rendered by the server to restore them after discarding a draft.
+var fs_reply_recipients = null;
 
 var FS_STATUS_CLOSED = 3;
 
@@ -2323,6 +2325,8 @@ function initRecipientSelector(custom_options, selector)
 function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 {
 	$(document).ready(function() {
+
+		rememberReplyRecipients();
 
 		convEditorInit();
 		if (typeof(load_attachments) != "undefined") {
@@ -4834,11 +4838,13 @@ function discardDraft(thread_id)
 							} else {
 								// Hide editor
 								hideReplyEditor();
-								$("#to").val(
+								// https://github.com/freescout-help-desk/freescout/pull/5674
+								restoreReplyRecipients();
+								/*$("#to").val(
 									$("#to option:first").val()
-								);
-								$(".conv-reply-block :input[name='cc']:first").val('');
-								$(".conv-reply-block :input[name='bcc']:first").val('');
+								);*/
+								//$(".conv-reply-block :input[name='cc[]']:first").val('');
+								//$(".conv-reply-block :input[name='bcc[]']:first").val('');
 								setReplyBody('');
 								$('#conv-subject').removeClass('action-visible');
 							}
@@ -4970,6 +4976,43 @@ function threadHideOriginal(trigger)
 	original.addClass('hidden');
 	container.find('.thread-original-show:first').removeClass('hidden');
 	trigger.addClass('hidden');
+}
+
+function rememberReplyRecipients()
+{
+	if (fs_reply_recipients !== null || !getGlobalAttr('conversation_id')) {
+		return;
+	}
+	fs_reply_recipients = {
+		to: $('#to').val(),
+		cc: $('#cc').val() || [],
+		bcc: $('#bcc').val() || []
+	};
+}
+
+function restoreReplyRecipients()
+{
+	if (fs_reply_recipients === null) {
+		$("#to").val($("#to option:first").val());
+		return;
+	}
+	if (fs_reply_recipients.to) {
+		$('#to').val(fs_reply_recipients.to);
+	}
+	var fields = ['cc', 'bcc'];
+	for (var f in fields) {
+		var select = $('#'+fields[f]);
+		if (!select.length) {
+			continue;
+		}
+		cleanSelect2(select);
+		var emails = fs_reply_recipients[fields[f]];
+		for (var i in emails) {
+			addSelect2Option(select, {
+				id: emails[i], text: emails[i]
+			});
+		}
+	}
 }
 
 function hideReplyEditor()
