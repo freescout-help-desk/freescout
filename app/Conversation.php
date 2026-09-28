@@ -2333,7 +2333,7 @@ class Conversation extends Model
                             );
                         } else {
                             // File in remote storage.
-                            $content_stream = $this->getFileStream();
+                            $content_stream = $attachment->getFileStream();
                         }
 
                         $file_info = Attachment::saveFileToDisk($new_attachment, $new_attachment->file_name, $content_stream, $attachment_file);
