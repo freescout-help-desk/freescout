@@ -947,9 +947,10 @@ class Helper
         return $dest_path;
     }
 
+    // Preserved for backward compatibility only.
     public static function getPrivateStorage()
     {
-        return \Storage::disk('local');
+        return \Storage::disk('local_app');
     }
 
     public static function getPublicStorage()
