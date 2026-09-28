@@ -879,11 +879,7 @@ a h4 {
     position: relative;
     border: 1px solid #dedede;
     border-radius: 15px;
-    /*border-left: 4px solid #5cb85c;*/
-    /*-webkit-box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
-    box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);*/
-    -webkit-box-shadow:0 0 5px rgba(0,0,0,.2);
-    box-shadow:0 0 5px rgba(0,0,0,.2);
+    box-shadow: 0 1px 2px rgba(23, 43, 58, .06), 0 1px 8px rgba(23, 43, 58, .05);
     box-sizing: border-box;
     min-height: 256px;
     margin: 0 20px 20px 0;
@@ -3042,15 +3038,9 @@ ul.sidebar-block-list {
     transform: translate(-50%,0) translate(-1px,0);
     z-index: 1099;
     max-width: 300px;
-    border-radius: 0;
     flex-direction: row;
     padding: 9px 14px;
-    /*-webkit-box-shadow: 4px 4px 12px rgba(0, 0, 0, .175);
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, .175);*/
-    -webkit-box-shadow:0 0 5px rgba(0,0,0,.4);
-    box-shadow:0 0 5px rgba(0,0,0,.4);
     cursor: default;
-
     overflow-wrap: break-word;
     word-wrap: break-word;
     -ms-word-break: break-all;
@@ -3064,7 +3054,14 @@ ul.sidebar-block-list {
     -webkit-hyphens: auto;
     hyphens: auto;
     border: 0;
+    border-top: 4px solid #009272;
+    border-radius: 4px;
+    box-shadow: 0 0 22px rgba(18, 51, 76, .1);
 }
+.alert-floating.alert-danger { border-top-color: #e11d48; }
+.alert-floating.alert-warning { border-top-color: #d97706; }
+.alert-floating.alert-info { border-top-color: #4f46e5; }
+
 .alert-floating.alert-danger,
 .alert-floating.alert-warning {
     position: fixed;
@@ -3079,6 +3076,10 @@ ul.sidebar-block-list {
 .alert-floating a:focus {
     color: #2a3b47;
     text-decoration: underline;
+}
+.alert-floating .glyphicon {
+    font-size: 13px;
+    vertical-align: inherit;
 }
 .alert-floating.alert-success .glyphicon {
     color: #53b961;
@@ -3655,7 +3656,7 @@ ul.sidebar-block-list {
 }*/
 
 /**
- * Panel
+ * Panels
  */
 .panel-sortable .handle {
     cursor: move;
@@ -3686,6 +3687,15 @@ ul.sidebar-block-list {
 .panel-grey {
     background-color: #f8f9f9;
     border-color: #dde2e6;
+}
+.panel-group .panel {
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(23, 43, 58, .06), 0 1px 8px rgba(23, 43, 58, .05);
+    border: 1px solid #e5e9ed;
+}
+.panel-heading {
+    border-bottom: 1px solid #e5e9ed;
+    border-radius: 8px 8px 0 0;
 }
 
 /**
@@ -4627,8 +4637,5 @@ a.disabled:focus {
 }
 
 .btn {
-    border-radius: 5px;
-}
-.panel-group .panel {
     border-radius: 5px;
 }
