@@ -3395,8 +3395,8 @@ class ConversationsController extends Controller
 
         // Restore conversation data from penultimate thread
         if ($last_thread) {
-            $conversation->setCc($last_thread->cc);
-            $conversation->setBcc($last_thread->bcc);
+            $conversation->setCc($last_thread->getCcArray());
+            $conversation->setBcc($last_thread->getBccArray());
             $conversation->last_reply_at = $last_thread->created_at;
             $conversation->last_reply_from = $last_thread->source_via;
             $conversation->user_updated_at = date('Y-m-d H:i:s');
