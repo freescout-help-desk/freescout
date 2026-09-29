@@ -108,7 +108,7 @@ else
 
 	git fetch
 
-	new_commits=`git log "$branch..origin/$branch" --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short | wc -l`;
+	new_commits=`git rev-list --count "$branch..origin/$branch"`;
 	if [ $new_commits = 0 ]; then
 		echo -e "\e[32mYou already have the latest version of the application, no upgrade needed.\e[0m";
 		exit;
