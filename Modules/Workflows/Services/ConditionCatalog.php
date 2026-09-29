@@ -7,10 +7,14 @@ class ConditionCatalog
     /**
      * Built-in condition groups for one mailbox.
      *
-     * @param int $mailboxId
+     * Pass flags to avoid Module::isActive. A missing flag is false.
+     * Null flags read tags and customfields from Module::isActive.
+     *
+     * @param int        $mailboxId
+     * @param array|null $flags
      * @return array
      */
-    public static function configured(int $mailboxId): array
+    public static function configured(int $mailboxId, ?array $flags = null): array
     {
         $text = self::textOperators();
         $equality = [
@@ -75,9 +79,53 @@ class ConditionCatalog
             ],
         ];
 
+        if (self::moduleEnabled($flags, 'tags')) {
+            $config['tags'] = [
+                'title' => 'Tags',
+                'items' => [
+                    'tag' => self::item('Tag', [
+                        'contains' => 'Contains',
+                        'not_contains' => 'Does not contain',
+                        'equal' => 'Is equal',
+                        'not_equal' => 'Is not equal',
+                    ]),
+                ],
+            ];
+        }
+
+        if (self::moduleEnabled($flags, 'customfields')) {
+            $config['custom_fields'] = [
+                'title' => 'Custom fields',
+                'items' => [
+                    'custom_field' => self::item('Custom field', [
+                        'equal' => 'Is equal',
+                        'not_equal' => 'Is not equal',
+                        'contains' => 'Contains',
+                        'not_contains' => 'Does not contain',
+                        'is_set' => 'Is set',
+                        'is_not_set' => 'Is not set',
+                    ]),
+                ],
+            ];
+        }
+
         $config['mailbox_id'] = $mailboxId;
 
         return \Eventy::filter('workflows.conditions_config', $config, $mailboxId);
+    }
+
+    /**
+     * @param array|null $flags
+     * @param string     $alias
+     * @return bool
+     */
+    private static function moduleEnabled(?array $flags, string $alias): bool
+    {
+        if ($flags === null) {
+            return (bool) \Module::isActive($alias);
+        }
+
+        return (bool) ($flags[$alias] ?? false);
     }
 
     /**

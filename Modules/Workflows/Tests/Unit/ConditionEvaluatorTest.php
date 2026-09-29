@@ -303,6 +303,112 @@ class ConditionEvaluatorTest extends TestCase
         ));
     }
 
+    public function test_tag_contains_uses_added_tag_and_ignores_the_tag_list(): void
+    {
+        $context = new ConditionContext();
+        $context->added_tag = 'refund';
+        $context->tags = ['other'];
+
+        $this->assertTrue(ConditionEvaluator::matches('tag', 'contains', 'refund', $context));
+        $this->assertFalse(ConditionEvaluator::matches('tag', 'contains', 'other', $context));
+        $this->assertFalse(ConditionEvaluator::matches('tag', 'equal', 'other', $context));
+        $this->assertTrue(ConditionEvaluator::matches('tag', 'not_contains', 'other', $context));
+    }
+
+    public function test_tag_equal_uses_tags_when_added_tag_is_null(): void
+    {
+        $context = new ConditionContext();
+        $context->added_tag = null;
+        $context->tags = ['refund', 'vip'];
+
+        $this->assertTrue(ConditionEvaluator::matches('tag', 'equal', 'vip', $context));
+        $this->assertTrue(ConditionEvaluator::matches('tag', 'equal', 'VIP', $context));
+        $this->assertTrue(ConditionEvaluator::matches('tag', 'contains', 'fund', $context));
+        $this->assertFalse(ConditionEvaluator::matches('tag', 'equal', 'other', $context));
+        $this->assertTrue(ConditionEvaluator::matches('tag', 'not_equal', 'other', $context));
+        $this->assertFalse(ConditionEvaluator::matches('tag', 'not_contains', 'fund', $context));
+    }
+
+    public function test_tag_not_operators_pass_when_no_candidate_matches(): void
+    {
+        $context = new ConditionContext();
+        $context->added_tag = null;
+        $context->tags = [];
+
+        $this->assertFalse(ConditionEvaluator::matches('tag', 'contains', 'refund', $context));
+        $this->assertFalse(ConditionEvaluator::matches('tag', 'equal', 'refund', $context));
+        $this->assertTrue(ConditionEvaluator::matches('tag', 'not_contains', 'refund', $context));
+        $this->assertTrue(ConditionEvaluator::matches('tag', 'not_equal', 'refund', $context));
+        $this->assertFalse(ConditionEvaluator::matches('tag', 'regex', 'refund', $context));
+    }
+
+    public function test_channel_equal_telegram(): void
+    {
+        $context = new ConditionContext();
+        $context->channel = 'telegram';
+
+        $this->assertTrue(ConditionEvaluator::matches('channel', 'equal', 'telegram', $context));
+        $this->assertFalse(ConditionEvaluator::matches('channel', 'not_equal', 'telegram', $context));
+        $this->assertFalse(ConditionEvaluator::matches('channel', 'contains', 'telegram', $context));
+
+        $context->channel = null;
+        $this->assertFalse(ConditionEvaluator::matches('channel', 'equal', 'telegram', $context));
+    }
+
+    public function test_custom_field_is_set_and_is_not_set(): void
+    {
+        $set = new ConditionContext();
+        $set->custom_field_value = 'sku-1';
+
+        $this->assertTrue(ConditionEvaluator::matches('custom_field', 'is_set', null, $set));
+        $this->assertFalse(ConditionEvaluator::matches('custom_field', 'is_not_set', null, $set));
+        $this->assertTrue(ConditionEvaluator::matches('custom_field', 'equal', 'sku-1', $set));
+        $this->assertTrue(ConditionEvaluator::matches('custom_field', 'contains', 'sku', $set));
+        $this->assertFalse(ConditionEvaluator::matches('custom_field', 'not_equal', 'sku-1', $set));
+        $this->assertFalse(ConditionEvaluator::matches('custom_field', 'not_contains', 'sku', $set));
+
+        $unset = new ConditionContext();
+        $unset->custom_field_value = null;
+
+        $this->assertTrue(ConditionEvaluator::matches('custom_field', 'is_not_set', null, $unset));
+        $this->assertFalse(ConditionEvaluator::matches('custom_field', 'is_set', null, $unset));
+
+        $empty = new ConditionContext();
+        $empty->custom_field_value = '';
+
+        $this->assertTrue(ConditionEvaluator::matches('custom_field', 'is_not_set', null, $empty));
+        $this->assertFalse(ConditionEvaluator::matches('custom_field', 'is_set', null, $empty));
+        $this->assertFalse(ConditionEvaluator::matches('custom_field', 'regex', 'sku', $set));
+    }
+
+    public function test_check_condition_filter_runs_after_the_builtin_result(): void
+    {
+        $seen = [];
+        $callback = function ($result, $type, $operator, $value, $conversation, $workflow) use (&$seen) {
+            $seen[] = [$type, $result, $conversation, $workflow];
+            if ($type === 'today_is_business_day') {
+                return true;
+            }
+
+            return $result;
+        };
+        \Eventy::addFilter('workflow.check_condition', $callback, 20, 6);
+
+        try {
+            $context = new ConditionContext();
+            $context->channel = 'telegram';
+
+            $this->assertTrue(ConditionEvaluator::matches('channel', 'equal', 'telegram', $context));
+            $this->assertTrue(ConditionEvaluator::matches('today_is_business_day', 'yes', null, $context));
+            $this->assertSame([
+                ['channel', true, null, null],
+                ['today_is_business_day', false, null, null],
+            ], $seen);
+        } finally {
+            \Eventy::removeFilter('workflow.check_condition', $callback, 20);
+        }
+    }
+
     /**
      * @return ConditionContext
      */

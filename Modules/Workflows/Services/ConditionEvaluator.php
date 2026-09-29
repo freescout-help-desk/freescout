@@ -65,7 +65,8 @@ class ConditionEvaluator
     }
 
     /**
-     * Whether one condition row matches. Unknown types and operators are false.
+     * Whether one condition row matches. Unknown types and operators start false.
+     * The result always goes through workflow.check_condition.
      * A missing context property counts as null, false, or an empty list.
      *
      * @param string $type
@@ -76,57 +77,171 @@ class ConditionEvaluator
      */
     public static function matches(string $type, string $operator, $value, $context): bool
     {
+        $result = false;
+
         if ($type === 'status') {
-            return self::matchesSlug(self::$statusSlugs, self::read($context, 'status'), $operator, $value);
-        }
-
-        if ($type === 'conversation_type') {
-            return self::matchesSlug(self::$typeSlugs, self::read($context, 'type'), $operator, $value);
-        }
-
-        if ($type === 'assignee') {
-            return self::matchesAssignee($operator, $value, self::read($context, 'user_id'));
-        }
-
-        if ($type === 'customer_viewed') {
-            return self::matchesFlag($operator, (bool) self::read($context, 'customer_viewed', false));
-        }
-
-        if ($type === 'user_action') {
-            return self::matchesUserAction($operator, self::read($context, 'trigger'));
-        }
-
-        if ($type === 'new_reply_moved') {
-            if ($operator !== 'is') {
-                return false;
+            $result = self::matchesSlug(self::$statusSlugs, self::read($context, 'status'), $operator, $value);
+        } elseif ($type === 'conversation_type') {
+            $result = self::matchesSlug(self::$typeSlugs, self::read($context, 'type'), $operator, $value);
+        } elseif ($type === 'assignee') {
+            $result = self::matchesAssignee($operator, $value, self::read($context, 'user_id'));
+        } elseif ($type === 'customer_viewed') {
+            $result = self::matchesFlag($operator, (bool) self::read($context, 'customer_viewed', false));
+        } elseif ($type === 'user_action') {
+            $result = self::matchesUserAction($operator, self::read($context, 'trigger'));
+        } elseif ($type === 'new_reply_moved') {
+            if ($operator === 'is') {
+                $result = self::read($context, 'trigger') === $value;
             }
-
-            return self::read($context, 'trigger') === $value;
-        }
-
-        if ($type === 'body') {
+        } elseif ($type === 'body') {
             if (!is_array($value)) {
                 $value = [];
             }
             $chosenBody = self::chosenBody($value, $context);
 
-            return self::text($chosenBody, $operator, (string) ($value['text'] ?? ''));
-        }
-
-        if ($type === 'attachment') {
+            $result = self::text($chosenBody, $operator, (string) ($value['text'] ?? ''));
+        } elseif ($type === 'attachment') {
             $hasAttachment = (bool) self::read($context, 'has_attachment', false);
             if ($operator === 'contains') {
-                return $hasAttachment;
+                $result = $hasAttachment;
+            } elseif ($operator === 'not_contains') {
+                $result = !$hasAttachment;
             }
-            if ($operator === 'not_contains') {
-                return !$hasAttachment;
+        } elseif ($type === 'waiting_since' || $type === 'last_user_reply' || $type === 'last_customer_reply' || $type === 'date_created') {
+            $result = self::matchesDate($type, $operator, $value, $context);
+        } elseif ($type === 'tag') {
+            $result = self::matchesTag($operator, $value, $context);
+        } elseif ($type === 'channel') {
+            $result = self::matchesChannel($operator, $value, $context);
+        } elseif ($type === 'custom_field') {
+            $result = self::matchesCustomField($operator, $value, $context);
+        }
+
+        return \Eventy::filter(
+            'workflow.check_condition',
+            $result,
+            $type,
+            $operator,
+            $value,
+            self::read($context, 'conversation'),
+            self::read($context, 'workflow')
+        );
+    }
+
+    /**
+     * added_tag, when set, is the only candidate. Otherwise every tag is checked.
+     * An empty list fails contains and equal, and passes the not_ operators.
+     *
+     * @param string $operator
+     * @param mixed  $value
+     * @param object $context
+     * @return bool
+     */
+    private static function matchesTag(string $operator, $value, $context): bool
+    {
+        if (!is_string($value) && $value !== null) {
+            return false;
+        }
+
+        $candidates = self::tagCandidates($context);
+
+        if ($operator === 'contains' || $operator === 'equal') {
+            foreach ($candidates as $candidate) {
+                if (self::text($candidate, $operator, $value)) {
+                    return true;
+                }
             }
 
             return false;
         }
 
-        if ($type === 'waiting_since' || $type === 'last_user_reply' || $type === 'last_customer_reply' || $type === 'date_created') {
-            return self::matchesDate($type, $operator, $value, $context);
+        if ($operator === 'not_contains' || $operator === 'not_equal') {
+            $positive = $operator === 'not_contains' ? 'contains' : 'equal';
+            foreach ($candidates as $candidate) {
+                if (self::text($candidate, $positive, $value)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param object $context
+     * @return array
+     */
+    private static function tagCandidates($context): array
+    {
+        $added = self::read($context, 'added_tag');
+        if ($added !== null) {
+            return is_string($added) ? [$added] : [];
+        }
+
+        $tags = self::read($context, 'tags', []);
+        if (!is_array($tags)) {
+            return [];
+        }
+
+        $candidates = [];
+        foreach ($tags as $tag) {
+            if (is_string($tag)) {
+                $candidates[] = $tag;
+            }
+        }
+
+        return $candidates;
+    }
+
+    /**
+     * @param string $operator
+     * @param mixed  $value
+     * @param object $context
+     * @return bool
+     */
+    private static function matchesChannel(string $operator, $value, $context): bool
+    {
+        if ($operator !== 'equal' && $operator !== 'not_equal') {
+            return false;
+        }
+
+        $channel = self::read($context, 'channel');
+        $actual = is_string($channel) ? $channel : null;
+        $expected = is_string($value) ? $value : null;
+        $equal = $actual !== null && $actual === $expected;
+
+        return $operator === 'equal' ? $equal : !$equal;
+    }
+
+    /**
+     * @param string $operator
+     * @param mixed  $value
+     * @param object $context
+     * @return bool
+     */
+    private static function matchesCustomField(string $operator, $value, $context): bool
+    {
+        $field = self::read($context, 'custom_field_value');
+        if (!is_string($field)) {
+            $field = null;
+        }
+
+        if ($operator === 'is_set') {
+            return $field !== null && $field !== '';
+        }
+
+        if ($operator === 'is_not_set') {
+            return $field === null || $field === '';
+        }
+
+        if ($operator === 'equal' || $operator === 'not_equal' || $operator === 'contains' || $operator === 'not_contains') {
+            if (!is_string($value) && $value !== null) {
+                return false;
+            }
+
+            return self::text($field, $operator, $value);
         }
 
         return false;

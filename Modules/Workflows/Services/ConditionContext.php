@@ -85,4 +85,36 @@ class ConditionContext
      * @var string|null
      */
     public $created_at;
+
+    /**
+     * Tag added by the triggering event. When set, tag checks ignore $tags.
+     *
+     * @var string|null
+     */
+    public $added_tag;
+
+    /**
+     * @var array
+     */
+    public $tags = [];
+
+    /**
+     * @var string|null
+     */
+    public $channel;
+
+    /**
+     * @var string|null
+     */
+    public $custom_field_value;
+
+    /**
+     * @var mixed
+     */
+    public $conversation;
+
+    /**
+     * @var mixed
+     */
+    public $workflow;
 }
