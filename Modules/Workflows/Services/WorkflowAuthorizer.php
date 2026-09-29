@@ -65,12 +65,19 @@ class WorkflowAuthorizer
     /**
      * On only for true, integer 1, and string "1".
      *
+     * @param mixed $stored
+     * @return bool
+     */
+    public static function storedOptionOn($stored): bool
+    {
+        return $stored === true || $stored === 1 || $stored === '1';
+    }
+
+    /**
      * @return bool
      */
     private static function optionOn(): bool
     {
-        $value = \Option::get('workflows.allow_non_admins');
-
-        return $value === true || $value === 1 || $value === '1';
+        return self::storedOptionOn(\Option::get('workflows.allow_non_admins'));
     }
 }

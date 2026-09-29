@@ -125,6 +125,97 @@ class WorkflowsServiceProvider extends ServiceProvider
         $events->addAction('bulk_actions.before_delete', function ($mailbox) {
             self::bulkMenu($mailbox);
         }, 20, 1);
+
+        $events->addFilter('settings.sections', function ($sections) {
+            return self::settingsSections($sections);
+        }, 20, 1);
+
+        $events->addFilter('settings.view', function ($view, $section) {
+            return self::settingsView($view, $section);
+        }, 20, 2);
+
+        $events->addFilter('settings.section_settings', function ($settings, $section) {
+            return self::settingsSectionSettings($settings, $section);
+        }, 20, 2);
+
+        $events->addFilter('settings.section_params', function ($params, $section) {
+            return self::settingsSectionParams($params, $section);
+        }, 20, 2);
+    }
+
+    /**
+     * Leave a non-array alone. The title is the literal shown in the settings menu.
+     *
+     * @param mixed $sections
+     * @return mixed
+     */
+    private static function settingsSections($sections)
+    {
+        if (!is_array($sections)) {
+            return $sections;
+        }
+
+        $sections['workflows'] = [
+            'title' => 'Workflows',
+            'icon' => 'random',
+            'order' => 400,
+        ];
+
+        return $sections;
+    }
+
+    /**
+     * Two arguments. Any other section keeps the view SettingsController already chose.
+     *
+     * @param mixed $view
+     * @param mixed $section
+     * @return mixed
+     */
+    private static function settingsView($view, $section)
+    {
+        if ($section === 'workflows') {
+            return 'workflows::partials.settings';
+        }
+
+        return $view;
+    }
+
+    /**
+     * Two arguments. Option is read only for the workflows section.
+     *
+     * @param mixed $settings
+     * @param mixed $section
+     * @return mixed
+     */
+    private static function settingsSectionSettings($settings, $section)
+    {
+        if ($section !== 'workflows') {
+            return $settings;
+        }
+
+        return [
+            'workflows.allow_non_admins' => \Option::get('workflows.allow_non_admins'),
+        ];
+    }
+
+    /**
+     * Two arguments. default false makes an unchecked box Option::remove, not an .env write.
+     *
+     * @param mixed $params
+     * @param mixed $section
+     * @return mixed
+     */
+    private static function settingsSectionParams($params, $section)
+    {
+        if ($section !== 'workflows') {
+            return $params;
+        }
+
+        return [
+            'settings' => [
+                'workflows.allow_non_admins' => ['default' => false],
+            ],
+        ];
     }
 
     /**

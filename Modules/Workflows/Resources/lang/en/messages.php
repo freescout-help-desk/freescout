@@ -49,4 +49,5 @@ return [
     'action_notification' => 'Notification',
     'action_disable_auto_reply' => 'Disable auto reply',
     'action_trigger_webhook' => 'Trigger webhook',
+    'allow_non_admins' => 'Allow non-admins to manage workflows',
 ];
