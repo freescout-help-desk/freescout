@@ -82,6 +82,49 @@ class ActionRunner
             return 'done';
         }
 
+        if ($type === 'reply') {
+            self::reply($conversation, $value, $workflowUser, $context);
+
+            return 'done';
+        }
+
+        if ($type === 'email_customer') {
+            self::emailCustomer($conversation, $value, $workflowUser, $context);
+
+            return 'done';
+        }
+
+        if ($type === 'forward') {
+            self::forwardConversation($conversation, $value, $workflowUser);
+
+            return 'done';
+        }
+
+        if ($type === 'notification') {
+            self::notification($conversation, $value, $context);
+
+            return 'done';
+        }
+
+        if ($type === 'disable_auto_reply') {
+            if (is_object($conversation)) {
+                $conversation->setMeta('ar_off', true, true);
+            }
+
+            return 'done';
+        }
+
+        if ($type === 'trigger_webhook') {
+            \Eventy::action(
+                'workflow.webhook',
+                $value,
+                $conversation,
+                self::read($context, 'workflow')
+            );
+
+            return 'done';
+        }
+
         \Eventy::filter(
             'workflow.perform_action',
             false,
@@ -135,6 +178,133 @@ class ActionRunner
         }
 
         $conversation->changeUser($userId, $workflowUser, true);
+    }
+
+    /**
+     * The application createUserThread returns void. Its return value is still passed on.
+     *
+     * @param object|null $conversation
+     * @param mixed       $value
+     * @param mixed       $workflowUser
+     * @param object      $context
+     * @return void
+     */
+    private static function reply($conversation, $value, $workflowUser, $context)
+    {
+        if (!is_object($conversation)) {
+            return;
+        }
+
+        $body = self::replaceBody($conversation, $value, $workflowUser);
+        $thread = $conversation->createUserThread($workflowUser, $body, ['type' => Thread::TYPE_MESSAGE]);
+        $context->send_reply = true;
+        $context->body = $body;
+        self::gateway($context)->sendReply($conversation, $thread);
+    }
+
+    /**
+     * Chat conversations are not emailed. No thread is created.
+     *
+     * @param object|null $conversation
+     * @param mixed       $value
+     * @param mixed       $workflowUser
+     * @param object      $context
+     * @return void
+     */
+    private static function emailCustomer($conversation, $value, $workflowUser, $context)
+    {
+        if (!is_object($conversation) || $conversation->type === Conversation::TYPE_CHAT) {
+            return;
+        }
+
+        $body = self::replaceBody($conversation, $value, $workflowUser);
+        $context->send_plain = true;
+        $context->send_reply = false;
+        $context->recorded_subject = $conversation->subject;
+        self::gateway($context)->sendPlain($conversation, $body);
+        $context->body = $body;
+    }
+
+    /**
+     * Forward does not set the reply or plain-email flags.
+     *
+     * @param object|null $conversation
+     * @param mixed       $value
+     * @param mixed       $workflowUser
+     * @return void
+     */
+    private static function forwardConversation($conversation, $value, $workflowUser)
+    {
+        if (!is_object($conversation) || !is_array($value) || !array_key_exists('body', $value) || !array_key_exists('to', $value)) {
+            return;
+        }
+
+        $body = self::replaceBody($conversation, $value['body'], $workflowUser);
+        $conversation->forward($workflowUser, $body, $value['to']);
+    }
+
+    /**
+     * Record who would be notified. This action does not send mail.
+     *
+     * @param object|null $conversation
+     * @param mixed       $value
+     * @param object      $context
+     * @return void
+     */
+    private static function notification($conversation, $value, $context)
+    {
+        if ($value === 'assignee') {
+            if (is_object($conversation)) {
+                $context->notification_user_id = $conversation->user_id;
+            }
+
+            return;
+        }
+
+        if ($value === 'last_user') {
+            $context->notification_user_id = self::read($context, 'last_user_id');
+
+            return;
+        }
+
+        if (is_int($value) || (is_string($value) && is_numeric($value))) {
+            $context->notification_user_id = (int) $value;
+        }
+    }
+
+    /**
+     * {%user.*%} resolves to the workflow user, not an assignee.
+     *
+     * @param object $conversation
+     * @param mixed  $body
+     * @param mixed  $workflowUser
+     * @return string
+     */
+    private static function replaceBody($conversation, $body, $workflowUser)
+    {
+        return \App\Misc\Mail::replaceMailVars($body, [
+            'conversation' => $conversation,
+            'mailbox' => $conversation->mailbox,
+            'customer' => $conversation->customer,
+            'user' => $workflowUser,
+        ], false, false);
+    }
+
+    /**
+     * A recording gateway on the context wins. Otherwise use MailGateway.
+     *
+     * @param object $context
+     * @return object
+     */
+    private static function gateway($context)
+    {
+        $gateway = self::read($context, 'mailGateway');
+
+        if (is_object($gateway)) {
+            return $gateway;
+        }
+
+        return new MailGateway();
     }
 
     /**

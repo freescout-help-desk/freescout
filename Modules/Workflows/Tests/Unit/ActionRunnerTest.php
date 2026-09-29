@@ -321,6 +321,202 @@ class ActionRunnerTest extends TestCase
         }
     }
 
+    public function test_reply_sends_the_replaced_body(): void
+    {
+        $conversation = $this->mailConversation();
+        $user = $this->workflowUser();
+        $gateway = $this->recordingGateway();
+        $body = 'Hello {%user.fullName%}';
+        $expected = $this->replacedBody($conversation, $user, $body);
+        $context = $this->context($conversation, $user);
+        $context->mailGateway = $gateway;
+
+        $result = ActionRunner::perform('reply', $body, $context);
+
+        $this->assertSame('done', $result);
+        $this->assertSame([
+            ['createUserThread', $user, $expected, ['type' => Thread::TYPE_MESSAGE]],
+        ], $conversation->calls);
+        $this->assertTrue($context->send_reply);
+        $this->assertSame($expected, $context->body);
+        $this->assertStringContainsString('Workflow Person', $context->body);
+        $this->assertSame([
+            ['sendReply', $conversation, $conversation->thread],
+        ], $gateway->calls);
+    }
+
+    public function test_email_customer_sends_plain_text_without_a_thread(): void
+    {
+        $conversation = $this->mailConversation();
+        $conversation->type = Conversation::TYPE_EMAIL;
+        $user = $this->workflowUser();
+        $gateway = $this->recordingGateway();
+        $body = 'Hello {%user.fullName%}';
+        $expected = $this->replacedBody($conversation, $user, $body);
+        $context = $this->context($conversation, $user);
+        $context->mailGateway = $gateway;
+
+        $result = ActionRunner::perform('email_customer', $body, $context);
+
+        $this->assertSame('done', $result);
+        $this->assertSame([], $conversation->calls);
+        $this->assertTrue($context->send_plain);
+        $this->assertFalse($context->send_reply);
+        $this->assertSame($conversation->subject, $context->recorded_subject);
+        $this->assertSame($expected, $context->body);
+        $this->assertStringContainsString('Workflow Person', $context->body);
+        $this->assertSame([
+            ['sendPlain', $conversation, $expected],
+        ], $gateway->calls);
+    }
+
+    public function test_email_customer_skips_chat_without_sending(): void
+    {
+        $conversation = $this->mailConversation();
+        $conversation->type = Conversation::TYPE_CHAT;
+        $user = $this->workflowUser();
+        $gateway = $this->recordingGateway();
+        $context = $this->context($conversation, $user);
+        $context->mailGateway = $gateway;
+
+        $result = ActionRunner::perform('email_customer', 'Hello {%user.fullName%}', $context);
+
+        $this->assertSame('done', $result);
+        $this->assertFalse(property_exists($context, 'send_reply'));
+        $this->assertFalse(property_exists($context, 'send_plain'));
+        $this->assertSame([], $gateway->calls);
+        $this->assertSame([], $conversation->calls);
+    }
+
+    public function test_forward_calls_forward_with_the_replaced_body(): void
+    {
+        $conversation = $this->mailConversation();
+        $user = $this->workflowUser();
+        $gateway = $this->recordingGateway();
+        $body = 'Please see {%user.fullName%}';
+        $expected = $this->replacedBody($conversation, $user, $body);
+        $context = $this->context($conversation, $user);
+        $context->mailGateway = $gateway;
+
+        $result = ActionRunner::perform('forward', [
+            'body' => $body,
+            'to' => 'ops@example.com',
+        ], $context);
+
+        $this->assertSame('done', $result);
+        $this->assertSame([
+            ['forward', $user, $expected, 'ops@example.com'],
+        ], $conversation->calls);
+        $this->assertStringContainsString('Workflow Person', $conversation->calls[0][2]);
+        $this->assertFalse(property_exists($context, 'send_reply'));
+        $this->assertFalse(property_exists($context, 'send_plain'));
+        $this->assertSame([], $gateway->calls);
+    }
+
+    public function test_notification_records_the_assignee(): void
+    {
+        $conversation = $this->mailConversation();
+        $conversation->user_id = 12;
+        $user = $this->workflowUser();
+        $gateway = $this->recordingGateway();
+        $context = $this->context($conversation, $user);
+        $context->mailGateway = $gateway;
+
+        $result = ActionRunner::perform('notification', 'assignee', $context);
+
+        $this->assertSame('done', $result);
+        $this->assertSame(12, $context->notification_user_id);
+        $this->assertSame([], $gateway->calls);
+        $this->assertSame([], $conversation->calls);
+    }
+
+    public function test_notification_records_the_last_user(): void
+    {
+        $conversation = $this->mailConversation();
+        $user = $this->workflowUser();
+        $gateway = $this->recordingGateway();
+        $context = $this->context($conversation, $user);
+        $context->last_user_id = 8;
+        $context->mailGateway = $gateway;
+
+        $result = ActionRunner::perform('notification', 'last_user', $context);
+
+        $this->assertSame('done', $result);
+        $this->assertSame(8, $context->notification_user_id);
+        $this->assertSame([], $gateway->calls);
+        $this->assertSame([], $conversation->calls);
+    }
+
+    public function test_notification_records_an_integer_or_numeric_string_user_id(): void
+    {
+        foreach ([15, '15'] as $value) {
+            $conversation = $this->mailConversation();
+            $user = $this->workflowUser();
+            $gateway = $this->recordingGateway();
+            $context = $this->context($conversation, $user);
+            $context->mailGateway = $gateway;
+
+            $result = ActionRunner::perform('notification', $value, $context);
+
+            $this->assertSame('done', $result);
+            $this->assertSame(15, $context->notification_user_id);
+            $this->assertSame([], $gateway->calls);
+            $this->assertSame([], $conversation->calls);
+        }
+    }
+
+    public function test_disable_auto_reply_sets_ar_off_meta(): void
+    {
+        $conversation = $this->mailConversation();
+        $conversation->id = 44;
+        $id = $conversation->id;
+        $user = $this->workflowUser();
+        $callback = function ($send, $conversation) use ($id) {
+            if ($conversation && $conversation->id === $id) {
+                return false;
+            }
+
+            return $send;
+        };
+        \Eventy::addFilter('autoreply.should_send', $callback, 20, 2);
+
+        try {
+            $result = ActionRunner::perform('disable_auto_reply', null, $this->context($conversation, $user));
+
+            $this->assertSame('done', $result);
+            $this->assertSame([
+                ['setMeta', 'ar_off', true, true],
+            ], $conversation->calls);
+            $this->assertFalse(\Eventy::filter('autoreply.should_send', true, $conversation));
+        } finally {
+            \Eventy::removeFilter('autoreply.should_send', $callback, 20);
+        }
+    }
+
+    public function test_trigger_webhook_fires_the_event_name(): void
+    {
+        $conversation = $this->mailConversation();
+        $user = $this->workflowUser();
+        $workflow = (object) ['id' => 3];
+        $seen = null;
+        $callback = function ($eventName, $conversation, $workflow) use (&$seen) {
+            $seen = [$eventName, $conversation, $workflow];
+        };
+        \Eventy::addAction('workflow.webhook', $callback, 20, 3);
+
+        try {
+            $context = $this->context($conversation, $user);
+            $context->workflow = $workflow;
+
+            $result = ActionRunner::perform('trigger_webhook', 'ticket.escalated', $context);
+
+            $this->assertSame('done', $result);
+            $this->assertSame(['ticket.escalated', $conversation, $workflow], $seen);
+        } finally {
+            \Eventy::removeAction('workflow.webhook', $callback, 20);
+        }
+    }
+
     /**
      * @param object $conversation
      * @param object $workflowUser
@@ -342,6 +538,15 @@ class ActionRunnerTest extends TestCase
     {
         return new class {
             public $calls = [];
+            public $thread = null;
+            public $subject = null;
+            public $number = null;
+            public $customer_email = null;
+            public $mailbox = null;
+            public $customer = null;
+            public $type = null;
+            public $user_id = null;
+            public $id = null;
 
             public function changeStatus($status, $user, $createThread)
             {
@@ -356,6 +561,9 @@ class ActionRunnerTest extends TestCase
             public function createUserThread($user, $body, $data = [])
             {
                 $this->calls[] = ['createUserThread', $user, $body, $data];
+                $this->thread = (object) ['id' => 501];
+
+                return $this->thread;
             }
 
             public function deleteToFolder($user)
@@ -372,6 +580,97 @@ class ActionRunnerTest extends TestCase
             {
                 $this->calls[] = ['moveToMailbox', $mailboxId, $user];
             }
+
+            public function forward($user, $body, $to = '')
+            {
+                $this->calls[] = ['forward', $user, $body, $to];
+            }
+
+            public function setMeta($key, $value, $save = false)
+            {
+                $this->calls[] = ['setMeta', $key, $value, $save];
+            }
         };
+    }
+
+    /**
+     * @return object
+     */
+    private function mailConversation()
+    {
+        $conversation = $this->conversationDouble();
+        $conversation->subject = 'Where is my order';
+        $conversation->number = 1001;
+        $conversation->customer_email = 'customer@example.com';
+        $conversation->mailbox = null;
+        $conversation->customer = null;
+
+        return $conversation;
+    }
+
+    /**
+     * Workflow user, not an App\User. replaceMailVars reads these members.
+     *
+     * @return object
+     */
+    private function workflowUser()
+    {
+        return new class {
+            public $phone = '555-0100';
+            public $email = 'workflow@localhost';
+            public $job_title = 'Automation';
+            public $last_name = 'Person';
+
+            public function getFullName()
+            {
+                return 'Workflow Person';
+            }
+
+            public function getFirstName()
+            {
+                return 'Workflow';
+            }
+
+            public function getPhotoUrl()
+            {
+                return 'https://example.test/workflow.png';
+            }
+        };
+    }
+
+    /**
+     * @return object
+     */
+    private function recordingGateway()
+    {
+        return new class {
+            public $calls = [];
+
+            public function sendReply($conversation, $thread)
+            {
+                $this->calls[] = ['sendReply', $conversation, $thread];
+            }
+
+            public function sendPlain($conversation, $body)
+            {
+                $this->calls[] = ['sendPlain', $conversation, $body];
+            }
+        };
+    }
+
+    /**
+     * @param object $conversation
+     * @param object $user
+     * @param string $body
+     * @return string
+     */
+    private function replacedBody($conversation, $user, $body)
+    {
+        return \App\Misc\Mail::replaceMailVars($body, [
+            'conversation' => $conversation,
+            'mailbox' => $conversation->mailbox,
+            'customer' => $conversation->customer,
+            'user' => $user,
+        ], false, false);
     }
 }
