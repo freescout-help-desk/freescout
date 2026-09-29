@@ -73,7 +73,9 @@ class WebklexHeaderTest extends TestCase {
         self::assertSame("php-imap", $to->mailbox);
         self::assertSame("noreply.github.com", $to->host);
         self::assertSame("php-imap@noreply.github.com", $to->mail);
-        self::assertSame("Webklex/php-imap <php-imap@noreply.github.com>", $to->full);
+        // There can be no space before "<".
+        // https://github.com/freescout-help-desk/freescout/pull/5678
+        self::assertSame("Webklex/php-imap<php-imap@noreply.github.com>", $to->full);
 
         self::assertInstanceOf(Carbon::class, $date);
         self::assertSame("2022-12-26 08:07:14 GMT-0800", $date->format("Y-m-d H:i:s T"));
