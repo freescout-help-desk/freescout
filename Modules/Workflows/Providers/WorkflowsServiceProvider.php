@@ -5,6 +5,7 @@ namespace Modules\Workflows\Providers;
 use App\User;
 use Illuminate\Support\ServiceProvider;
 use Modules\Workflows\Listeners\RunWorkflows;
+use Modules\Workflows\Services\WorkflowHealth;
 use Modules\Workflows\Services\WorkflowRunner;
 
 class WorkflowsServiceProvider extends ServiceProvider
@@ -35,6 +36,9 @@ class WorkflowsServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../Config/config.php', 'workflows');
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
+        \Illuminate\Support\Facades\Event::listen(\App\Events\UserDeleted::class, function ($event) {
+            self::deactivateDeletedUser($event);
+        });
         self::hooks(new class {
             public function addFilter($hook, $callback, $priority = 20, $arguments = 1)
             {
@@ -82,6 +86,53 @@ class WorkflowsServiceProvider extends ServiceProvider
         self::listen($events, 'conversation.user_changed', 3, false);
         self::listen($events, 'conversation.subject_changed', 3, false);
         self::listen($events, 'conversation.state_changed', 3, false);
+
+        $events->addAction('customer.deleting', function ($customer) {
+            self::deactivateDeletedRecord($customer, 'customer');
+        }, 20, 1);
+
+        $events->addAction('mailbox.deleted', function ($mailbox) {
+            self::deactivateDeletedRecord($mailbox, 'mailbox');
+        }, 20, 1);
+    }
+
+    /**
+     * One argument. A draft array is not a record. A failed lookup must not stop the delete.
+     *
+     * @param mixed  $record
+     * @param string $kind
+     * @return void
+     */
+    private static function deactivateDeletedRecord($record, $kind): void
+    {
+        if (!is_object($record) || !isset($record->id)) {
+            return;
+        }
+
+        try {
+            WorkflowHealth::deactivateReferencing($record->id, $kind);
+        } catch (\Throwable $e) {
+            // The customer or mailbox delete continues when workflows cannot be updated.
+        }
+    }
+
+    /**
+     * Listen to the Laravel event only. Its constructor also fires user.deleted.
+     *
+     * @param mixed $event
+     * @return void
+     */
+    private static function deactivateDeletedUser($event): void
+    {
+        if (!is_object($event) || !isset($event->deleted_user) || !is_object($event->deleted_user) || !isset($event->deleted_user->id)) {
+            return;
+        }
+
+        try {
+            WorkflowHealth::deactivateReferencing($event->deleted_user->id, 'user');
+        } catch (\Throwable $e) {
+            // The user delete continues when workflows cannot be updated.
+        }
     }
 
     /**
