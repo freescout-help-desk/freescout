@@ -184,4 +184,133 @@ class ConditionEvaluatorTest extends TestCase
         $this->assertFalse(ConditionEvaluator::matches('unknown_type', 'equal', 'pending', $context));
         $this->assertFalse(ConditionEvaluator::matches('status', 'starts_with', 'pending', $context));
     }
+
+    public function test_waiting_since_in_the_last_is_false_when_last_reply_from_is_user(): void
+    {
+        $context = $this->dateContext();
+        $context->last_reply_from = Conversation::PERSON_USER;
+        $context->last_reply_from_workflow = false;
+        $context->status = Conversation::STATUS_ACTIVE;
+        $context->last_customer_reply_at = '2026-09-29 11:00:00';
+
+        $this->assertFalse(ConditionEvaluator::matches(
+            'waiting_since',
+            'in_the_last',
+            ['number' => 1, 'unit' => 'days'],
+            $context
+        ));
+    }
+
+    public function test_waiting_since_in_the_last_is_false_when_status_is_closed(): void
+    {
+        $context = $this->dateContext();
+        $context->last_reply_from = Conversation::PERSON_CUSTOMER;
+        $context->last_reply_from_workflow = false;
+        $context->status = Conversation::STATUS_CLOSED;
+        $context->last_customer_reply_at = '2026-09-29 11:00:00';
+
+        $this->assertFalse(ConditionEvaluator::matches(
+            'waiting_since',
+            'in_the_last',
+            ['number' => 1, 'unit' => 'days'],
+            $context
+        ));
+    }
+
+    public function test_waiting_since_not_in_the_last_is_true_for_an_older_customer_reply(): void
+    {
+        $context = $this->dateContext();
+        $context->last_reply_from = Conversation::PERSON_CUSTOMER;
+        $context->last_reply_from_workflow = false;
+        $context->status = Conversation::STATUS_ACTIVE;
+        $context->last_customer_reply_at = '2026-09-27 12:00:00';
+
+        $this->assertTrue(ConditionEvaluator::matches(
+            'waiting_since',
+            'not_in_the_last',
+            ['number' => 1, 'unit' => 'days'],
+            $context
+        ));
+    }
+
+    public function test_waiting_since_is_false_when_last_reply_from_workflow(): void
+    {
+        $context = $this->dateContext();
+        $context->last_reply_from = Conversation::PERSON_CUSTOMER;
+        $context->last_reply_from_workflow = true;
+        $context->status = Conversation::STATUS_ACTIVE;
+        $context->last_customer_reply_at = '2026-09-27 12:00:00';
+
+        $this->assertFalse(ConditionEvaluator::matches(
+            'waiting_since',
+            'not_in_the_last',
+            ['number' => 1, 'unit' => 'days'],
+            $context
+        ));
+    }
+
+    public function test_last_customer_reply_not_in_the_last_is_false_when_timestamp_is_null(): void
+    {
+        $context = $this->dateContext();
+        $context->last_customer_reply_at = null;
+
+        $this->assertFalse(ConditionEvaluator::matches(
+            'last_customer_reply',
+            'not_in_the_last',
+            ['number' => 1, 'unit' => 'days'],
+            $context
+        ));
+    }
+
+    public function test_date_created_in_the_last_two_hours(): void
+    {
+        $context = $this->dateContext();
+        $context->created_at = '2026-09-29 11:00:00';
+
+        $this->assertTrue(ConditionEvaluator::matches(
+            'date_created',
+            'in_the_last',
+            ['number' => 2, 'unit' => 'hours'],
+            $context
+        ));
+    }
+
+    public function test_date_created_minutes_unit_returns_false(): void
+    {
+        $context = $this->dateContext();
+        $context->created_at = '2026-09-29 11:30:00';
+
+        $this->assertFalse(ConditionEvaluator::matches(
+            'date_created',
+            'in_the_last',
+            ['number' => 60, 'unit' => 'minutes'],
+            $context
+        ));
+    }
+
+    public function test_last_user_reply_in_the_last_hour_has_no_status_guard(): void
+    {
+        $context = $this->dateContext();
+        $context->last_user_reply_at = '2026-09-29 11:30:00';
+        $context->status = Conversation::STATUS_CLOSED;
+        $context->last_reply_from = Conversation::PERSON_USER;
+
+        $this->assertTrue(ConditionEvaluator::matches(
+            'last_user_reply',
+            'in_the_last',
+            ['number' => 1, 'unit' => 'hours'],
+            $context
+        ));
+    }
+
+    /**
+     * @return ConditionContext
+     */
+    private function dateContext(): ConditionContext
+    {
+        $context = new ConditionContext();
+        $context->now = '2026-09-29 12:00:00';
+
+        return $context;
+    }
 }

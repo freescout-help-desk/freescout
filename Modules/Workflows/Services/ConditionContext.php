@@ -51,4 +51,38 @@ class ConditionContext
      * @var bool
      */
     public $has_attachment = false;
+
+    /**
+     * Fixed clock for date conditions. The evaluator must not call Carbon::now().
+     *
+     * @var string|null
+     */
+    public $now;
+
+    /**
+     * Conversation::PERSON_CUSTOMER or Conversation::PERSON_USER.
+     *
+     * @var int|null
+     */
+    public $last_reply_from;
+
+    /**
+     * @var bool
+     */
+    public $last_reply_from_workflow = false;
+
+    /**
+     * @var string|null
+     */
+    public $last_customer_reply_at;
+
+    /**
+     * @var string|null
+     */
+    public $last_user_reply_at;
+
+    /**
+     * @var string|null
+     */
+    public $created_at;
 }

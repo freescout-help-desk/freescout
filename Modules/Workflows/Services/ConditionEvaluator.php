@@ -3,6 +3,7 @@
 namespace Modules\Workflows\Services;
 
 use App\Conversation;
+use Carbon\Carbon;
 
 class ConditionEvaluator
 {
@@ -124,7 +125,121 @@ class ConditionEvaluator
             return false;
         }
 
+        if ($type === 'waiting_since' || $type === 'last_user_reply' || $type === 'last_customer_reply' || $type === 'date_created') {
+            return self::matchesDate($type, $operator, $value, $context);
+        }
+
         return false;
+    }
+
+    /**
+     * in_the_last is at or after now minus the interval. not_in_the_last is strictly older.
+     * The clock is the context now string. Never call Carbon::now(). Only hours and days count.
+     * Waiting Since also needs a non-workflow customer reply and an active or pending status.
+     *
+     * @param string $type
+     * @param string $operator
+     * @param mixed  $value
+     * @param object $context
+     * @return bool
+     */
+    private static function matchesDate(string $type, string $operator, $value, $context): bool
+    {
+        if ($operator !== 'in_the_last' && $operator !== 'not_in_the_last') {
+            return false;
+        }
+
+        if ($type === 'waiting_since' && !self::customerIsWaiting($context)) {
+            return false;
+        }
+
+        $timestamp = self::dateTimestamp($type, $context);
+        if ($timestamp === null) {
+            return false;
+        }
+
+        $cutoff = self::dateCutoff($value, self::read($context, 'now'));
+        if ($cutoff === null) {
+            return false;
+        }
+
+        $inTheLast = Carbon::parse($timestamp)->greaterThanOrEqualTo($cutoff);
+
+        if ($operator === 'in_the_last') {
+            return $inTheLast;
+        }
+
+        return !$inTheLast;
+    }
+
+    /**
+     * @param object $context
+     * @return bool
+     */
+    private static function customerIsWaiting($context): bool
+    {
+        if (self::read($context, 'last_reply_from') !== Conversation::PERSON_CUSTOMER) {
+            return false;
+        }
+
+        if (self::read($context, 'last_reply_from_workflow', false)) {
+            return false;
+        }
+
+        $status = self::read($context, 'status');
+
+        return $status === Conversation::STATUS_ACTIVE || $status === Conversation::STATUS_PENDING;
+    }
+
+    /**
+     * @param string $type
+     * @param object $context
+     * @return string|null
+     */
+    private static function dateTimestamp(string $type, $context): ?string
+    {
+        if ($type === 'waiting_since' || $type === 'last_customer_reply') {
+            $timestamp = self::read($context, 'last_customer_reply_at');
+        } elseif ($type === 'last_user_reply') {
+            $timestamp = self::read($context, 'last_user_reply_at');
+        } elseif ($type === 'date_created') {
+            $timestamp = self::read($context, 'created_at');
+        } else {
+            $timestamp = null;
+        }
+
+        if (!is_string($timestamp) || $timestamp === '') {
+            return null;
+        }
+
+        return $timestamp;
+    }
+
+    /**
+     * @param mixed $value
+     * @param mixed $now
+     * @return Carbon|null
+     */
+    private static function dateCutoff($value, $now): ?Carbon
+    {
+        if (!is_string($now) || $now === '' || !is_array($value)) {
+            return null;
+        }
+
+        $number = array_key_exists('number', $value) ? $value['number'] : null;
+        $unit = array_key_exists('unit', $value) ? $value['unit'] : null;
+        if (!is_numeric($number) || ($unit !== 'hours' && $unit !== 'days')) {
+            return null;
+        }
+
+        $cutoff = Carbon::parse($now);
+        if ($unit === 'hours') {
+            $cutoff->subHours($number);
+        } else {
+            $cutoff->subDays($number);
+        }
+
+        return $cutoff;
     }
 
     /**
