@@ -43,6 +43,7 @@ class WorkflowRunner
         'created_at',
         'trigger_source',
         'trigger_body',
+        'latest_body_by_source',
         'has_attachment',
     ];
 
@@ -217,7 +218,7 @@ class WorkflowRunner
             $workflows[] = self::workflowArray($model);
         }
 
-        $selected = self::select($workflows, self::conversationArray($conversation, $thread), $trigger, []);
+        $selected = self::select($workflows, self::conversationArray($conversation, $thread, $trigger), $trigger, []);
         if ($selected === []) {
             return;
         }
@@ -550,13 +551,31 @@ class WorkflowRunner
 
     /**
      * PDO integer columns arrive as strings. Status and reply-from checks are strict.
+     * Latest published threads fill bodies and dates when the trigger has no thread.
      *
      * @param object $conversation
      * @param mixed  $thread
+     * @param array  $trigger
      * @return array
      */
-    private static function conversationArray($conversation, $thread): array
+    private static function conversationArray($conversation, $thread, array $trigger = []): array
     {
+        $latest = [
+            'customer' => self::lastThread($conversation, Thread::TYPE_CUSTOMER),
+            'user' => self::lastThread($conversation, Thread::TYPE_MESSAGE),
+            'note' => self::lastThread($conversation, Thread::TYPE_NOTE),
+        ];
+        $bodies = [];
+        foreach ($latest as $source => $row) {
+            if (!is_object($row)) {
+                continue;
+            }
+            $text = self::threadText($row);
+            if ($text !== null) {
+                $bodies[$source] = $text;
+            }
+        }
+
         $data = [
             'state' => self::integerColumn(self::readAttribute($conversation, 'state')),
             'status' => self::integerColumn(self::readAttribute($conversation, 'status')),
@@ -564,10 +583,10 @@ class WorkflowRunner
             'type' => self::integerColumn(self::readAttribute($conversation, 'type')),
             'last_reply_from' => self::integerColumn(self::readAttribute($conversation, 'last_reply_from')),
             'now' => date('Y-m-d H:i:s'),
-            'customer_viewed' => self::customerViewed($thread),
-            'tags' => self::tagNames($conversation),
+            'customer_viewed' => self::customerViewed($thread, $latest['user']),
+            'tags' => self::tagNames($conversation, $trigger),
             'channel' => \Eventy::filter('workflow.conversation_channel', 'email', $conversation),
-            'has_attachment' => self::threadHasAttachment($thread),
+            'has_attachment' => self::contextHasAttachment($thread, $latest),
         ];
 
         $createdAt = self::formatDate(self::readAttribute($conversation, 'created_at'));
@@ -575,7 +594,7 @@ class WorkflowRunner
             $data['created_at'] = $createdAt;
         }
 
-        if (method_exists($conversation, 'getLastCustomerReplyAt')) {
+        if (is_object($conversation) && method_exists($conversation, 'getLastCustomerReplyAt')) {
             $lastCustomer = $conversation->getLastCustomerReplyAt();
             $formatted = self::formatDate($lastCustomer);
             if ($lastCustomer !== null && $lastCustomer !== '' && $formatted !== null) {
@@ -583,11 +602,9 @@ class WorkflowRunner
             }
         }
 
-        if ($data['last_reply_from'] == Conversation::PERSON_USER) {
-            $formatted = self::formatDate(self::readAttribute($conversation, 'last_reply_at'));
-            if ($formatted !== null) {
-                $data['last_user_reply_at'] = $formatted;
-            }
+        $userReplyAt = self::formatDate(self::readAttribute($latest['user'], 'created_at'));
+        if ($userReplyAt !== null) {
+            $data['last_user_reply_at'] = $userReplyAt;
         }
 
         if (is_object($thread) && method_exists($thread, 'getBodyAsText')) {
@@ -598,7 +615,16 @@ class WorkflowRunner
             $source = self::triggerSource($thread);
             if ($source !== null) {
                 $data['trigger_source'] = $source;
+                if ($text !== null && !array_key_exists($source, $bodies)) {
+                    $bodies[$source] = $text;
+                }
             }
+        }
+
+        $data['latest_body_by_source'] = $bodies;
+
+        if (array_key_exists('added_tag', $trigger) && $trigger['added_tag'] !== null) {
+            $data['added_tag'] = $trigger['added_tag'];
         }
 
         return $data;
@@ -739,21 +765,24 @@ class WorkflowRunner
     }
 
     /**
-     * A message the customer has opened.
+     * A message the customer has opened. The triggering message wins.
+     * Any other trigger uses the latest outbound message. A throw is unviewed.
      *
      * @param mixed $thread
+     * @param mixed $latestMessage
      * @return bool
      */
-    private static function customerViewed($thread): bool
+    private static function customerViewed($thread, $latestMessage): bool
     {
-        if (!is_object($thread)) {
-            return false;
+        if (is_object($thread) && self::readAttribute($thread, 'type') == Thread::TYPE_MESSAGE) {
+            return self::filled(self::readAttribute($thread, 'opened_at'));
         }
-        if (self::readAttribute($thread, 'type') != Thread::TYPE_MESSAGE) {
+
+        if (!is_object($latestMessage)) {
             return false;
         }
 
-        return self::filled(self::readAttribute($thread, 'opened_at'));
+        return self::filled(self::readAttribute($latestMessage, 'opened_at'));
     }
 
     /**
@@ -770,24 +799,16 @@ class WorkflowRunner
     }
 
     /**
-     * Tag names only. A missing tags() method, or a relation that errors, is an empty list.
+     * Tag names from workflow.conversation_tags. A non-array result is an empty list.
      *
      * @param object $conversation
+     * @param array  $trigger
      * @return array
      */
-    private static function tagNames($conversation): array
+    private static function tagNames($conversation, array $trigger): array
     {
-        if (!method_exists($conversation, 'tags')) {
-            return [];
-        }
-
-        try {
-            $tags = $conversation->tags;
-        } catch (\Throwable $e) {
-            return [];
-        }
-
-        if ($tags === null) {
+        $tags = \Eventy::filter('workflow.conversation_tags', [], $conversation, $trigger);
+        if (!is_array($tags)) {
             return [];
         }
 
@@ -819,6 +840,55 @@ class WorkflowRunner
         }
 
         return null;
+    }
+
+    /**
+     * Latest published thread of one type. A missing method or a throw is no thread.
+     *
+     * @param mixed $conversation
+     * @param int   $type
+     * @return object|null
+     */
+    private static function lastThread($conversation, $type)
+    {
+        if (!is_object($conversation) || !method_exists($conversation, 'getLastThread')) {
+            return null;
+        }
+
+        try {
+            $thread = $conversation->getLastThread([$type]);
+        } catch (\Throwable $e) {
+            return null;
+        }
+
+        if (!is_object($thread)) {
+            return null;
+        }
+
+        return $thread;
+    }
+
+    /**
+     * A triggering thread decides by itself. With no thread, any latest
+     * customer, user, or note attachment counts.
+     *
+     * @param mixed $thread
+     * @param array $latest
+     * @return bool
+     */
+    private static function contextHasAttachment($thread, array $latest): bool
+    {
+        if (is_object($thread)) {
+            return self::threadHasAttachment($thread);
+        }
+
+        foreach ($latest as $row) {
+            if (self::threadHasAttachment($row)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
