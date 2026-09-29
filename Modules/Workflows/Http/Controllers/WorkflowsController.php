@@ -105,21 +105,67 @@ class WorkflowsController extends Controller
     }
 
     /**
-     * Swap sort_order with the neighbor when direction is up or down.
+     * Rewrite this mailbox's sort_order as 0, 1, 2, ... after one move.
      *
      * @param mixed   $id
      * @param Request $request
      */
     public function sort($id, Request $request)
     {
-        $direction = $request->input('direction');
-        $workflowId = $request->input('workflow');
+        $ids = Workflow::where('mailbox_id', $id)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->pluck('id')
+            ->all();
 
-        if (($direction === 'up' || $direction === 'down') && $workflowId !== null && $workflowId !== '') {
-            $this->swapSortOrder($id, $workflowId, $direction);
+        $ordered = self::reordered($ids, $request->input('workflow'), $request->input('direction'));
+
+        foreach ($ordered as $position => $workflowId) {
+            Workflow::where('mailbox_id', $id)
+                ->where('id', $workflowId)
+                ->update(['sort_order' => $position]);
         }
 
         return $this->redirectToList($id);
+    }
+
+    /**
+     * Swap one id with its neighbor. The result is ids, not sort numbers.
+     *
+     * @param array $idsInOrder
+     * @param mixed $workflowId
+     * @param mixed $direction
+     * @return array
+     */
+    public static function reordered(array $idsInOrder, $workflowId, $direction): array
+    {
+        $ids = array_values($idsInOrder);
+        if ($direction !== 'up' && $direction !== 'down') {
+            return $ids;
+        }
+
+        $index = null;
+        foreach ($ids as $position => $id) {
+            if (self::sameWorkflowId($id, $workflowId)) {
+                $index = $position;
+                break;
+            }
+        }
+
+        if ($index === null) {
+            return $ids;
+        }
+
+        $neighbor = $direction === 'up' ? $index - 1 : $index + 1;
+        if ($neighbor < 0 || $neighbor >= count($ids)) {
+            return $ids;
+        }
+
+        $current = $ids[$index];
+        $ids[$index] = $ids[$neighbor];
+        $ids[$neighbor] = $current;
+
+        return $ids;
     }
 
     /**
@@ -171,50 +217,32 @@ class WorkflowsController extends Controller
     }
 
     /**
-     * @param mixed  $mailboxId
-     * @param mixed  $workflowId
-     * @param string $direction
-     * @return void
+     * Int 3 and string "3" are the same workflow. Other values stay strict.
+     *
+     * @param mixed $left
+     * @param mixed $right
+     * @return bool
      */
-    private function swapSortOrder($mailboxId, $workflowId, $direction)
+    private static function sameWorkflowId($left, $right): bool
     {
-        $ordered = Workflow::where('mailbox_id', $mailboxId)
-            ->orderBy('sort_order')
-            ->orderBy('id')
-            ->get()
-            ->values();
-
-        $index = null;
-        foreach ($ordered as $position => $row) {
-            if ((string) $row->id === (string) $workflowId) {
-                $index = $position;
-                break;
-            }
+        if (self::integerId($left) && self::integerId($right)) {
+            return (int) $left === (int) $right;
         }
 
-        if ($index === null) {
-            return;
+        return $left === $right;
+    }
+
+    /**
+     * @param mixed $value
+     * @return bool
+     */
+    private static function integerId($value): bool
+    {
+        if (is_int($value)) {
+            return true;
         }
 
-        $neighborIndex = $direction === 'up' ? $index - 1 : $index + 1;
-        if (!isset($ordered[$neighborIndex])) {
-            return;
-        }
-
-        $current = $ordered[$index];
-        $neighbor = $ordered[$neighborIndex];
-        $currentOrder = (int) $current->sort_order;
-        $neighborOrder = (int) $neighbor->sort_order;
-
-        if ($currentOrder === $neighborOrder) {
-            $neighbor->sort_order = $direction === 'up' ? $currentOrder + 1 : $currentOrder - 1;
-        } else {
-            $current->sort_order = $neighborOrder;
-            $neighbor->sort_order = $currentOrder;
-        }
-
-        $current->save();
-        $neighbor->save();
+        return is_string($value) && preg_match('/^-?\d+$/', $value) === 1;
     }
 
     /**

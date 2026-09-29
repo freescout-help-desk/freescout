@@ -2,6 +2,7 @@
 
 namespace Modules\Workflows\Tests\Unit;
 
+use Modules\Workflows\Http\Controllers\WorkflowsController;
 use Modules\Workflows\Http\Requests\WorkflowRequest;
 use Tests\TestCase;
 
@@ -307,6 +308,19 @@ class WorkflowRequestTest extends TestCase
         $this->assertFalse(WorkflowRequest::sanitize($this->payload([
             'active' => 'true',
         ]))['workflow']['active']);
+    }
+
+    public function test_reordered_swaps_a_neighbor_and_leaves_the_ends_in_place(): void
+    {
+        $ids = [10, 20, 30];
+
+        $this->assertSame([20, 10, 30], WorkflowsController::reordered($ids, 20, 'up'));
+        $this->assertSame([10, 30, 20], WorkflowsController::reordered($ids, 20, 'down'));
+        $this->assertSame($ids, WorkflowsController::reordered($ids, 10, 'up'));
+        $this->assertSame($ids, WorkflowsController::reordered($ids, 30, 'down'));
+        $this->assertSame([20, 10, 30], WorkflowsController::reordered($ids, '20', 'up'));
+        $this->assertSame($ids, WorkflowsController::reordered($ids, 20, 'sideways'));
+        $this->assertSame($ids, WorkflowsController::reordered($ids, 99, 'up'));
     }
 
     /**
