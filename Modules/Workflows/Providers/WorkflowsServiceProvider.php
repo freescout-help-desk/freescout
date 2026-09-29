@@ -5,6 +5,7 @@ namespace Modules\Workflows\Providers;
 use App\User;
 use Illuminate\Support\ServiceProvider;
 use Modules\Workflows\Listeners\RunWorkflows;
+use Modules\Workflows\Services\WorkflowAuthorizer;
 use Modules\Workflows\Services\WorkflowHealth;
 use Modules\Workflows\Services\WorkflowRunner;
 
@@ -94,6 +95,77 @@ class WorkflowsServiceProvider extends ServiceProvider
         $events->addAction('mailbox.deleted', function ($mailbox) {
             self::deactivateDeletedRecord($mailbox, 'mailbox');
         }, 20, 1);
+
+        // The name filter only receives the id when it accepts 2 arguments.
+        $permissionId = self::workflowsPermissionId();
+
+        $events->addFilter('user_permissions.list', function ($permissions) use ($permissionId) {
+            return self::appendWorkflowPermission($permissions, $permissionId);
+        }, 20, 1);
+
+        $events->addFilter('user_permissions.name', function ($name, $id) use ($permissionId) {
+            if (self::sameWorkflowPermission($id, $permissionId)) {
+                return WorkflowAuthorizer::permissionName();
+            }
+
+            return $name;
+        }, 20, 2);
+    }
+
+    /**
+     * config() is missing while the module is inactive. A non-id falls back to 1001.
+     *
+     * @return int
+     */
+    private static function workflowsPermissionId()
+    {
+        $id = config('workflows.permission_id', 1001);
+        if (is_int($id)) {
+            return $id;
+        }
+        if (is_string($id) && ctype_digit($id)) {
+            return (int) $id;
+        }
+
+        return 1001;
+    }
+
+    /**
+     * Leave a non-array alone. Int 1001 and digit-string "1001" are already present.
+     *
+     * @param mixed $permissions
+     * @param int   $permissionId
+     * @return mixed
+     */
+    private static function appendWorkflowPermission($permissions, $permissionId)
+    {
+        if (!is_array($permissions)) {
+            return $permissions;
+        }
+
+        foreach ($permissions as $existing) {
+            if (self::sameWorkflowPermission($existing, $permissionId)) {
+                return $permissions;
+            }
+        }
+
+        $permissions[] = $permissionId;
+
+        return $permissions;
+    }
+
+    /**
+     * @param mixed $value
+     * @param int   $permissionId
+     * @return bool
+     */
+    private static function sameWorkflowPermission($value, $permissionId)
+    {
+        if (is_int($value)) {
+            return $value === $permissionId;
+        }
+
+        return is_string($value) && ctype_digit($value) && (int) $value === $permissionId;
     }
 
     /**
