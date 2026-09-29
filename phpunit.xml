@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" bootstrap="vendor/autoload.php" colors="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.2/phpunit.xsd">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" bootstrap="tests/bootstrap.php" colors="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.2/phpunit.xsd">
   <testsuites>
     <testsuite name="Feature">
       <directory suffix="Test.php">./tests/Feature</directory>
     </testsuite>
     <testsuite name="Unit">
       <directory suffix="Test.php">./tests/Unit</directory>
+    </testsuite>
+    <testsuite name="Workflows">
+      <directory suffix="Test.php">./Modules/Workflows/Tests</directory>
     </testsuite>
   </testsuites>
   <php>

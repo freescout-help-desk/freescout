@@ -1,0 +1,22 @@
+{
+    "name": "Workflows",
+    "alias": "workflows",
+    "description": "Per-mailbox workflows",
+    "version": "1.0.0",
+    "detailsUrl": "",
+    "author": "",
+    "authorUrl": "",
+    "requiredAppVersion": "1.0.2",
+    "license": "AGPL-3.0",
+    "keywords": [],
+    "active": 0,
+    "order": 0,
+    "providers": [
+        "Modules\\Workflows\\Providers\\WorkflowsServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

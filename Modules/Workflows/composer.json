@@ -1,0 +1,10 @@
+{
+    "name": "freescout/workflows",
+    "description": "Per-mailbox workflows",
+    "license": "AGPL-3.0",
+    "autoload": {
+        "psr-4": {
+            "Modules\\Workflows\\": ""
+        }
+    }
+}
