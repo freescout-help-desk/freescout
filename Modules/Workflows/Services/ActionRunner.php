@@ -213,7 +213,7 @@ class ActionRunner
      */
     private static function emailCustomer($conversation, $value, $workflowUser, $context)
     {
-        if (!is_object($conversation) || $conversation->type === Conversation::TYPE_CHAT) {
+        if (!is_object($conversation) || $conversation->type == Conversation::TYPE_CHAT) {
             return;
         }
 

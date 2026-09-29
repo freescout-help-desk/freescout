@@ -388,6 +388,24 @@ class ActionRunnerTest extends TestCase
         $this->assertSame([], $conversation->calls);
     }
 
+    public function test_email_customer_skips_a_string_chat_type_without_sending(): void
+    {
+        $conversation = $this->mailConversation();
+        $conversation->type = '3';
+        $user = $this->workflowUser();
+        $gateway = $this->recordingGateway();
+        $context = $this->context($conversation, $user);
+        $context->mailGateway = $gateway;
+
+        $result = ActionRunner::perform('email_customer', 'Hello {%user.fullName%}', $context);
+
+        $this->assertSame('done', $result);
+        $this->assertFalse(property_exists($context, 'send_reply'));
+        $this->assertFalse(property_exists($context, 'send_plain'));
+        $this->assertSame([], $gateway->calls);
+        $this->assertSame([], $conversation->calls);
+    }
+
     public function test_forward_calls_forward_with_the_replaced_body(): void
     {
         $conversation = $this->mailConversation();

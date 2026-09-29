@@ -5,8 +5,7 @@ namespace Modules\Workflows\Services;
 class MailGateway
 {
     /**
-     * Dispatch the reply for this thread to the conversation customer.
-     * sortThreads calls $threads->sort(), so the job receives a Collection.
+     * The runner still calls this. The reply listener is the only sender.
      *
      * @param object $conversation
      * @param mixed  $thread
@@ -14,16 +13,13 @@ class MailGateway
      */
     public function sendReply($conversation, $thread)
     {
-        $threads = collect([$thread]);
-        $delay = \Eventy::filter(
-            'conversation.send_reply_to_customer_delay',
-            now()->addSeconds(\App\Conversation::UNDO_TIMOUT),
-            $conversation,
-            $threads
-        );
-        \App\Jobs\SendReplyToCustomer::dispatch($conversation, $threads, $conversation->customer)
-            ->delay($delay)
-            ->onQueue('emails');
+        // createUserThread(TYPE_MESSAGE) fires UserReplied. EventServiceProvider maps that
+        // to Listeners\SendReplyToCustomer, which loads the customer, message, and line-item
+        // threads, trims at the new thread, drops line items, and dispatches
+        // Jobs\SendReplyToCustomer with a Collection, the undo delay, and onQueue('emails').
+        // A second dispatch here would email the customer twice and would skip In-Reply-To,
+        // References, and thread history. email_customer still uses sendPlain because it
+        // does not create a thread.
     }
 
     /**
