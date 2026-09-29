@@ -1508,7 +1508,7 @@ class Customer extends Model
     public function setPhotoFromRemoteFile($url)
     {
         // Sanitize URL.
-        try {
+        /*try {
             \Helper::sanitizeRemoteUrl($url, true);
         } catch (\Exception $e) {
             if ($e->getCode() == \Helper::EXCEPTION_UNSAFE_URL) {
@@ -1517,20 +1517,21 @@ class Customer extends Model
             } else {
                 throw $e;
             }
-        }
+        }*/
 
+        // Quick check for response code 200.
         try {
             $headers = get_headers($url);
         } catch (\Exception $e) {
             \Helper::logException($e, 'Customer::setPhotoFromRemoteFile()');
             return false;
         }
-
         if (!preg_match("/200/", $headers[0])) {
             return false;
         }
 
-        $image_data = \Helper::getRemoteFileContents($url);
+        // URL sanitizing takes place in getRemoteFileContents().
+        $image_data = \Helper::getRemoteFileContents($url, $follow_redirects = false);
 
         if (!$image_data) {
             return false;
