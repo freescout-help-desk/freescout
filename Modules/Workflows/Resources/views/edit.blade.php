@@ -26,6 +26,32 @@
         $groups = $conditionGroups ?? [];
         $types = $actionTypes ?? [];
         $editorUsers = $users ?? [];
+        $editorUserOptions = [];
+        foreach ($editorUsers as $editorUser) {
+            if (is_object($editorUser)) {
+                $editorUserId = $editorUser->id;
+                $editorUserName = trim(($editorUser->first_name ?? '').' '.($editorUser->last_name ?? ''));
+                if ($editorUserName === '' && isset($editorUser->name)) {
+                    $editorUserName = $editorUser->name;
+                }
+            } else {
+                $editorUserId = $editorUser['id'] ?? '';
+                $editorUserName = $editorUser['name'] ?? trim(($editorUser['first_name'] ?? '').' '.($editorUser['last_name'] ?? ''));
+            }
+            $editorUserOptions[] = ['id' => $editorUserId, 'name' => $editorUserName];
+        }
+        $operatorMap = [];
+        foreach ($groups as $group) {
+            if (!is_array($group) || empty($group['items']) || !is_array($group['items'])) {
+                continue;
+            }
+            foreach ($group['items'] as $itemType => $item) {
+                if (!is_array($item) || empty($item['operators']) || !is_array($item['operators'])) {
+                    continue;
+                }
+                $operatorMap[$itemType] = $item['operators'];
+            }
+        }
         $rowSets = [
             'conditions' => $conditionRows,
             'actions' => $actionRows,
@@ -103,23 +129,18 @@
                                 <strong>{{ __('workflows::messages.'.$field) }}</strong>
                             </div>
                         </div>
-                        @foreach ($rows as $row)
+                        @foreach ($rows as $index => $row)
                             @php
                                 $rowType = is_object($row) ? ($row->type ?? '') : ($row['type'] ?? '');
                                 $rowOperator = is_object($row) ? ($row->operator ?? '') : ($row['operator'] ?? '');
                                 $rowValue = is_object($row) ? ($row->value ?? '') : ($row['value'] ?? '');
-                                $operatorOptions = [];
-                                if ($field === 'conditions') {
-                                    foreach ($groups as $group) {
-                                        if (!is_array($group) || empty($group['items'][$rowType]['operators']) || !is_array($group['items'][$rowType]['operators'])) {
-                                            continue;
-                                        }
-                                        $operatorOptions = $group['items'][$rowType]['operators'];
-                                        break;
-                                    }
-                                }
+                                $operatorOptions = $operatorMap[$rowType] ?? [];
                                 $widget = 'text';
-                                if (in_array($rowType, ['assignee', 'assign', 'notification'], true)) {
+                                if ($field === 'actions' && $rowType === 'assign') {
+                                    $widget = 'assign';
+                                } elseif ($field === 'actions' && $rowType === 'notification') {
+                                    $widget = 'notification';
+                                } elseif ($rowType === 'assignee') {
                                     $widget = 'user';
                                 } elseif (in_array($rowType, ['status', 'change_status'], true)) {
                                     $widget = 'status';
@@ -130,11 +151,14 @@
                                 $choiceValue = is_scalar($rowValue) ? (string) $rowValue : '';
                                 $ageNumber = is_array($rowValue) ? ($rowValue['number'] ?? '') : '';
                                 $ageUnit = is_array($rowValue) && isset($rowValue['unit']) ? $rowValue['unit'] : 'days';
+                                $assignUserId = is_array($rowValue) ? ($rowValue['user_id'] ?? '') : '';
+                                $onlyFlag = is_array($rowValue) ? ($rowValue['only_if_available'] ?? false) : false;
+                                $onlyIfAvailable = $onlyFlag === true || $onlyFlag === 1 || $onlyFlag === '1';
                             @endphp
                             <div class="form-group" data-workflow-row>
                                 <label class="col-sm-2 control-label">{{ __('workflows::messages.'.$field) }}</label>
                                 <div class="col-sm-3">
-                                    <select class="form-control" name="{{ $field }}[][type]" data-workflow-type>
+                                    <select class="form-control" name="{{ $field }}[{{ $index }}][type]" data-workflow-type>
                                         @if ($field === 'conditions')
                                             @foreach ($groups as $groupKey => $group)
                                                 @if (is_array($group) && !empty($group['items']) && is_array($group['items']))
@@ -157,7 +181,7 @@
                                 </div>
                                 @if ($field === 'conditions')
                                     <div class="col-sm-3">
-                                        <select class="form-control" name="conditions[][operator]">
+                                        <select class="form-control" name="conditions[{{ $index }}][operator]" data-workflow-operator>
                                             @foreach ($operatorOptions as $operatorKey => $operatorLabel)
                                                 <option value="{{ $operatorKey }}" @if ((string) $operatorKey === (string) $rowOperator) selected="selected" @endif>{{ $operatorLabel }}</option>
                                             @endforeach
@@ -166,39 +190,47 @@
                                 @endif
                                 <div class="col-sm-4">
                                     <div data-widget="text" @if ($widget !== 'text') style="display:none" @endif>
-                                        <input type="text" class="form-control" name="{{ $field }}[][value]" value="{{ $textValue }}" @if ($widget !== 'text') disabled="disabled" @endif>
+                                        <input type="text" class="form-control" name="{{ $field }}[{{ $index }}][value]" value="{{ $textValue }}" @if ($widget !== 'text') disabled="disabled" @endif>
                                     </div>
                                     <div data-widget="user" @if ($widget !== 'user') style="display:none" @endif>
-                                        <select class="form-control" name="{{ $field }}[][value]" @if ($widget !== 'user') disabled="disabled" @endif>
+                                        <select class="form-control" name="{{ $field }}[{{ $index }}][value]" @if ($widget !== 'user') disabled="disabled" @endif>
                                             <option value="anybody" @if ($choiceValue === 'anybody') selected="selected" @endif>{{ __('workflows::messages.anybody') }}</option>
                                             <option value="nobody" @if ($choiceValue === 'nobody') selected="selected" @endif>{{ __('workflows::messages.nobody') }}</option>
-                                            @foreach ($editorUsers as $editorUser)
-                                                @php
-                                                    if (is_object($editorUser)) {
-                                                        $editorUserId = $editorUser->id;
-                                                        $editorUserName = trim(($editorUser->first_name ?? '').' '.($editorUser->last_name ?? ''));
-                                                        if ($editorUserName === '' && isset($editorUser->name)) {
-                                                            $editorUserName = $editorUser->name;
-                                                        }
-                                                    } else {
-                                                        $editorUserId = $editorUser['id'] ?? '';
-                                                        $editorUserName = $editorUser['name'] ?? trim(($editorUser['first_name'] ?? '').' '.($editorUser['last_name'] ?? ''));
-                                                    }
-                                                @endphp
-                                                <option value="{{ $editorUserId }}" @if ($choiceValue === (string) $editorUserId) selected="selected" @endif>{{ $editorUserName }}</option>
+                                            @foreach ($editorUserOptions as $editorUserOption)
+                                                <option value="{{ $editorUserOption['id'] }}" @if ($choiceValue === (string) $editorUserOption['id']) selected="selected" @endif>{{ $editorUserOption['name'] }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div data-widget="assign" @if ($widget !== 'assign') style="display:none" @endif>
+                                        <select class="form-control" name="{{ $field }}[{{ $index }}][value][user_id]" @if ($widget !== 'assign') disabled="disabled" @endif>
+                                            @foreach ($editorUserOptions as $editorUserOption)
+                                                <option value="{{ $editorUserOption['id'] }}" @if ((string) $assignUserId === (string) $editorUserOption['id']) selected="selected" @endif>{{ $editorUserOption['name'] }}</option>
+                                            @endforeach
+                                        </select>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="{{ $field }}[{{ $index }}][value][only_if_available]" value="1" @if ($onlyIfAvailable) checked="checked" @endif @if ($widget !== 'assign') disabled="disabled" @endif>
+                                            {{ __('workflows::messages.only_if_available') }}
+                                        </label>
+                                    </div>
+                                    <div data-widget="notification" @if ($widget !== 'notification') style="display:none" @endif>
+                                        <select class="form-control" name="{{ $field }}[{{ $index }}][value]" @if ($widget !== 'notification') disabled="disabled" @endif>
+                                            <option value="assignee" @if ($choiceValue === 'assignee') selected="selected" @endif>{{ __('workflows::messages.assignee') }}</option>
+                                            <option value="last_user" @if ($choiceValue === 'last_user') selected="selected" @endif>{{ __('workflows::messages.last_user') }}</option>
+                                            @foreach ($editorUserOptions as $editorUserOption)
+                                                <option value="{{ $editorUserOption['id'] }}" @if ($choiceValue === (string) $editorUserOption['id']) selected="selected" @endif>{{ $editorUserOption['name'] }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div data-widget="status" @if ($widget !== 'status') style="display:none" @endif>
-                                        <select class="form-control" name="{{ $field }}[][value]" @if ($widget !== 'status') disabled="disabled" @endif>
+                                        <select class="form-control" name="{{ $field }}[{{ $index }}][value]" @if ($widget !== 'status') disabled="disabled" @endif>
                                             @foreach (['active', 'pending', 'closed', 'spam'] as $statusSlug)
                                                 <option value="{{ $statusSlug }}" @if ($choiceValue === $statusSlug) selected="selected" @endif>{{ __('workflows::messages.status_'.$statusSlug) }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div data-widget="age" @if ($widget !== 'age') style="display:none" @endif>
-                                        <input type="number" class="form-control" name="{{ $field }}[][value][number]" value="{{ $ageNumber }}" @if ($widget !== 'age') disabled="disabled" @endif>
-                                        <select class="form-control" name="{{ $field }}[][value][unit]" @if ($widget !== 'age') disabled="disabled" @endif>
+                                        <input type="number" class="form-control" name="{{ $field }}[{{ $index }}][value][number]" value="{{ $ageNumber }}" @if ($widget !== 'age') disabled="disabled" @endif>
+                                        <select class="form-control" name="{{ $field }}[{{ $index }}][value][unit]" @if ($widget !== 'age') disabled="disabled" @endif>
                                             <option value="days" @if ($ageUnit === 'days') selected="selected" @endif>{{ __('workflows::messages.days') }}</option>
                                             <option value="hours" @if ($ageUnit === 'hours') selected="selected" @endif>{{ __('workflows::messages.hours') }}</option>
                                         </select>
@@ -213,17 +245,8 @@
                         <select>
                             <option value="anybody">{{ __('workflows::messages.anybody') }}</option>
                             <option value="nobody">{{ __('workflows::messages.nobody') }}</option>
-                            @foreach ($editorUsers as $editorUser)
-                                @php
-                                    if (is_object($editorUser)) {
-                                        $editorUserId = $editorUser->id;
-                                        $editorUserName = trim(($editorUser->first_name ?? '').' '.($editorUser->last_name ?? ''));
-                                    } else {
-                                        $editorUserId = $editorUser['id'] ?? '';
-                                        $editorUserName = $editorUser['name'] ?? '';
-                                    }
-                                @endphp
-                                <option value="{{ $editorUserId }}">{{ $editorUserName }}</option>
+                            @foreach ($editorUserOptions as $editorUserOption)
+                                <option value="{{ $editorUserOption['id'] }}">{{ $editorUserOption['name'] }}</option>
                             @endforeach
                         </select>
                         <select>
@@ -252,12 +275,18 @@
 
 @section('javascript')
     (function () {
-        var userTypes = {assignee: true, assign: true, notification: true};
+        var workflowOperators = {!! json_encode($operatorMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS) !!};
         var statusTypes = {status: true, change_status: true};
         var ageTypes = {waiting_since: true, last_user_reply: true, last_customer_reply: true, date_created: true};
 
         function widgetName(type) {
-            if (userTypes[type]) {
+            if (type === 'assign') {
+                return 'assign';
+            }
+            if (type === 'notification') {
+                return 'notification';
+            }
+            if (type === 'assignee') {
                 return 'user';
             }
             if (statusTypes[type]) {
@@ -267,6 +296,29 @@
                 return 'age';
             }
             return 'text';
+        }
+
+        function rebuildOperators(row) {
+            var typeSelect = row.querySelector('[data-workflow-type]');
+            var operatorSelect = row.querySelector('[data-workflow-operator]');
+            if (!typeSelect || !operatorSelect) {
+                return;
+            }
+            var operators = workflowOperators[typeSelect.value] || {};
+            var current = operatorSelect.value;
+            while (operatorSelect.firstChild) {
+                operatorSelect.removeChild(operatorSelect.firstChild);
+            }
+            var keys = Object.keys(operators);
+            for (var i = 0; i < keys.length; i++) {
+                var option = document.createElement('option');
+                option.value = keys[i];
+                option.text = operators[keys[i]];
+                if (keys[i] === current) {
+                    option.selected = true;
+                }
+                operatorSelect.appendChild(option);
+            }
         }
 
         function applyRow(row) {
@@ -295,6 +347,7 @@
                 }
                 applyRow(row);
                 select.addEventListener('change', function () {
+                    rebuildOperators(row);
                     applyRow(row);
                 });
             })(rows[i]);

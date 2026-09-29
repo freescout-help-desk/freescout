@@ -135,6 +135,68 @@ class WorkflowViewsTest extends TestCase
         $this->assertStringNotContainsString('name="run"', $html);
     }
 
+    public function test_edit_posts_one_indexed_row_and_embeds_operator_map(): void
+    {
+        $groups = $this->conditionGroups();
+        $html = $this->renderPage('workflows::edit', [
+            'mailbox' => $this->mailboxDouble(),
+            'workflow' => (object) [
+                'id' => 4,
+                'name' => 'Close billing',
+                'type' => 'automatic',
+                'active' => true,
+                'apply_to_previous' => false,
+                'max_executions' => 1,
+                'match' => 'all',
+                'conditions' => [
+                    ['type' => 'subject', 'operator' => 'contains', 'value' => 'invoice'],
+                ],
+                'actions' => [
+                    ['type' => 'assign', 'value' => ['user_id' => 4, 'only_if_available' => true]],
+                ],
+            ],
+            'users' => [
+                ['id' => 4, 'name' => 'Ada'],
+            ],
+            'conditionGroups' => $groups,
+            'actionTypes' => ['stop', 'assign', 'notification'],
+        ]);
+
+        $this->assertStringContainsString('conditions[0][type]', $html);
+        $this->assertStringContainsString('conditions[0][operator]', $html);
+        $this->assertStringContainsString('conditions[0][value]', $html);
+        $this->assertStringContainsString('actions[0][value][user_id]', $html);
+        $this->assertStringContainsString('actions[0][value][only_if_available]', $html);
+        $this->assertStringNotContainsString('conditions[][type]', $html);
+        $this->assertStringNotContainsString('actions[][type]', $html);
+        $this->assertStringContainsString('"waiting_since":{"in_the_last":', $html);
+        $this->assertStringContainsString('workflowOperators', $html);
+        $this->assertStringContainsString("createElement('option')", $html);
+
+        $dated = $this->renderPage('workflows::edit', [
+            'mailbox' => $this->mailboxDouble(),
+            'workflow' => (object) [
+                'id' => 4,
+                'name' => 'Close billing',
+                'type' => 'automatic',
+                'active' => true,
+                'apply_to_previous' => false,
+                'max_executions' => 1,
+                'match' => 'all',
+                'conditions' => [
+                    ['type' => 'waiting_since', 'operator' => 'in_the_last', 'value' => ['number' => 2, 'unit' => 'days']],
+                ],
+                'actions' => [],
+            ],
+            'users' => [],
+            'conditionGroups' => $groups,
+            'actionTypes' => ['assign'],
+        ]);
+
+        $this->assertStringContainsString('conditions[0][value][number]', $dated);
+        $this->assertStringContainsString('conditions[0][value][unit]', $dated);
+    }
+
     public function test_settings_menu_links_to_workflows(): void
     {
         $html = view('workflows::partials.settings_menu', [
@@ -142,6 +204,36 @@ class WorkflowViewsTest extends TestCase
         ])->render();
 
         $this->assertStringContainsString('/workflows', $html);
+    }
+
+    /**
+     * @return array
+     */
+    private function conditionGroups(): array
+    {
+        return [
+            'message' => [
+                'title' => 'Message',
+                'items' => [
+                    'subject' => [
+                        'title' => 'Subject',
+                        'operators' => ['contains' => 'Contains'],
+                    ],
+                ],
+            ],
+            'dates' => [
+                'title' => 'Dates',
+                'items' => [
+                    'waiting_since' => [
+                        'title' => 'Waiting since',
+                        'operators' => [
+                            'in_the_last' => 'In the last',
+                            'not_in_the_last' => 'Not in the last',
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
