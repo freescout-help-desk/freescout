@@ -167,6 +167,32 @@ class ConditionEvaluatorTest extends TestCase
         $this->assertTrue(ConditionEvaluator::matches('body', 'contains', $value, $unset));
     }
 
+    public function test_body_string_value_matches_the_latest_customer_message(): void
+    {
+        $match = new ConditionContext();
+        $match->latest_body_by_source = ['customer' => 'please invoice us'];
+
+        $this->assertTrue(ConditionEvaluator::matches('body', 'contains', 'invoice', $match));
+
+        $other = new ConditionContext();
+        $other->latest_body_by_source = ['customer' => 'hello'];
+
+        $this->assertFalse(ConditionEvaluator::matches('body', 'contains', 'invoice', $other));
+
+        $empty = new ConditionContext();
+        $empty->latest_body_by_source = ['customer' => ''];
+
+        $this->assertFalse(ConditionEvaluator::matches('body', 'contains', 'invoice', $empty));
+    }
+
+    public function test_subject_contains_matches_the_context_property(): void
+    {
+        $context = new ConditionContext();
+        $context->subject = 'Invoice please';
+
+        $this->assertTrue(ConditionEvaluator::matches('subject', 'contains', 'invoice', $context));
+    }
+
     public function test_attachment_contains_when_the_message_has_a_file(): void
     {
         $context = new ConditionContext();
@@ -379,6 +405,33 @@ class ConditionEvaluatorTest extends TestCase
         $this->assertTrue(ConditionEvaluator::matches('custom_field', 'is_not_set', null, $empty));
         $this->assertFalse(ConditionEvaluator::matches('custom_field', 'is_set', null, $empty));
         $this->assertFalse(ConditionEvaluator::matches('custom_field', 'regex', 'sku', $set));
+    }
+
+    public function test_custom_field_equal_reads_the_field_filter(): void
+    {
+        $conversation = new \stdClass();
+        $callback = function ($current, $fieldId, $seenConversation) use ($conversation) {
+            if ($fieldId === 4 && $seenConversation === $conversation) {
+                return 'gold';
+            }
+
+            return $current;
+        };
+        \Eventy::addFilter('workflow.custom_field_value', $callback, 20, 3);
+
+        try {
+            $context = new ConditionContext();
+            $context->conversation = $conversation;
+
+            $this->assertTrue(ConditionEvaluator::matches(
+                'custom_field',
+                'equal',
+                ['field_id' => 4, 'text' => 'gold'],
+                $context
+            ));
+        } finally {
+            \Eventy::removeFilter('workflow.custom_field_value', $callback, 20);
+        }
     }
 
     public function test_check_condition_filter_runs_after_the_builtin_result(): void

@@ -3,6 +3,7 @@
 namespace Modules\Workflows\Services;
 
 use App\Conversation;
+use App\Mailbox;
 use App\Thread;
 
 class ActionRunner
@@ -75,8 +76,10 @@ class ActionRunner
         }
 
         if ($type === 'move_mailbox') {
-            if (is_object($conversation)) {
-                $conversation->moveToMailbox($value, $workflowUser);
+            // Conversation::moveToMailbox reads $mailbox->id. A raw id is a TypeError.
+            $mailbox = self::mailboxToMove($value);
+            if (is_object($conversation) && is_object($mailbox)) {
+                $conversation->moveToMailbox($mailbox, $workflowUser);
             }
 
             return 'done';
@@ -320,6 +323,36 @@ class ActionRunner
         $flag = $value['only_if_available'];
 
         return $flag === true || $flag === 1 || $flag === '1';
+    }
+
+    /**
+     * An object is the mailbox. An id is loaded with Mailbox::find.
+     * A missing row or a query error does not move.
+     *
+     * @param mixed $value
+     * @return object|null
+     */
+    private static function mailboxToMove($value)
+    {
+        if (is_object($value)) {
+            return $value;
+        }
+
+        if (!is_int($value) && !(is_string($value) && ctype_digit($value))) {
+            return null;
+        }
+
+        try {
+            $mailbox = Mailbox::find($value);
+        } catch (\Throwable $e) {
+            return null;
+        }
+
+        if (!is_object($mailbox)) {
+            return null;
+        }
+
+        return $mailbox;
     }
 
     /**

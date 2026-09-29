@@ -26,6 +26,20 @@ class ConditionEvaluator
     ];
 
     /**
+     * Text rows whose haystack is the context property of the same name.
+     *
+     * @var array
+     */
+    private static $textTypes = [
+        'customer_name',
+        'customer_email',
+        'to',
+        'cc',
+        'subject',
+        'headers',
+    ];
+
+    /**
      * Compare text. Null haystack and needle are empty strings.
      *
      * @param string|null $haystack
@@ -46,6 +60,11 @@ class ConditionEvaluator
         $needle = mb_strtolower($needle);
 
         if ($operator === 'contains') {
+            // mb_strpos($haystack, '') is 0, so an empty needle would match every conversation.
+            if ($needle === '') {
+                return false;
+            }
+
             return mb_strpos($haystack, $needle) !== false;
         }
 
@@ -94,12 +113,25 @@ class ConditionEvaluator
                 $result = self::read($context, 'trigger') === $value;
             }
         } elseif ($type === 'body') {
-            if (!is_array($value)) {
+            if (is_string($value)) {
+                $value = ['text' => $value];
+            } elseif (!is_array($value)) {
                 $value = [];
             }
             $chosenBody = self::chosenBody($value, $context);
+            $needle = $value['text'] ?? '';
+            if (!is_string($needle)) {
+                $needle = is_scalar($needle) || $needle === null ? (string) $needle : '';
+            }
 
-            $result = self::text($chosenBody, $operator, (string) ($value['text'] ?? ''));
+            $result = self::text($chosenBody, $operator, $needle);
+        } elseif (in_array($type, self::$textTypes, true)) {
+            $haystack = self::read($context, $type, '');
+            if (!is_string($haystack)) {
+                $haystack = '';
+            }
+
+            $result = self::text($haystack, $operator, self::textNeedle($value));
         } elseif ($type === 'attachment') {
             $hasAttachment = (bool) self::read($context, 'has_attachment', false);
             if ($operator === 'contains') {
@@ -223,9 +255,12 @@ class ConditionEvaluator
      */
     private static function matchesCustomField(string $operator, $value, $context): bool
     {
-        $field = self::read($context, 'custom_field_value');
-        if (!is_string($field)) {
-            $field = null;
+        $stored = self::read($context, 'custom_field_value');
+        $fromContext = is_string($stored);
+        if ($fromContext) {
+            $field = $stored;
+        } else {
+            $field = self::customFieldFromFilter($value, $context);
         }
 
         if ($operator === 'is_set') {
@@ -237,6 +272,10 @@ class ConditionEvaluator
         }
 
         if ($operator === 'equal' || $operator === 'not_equal' || $operator === 'contains' || $operator === 'not_contains') {
+            if (!$fromContext && self::customFieldId($value) !== null && is_object(self::read($context, 'conversation'))) {
+                return self::text($field, $operator, self::textNeedle(is_array($value) ? ($value['text'] ?? '') : $value));
+            }
+
             if (!is_string($value) && $value !== null) {
                 return false;
             }
@@ -245,6 +284,76 @@ class ConditionEvaluator
         }
 
         return false;
+    }
+
+    /**
+     * workflow.custom_field_value receives (null, $fieldId, $conversation).
+     * A non-string return counts as unset. No conversation means the filter is not called.
+     *
+     * @param mixed  $value
+     * @param object $context
+     * @return string|null
+     */
+    private static function customFieldFromFilter($value, $context): ?string
+    {
+        $fieldId = self::customFieldId($value);
+        if ($fieldId === null) {
+            return null;
+        }
+
+        $conversation = self::read($context, 'conversation');
+        if (!is_object($conversation)) {
+            return null;
+        }
+
+        $stored = \Eventy::filter('workflow.custom_field_value', null, $fieldId, $conversation);
+        if (!is_string($stored)) {
+            return null;
+        }
+
+        return $stored;
+    }
+
+    /**
+     * @param mixed $value
+     * @return int|null
+     */
+    private static function customFieldId($value): ?int
+    {
+        if (!is_array($value) || !array_key_exists('field_id', $value)) {
+            return null;
+        }
+
+        $fieldId = $value['field_id'];
+        if (is_int($fieldId)) {
+            return $fieldId;
+        }
+        if (is_string($fieldId) && ctype_digit($fieldId)) {
+            return (int) $fieldId;
+        }
+
+        return null;
+    }
+
+    /**
+     * A string value is the needle. An array value uses its text entry.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    private static function textNeedle($value): string
+    {
+        if (is_array($value)) {
+            $value = $value['text'] ?? '';
+        }
+        if (is_string($value)) {
+            return $value;
+        }
+        if (is_scalar($value) || $value === null) {
+            return (string) $value;
+        }
+
+        return '';
     }
 
     /**
@@ -512,7 +621,7 @@ class ConditionEvaluator
      */
     private static function chosenBody(array $value, $context): ?string
     {
-        $source = isset($value['source']) ? (string) $value['source'] : '';
+        $source = isset($value['source']) ? (string) $value['source'] : 'customer';
         $triggerSource = self::read($context, 'trigger_source');
 
         if ($triggerSource !== null && (string) $triggerSource === $source) {

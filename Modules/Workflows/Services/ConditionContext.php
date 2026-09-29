@@ -106,6 +106,36 @@ class ConditionContext
     /**
      * @var string|null
      */
+    public $subject;
+
+    /**
+     * @var string|null
+     */
+    public $customer_name;
+
+    /**
+     * @var string|null
+     */
+    public $customer_email;
+
+    /**
+     * @var string|null
+     */
+    public $to;
+
+    /**
+     * @var string|null
+     */
+    public $cc;
+
+    /**
+     * @var string|null
+     */
+    public $headers;
+
+    /**
+     * @var string|null
+     */
     public $custom_field_value;
 
     /**

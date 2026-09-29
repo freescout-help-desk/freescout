@@ -5,6 +5,7 @@ namespace Modules\Workflows\Providers;
 use App\User;
 use Illuminate\Support\ServiceProvider;
 use Modules\Workflows\Entities\Workflow;
+use Modules\Workflows\Http\Controllers\WorkflowsController;
 use Modules\Workflows\Listeners\RunWorkflows;
 use Modules\Workflows\Services\WorkflowAuthorizer;
 use Modules\Workflows\Services\WorkflowHealth;
@@ -219,7 +220,7 @@ class WorkflowsServiceProvider extends ServiceProvider
     }
 
     /**
-     * A draft array is not a conversation. Return before querying workflows.
+     * A draft array is not a conversation. Return before allows(), which reads Option for non-admins.
      *
      * @param mixed $conversation
      * @param mixed $mailbox
@@ -231,6 +232,10 @@ class WorkflowsServiceProvider extends ServiceProvider
             return;
         }
 
+        if (!WorkflowsController::runnerAllowed(auth()->user())) {
+            return;
+        }
+
         echo view('workflows::partials.conversation_menu', [
             'conversation' => $conversation,
             'workflows' => self::manualWorkflows($mailbox->id),
@@ -238,7 +243,7 @@ class WorkflowsServiceProvider extends ServiceProvider
     }
 
     /**
-     * A draft array is not a mailbox. Return before querying workflows.
+     * A draft array is not a mailbox. Return before allows(), which reads Option for non-admins.
      *
      * @param mixed $mailbox
      * @return void
@@ -246,6 +251,10 @@ class WorkflowsServiceProvider extends ServiceProvider
     private static function bulkMenu($mailbox): void
     {
         if (!self::isRecord($mailbox)) {
+            return;
+        }
+
+        if (!WorkflowsController::runnerAllowed(auth()->user())) {
             return;
         }
 

@@ -146,6 +146,18 @@ class ManualRunTest extends TestCase
         $this->assertFalse(WorkflowRunner::eligible($subject, $conversation, ['name' => 'schedule']));
     }
 
+    public function test_runner_allowed_is_true_for_an_admin(): void
+    {
+        $user = new class {
+            public function isAdmin()
+            {
+                return true;
+            }
+        };
+
+        $this->assertTrue(WorkflowsController::runnerAllowed($user));
+    }
+
     public function test_bulk_menu_posts_checked_conversation_ids(): void
     {
         $workflow = $this->workflow(8, 'Send & reply', 'reply');

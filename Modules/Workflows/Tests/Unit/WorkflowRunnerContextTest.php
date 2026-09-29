@@ -129,6 +129,18 @@ class WorkflowRunnerContextTest extends TestCase
         $this->assertSame('trigger text', $onlyTrigger['latest_body_by_source']['customer']);
     }
 
+    public function test_conversation_array_copies_subject_and_customer_email(): void
+    {
+        $conversation = new \stdClass();
+        $conversation->subject = 'Billing';
+        $conversation->customer_email = 'a@b.test';
+
+        $data = $this->conversationArray($conversation, null, ['name' => 'customer_reply']);
+
+        $this->assertSame('Billing', $data['subject']);
+        $this->assertSame('a@b.test', $data['customer_email']);
+    }
+
     public function test_tags_come_from_the_conversation_tags_filter(): void
     {
         $conversation = new \stdClass();

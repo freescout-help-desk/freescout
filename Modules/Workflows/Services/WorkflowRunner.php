@@ -32,6 +32,12 @@ class WorkflowRunner
         'type',
         'customer_viewed',
         'channel',
+        'subject',
+        'customer_name',
+        'customer_email',
+        'to',
+        'cc',
+        'headers',
         'added_tag',
         'tags',
         'custom_field_value',
@@ -408,6 +414,8 @@ class WorkflowRunner
     }
 
     /**
+     * Equal sort orders use the numeric id, lower first. A non-numeric id is 0.
+     *
      * @param mixed $left
      * @param mixed $right
      * @return int
@@ -416,11 +424,30 @@ class WorkflowRunner
     {
         $leftOrder = self::sortOrder(is_array($left) ? $left : []);
         $rightOrder = self::sortOrder(is_array($right) ? $right : []);
-        if ($leftOrder === $rightOrder) {
+        if ($leftOrder !== $rightOrder) {
+            return ($leftOrder < $rightOrder) ? -1 : 1;
+        }
+
+        $leftId = self::numericId(is_array($left) ? $left : []);
+        $rightId = self::numericId(is_array($right) ? $right : []);
+        if ($leftId === $rightId) {
             return 0;
         }
 
-        return ($leftOrder < $rightOrder) ? -1 : 1;
+        return ($leftId < $rightId) ? -1 : 1;
+    }
+
+    /**
+     * @param array $workflow
+     * @return int
+     */
+    private static function numericId(array $workflow): int
+    {
+        if (!array_key_exists('id', $workflow) || !is_numeric($workflow['id'])) {
+            return 0;
+        }
+
+        return (int) $workflow['id'];
     }
 
     /**
@@ -448,6 +475,9 @@ class WorkflowRunner
             if (array_key_exists($key, $conversation)) {
                 $context->{$key} = $conversation[$key];
             }
+        }
+        if (array_key_exists('conversation', $conversation) && is_object($conversation['conversation'])) {
+            $context->conversation = $conversation['conversation'];
         }
         if (array_key_exists('name', $trigger)) {
             $context->trigger = $trigger['name'];
@@ -532,6 +562,7 @@ class WorkflowRunner
             ->where('type', 'automatic')
             ->with(['conditions', 'actions'])
             ->orderBy('sort_order')
+            ->orderBy('id')
             ->get();
     }
 
@@ -622,6 +653,10 @@ class WorkflowRunner
             'tags' => self::tagNames($conversation, $trigger),
             'channel' => \Eventy::filter('workflow.conversation_channel', 'email', $conversation),
             'has_attachment' => self::contextHasAttachment($thread, $latest),
+            'subject' => self::stringAttribute($conversation, 'subject'),
+            'customer_email' => self::stringAttribute($conversation, 'customer_email'),
+            'customer_name' => self::customerName($conversation),
+            'conversation' => $conversation,
         ];
 
         $createdAt = self::formatDate(self::readAttribute($conversation, 'created_at'));
@@ -657,6 +692,11 @@ class WorkflowRunner
         }
 
         $data['latest_body_by_source'] = $bodies;
+
+        $message = is_object($thread) ? $thread : $latest['customer'];
+        $data['to'] = self::stringAttribute($message, 'to');
+        $data['cc'] = self::stringAttribute($message, 'cc');
+        $data['headers'] = self::stringAttribute($message, 'headers');
 
         if (array_key_exists('added_tag', $trigger) && $trigger['added_tag'] !== null) {
             $data['added_tag'] = $trigger['added_tag'];
@@ -740,6 +780,42 @@ class WorkflowRunner
         }
 
         return null;
+    }
+
+    /**
+     * @param mixed  $model
+     * @param string $name
+     * @return string
+     */
+    private static function stringAttribute($model, string $name): string
+    {
+        try {
+            $value = self::readAttribute($model, $name);
+        } catch (\Throwable $e) {
+            return '';
+        }
+
+        return is_string($value) ? $value : '';
+    }
+
+    /**
+     * @param mixed $conversation
+     * @return string
+     */
+    private static function customerName($conversation): string
+    {
+        try {
+            $customer = self::readAttribute($conversation, 'customer');
+            if (!is_object($customer) || !method_exists($customer, 'getFullName')) {
+                return '';
+            }
+
+            $name = $customer->getFullName();
+        } catch (\Throwable $e) {
+            return '';
+        }
+
+        return is_string($name) ? $name : '';
     }
 
     /**

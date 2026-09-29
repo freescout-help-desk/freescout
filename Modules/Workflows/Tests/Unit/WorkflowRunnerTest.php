@@ -241,6 +241,40 @@ class WorkflowRunnerTest extends TestCase
         $this->assertSame([$stringId, $earlier, $later], $selected);
     }
 
+    public function test_select_orders_a_tied_sort_order_by_id(): void
+    {
+        $second = $this->workflow([
+            'id' => 2,
+            'sort_order' => 0,
+            'apply_to_previous' => true,
+            'conditions' => [
+                ['type' => 'subject', 'operator' => 'contains', 'value' => 'invoice'],
+            ],
+        ]);
+        $first = $this->workflow([
+            'id' => 1,
+            'sort_order' => 0,
+            'apply_to_previous' => true,
+            'conditions' => [
+                ['type' => 'subject', 'operator' => 'contains', 'value' => 'invoice'],
+            ],
+        ]);
+
+        $selected = WorkflowRunner::select(
+            [$second, $first],
+            $this->conversation(['subject' => 'Invoice please']),
+            ['name' => 'customer_reply'],
+            []
+        );
+
+        $ids = [];
+        foreach ($selected as $workflow) {
+            $ids[] = $workflow['id'];
+        }
+
+        $this->assertSame([1, 2], $ids);
+    }
+
     public function test_select_drops_workflows_that_are_not_eligible(): void
     {
         $workflow = $this->workflow([

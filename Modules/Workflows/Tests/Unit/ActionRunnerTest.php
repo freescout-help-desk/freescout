@@ -243,8 +243,14 @@ class ActionRunnerTest extends TestCase
         $result = ActionRunner::perform('move_mailbox', 15, $this->context($conversation, $user));
 
         $this->assertSame('done', $result);
+        $this->assertSame([], $conversation->calls);
+
+        $mailbox = new \stdClass();
+        $result = ActionRunner::perform('move_mailbox', $mailbox, $this->context($conversation, $user));
+
+        $this->assertSame('done', $result);
         $this->assertSame([
-            ['moveToMailbox', 15, $user],
+            ['moveToMailbox', $mailbox, $user],
         ], $conversation->calls);
     }
 

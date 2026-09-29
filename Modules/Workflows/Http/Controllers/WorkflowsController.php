@@ -199,7 +199,7 @@ class WorkflowsController extends Controller
     }
 
     /**
-     * Run one active manual workflow when this user can view the conversation.
+     * Run one active manual workflow when this user can manage workflows and view the conversation.
      *
      * @param mixed $id
      * @param mixed $workflow
@@ -207,8 +207,12 @@ class WorkflowsController extends Controller
      */
     public function run($id, $workflow)
     {
-        $conversation = Conversation::findOrFail($id);
         $user = auth()->user();
+        if (!self::runnerAllowed($user)) {
+            abort(403);
+        }
+
+        $conversation = Conversation::findOrFail($id);
         if (!$user || !$user->can('view', $conversation)) {
             abort(403);
         }
@@ -225,6 +229,7 @@ class WorkflowsController extends Controller
 
     /**
      * Run one active manual workflow on each conversation this user can view.
+     * The user must be allowed to manage workflows.
      * A missing conversation, another mailbox, or a failed view check is skipped.
      *
      * @param mixed   $workflow
@@ -233,6 +238,11 @@ class WorkflowsController extends Controller
      */
     public function bulk($workflow, Request $request)
     {
+        $user = auth()->user();
+        if (!self::runnerAllowed($user)) {
+            abort(403);
+        }
+
         $model = Workflow::where('id', $workflow)
             ->where('type', 'manual')
             ->where('active', 1)
@@ -244,7 +254,6 @@ class WorkflowsController extends Controller
             $ids = [$ids];
         }
 
-        $user = auth()->user();
         $runner = app(WorkflowRunner::class);
         foreach ($ids as $conversationId) {
             $conversation = Conversation::find($conversationId);
@@ -271,6 +280,17 @@ class WorkflowsController extends Controller
         app(WorkflowRunner::class)->runOne($conversation, $workflow, ['name' => 'manual']);
 
         return redirect()->route('conversations.view', ['id' => $conversation->id]);
+    }
+
+    /**
+     * Admins return inside allows() before Option::get.
+     *
+     * @param mixed $user
+     * @return bool
+     */
+    public static function runnerAllowed($user): bool
+    {
+        return WorkflowAuthorizer::allows($user);
     }
 
     /**
