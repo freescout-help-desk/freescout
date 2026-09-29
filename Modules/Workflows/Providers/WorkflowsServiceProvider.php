@@ -4,6 +4,7 @@ namespace Modules\Workflows\Providers;
 
 use App\User;
 use Illuminate\Support\ServiceProvider;
+use Modules\Workflows\Entities\Workflow;
 use Modules\Workflows\Listeners\RunWorkflows;
 use Modules\Workflows\Services\WorkflowAuthorizer;
 use Modules\Workflows\Services\WorkflowHealth;
@@ -116,6 +117,78 @@ class WorkflowsServiceProvider extends ServiceProvider
         $events->addAction('mailboxes.settings.menu', function ($mailbox) {
             self::settingsMenu($mailbox);
         }, 20, 1);
+
+        $events->addAction('conversation.append_action_buttons', function ($conversation, $mailbox) {
+            self::conversationMenu($conversation, $mailbox);
+        }, 20, 2);
+
+        $events->addAction('bulk_actions.before_delete', function ($mailbox) {
+            self::bulkMenu($mailbox);
+        }, 20, 1);
+    }
+
+    /**
+     * A draft array is not a conversation. Return before querying workflows.
+     *
+     * @param mixed $conversation
+     * @param mixed $mailbox
+     * @return void
+     */
+    private static function conversationMenu($conversation, $mailbox): void
+    {
+        if (!self::isRecord($conversation) || !self::isRecord($mailbox)) {
+            return;
+        }
+
+        echo view('workflows::partials.conversation_menu', [
+            'conversation' => $conversation,
+            'workflows' => self::manualWorkflows($mailbox->id),
+        ]);
+    }
+
+    /**
+     * A draft array is not a mailbox. Return before querying workflows.
+     *
+     * @param mixed $mailbox
+     * @return void
+     */
+    private static function bulkMenu($mailbox): void
+    {
+        if (!self::isRecord($mailbox)) {
+            return;
+        }
+
+        echo view('workflows::partials.bulk_menu', [
+            'mailbox' => $mailbox,
+            'workflows' => self::manualWorkflows($mailbox->id),
+        ]);
+    }
+
+    /**
+     * @param mixed $record
+     * @return bool
+     */
+    private static function isRecord($record): bool
+    {
+        return is_object($record) && isset($record->id);
+    }
+
+    /**
+     * Active manual workflows for this mailbox, in sort_order then id.
+     *
+     * @param mixed $mailboxId
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private static function manualWorkflows($mailboxId)
+    {
+        return Workflow::query()
+            ->where('mailbox_id', $mailboxId)
+            ->where('type', 'manual')
+            ->where('active', 1)
+            ->with(['actions'])
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
     }
 
     /**

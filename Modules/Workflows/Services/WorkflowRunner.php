@@ -10,7 +10,7 @@ use Modules\Workflows\Entities\Workflow;
 class WorkflowRunner
 {
     /**
-     * Date rows run from the schedule trigger only.
+     * Date rows run from schedule and from manual.
      *
      * @var array
      */
@@ -55,7 +55,7 @@ class WorkflowRunner
     private static $running = [];
 
     /**
-     * Drafts never run. Date conditions run only from schedule.
+     * Drafts never run. Date rows run from schedule and from manual.
      * A move runs only when new_reply_moved values moved.
      * apply_to_previous true, 1, or "1" includes older conversations. Created-at strings compare as Y-m-d H:i:s.
      *
@@ -77,7 +77,7 @@ class WorkflowRunner
         $triggerName = self::triggerName($trigger);
         $hasDateCondition = self::hasDateCondition($workflow);
 
-        if ($hasDateCondition && $triggerName !== 'schedule') {
+        if ($hasDateCondition && $triggerName !== 'schedule' && $triggerName !== 'manual') {
             return false;
         }
 
@@ -226,6 +226,41 @@ class WorkflowRunner
         $workflowUser = WorkflowUser::findOrCreate();
         self::runList($selected, function ($workflow) use ($conversation, $models, $workflowUser) {
             return self::executeSelected($conversation, $workflow, $models, $workflowUser);
+        });
+    }
+
+    /**
+     * One workflow chosen by the caller. A non-object returns before any query.
+     * select() gets the manual trigger, then runList and executeSelected.
+     *
+     * @param mixed $conversation
+     * @param mixed $workflow
+     * @param array $trigger
+     * @return void
+     */
+    public function runOne($conversation, $workflow, array $trigger = []): void
+    {
+        if (!is_object($conversation) || !is_object($workflow)) {
+            return;
+        }
+
+        if (!array_key_exists('name', $trigger) || !is_string($trigger['name']) || $trigger['name'] === '') {
+            $trigger = ['name' => 'manual'];
+        }
+
+        $selected = self::select(
+            [self::workflowArray($workflow)],
+            self::conversationArray($conversation, null, $trigger),
+            $trigger,
+            []
+        );
+        if ($selected === []) {
+            return;
+        }
+
+        $workflowUser = WorkflowUser::findOrCreate();
+        self::runList($selected, function ($row) use ($conversation, $workflow, $workflowUser) {
+            return self::executeSelected($conversation, $row, [$workflow], $workflowUser);
         });
     }
 

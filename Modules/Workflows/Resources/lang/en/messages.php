@@ -4,6 +4,7 @@ return [
     'workflows' => 'Workflows',
     'automatic' => 'Automatic',
     'manual' => 'Manual',
+    'run' => 'Run',
     'max_executions_warning' => 'A value above 1 can let workflows trigger each other.',
     'name' => 'Name',
     'active' => 'Active',

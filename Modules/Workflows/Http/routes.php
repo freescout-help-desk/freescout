@@ -21,4 +21,5 @@ Route::group($attributes, function () use ($controller) {
     Route::post('mailboxes/{id}/workflows/{workflow}', $controller.'@update')->name('mailboxes.workflows.update');
     Route::post('mailboxes/{id}/workflows/{workflow}/delete', $controller.'@delete')->name('mailboxes.workflows.delete');
     Route::post('conversation/{id}/workflow/{workflow}', $controller.'@run')->name('conversations.workflow.run');
+    Route::post('conversation/workflow/{workflow}/bulk', $controller.'@bulk')->name('conversations.workflow.bulk');
 });

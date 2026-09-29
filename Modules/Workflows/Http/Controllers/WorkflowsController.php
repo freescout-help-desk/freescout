@@ -2,6 +2,7 @@
 
 namespace Modules\Workflows\Http\Controllers;
 
+use App\Conversation;
 use App\Http\Controllers\Controller;
 use App\Mailbox;
 use App\User;
@@ -11,6 +12,7 @@ use Modules\Workflows\Entities\Workflow;
 use Modules\Workflows\Http\Requests\WorkflowRequest;
 use Modules\Workflows\Services\ConditionCatalog;
 use Modules\Workflows\Services\WorkflowAuthorizer;
+use Modules\Workflows\Services\WorkflowRunner;
 
 class WorkflowsController extends Controller
 {
@@ -25,7 +27,7 @@ class WorkflowsController extends Controller
             }
 
             return $next($request);
-        });
+        })->except(['run', 'bulk']);
     }
 
     /**
@@ -197,14 +199,138 @@ class WorkflowsController extends Controller
     }
 
     /**
-     * Manual runs are wired later. This only redirects.
+     * Run one active manual workflow when this user can view the conversation.
      *
      * @param mixed $id
      * @param mixed $workflow
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function run($id, $workflow)
     {
+        $conversation = Conversation::findOrFail($id);
+        $user = auth()->user();
+        if (!$user || !$user->can('view', $conversation)) {
+            abort(403);
+        }
+
+        $model = Workflow::where('id', $workflow)
+            ->where('mailbox_id', $conversation->mailbox_id)
+            ->where('type', 'manual')
+            ->where('active', 1)
+            ->with(['conditions', 'actions'])
+            ->firstOrFail();
+
+        return $this->runManual($conversation, $model);
+    }
+
+    /**
+     * Run one active manual workflow on each conversation this user can view.
+     * A missing conversation, another mailbox, or a failed view check is skipped.
+     *
+     * @param mixed   $workflow
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function bulk($workflow, Request $request)
+    {
+        $model = Workflow::where('id', $workflow)
+            ->where('type', 'manual')
+            ->where('active', 1)
+            ->with(['conditions', 'actions'])
+            ->firstOrFail();
+
+        $ids = $request->input('conversation_id', []);
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $user = auth()->user();
+        $runner = app(WorkflowRunner::class);
+        foreach ($ids as $conversationId) {
+            $conversation = Conversation::find($conversationId);
+            if (!$conversation || $conversation->mailbox_id != $model->mailbox_id) {
+                continue;
+            }
+            if (!$user || !$user->can('view', $conversation)) {
+                continue;
+            }
+
+            $runner->runOne($conversation, $model, ['name' => 'manual']);
+        }
+
         return redirect()->back();
+    }
+
+    /**
+     * @param mixed $conversation
+     * @param mixed $workflow
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function runManual($conversation, $workflow)
+    {
+        app(WorkflowRunner::class)->runOne($conversation, $workflow, ['name' => 'manual']);
+
+        return redirect()->route('conversations.view', ['id' => $conversation->id]);
+    }
+
+    /**
+     * Confirm when an action emails the customer or deletes the conversation.
+     * Arrays and objects are both accepted. This does not query.
+     *
+     * @param mixed $workflow
+     * @return array
+     */
+    public static function manualPayload($workflow): array
+    {
+        foreach (self::payloadActions($workflow) as $action) {
+            if (in_array(self::actionType($action), ['reply', 'email_customer', 'forward', 'move_deleted', 'delete_forever'], true)) {
+                return ['confirm' => true];
+            }
+        }
+
+        return ['confirm' => false];
+    }
+
+    /**
+     * Loaded relations are read. An unloaded relation is not queried.
+     *
+     * @param mixed $workflow
+     * @return array
+     */
+    private static function payloadActions($workflow): array
+    {
+        $actions = [];
+        if (is_array($workflow)) {
+            $actions = array_key_exists('actions', $workflow) ? $workflow['actions'] : [];
+        } elseif (is_object($workflow) && method_exists($workflow, 'relationLoaded')) {
+            if ($workflow->relationLoaded('actions')) {
+                $actions = $workflow->getRelation('actions');
+            }
+        } elseif (is_object($workflow) && isset($workflow->actions)) {
+            $actions = $workflow->actions;
+        }
+
+        if ($actions instanceof \Traversable) {
+            $actions = iterator_to_array($actions);
+        }
+
+        return is_array($actions) ? $actions : [];
+    }
+
+    /**
+     * @param mixed $action
+     * @return string|null
+     */
+    private static function actionType($action): ?string
+    {
+        $type = null;
+        if (is_array($action) && array_key_exists('type', $action)) {
+            $type = $action['type'];
+        } elseif (is_object($action) && isset($action->type)) {
+            $type = $action->type;
+        }
+
+        return is_string($type) ? $type : null;
     }
 
     /**
