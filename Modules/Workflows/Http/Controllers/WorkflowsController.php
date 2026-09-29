@@ -3,10 +3,13 @@
 namespace Modules\Workflows\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mailbox;
+use App\User;
 use Illuminate\Http\Request;
 use Modules\Workflows\Entities\ConversationWorkflow;
 use Modules\Workflows\Entities\Workflow;
 use Modules\Workflows\Http\Requests\WorkflowRequest;
+use Modules\Workflows\Services\ConditionCatalog;
 use Modules\Workflows\Services\WorkflowAuthorizer;
 
 class WorkflowsController extends Controller
@@ -30,7 +33,16 @@ class WorkflowsController extends Controller
      */
     public function index($id)
     {
-        abort(404);
+        $mailbox = Mailbox::findOrFail($id);
+        $workflows = Workflow::where('mailbox_id', $mailbox->id)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        return view('workflows::index', [
+            'mailbox' => $mailbox,
+            'workflows' => $workflows,
+        ]);
     }
 
     /**
@@ -38,7 +50,17 @@ class WorkflowsController extends Controller
      */
     public function create($id)
     {
-        abort(404);
+        $mailbox = Mailbox::findOrFail($id);
+        $workflow = new Workflow();
+        $workflow->type = 'automatic';
+        $workflow->active = true;
+        $workflow->apply_to_previous = false;
+        $workflow->max_executions = 1;
+        $workflow->setAttribute('match', 'all');
+        $workflow->setRelation('conditions', collect());
+        $workflow->setRelation('actions', collect());
+
+        return view('workflows::edit', $this->editorView($mailbox, $workflow));
     }
 
     /**
@@ -66,7 +88,13 @@ class WorkflowsController extends Controller
      */
     public function edit($id, $workflow)
     {
-        abort(404);
+        $mailbox = Mailbox::findOrFail($id);
+        $model = Workflow::where('mailbox_id', $mailbox->id)
+            ->where('id', $workflow)
+            ->with(['conditions', 'actions'])
+            ->firstOrFail();
+
+        return view('workflows::edit', $this->editorView($mailbox, $model));
     }
 
     /**
@@ -243,6 +271,36 @@ class WorkflowsController extends Controller
         }
 
         return is_string($value) && preg_match('/^-?\d+$/', $value) === 1;
+    }
+
+    /**
+     * @param Mailbox  $mailbox
+     * @param Workflow $workflow
+     * @return array
+     */
+    private function editorView(Mailbox $mailbox, Workflow $workflow): array
+    {
+        return [
+            'mailbox' => $mailbox,
+            'workflow' => $workflow,
+            'users' => User::where('status', '!=', User::STATUS_DELETED)->get(),
+            'conditionGroups' => ConditionCatalog::configured((int) $mailbox->id),
+            'actionTypes' => [
+                'stop',
+                'change_status',
+                'assign',
+                'add_note',
+                'move_deleted',
+                'delete_forever',
+                'move_mailbox',
+                'reply',
+                'email_customer',
+                'forward',
+                'notification',
+                'disable_auto_reply',
+                'trigger_webhook',
+            ],
+        ];
     }
 
     /**

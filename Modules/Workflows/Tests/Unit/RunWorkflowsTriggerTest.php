@@ -95,6 +95,7 @@ class RunWorkflowsTriggerTest extends TestCase
             'conversation.user_changed' => 3,
             'conversation.subject_changed' => 3,
             'conversation.state_changed' => 3,
+            'mailboxes.settings.menu' => 1,
         ];
         foreach ($actions as $name => $arguments) {
             $hook = $this->recorded($events->actions, $name);

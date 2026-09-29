@@ -37,6 +37,8 @@ class WorkflowsServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../Config/config.php', 'workflows');
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
+        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'workflows');
+        $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'workflows');
         \Illuminate\Support\Facades\Event::listen(\App\Events\UserDeleted::class, function ($event) {
             self::deactivateDeletedUser($event);
         });
@@ -110,6 +112,30 @@ class WorkflowsServiceProvider extends ServiceProvider
 
             return $name;
         }, 20, 2);
+
+        $events->addAction('mailboxes.settings.menu', function ($mailbox) {
+            self::settingsMenu($mailbox);
+        }, 20, 1);
+    }
+
+    /**
+     * A draft array is not a mailbox. Return before allows(), which reads Option for non-admins.
+     *
+     * @param mixed $mailbox
+     * @return void
+     */
+    private static function settingsMenu($mailbox): void
+    {
+        if (!is_object($mailbox) || !isset($mailbox->id)) {
+            return;
+        }
+
+        $user = auth()->user();
+        if (!is_object($user) || !WorkflowAuthorizer::allows($user)) {
+            return;
+        }
+
+        echo view('workflows::partials.settings_menu', ['mailbox' => $mailbox]);
     }
 
     /**

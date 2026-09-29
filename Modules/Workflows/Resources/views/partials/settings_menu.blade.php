@@ -1,0 +1,1 @@
+<li @if (in_array(Route::currentRouteName(), ['mailboxes.workflows', 'mailboxes.workflows.create', 'mailboxes.workflows.edit']))class="active"@endif><a href="{{ route('mailboxes.workflows', ['id' => $mailbox->id]) }}"><i class="glyphicon glyphicon-random"></i> {{ __('workflows::messages.workflows') }}</a></li>
