@@ -3,6 +3,9 @@
 namespace Modules\Workflows\Services;
 
 use App\Conversation;
+use App\Thread;
+use Modules\Workflows\Entities\ConversationWorkflow;
+use Modules\Workflows\Entities\Workflow;
 
 class WorkflowRunner
 {
@@ -38,6 +41,9 @@ class WorkflowRunner
         'last_customer_reply_at',
         'last_user_reply_at',
         'created_at',
+        'trigger_source',
+        'trigger_body',
+        'has_attachment',
     ];
 
     /**
@@ -187,6 +193,39 @@ class WorkflowRunner
         }
 
         return $results;
+    }
+
+    /**
+     * Load this mailbox's active automatic workflows and run the ones select() keeps.
+     * Dates are Y-m-d H:i:s strings. Carbon objects fail the created-at check.
+     * Workflow ids are not cast, so the running-id comparison stays strict.
+     *
+     * @param mixed $conversation
+     * @param array $trigger
+     * @param mixed $thread
+     * @return void
+     */
+    public static function runMailbox($conversation, array $trigger, $thread = null): void
+    {
+        if (!is_object($conversation)) {
+            return;
+        }
+
+        $models = self::automaticWorkflows($conversation);
+        $workflows = [];
+        foreach ($models as $model) {
+            $workflows[] = self::workflowArray($model);
+        }
+
+        $selected = self::select($workflows, self::conversationArray($conversation, $thread), $trigger, []);
+        if ($selected === []) {
+            return;
+        }
+
+        $workflowUser = WorkflowUser::findOrCreate();
+        self::runList($selected, function ($workflow) use ($conversation, $models, $workflowUser) {
+            return self::executeSelected($conversation, $workflow, $models, $workflowUser);
+        });
     }
 
     /**
@@ -443,5 +482,412 @@ class WorkflowRunner
         }
 
         unset(self::$running[$index]);
+    }
+
+    /**
+     * @param object $conversation
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private static function automaticWorkflows($conversation)
+    {
+        return Workflow::query()
+            ->where('mailbox_id', $conversation->mailbox_id)
+            ->where('active', 1)
+            ->where('type', 'automatic')
+            ->with(['conditions', 'actions'])
+            ->orderBy('sort_order')
+            ->get();
+    }
+
+    /**
+     * Plain array select() already expects. id is left as stored.
+     * match is a reserved word, so it is read with getAttribute.
+     *
+     * @param Workflow $model
+     * @return array
+     */
+    private static function workflowArray($model): array
+    {
+        $workflow = [
+            'id' => $model->getAttribute('id'),
+            'sort_order' => $model->getAttribute('sort_order'),
+            'apply_to_previous' => $model->getAttribute('apply_to_previous'),
+            'match' => $model->getAttribute('match'),
+            'conditions' => self::ruleRows($model->conditions),
+            'actions' => self::ruleRows($model->actions),
+            'max_executions' => $model->getAttribute('max_executions'),
+        ];
+
+        $createdAt = self::formatDate($model->getAttribute('created_at'));
+        if ($createdAt !== null) {
+            $workflow['created_at'] = $createdAt;
+        }
+
+        return $workflow;
+    }
+
+    /**
+     * @param mixed $rows
+     * @return array
+     */
+    private static function ruleRows($rows): array
+    {
+        $result = [];
+        if ($rows === null) {
+            return $result;
+        }
+
+        foreach ($rows as $row) {
+            $result[] = [
+                'type' => $row->type,
+                'operator' => $row->operator,
+                'value' => $row->value,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * PDO integer columns arrive as strings. Status and reply-from checks are strict.
+     *
+     * @param object $conversation
+     * @param mixed  $thread
+     * @return array
+     */
+    private static function conversationArray($conversation, $thread): array
+    {
+        $data = [
+            'state' => self::integerColumn(self::readAttribute($conversation, 'state')),
+            'status' => self::integerColumn(self::readAttribute($conversation, 'status')),
+            'user_id' => self::integerColumn(self::readAttribute($conversation, 'user_id')),
+            'type' => self::integerColumn(self::readAttribute($conversation, 'type')),
+            'last_reply_from' => self::integerColumn(self::readAttribute($conversation, 'last_reply_from')),
+            'now' => date('Y-m-d H:i:s'),
+            'customer_viewed' => self::customerViewed($thread),
+            'tags' => self::tagNames($conversation),
+            'channel' => \Eventy::filter('workflow.conversation_channel', 'email', $conversation),
+            'has_attachment' => self::threadHasAttachment($thread),
+        ];
+
+        $createdAt = self::formatDate(self::readAttribute($conversation, 'created_at'));
+        if ($createdAt !== null) {
+            $data['created_at'] = $createdAt;
+        }
+
+        if (method_exists($conversation, 'getLastCustomerReplyAt')) {
+            $lastCustomer = $conversation->getLastCustomerReplyAt();
+            $formatted = self::formatDate($lastCustomer);
+            if ($lastCustomer !== null && $lastCustomer !== '' && $formatted !== null) {
+                $data['last_customer_reply_at'] = $formatted;
+            }
+        }
+
+        if ($data['last_reply_from'] == Conversation::PERSON_USER) {
+            $formatted = self::formatDate(self::readAttribute($conversation, 'last_reply_at'));
+            if ($formatted !== null) {
+                $data['last_user_reply_at'] = $formatted;
+            }
+        }
+
+        if (is_object($thread) && method_exists($thread, 'getBodyAsText')) {
+            $text = self::threadText($thread);
+            if ($text !== null) {
+                $data['trigger_body'] = $text;
+            }
+            $source = self::triggerSource($thread);
+            if ($source !== null) {
+                $data['trigger_source'] = $source;
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Count the run before its actions. stop ends this workflow and later ones.
+     *
+     * @param object $conversation
+     * @param array  $workflow
+     * @param mixed  $models
+     * @param mixed  $workflowUser
+     * @return string|null
+     */
+    private static function executeSelected($conversation, array $workflow, $models, $workflowUser)
+    {
+        if (!array_key_exists('id', $workflow)) {
+            return null;
+        }
+
+        $model = self::workflowModel($models, $workflow['id']);
+        if ($model === null) {
+            return null;
+        }
+
+        $record = ConversationWorkflow::where('conversation_id', $conversation->id)
+            ->where('workflow_id', $workflow['id'])
+            ->first();
+        $executions = $record === null ? 0 : (int) $record->executions;
+        $max = array_key_exists('max_executions', $workflow) ? (int) $workflow['max_executions'] : 0;
+        if (!self::allowsAnotherRun($executions, $max)) {
+            return null;
+        }
+
+        if ($record === null) {
+            $record = new ConversationWorkflow();
+            $record->conversation_id = $conversation->id;
+            $record->workflow_id = $workflow['id'];
+        }
+        $record->executions = $executions + 1;
+        $record->save();
+
+        $context = new \stdClass();
+        $context->conversation = $conversation;
+        $context->workflowUser = $workflowUser;
+        $context->workflow = $model;
+
+        $actions = [];
+        if (array_key_exists('actions', $workflow) && is_array($workflow['actions'])) {
+            $actions = $workflow['actions'];
+        }
+        foreach ($actions as $action) {
+            if (!is_array($action)) {
+                continue;
+            }
+            $type = array_key_exists('type', $action) ? $action['type'] : '';
+            $value = array_key_exists('value', $action) ? $action['value'] : null;
+            $result = ActionRunner::perform($type, $value, $context);
+            if ($result === 'stop') {
+                return 'stop';
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param mixed $models
+     * @param mixed $id
+     * @return Workflow|null
+     */
+    private static function workflowModel($models, $id)
+    {
+        foreach ($models as $model) {
+            if ($model->getAttribute('id') === $id) {
+                return $model;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param mixed  $model
+     * @param string $name
+     * @return mixed
+     */
+    private static function readAttribute($model, $name)
+    {
+        if (is_array($model) && array_key_exists($name, $model)) {
+            return $model[$name];
+        }
+        if (!is_object($model)) {
+            return null;
+        }
+        if (method_exists($model, 'getAttribute')) {
+            return $model->getAttribute($name);
+        }
+        if (property_exists($model, $name)) {
+            return $model->{$name};
+        }
+
+        return null;
+    }
+
+    /**
+     * Whole-number strings become ints. Anything else is unchanged, including null.
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    private static function integerColumn($value)
+    {
+        if (is_int($value) || $value === null) {
+            return $value;
+        }
+        if (is_string($value) && preg_match('/^-?\d+$/', $value) === 1) {
+            return (int) $value;
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param mixed $value
+     * @return string|null
+     */
+    private static function formatDate($value): ?string
+    {
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('Y-m-d H:i:s');
+        }
+        if (is_string($value) && $value !== '') {
+            return $value;
+        }
+
+        return null;
+    }
+
+    /**
+     * A message the customer has opened.
+     *
+     * @param mixed $thread
+     * @return bool
+     */
+    private static function customerViewed($thread): bool
+    {
+        if (!is_object($thread)) {
+            return false;
+        }
+        if (self::readAttribute($thread, 'type') != Thread::TYPE_MESSAGE) {
+            return false;
+        }
+
+        return self::filled(self::readAttribute($thread, 'opened_at'));
+    }
+
+    /**
+     * @param mixed $value
+     * @return bool
+     */
+    private static function filled($value): bool
+    {
+        if ($value instanceof \DateTimeInterface) {
+            return true;
+        }
+
+        return !empty($value);
+    }
+
+    /**
+     * Tag names only. A missing tags() method, or a relation that errors, is an empty list.
+     *
+     * @param object $conversation
+     * @return array
+     */
+    private static function tagNames($conversation): array
+    {
+        if (!method_exists($conversation, 'tags')) {
+            return [];
+        }
+
+        try {
+            $tags = $conversation->tags;
+        } catch (\Throwable $e) {
+            return [];
+        }
+
+        if ($tags === null) {
+            return [];
+        }
+
+        $names = [];
+        foreach ($tags as $tag) {
+            $name = self::tagName($tag);
+            if ($name !== null) {
+                $names[] = $name;
+            }
+        }
+
+        return $names;
+    }
+
+    /**
+     * @param mixed $tag
+     * @return string|null
+     */
+    private static function tagName($tag): ?string
+    {
+        if (is_string($tag)) {
+            return $tag;
+        }
+        if (is_array($tag) && isset($tag['name']) && is_string($tag['name'])) {
+            return $tag['name'];
+        }
+        if (is_object($tag) && isset($tag->name) && is_string($tag->name)) {
+            return $tag->name;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param mixed $thread
+     * @return bool
+     */
+    private static function threadHasAttachment($thread): bool
+    {
+        if (!is_object($thread) || !method_exists($thread, 'attachments')) {
+            return false;
+        }
+
+        try {
+            $attachments = $thread->attachments;
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        if ($attachments === null) {
+            return false;
+        }
+        if (is_object($attachments) && method_exists($attachments, 'isEmpty')) {
+            return !$attachments->isEmpty();
+        }
+        if (is_countable($attachments)) {
+            return count($attachments) > 0;
+        }
+
+        return !empty($attachments);
+    }
+
+    /**
+     * htmlToText warns on a null body. That must not abort the run.
+     *
+     * @param object $thread
+     * @return string|null
+     */
+    private static function threadText($thread): ?string
+    {
+        try {
+            $text = $thread->getBodyAsText();
+        } catch (\Throwable $e) {
+            return null;
+        }
+
+        if (!is_string($text)) {
+            return null;
+        }
+
+        return $text;
+    }
+
+    /**
+     * @param object $thread
+     * @return string|null
+     */
+    private static function triggerSource($thread): ?string
+    {
+        $type = self::readAttribute($thread, 'type');
+        if ($type == Thread::TYPE_CUSTOMER) {
+            return 'customer';
+        }
+        if ($type == Thread::TYPE_MESSAGE) {
+            return 'user';
+        }
+        if ($type == Thread::TYPE_NOTE) {
+            return 'note';
+        }
+
+        return null;
     }
 }
