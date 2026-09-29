@@ -29,5 +29,7 @@ class WorkflowsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->mergeConfigFrom(__DIR__.'/../Config/config.php', 'workflows');
+        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
     }
 }
