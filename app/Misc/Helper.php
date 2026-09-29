@@ -2242,7 +2242,7 @@ class Helper
                     if (!empty($dns_record['ip']) && !in_array($dns_record['ip'], $hosts_to_check)) {
                         $hosts_to_check[] = $dns_record['ip'];
                         // Remember IP.
-                        if (!in_array( $dns_record['ip'], self::$last_request['ips'])) {
+                        if (!in_array($dns_record['ip'], self::$last_request['ips'])) {
                             self::$last_request['ips'][$host][] = $dns_record['ip'];
                         }
                     }
