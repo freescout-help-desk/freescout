@@ -59,6 +59,28 @@ class WorkflowRunnerTest extends TestCase
         $this->assertTrue(WorkflowRunner::eligible($closed, $newer, $trigger));
     }
 
+    public function test_a_stored_apply_to_previous_flag_of_one_includes_older_conversations(): void
+    {
+        $conversation = $this->conversation(['created_at' => '2026-08-01 00:00:00']);
+        $trigger = ['name' => 'customer_reply'];
+
+        foreach ([1, '1'] as $flag) {
+            $workflow = $this->workflow([
+                'apply_to_previous' => $flag,
+                'created_at' => '2026-09-01 00:00:00',
+            ]);
+            $this->assertTrue(WorkflowRunner::eligible($workflow, $conversation, $trigger));
+        }
+
+        foreach ([0, '0'] as $flag) {
+            $workflow = $this->workflow([
+                'apply_to_previous' => $flag,
+                'created_at' => '2026-09-01 00:00:00',
+            ]);
+            $this->assertFalse(WorkflowRunner::eligible($workflow, $conversation, $trigger));
+        }
+    }
+
     public function test_equal_created_at_stays_eligible_without_apply_to_previous(): void
     {
         $workflow = $this->workflow([

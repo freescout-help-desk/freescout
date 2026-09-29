@@ -50,7 +50,7 @@ class WorkflowRunner
     /**
      * Drafts never run. Date conditions run only from schedule.
      * A move runs only when new_reply_moved values moved.
-     * apply_to_previous must be boolean true. Created-at strings compare as Y-m-d H:i:s.
+     * apply_to_previous true, 1, or "1" includes older conversations. Created-at strings compare as Y-m-d H:i:s.
      *
      * @param array $workflow
      * @param array $conversation
@@ -190,14 +190,21 @@ class WorkflowRunner
     }
 
     /**
-     * Boolean true only. Missing, false, 0, and "0" still apply the created-at rule.
+     * Enabled for boolean true, integer 1, and string "1".
+     * Missing, null, false, 0, and "0" still apply the created-at rule.
      *
      * @param array $workflow
      * @return bool
      */
     private static function appliesToPrevious(array $workflow): bool
     {
-        return array_key_exists('apply_to_previous', $workflow) && $workflow['apply_to_previous'] === true;
+        if (!array_key_exists('apply_to_previous', $workflow)) {
+            return false;
+        }
+
+        $flag = $workflow['apply_to_previous'];
+
+        return $flag === true || $flag === 1 || $flag === '1';
     }
 
     /**
