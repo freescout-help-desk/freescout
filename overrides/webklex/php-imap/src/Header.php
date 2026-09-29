@@ -677,7 +677,7 @@ class Header {
                     $split_address = substr($split_address, 0, -1);
                 }
                 if (preg_match(
-                    '/^(?:(?P<name>.+)\s)?(?(name)<|<?)(?P<email>[^\s]+?)(?(name)>|>?)$/',
+                    '/^(?:(?P<name>.+)\s*)?(?(name)<|<?)(?P<email>[^\s]+?)(?(name)>|>?)$/',
                     $split_address,
                     $matches
                 )) {
@@ -722,7 +722,7 @@ class Header {
             if (is_string($list)) {
                 // $list = "<noreply@github.com>"
                 if (preg_match(
-                    '/^(?:(?P<name>.+)\s)?(?(name)<|<?)(?P<email>[^\s]+?)(?(name)>|>?)$/',
+                    '/^(?:(?P<name>.+)\s*)?(?(name)<|<?)(?P<email>[^\s]+?)(?(name)>|>?)$/',
                     $list,
                     $matches
                 )) {
