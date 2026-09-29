@@ -46,7 +46,8 @@ class WorkflowUser
 
     /**
      * Return workflow@localhost, creating it when missing.
-     * This lookup includes deleted users. Password is a random hash. Role is left unset.
+     * This lookup includes deleted users. Password is a random hash.
+     * last_name is empty because the column is not nullable. Role is left unset.
      *
      * @return User
      */
@@ -59,6 +60,7 @@ class WorkflowUser
 
         $user = new User(self::attributes());
         $user->password = Hash::make(str_random(32));
+        $user->last_name = '';
         $user->save();
 
         return $user;
