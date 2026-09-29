@@ -2,12 +2,11 @@
 
 namespace Modules\Workflows\Services;
 
-use App\Jobs\SendReplyToCustomer;
-
 class MailGateway
 {
     /**
      * Dispatch the reply for this thread to the conversation customer.
+     * sortThreads calls $threads->sort(), so the job receives a Collection.
      *
      * @param object $conversation
      * @param mixed  $thread
@@ -15,7 +14,16 @@ class MailGateway
      */
     public function sendReply($conversation, $thread)
     {
-        SendReplyToCustomer::dispatch($conversation, [$thread], $conversation->customer);
+        $threads = collect([$thread]);
+        $delay = \Eventy::filter(
+            'conversation.send_reply_to_customer_delay',
+            now()->addSeconds(\App\Conversation::UNDO_TIMOUT),
+            $conversation,
+            $threads
+        );
+        \App\Jobs\SendReplyToCustomer::dispatch($conversation, $threads, $conversation->customer)
+            ->delay($delay)
+            ->onQueue('emails');
     }
 
     /**
