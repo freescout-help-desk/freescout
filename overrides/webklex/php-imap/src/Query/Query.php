@@ -443,7 +443,11 @@ class Query {
             }
         }
 
-        if ($last_exception) {
+        // One malformed message must not prevent the other messages in this
+        // batch from reaching FreeScout. If none could be parsed, preserve the
+        // fetch error as well as the unread flags so the failure stays visible.
+        // https://github.com/freescout-help-desk/freescout/pull/5668
+        if ($last_exception && $messages->isEmpty()) {
             throw $last_exception;
         }
 
