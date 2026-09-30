@@ -2994,6 +2994,127 @@ var Bullet = /** @class */ (function () {
         rng.select();
     };
     /**
+     * Split <div>/<p> blocks made of <br>-separated lines into one <div> per
+     * line and narrow the range to the lines touched by the selection, so
+     * that only those lines are turned into list items.
+     * Blocks without direct <br> children are left untouched.
+     *
+     * @param {WrappedRange} rng
+     * @return {WrappedRange}
+     */
+    Bullet.prototype.splitBrParas = function (rng) {
+        var sc = rng.sc, so = rng.so, ec = rng.ec, eo = rng.eo;
+        var changed = false;
+        var isBr = function (node) {
+            return !!node && node.nodeName === 'BR';
+        };
+        var paras = rng.nodes(dom.isPara, { includeAncestor: true }).filter(function (para) {
+            if (!/^(DIV|P)$/.test(para.nodeName) || !$$1(para).children('br').length) {
+                return false;
+            }
+            // Skip blocks containing other blocks or lists.
+            return !$$1(para).children().filter(function () {
+                return dom.isPara(this) || dom.isList(this);
+            }).length;
+        });
+        $$1.each(paras, function (idx, para) {
+            var children = $$1.makeArray(para.childNodes);
+            // Line index of each direct child (a <br> belongs to the line it ends).
+            var childLine = [];
+            var line = 0;
+            $$1.each(children, function (i, child) {
+                childLine[i] = line;
+                if (isBr(child)) {
+                    line++;
+                }
+            });
+            // A trailing <br> does not start a new visible line.
+            var lineCount = isBr(children[children.length - 1]) ? line : line + 1;
+            // Line a boundary point falls on, null if the point is outside para.
+            var lineAt = function (node, offset, isEnd) {
+                if (node !== para && !$$1.contains(para, node)) {
+                    return null;
+                }
+                var i;
+                if (node === para) {
+                    if (isEnd && offset > 0 && isBr(children[offset - 1])) {
+                        offset--; // range ends right after a <br>
+                    }
+                    i = Math.min(offset, children.length - 1);
+                }
+                else {
+                    var c = node;
+                    while (c.parentNode !== para) {
+                        c = c.parentNode;
+                    }
+                    i = $$1.inArray(c, children);
+                    // Range ends at the very start of a later line: exclude it.
+                    if (isEnd && c === node && offset === 0 && i > 0 && isBr(children[i - 1])) {
+                        i--;
+                    }
+                }
+                return Math.min(childLine[i], lineCount - 1);
+            };
+            var startLine = lineAt(sc, so, false);
+            var endLine = lineAt(ec, eo, true);
+            var startInside = startLine !== null;
+            var endInside = endLine !== null;
+            if (!startInside) {
+                startLine = 0;
+            }
+            if (!endInside) {
+                endLine = lineCount - 1;
+            }
+            if (endLine < startLine) {
+                endLine = startLine;
+            }
+            // Build one <div> per line.
+            var divs = [];
+            var cur = null;
+            var closeLine = function () {
+                if (!cur.childNodes.length) {
+                    cur.appendChild(document.createElement('br')); // keep blank lines
+                }
+                divs.push(cur);
+                cur = null;
+            };
+            $$1.each(children, function (i, child) {
+                if (!cur) {
+                    cur = document.createElement('div');
+                    if (para.className) {
+                        cur.className = para.className;
+                    }
+                    if (para.style && para.style.cssText) {
+                        cur.style.cssText = para.style.cssText;
+                    }
+                }
+                if (isBr(child)) {
+                    closeLine();
+                }
+                else {
+                    cur.appendChild(child);
+                }
+            });
+            if (cur && cur.childNodes.length) {
+                closeLine();
+            }
+            $$1.each(divs, function (i, d) {
+                para.parentNode.insertBefore(d, para);
+            });
+            para.parentNode.removeChild(para);
+            changed = true;
+            if (startInside) {
+                sc = divs[startLine];
+                so = 0;
+            }
+            if (endInside) {
+                ec = divs[endLine];
+                eo = dom.nodeLength(divs[endLine]);
+            }
+        });
+        return changed ? range.create(sc, so, ec, eo) : rng;
+    };
+    /**
      * toggle list
      *
      * @param {String} listName - OL or UL
@@ -3001,6 +3122,8 @@ var Bullet = /** @class */ (function () {
     Bullet.prototype.toggleList = function (listName, editable) {
         var _this = this;
         var rng = range.create(editable).wrapBodyInlineWithPara();
+        // Split <br>-separated lines so only the selected lines become list items.
+        rng = this.splitBrParas(rng);
         var paras = rng.nodes(dom.isPara, { includeAncestor: true });
         var bookmark = rng.paraBookmark(paras);
         var clustereds = lists.clusterBy(paras, func.peq2('parentNode'));
