@@ -423,6 +423,19 @@ $(document).ready(function(){
 		e.preventDefault();
 	});
 
+	// Icons acting as buttons (role="button" on span/i): Enter and Space click them, like a real button.
+	// Space on a dropdown toggle is left to Bootstrap, which already opens it.
+	$(document).on('keydown', 'span[role="button"][tabindex], i[role="button"][tabindex]', function(e) {
+		if ((e.which != 13 && e.which != 32) || (e.originalEvent && e.originalEvent.repeat)) {
+			return;
+		}
+		if (e.which == 32 && $(this).is('[data-toggle="dropdown"]')) {
+			return;
+		}
+		e.preventDefault();
+		$(this).click();
+	});
+
 	//applyVoidLinks();
 	$('ul.customer-contacts a.contact-main').click(function(e) {
 		copyToClipboard($(this).text());
