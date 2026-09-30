@@ -3598,6 +3598,19 @@ function showModalDialog(body, options)
 	}
 	options = Object.assign(standard_options, options);
 
+	// Focus the primary button, so Enter confirms and Tab moves to Cancel.
+	// Skipped when the dialog has a field to fill in.
+	var on_show = options.on_show;
+	options.on_show = function(modal, a) {
+		if (typeof(on_show) == "function") {
+			on_show(modal, a);
+		}
+		var modal_body = modal.children().find('.modal-body:first');
+		if (!modal_body.find('input:visible,textarea:visible,select:visible').length) {
+			modal_body.find('.btn-primary:enabled:visible:first').focus();
+		}
+	};
+
 	triggerModal(null, options);
 }
 
