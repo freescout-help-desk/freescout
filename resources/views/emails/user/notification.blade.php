@@ -4,6 +4,7 @@
 	<meta name="viewport" content="width=350px, user-scalable=yes">
 	<style>
 		#wrapper * { max-width: 650px !important; }
+		#wrapper img { max-width: 100% !important; height: auto !important; }
 		p { margin:0 0 1.5em 0; }
 		pre { font-family: Menlo, Monaco, monospace, sans-serif; padding: 0 0 1.6em 0; color:#333333; line-height:15px; }
 		a { color:#3f8abf; text-decoration:none; }
@@ -227,7 +228,7 @@
 							                                @endif
 							                                @action('email_notification.before_body', $thread, $user, $conversation)
 									                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#444; font-size:14px; line-height:20px; margin:0; @if ($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
-																{!! safe_raw_html($thread->getCleanBody() ?? '') !!}
+																{!! safe_raw_html(\MailHelper::fitImages($thread->getCleanBody() ?? '', 580)) !!}
 															</div>
 
 															@if ($thread->has_attachments)
