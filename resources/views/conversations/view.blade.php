@@ -42,7 +42,8 @@
                                   data-placement="bottom"
                                   title="{{ $action['label'] }}"
                                   aria-label="{{ $action['label'] }}"
-                                  role="button"></span>
+                                  role="button"
+                                  tabindex="0"></span>
                         @elseif (!empty($action['url']))
                             {{-- Action with URL (like move, merge) --}}
                             <a href="{{ $action['url']($conversation) }}"
@@ -69,6 +70,7 @@
                                   title="{{ $action['label'] }}"
                                   aria-label="{{ $action['label'] }}"
                                   role="button"
+                                  tabindex="0"
                             @if (!empty($action['attrs']))
                                 @foreach ($action['attrs'] as $attr_key => $attr_value)
                                     {{ $attr_key }}="{{ $attr_value }}"
@@ -85,6 +87,7 @@
         <span class="conv-action glyphicon glyphicon-option-horizontal dropdown-toggle"
               data-toggle="dropdown"
               role="button"
+              tabindex="0"
               aria-haspopup="true"
               aria-expanded="false"
               aria-label="{{ __('More Actions') }}"></span>
@@ -206,7 +209,7 @@
                         @endif
                         @action('conversation.after_subject', $conversation, $mailbox)
                         <div class="conv-numnav">
-                            <i class="glyphicon conv-star @if ($conversation->isStarredByUser()) glyphicon-star @else glyphicon-star-empty @endif" title="@if ($conversation->isStarredByUser()){{ __("Unstar Conversation") }}@else{{ __("Star Conversation") }}@endif"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>
+                            <i role="button" tabindex="0" class="glyphicon conv-star @if ($conversation->isStarredByUser()) glyphicon-star @else glyphicon-star-empty @endif" title="@if ($conversation->isStarredByUser()){{ __("Unstar Conversation") }}@else{{ __("Star Conversation") }}@endif"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>
                         </div>
                         <div id="conv-viewers">
                             @foreach ($viewers as $viewer)
