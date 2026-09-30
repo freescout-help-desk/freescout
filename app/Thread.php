@@ -443,6 +443,12 @@ class Thread extends Model
         return self::$types[$this->type];
     }
 
+    // Get "Cc" as array.
+    public function getCc($exclude_array = [])
+    {
+        return $this->getCcArray($exclude_array);
+    }
+
     /**
      * Get thread CC recipients.
      *
@@ -456,6 +462,12 @@ class Thread extends Model
     public function getCcString($exclude_array = [])
     {
         return implode(', ', $this->getCcArray($exclude_array));
+    }
+
+    // Get "Bcc" as array.
+    public function getBcc($exclude_array = [])
+    {
+        return $this->getBccArray($exclude_array);
     }
 
     /**
