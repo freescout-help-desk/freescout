@@ -2458,6 +2458,10 @@ button.conv-checkbox-clear {
 .thread-content	img {
     max-width: 100%;
 }
+/* Keep aspect ratio when max-width shrinks an image with width/height attributes */
+.thread-content	img[width] {
+    height: auto;
+}
 .conv-new #conv-toolbar {
     border-bottom: 1px solid #d4d9dd;
     padding: 6px 0 7px 0;
