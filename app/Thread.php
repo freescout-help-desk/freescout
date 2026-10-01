@@ -387,7 +387,6 @@ class Thread extends Model
 
             // Skip non-external links.
             if (parse_url($href, PHP_URL_HOST) == \Helper::getDomain()) {
-\Log::error('SKIP host='.parse_url($href, PHP_URL_HOST).', domain='.\Helper::getDomain());
                 return $tpl;
             }
 
