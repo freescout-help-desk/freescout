@@ -160,7 +160,7 @@
 		    <li @if ($mode == App\Conversation::SEARCH_MODE_CUSTOMERS)class="active"@endif><a href="{{ \Helper::fixProtocol(request()->fullUrlWithQuery(['mode' => App\Conversation::SEARCH_MODE_CUSTOMERS])) }}">{{ __('Customers') }} <b>({{ $customers->total() }})</b></a></li>
 		</ul>
 		@if ($mode == App\Conversation::SEARCH_MODE_CONV)
-	    	@include('conversations/conversations_table', ['mailbox' => $search_mailbox, 'params' => ['target_blank' => true, 'show_mailbox' => (count(Auth::user()->mailboxesCanView(true)) > 1)]])
+	    	@include('conversations/conversations_table', ['mailbox' => $search_mailbox, 'params' => ['target_blank' => false, 'show_mailbox' => (count(Auth::user()->mailboxesCanView(true)) > 1)]])
 	    @else
 	    	@include('customers/partials/customers_table')
 	    @endif

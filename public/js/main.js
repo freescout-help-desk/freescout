@@ -1478,7 +1478,7 @@ function initConversation()
 		starConversationInit();
 		maybeShowStoredNote();
 		maybeShowDraft();
-		processLinks();
+		//processLinks();
 		initConvSettings();
 
 		// Show reply form in chat mode

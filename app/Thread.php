@@ -369,22 +369,29 @@ class Thread extends Model
 
         $body = \Helper::linkify($this->getCleanBody($body));
 
-        // Add target="_blank" to links.
+        // Add target="_blank" to external links.
         $pattern = '/<a(.*?)?href=[\'"]?[\'"]?(.*?)?>/i';
 
         $body = preg_replace_callback($pattern, function ($m) {
             $tpl = array_shift($m);
-            $href = isset($m[1]) ? $m[1] : null;
+            $href = trim(isset($m[1]) ? $m[1] : '');
 
             if (preg_match('/target=[\'"]?(.*?)[\'"]?/i', $tpl)) {
                 return $tpl;
             }
 
-            if (trim($href) && 0 === strpos($href, '#')) {
-                // Anchor links.
+            // Skip anchor link.
+            if ($href && 0 === strpos($href, '#')) {
                 return $tpl;
             }
 
+            // Skip non-external links.
+            if (parse_url($href, PHP_URL_HOST) == \Helper::getDomain()) {
+\Log::error('SKIP host='.parse_url($href, PHP_URL_HOST).', domain='.\Helper::getDomain());
+                return $tpl;
+            }
+
+            // Add target.
             return preg_replace_callback('/href=/i', function ($m2) {
                 return sprintf('target="_blank" %s', array_shift($m2));
             }, $tpl);

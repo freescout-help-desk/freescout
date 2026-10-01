@@ -17,7 +17,7 @@
 
             <span class="section-heading-right">
                 <a href="#" data-trigger="modal" data-modal-body="#deactivate_license_modal" data-modal-size="sm" data-modal-no-footer="true" data-modal-title="{{ __('Deactivate License') }}" data-modal-on-show="deactivateLicenseModal" class="small">{{ __('Deactivate License') }}</a> | 
-                <a href="https://freescout.net/remind-license-keys/" target="_blank" class="small">{{ __('Remind License Keys') }}</a>
+                <a href="{{ config('app.freescout_url') }}/remind-license-keys/" target="_blank" class="small">{{ __('Remind License Keys') }}</a>
             </span>
         </div>
 
