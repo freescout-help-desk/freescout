@@ -136,6 +136,9 @@ class SettingsController extends Controller
                             'env' => 'APP_USER_PERMISSIONS',
                             'env_encode' => true,
                         ],
+                        'limit_user_customer_visibility' => [
+                            'env' => 'APP_LIMIT_USER_CUSTOMER_VISIBILITY',
+                        ],
                     ],
                 ];
                 break;
@@ -201,6 +204,7 @@ class SettingsController extends Controller
                     'next_ticket'          => (Option::get('next_ticket') >= Conversation::max('number') + 1) ? Option::get('next_ticket') : Conversation::max('number') + 1,
                     'custom_number'        => (int)config('app.custom_number'),
                     'user_permissions'     => User::getGlobalUserPermissions(),
+                    'limit_user_customer_visibility' => (int)config('app.limit_user_customer_visibility'),
                     'email_branding'       => Option::get('email_branding'),
                     'open_tracking'        => Option::get('open_tracking'),
                     'email_conv_history'   => config('app.email_conv_history'),
