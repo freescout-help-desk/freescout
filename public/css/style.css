@@ -2462,6 +2462,31 @@ button.conv-checkbox-clear {
 .thread-content	img[width] {
     height: auto;
 }
+/* Fit wide tables (e.g. from Outlook) into the thread instead of scrolling it horizontally.
+   overflow-wrap: anywhere lets columns shrink below the longest word when there is no room.
+   Cell widths are reset as Outlook sets arbitrary percentages (like 1.7% for a column with long text),
+   which would squeeze such columns to one letter per line. */
+.thread-content table {
+    max-width: 100%;
+}
+.thread-content td,
+.thread-content th {
+    overflow-wrap: anywhere;
+    width: auto !important;
+}
+/* On phones there is no room to fit a table without breaking every word,
+   so the table is scrolled horizontally on its own instead of the whole thread. */
+@media (max-width:700px) {
+    .thread-content table {
+        display: block;
+        overflow-x: auto;
+        width: max-content !important;
+    }
+    .thread-content td,
+    .thread-content th {
+        overflow-wrap: normal;
+    }
+}
 .conv-new #conv-toolbar {
     border-bottom: 1px solid #d4d9dd;
     padding: 6px 0 7px 0;
