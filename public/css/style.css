@@ -730,7 +730,7 @@ select[multiple].input-md {
  * Cards
  */
 .card {
-    border: 1px solid #dedede;
+    border: 1px solid #e1e5e8;
     box-sizing: border-box;
     display: block;
     position: relative;
@@ -739,8 +739,8 @@ select[multiple].input-md {
     width: 270px;
     height: 82px;
     float: left;
-    -webkit-box-shadow:0 0 5px rgba(0,0,0,.2);
-    box-shadow:0 0 5px rgba(0,0,0,.2);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(23, 43, 58, .06), 0 1px 8px rgba(23, 43, 58, .05);
 }
 a.card:active,
 a.card:focus,
@@ -877,7 +877,7 @@ a h4 {
 .dash-card {
     float: left;
     position: relative;
-    border: 1px solid #e5e9ed;
+    border: 1px solid #e1e5e8;
     border-radius: 15px;
     box-shadow: 0 1px 2px rgba(23, 43, 58, .06), 0 1px 8px rgba(23, 43, 58, .05);
     box-sizing: border-box;
@@ -3556,7 +3556,7 @@ ul.sidebar-block-list {
  */
 .module-card {
     background-color: #ffffff;
-    border: 1px solid #e5e9ed;
+    border: 1px solid #e1e5e8;
     border-radius: 8px;
     box-sizing: border-box;
     display: block;
@@ -3720,10 +3720,10 @@ ul.sidebar-block-list {
 .panel-group .panel {
     border-radius: 8px;
     box-shadow: 0 1px 2px rgba(23, 43, 58, .06), 0 1px 8px rgba(23, 43, 58, .05);
-    border: 1px solid #e5e9ed;
+    border: 1px solid #e1e5e8;
 }
 .panel-heading {
-    border-bottom: 1px solid #e5e9ed;
+    border-bottom: 1px solid #e1e5e8;
     border-radius: 8px 8px 0 0;
 }
 
@@ -4333,8 +4333,7 @@ a.disabled:focus {
     left: -5px;
 }
 .hover-shade:hover {
-    -webkit-box-shadow:0 0 13px rgba(0,0,0,.2);
-    box-shadow:0 0 13px rgba(0,0,0,.2);
+    box-shadow:0 0 5px rgba(0,0,0,.2);
 }
 .dropdown-menu > li > span {
     display: block;
