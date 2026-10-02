@@ -2955,6 +2955,7 @@ function searchInit()
 		starConversationInit();
 
 		customersPagination();
+		customersViewSwitchInit();
 
 		$(".sidebar-menu .menu-link a").filter('[data-filter]').click(function(e){
 			var trigger = $(this);
@@ -3133,6 +3134,44 @@ function conversationPagination()
 	$(".table-conversations .pager-nav").click(function(e){
 		loadConversations($(this).attr('data-page'), $(this).parents('.table-conversations:first'));
 		e.preventDefault();
+	});
+}
+
+// Customers list view: cards (default) or table.
+// The choice is stored in the "customers_view" cookie and used by the server
+// when rendering the list (Helper::getCustomersView()).
+function setCustomersView(view)
+{
+	view = (view == 'table') ? 'table' : 'cards';
+
+	// SameSite=Lax and no Secure flag, so the cookie works on HTTP installations too.
+	setCookie('customers_view', view, {samesite: 'Lax'});
+	updateCustomersViewSwitch(view);
+	loadCustomers();
+}
+
+function updateCustomersViewSwitch(view)
+{
+	$('.customers-view-switch').each(function() {
+		var button = $(this);
+		var is_table = (view == 'table');
+		var title = is_table ? button.attr('data-title-cards') : button.attr('data-title-table');
+
+		// Icon shows the view the user will switch to.
+		button.toggleClass('glyphicon-th-large', is_table)
+			.toggleClass('glyphicon-th-list', !is_table)
+			.attr('title', title)
+			.attr('data-original-title', title);
+	});
+}
+
+function customersViewSwitchInit()
+{
+	$('.customers-view-switch').click(function(e) {
+		setCustomersView(getCookie('customers_view') == 'table' ? 'cards' : 'table');
+		// The switch is inside the tab link.
+		e.preventDefault();
+		e.stopPropagation();
 	});
 }
 

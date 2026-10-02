@@ -1795,6 +1795,18 @@ class Helper
     }
 
     /**
+     * Customers list view mode: cards (default) or table.
+     * The cookie is set from JS (see setCustomersView() in main.js).
+     */
+    public static function getCustomersView($request = null)
+    {
+        if (!$request) {
+            $request = app('request');
+        }
+        return $request->cookie('customers_view') == 'table' ? 'table' : 'cards';
+    }
+
+    /**
      * Get identifier for queue:work
      */
     public static function getWorkerIdentifier($salt = '')

@@ -3677,6 +3677,75 @@ ul.sidebar-block-list {
 .customers-pager a:hover {
     color: #333;
 }
+/* Customers list: table view */
+.customers-view-switch {
+    color: #93a1af;
+    cursor: pointer;
+    margin-left: 6px;
+    font-size: 13px;
+    top: 2px;
+}
+.customers-view-switch:hover {
+    color: #333;
+}
+.customers-table {
+    background-color: #fff;
+    /* Fixed layout: long values can not stretch the table, they are truncated. */
+    table-layout: fixed;
+    width: 100%;
+}
+.customers-table-col-name {
+    width: 34%;
+}
+.customers-table-col-email {
+    width: 30%;
+}
+.customers-table-col-phone {
+    width: 16%;
+}
+.customers-table-col-company {
+    width: 20%;
+}
+.customers-table > thead > tr > th,
+.customers-table > tbody > tr > td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.customers-table > thead > tr > th {
+    color: #93a1af;
+    font-weight: normal;
+    border-bottom-width: 1px;
+}
+.customers-table > tbody > tr > td {
+    vertical-align: middle;
+}
+.customers-table-name > a {
+    color: #2a3b47;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.customers-table-photo {
+    width: 28px;
+    height: 28px;
+    margin-right: 6px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+@media (max-width:582px) {
+    .customers-table > thead > tr > th:nth-child(n+3),
+    .customers-table > tbody > tr > td:nth-child(n+3) {
+        display: none;
+    }
+    .customers-table-col-name {
+        width: 55%;
+    }
+    .customers-table-col-email {
+        width: 45%;
+    }
+}
 /*.customers-pager a:hover,
 .customers-pager a:active
 .customers-pager a:focus, {
@@ -4194,6 +4263,16 @@ a.help-icon:hover {
 }
 .text-larger {
     font-size: 16.8px;
+}
+.text-link,
+.text-link:focus {
+    color: #0078D7!important;
+    text-decoration: none!important;
+    cursor: pointer;
+}
+.text-link:hover {
+    color: #000!important;
+    text-decoration: none!important;
 }
 #loader-main {
     position: fixed;
