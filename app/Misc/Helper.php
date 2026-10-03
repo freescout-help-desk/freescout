@@ -1015,9 +1015,20 @@ class Helper
         return true;
     }
 
+   /**
+     * symfony/filesystem package is not installed,
+     * so the logic of Symfony\Component\Filesystem\Filesystem::isAbsolutePath() is used here.
+     */
     public static function isAbasolutePath($path)
     {
-        return (new \Symfony\Component\Filesystem\Filesystem())->isAbsolutePath($path);
+        $path = (string)$path;
+
+        return strspn($path, '/\\', 0, 1)
+            || (strlen($path) > 3 && ctype_alpha($path[0])
+                && ':' === $path[1]
+                && strspn($path, '/\\', 2, 1)
+            )
+            || null !== parse_url($path, PHP_URL_SCHEME);
     }
 
     /**
