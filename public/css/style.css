@@ -1535,6 +1535,22 @@ table.table-conversations td.conv-attachment {
 .table-conversations .conv-customer {
     width: 150px;
 }
+/* Only the name is truncated, so the counter always stays visible */
+.conv-customer-line {
+    display: flex;
+    align-items: baseline;
+}
+.conv-customer-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.conv-customer-line .conv-counter {
+    flex-shrink: 0;
+    /* As with inline padding, the padding must not make the line taller */
+    margin-top: -1px;
+    margin-bottom: -1px;
+}
 .table-conversations .conv-spam .conv-customer a {
     color: #93a1af;
 }
@@ -1782,6 +1798,15 @@ button.conv-checkbox-clear {
         font-size: 12px!important;
         background-color: transparent!important;
         font-weight: normal;
+    }
+    .conv-customer-line {
+        display: inline;
+    }
+    /* Leave room for the counter and the assignee */
+    .conv-customer-name {
+        display: inline-block;
+        max-width: 60%;
+        vertical-align: top;
     }
     .conv-counter {
         top: -1px;
