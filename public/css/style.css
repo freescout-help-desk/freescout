@@ -1533,7 +1533,24 @@ table.table-conversations td.conv-attachment {
     width: 40px;
 }
 .table-conversations .conv-customer {
-    width: 150px;
+    width: 190px;
+}
+.conv-customer-line {
+    display: inline-flex;
+    align-items: baseline;
+    max-width: 100%;
+    vertical-align: bottom;
+}
+.conv-customer-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.conv-customer-line .conv-counter {
+    flex-shrink: 0;
+    line-height: 14px;
+    margin-left: 5px;
 }
 .table-conversations .conv-spam .conv-customer a {
     color: #93a1af;
@@ -1589,6 +1606,14 @@ table.table-conversations td.conv-attachment {
     font-size: 14px;
     margin-top: 2px;
     padding-bottom: 8px;
+}
+.table-conversations .conv-owner {
+    width: 160px;
+}
+.table-conversations td.conv-owner a {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .table-conversations .conv-number {
     width: 86px;
