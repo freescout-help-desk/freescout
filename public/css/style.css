@@ -2458,9 +2458,10 @@ button.conv-checkbox-clear {
 .thread-content	img {
     max-width: 100%;
 }
-/* Keep aspect ratio when max-width shrinks an image with width/height attributes */
+/* Keep aspect ratio when max-width shrinks an image with width/height attributes.
+   !important overrides inline height set by Outlook (style="width:13.3in;height:6.6in"). */
 .thread-content	img[width] {
-    height: auto;
+    height: auto !important;
 }
 /* Fit wide tables (e.g. from Outlook) into the thread instead of scrolling it horizontally.
    overflow-wrap: anywhere lets columns shrink below the longest word when there is no room.
