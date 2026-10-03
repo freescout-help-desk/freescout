@@ -1,5 +1,5 @@
 <div class="dropdown sidebar-title">
-    <span class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
+    <span class="dropdown-toggle" data-toggle="dropdown" role="button" @if (isset($users) && count($users))tabindex="0" @endif aria-expanded="false" aria-haspopup="true" v-pre>
         {{ $user->first_name }} {{ $user->last_name }} @if (isset($users) && count($users))<span class="caret"></span>@endif
     </span>
     @if (isset($users) && count($users))

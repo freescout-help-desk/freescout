@@ -75,6 +75,11 @@ class Helper
     public static $memory_cache = [];
 
     /**
+     * Holds last request data.
+     */
+    public static $last_request = [];
+
+    /**
      * Files with such extensions are being renamed on upload.
      */
     public static $restricted_extensions = [
@@ -947,9 +952,10 @@ class Helper
         return $dest_path;
     }
 
+    // Preserved for backward compatibility only.
     public static function getPrivateStorage()
     {
-        return \Storage::disk('local');
+        return \Storage::disk('local_app');
     }
 
     public static function getPublicStorage()
@@ -988,32 +994,30 @@ class Helper
     /**
      * Download remote file and save as file.
      */
-    public static function downloadRemoteFile($url, $destinationFilePath)
+    public static function downloadRemoteFile($url, $file_path)
     {
-        // Sanitize URL.
-        try {
-            if (!self::sanitizeRemoteUrl($url)) {
-                throw new \Exception('URL points to the local host', 1);
-            }
-        } catch (\Exception $e) {
+        // getRemoteFileContents() sanitizes remote URL.
+        $contents = self::getRemoteFileContents($url);
+
+        if (!$contents) {
             \Helper::logException($e, 'Error downloading a remote file ('.$url.'): ');
             return false;
         }
 
-        $client = new \GuzzleHttp\Client();
-
-        try {
-            $client->request('GET', $url, \Helper::setGuzzleDefaultOptions([
-                'sink' => $destinationFilePath,
-                'timeout' => 300, // seconds
-                'connect_timeout' => 7,
-            ]));
-        } catch (\Exception $e) {
-            self::logException($e);
-            return false;
+        if (self::isAbasolutePath($file_path)) {
+            // Absolute path.
+            \File::put($file_path, $contents);
+        } else {
+            // Relative path: store in "storage".
+            \Storage::put($file_path, $contents);
         }
 
         return true;
+    }
+
+    public static function isAbasolutePath($path)
+    {
+        return (new \Symfony\Component\Filesystem\Filesystem())->isAbsolutePath($path);
     }
 
     /**
@@ -1625,8 +1629,24 @@ class Helper
      */
     public static function checkPort($host, $port)
     {
-        // Sanitize URL.
-        self::sanitizeRemoteUrl('https://'.$host, true);
+        // Sanitize URL and get host IP.
+        self::sanitizeRemoteUrl('https://'.$host, $throw_exception = true);
+
+        // Connect to the address that was actually validated above, not to
+        // the original hostname (which fsockopen() would otherwise resolve
+        // again on its own, at a different point in time).
+        $ips = array_first(self::$last_request['ips'] ?? []);
+
+        $host = array_first($ips);
+        if (!$host) {
+            // Could not determine host IP.
+            return false;
+        }
+
+        // fsockopen() requires IPv6 literals to be wrapped in brackets.
+        if (strpos($host, ':') !== false && strpos($host, '[') === false) {
+            $host = '['.$host.']';
+        }
 
         $connection = @fsockopen($host, $port);
         if (is_resource($connection)) {
@@ -1772,6 +1792,18 @@ class Helper
             $request = app('request');
         }
         return (int)$request->cookie('in_app');
+    }
+
+    /**
+     * Customers list view mode: cards (default) or table.
+     * The cookie is set from JS (see setCustomersView() in main.js).
+     */
+    public static function getCustomersView($request = null)
+    {
+        if (!$request) {
+            $request = app('request');
+        }
+        return $request->cookie('customers_view') == 'table' ? 'table' : 'cards';
     }
 
     /**
@@ -2009,10 +2041,7 @@ class Helper
     public static function downloadRemoteFileAsTmp($uri, $follow_redirects = true)
     {
         try {
-            // Sanitize URL first.
-            if (!self::sanitizeRemoteUrl($uri)) {
-                throw new \Exception('URL points to the local host', 1);
-            }
+            // getRemoteFileContents() sanitizes remote URL.
             $contents = self::getRemoteFileContents($uri, $follow_redirects);
 
             if (!$contents) {
@@ -2039,17 +2068,19 @@ class Helper
     {
         try {
             // Sanitize URL first.
-            if (!self::sanitizeRemoteUrl($url)) {
-                throw new \Exception('URL points to the local host', 1);
+            $url = self::sanitizeRemoteUrl($url);
+            if (!$url) {
+                throw new \Exception('[Helper::getRemoteFileContents()] URL points to the local host', 1);
             }
 
+            // Quick check for response code 200 or redierct.
             $headers = get_headers($url);
-
             // 307 - Temporary Redirect.
             if (!preg_match("/(200|301|302|307)/", $headers[0])) {
                 throw new \Exception('HTTP Status Code: '.$headers[0], 1);
-                //return false;
             }
+
+            // Get contents.
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -2060,7 +2091,9 @@ class Helper
             curl_setopt($ch, CURLOPT_URL, $url);
             \Helper::setCurlDefaultOptions($ch);
             curl_setopt($ch, CURLOPT_TIMEOUT, 180);
-            $contents = curl_exec($ch);
+
+            //$contents = curl_exec($ch);
+            $contents = self::curlExec($url, $ch);
 
             $curl_errno = curl_errno($ch);
 
@@ -2089,31 +2122,51 @@ class Helper
         }
     }
 
-    public static function sanitizeRemoteUrl($url, $throw_exception = false, $follow_redirects = true)
+    public static function sanitizeRemoteUrl($url, $throw_exception = false, $follow_redirects = true, $ch = null)
     {
-        if (!self::checkUrlIpAndHost($url, $throw_exception)) {
+        self::$last_request = [
+            'ips' => [],
+            'response' => '',
+            'last_url' => '',
+        ];
+
+        if (!self::checkUrlHost($url, $throw_exception)) {
             return '';
         }
 
         // Follow redirects and check all IPs/hosts.
         if ($follow_redirects) {
             for ($i = 0; $i < 20; $i++) { 
-                $redirected_url = self::curlGetNextRedirectedUrl($url);
-
+                $redirected_url = self::curlGetNextRedirect($url, false, $ch);
                 if ($redirected_url == $url || !$redirected_url) {
                     break;
                 }
 
                 if ($redirected_url != $url) {
-                    if (!self::checkUrlIpAndHost($redirected_url, $throw_exception)) {
+                    if (!self::checkUrlHost($redirected_url, $throw_exception)) {
                         return '';
                     }
                 }
                 $url = $redirected_url;
             }
         }
-
         return $url;
+    }
+
+    // Safe curl exec checking hosts and IPs against SSRF.
+    public static function curlExec($url, $ch, $throw_exception = false)
+    {
+        // Sanitize URL and get response.
+        $last_url = self::sanitizeRemoteUrl($url, $throw_exception, $follow_redirects = true, $ch);
+
+        self::$last_request['last_url'] = $last_url;
+
+        $response = self::$last_request['response'] ?? '';
+
+        // Clean memory.
+        unset(self::$last_request['response']);
+
+        return $response;
     }
 
     /**
@@ -2123,7 +2176,7 @@ class Helper
      * 
      * Returns URL if host can not be extracted.
      */
-    public static function checkUrlIpAndHost($url, $throw_exception = false)
+    public static function checkUrlHost($url, $throw_exception = false)
     {
         $url = self::normalizeIPv6InUrl($url ?? '');
 
@@ -2174,6 +2227,8 @@ class Helper
             $hosts_to_check[] = $host_hex_to_ip;
         }
 
+        self::$last_request['ips'][$host] = [];
+
         // Check only if host name is passed in URL.
         if (!self::isValidIp($host)) {
 
@@ -2181,6 +2236,10 @@ class Helper
             $remote_host_ip = gethostbyname($host);
             if ($remote_host_ip && !in_array($remote_host_ip, $hosts_to_check)) {
                 $hosts_to_check[] = $remote_host_ip;
+                // Remember IP.
+                if (!in_array($remote_host_ip, self::$last_request['ips'])) {
+                    self::$last_request['ips'][$host][] = $remote_host_ip;
+                }
             }
 
             // Resolve DNS records.
@@ -2194,12 +2253,24 @@ class Helper
                 foreach ($dns_records as $dns_record) {
                     if (!empty($dns_record['ip']) && !in_array($dns_record['ip'], $hosts_to_check)) {
                         $hosts_to_check[] = $dns_record['ip'];
+                        // Remember IP.
+                        if (!in_array($dns_record['ip'], self::$last_request['ips'])) {
+                            self::$last_request['ips'][$host][] = $dns_record['ip'];
+                        }
                     }
                     if (!empty($dns_record['ipv6']) && !in_array($dns_record['ipv6'], $hosts_to_check)) {
                         $hosts_to_check[] = $dns_record['ipv6'];
+                        // Remember IP.
+                        if (!in_array($dns_record['ipv6'], self::$last_request['ips'])) {
+                            self::$last_request['ips'][$host][] = $dns_record['ipv6'];
+                        }
                     }
                 }
             }
+        } else {
+            // $host contains IP.
+            // Remember IP.
+            self::$last_request['ips'][$host][] = $host;
         }
 
         foreach ($hosts_to_check as $host_item) {
@@ -2210,6 +2281,10 @@ class Helper
                     return '';
                 }
             }
+        }
+
+        if (empty(self::$last_request['ips'][$host])) {
+            self::$last_request['ips'][$host][] = $host;
         }
 
         return $url;
@@ -2287,20 +2362,23 @@ class Helper
         return preg_replace($pattern, '$1[$2]$3', $url);
     }
 
-    // Get next redicred URL.
-    public static function curlGetNextRedirectedUrl($url, $throw_exception = false)
+    // Get next redicred URL and response body.
+    public static function curlGetNextRedirect($url, $throw_exception = false, $ch = null)
     {
-        $ch = curl_init();
+        if (!$ch) {
+            $ch = curl_init();
+            \Helper::setCurlDefaultOptions($ch);
+        } else {
+            //curl_setopt($ch, CURLOPT_TIMEOUT, 180);
+        }
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
         //curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
         curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
         curl_setopt($ch, CURLOPT_HEADER, 1);
-
         curl_setopt($ch, CURLOPT_URL, $url);
-        \Helper::setCurlDefaultOptions($ch);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 180);
+
         //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($ch);
 
@@ -2310,6 +2388,10 @@ class Helper
 
         //if ($curl_errno && $curl_errno != CURLE_TOO_MANY_REDIRECTS && !$redirected_url) {
         if ($curl_errno) {
+            // Could not connect to host.
+            // if ($curl_errno == CURLE_COULDNT_CONNECT) {
+            //     return $url;
+            // }
             if ($throw_exception) {
                 throw new \Exception('Could not check URL contents by following redirects: '.$curl_errno, 1);
             } else {
@@ -2334,6 +2416,11 @@ class Helper
 
         if (PHP_VERSION_ID < 80000) {
             \curl_close($ch);
+        }
+
+        // Remember response body.
+        if ($ch) {
+            self::$last_request['response'] = (string)substr($response ?? '', $header_size);
         }
 
         return $redirected_url;
@@ -2840,7 +2927,7 @@ class Helper
         if (\Option::get('send_emails_problem')) {
             $flashes[] = [
                 'type'      => 'warning',
-                'text'      => __('There is a problem processing outgoing mail queue — an admin should check :%a_begin%System Status:%a_end% and :%a_begin_recommendations%Recommendations:%a_end%', ['%a_begin%' => '<a href="'.route('system').'#cron" target="_blank">', '%a_end%' => '</a>', /*'%a_begin_logs%' => '<a href="'.route('logs', ['name' => 'send_errors']).'#cron" target="_blank">',*/ '%a_begin_recommendations%' => '<a href="'.config('app.freescout_repo').'/wiki/Background-Jobs" target="_blank">']),
+                'text'      => __('There is a problem processing outgoing mail queue — an admin should check :%a_begin%System Status:%a_end% and :%a_begin_recommendations%Recommendations:%a_end%', ['%a_begin%' => '<a href="'.route('system').'#cron">', '%a_end%' => '</a>', /*'%a_begin_logs%' => '<a href="'.route('logs', ['name' => 'send_errors']).'#cron" target="_blank">',*/ '%a_begin_recommendations%' => '<a href="'.config('app.freescout_repo').'/wiki/Background-Jobs">']),
                 'unescaped' => true,
             ];
         }

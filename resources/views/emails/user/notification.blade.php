@@ -4,6 +4,7 @@
 	<meta name="viewport" content="width=350px, user-scalable=yes">
 	<style>
 		#wrapper * { max-width: 650px !important; }
+		#wrapper img { max-width: 100% !important; height: auto !important; }
 		p { margin:0 0 1.5em 0; }
 		pre { font-family: Menlo, Monaco, monospace, sans-serif; padding: 0 0 1.6em 0; color:#333333; line-height:15px; }
 		a { color:#3f8abf; text-decoration:none; }
@@ -156,7 +157,7 @@
 												<table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#f8f9fa">
 													<tr>
 														@if ($is_rtl)
-															<td valign="top">
+															<td valign="top" align="left" width="1%" nowrap="nowrap" style="white-space:nowrap; padding-right:10px;">
 																<div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;" align="left">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
 															</td>
 															<td valign="top">
@@ -170,8 +171,8 @@
 																	{!! safe_raw_html($thread->getActionText('', true, false, $user, htmlspecialchars(view('emails/user/thread_by', ['thread' => $thread, 'user' => $user])->render()))) !!}
 																</div>
 															</td>
-															<td valign="top">
-																<div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
+															<td valign="top" align="right" width="1%" nowrap="nowrap" style="white-space:nowrap; padding-left:10px;">
+																<div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#b5b9bd; font-size:12px; line-height:16px; margin:0;" align="right">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
 															</td>
 														@endif
 													</tr>
@@ -192,7 +193,7 @@
 									                <tr>
 									                	@if ($is_rtl)
                                                             {{-- RTL Order: User name on the right, Date on the left --}}
-                                                            <td valign="top">
+                                                            <td valign="top" align="left" width="1%" nowrap="nowrap" style="white-space:nowrap; padding-right:10px;">
                                                                 <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; font-size:12px; line-height:18px; margin:0;" align="left">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
                                                             </td>
                                                             <td>
@@ -207,7 +208,7 @@
 										                        	@include('emails.user._notification_thread_action', ['thread' => $thread])
 																</h3>
 										                    </td>
-										                    <td valign="top">
+										                    <td valign="top" align="right" width="1%" nowrap="nowrap" style="white-space:nowrap; padding-left:10px;">
 										                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#B5B9BD; font-size:12px; line-height:18px; margin:0;" align="right">{{ App\User::dateFormat($thread->created_at, 'M j, H:i', $user) }}</div>
 										                    </td>
 										                @endif
@@ -227,7 +228,7 @@
 							                                @endif
 							                                @action('email_notification.before_body', $thread, $user, $conversation)
 									                        <div style="font-family:Arial, 'Helvetica Neue', Helvetica, Tahoma, sans-serif; color:#444; font-size:14px; line-height:20px; margin:0; @if ($is_rtl) text-align: right; direction: rtl; unicode-bidi: plaintext; @endif">
-																{!! safe_raw_html($thread->getCleanBody() ?? '') !!}
+																{!! safe_raw_html(\MailHelper::fitImages($thread->getCleanBody() ?? '', 580)) !!}
 															</div>
 
 															@if ($thread->has_attachments)

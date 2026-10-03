@@ -4,7 +4,7 @@
         $menu_mailboxes = $auth_user->mailboxesCanView();
     @endphp
     @action('mailbox.update.before_mailbox_name', $mailbox)
-    <span class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
+    <span class="dropdown-toggle" data-toggle="dropdown" role="button" @if (count($menu_mailboxes))tabindex="0" @endif aria-expanded="false" aria-haspopup="true" v-pre>
         @if ($mailbox->isArchived())<i class="glyphicon glyphicon-lock smaller"></i> @elseif (!$mailbox->isConnected())<i class="glyphicon glyphicon-flash smaller"></i> @endif{{ $mailbox->name }} @if (count($menu_mailboxes))<span class="caret"></span>@endif
     </span>
     @if (count($menu_mailboxes))

@@ -142,7 +142,7 @@ class CustomersController extends Controller
                     'tag_email_begin' => '<strong>',
                     'tag_email_end'   => '</strong>',
                     'customer'        => htmlspecialchars($email->customer->getFullName()),
-                    'a_begin'         => '<strong><a href="'.$email->customer->url().'" target="_blank">',
+                    'a_begin'         => '<strong><a href="'.$email->customer->url().'">',
                     'a_end'           => '</a></strong>',
                 ]).' ';
 

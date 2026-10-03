@@ -210,7 +210,7 @@
 
                                     <ul class="dropdown-menu dropdown-with-icons">
                                         <li>
-                                            <form class="form-inline form-nav-search" role="form" action="{{ route('conversations.search') }}" target="_blank">
+                                            <form class="form-inline form-nav-search" role="form" action="{{ route('conversations.search') }}">
                                                 <div class="input-group">
                                                     <input type="text" class="form-control" name="q">
                                                     <span class="input-group-btn">

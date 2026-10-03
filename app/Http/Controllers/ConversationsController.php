@@ -1950,11 +1950,11 @@ class ConversationsController extends Controller
                 }
 
                 if (!$response['msg']) {
-                    $folder_id = $conversation->getCurrentFolder();
+                    $redirect_url = $this->getRedirectUrlAfterDelete($conversation, $user);
 
                     $conversation->deleteToFolder($user);
 
-                    $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $folder_id]);
+                    $response['redirect_url'] = $redirect_url;
 
                     $response['status'] = 'success';
 
@@ -1972,7 +1972,7 @@ class ConversationsController extends Controller
                 }
 
                 if (!$response['msg']) {
-                    $folder_id = $conversation->getCurrentFolder();
+                    $redirect_url = $this->getRedirectUrlAfterDelete($conversation, $user);
                     $mailbox = $conversation->mailbox;
 
                     $conversation->deleteForever();
@@ -1980,7 +1980,7 @@ class ConversationsController extends Controller
                     // Recalculate only old and new folders
                     $mailbox->updateFoldersCounters();
 
-                    $response['redirect_url'] = route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $folder_id]);
+                    $response['redirect_url'] = $redirect_url;
 
                     $response['status'] = 'success';
 
@@ -2855,6 +2855,20 @@ class ConversationsController extends Controller
     }
 
     /**
+     * Where to go after deleting a conversation.
+     * Follows the user's "after send" setting, as changing the status does: "Next active conversation" opens it,
+     * anything else shows the folder. Must be called before the conversation is deleted.
+     */
+    public function getRedirectUrlAfterDelete($conversation, $user)
+    {
+        if ($conversation->mailbox->getUserSettings($user->id)->after_send == MailboxUser::AFTER_SEND_NEXT) {
+            return $conversation->urlNext(Conversation::getFolderParam(), Conversation::STATUS_ACTIVE, true);
+        }
+
+        return route('mailboxes.view.folder', ['id' => $conversation->mailbox_id, 'folder_id' => $conversation->getCurrentFolder()]);
+    }
+
+    /**
      * Upload files and images.
      */
     public function upload(Request $request)
@@ -3395,8 +3409,8 @@ class ConversationsController extends Controller
 
         // Restore conversation data from penultimate thread
         if ($last_thread) {
-            $conversation->setCc($last_thread->cc);
-            $conversation->setBcc($last_thread->bcc);
+            $conversation->setCc($last_thread->getCcArray());
+            $conversation->setBcc($last_thread->getBccArray());
             $conversation->last_reply_at = $last_thread->created_at;
             $conversation->last_reply_from = $last_thread->source_via;
             $conversation->user_updated_at = date('Y-m-d H:i:s');

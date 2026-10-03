@@ -329,6 +329,11 @@ class Thread extends Model
         // https://github.com/freescout-helpdesk/freescout/pull/3865#issuecomment-1990758149
         $body = preg_replace('/<!\-\-\[if [^>]+\]><!\-\->(.*?)<![ ]+\-\-<!\[endif\]\-\->/s', '$1', $body);
 
+        // Remove Outlook "downlevel-revealed" conditional comments (<![if !vml]>...<![endif]>),
+        // preserving the data inside. Browsers ignore them, but the purifier escapes them as text.
+        // Emails fetched before the fix have them already escaped (&lt;![if !vml]&gt;) in the DB.
+        $body = preg_replace('/(?:<|&lt;)!\[(?:if\s[^\]]*|endif)\](?:>|&gt;)/i', '', $body) ?: $body;
+
         // https://github.com/freescout-helpdesk/freescout/issues/3894
         // Remove <!--[if !mso]><!--> and <!--<![endif]--> comments, preserving the data inside
         //$body = preg_replace('/(<!\-\-\[if [^>]+\]>|<!\[endif\]\-\->)/', '', $body);
@@ -364,22 +369,28 @@ class Thread extends Model
 
         $body = \Helper::linkify($this->getCleanBody($body));
 
-        // Add target="_blank" to links.
+        // Add target="_blank" to external links.
         $pattern = '/<a(.*?)?href=[\'"]?[\'"]?(.*?)?>/i';
 
         $body = preg_replace_callback($pattern, function ($m) {
             $tpl = array_shift($m);
-            $href = isset($m[1]) ? $m[1] : null;
+            $href = trim(isset($m[1]) ? $m[1] : '');
 
             if (preg_match('/target=[\'"]?(.*?)[\'"]?/i', $tpl)) {
                 return $tpl;
             }
 
-            if (trim($href) && 0 === strpos($href, '#')) {
-                // Anchor links.
+            // Skip anchor link.
+            if ($href && 0 === strpos($href, '#')) {
                 return $tpl;
             }
 
+            // Skip non-external links.
+            if (parse_url($href, PHP_URL_HOST) == \Helper::getDomain()) {
+                return $tpl;
+            }
+
+            // Add target.
             return preg_replace_callback('/href=/i', function ($m2) {
                 return sprintf('target="_blank" %s', array_shift($m2));
             }, $tpl);
@@ -438,6 +449,12 @@ class Thread extends Model
         return self::$types[$this->type];
     }
 
+    // Get "Cc" as array.
+    public function getCc($exclude_array = [])
+    {
+        return $this->getCcArray($exclude_array);
+    }
+
     /**
      * Get thread CC recipients.
      *
@@ -451,6 +468,12 @@ class Thread extends Model
     public function getCcString($exclude_array = [])
     {
         return implode(', ', $this->getCcArray($exclude_array));
+    }
+
+    // Get "Bcc" as array.
+    public function getBcc($exclude_array = [])
+    {
+        return $this->getBccArray($exclude_array);
     }
 
     /**

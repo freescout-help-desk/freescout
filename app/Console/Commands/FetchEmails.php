@@ -1236,7 +1236,7 @@ class FetchEmails extends Command
             $now = date('Y-m-d H:i:s');
         }
         $conv_cc = $cc;
-        //$prev_conv_cc = $conv_cc;
+        $prev_conv_cc = $conv_cc;
 
         // Customers are created before with email and name
         $customer = Customer::create($from);
@@ -1387,21 +1387,46 @@ class FetchEmails extends Command
             \Eventy::action('conversation.customer_replied', $conversation, $thread, $customer);
         }
 
-        // Conversation customer changed
-        if ($prev_customer_id) {
-            event(new ConversationCustomerChanged($conversation, $prev_customer_id, $prev_customer_email, null, $customer));
-        }
-
-        // Returning original customer is disabled for better security:
+        // Simply returning original customer is disabled for better security:
         // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-j49f-9g94-3wh4
-        // 
-        // Return original customer back.
-        /*if ($prev_customer_id) {
-            $conversation->customer_id = $prev_customer_id;
-            $conversation->customer_email = $prev_customer_email;
-            $conversation->setCc(array_merge($prev_conv_cc, array_diff($to, $mailbox->getEmails())));
-            $conversation->save();
-        }*/
+
+        // Change customer when reply to the conversation from a completely new email is received.
+        // Check From, To, Cc and Bcc in all previous threads.
+        if ($prev_customer_id) {
+            $change_customer = true;
+
+            $prev_threads = Thread::select(['id', 'from', 'to', 'cc', 'bcc'])
+                ->where('conversation_id', $conversation->id)
+                ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE])
+                ->get();
+
+            foreach ($prev_threads as $prev_thread) {
+                if ($prev_thread->id == $thread->id) {
+                    continue;
+                }
+
+                // Sender has been already mentioned in the conversation -
+                // no need to change the customer.
+                if ($prev_thread->from == $from
+                    || in_array($from, $prev_thread->getTo())
+                    || in_array($from, $prev_thread->getCc())
+                    || in_array($from, $prev_thread->getBcc())
+                ) {
+                    $change_customer = false;
+                    break;
+                }
+            }
+
+            if ($change_customer) {
+                event(new ConversationCustomerChanged($conversation, $prev_customer_id, $prev_customer_email, null, $customer));
+            } else {
+                // Return original customer back.
+                $conversation->customer_id = $prev_customer_id;
+                $conversation->customer_email = $prev_customer_email;
+                $conversation->setCc(array_merge($prev_conv_cc, array_diff($to, $mailbox->getEmails())));
+                $conversation->save();
+            }
+        }
 
         return $thread;
     }
@@ -1598,8 +1623,12 @@ class FetchEmails extends Command
         $body = \Eventy::filter('fetch_emails.separate_reply.preprocess_body', $body ?? '');
 
         if ($is_html) {
+            // Remove Outlook "downlevel-revealed" conditional comments (<![if !vml]>...<![endif]>),
+            // preserving the data inside. Otherwise DOMDocument turns them into escaped text.
+            $body = preg_replace('/<!\[(?:if\s[^\]]*|endif)\]>/i', '', $body) ?: $body;
+
             // Extract body content from HTML
-            
+
             // Proton has it's own unique way of placing replies:
             // https://github.com/freescout-help-desk/freescout/issues/4537#issuecomment-2629836738
             if ($is_reply

@@ -52,6 +52,22 @@
         </div>
     </div>
 
+    <div class="form-group{{ $errors->has('settings[limit_user_customer_visibility]') ? ' has-error' : '' }}">
+        <label for="limit_user_customer_visibility_0" class="col-sm-2 control-label">{{ __('Customer Visibility') }}</label>
+
+        <div class="col-sm-6">
+            <p class="form-help">
+                {{ __('Which customers non-admin users can see.') }}
+            </p>
+            <div class="controls">
+                <label for="limit_user_customer_visibility_0" class="radio inline plain"><input type="radio" name="settings[limit_user_customer_visibility]" value="false" id="limit_user_customer_visibility_0" @if (!$settings['limit_user_customer_visibility'])checked="checked"@endif> {{ __('All customers') }}</label>
+                <label for="limit_user_customer_visibility_1" class="radio inline"><input type="radio" name="settings[limit_user_customer_visibility]" value="true" id="limit_user_customer_visibility_1" @if ($settings['limit_user_customer_visibility'])checked="checked"@endif> {{ __('Only customers from accessible mailboxes') }}</label>
+            </div>
+
+            @include('partials/field_error', ['field'=>'settings.limit_user_customer_visibility'])
+        </div>
+    </div>
+
     <div class="form-group{{ $errors->has('settings[locale]') ? ' has-error' : '' }}">
         <label for="locale" class="col-sm-2 control-label">{{ __('Default Language') }}</label>
 

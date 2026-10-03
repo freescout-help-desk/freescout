@@ -1448,6 +1448,51 @@ class Mail
         return $separator;
     }
 
+    /**
+     * Make images fit into the email container so that wide images
+     * do not stretch the layout.
+     * - Scale down width/height attributes (Outlook ignores CSS max-width).
+     * - Add "max-width:100%; height:auto" inline styles.
+     */
+    public static function fitImages($html, $max_width = 0)
+    {
+        if (!$html || stripos($html, '<img') === false) {
+            return $html;
+        }
+
+        return preg_replace_callback('#<img\b[^>]*>#i', function ($m) use ($max_width) {
+            $tag = $m[0];
+
+            // Scale down dimensions preserving aspect ratio.
+            if ($max_width
+                && preg_match('#\swidth\s*=\s*["\']?(\d+)#i', $tag, $w)
+                && (int)$w[1] > $max_width
+            ) {
+                $width = (int)$w[1];
+                $tag = preg_replace('#(\swidth\s*=\s*["\']?)\d+#i', '${1}'.$max_width, $tag, 1);
+                if (preg_match('#\sheight\s*=\s*["\']?(\d+)#i', $tag, $h)) {
+                    $height = (int)round((int)$h[1] * $max_width / $width);
+                    $tag = preg_replace('#(\sheight\s*=\s*["\']?)\d+#i', '${1}'.$height, $tag, 1);
+                }
+            }
+
+            $fit_style = 'max-width:100%;height:auto;';
+
+            if (preg_match('#\sstyle\s*=\s*(["\'])(.*?)\1#is', $tag, $s)) {
+                // Remove existing max-width and height declarations.
+                $style = preg_replace('#(^|;)\s*(max-width|height)\s*:[^;]*#i', '$1', $s[2]);
+                $style = trim(preg_replace('#;(\s*;)+#', ';', $style), " \t\r\n;");
+                $style = ($style !== '' ? $style.';' : '').$fit_style;
+                $tag = str_replace($s[0], ' style='.$s[1].$style.$s[1], $tag);
+            } else {
+                $self_closing = preg_match('#/\s*>$#', $tag);
+                $tag = preg_replace('#\s*/?\s*>$#', '', $tag).' style="'.$fit_style.'"'.($self_closing ? ' />' : '>');
+            }
+
+            return $tag;
+        }, $html) ?: $html;
+    }
+
     // Sanitize status message - remove SMTP username and password.
     public static function sanitizeSmtpStatusMessage($status_message)
     {

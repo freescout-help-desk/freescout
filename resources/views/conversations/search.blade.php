@@ -157,10 +157,10 @@
 			@if (Eventy::filter('search.is_tab_visible', true, App\Conversation::SEARCH_MODE_CONV))
 		    	<li @if ($mode == App\Conversation::SEARCH_MODE_CONV)class="active search-tab-conv"@endif><a href="{{ \Helper::fixProtocol(request()->fullUrlWithQuery(['mode' => App\Conversation::SEARCH_MODE_CONV])) }}">{{ __('Conversations') }} <b>({{ $conversations->total() }})</b>@action('search.conversations_tab_append', $filters, $conversations->total())</a></li>
 		    @endif
-		    <li @if ($mode == App\Conversation::SEARCH_MODE_CUSTOMERS)class="active"@endif><a href="{{ \Helper::fixProtocol(request()->fullUrlWithQuery(['mode' => App\Conversation::SEARCH_MODE_CUSTOMERS])) }}">{{ __('Customers') }} <b>({{ $customers->total() }})</b></a></li>
+		    <li @if ($mode == App\Conversation::SEARCH_MODE_CUSTOMERS)class="active"@endif><a href="@if ($mode == App\Conversation::SEARCH_MODE_CUSTOMERS)#@else{{ \Helper::fixProtocol(request()->fullUrlWithQuery(['mode' => App\Conversation::SEARCH_MODE_CUSTOMERS])) }}@endif">{{ __('Customers') }} <b>({{ $customers->total() }})</b>@if ($mode == App\Conversation::SEARCH_MODE_CUSTOMERS) <i class="text-link glyphicon @if (\Helper::getCustomersView() == 'table') glyphicon-th-large @else glyphicon-th-list @endif customers-view-switch" role="button" data-title-table="{{ __('Table View') }}" data-title-cards="{{ __('Cards View') }}" title="@if (\Helper::getCustomersView() == 'table'){{ __('Cards View') }}@else{{ __('Table View') }}@endif" data-toggle="tooltip"></i>@endif</a></li>
 		</ul>
 		@if ($mode == App\Conversation::SEARCH_MODE_CONV)
-	    	@include('conversations/conversations_table', ['mailbox' => $search_mailbox, 'params' => ['target_blank' => true, 'show_mailbox' => (count(Auth::user()->mailboxesCanView(true)) > 1)]])
+	    	@include('conversations/conversations_table', ['mailbox' => $search_mailbox, 'params' => ['target_blank' => false, 'show_mailbox' => (count(Auth::user()->mailboxesCanView(true)) > 1)]])
 	    @else
 	    	@include('customers/partials/customers_table')
 	    @endif

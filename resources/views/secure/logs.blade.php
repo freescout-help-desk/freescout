@@ -57,7 +57,7 @@
                                     @elseif ($col == 'date')
                                         {{  App\User::dateFormat(new Illuminate\Support\Carbon($row[$col]), 'M j, H:i:s') }}
                                     @elseif (is_object($row[$col]) && get_class($row[$col]) == 'App\Thread')
-                                        <a href="{{ route('conversations.view', ['id' => $row[$col]->conversation_id]) }}#thread-{{ $row[$col]->id }}" target="_blank">#{{ $row[$col]->conversation->number }}</a>
+                                        <a href="{{ route('conversations.view', ['id' => $row[$col]->conversation_id]) }}#thread-{{ $row[$col]->id }}">#{{ $row[$col]->conversation->number }}</a>
                                     @else
                                         {{ $row[$col] }}
                                     @endif

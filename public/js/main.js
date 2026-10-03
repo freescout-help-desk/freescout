@@ -25,6 +25,8 @@ var fs_checkbox_shift_last_checked = null;
 var upload_in_progress = false;
 var audio_chat;
 var autoplay_msg_shown = false;
+// Remember recipients rendered by the server to restore them after discarding a draft.
+var fs_reply_recipients = null;
 
 var FS_STATUS_CLOSED = 3;
 
@@ -419,6 +421,19 @@ $(document).ready(function(){
 	$('#logout-link').click(function(e) {
 		$('#logout-form').submit();
 		e.preventDefault();
+	});
+
+	// Icons acting as buttons (role="button" on span/i): Enter and Space click them, like a real button.
+	// Space on a dropdown toggle is left to Bootstrap, which already opens it.
+	$(document).on('keydown', 'span[role="button"][tabindex], i[role="button"][tabindex]', function(e) {
+		if ((e.which != 13 && e.which != 32) || (e.originalEvent && e.originalEvent.repeat)) {
+			return;
+		}
+		if (e.which == 32 && $(this).is('[data-toggle="dropdown"]')) {
+			return;
+		}
+		e.preventDefault();
+		$(this).click();
 	});
 
 	//applyVoidLinks();
@@ -1463,7 +1478,7 @@ function initConversation()
 		starConversationInit();
 		maybeShowStoredNote();
 		maybeShowDraft();
-		processLinks();
+		//processLinks();
 		initConvSettings();
 
 		// Show reply form in chat mode
@@ -2324,6 +2339,8 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 {
 	$(document).ready(function() {
 
+		rememberReplyRecipients();
+
 		convEditorInit();
 		if (typeof(load_attachments) != "undefined") {
 			loadAttachments();
@@ -2938,6 +2955,7 @@ function searchInit()
 		starConversationInit();
 
 		customersPagination();
+		customersViewSwitchInit();
 
 		$(".sidebar-menu .menu-link a").filter('[data-filter]').click(function(e){
 			var trigger = $(this);
@@ -3116,6 +3134,44 @@ function conversationPagination()
 	$(".table-conversations .pager-nav").click(function(e){
 		loadConversations($(this).attr('data-page'), $(this).parents('.table-conversations:first'));
 		e.preventDefault();
+	});
+}
+
+// Customers list view: cards (default) or table.
+// The choice is stored in the "customers_view" cookie and used by the server
+// when rendering the list (Helper::getCustomersView()).
+function setCustomersView(view)
+{
+	view = (view == 'table') ? 'table' : 'cards';
+
+	// SameSite=Lax and no Secure flag, so the cookie works on HTTP installations too.
+	setCookie('customers_view', view, {samesite: 'Lax'});
+	updateCustomersViewSwitch(view);
+	loadCustomers();
+}
+
+function updateCustomersViewSwitch(view)
+{
+	$('.customers-view-switch').each(function() {
+		var button = $(this);
+		var is_table = (view == 'table');
+		var title = is_table ? button.attr('data-title-cards') : button.attr('data-title-table');
+
+		// Icon shows the view the user will switch to.
+		button.toggleClass('glyphicon-th-large', is_table)
+			.toggleClass('glyphicon-th-list', !is_table)
+			.attr('title', title)
+			.attr('data-original-title', title);
+	});
+}
+
+function customersViewSwitchInit()
+{
+	$('.customers-view-switch').click(function(e) {
+		setCustomersView(getCookie('customers_view') == 'table' ? 'cards' : 'table');
+		// The switch is inside the tab link.
+		e.preventDefault();
+		e.stopPropagation();
 	});
 }
 
@@ -3580,6 +3636,19 @@ function showModalDialog(body, options)
 		options = {};
 	}
 	options = Object.assign(standard_options, options);
+
+	// Focus the primary button, so Enter confirms and Tab moves to Cancel.
+	// Skipped when the dialog has a field to fill in.
+	var on_show = options.on_show;
+	options.on_show = function(modal, a) {
+		if (typeof(on_show) == "function") {
+			on_show(modal, a);
+		}
+		var modal_body = modal.children().find('.modal-body:first');
+		if (!modal_body.find('input:visible,textarea:visible,select:visible').length) {
+			modal_body.find('.btn-primary:enabled:visible:first').focus();
+		}
+	};
 
 	triggerModal(null, options);
 }
@@ -4834,11 +4903,13 @@ function discardDraft(thread_id)
 							} else {
 								// Hide editor
 								hideReplyEditor();
-								$("#to").val(
+								// https://github.com/freescout-help-desk/freescout/pull/5674
+								restoreReplyRecipients();
+								/*$("#to").val(
 									$("#to option:first").val()
-								);
-								$(".conv-reply-block :input[name='cc']:first").val('');
-								$(".conv-reply-block :input[name='bcc']:first").val('');
+								);*/
+								//$(".conv-reply-block :input[name='cc[]']:first").val('');
+								//$(".conv-reply-block :input[name='bcc[]']:first").val('');
 								setReplyBody('');
 								$('#conv-subject').removeClass('action-visible');
 							}
@@ -4970,6 +5041,43 @@ function threadHideOriginal(trigger)
 	original.addClass('hidden');
 	container.find('.thread-original-show:first').removeClass('hidden');
 	trigger.addClass('hidden');
+}
+
+function rememberReplyRecipients()
+{
+	if (fs_reply_recipients !== null || !getGlobalAttr('conversation_id')) {
+		return;
+	}
+	fs_reply_recipients = {
+		to: $('#to').val(),
+		cc: $('#cc').val() || [],
+		bcc: $('#bcc').val() || []
+	};
+}
+
+function restoreReplyRecipients()
+{
+	if (fs_reply_recipients === null) {
+		$("#to").val($("#to option:first").val());
+		return;
+	}
+	if (fs_reply_recipients.to) {
+		$('#to').val(fs_reply_recipients.to);
+	}
+	var fields = ['cc', 'bcc'];
+	for (var f in fields) {
+		var select = $('#'+fields[f]);
+		if (!select.length) {
+			continue;
+		}
+		cleanSelect2(select);
+		var emails = fs_reply_recipients[fields[f]];
+		for (var i in emails) {
+			addSelect2Option(select, {
+				id: emails[i], text: emails[i]
+			});
+		}
+	}
 }
 
 function hideReplyEditor()

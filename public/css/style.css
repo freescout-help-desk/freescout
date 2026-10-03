@@ -730,7 +730,7 @@ select[multiple].input-md {
  * Cards
  */
 .card {
-    border: 1px solid #dedede;
+    border: 1px solid #e1e5e8;
     box-sizing: border-box;
     display: block;
     position: relative;
@@ -739,8 +739,8 @@ select[multiple].input-md {
     width: 270px;
     height: 82px;
     float: left;
-    -webkit-box-shadow:0 0 5px rgba(0,0,0,.2);
-    box-shadow:0 0 5px rgba(0,0,0,.2);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(23, 43, 58, .06), 0 1px 8px rgba(23, 43, 58, .05);
 }
 a.card:active,
 a.card:focus,
@@ -877,13 +877,9 @@ a h4 {
 .dash-card {
     float: left;
     position: relative;
-    border: 1px solid #dedede;
+    border: 1px solid #e1e5e8;
     border-radius: 15px;
-    /*border-left: 4px solid #5cb85c;*/
-    /*-webkit-box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);
-    box-shadow: 0 1px 7px 0 rgba(0,0,0,.08);*/
-    -webkit-box-shadow:0 0 5px rgba(0,0,0,.2);
-    box-shadow:0 0 5px rgba(0,0,0,.2);
+    box-shadow: 0 1px 2px rgba(23, 43, 58, .06), 0 1px 8px rgba(23, 43, 58, .05);
     box-sizing: border-box;
     min-height: 256px;
     margin: 0 20px 20px 0;
@@ -2462,6 +2458,35 @@ button.conv-checkbox-clear {
 .thread-content	img {
     max-width: 100%;
 }
+/* Keep aspect ratio when max-width shrinks an image with width/height attributes */
+.thread-content	img[width] {
+    height: auto;
+}
+/* Fit wide tables (e.g. from Outlook) into the thread instead of scrolling it horizontally.
+   overflow-wrap: anywhere lets columns shrink below the longest word when there is no room.
+   Cell widths are reset as Outlook sets arbitrary percentages (like 1.7% for a column with long text),
+   which would squeeze such columns to one letter per line. */
+.thread-content table {
+    max-width: 100%;
+}
+.thread-content td,
+.thread-content th {
+    overflow-wrap: anywhere;
+    width: auto !important;
+}
+/* On phones there is no room to fit a table without breaking every word,
+   so the table is scrolled horizontally on its own instead of the whole thread. */
+@media (max-width:700px) {
+    .thread-content table {
+        display: block;
+        overflow-x: auto;
+        width: max-content !important;
+    }
+    .thread-content td,
+    .thread-content th {
+        overflow-wrap: normal;
+    }
+}
 .conv-new #conv-toolbar {
     border-bottom: 1px solid #d4d9dd;
     padding: 6px 0 7px 0;
@@ -3042,15 +3067,9 @@ ul.sidebar-block-list {
     transform: translate(-50%,0) translate(-1px,0);
     z-index: 1099;
     max-width: 300px;
-    border-radius: 0;
     flex-direction: row;
     padding: 9px 14px;
-    /*-webkit-box-shadow: 4px 4px 12px rgba(0, 0, 0, .175);
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, .175);*/
-    -webkit-box-shadow:0 0 5px rgba(0,0,0,.4);
-    box-shadow:0 0 5px rgba(0,0,0,.4);
     cursor: default;
-
     overflow-wrap: break-word;
     word-wrap: break-word;
     -ms-word-break: break-all;
@@ -3064,7 +3083,14 @@ ul.sidebar-block-list {
     -webkit-hyphens: auto;
     hyphens: auto;
     border: 0;
+    border-top: 4px solid #009272;
+    border-radius: 4px;
+    box-shadow: 0 0 22px rgba(18, 51, 76, .1);
 }
+.alert-floating.alert-danger { border-top-color: #e11d48; }
+.alert-floating.alert-warning { border-top-color: #d97706; }
+.alert-floating.alert-info { border-top-color: #4f46e5; }
+
 .alert-floating.alert-danger,
 .alert-floating.alert-warning {
     position: fixed;
@@ -3079,6 +3105,10 @@ ul.sidebar-block-list {
 .alert-floating a:focus {
     color: #2a3b47;
     text-decoration: underline;
+}
+.alert-floating .glyphicon {
+    font-size: 13px;
+    vertical-align: inherit;
 }
 .alert-floating.alert-success .glyphicon {
     color: #53b961;
@@ -3526,14 +3556,14 @@ ul.sidebar-block-list {
  */
 .module-card {
     background-color: #ffffff;
-    border: 1px solid #dedede;
+    border: 1px solid #e1e5e8;
+    border-radius: 8px;
     box-sizing: border-box;
     display: block;
     position: relative;
     margin: 0 18px 18px 0;
     padding: 18px;
-    -webkit-box-shadow:0 0 5px rgba(0,0,0,.2);
-    box-shadow:0 0 5px rgba(0,0,0,.2);
+    box-shadow: 0 1px 2px rgba(23, 43, 58, .06), 0 1px 8px rgba(23, 43, 58, .05);
 }
 .module-card.active {
     background-color: #deffde;
@@ -3647,6 +3677,75 @@ ul.sidebar-block-list {
 .customers-pager a:hover {
     color: #333;
 }
+/* Customers list: table view */
+.customers-view-switch {
+    color: #93a1af;
+    cursor: pointer;
+    margin-left: 6px;
+    font-size: 13px;
+    top: 2px;
+}
+.customers-view-switch:hover {
+    color: #333;
+}
+.customers-table {
+    background-color: #fff;
+    /* Fixed layout: long values can not stretch the table, they are truncated. */
+    table-layout: fixed;
+    width: 100%;
+}
+.customers-table-col-name {
+    width: 34%;
+}
+.customers-table-col-email {
+    width: 30%;
+}
+.customers-table-col-phone {
+    width: 16%;
+}
+.customers-table-col-company {
+    width: 20%;
+}
+.customers-table > thead > tr > th,
+.customers-table > tbody > tr > td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.customers-table > thead > tr > th {
+    color: #93a1af;
+    font-weight: normal;
+    border-bottom-width: 1px;
+}
+.customers-table > tbody > tr > td {
+    vertical-align: middle;
+}
+.customers-table-name > a {
+    color: #2a3b47;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.customers-table-photo {
+    width: 28px;
+    height: 28px;
+    margin-right: 6px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+@media (max-width:582px) {
+    .customers-table > thead > tr > th:nth-child(n+3),
+    .customers-table > tbody > tr > td:nth-child(n+3) {
+        display: none;
+    }
+    .customers-table-col-name {
+        width: 55%;
+    }
+    .customers-table-col-email {
+        width: 45%;
+    }
+}
 /*.customers-pager a:hover,
 .customers-pager a:active
 .customers-pager a:focus, {
@@ -3655,7 +3754,7 @@ ul.sidebar-block-list {
 }*/
 
 /**
- * Panel
+ * Panels
  */
 .panel-sortable .handle {
     cursor: move;
@@ -3686,6 +3785,15 @@ ul.sidebar-block-list {
 .panel-grey {
     background-color: #f8f9f9;
     border-color: #dde2e6;
+}
+.panel-group .panel {
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(23, 43, 58, .06), 0 1px 8px rgba(23, 43, 58, .05);
+    border: 1px solid #e1e5e8;
+}
+.panel-heading {
+    border-bottom: 1px solid #e1e5e8;
+    border-radius: 8px 8px 0 0;
 }
 
 /**
@@ -4156,6 +4264,16 @@ a.help-icon:hover {
 .text-larger {
     font-size: 16.8px;
 }
+.text-link,
+.text-link:focus {
+    color: #0078D7!important;
+    text-decoration: none!important;
+    cursor: pointer;
+}
+.text-link:hover {
+    color: #000!important;
+    text-decoration: none!important;
+}
 #loader-main {
     position: fixed;
     display: none;
@@ -4294,8 +4412,7 @@ a.disabled:focus {
     left: -5px;
 }
 .hover-shade:hover {
-    -webkit-box-shadow:0 0 13px rgba(0,0,0,.2);
-    box-shadow:0 0 13px rgba(0,0,0,.2);
+    box-shadow:0 0 5px rgba(0,0,0,.2);
 }
 .dropdown-menu > li > span {
     display: block;
@@ -4627,8 +4744,5 @@ a.disabled:focus {
 }
 
 .btn {
-    border-radius: 5px;
-}
-.panel-group .panel {
     border-radius: 5px;
 }

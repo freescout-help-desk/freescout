@@ -43,7 +43,7 @@ class SsrfProtectionsTest extends TestCase
             'example.org' => 'https://example.org',
         ];
         foreach ($test_hosts as $host => $result) {
-            $this->assertEquals($result, \Helper::checkUrlIpAndHost('https://'.$host), $host);
+            $this->assertEquals($result, \Helper::checkUrlHost('https://'.$host), $host);
         }
     }
 }
