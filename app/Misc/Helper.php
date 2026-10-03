@@ -1805,6 +1805,14 @@ class Helper
         return (int)$request->cookie('in_app');
     }
 
+    public static function isAndroid($request = null)
+    {
+        if (!$request) {
+            $request = app('request');
+        }
+        return stripos($request->server('HTTP_USER_AGENT') ?? '', 'Android') !== false;
+    }
+
     /**
      * Customers list view mode: cards (default) or table.
      * The cookie is set from JS (see setCustomersView() in main.js).
