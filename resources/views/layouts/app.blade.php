@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    {{-- maximum-scale=1 prevents iOS from zooming in on focusing a field (#4698). Android does not zoom in on focus, but disables pinch zoom with maximum-scale. --}}
+    <meta name="viewport" content="width=device-width, initial-scale=1{{ \Helper::isAndroid() ? '' : ', maximum-scale=1' }}">
     <meta name="robots" content="noindex,nofollow">
     
     <!-- CSRF Token -->
