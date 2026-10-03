@@ -146,7 +146,7 @@
                     @if (empty($no_customer))
                         <td class="conv-customer">
                             <a href="{{ $conversation->url() }}" @if (!empty($params['target_blank'])) target="_blank" @endif title="{{ $conversation->customer_email }}">
-                                @if ($conversation->customer_id && $conversation->customer){{ $conversation->customer->getFullName(true)}}@endif&nbsp;@if ($conversation->threads_count > 1)<span class="conv-counter">{{ $conversation->threads_count }}</span>@endif
+                                <span class="conv-customer-line"><span class="conv-customer-name">@if ($conversation->customer_id && $conversation->customer){{ $conversation->customer->getFullName(true)}}@endif&nbsp;</span>@if ($conversation->threads_count > 1)<span class="conv-counter">{{ $conversation->threads_count }}</span>@endif</span>
                                 @if ($conversation->user_id)
                                     <small class="conv-owner-mobile text-help">
                                         {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }} <small class="glyphicon glyphicon-user"></small>
