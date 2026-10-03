@@ -84,6 +84,7 @@ return [
         '__',
         '__j',
         '__h',
+        '__safe_raw_html',
         '$trans.get',
     ],
 
