@@ -1897,11 +1897,6 @@ button.conv-checkbox-clear {
         display: block;
     }
 }
-@media (max-width:700px) {
-    .conv-customer a {
-        width: 250px;
-    }
-}
 
 /**
  * Conversation
