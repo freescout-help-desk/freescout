@@ -1749,8 +1749,10 @@ button.conv-checkbox-clear {
         height: 80px;
         border-bottom: 1px solid #e3e8eb;
     }
+    /* The mailbox name adds a line (20.1px) to the preview. With 97px the subject's link
+       ended below the row, and its fader whitened the row's bottom border */
     .table.table-conversations.show-mailbox tbody tr {
-        height: 97px;
+        height: 100px;
     }
 
     .table-conversations .conv-attachment-mobile
