@@ -5189,17 +5189,39 @@ function conversationsTableInit()
 	// if ("ontouchstart" in window)
 	// {
 	$(document).ready(function() {
-		$('.conv-row').on('contextmenu', function(event) {
-			event.preventDefault();
-			event.stopPropagation();
-		});
+		// Toggle the row only once per press: on touch devices
+		// both contextmenu and taphold may fire for the same press.
+		var toggleRow = function(row) {
+			if ($(row).data('conv_toggled')) {
+				return;
+			}
+			$(row).data('conv_toggled', true);
 
-		$('.conv-row').on('taphold', {duration: 700}, function(event) {
-			var row = $(event.target).parents('.conv-row');
 			var checkbox = $(row).find('input.conv-checkbox');
 			$(checkbox).prop('checked', !checkbox.prop('checked'));
 			$(checkbox).trigger('change');
 			$(row).toggleClass('selected');
+		};
+
+		$('.conv-row').on('touchstart mousedown', function(event) {
+			$(this).data('conv_touch', event.type == 'touchstart');
+			$(this).data('conv_toggled', false);
+		});
+
+		$('.conv-row').on('contextmenu', function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+
+			// The browser fires contextmenu after its native long press
+			// (with haptic feedback on Android), on press or on release,
+			// which may happen before taphold.
+			if ($(this).data('conv_touch')) {
+				toggleRow(this);
+			}
+		});
+
+		$('.conv-row').on('taphold', {duration: 700}, function(event) {
+			toggleRow(this);
 		});
 	});
 	//}
