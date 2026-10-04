@@ -3017,6 +3017,12 @@ ul.sidebar-block-list {
     .conv-sidebar-block .panel {
         background-color: #fff;
     }
+    /* Overrides the border and shadow of .panel-group .panel: the collapsed panel is empty
+       and its border made the bottom border of the customer block 3px thick */
+    .conv-sidebar-block .panel-group .panel {
+        border: 0;
+        box-shadow: none;
+    }
     .conv-sidebar-block .panel-group {
         margin: 0;
     }
