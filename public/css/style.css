@@ -2528,7 +2528,7 @@ button.conv-checkbox-clear {
     .thread-content table {
         display: block;
         overflow-x: auto;
-        width: max-content !important;
+        width: auto !important;
     }
     .thread-content td,
     .thread-content th {
