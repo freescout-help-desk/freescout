@@ -39,6 +39,7 @@ If you want to support the project feel free to **star this repository**. It hel
   * Multilingual (translated into 33 languages).
   * Seamless email integration (via SMTP, IMAP, POP3, etc).
   * Modern OAuth authentication for Microsoft Office 365 and Google Workspace.
+  * [Progressive Web App](https://freescout.net/progressive-app/) for phones and desktops (installable from browser and sending Web Push notifications).
   * Native [S3 storage](https://github.com/freescout-help-desk/S3Storage) support.
   * Fully supports screen readers (for visually impaired).
   * Web installer & updater.
@@ -67,7 +68,7 @@ Mobile apps support the same functionality and modules as the web version of you
 
 <a href="https://freescout.net/android-app/" target="_blank" rel="nofollow"><img alt="Android App" src="https://freescout-helpdesk.github.io/img/apps/android.png" width="200px" /></a> <a href="https://freescout.net/ios-app/" target="_blank" rel="nofollow"><img alt="iOS App" src="https://freescout-helpdesk.github.io/img/apps/ios.png?v=1" width="200px" /></a>
 
-[MacOS Menu Bar App](https://github.com/jonalaniz/scouter)
+[Progressive Web App for phones and desktops](https://freescout.net/progressive-app/) | [MacOS Menu Bar App](https://github.com/jonalaniz/scouter)
 
 ## Requirements
 
