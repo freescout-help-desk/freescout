@@ -1590,7 +1590,7 @@ table.table-conversations td.conv-attachment {
 .conv-counter {
     background: #97a3ad;
     color: #fff;
-    line-height: 17px;
+    line-height: 14px;
     position: relative;
     padding: 1px 5px;
     margin-left: 2px;
@@ -1605,6 +1605,14 @@ table.table-conversations td.conv-attachment {
     font-size: 14px;
     margin-top: 2px;
     padding-bottom: 8px;
+}
+.table-conversations .conv-owner {
+    width: 160px;
+}
+.table-conversations td.conv-owner a {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .table-conversations .conv-number {
     width: 86px;
