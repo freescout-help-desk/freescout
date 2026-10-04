@@ -1787,8 +1787,13 @@ button.conv-checkbox-clear {
         top: 0;
         margin-left: 10px!important;
     }
+    /* Stretch to the date, leaving room for it */
+    .table.table-conversations td.conv-customer {
+        width: auto;
+        inset-inline-start: 0;
+        inset-inline-end: 110px;
+    }
     .conv-customer a {
-        width: 350px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -1807,8 +1812,20 @@ button.conv-checkbox-clear {
         background-color: transparent!important;
         font-weight: normal;
     }
+    /* The link's ellipsis truncates the assignee, so it gets the assignee's style */
+    .table-conversations td.conv-customer a {
+        color: #93a1af;
+        font-weight: normal;
+    }
     .conv-customer-line {
         display: inline;
+        color: #2a3b47;
+    }
+    .conv-active .conv-customer-line {
+        font-weight: bold;
+    }
+    .conv-spam .conv-customer-line {
+        color: #93a1af;
     }
     /* Leave room for the counter and the assignee */
     .conv-customer-name {
