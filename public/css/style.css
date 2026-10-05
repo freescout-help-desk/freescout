@@ -3039,6 +3039,17 @@ ul.sidebar-block-list {
         display: none!important;
         height: 0!important;
     }
+    /* While animating, Bootstrap replaces .collapse with .collapsing, the rules above don't apply
+       and the block was animated the opposite way: on "close" it grew and only then disappeared,
+       on open it appeared after a delay. Show the final state at once instead:
+       aria-expanded is the state Bootstrap is switching to */
+    .conv-sidebar-block .collapsing[aria-expanded="true"] {
+        display: none!important;
+    }
+    .conv-sidebar-block .collapsing[aria-expanded="false"] {
+        display: block!important;
+        height: auto!important;
+    }
     .customer-social-profiles {
         white-space: normal;
         max-width: none;
