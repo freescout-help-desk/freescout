@@ -94,7 +94,10 @@ class Handler extends ExceptionHandler
     {
         try {
             $property = new \ReflectionProperty(\Exception::class, 'trace');
-            $property->setAccessible(true);
+            // Has no effect since PHP 8.1 and is deprecated since PHP 8.5.
+            if (PHP_VERSION_ID < 80100) {
+                $property->setAccessible(true);
+            }
 
             $depth = 0;
             while ($exception && $depth < 20) {
