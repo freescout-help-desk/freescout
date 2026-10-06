@@ -157,6 +157,38 @@ class LaravelLogViewer
     }
 
     /**
+     * Select the log file to display by default: the latest "laravel-*" file
+     * (by date in the file name), otherwise the most recently modified file.
+     *
+     * @param array $files Full paths of log files.
+     * @return string
+     */
+    protected function getLatestLogFile(array $files)
+    {
+        $laravel_files = [];
+        foreach ($files as $file) {
+            if (preg_match('/^laravel-.*\.log$/', basename($file))) {
+                $laravel_files[] = $file;
+            }
+        }
+
+        if (count($laravel_files)) {
+            // laravel-YYYY-MM-DD.log names sort chronologically.
+            usort($laravel_files, function ($a, $b) {
+                return strcmp(basename($b), basename($a));
+            });
+
+            return $laravel_files[0];
+        }
+
+        usort($files, function ($a, $b) {
+            return @filemtime($b) <=> @filemtime($a);
+        });
+
+        return $files[0];
+    }
+
+    /**
      * @return array
      */
     public function all()
@@ -168,7 +200,7 @@ class LaravelLogViewer
             if (!count($log_file)) {
                 return [];
             }
-            $this->file = $log_file[0];
+            $this->file = $this->getLatestLogFile($log_file);
         }
 
         $max_file_size = function_exists('config') ? config('logviewer.max_file_size', self::MAX_FILE_SIZE) : self::MAX_FILE_SIZE;
