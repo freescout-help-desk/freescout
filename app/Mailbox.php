@@ -139,6 +139,8 @@ class Mailbox extends Model
     const DEFAULT_SIGNATURE = '<br><span style="color:#808080;">--<br>
 {%mailbox.name%}</span>';
 
+    const META_STATE = 'st';
+
     /**
      * Default values.
      */
@@ -229,7 +231,7 @@ class Mailbox extends Model
      */
     public function getStateAttribute()
     {
-        return $this->getMeta('st', self::STATE_ACTIVE);
+        return $this->getMeta(self::META_STATE, self::STATE_ACTIVE);
     }
 
     public function setStateAttribute($value)
@@ -238,7 +240,7 @@ class Mailbox extends Model
         if (!in_array($value, [self::STATE_ACTIVE, self::STATE_ARCHIVED])) {
             $value = self::STATE_ACTIVE;
         }
-        $this->setMeta('st', $value);
+        $this->setMeta(self::META_STATE, $value);
     }
 
     /**
