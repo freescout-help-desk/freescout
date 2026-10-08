@@ -111,6 +111,14 @@ return [
         'fetch_order' => 'asc',
         'open' => [
             // 'DISABLE_AUTHENTICATOR' => 'GSSAPI'
-        ]
+        ],
+        // Socket connect / read timeout in seconds.
+        'timeout' => (int)env('IMAP_TIMEOUT', 30),
+        // How many times to retry if the connection or the server greeting
+        // times out (transient errors, common when polling many mailboxes
+        // from one IP). Set to 0 to disable retries.
+        'connect_retries' => (int)env('IMAP_CONNECT_RETRIES', 1),
+        // Delay in seconds before a retry.
+        'connect_retry_delay' => (int)env('IMAP_CONNECT_RETRY_DELAY', 2),
     ]
 ];
