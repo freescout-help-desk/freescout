@@ -193,6 +193,10 @@
             <div id="conv-subject">
                 <div class="conv-subj-block">
                     <div class="conv-subjwrap">
+                        {{-- Floated, so it goes before the subject which wraps around it --}}
+                        <div class="conv-numnav">
+                            <i role="button" tabindex="0" class="glyphicon conv-star @if ($conversation->isStarredByUser()) glyphicon-star @else glyphicon-star-empty @endif" title="@if ($conversation->isStarredByUser()){{ __("Unstar Conversation") }}@else{{ __("Star Conversation") }}@endif"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>
+                        </div>
                         <div class="conv-subjtext">
                             <span>{{ $conversation->getSubject() }}</span>
                             <div class="input-group input-group-lg conv-subj-editor">
@@ -208,9 +212,6 @@
                             </span>
                         @endif
                         @action('conversation.after_subject', $conversation, $mailbox)
-                        <div class="conv-numnav">
-                            <i role="button" tabindex="0" class="glyphicon conv-star @if ($conversation->isStarredByUser()) glyphicon-star @else glyphicon-star-empty @endif" title="@if ($conversation->isStarredByUser()){{ __("Unstar Conversation") }}@else{{ __("Star Conversation") }}@endif"></i>&nbsp; # <strong>{{ $conversation->number }}</strong>
-                        </div>
                         <div id="conv-viewers">
                             @foreach ($viewers as $viewer)
                                 <span class="photo-xs viewer-{{ $viewer['user']->id }} @if ($viewer['replying']) viewer-replying @endif" data-toggle="tooltip" title="@if ($viewer['replying']){{ __(':user is replying', ['user' => $viewer['user']->getFullName()]) }}@else{{ __(':user is viewing', ['user' => $viewer['user']->getFullName()]) }}@endif">

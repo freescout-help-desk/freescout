@@ -1988,16 +1988,11 @@ button.conv-checkbox-clear {
     width: 100%;
 }
 .conv-subjtext {
-    float: left;
-    display: inline-block;
     color: #2a3b47;
     font-weight: 400;
     font-size: 23px;
     line-height: 30px;
     word-wrap: break-word;
-    margin-right: 8px;
-    width: 100%;
-    max-width: 100%;
 }
 .conv-subj-editor,
 .conv-subj-editing > span {
@@ -2006,11 +2001,14 @@ button.conv-checkbox-clear {
 .conv-subj-editing .conv-subj-editor {
     display: table;
 }
+/* Floats in the right padding of .conv-subjwrap (negative margin-right = that padding),
+   so the subject wraps only around the part that does not fit there (a long number, icons added by modules)
+   and keeps 8px away from it */
 .conv-numnav {
-    margin: 0;
-    position: absolute;
+    float: right;
+    margin: 0 -145px 0 8px;
+    position: relative;
     color: #93a1af;
-    right: 0;
     top: 5px;
 }
 .conv-numnav strong {
@@ -2810,6 +2808,8 @@ ul.sidebar-block-list {
     }
     .conv-numnav {
         top: 0;
+        /* = padding-right of .conv-subjwrap */
+        margin-right: -90px;
     }
     .conv-info .btn-group button.conv-info-val {
         padding-right: 17px;
