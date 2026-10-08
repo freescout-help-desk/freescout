@@ -84,7 +84,7 @@ class User extends Authenticatable
     /**
      * User permissions.
      * Core permissions have IDs below 100.
-     * Permissions in custom modules should use IDs above 1000.
+     * Permissions in custom modules should use string IDs: "modulealias.permission"
      */
     const PERM_DELETE_CONVERSATIONS = 1;
     const PERM_EDIT_CONVERSATIONS   = 2;
