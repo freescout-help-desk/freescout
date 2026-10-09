@@ -3221,6 +3221,11 @@ class ConversationsController extends Controller
             $query_customers->whereIn('conversations.mailbox_id', $mailbox_ids);
         }
 
+        if (!empty($filters['company']) && is_string($filters['company'])) {
+            $company_like = '%'.mb_strtolower(trim($filters['company'])).'%';
+            $query_customers->where('customers.company', \Helper::isPgSql() ? 'ilike' : 'like', $company_like);
+        }
+
         $query_customers = \Eventy::filter('search.customers.apply_filters', $query_customers, $filters, $q);
 
         return $query_customers->paginate(50);

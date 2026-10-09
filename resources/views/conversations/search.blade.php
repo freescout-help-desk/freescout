@@ -74,6 +74,10 @@
                         @endforeach
                     </select>
 		        </div>
+				<div class="col-sm-6 form-group @if (isset($filters['company'])) active @endif" data-filter="company">
+		            <label>{{ __('Company') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
+		            <input type="text" name="f[company]" value="{{ $filters['company'] ?? ''}}" class="form-control" @if (empty($filters['company'])) disabled @endif>
+		        </div>
 				<div class="col-sm-6 form-group @if (isset($filters['status'])) active @endif" data-filter="status">
 		            <label>{{ __('Status') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
 		            <select name="f[status][]" class="form-control filter-multiple" multiple @if (empty($filters['status'])) disabled @endif>
