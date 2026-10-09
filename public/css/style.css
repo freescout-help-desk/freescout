@@ -1961,7 +1961,8 @@ button.conv-checkbox-clear {
     border-bottom: 1px solid #e3e8eb;
 }
 .conv-subj-block {
-    padding: 16px 9px 18px 20px;
+    /* The bottom padding leaves room for #conv-viewers under the number when the subject is one line */
+    padding: 16px 9px 24px 20px;
 }
 .conv-following .conv-subjtext > span:before {
     content: "🔔 ";
@@ -2794,7 +2795,7 @@ ul.sidebar-block-list {
         padding-right: 90px;
     }
     .conv-subj-block {
-        padding: 16px 2px 12px 13px;
+        padding: 16px 2px 18px 13px;
     }
     .conv-top-block {
         padding: 10px 13px;
