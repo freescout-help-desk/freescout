@@ -3754,62 +3754,101 @@ ul.sidebar-block-list {
 .customers-view-switch:hover {
     color: #333;
 }
-.customers-table {
+.customers-list {
+    --customers-cols: minmax(0, 34fr) minmax(0, 30fr) minmax(0, 16fr) minmax(0, 20fr);
+    display: flex;
+    flex-direction: column;
     background-color: #fff;
-    /* Fixed layout: long values can not stretch the table, they are truncated. */
-    table-layout: fixed;
-    width: 100%;
 }
-.customers-table-col-name {
-    width: 34%;
+.customers-list-head,
+.customers-list-row {
+    display: grid;
+    grid-template-columns: var(--customers-cols);
+    align-items: center;
+    column-gap: 12px;
+    padding: 0 16px;
 }
-.customers-table-col-email {
-    width: 30%;
-}
-.customers-table-col-phone {
-    width: 16%;
-}
-.customers-table-col-company {
-    width: 20%;
-}
-.customers-table > thead > tr > th,
-.customers-table > tbody > tr > td {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.customers-table > thead > tr > th {
+.customers-list-head {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ddd;
     color: #93a1af;
-    font-weight: normal;
-    border-bottom-width: 1px;
 }
-.customers-table > tbody > tr > td {
-    vertical-align: middle;
-}
-.customers-table-name > a {
+.customers-list-row,
+.customers-list-row:hover,
+.customers-list-row:focus {
     color: #2a3b47;
-    display: block;
+    text-decoration: none;
+}
+.customers-list-row {
+    min-height: 48px;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    cursor: pointer;
+}
+.customers-list-head + .customers-list-row {
+    border-top: 0;
+}
+.customers-list-row:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+.customers-list-row:hover,
+.customers-list-row:focus {
+    background-color: #f5f5f5;
+    outline: none;
+}
+.customers-list-cell {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.customers-table-photo {
-    width: 28px;
-    height: 28px;
-    margin-right: 6px;
+.customers-list-row .customers-list-cell {
+    padding: 8px 0;
+    color: #5b6b79;
+}
+.customers-list-col-name {
+    display: flex;
+    align-items: center;
+}
+.customers-list-row .customers-list-col-name {
+    color: #2a3b47;
+}
+.customers-list-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.customers-list-photo {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
     border-radius: 50%;
     object-fit: cover;
 }
+.customers-list-company {
+    display: inline-block;
+    max-width: 100%;
+    padding: 2px 10px;
+    border-radius: 10px;
+    background-color: #eef2f6;
+    color: #5b6b79;
+    font-size: 12px;
+    line-height: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
+}
 @media (max-width:582px) {
-    .customers-table > thead > tr > th:nth-child(n+3),
-    .customers-table > tbody > tr > td:nth-child(n+3) {
+    .customers-list {
+        --customers-cols: minmax(0, 55fr) minmax(0, 45fr);
+    }
+    .customers-list-col-phone,
+    .customers-list-col-company {
         display: none;
-    }
-    .customers-table-col-name {
-        width: 55%;
-    }
-    .customers-table-col-email {
-        width: 45%;
     }
 }
 /*.customers-pager a:hover,
