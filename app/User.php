@@ -338,7 +338,7 @@ class User extends Authenticatable
             $mailboxes = $this->mailboxes()->pluck('mailboxes.meta', 'mailboxes.id');
             // Exclude archived mailboxes.
             return $mailboxes->filter(function ($meta) {
-                $meta = json_decode($meta, true);
+                $meta = json_decode($meta ?? '', true);
                 if (!isset($meta[Mailbox::META_STATE])) {
                     return true;
                 }
