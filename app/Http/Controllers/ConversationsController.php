@@ -2208,19 +2208,26 @@ class ConversationsController extends Controller
                 }
 
                 // Check access to the mailbox.
-                $folder = Folder::find($request->folder_id ?? '');
+                $mailbox = Mailbox::find($request->mailbox_id ?? '');
+                $folder = null;
 
-                if (!$folder) {
-                    $response['msg'] = __('Folder not found');
-                    return \Response::json($response);
-                }
-                if (!in_array($folder->type, [Folder::TYPE_SPAM, Folder::TYPE_DELETED])) {
-                    $response['msg'] = __('Folder not found');
-                    return \Response::json($response);
-                }
-                if (!$folder->mailbox->userHasAccess($user->id)) {
-                    $response['msg'] = __('Not enough permissions');
-                    return \Response::json($response);
+                if ($mailbox) {
+                    $folder = Folder::find($request->folder_id ?? '');
+
+                    if (!$folder || $folder->mailbox_id != $mailbox->id
+                        || !in_array($folder->type, [Folder::TYPE_SPAM, Folder::TYPE_DELETED])
+                    ) {
+                        $response['msg'] = __('Folder not found');
+                        return \Response::json($response);
+                    }
+                    if (!$mailbox->userHasAccess($user->id)) {
+                        $response['msg'] = __('Not enough permissions');
+                        return \Response::json($response);
+                    }
+                } else {
+                    // Virtual mailbox:
+                    // folder_id contains folder type and folders of this type
+                    // are emptied by the module in all mailboxes via the hook below.
                 }
 
                 $response = \Eventy::filter('conversations.empty_folder', $response, 
