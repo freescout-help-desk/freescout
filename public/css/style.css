@@ -523,8 +523,8 @@ label.radio {
     cursor: pointer;
 }
 select.form-control {
-    height: 28px;
-    line-height: 28px;
+    height: 30px;
+    line-height: 30px;
 }
 .input-sized-xs {
     width: 87px;
@@ -532,15 +532,17 @@ select.form-control {
 .input-sized-sm {
     width: 187px;
 }
-.input-sized {
-    width: 270px;
-}
+.input-sized,
 .input-sized-lg {
     width: 320px;
     max-width: 100%;
 }
 .control-label {
     font-size: 13.4px;
+    color: #5d6c79;
+}
+.has-error .control-label {
+    color: #a94442;
 }
 .controls>.checkbox:first-child,
 .controls>.radio:first-child {
@@ -562,7 +564,8 @@ select.form-control {
     position: relative;
 }
 .input-group-btn .btn {
-    height: 28px;
+    height: 30px;
+    line-height: 28px;
 }
 .btn-sidebar {
     margin: 8px 0 0 20px;
@@ -622,6 +625,7 @@ select.form-control {
 .has-error .form-control.parsley-exclude {
     border-color: #ccc;
 }
+.has-error .select2-container--default .select2-selection--single,
 .has-error .select2-container--default .select2-selection--multiple,
 .has-error .select2-container--default.select2-container--focus .select2-selection--multiple {
     border-color: #a94442;
@@ -635,6 +639,9 @@ select.form-control {
 }
 .btn .glyphicon {
     top: 2px;
+}
+select.input-md {
+    height: 38px;
 }
 select.input-lg {
     height: 38px;
@@ -657,6 +664,7 @@ select[multiple].input-md {
     padding: 3px 9px;
     font-size: 12px;
     line-height: 20px;
+    height: 30px;
     border-radius: 3px;
 }
 .form-help {
@@ -720,9 +728,29 @@ select[multiple].input-md {
 .input-group .input-group-btn {
     vertical-align: top;
 }
+.btn {
+    border-radius: 6px;
+}
+.btn-square {
+    border-radius: 0 !important;
+}
 @media (min-width: 435px) {
+    .input-sized,
     .input-sized-lg {
         width: 387px;
+    }
+}
+@media (min-width: 768px) {
+    .input-sized,
+    .input-sized-lg {
+        width: 100%;
+        max-width: 400px;
+    }
+    /* .input-group is a table, so percent width is unreliable. */
+    .input-group.input-sized,
+    .input-group.input-sized-lg {
+        width: 400px;
+        max-width: 100%;
     }
 }
 
@@ -1062,6 +1090,7 @@ https://github.com/freescout-help-desk/freescout/issues/4354
     font-size: 14px;
     line-height: 18px;
     height: 30px;
+    padding: 5px 10px;
 }
 .note-actions {
     float: right;
@@ -1107,7 +1136,7 @@ https://github.com/freescout-help-desk/freescout/issues/4354
     margin-bottom: -1px;
 }
 .btn-group-send .btn {
-    height: 38px;
+    height: 36px;
 }
 .btn-send-menu {
     padding-left: 8px;
@@ -1246,8 +1275,9 @@ https://github.com/freescout-help-desk/freescout/issues/4354
 }
 .customer-name {
     color: #2a3b47;
-    font-size: 17px;
-    line-height: 21px;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 26px;
 }
 .customer-name:hover,
 .customer-name:focus {
@@ -1332,6 +1362,11 @@ https://github.com/freescout-help-desk/freescout/issues/4354
     margin-top: 9px;
     color: #93a1af;
     word-wrap: break-word;
+}
+.customer-extra .customer-section {
+    margin-top: 5px;
+    padding-top: 4px;
+    border-top: 1px solid #eef1f4;
 }
 .customer-divider {
     display: block;
@@ -2062,6 +2097,7 @@ button.conv-checkbox-clear {
 }
 .conv-info .btn {
     height: 30px;
+    line-height: 28px;
 }
 .conv-info > li {
     display: inline-block;
@@ -2971,8 +3007,11 @@ ul.sidebar-block-list {
         /*font-weight: bold;
         font-size: 18px;*/
     }
-    .customer-section {
+    .customer-section,
+    .customer-extra .customer-section {
         margin-top: 0px;
+        padding-top: 0;
+        border-top: 0;
     }
     .customer-trigger {
         top: 16px;
@@ -3386,14 +3425,28 @@ ul.sidebar-block-list {
  * Select2
  */
 .select2-container--default .select2-selection--multiple {
-    border-radius: 3px;
-    border: 1px solid #c1cbd4;
+    border-radius: 6px;
+    border: 1px solid #d5dbe0;
 }
 .select2-container--default.select2-container--focus .select2-selection--multiple {
-    border: 1px solid #c1cbd4;
+    border: 1px solid #d5dbe0;
 }
 .select2-dropdown {
-    border: 1px solid #c1cbd4;
+    border: 1px solid #d5dbe0;
+    border-radius: 6px;
+}
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    border-color: #d5dbe0;
+    border-radius: 6px;
+}
+.select2-container .select2-selection--single {
+    height: 30px;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 28px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 28px;
 }
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
     float: right;
@@ -3415,10 +3468,11 @@ ul.sidebar-block-list {
     display: none !important;
 }
 .select2-multi-dropdown .select2-results__option:last-child {
-    border-bottom: 1px solid #c1cbd4;
+    border-bottom: 1px solid #d5dbe0;
 }
 .select2-container--default .select2-selection--single {
-    border-color: rgb(193, 203, 212);
+    border-color: #d5dbe0;
+    border-radius: 6px;
 }
 .select2-selection--single .select2-selection__rendered {
     font-size: 13px;
@@ -3434,14 +3488,41 @@ ul.sidebar-block-list {
     line-height: 17px;
 }
 .select2-container .select2-selection--multiple {
-    min-height: auto;
+    min-height: 30px;
 }
 .dropdown-menu .select2-selection__choice__remove {
     font-size: 13.4px;
 }
-.input-group .select2:nth-child(2) .select2-selection {
+.input-group > .select2-container:not(:last-child) .select2-selection {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+}
+.input-group > .input-group-addon + .select2-container .select2-selection,
+.input-group > .input-group-btn + .select2-container .select2-selection,
+.input-group > .form-control + .select2-container .select2-selection {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+/* .input-md applied to select2 (class on the <select> or on the container). */
+.input-md + .select2-container .select2-selection--single,
+.select2-container.input-md .select2-selection--single {
+    height: 38px;
+}
+.input-md + .select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--default.input-md .select2-selection--single .select2-selection__rendered {
+    line-height: 36px;
+}
+.input-md + .select2-container--default .select2-selection--single .select2-selection__arrow,
+.select2-container--default.input-md .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+.input-md + .select2-container .select2-selection--multiple,
+.select2-container.input-md .select2-selection--multiple {
+    min-height: 38px;
+}
+.input-md + .select2-container .select2-selection--multiple .select2-selection__rendered,
+.select2-container.input-md .select2-selection--multiple .select2-selection__rendered {
+    padding-top: 5px;
 }
 /*.select2-with-loader .select2-selection__rendered {
     padding-right: 30px;
@@ -4848,6 +4929,4 @@ a.disabled:focus {
     }
 }
 
-.btn {
-    border-radius: 5px;
-}
+

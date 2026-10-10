@@ -235,7 +235,7 @@
                                 {{ __('Save Settings') }}
                             </button>
                             &nbsp;
-                            <button type="button" class="btn btn-default btn-sm" id="check-connection" data-loading-text="{{ __('Connecting') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>
+                            <button type="button" class="btn btn-default" id="check-connection" data-loading-text="{{ __('Connecting') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>
                                 {{ __('Check Connection') }}
                             </button>
                         </div>
