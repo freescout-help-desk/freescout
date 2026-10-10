@@ -4784,6 +4784,7 @@ a.disabled:focus {
 .fs-tag-btn {
     margin-top: 8px;
     margin-right: 8px;
+    height: 24px;
     line-height: 14px;
     font-size: 15px;
     padding: 4px 6px 4px 6px;

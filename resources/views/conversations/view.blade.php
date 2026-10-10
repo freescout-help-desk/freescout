@@ -208,7 +208,7 @@
                         </div>
                         @if ($conversation->isChat() && $conversation->getChannelName())
                             <span class="conv-tags">
-                                @if (\Helper::isChatMode())<a class="btn btn-default fs-tag-btn" href="{{ request()->fullUrlWithQuery(['chat_mode' => '0']) }}" title="{{ __('Exit') }}" data-toggle="tooltip"><small class="glyphicon glyphicon-stop"></small> {{ __('Chat Mode') }}</a>@else<a class="btn btn-primary fs-tag-btn" href="{{ request()->fullUrlWithQuery(['chat_mode' => '1']) }}"><small class="glyphicon glyphicon-play"></small> {{ __('Chat Mode') }}</a>@endif<span class="fs-tag fs-tag-md"><a class="fs-tag-name" href="#"><small class="glyphicon glyphicon-phone"></small> {{ $conversation->getChannelName() }}</a></span>
+                                @if (\Helper::isChatMode())<a class="btn btn-default fs-tag-btn" href="{{ request()->fullUrlWithQuery(['chat_mode' => '0']) }}" title="{{ __('Exit') }}" data-toggle="tooltip"><small class="glyphicon glyphicon-remove"></small> {{ __('Chat Mode') }}</a>@else<a class="btn btn-primary fs-tag-btn" href="{{ request()->fullUrlWithQuery(['chat_mode' => '1']) }}"><small class="glyphicon glyphicon-comment"></small> {{ __('Chat Mode') }}</a>@endif<span class="fs-tag fs-tag-md"><a class="fs-tag-name" href="#"><small class="glyphicon glyphicon-phone"></small> {{ $conversation->getChannelName() }}</a></span>
                             </span>
                         @endif
                         @action('conversation.after_subject', $conversation, $mailbox)
