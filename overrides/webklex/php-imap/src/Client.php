@@ -201,6 +201,15 @@ class Client {
             $this->setAccountConfig($key, $config, $default_config);
         }
 
+        // Timeout can be set globally via IMAP_TIMEOUT (imap.options.timeout)
+        // unless it has been specified for the account.
+        if (!isset($config['timeout']) && !isset($default_config['timeout'])) {
+            $timeout = (int)ClientManager::get('options.timeout');
+            if ($timeout > 0) {
+                $this->timeout = $timeout;
+            }
+        }
+
         return $this;
     }
 

@@ -964,7 +964,16 @@ class FetchEmails extends Command
             // is mentioned as <test@example.org> and it will interpret it as a tag.
             // https://github.com/freescout-helpdesk/freescout/issues/4036
 
+            $full_body = $body;
+
             $body = $this->separateReply($body, $is_html, $is_reply, !$message_from_customer, (($message_from_customer && $prev_thread) ? $prev_thread->getMessageId($mailbox) : ''));
+
+            // Inline images which were referenced only in the quoted part of the email
+            // (removed by separateReply()) must not be saved as attachments.
+            if ($is_html) {
+                $attachments = $this->removeQuotedInlineAttachments($attachments, $full_body, $body);
+            }
+            $full_body = null;
 
             // Create customers
             $emails = array_merge(
@@ -1585,6 +1594,39 @@ class FetchEmails extends Command
         return $created_attachments;
     }
 
+    /**
+     * Remove inline images which are referenced (by cid) only in the quoted part
+     * of the email, i.e. in the part which has been cut off by separateReply().
+     * Otherwise such images become orphaned attachments of the thread.
+     *
+     * @param mixed  $attachments
+     * @param string $full_body   Body before separateReply().
+     * @param string $reply_body  Body after separateReply().
+     *
+     * @return array
+     */
+    public function removeQuotedInlineAttachments($attachments, $full_body, $reply_body)
+    {
+        $result = [];
+
+        foreach ($attachments as $attachment) {
+            $cid = trim((string)($attachment->id ?? ''), '<> ');
+
+            if ($cid !== ''
+                && stripos((string)($attachment->content_type ?? ''), 'image/') === 0
+                && stripos($full_body, 'cid:'.$cid) !== false
+                && stripos($reply_body, 'cid:'.$cid) === false
+            ) {
+                // Referenced only in the quoted text.
+                continue;
+            }
+
+            $result[] = $attachment;
+        }
+
+        return $result;
+    }
+
     public function processAttachmentName($name)
     {
         // Fix for Webklex/laravel-imap.
@@ -1799,6 +1841,8 @@ class FetchEmails extends Command
             }
         }
 
+        // New message contains only embedded attachents -
+        // reset has_attachments flag for the conversation.
         if ($only_embedded_attachments 
             && $conversation 
             && $conversation->has_attachments

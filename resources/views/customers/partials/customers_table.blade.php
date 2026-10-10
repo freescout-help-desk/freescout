@@ -2,28 +2,29 @@
     <div class="table-customers" data-page="{{ (int)request()->get('page', 1) }}">
         <div class="container">
             @if (\Helper::getCustomersView() == 'table')
-                <table class="table table-striped table-hover customers-table margin-top">
-                    <thead>
-                        <tr>
-                            <th class="customers-table-col-name">{{ __('Name') }}</th>
-                            <th class="customers-table-col-email">{{ __('Email') }}</th>
-                            <th class="customers-table-col-phone">{{ __('Phone') }}</th>
-                            <th class="customers-table-col-company">{{ __('Company') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($customers as $customer)
-                            <tr>
-                                <td class="customers-table-name">
-                                    <a href="{{ Eventy::filter('customer.card.url', route('customers.update', ['id' => $customer->id]), $customer) }}" @action('customer.card.link', $customer) title="{{ $customer->first_name }} {{ $customer->last_name }}"><img src="{{ $customer->getPhotoUrl() }}" class="customers-table-photo" /> {{ $customer->first_name }} {{ $customer->last_name }}</a>
-                                </td>
-                                <td title="{{ $customer->getMainEmail() }}">{{ $customer->getMainEmail() }}</td>
-                                <td title="{{ $customer->getMainPhoneNumber() }}">{{ $customer->getMainPhoneNumber() }}</td>
-                                <td title="{{ $customer->company }}">{{ $customer->company }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="customers-list margin-top" role="list">
+                    <div class="customers-list-head" aria-hidden="true">
+                        <div class="customers-list-cell customers-list-col-name">{{ __('Name') }}</div>
+                        <div class="customers-list-cell customers-list-col-email">{{ __('Email') }}</div>
+                        <div class="customers-list-cell customers-list-col-phone">{{ __('Phone') }}</div>
+                        <div class="customers-list-cell customers-list-col-company">{{ __('Company') }}</div>
+                    </div>
+                    @foreach ($customers as $customer)
+                        <a href="{{ Eventy::filter('customer.card.url', route('customers.update', ['id' => $customer->id]), $customer) }}" class="customers-list-row" role="listitem" @action('customer.card.link', $customer) title="{{ $customer->first_name }} {{ $customer->last_name }}">
+                            <div class="customers-list-cell customers-list-col-name">
+                                <img src="{{ $customer->getPhotoUrl() }}" class="customers-list-photo" alt="" />
+                                <span class="customers-list-name">{{ $customer->first_name }} {{ $customer->last_name }}</span>
+                            </div>
+                            <div class="customers-list-cell customers-list-col-email" title="{{ $customer->getMainEmail() }}">{{ $customer->getMainEmail() }}</div>
+                            <div class="customers-list-cell customers-list-col-phone" title="{{ $customer->getMainPhoneNumber() }}">{{ $customer->getMainPhoneNumber() }}</div>
+                            <div class="customers-list-cell customers-list-col-company" title="{{ $customer->company }}">
+                                @if ($customer->company)
+                                    <span class="customers-list-company">{{ $customer->company }}</span>
+                                @endif
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
             @else
                 <div class="card-list margin-top">
                     @foreach ($customers as $customer)

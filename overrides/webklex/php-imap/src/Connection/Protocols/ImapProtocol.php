@@ -94,17 +94,42 @@ class ImapProtocol extends Protocol {
             }
         }
         $port = $port === null ? 143 : $port;
-        try {
-            $this->stream = $this->createStream($transport, $host, $port, $this->connection_timeout);
-            $this->greeting = $this->nextLine();
-            if (!$this->assumedNextLine('* OK', $this->greeting)) {
-                throw new ConnectionFailedException('connection refused');
+
+        // Retry on transient errors (connection or greeting timeout).
+        // https://github.com/freescout-help-desk/freescout/issues/5713
+        $retries = max(0, (int)config('imap.options.connect_retries', 1));
+        $retry_delay = max(0, (int)config('imap.options.connect_retry_delay', 2));
+        $attempt = 0;
+
+        while (true) {
+            // Only failures while establishing the socket or waiting for
+            // the greeting are considered transient.
+            $transient = true;
+            try {
+                $this->stream = $this->createStream($transport, $host, $port, $this->connection_timeout);
+                $this->greeting = $this->nextLine();
+                $transient = false;
+                if (!$this->assumedNextLine('* OK', $this->greeting)) {
+                    throw new ConnectionFailedException('connection refused');
+                }
+                if ($encryption == 'starttls') {
+                    $this->enableStartTls();
+                }
+                break;
+            } catch (Exception $e) {
+                if ($transient && $attempt < $retries) {
+                    $attempt++;
+                    if ($this->stream) {
+                        @fclose($this->stream);
+                        $this->stream = null;
+                    }
+                    if ($retry_delay) {
+                        sleep($retry_delay);
+                    }
+                    continue;
+                }
+                throw new ConnectionFailedException('connection failed - '.$e->getMessage(), 0, $e);
             }
-            if ($encryption == 'starttls') {
-                $this->enableStartTls();
-            }
-        } catch (Exception $e) {
-            throw new ConnectionFailedException('connection failed - '.$e->getMessage(), 0, $e);
         }
     }
 

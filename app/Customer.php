@@ -183,6 +183,7 @@ class Customer extends Model
      */
     public static $search_filters = [
         'mailbox',
+        'company',
     ];
 
     /**

@@ -84,7 +84,7 @@ class User extends Authenticatable
     /**
      * User permissions.
      * Core permissions have IDs below 100.
-     * Permissions in custom modules should use IDs above 1000.
+     * Permissions in custom modules should use string IDs: "modulealias.permission"
      */
     const PERM_DELETE_CONVERSATIONS = 1;
     const PERM_EDIT_CONVERSATIONS   = 2;
@@ -335,12 +335,23 @@ class User extends Authenticatable
         if ($this->isAdmin()) {
             return Mailbox::pluck('id')->toArray();
         } else {
-            return $this->mailboxes()->pluck('mailboxes.id')->toArray();
+            $mailboxes = $this->mailboxes()->pluck('mailboxes.meta', 'mailboxes.id');
+            // Exclude archived mailboxes.
+            return $mailboxes->filter(function ($meta) {
+                $meta = json_decode($meta, true);
+                if (!isset($meta[Mailbox::META_STATE])) {
+                    return true;
+                }
+                return $meta[Mailbox::META_STATE] == Mailbox::STATE_ACTIVE;
+            })->keys()->toArray();
         }
     }
 
     public function hasAccessToMailbox($mailbox_id)
     {
+        if ($this->isAdmin()) {
+            return true;
+        }
         $ids = $this->mailboxesIdsCanView();
         return in_array($mailbox_id, $ids);
     }

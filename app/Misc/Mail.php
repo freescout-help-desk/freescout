@@ -42,6 +42,11 @@ class Mail
     const MAIL_DRIVER_SMTP = 'smtp';
 
     /**
+     * Refresh OAuth access token if it expires within this number of seconds.
+     */
+    const OAUTH_TOKEN_REFRESH_MARGIN = 300;
+
+    /**
      * Encryptions.
      */
     const MAIL_ENCRYPTION_NONE = '';
@@ -171,7 +176,7 @@ class Mail
 
             // Refresh Access Token.
             if ($oauth) {
-                if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
+                if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) - self::OAUTH_TOKEN_REFRESH_MARGIN < time()) {
                     // Try to get an access token (using the authorization code grant)
                     $token_data = \MailHelper::oauthGetAccessToken($mailbox->oauthGetParam('provider'), [
                         'client_id' => $mailbox->getOutOauthClientId(),
@@ -811,7 +816,9 @@ class Mail
 
         // Refresh Access Token.
         if ($oauth) {
-            if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in')) < time()) {
+            // Refresh the token if it has expired or is going to expire soon.
+            // https://github.com/freescout-help-desk/freescout/issues/5711
+            if ((strtotime($mailbox->oauthGetParam('issued_on')) + (int)$mailbox->oauthGetParam('expires_in') - self::OAUTH_TOKEN_REFRESH_MARGIN) < time()) {
                 // Try to get an access token (using the authorization code grant)
                 $token_data = \MailHelper::oauthGetAccessToken($mailbox->oauthGetParam('provider'), [
                     'client_id' => $mailbox->getInOauthClientId(),

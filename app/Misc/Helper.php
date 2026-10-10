@@ -1000,7 +1000,7 @@ class Helper
         $contents = self::getRemoteFileContents($url);
 
         if (!$contents) {
-            \Helper::logException($e, 'Error downloading a remote file ('.$url.'): ');
+            \Log::error('Error downloading a remote file ('.$url.'): empty response');
             return false;
         }
 
@@ -1805,6 +1805,14 @@ class Helper
         return (int)$request->cookie('in_app');
     }
 
+    public static function isAndroid($request = null)
+    {
+        if (!$request) {
+            $request = app('request');
+        }
+        return stripos($request->server('HTTP_USER_AGENT') ?? '', 'Android') !== false;
+    }
+
     /**
      * Customers list view mode: cards (default) or table.
      * The cookie is set from JS (see setCustomersView() in main.js).
@@ -2376,9 +2384,12 @@ class Helper
     // Get next redicred URL and response body.
     public static function curlGetNextRedirect($url, $throw_exception = false, $ch = null)
     {
+        $close_handle = false;
+
         if (!$ch) {
             $ch = curl_init();
             \Helper::setCurlDefaultOptions($ch);
+            $close_handle = true;
         } else {
             //curl_setopt($ch, CURLOPT_TIMEOUT, 180);
         }
@@ -2425,7 +2436,7 @@ class Helper
         }
         //}
 
-        if (PHP_VERSION_ID < 80000) {
+        if ($close_handle && PHP_VERSION_ID < 80000) {
             \curl_close($ch);
         }
 

@@ -523,8 +523,8 @@ label.radio {
     cursor: pointer;
 }
 select.form-control {
-    height: 28px;
-    line-height: 28px;
+    height: 30px;
+    line-height: 30px;
 }
 .input-sized-xs {
     width: 87px;
@@ -532,15 +532,17 @@ select.form-control {
 .input-sized-sm {
     width: 187px;
 }
-.input-sized {
-    width: 270px;
-}
+.input-sized,
 .input-sized-lg {
     width: 320px;
     max-width: 100%;
 }
 .control-label {
     font-size: 13.4px;
+    color: #5d6c79;
+}
+.has-error .control-label {
+    color: #a94442;
 }
 .controls>.checkbox:first-child,
 .controls>.radio:first-child {
@@ -562,7 +564,8 @@ select.form-control {
     position: relative;
 }
 .input-group-btn .btn {
-    height: 28px;
+    height: 30px;
+    line-height: 28px;
 }
 .btn-sidebar {
     margin: 8px 0 0 20px;
@@ -622,6 +625,7 @@ select.form-control {
 .has-error .form-control.parsley-exclude {
     border-color: #ccc;
 }
+.has-error .select2-container--default .select2-selection--single,
 .has-error .select2-container--default .select2-selection--multiple,
 .has-error .select2-container--default.select2-container--focus .select2-selection--multiple {
     border-color: #a94442;
@@ -635,6 +639,9 @@ select.form-control {
 }
 .btn .glyphicon {
     top: 2px;
+}
+select.input-md {
+    height: 38px;
 }
 select.input-lg {
     height: 38px;
@@ -657,6 +664,7 @@ select[multiple].input-md {
     padding: 3px 9px;
     font-size: 12px;
     line-height: 20px;
+    height: 30px;
     border-radius: 3px;
 }
 .form-help {
@@ -720,9 +728,29 @@ select[multiple].input-md {
 .input-group .input-group-btn {
     vertical-align: top;
 }
+.btn {
+    border-radius: 6px;
+}
+.btn-square {
+    border-radius: 0 !important;
+}
 @media (min-width: 435px) {
+    .input-sized,
     .input-sized-lg {
         width: 387px;
+    }
+}
+@media (min-width: 768px) {
+    .input-sized,
+    .input-sized-lg {
+        width: 100%;
+        max-width: 400px;
+    }
+    /* .input-group is a table, so percent width is unreliable. */
+    .input-group.input-sized,
+    .input-group.input-sized-lg {
+        width: 400px;
+        max-width: 100%;
     }
 }
 
@@ -1062,6 +1090,7 @@ https://github.com/freescout-help-desk/freescout/issues/4354
     font-size: 14px;
     line-height: 18px;
     height: 30px;
+    padding: 5px 10px;
 }
 .note-actions {
     float: right;
@@ -1107,7 +1136,7 @@ https://github.com/freescout-help-desk/freescout/issues/4354
     margin-bottom: -1px;
 }
 .btn-group-send .btn {
-    height: 38px;
+    height: 36px;
 }
 .btn-send-menu {
     padding-left: 8px;
@@ -1246,8 +1275,9 @@ https://github.com/freescout-help-desk/freescout/issues/4354
 }
 .customer-name {
     color: #2a3b47;
-    font-size: 17px;
-    line-height: 21px;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 26px;
 }
 .customer-name:hover,
 .customer-name:focus {
@@ -1332,6 +1362,11 @@ https://github.com/freescout-help-desk/freescout/issues/4354
     margin-top: 9px;
     color: #93a1af;
     word-wrap: break-word;
+}
+.customer-extra .customer-section {
+    margin-top: 5px;
+    padding-top: 4px;
+    border-top: 1px solid #eef1f4;
 }
 .customer-divider {
     display: block;
@@ -1535,6 +1570,22 @@ table.table-conversations td.conv-attachment {
 .table-conversations .conv-customer {
     width: 150px;
 }
+/* Only the name is truncated, so the counter always stays visible */
+.conv-customer-line {
+    display: flex;
+    align-items: baseline;
+}
+.conv-customer-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.conv-customer-line .conv-counter {
+    flex-shrink: 0;
+    /* As with inline padding, the padding must not make the line taller */
+    margin-top: -1px;
+    margin-bottom: -1px;
+}
 .table-conversations .conv-spam .conv-customer a {
     color: #93a1af;
 }
@@ -1574,7 +1625,7 @@ table.table-conversations td.conv-attachment {
 .conv-counter {
     background: #97a3ad;
     color: #fff;
-    line-height: 17px;
+    line-height: 14px;
     position: relative;
     padding: 1px 5px;
     margin-left: 2px;
@@ -1589,6 +1640,14 @@ table.table-conversations td.conv-attachment {
     font-size: 14px;
     margin-top: 2px;
     padding-bottom: 8px;
+}
+.table-conversations .conv-owner {
+    width: 160px;
+}
+.table-conversations td.conv-owner a {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .table-conversations .conv-number {
     width: 86px;
@@ -1725,8 +1784,10 @@ button.conv-checkbox-clear {
         height: 80px;
         border-bottom: 1px solid #e3e8eb;
     }
+    /* The mailbox name adds a line (20.1px) to the preview. With 97px the subject's link
+       ended below the row, and its fader whitened the row's bottom border */
     .table.table-conversations.show-mailbox tbody tr {
-        height: 97px;
+        height: 100px;
     }
 
     .table-conversations .conv-attachment-mobile
@@ -1763,8 +1824,13 @@ button.conv-checkbox-clear {
         top: 0;
         margin-left: 10px!important;
     }
+    /* Stretch to the date, leaving room for it */
+    .table.table-conversations td.conv-customer {
+        width: auto;
+        inset-inline-start: 0;
+        inset-inline-end: 110px;
+    }
     .conv-customer a {
-        width: 350px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -1782,6 +1848,27 @@ button.conv-checkbox-clear {
         font-size: 12px!important;
         background-color: transparent!important;
         font-weight: normal;
+    }
+    /* The link's ellipsis truncates the assignee, so it gets the assignee's style */
+    .table-conversations td.conv-customer a {
+        color: #93a1af;
+        font-weight: normal;
+    }
+    .conv-customer-line {
+        display: inline;
+        color: #2a3b47;
+    }
+    .conv-active .conv-customer-line {
+        font-weight: bold;
+    }
+    .conv-spam .conv-customer-line {
+        color: #93a1af;
+    }
+    /* Leave room for the counter and the assignee */
+    .conv-customer-name {
+        display: inline-block;
+        max-width: 60%;
+        vertical-align: top;
     }
     .conv-counter {
         top: -1px;
@@ -1843,11 +1930,6 @@ button.conv-checkbox-clear {
 
     button.conv-checkbox-clear {
         display: block;
-    }
-}
-@media (max-width:700px) {
-    .conv-customer a {
-        width: 250px;
     }
 }
 
@@ -1914,7 +1996,8 @@ button.conv-checkbox-clear {
     border-bottom: 1px solid #e3e8eb;
 }
 .conv-subj-block {
-    padding: 16px 9px 18px 20px;
+    /* The bottom padding leaves room for #conv-viewers under the number when the subject is one line */
+    padding: 16px 9px 24px 20px;
 }
 .conv-following .conv-subjtext > span:before {
     content: "🔔 ";
@@ -1941,16 +2024,11 @@ button.conv-checkbox-clear {
     width: 100%;
 }
 .conv-subjtext {
-    float: left;
-    display: inline-block;
     color: #2a3b47;
     font-weight: 400;
     font-size: 23px;
     line-height: 30px;
     word-wrap: break-word;
-    margin-right: 8px;
-    width: 100%;
-    max-width: 100%;
 }
 .conv-subj-editor,
 .conv-subj-editing > span {
@@ -1959,11 +2037,14 @@ button.conv-checkbox-clear {
 .conv-subj-editing .conv-subj-editor {
     display: table;
 }
+/* Floats in the right padding of .conv-subjwrap (negative margin-right = that padding),
+   so the subject wraps only around the part that does not fit there (a long number, icons added by modules)
+   and keeps 8px away from it */
 .conv-numnav {
-    margin: 0;
-    position: absolute;
+    float: right;
+    margin: 0 -145px 0 8px;
+    position: relative;
     color: #93a1af;
-    right: 0;
     top: 5px;
 }
 .conv-numnav strong {
@@ -2016,6 +2097,7 @@ button.conv-checkbox-clear {
 }
 .conv-info .btn {
     height: 30px;
+    line-height: 28px;
 }
 .conv-info > li {
     display: inline-block;
@@ -2458,33 +2540,34 @@ button.conv-checkbox-clear {
 .thread-content	img {
     max-width: 100%;
 }
-/* Keep aspect ratio when max-width shrinks an image with width/height attributes */
-.thread-content	img[width] {
-    height: auto;
+/* Keep aspect ratio when max-width shrinks an image with width set in attributes or inline style.
+   !important overrides inline height (style="width:13.3in;height:6.6in").
+   Purified styles have no spaces, so "width:" at the start or after ";" does not match max-width. */
+.thread-content	img[width],
+.thread-content	img[style^="width:"],
+.thread-content	img[style*=";width:"] {
+    height: auto !important;
 }
 /* Fit wide tables (e.g. from Outlook) into the thread instead of scrolling it horizontally.
-   overflow-wrap: anywhere lets columns shrink below the longest word when there is no room.
+   Words are not broken: a table that is still wider than the thread because of its longest words
+   (like a long link) scrolls the thread. overflow-wrap: anywhere broke words even when there was room,
+   e.g. in a one-column table of IDs a bit wider than the width set by Outlook.
    Cell widths are reset as Outlook sets arbitrary percentages (like 1.7% for a column with long text),
-   which would squeeze such columns to one letter per line. */
+   which would squeeze such columns to one word per line. */
 .thread-content table {
     max-width: 100%;
 }
 .thread-content td,
 .thread-content th {
-    overflow-wrap: anywhere;
     width: auto !important;
 }
-/* On phones there is no room to fit a table without breaking every word,
+/* On phones a fitted table would have one word per line,
    so the table is scrolled horizontally on its own instead of the whole thread. */
 @media (max-width:700px) {
     .thread-content table {
         display: block;
         overflow-x: auto;
-        width: max-content !important;
-    }
-    .thread-content td,
-    .thread-content th {
-        overflow-wrap: normal;
+        width: auto !important;
     }
 }
 .conv-new #conv-toolbar {
@@ -2748,7 +2831,7 @@ ul.sidebar-block-list {
         padding-right: 90px;
     }
     .conv-subj-block {
-        padding: 16px 2px 12px 13px;
+        padding: 16px 2px 18px 13px;
     }
     .conv-top-block {
         padding: 10px 13px;
@@ -2762,6 +2845,8 @@ ul.sidebar-block-list {
     }
     .conv-numnav {
         top: 0;
+        /* = padding-right of .conv-subjwrap */
+        margin-right: -90px;
     }
     .conv-info .btn-group button.conv-info-val {
         padding-right: 17px;
@@ -2922,8 +3007,11 @@ ul.sidebar-block-list {
         /*font-weight: bold;
         font-size: 18px;*/
     }
-    .customer-section {
+    .customer-section,
+    .customer-extra .customer-section {
         margin-top: 0px;
+        padding-top: 0;
+        border-top: 0;
     }
     .customer-trigger {
         top: 16px;
@@ -2966,6 +3054,12 @@ ul.sidebar-block-list {
     .conv-sidebar-block .panel {
         background-color: #fff;
     }
+    /* Overrides the border and shadow of .panel-group .panel: the collapsed panel is empty
+       and its border made the bottom border of the customer block 3px thick */
+    .conv-sidebar-block .panel-group .panel {
+        border: 0;
+        box-shadow: none;
+    }
     .conv-sidebar-block .panel-group {
         margin: 0;
     }
@@ -2984,6 +3078,17 @@ ul.sidebar-block-list {
     .conv-sidebar-block .collapse.in {
         display: none!important;
         height: 0!important;
+    }
+    /* While animating, Bootstrap replaces .collapse with .collapsing, the rules above don't apply
+       and the block was animated the opposite way: on "close" it grew and only then disappeared,
+       on open it appeared after a delay. Show the final state at once instead:
+       aria-expanded is the state Bootstrap is switching to */
+    .conv-sidebar-block .collapsing[aria-expanded="true"] {
+        display: none!important;
+    }
+    .conv-sidebar-block .collapsing[aria-expanded="false"] {
+        display: block!important;
+        height: auto!important;
     }
     .customer-social-profiles {
         white-space: normal;
@@ -3320,14 +3425,28 @@ ul.sidebar-block-list {
  * Select2
  */
 .select2-container--default .select2-selection--multiple {
-    border-radius: 3px;
-    border: 1px solid #c1cbd4;
+    border-radius: 6px;
+    border: 1px solid #d5dbe0;
 }
 .select2-container--default.select2-container--focus .select2-selection--multiple {
-    border: 1px solid #c1cbd4;
+    border: 1px solid #d5dbe0;
 }
 .select2-dropdown {
-    border: 1px solid #c1cbd4;
+    border: 1px solid #d5dbe0;
+    border-radius: 6px;
+}
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    border-color: #d5dbe0;
+    border-radius: 6px;
+}
+.select2-container .select2-selection--single {
+    height: 30px;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 28px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 28px;
 }
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
     float: right;
@@ -3349,10 +3468,11 @@ ul.sidebar-block-list {
     display: none !important;
 }
 .select2-multi-dropdown .select2-results__option:last-child {
-    border-bottom: 1px solid #c1cbd4;
+    border-bottom: 1px solid #d5dbe0;
 }
 .select2-container--default .select2-selection--single {
-    border-color: rgb(193, 203, 212);
+    border-color: #d5dbe0;
+    border-radius: 6px;
 }
 .select2-selection--single .select2-selection__rendered {
     font-size: 13px;
@@ -3368,14 +3488,41 @@ ul.sidebar-block-list {
     line-height: 17px;
 }
 .select2-container .select2-selection--multiple {
-    min-height: auto;
+    min-height: 30px;
 }
 .dropdown-menu .select2-selection__choice__remove {
     font-size: 13.4px;
 }
-.input-group .select2:nth-child(2) .select2-selection {
+.input-group > .select2-container:not(:last-child) .select2-selection {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+}
+.input-group > .input-group-addon + .select2-container .select2-selection,
+.input-group > .input-group-btn + .select2-container .select2-selection,
+.input-group > .form-control + .select2-container .select2-selection {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+/* .input-md applied to select2 (class on the <select> or on the container). */
+.input-md + .select2-container .select2-selection--single,
+.select2-container.input-md .select2-selection--single {
+    height: 38px;
+}
+.input-md + .select2-container--default .select2-selection--single .select2-selection__rendered,
+.select2-container--default.input-md .select2-selection--single .select2-selection__rendered {
+    line-height: 36px;
+}
+.input-md + .select2-container--default .select2-selection--single .select2-selection__arrow,
+.select2-container--default.input-md .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+.input-md + .select2-container .select2-selection--multiple,
+.select2-container.input-md .select2-selection--multiple {
+    min-height: 38px;
+}
+.input-md + .select2-container .select2-selection--multiple .select2-selection__rendered,
+.select2-container.input-md .select2-selection--multiple .select2-selection__rendered {
+    padding-top: 5px;
 }
 /*.select2-with-loader .select2-selection__rendered {
     padding-right: 30px;
@@ -3688,62 +3835,101 @@ ul.sidebar-block-list {
 .customers-view-switch:hover {
     color: #333;
 }
-.customers-table {
+.customers-list {
+    --customers-cols: minmax(0, 34fr) minmax(0, 30fr) minmax(0, 16fr) minmax(0, 20fr);
+    display: flex;
+    flex-direction: column;
     background-color: #fff;
-    /* Fixed layout: long values can not stretch the table, they are truncated. */
-    table-layout: fixed;
-    width: 100%;
 }
-.customers-table-col-name {
-    width: 34%;
+.customers-list-head,
+.customers-list-row {
+    display: grid;
+    grid-template-columns: var(--customers-cols);
+    align-items: center;
+    column-gap: 12px;
+    padding: 0 16px;
 }
-.customers-table-col-email {
-    width: 30%;
-}
-.customers-table-col-phone {
-    width: 16%;
-}
-.customers-table-col-company {
-    width: 20%;
-}
-.customers-table > thead > tr > th,
-.customers-table > tbody > tr > td {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.customers-table > thead > tr > th {
+.customers-list-head {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ddd;
     color: #93a1af;
-    font-weight: normal;
-    border-bottom-width: 1px;
 }
-.customers-table > tbody > tr > td {
-    vertical-align: middle;
-}
-.customers-table-name > a {
+.customers-list-row,
+.customers-list-row:hover,
+.customers-list-row:focus {
     color: #2a3b47;
-    display: block;
+    text-decoration: none;
+}
+.customers-list-row {
+    min-height: 48px;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    cursor: pointer;
+}
+.customers-list-head + .customers-list-row {
+    border-top: 0;
+}
+.customers-list-row:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+.customers-list-row:hover,
+.customers-list-row:focus {
+    background-color: #f5f5f5;
+    outline: none;
+}
+.customers-list-cell {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.customers-table-photo {
-    width: 28px;
-    height: 28px;
-    margin-right: 6px;
+.customers-list-row .customers-list-cell {
+    padding: 8px 0;
+    color: #5b6b79;
+}
+.customers-list-col-name {
+    display: flex;
+    align-items: center;
+}
+.customers-list-row .customers-list-col-name {
+    color: #2a3b47;
+}
+.customers-list-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.customers-list-photo {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
     border-radius: 50%;
     object-fit: cover;
 }
+.customers-list-company {
+    display: inline-block;
+    max-width: 100%;
+    padding: 2px 10px;
+    border-radius: 10px;
+    background-color: #eef2f6;
+    color: #5b6b79;
+    font-size: 12px;
+    line-height: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
+}
 @media (max-width:582px) {
-    .customers-table > thead > tr > th:nth-child(n+3),
-    .customers-table > tbody > tr > td:nth-child(n+3) {
+    .customers-list {
+        --customers-cols: minmax(0, 55fr) minmax(0, 45fr);
+    }
+    .customers-list-col-phone,
+    .customers-list-col-company {
         display: none;
-    }
-    .customers-table-col-name {
-        width: 55%;
-    }
-    .customers-table-col-email {
-        width: 45%;
     }
 }
 /*.customers-pager a:hover,
@@ -4743,6 +4929,4 @@ a.disabled:focus {
     }
 }
 
-.btn {
-    border-radius: 5px;
-}
+
