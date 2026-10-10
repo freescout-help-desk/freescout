@@ -6001,7 +6001,7 @@ button.close {
           background-clip: padding-box;
   border: 1px solid #999;
   border: 1px solid rgba(0, 0, 0, .2);
-  border-radius: 6px;
+  border-radius: 10px;
   outline: 0;
   -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
           box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
@@ -6025,7 +6025,8 @@ button.close {
 }
 .modal-header {
   padding: 15px;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid #eef1f4;
+  border-radius: 9px 9px 0 0;
 }
 .modal-header .close {
   margin-top: -2px;
@@ -6043,6 +6044,7 @@ button.close {
   padding: 15px;
   text-align: right;
   border-top: 1px solid #e5e5e5;
+  border-radius: 0 0 9px 9px;
 }
 .modal-footer .btn + .btn {
   margin-bottom: 0;
