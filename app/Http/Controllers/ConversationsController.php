@@ -2208,19 +2208,35 @@ class ConversationsController extends Controller
                 }
 
                 // Check access to the mailbox.
-                $folder = Folder::find($request->folder_id ?? '');
+                $mailbox = Mailbox::find($request->mailbox_id ?? '');
+                $folder = null;
 
-                if (!$folder) {
-                    $response['msg'] = __('Folder not found');
-                    return \Response::json($response);
-                }
-                if (!in_array($folder->type, [Folder::TYPE_SPAM, Folder::TYPE_DELETED])) {
-                    $response['msg'] = __('Folder not found');
-                    return \Response::json($response);
-                }
-                if (!$folder->mailbox->userHasAccess($user->id)) {
-                    $response['msg'] = __('Not enough permissions');
-                    return \Response::json($response);
+                if ($mailbox) {
+                    $folder = Folder::find($request->folder_id ?? '');
+
+                    if (!$folder || $folder->mailbox_id != $mailbox->id
+                        || !in_array($folder->type, [Folder::TYPE_SPAM, Folder::TYPE_DELETED])
+                    ) {
+                        $response['msg'] = __('Folder not found');
+                        return \Response::json($response);
+                    }
+                    if (!$mailbox->userHasAccess($user->id)) {
+                        $response['msg'] = __('Not enough permissions');
+                        return \Response::json($response);
+                    }
+                } else {
+                    // Virtual mailbox (for example Global Mailbox module):
+                    // folder_id contains folder type and folders of this type
+                    // are emptied by the module in all mailboxes via the hook below.
+                    if (!in_array($request->folder_id, [Folder::TYPE_SPAM, Folder::TYPE_DELETED])) {
+                        $response['msg'] = __('Folder not found');
+                        return \Response::json($response);
+                    }
+                    // The module can not limit deletion to assigned conversations.
+                    if (!$user->isAdmin() && $user->canSeeOnlyAssignedConversations()) {
+                        $response['msg'] = __('Not enough permissions');
+                        return \Response::json($response);
+                    }
                 }
 
                 $response = \Eventy::filter('conversations.empty_folder', $response, 
@@ -2229,6 +2245,11 @@ class ConversationsController extends Controller
                 );
 
                 if (empty($response['processed'])) {
+
+                    if (!$folder) {
+                        $response['msg'] = __('Folder not found');
+                        return \Response::json($response);
+                    }
 
                     if (!$user->isAdmin() && $folder->mailbox && !$folder->mailbox->userHasAccess($user->id)) {
                         $response['msg'] = __('Not enough permissions');
