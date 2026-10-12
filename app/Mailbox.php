@@ -396,14 +396,18 @@ class Mailbox extends Model
     /**
      * Get folders available for the current user.
      */
-    public function getAssesibleFolders()
+    public function getAssesibleFolders($user = null)
     {
+        if (!$user) {
+            $user = auth()->user();
+        }
+
         $folders = $this->folders()
-            ->where(function ($query) {
+            ->where(function ($query) use ($user) {
                 $query->whereIn('type', \Eventy::filter('mailbox.folders.public_types', Folder::$public_types))
-                    ->orWhere(function ($query2) {
+                    ->orWhere(function ($query2) use ($user) {
                         $query2->whereIn('type', Folder::$personal_types);
-                        $query2->where(['user_id' => auth()->user()->id]);
+                        $query2->where(['user_id' => $user->id]);
                     });
             })
             ->orderBy('type')
@@ -578,6 +582,8 @@ class Mailbox extends Model
             } else {
                 $user = User::find($user_id);
             }
+        } else {
+            $user_id = $user->id;
         }
         if (!$user->isAdmin() && !$this->isActive()) {
             return false;
