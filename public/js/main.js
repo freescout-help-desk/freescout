@@ -34,6 +34,7 @@ var FS_STATUS_CLOSED = 3;
 var poly;
 // List of funcions preparin data for polycast receive request
 var poly_data_closures = [];
+var conv_list_polling_set = false;
 
 var fs_select2_config = {
 	//containerCssClass: "select2-multi-container", // select2-with-loader
@@ -1480,6 +1481,7 @@ function initConversation()
 		maybeShowDraft();
 		//processLinks();
 		initConvSettings();
+		initConvCol();
 
 		// Show reply form in chat mode
 		if (is_chat_mode && !$('.conv-action.inactive:first').length) {
@@ -3854,6 +3856,11 @@ function polycastInit()
 			} else {
 				data.replying = 0;
 			}
+			if (isChatMode()) {
+				data.chat_mode = 1;
+			} else {
+				data.chat_mode = 0;
+			}
 			if (!fs_prev_focus && document.hasFocus()) {
 				data.conversation_view_focus = 1;
 			}
@@ -4110,7 +4117,7 @@ function polycastInit()
 		    }
 
 		    if (typeof(data.folders_html) != "undefined" && data.folders_html) {
-		    	var folder_id = el_folders.children('li.active:first').attr('data-folder_id');
+		    	var folder_id = getFolderId();
 		    	el_folders.html(data.folders_html);
 		    	var active_folder = el_folders.children('li[data-folder_id="'+folder_id+'"]');
 		    	active_folder.addClass('active');
@@ -4164,11 +4171,16 @@ function polycastInit()
 		    	var active_chat = chats.children('li[data-chat_id="'+chat_id+'"]');
 		    	active_chat.addClass('active');
 
-		    	initChats();
+		    	initChatsLoadMore();
 		    }
 	    });
 
-	    initChats();
+	    initChatsLoadMore();
+	}
+
+	// Refresh conv list.
+    if (isConvListVisible()) {
+    	initConvListPolling();
 	}
 
     // at any point you can disconnect
@@ -4176,6 +4188,52 @@ function polycastInit()
 
     // and when you disconnect, you can again at any point reconnect
     //poly.reconnect();
+}
+
+// poly is globally available
+function initConvListPolling()
+{
+	if (conv_list_polling_set) {
+		return;
+	}
+
+	var conv_list = $('#conv-list-col-items');
+
+	var folder_id = getFolderId();
+
+	if (folder_id) {
+		conv_list_polling_set = true;
+
+	    var channel = poly.subscribe('conv_list.'+folder_id);
+
+	    channel.on('App\\Events\\RealtimeConvList', function(data, event) {
+	        if (!data) {
+				return;
+		    }
+
+	        if (typeof(data.folder_id) == "undefined" || data.folder_id != folder_id) {
+	        	return;
+		    }
+
+		    // Show conversations
+		    if (typeof(data.list_html) != "undefined" && data.list_html) {
+		    	
+		    	var active_id = conv_list.children('li.active:first').attr('data-chat_id');
+
+		    	conv_list.html(data.list_html);
+
+		    	var active_item = conv_list.children('li[data-chat_id="'+active_id+'"]');
+		    	active_item.addClass('active');
+
+		    	initConvListLoadMore();
+		    }
+	    });
+	}
+}
+
+function getFolderId()
+{
+	return $('#folders').children('li.active:first').attr('data-folder_id');
 }
 
 function playAudioNotification(data)
@@ -4244,7 +4302,7 @@ function playAudio()
     });
 }
 
-function initChats()
+function initChatsLoadMore()
 {
 	$('.chats-load-more').click(function(e) {
 		var button = $(this);
@@ -4262,7 +4320,7 @@ function initChats()
 				if (isAjaxSuccess(response)) {
 					button.parent().before(response.html);
 					button.parent().remove();
-					initChats();
+					initChatsLoadMore();
 				} else {
 					showAjaxResult(response);
 				}
@@ -4275,9 +4333,94 @@ function initChats()
 	});
 }
 
+// Conversations list column (between folders and the conversation) on the conversation page.
+function initConvCol()
+{
+	var wrapper = $('#conv-list-2col');
+
+	if (!wrapper.length) {
+		return;
+	}
+
+	// Open conv list
+	$('#conv-list-open').click(function(e) {
+		setCookie('conv_col', '1', {samesite: 'Lax'});
+		wrapper.removeClass('hidden');
+		$('#conv-list-open').addClass('hidden');
+		if (!$(this).hasClass('loaded')) {
+			$(this).addClass('loaded');
+			convListLoad();
+		}
+		initConvListPolling();
+	});
+
+	// Hide conv list
+	$('#conv-list-col-toggle').click(function(e) {
+		deleteCookie('conv_col');
+		wrapper.addClass('hidden');
+		$('#conv-list-open').removeClass('hidden');
+	});
+
+	// Load conversations
+	if (!wrapper.hasClass('hidden')) {
+		convListLoad();
+	}
+}
+
+function convListLoad()
+{
+	var col = $('#conv-list-col');
+	var list = $('#conv-list-col-items');
+	var button = $('.chats-load-more:first');
+
+	if (button.length) {
+		button.button('loading');
+	}
+	
+	fsAjax(
+		{
+			action: 'conv_list',
+			mailbox_id: col.attr('data-mailbox_id'),
+			folder_id: col.attr('data-folder_id'),
+			conversation_id: col.attr('data-conversation_id'),
+			offset: $('#conv-list-col-items .chat-item').length - 1
+		},
+		laroute.route('conversations.ajax'),
+		function(response) {
+			if (isAjaxSuccess(response)) {
+				list.append(response.html);
+				list.find('[data-toggle="tooltip"]').tooltip();
+				button.parent().remove();
+				/*var active = list.children('li.active:first');
+				if (active.length && page == 1) {
+					list[0].scrollTop = Math.max(0, active[0].offsetTop - 100);
+				}*/
+				button.button('reset');
+
+				initConvListLoadMore();
+			} else {
+				showAjaxResult(response);
+			}
+		}, true
+	);
+}
+
+function initConvListLoadMore()
+{
+	$('#conv-list-col-items .chats-load-more:first').off('click').on('click', function(e) {
+		convListLoad();
+		e.preventDefault();
+	});
+}
+
 function convIsChat()
 {
 	return $('#conv-layout').hasClass('conv-type-chat');
+}
+
+function isConvListVisible()
+{
+	return getCookie('conv_col');
 }
 
 function convGetUserId()

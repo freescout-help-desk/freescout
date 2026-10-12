@@ -2461,6 +2461,36 @@ class ConversationsController extends Controller
                 }
                 break;
 
+            case 'conv_list':
+                $mailbox = Mailbox::find($request->mailbox_id);
+                $folder = null;
+
+                if (!$mailbox) {
+                    $response['msg'] = __('Mailbox not found');
+                } elseif (!$mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Action not authorized');
+                }
+
+                if (!$response['msg']) {
+                    $folder = $mailbox->getAssesibleFolders()->where('id', (int)$request->folder_id)->first();
+                    if (!$folder || !$user->can('view', $folder)) {
+                        $response['msg'] = __('Not enough permissions');
+                    }
+                }
+
+                if (!$response['msg']) {
+                    $conversations = Conversation::getConvList($user, $folder, (int)$request->offset);
+
+                    $response['html'] = \View::make('conversations/partials/conv_list')->with([
+                            //'folder'                  => $folder,
+                            'conversations'           => $conversations,
+                            'current_conversation_id' => (int)$request->conversation_id,
+                            'list_size' => Conversation::DEFAULT_LIST_SIZE,
+                        ])->render();
+                    $response['status'] = 'success';
+                }
+                break;
+
             case 'retry_send':
                 $thread = Thread::find($request->thread_id);
 
@@ -2944,10 +2974,11 @@ class ConversationsController extends Controller
             $response['msg'] = __('Not enough permissions');
         }
 
+        // Check access to the folder already includes checking access to mailbox.
         // We should not use mailbox_id from the request, as it can be changed.
-        if (!$response['msg'] && !$user->can('view', $folder->mailbox)) {
-            $response['msg'] = __('Not enough permissions');
-        }
+        // if (!$response['msg'] && !$user->can('view', $folder->mailbox)) {
+        //     $response['msg'] = __('Not enough permissions');
+        // }
 
         if (!$response['msg']) {
             $query_conversations = Conversation::getQueryByFolder($folder, $user->id);

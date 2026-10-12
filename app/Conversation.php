@@ -2511,7 +2511,10 @@ class Conversation extends Model
     {
         \App\Events\RealtimeConvNewThread::dispatchSelf($thread);
         \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id, $thread->id, (int)$conversation->isChat(), $thread->state);
+        // Alerts about new conversations in a mailbox.
         \App\Events\RealtimeChat::dispatchSelf($conversation->mailbox_id, $thread->id, (int)$conversation->isChat());
+        // Alerts about new conversations in a folder.
+        \App\Events\RealtimeConvList::dispatchSelf($conversation->folder_id, $thread->id);
     }
 
     public static function getConvTableSorting($request = null)
@@ -2777,6 +2780,29 @@ class Conversation extends Model
         }
 
         return $chats;
+    }
+
+    // Get conversation list for Conversations column.
+    public static function getConvList($user, $folder, $offset = 0)
+    {
+        $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
+        $folder->queryAddOrderBy($query_conversations);
+
+        // Check access.
+        if ($user->canSeeOnlyAssignedConversations()) {
+            $query_conversations->where('conversations.user_id', $user->id);
+        }
+        // Not using standard pagination allow to avoid extra count() SQL query.
+        $conversations = $query_conversations
+            ->offset($offset)
+            ->limit(Conversation::DEFAULT_LIST_SIZE+1)
+            ->get();
+
+        if (count($conversations)) {
+            Conversation::loadCustomers($conversations);
+        }
+
+        return $conversations;
     }
 
     public static function queryContainsStr($query_str, $substr)

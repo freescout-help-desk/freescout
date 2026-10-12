@@ -2030,6 +2030,11 @@ class Helper
         return (bool)app('request')->input('print');
     }
 
+    public static function isConvListVisible()
+    {
+        return (int)request()->cookie('conv_col');
+    }
+
     public static function isDev()
     {
         return config('app.env') != 'production';
