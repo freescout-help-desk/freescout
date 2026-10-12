@@ -2485,7 +2485,6 @@ class ConversationsController extends Controller
                             //'folder'                  => $folder,
                             'conversations'           => $conversations,
                             'current_conversation_id' => (int)$request->conversation_id,
-                            'list_size' => Conversation::DEFAULT_LIST_SIZE,
                         ])->render();
                     $response['status'] = 'success';
                 }

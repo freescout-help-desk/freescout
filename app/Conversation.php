@@ -204,6 +204,11 @@ class Conversation extends Model
     const DEFAULT_LIST_SIZE = 50;
 
     /**
+     * Default size of the conversations list.
+     */
+    const CONV_LIST_SIZE = 15;
+
+    /**
      * Default size of the chats list.
      */
     const CHATS_LIST_SIZE = 50;
@@ -2795,7 +2800,7 @@ class Conversation extends Model
         // Not using standard pagination allow to avoid extra count() SQL query.
         $conversations = $query_conversations
             ->offset($offset)
-            ->limit(Conversation::DEFAULT_LIST_SIZE+1)
+            ->limit(Conversation::CONV_LIST_SIZE+1)
             ->get();
 
         if (count($conversations)) {

@@ -7,7 +7,7 @@
         }
     }
     if (!isset($list_size)) {
-        $list_size = App\Conversation::DEFAULT_LIST_SIZE;
+        $list_size = App\Conversation::CONV_LIST_SIZE;
     }
 @endphp
 @foreach ($conversations as $conv_i => $conv)
@@ -16,8 +16,15 @@
             <a href="{{ $conv->url(null, null, ['chat_mode' => 1]) }}">
                 <strong class="folder-name">{{ $conv->customer ? $conv->customer->getFullName(true) : '' }}</strong>
                 <span class="active-count pull-right small" data-toggle="tooltip" title="{{ App\User::dateFormat($conv->last_reply_at) }}">{{ \App\User::dateDiffForHumans($conv->last_reply_at) }}</span>
-                <br/>
-                <span class="chat-preview">{{ $conv->preview }}</span>
+                @if (!empty($chat_mode))
+                    <br/>
+                    <span class="chat-preview">{{ $conv->preview }}</span>
+                @else
+                    <div class="conv-list-text">
+                        <span class="chat-preview">{{ $conv->getSubject() }}</span><br/>
+                        <span class="conv-list-preview">{{ $conv->preview }}</span>
+                    </div>
+                @endif
                 
                 @if (!empty($chat_mode))
                     <br/>

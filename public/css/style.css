@@ -342,6 +342,15 @@ body.user-is-guest {
 #conv-list-col-items > li > a {
     padding-left: 22px;
 }
+.conv-list-text {
+    margin-top: 2px;
+}
+.conv-list-preview {
+    max-width: 217px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 @media (max-width:991px) {
     .layout-2col {
         display: block;
@@ -4957,6 +4966,7 @@ a.disabled:focus {
 }
 .chats li {
     border-bottom: 1px solid #e3e8eb;
+    background-color: #fff;
 }
 .chats li.active {
     border-bottom: 0;
