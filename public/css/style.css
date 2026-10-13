@@ -271,12 +271,40 @@ body.user-is-guest {
     border-left: 1px solid #d6dde3;
     position: relative;
 }
+@media (min-width:992px) {
+    #conv-list-2col {
+        min-height: 100vh;
+    }
+}
+/* The list column does not take part in the row height: it fills the
+   column (down to the footer) and the list scrolls inside it, so "Load more"
+   never pushes the footer down. */
 #conv-list-col {
     position: sticky;
     top: 0;
-    max-height: calc(100vh - 54px);
+    height: calc(100vh - 54px);
     display: flex;
     flex-direction: column;
+    background:
+        linear-gradient(100deg,
+            rgba(255, 255, 255, 0) 30%,
+            rgba(255, 255, 255, .85) 50%,
+            rgba(255, 255, 255, 0) 70%) 120% 0 / 200% 100% no-repeat,
+        url('../../img/conv-list.png') 0 54px repeat-y #fff;
+    animation: bg-shimmer 2s linear infinite;
+}
+@keyframes bg-shimmer {
+    from { background-position: 120% 0, 0 54px; }
+    to   { background-position: -20% 0, 0 54px; }
+}
+#conv-list-col.loaded {
+    position: absolute;
+    height: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: none;
+    animation: none;
 }
 #conv-list-col-header {
     display: flex;
@@ -311,14 +339,9 @@ body.user-is-guest {
     max-width: 250px;
 }
 #conv-list-col-items {
-    background:
-        linear-gradient(100deg,
-            rgba(255, 255, 255, 0) 30%,
-            rgba(255, 255, 255, .85) 50%,
-            rgba(255, 255, 255, 0) 70%) 120% 0 / 200% 100% no-repeat,
-        url('../../img/conv-list.png') 0 0 repeat-y #fff;
-    animation: bg-shimmer 2s linear infinite;
     height: 100vh;
+    height: auto;
+    min-height: 0;
     margin-right: 0;
     flex: 1 1 auto;
     overflow-y: auto;
@@ -330,15 +353,6 @@ body.user-is-guest {
     min-width: 0;
     margin-bottom: 0;
 }
-@keyframes bg-shimmer {
-    from { background-position: 120% 0, 0 0; }
-    to   { background-position: -20% 0, 0 0; }
-}
-#conv-list-col-items.loaded {
-    background: none;
-    animation: none;
-    height: auto;
-}
 #conv-list-col-items > li > a {
     padding-left: 22px;
 }
@@ -346,10 +360,11 @@ body.user-is-guest {
     margin-top: 2px;
 }
 .conv-list-preview {
-    max-width: 217px;
+    max-width: 258px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: inline-block;
 }
 @media (max-width:991px) {
     .layout-2col {
@@ -4966,7 +4981,6 @@ a.disabled:focus {
 }
 .chats li {
     border-bottom: 1px solid #e3e8eb;
-    background-color: #fff;
 }
 .chats li.active {
     border-bottom: 0;

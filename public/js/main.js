@@ -4370,7 +4370,7 @@ function initConvCol()
 function convListLoad()
 {
 	var col = $('#conv-list-col');
-	var list = $('#conv-list-col-items');
+	var conv_list = $('#conv-list-col-items');
 	var button = $('.chats-load-more:first');
 
 	if (button.length) {
@@ -4388,14 +4388,10 @@ function convListLoad()
 		laroute.route('conversations.ajax'),
 		function(response) {
 			if (isAjaxSuccess(response)) {
-				list.append(response.html);
-				list.find('[data-toggle="tooltip"]').tooltip();
+				conv_list.append(response.html);
+				conv_list.find('[data-toggle="tooltip"]').tooltip();
 				button.parent().remove();
-				/*var active = list.children('li.active:first');
-				if (active.length && page == 1) {
-					list[0].scrollTop = Math.max(0, active[0].offsetTop - 100);
-				}*/
-				button.button('reset');
+				conv_list.parent().addClass('loaded');
 
 				initConvListLoadMore();
 			} else {
