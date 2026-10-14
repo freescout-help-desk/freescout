@@ -3124,6 +3124,9 @@ ul.sidebar-block-list {
     .customer-name {
         float: left;
         margin-right: 7px;
+        /* Same height as the email line next to the name: keeps them on one line
+           and makes company, job title, etc. start below the name */
+        line-height: 21px;
         /*font-weight: bold;
         font-size: 18px;*/
     }
