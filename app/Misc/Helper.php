@@ -2381,6 +2381,11 @@ class Helper
             return $url;
         }
 
+        // Skip host with port (http://127.0.0.1:7700)
+        if (preg_match('/^https?:\/\/[^\/?#:]+:\d+([\/?#]|$)/', $url)) {
+            return $url;
+        }
+
         $pattern = '/^(https?:\/\/)([^\/?#]+:[^\/?#]+)([\/?#]+|$)/';
 
         return preg_replace($pattern, '$1[$2]$3', $url);
