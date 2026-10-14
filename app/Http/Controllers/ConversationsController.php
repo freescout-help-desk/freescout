@@ -231,6 +231,9 @@ class ConversationsController extends Controller
         $prev_conversations = [];
         if ($customer) {
             $prev_conversations = $mailbox->conversations()
+                                    ->when($user->canSeeOnlyAssignedConversations(), function ($query) use ($user) {
+                                        return $query->where('conversations.user_id', $user->id);
+                                    })
                                     ->where('customer_id', $customer->id)
                                     ->where('id', '<>', $conversation->id)
                                     ->where('status', '!=', Conversation::STATUS_SPAM)
@@ -2538,6 +2541,9 @@ class ConversationsController extends Controller
                         $conversation_id = (int)$request->conversation_id ?? 0;
 
                         $prev_conversations = $mailbox->conversations()
+                            ->when($user->canSeeOnlyAssignedConversations(), function ($query) use ($user) {
+                                return $query->where('conversations.user_id', $user->id);
+                            })
                             ->where('customer_id', $customer->id)
                             ->where('id', '<>', $conversation_id)
                             ->where('status', '!=', Conversation::STATUS_SPAM)
@@ -2758,6 +2764,9 @@ class ConversationsController extends Controller
 
         if ($conversation->customer_id) {
             $prev_conversations = $conversation->mailbox->conversations()
+                                    ->when($user->canSeeOnlyAssignedConversations(), function ($query) use ($user) {
+                                        return $query->where('conversations.user_id', $user->id);
+                                    })
                                     ->where('customer_id', $conversation->customer_id)
                                     ->where('id', '<>', $conversation->id)
                                     ->where('status', '!=', Conversation::STATUS_SPAM)
