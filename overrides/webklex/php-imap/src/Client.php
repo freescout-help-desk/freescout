@@ -411,8 +411,16 @@ class Client {
      * @return $this
      */
     public function disconnect(): Client {
-        if ($this->isConnected() && $this->connection !== false) {
-            $this->connection->logout();
+        // Do not use isConnected() here: it sends NOOP over the socket and on
+        // a dead stream throws "no response" after another full timeout.
+        // logout() itself is safe for dead and already closed streams.
+        // https://github.com/freescout-help-desk/freescout/issues/5724
+        if ($this->connection) {
+            try {
+                $this->connection->logout();
+            } catch (\Throwable $e) {
+                // Nothing to do: the connection is gone anyway.
+            }
         }
         $this->active_folder = null;
 
