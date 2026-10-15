@@ -1988,6 +1988,7 @@ class Helper
         return \DB::connection()->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'pgsql';
     }
 
+    // Case insensitive LIKE for MySQL/MariaDB and PostgreSQL.
     public static function sqlLikeOperator()
     {
         return self::isPgSql() ? 'ilike' : 'like';
