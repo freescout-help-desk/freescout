@@ -503,8 +503,10 @@ class FetchEmails extends Command
             // https://github.com/freescout-help-desk/freescout/issues/5591
             $new_email_with_same_message_id = false;
             if (!$extra && $duplicate_message_id) {
-                // Compare headers
-                if ($duplicate_message_id->headers != $this->headerToStr($message->getHeader())) {
+                if (self::isNewEmailWithSameMessageId(
+                    $duplicate_message_id->headers,
+                    $this->headerToStr($message->getHeader())
+                )) {
                     $new_email_with_same_message_id = true;
                 }
             }
@@ -1937,6 +1939,18 @@ class FetchEmails extends Command
         }
 
         return $attr;
+    }
+
+    /**
+     * The same email may be fetched with different header sets (a copy from the Sent folder has only
+     * the minimal headers), so a different headers string alone does not make it a new email.
+     * It is new only if the Date differs too.
+     */
+    public static function isNewEmailWithSameMessageId($existing_headers, $new_headers)
+    {
+        return $existing_headers != $new_headers
+            && trim(\MailHelper::getHeader($existing_headers, 'Date'))
+                != trim(\MailHelper::getHeader($new_headers, 'Date'));
     }
 
     public function headerToStr($header)
