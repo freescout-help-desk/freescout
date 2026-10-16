@@ -32,6 +32,9 @@
                 @endforeach
             </ul>
         </div>
+        <button type="button" class="btn btn-default conv-merge hidden" title="{{ __("Merge") }}">
+            <span class="glyphicon glyphicon-indent-left"></span>
+        </button>
         @action('bulk_actions.before_delete', $mailbox ?? null)
         @if (Auth::user()->can('delete', new App\Conversation()))
             <button type="button" class="btn btn-default conv-delete" title="{{ __("Delete") }}">
@@ -46,6 +49,18 @@
         <div class="text-larger margin-top-10">{{ __("Delete the conversations?") }}</div>
         <div class="form-group margin-top">
             <button class="btn btn-primary delete-conversation-ok" data-loading-text="{{ __("Deleting") }}…">{{ __("Delete") }}</button>
+            <button class="btn btn-link" data-dismiss="modal">{{ __("Cancel") }}</button>
+        </div>
+    </div>
+</div>
+
+<div id="conversations-bulk-actions-merge-modal" class="hide">
+    <div class="text-center">
+        <div class="text-larger margin-top-10">{{ __("Merge the selected conversations into the oldest one?") }}</div>
+        <div class="margin-top-10 merge-conversation-target"></div>
+        <div class="margin-top-10 text-help"><i class="glyphicon glyphicon-exclamation-sign"></i> {{ __("Merged conversations can not be unmerged.") }}</div>
+        <div class="form-group margin-top">
+            <button class="btn btn-primary merge-conversation-ok" data-loading-text="{{ __("Merge") }}…">{{ __("Merge") }}</button>
             <button class="btn btn-link" data-dismiss="modal">{{ __("Cancel") }}</button>
         </div>
     </div>
