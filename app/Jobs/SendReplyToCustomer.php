@@ -227,8 +227,8 @@ class SendReplyToCustomer implements ShouldQueue
                     $recent[] = $reference;
                 }
 
-                // Append the last.
-                if (!empty($references_array[count($references_array)-1])) {
+                // Append the last (unless it is the first one, already added above).
+                if (count($references_array) > 1 && !empty($references_array[count($references_array)-1])) {
                     $recent[] = $references_array[count($references_array)-1];
                 }
 
