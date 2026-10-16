@@ -136,7 +136,9 @@ class FetchEmails extends Command
             
             try {
                 $debug_log = $this->executeFetch($mailbox, $debug);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
+                // \Throwable: a PHP \Error raised while fetching one mailbox must not stop
+                // fetching the remaining mailboxes.
                 // If mail server starts to block the connection
                 // (when there are many mailboxes for example),
                 // we increase connection sleep time and retry after sleep.
@@ -148,7 +150,7 @@ class FetchEmails extends Command
                     
                     try {
                         $debug_log = $this->executeFetch($mailbox, $debug);
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
                         $successfully = false;
                         $this->logError('Error: '.$e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')').')';
                     }
@@ -367,7 +369,6 @@ class FetchEmails extends Command
                 }
 
                 if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
-                    $errors_count = count($client->getErrors());
                     // Solution for MS mailboxes.
                     // https://github.com/freescout-helpdesk/freescout/issues/176
                     $messages_query = $folder->query()->since(now()->subDays($this->option('days')))->leaveUnread()->setCharset(null);
@@ -1142,14 +1143,16 @@ class FetchEmails extends Command
             } else {
                 $this->logError('Error occurred processing message');
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // \Throwable: a PHP \Error (TypeError etc.) caused by one malformed message
+            // must not stop fetching the remaining messages.
             // The connection may be already closed or timed out (for example when
             // the message is processed in the extra_import loop after disconnect),
             // setSeen() must not break the whole fetching run.
             // https://github.com/freescout-help-desk/freescout/issues/5724
             try {
                 $this->setSeen($message, $mailbox);
-            } catch (\Exception $e_seen) {
+            } catch (\Throwable $e_seen) {
                 $this->logError('Could not mark message as seen: '.$e_seen->getMessage());
             }
             $this->logError(\Helper::formatException($e));
