@@ -392,6 +392,8 @@ $(document).ready(function(){
 	// Floating alerts
 	fsFloatingAlertsInit();
 
+	timezoneChangesInit();
+
 	// Editor
 	(function($) {
 		if (typeof($.summernote) != "undefined") {
@@ -6391,5 +6393,25 @@ function initMergeCustomers()
 				}
 			}
 		});
+	});
+}
+
+function timezoneChangesInit()
+{
+	$('select').has('option[data-tz-changes]').each(function() {
+		var select = $(this);
+		var info = $('<p class="form-help"></p>').insertAfter(select);
+
+		select.on('change', function() {
+			var lines = [];
+			$.each((select.find('option:selected').attr('data-tz-changes') || '').split(';'), function(i, change) {
+				if (change) {
+					change = change.split('|');
+					var date = new Date(change[0] * 1000).toLocaleString(document.documentElement.lang, {timeZone: select.val(), day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'});
+					lines.push(Lang.get(change[1] == '1' ? 'messages.tz_summer_time' : 'messages.tz_winter_time', {date: date}));
+				}
+			});
+			info.text(lines.join(' '));
+		}).trigger('change');
 	});
 }

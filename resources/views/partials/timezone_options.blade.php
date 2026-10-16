@@ -1,61 +1,106 @@
-<option value="Pacific/Samoa" @if ($current_timezone == 'Pacific/Samoa')selected="selected"@endif>(GMT-11:00) Midway Island, Samoa</option>
-<option value="Pacific/Honolulu" @if ($current_timezone == 'Pacific/Honolulu')selected="selected"@endif>(GMT-10:00) Hawaiian/Aleutian Time</option>
-<option value="America/Anchorage" @if ($current_timezone == 'America/Anchorage')selected="selected"@endif>(GMT-08:00) Alaska Time</option>
-<option value="America/Vancouver" @if ($current_timezone == 'America/Vancouver')selected="selected"@endif>(GMT-07:00) Pacific Time (Vancouver)</option>
-<option value="America/Los_Angeles" @if ($current_timezone == 'America/Los_Angeles')selected="selected"@endif>(GMT-07:00) Pacific Time (US)</option>
-<option value="America/Phoenix" @if ($current_timezone == 'America/Phoenix')selected="selected"@endif>(GMT-07:00) Mountain Time (Arizona)</option>
-<option value="America/Denver" @if ($current_timezone == 'America/Denver')selected="selected"@endif>(GMT-06:00) Mountain Time (US)</option>
-<option value="America/Chicago" @if ($current_timezone == 'America/Chicago')selected="selected"@endif>(GMT-05:00) Central Time (US)</option>
-<option value="America/New_York" @if ($current_timezone == 'America/New_York')selected="selected"@endif>(GMT-04:00) Eastern Time (US)</option>
-<option value="--SEPARATOR1--" disabled="disabled" @if ($current_timezone == '--SEPARATOR1--" disabled="disabled')selected="selected"@endif>-------------</option>
-<option value="America/Indiana/Knox" @if ($current_timezone == 'America/Indiana/Knox')selected="selected"@endif>(GMT-05:00) Central Time (Indiana)</option>
-<option value="America/Indiana/Indianapolis" @if ($current_timezone == 'America/Indiana/Indianapolis')selected="selected"@endif>(GMT-04:00) Eastern Time (Indiana)</option>
-<option value="--SEPARATOR2--" disabled="disabled" @if ($current_timezone == '--SEPARATOR2--" disabled="disabled')selected="selected"@endif>-------------</option>
-<option value="America/Regina" @if ($current_timezone == 'America/Regina')selected="selected"@endif>(GMT-06:00) Central Time (Saskatchewan)</option>
-<option value="America/Monterrey" @if ($current_timezone == 'America/Monterrey')selected="selected"@endif>(GMT-05:00) Central Time (Mexico City, Monterey)</option>
-<option value="America/Lima" @if ($current_timezone == 'America/Lima')selected="selected"@endif>(GMT-05:00) UTC/GMT -5 hours</option>
-<option value="America/Caracas" @if ($current_timezone == 'America/Caracas')selected="selected"@endif>(GMT-04:30) Caracas, La Paz</option>
-<option value="America/Manaus" @if ($current_timezone == 'America/Manaus')selected="selected"@endif>(GMT-04:00) Atlantic Time</option>
-<option value="America/Puerto_Rico" @if ($current_timezone == 'America/Puerto_Rico')selected="selected"@endif>(GMT-04:00) Atlantic Time (Puerto Rico)</option>
-<option value="America/Santiago" @if ($current_timezone == 'America/Santiago')selected="selected"@endif>(GMT-04:00) Atlantic Time (Santiago)</option>
-<option value="Canada/Newfoundland" @if ($current_timezone == 'Canada/Newfoundland')selected="selected"@endif>(GMT-03:30) Newfoundland</option>
-<option value="America/Thule" @if ($current_timezone == 'America/Thule')selected="selected"@endif>(GMT-03:00) Western Greenland Time</option>
-<option value="America/Sao_Paulo" @if ($current_timezone == 'America/Sao_Paulo')selected="selected"@endif>(GMT-03:00) Eastern Brazil</option>
-<option value="America/St_Johns" @if ($current_timezone == 'America/St_Johns')selected="selected"@endif>(GMT-02:30) Newfoundland Time</option>
-<option value="America/Godthab" @if ($current_timezone == 'America/Godthab')selected="selected"@endif>(GMT-02:00) Central Greenland Time</option>
-<option value="Etc/GMT+2" @if ($current_timezone == 'Etc/GMT+2')selected="selected"@endif>(GMT-02:00) GMT-2:00</option>
-<option value="America/Scoresbysund" @if ($current_timezone == 'America/Scoresbysund')selected="selected"@endif>(GMT+00:00) Eastern Greenland Time</option>
-<option value="Atlantic/Reykjavik" @if ($current_timezone == 'Atlantic/Reykjavik')selected="selected"@endif>(GMT+00:00) Western European Time (Iceland)</option>
-<option value="UTC" @if ($current_timezone == 'UTC')selected="selected"@endif>(GMT+00:00) UTC</option>
-<option value="Europe/London" @if ($current_timezone == 'Europe/London')selected="selected"@endif>(GMT+01:00) British Time (London)</option>
-<option value="Etc/GMT-1" @if ($current_timezone == 'Etc/GMT-1')selected="selected"@endif>(GMT+01:00) GMT+1:00</option>
-<option value="Europe/Lisbon" @if ($current_timezone == 'Europe/Lisbon')selected="selected"@endif>(GMT+01:00) Western European Time (Lisbon)</option>
-<option value="Europe/Paris" @if ($current_timezone == 'Europe/Paris')selected="selected"@endif>(GMT+02:00) Western European Time</option>
-<option value="Europe/Berlin" @if ($current_timezone == 'Europe/Berlin')selected="selected"@endif>(GMT+02:00) Central European Time</option>
-<option value="Europe/Bucharest" @if ($current_timezone == 'Europe/Bucharest')selected="selected"@endif>(GMT+03:00) Eastern European Time</option>
-<option value="Africa/Johannesburg" @if ($current_timezone == 'Africa/Johannesburg')selected="selected"@endif>(GMT+02:00) South Africa Standard Time</option>
-<option value="Africa/Kampala" @if ($current_timezone == 'Africa/Kampala')selected="selected"@endif>(GMT+03:00) Eastern Africa Time</option>
-<option value="Etc/GMT-3" @if ($current_timezone == 'Etc/GMT-3')selected="selected"@endif>(GMT+03:00) Moscow</option>
-<option value="Asia/Tehran" @if ($current_timezone == 'Asia/Tehran')selected="selected"@endif>(GMT+04:30) Iran Standard Time</option>
-<option value="Asia/Dubai" @if ($current_timezone == 'Asia/Dubai')selected="selected"@endif>(GMT+04:00) UAE (Dubai)</option>
-<option value="Asia/Kabul" @if ($current_timezone == 'Asia/Kabul')selected="selected"@endif>(GMT+04:30) Kabul</option>
-<option value="Asia/Karachi" @if ($current_timezone == 'Asia/Karachi')selected="selected"@endif>(GMT+05:00) Pakistan Standard Time (Karachi)</option>
-<option value="Asia/Colombo" @if ($current_timezone == 'Asia/Colombo')selected="selected"@endif>(GMT+05:30) Sri Jayawardenepura, Colombo</option>
-<option value="Asia/Kolkata" @if ($current_timezone == 'Asia/Kolkata')selected="selected"@endif>(GMT+05:30) India</option>
-<option value="Asia/Kathmandu" @if ($current_timezone == 'Asia/Kathmandu')selected="selected"@endif>(GMT+05:45) Kathmandu</option>
-<option value="Asia/Dhaka" @if ($current_timezone == 'Asia/Dhaka')selected="selected"@endif>(GMT+06:00) Bangladesh Standard Time</option>
-<option value="Asia/Yangon" @if ($current_timezone == 'Asia/Yangon')selected="selected"@endif>(GMT+06:30) Yangon, Rangoon</option>
-<option value="Asia/Jakarta" @if ($current_timezone == 'Asia/Jakarta')selected="selected"@endif>(GMT+07:00) Western Indonesian Time (Jakarta)</option>
-<option value="Asia/Bangkok" @if ($current_timezone == 'Asia/Bangkok')selected="selected"@endif>(GMT+07:00) Thailand (Bangkok)</option>
-<option value="Asia/Hong_Kong" @if ($current_timezone == 'Asia/Hong_Kong')selected="selected"@endif>(GMT+08:00) Hong Kong</option>
-<option value="Asia/Singapore" @if ($current_timezone == 'Asia/Singapore')selected="selected"@endif>(GMT+08:00) Singapore</option>
-<option value="Australia/West" @if ($current_timezone == 'Australia/West')selected="selected"@endif>(GMT+08:00) Australian Western Time</option>
-<option value="Asia/Tokyo" @if ($current_timezone == 'Asia/Tokyo')selected="selected"@endif>(GMT+09:00) Tokyo</option>
-<option value="Australia/North" @if ($current_timezone == 'Australia/North')selected="selected"@endif>(GMT+09:30) Australian Central Time (Northern Territory)</option>
-<option value="Australia/Adelaide" @if ($current_timezone == 'Australia/Adelaide')selected="selected"@endif>(GMT+09:30) Australian Central Time (Adelaide)</option>
-{{--<option value="Australia/Queensland" @if ($current_timezone == 'Australia/Queensland')selected="selected"@endif>(GMT+10:00) Australian Eastern Time (Queensland)</option>--}}
-<option value="Australia/Sydney" @if ($current_timezone == 'Australia/Sydney')selected="selected"@endif>(GMT+10:00) Australian Eastern Time (Sydney)</option>
-<option value="Pacific/Noumea" @if ($current_timezone == 'Pacific/Noumea')selected="selected"@endif>(GMT+11:00) Noumea, New Caledonia</option>
-<option value="Pacific/Norfolk" @if ($current_timezone == 'Pacific/Norfolk')selected="selected"@endif>(GMT+11:00) Norfolk Island (Austl.)</option>
-<option value="Pacific/Tarawa" @if ($current_timezone == 'Pacific/Tarawa')selected="selected"@endif>(GMT+12:00) Tarawa</option>
-<option value="Pacific/Auckland" @if ($current_timezone == 'Pacific/Auckland')selected="selected"@endif>(GMT+12:00) New Zealand Time</option>
+@php
+    $tz_common = [
+        'Pacific/Samoa' => 'Midway Island, Samoa',
+        'Pacific/Honolulu' => 'Hawaiian/Aleutian Time',
+        'America/Anchorage' => 'Alaska Time',
+        'America/Vancouver' => 'Pacific Time (Vancouver)',
+        'America/Los_Angeles' => 'Pacific Time (US)',
+        'America/Phoenix' => 'Mountain Time (Arizona)',
+        'America/Denver' => 'Mountain Time (US)',
+        'America/Chicago' => 'Central Time (US)',
+        'America/New_York' => 'Eastern Time (US)',
+        '--SEPARATOR1--' => null,
+        'America/Indiana/Knox' => 'Central Time (Indiana)',
+        'America/Indiana/Indianapolis' => 'Eastern Time (Indiana)',
+        '--SEPARATOR2--' => null,
+        'America/Regina' => 'Central Time (Saskatchewan)',
+        'America/Monterrey' => 'Central Time (Mexico City, Monterey)',
+        'America/Lima' => 'UTC/GMT -5 hours',
+        'America/Caracas' => 'Caracas, La Paz',
+        'America/Manaus' => 'Atlantic Time',
+        'America/Puerto_Rico' => 'Atlantic Time (Puerto Rico)',
+        'America/Santiago' => 'Atlantic Time (Santiago)',
+        'Canada/Newfoundland' => 'Newfoundland',
+        'America/Thule' => 'Western Greenland Time',
+        'America/Sao_Paulo' => 'Eastern Brazil',
+        'America/St_Johns' => 'Newfoundland Time',
+        'America/Godthab' => 'Central Greenland Time',
+        'Etc/GMT+2' => 'GMT-2:00',
+        'America/Scoresbysund' => 'Eastern Greenland Time',
+        'Atlantic/Reykjavik' => 'Western European Time (Iceland)',
+        'UTC' => 'UTC',
+        'Europe/London' => 'British Time (London)',
+        'Etc/GMT-1' => 'GMT+1:00',
+        'Europe/Lisbon' => 'Western European Time (Lisbon)',
+        'Europe/Paris' => 'Western European Time',
+        'Europe/Berlin' => 'Central European Time',
+        'Europe/Bucharest' => 'Eastern European Time',
+        'Europe/Kyiv' => 'Kyiv',
+        'Africa/Johannesburg' => 'South Africa Standard Time',
+        'Africa/Kampala' => 'Eastern Africa Time',
+        'Etc/GMT-3' => 'Moscow',
+        'Asia/Tehran' => 'Iran Standard Time',
+        'Asia/Dubai' => 'UAE (Dubai)',
+        'Asia/Kabul' => 'Kabul',
+        'Asia/Karachi' => 'Pakistan Standard Time (Karachi)',
+        'Asia/Colombo' => 'Sri Jayawardenepura, Colombo',
+        'Asia/Kolkata' => 'India',
+        'Asia/Kathmandu' => 'Kathmandu',
+        'Asia/Dhaka' => 'Bangladesh Standard Time',
+        'Asia/Yangon' => 'Yangon, Rangoon',
+        'Asia/Jakarta' => 'Western Indonesian Time (Jakarta)',
+        'Asia/Bangkok' => 'Thailand (Bangkok)',
+        'Asia/Hong_Kong' => 'Hong Kong',
+        'Asia/Singapore' => 'Singapore',
+        'Australia/West' => 'Australian Western Time',
+        'Asia/Tokyo' => 'Tokyo',
+        'Australia/North' => 'Australian Central Time (Northern Territory)',
+        'Australia/Adelaide' => 'Australian Central Time (Adelaide)',
+        'Australia/Sydney' => 'Australian Eastern Time (Sydney)',
+        'Pacific/Noumea' => 'Noumea, New Caledonia',
+        'Pacific/Norfolk' => 'Norfolk Island (Austl.)',
+        'Pacific/Tarawa' => 'Tarawa',
+        'Pacific/Auckland' => 'New Zealand Time',
+    ];
+    $tz_info = function ($timezone) {
+        try {
+            $zone = new \DateTimeZone($timezone);
+        } catch (\Exception $e) {
+            return ['', '', 0];
+        }
+        $offsets = array_unique([(new \DateTime(date('Y').'-01-01', $zone))->getOffset(), (new \DateTime(date('Y').'-07-01', $zone))->getOffset()]);
+        sort($offsets);
+        $changes = [];
+        foreach (array_slice($zone->getTransitions(time(), time() + 400 * 86400), 1, 2) as $transition) {
+            $changes[] = $transition['ts'].'|'.(int)$transition['isdst'];
+        }
+
+        return [implode('/', array_map(function ($seconds) {
+            return ($seconds < 0 ? '-' : '+').gmdate('H:i', abs($seconds));
+        }, $offsets)), implode(';', $changes), $offsets[0]];
+    };
+    $tz_all = [];
+    foreach (\DateTimeZone::listIdentifiers() as $tz_id) {
+        $tz_all[$tz_id] = $tz_info($tz_id);
+    }
+    uasort($tz_all, function ($a, $b) {
+        return $a[2] <=> $b[2];
+    });
+@endphp
+@if ($current_timezone && !isset($tz_common[$current_timezone]) && !isset($tz_all[$current_timezone]))
+    @php $tz = $tz_info($current_timezone) @endphp
+    <option value="{{ $current_timezone }}" data-tz-changes="{{ $tz[1] }}" selected="selected">(GMT{{ $tz[0] }}) {{ $current_timezone }}</option>
+@endif
+@foreach ($tz_common as $tz_id => $tz_name)
+    @if ($tz_name)
+        @php $tz = $tz_all[$tz_id] ?? $tz_info($tz_id) @endphp
+        <option value="{{ $tz_id }}" data-tz-changes="{{ $tz[1] }}" @if ($current_timezone == $tz_id)selected="selected"@endif>(GMT{{ $tz[0] }}) {{ $tz_name }}</option>
+    @else
+        <option value="{{ $tz_id }}" disabled="disabled">-------------</option>
+    @endif
+@endforeach
+<optgroup label="{{ __('All time zones') }}">
+    @foreach ($tz_all as $tz_id => $tz)
+        <option value="{{ $tz_id }}" data-tz-changes="{{ $tz[1] }}" @if ($current_timezone == $tz_id && !isset($tz_common[$tz_id]))selected="selected"@endif>(GMT{{ $tz[0] }}) {{ str_replace(['/', '_'], [' / ', ' '], $tz_id) }}</option>
+    @endforeach
+</optgroup>

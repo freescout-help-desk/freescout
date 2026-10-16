@@ -36,6 +36,8 @@ var LangMessages = {
             "save_draft": "{{ __("Save Draft") }}",
             "discard": "{{ __("Discard") }}",
             "close": "{{ __("Close") }}",
+            "tz_summer_time": "{{ __("Summer time from :date.") }}",
+            "tz_winter_time": "{{ __("Winter time from :date.") }}",
             "cancel": "{{ __("Cancel") }}",
             "settings_saved": "{{ __("Settings saved") }}",
             "insert_var": "{{ __("Insert variable") }}",
