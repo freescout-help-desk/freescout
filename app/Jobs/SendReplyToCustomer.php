@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\ReplyToCustomer;
 use App\Customer;
+use App\Mailbox;
 use App\SendLog;
 use App\Thread;
 use App\Misc\SwiftGetSmtpQueueId;
@@ -28,6 +29,10 @@ class SendReplyToCustomer implements ShouldQueue
 
     // Needed to show proper signature when conversation is being moved between mailboxes.
     public $mailbox_change_history = [];
+
+    // Mailbox the conversation was in when the reply was sent.
+    // https://github.com/freescout-help-desk/freescout/issues/4987
+    public $mailbox_id = null;
 
     private $failures = [];
     private $recipients = [];
@@ -57,6 +62,7 @@ class SendReplyToCustomer implements ShouldQueue
         $this->threads = $threads;
         // Recipient.
         $this->customer = $customer;
+        $this->mailbox_id = $conversation->mailbox_id ?? null;
     }
 
     /**
@@ -74,7 +80,18 @@ class SendReplyToCustomer implements ShouldQueue
             return;
         }
 
-        $mailbox = $this->conversation->mailbox;
+        // The job runs after the undo delay (or on a retry), and the conversation may have
+        // been moved to another mailbox in the meantime. Send from the mailbox the reply
+        // was written in: its From address, SMTP settings and signature. #4987
+        // Only on the first attempt: if sending failed and the conversation was moved
+        // afterwards (e.g. away from a mailbox with broken SMTP), retries use the new mailbox.
+        $mailbox = null;
+        if ($this->mailbox_id && $this->mailbox_id != $this->conversation->mailbox_id && $this->attempts() <= 1) {
+            $mailbox = Mailbox::find($this->mailbox_id);
+        }
+        if (!$mailbox) {
+            $mailbox = $this->conversation->mailbox;
+        }
 
         // Mailbox may be deleted.
         if (!$mailbox) {
@@ -169,15 +186,43 @@ class SendReplyToCustomer implements ShouldQueue
         // this is the previous reply sent by an agent. Without it follow-up emails have
         // no In-Reply-To and References headers and are not threaded by the recipients.
         // https://github.com/freescout-help-desk/freescout/issues/5726
+        //
+        // Message-IDs earlier replies were actually sent with. Thread::getMessageId() uses the
+        // domain of the conversation's current mailbox, which differs if the conversation has
+        // been moved since. https://github.com/freescout-help-desk/freescout/issues/4987
+        $sent_message_ids = [];
+        $earlier_reply_ids = $this->threads->slice(1)->where('type', Thread::TYPE_MESSAGE)->pluck('id')->all();
+        if ($earlier_reply_ids) {
+            $sent_message_ids = SendLog::whereIn('thread_id', $earlier_reply_ids)
+                ->where('mail_type', SendLog::MAIL_TYPE_EMAIL_TO_CUSTOMER)
+                ->whereIn('status', [SendLog::STATUS_ACCEPTED, SendLog::STATUS_DELIVERY_SUCCESS, SendLog::STATUS_OPENED, SendLog::STATUS_CLICKED])
+                ->pluck('message_id', 'thread_id')
+                ->all();
+        }
+        $get_message_id = function ($thread) use ($sent_message_ids) {
+            return $sent_message_ids[$thread->id] ?? $thread->getMessageId();
+        };
+
         $prev_reply_to_thread = $last_customer_thread;
-        if (!$new && !$prev_reply_to_thread) {
+        // Forwards are excluded: the recipient never got the messages of the original conversation.
+        if (!$new && !$prev_reply_to_thread && !$is_forward) {
+            // Prefer a reply which was actually sent; old send log records may have been cleaned up.
+            $first_user_message = null;
             $i = 0;
             foreach ($this->threads as $thread) {
                 if ($i > 0 && $thread->type == Thread::TYPE_MESSAGE) {
-                    $prev_reply_to_thread = $thread;
-                    break;
+                    if (isset($sent_message_ids[$thread->id])) {
+                        $prev_reply_to_thread = $thread;
+                        break;
+                    }
+                    if (!$first_user_message) {
+                        $first_user_message = $thread;
+                    }
                 }
                 $i++;
+            }
+            if (!$prev_reply_to_thread && !$sent_message_ids) {
+                $prev_reply_to_thread = $first_user_message;
             }
         }
 
@@ -191,14 +236,14 @@ class SendReplyToCustomer implements ShouldQueue
 
             // Always put real Message-ID into In-Reply-To field.
             // https://github.com/freescout-help-desk/freescout/issues/5620
-            $headers['In-Reply-To'] = '<'.$prev_reply_to_thread->getMessageId().'>';
+            $headers['In-Reply-To'] = '<'.$get_message_id($prev_reply_to_thread).'>';
             //$headers['References'] = '<'.$last_customer_thread->message_id.'>';
             // https://github.com/freescout-helpdesk/freescout/issues/3175
             $i = 0;
             $references_array = [];
             foreach ($this->threads as $thread) {
                 if ($i > 0) {
-                    $reference = $thread->getMessageId();
+                    $reference = $get_message_id($thread);
                     if ($reference) {
                         $references_array[] = $reference;
                     }
