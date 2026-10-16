@@ -998,6 +998,13 @@ class FetchEmails extends Command
             }
             $full_body = null;
 
+            // Files which the sender's mail client attached again
+            // (already received in this conversation) are not saved again.
+            // https://github.com/freescout-help-desk/freescout/issues/5311
+            if (config('app.fetch_skip_duplicate_attachments') && $prev_thread && count($attachments)) {
+                $attachments = $this->removeDuplicateAttachments($attachments, $prev_thread->conversation_id, $body);
+            }
+
             // Create customers
             $emails = array_merge(
                 $this->attrToArray($message->getFrom()), 
@@ -1653,6 +1660,67 @@ class FetchEmails extends Command
             }
 
             $result[] = $attachment;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Remove attachments which are byte-identical to an attachment already
+     * received in the conversation. Inline images referenced in the body of
+     * the new message are kept: the message shows them.
+     *
+     * @param mixed  $attachments
+     * @param int    $conversation_id
+     * @param string $body Body of the new message (after separateReply()).
+     *
+     * @return array
+     */
+    public function removeDuplicateAttachments($attachments, $conversation_id, $body)
+    {
+        $existing = Attachment::whereIn('thread_id', Thread::where('conversation_id', $conversation_id)->pluck('id'))
+            ->get();
+
+        if (!count($existing)) {
+            return $attachments;
+        }
+
+        $existing_hashes = [];
+        $result = [];
+
+        foreach ($attachments as $attachment) {
+            $cid = trim((string)($attachment->id ?? ''), '<> ');
+
+            if ($cid !== '' && stripos((string)$body, 'cid:'.$cid) !== false) {
+                // Shown in the new message.
+                $result[] = $attachment;
+                continue;
+            }
+
+            $content = (string)$attachment->getContent();
+            $hash = null;
+            $duplicate = false;
+            // Only files of the same size are read and compared.
+            foreach ($existing->where('size', strlen($content)) as $existing_attachment) {
+                if (!isset($existing_hashes[$existing_attachment->id])) {
+                    $existing_hashes[$existing_attachment->id] = $existing_attachment->fileExists()
+                        ? hash('sha256', (string)$existing_attachment->getFileContents())
+                        : '';
+                }
+                if ($hash === null) {
+                    $hash = hash('sha256', $content);
+                }
+                if ($existing_hashes[$existing_attachment->id] !== ''
+                    && hash_equals($existing_hashes[$existing_attachment->id], $hash)
+                ) {
+                    $duplicate = true;
+                    break;
+                }
+            }
+
+            if (!$duplicate) {
+                $result[] = $attachment;
+            }
         }
 
         return $result;
