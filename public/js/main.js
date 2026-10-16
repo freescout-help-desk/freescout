@@ -1153,10 +1153,19 @@ function showFloatingAlert(type, msg, no_autohide)
 	}
 
 	var html = '<div class="alert alert-'+alert_class+' alert-floating">'+
-        '<div><i class="glyphicon glyphicon-'+icon+'"></i>'+htmlEscape(msg)+'</div>'+
+        '<div><i class="glyphicon glyphicon-'+icon+'"></i>'+processMarkup(htmlEscape(msg))+'</div>'+
         '</div>';
     $('body:first').append(html);
     fsFloatingAlertsInit();
+}
+
+function processMarkup(text)
+{
+	return text
+		// Links: [Example](https://example.org)
+		.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+		// New lines to <br><br>
+		.replace(/\r?\n/g, '<br><br>');
 }
 
 function initConversation()
