@@ -392,6 +392,16 @@ return [
     */
     'fetching_bunch_size'    => env('APP_FETCHING_BUNCH_SIZE', 100),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Do not save attachments which are identical to attachments
+    | already received in the conversation.
+    | https://github.com/freescout-help-desk/freescout/issues/5311
+    |
+    |-------------------------------------------------------------------------
+    */
+    'fetch_skip_duplicate_attachments'    => env('APP_FETCH_SKIP_DUPLICATE_ATTACHMENTS', false),
+
      /*
     |--------------------------------------------------------------------------
     | Dashboard path.
