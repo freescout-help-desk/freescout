@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\ReplyToCustomer;
 use App\Customer;
+use App\Mailbox;
 use App\SendLog;
 use App\Thread;
 use App\Misc\SwiftGetSmtpQueueId;
@@ -28,6 +29,10 @@ class SendReplyToCustomer implements ShouldQueue
 
     // Needed to show proper signature when conversation is being moved between mailboxes.
     public $mailbox_change_history = [];
+
+    // Mailbox the conversation was in when the reply was sent.
+    // https://github.com/freescout-help-desk/freescout/issues/4987
+    public $mailbox_id = null;
 
     private $failures = [];
     private $recipients = [];
@@ -57,6 +62,7 @@ class SendReplyToCustomer implements ShouldQueue
         $this->threads = $threads;
         // Recipient.
         $this->customer = $customer;
+        $this->mailbox_id = $conversation->mailbox_id ?? null;
     }
 
     /**
@@ -74,7 +80,18 @@ class SendReplyToCustomer implements ShouldQueue
             return;
         }
 
-        $mailbox = $this->conversation->mailbox;
+        // The job runs after the undo delay (or on a retry), and the conversation may have
+        // been moved to another mailbox in the meantime. We need to send from the mailbox the reply
+        // was written using its From address, SMTP settings and signature.
+        // We do it only on the first attempt: if sending failed or if the conversation was moved.
+        // Retries use the new mailbox.
+        $mailbox = null;
+        if ($this->mailbox_id && $this->mailbox_id != $this->conversation->mailbox_id && $this->attempts() <= 1) {
+            $mailbox = Mailbox::find($this->mailbox_id);
+        }
+        if (!$mailbox) {
+            $mailbox = $this->conversation->mailbox;
+        }
 
         // Mailbox may be deleted.
         if (!$mailbox) {
