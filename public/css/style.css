@@ -2677,6 +2677,11 @@ button.conv-checkbox-clear {
 .thread-content table {
     max-width: 100%;
 }
+/* Wrap long lines in code blocks instead of making the thread scroll horizontally. */
+.thread-content pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
 .thread-content td,
 .thread-content th {
     width: auto !important;
