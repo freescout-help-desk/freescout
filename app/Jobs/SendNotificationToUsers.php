@@ -97,6 +97,7 @@ class SendNotificationToUsers implements ShouldQueue
 
         // We throw an exception if any of the send attempts throws an exception (connection error, etc)
         $last_send_exception = null;
+        $all_failures_after_data_sent = true;
 
         foreach ($this->users as $user) {
 
@@ -157,6 +158,10 @@ class SendNotificationToUsers implements ShouldQueue
 
             $exception = null;
 
+            // The flag is otherwise reset only when a new SMTP connection is started,
+            // so it could report data sent for a previous recipient.
+            \MailHelper::$smtp_data_sent = false;
+
             try {
                 Mail::to([['name' => $user->getFullName(), 'email' => $user->email]])
                     ->send(new UserNotification($user, $this->conversation, $this->threads, $headers, $from, $mailbox));
@@ -173,6 +178,12 @@ class SendNotificationToUsers implements ShouldQueue
 
                 $exception = $e;
                 $last_send_exception = $e;
+
+                // Track whether every failed send timed out after its own message data
+                // had been passed to the mail server (see the retry logic below).
+                if (!preg_match("#^Connection to .* Timed Out$#", $e->getMessage()) || !\MailHelper::$smtp_data_sent) {
+                    $all_failures_after_data_sent = false;
+                }
             }
 
             $status_message = '';
@@ -207,10 +218,13 @@ class SendNotificationToUsers implements ShouldQueue
                     // So we may consider that the email has been successfully sent.
                     // Otherwise this email may be sent again and again.
                     if ($this->attempts() >= 3
-                        && preg_match("#^Connection to .* Timed Out$#", $last_send_exception->getMessage())
-                        && \MailHelper::$smtp_data_sent
+                        && $all_failures_after_data_sent
                     ) {
                         $this->fail($last_send_exception);
+
+                        // Without this return the job was released below anyway,
+                        // so the same notification was resent every hour.
+                        return;
                     }
 
                     // Others - after 1 hour.
