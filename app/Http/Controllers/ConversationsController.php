@@ -1719,6 +1719,26 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
+                // Draft conversation can be discarded only if it contains nothing
+                // but draft threads and is owned by the user (or user can delete conversations).
+                // Otherwise merged published threads could be destroyed along with the draft.
+                if (!$response['msg']
+                    && $thread->conversation->isDraft()
+                    && !$user->can('delete', $thread->conversation)
+                ) {
+                    if ($thread->conversation->created_by_user_id != $user->id
+                        // Conversation has non-draft messages.
+                        || $thread->conversation->threads()
+                            ->where(function ($query) {
+                                $query->where('state', '!=', Thread::STATE_DRAFT)
+                                    ->orWhereNull('state');
+                            })
+                            ->exists()
+                    ) {
+                        $response['msg'] = __('Not enough permissions');
+                    }
+                }
+
                 if (!$response['msg']) {
                     $conversation = $thread->conversation;
 
@@ -2334,6 +2354,10 @@ class ConversationsController extends Controller
                 if (!$response['msg'] && !$user->can('view', $conversation)) {
                     $response['msg'] = __('Not enough permissions');
                 }
+                // Only published conversations can be merged.
+                if (!$response['msg'] && !$conversation->isPublished()) {
+                    $response['msg'] = __('Not enough permissions');
+                }
 
                 if (!$response['msg'] && !empty($request->merge_conversation_id) && is_array($request->merge_conversation_id)) {
                     
@@ -2350,7 +2374,11 @@ class ConversationsController extends Controller
                                 break;
                             }
                         }
-                        if (!$response['msg'] && !$user->can('view', $merge_conversation)) {
+                        // The user has to be allowed to view merged conversation, and it must be published.
+                        if (!$response['msg']
+                            && (!$user->can('view', $merge_conversation)
+                                || !$merge_conversation->isPublished())
+                        ) {
                             $response['msg'] = __('Not enough permissions').': #'.$merge_conversation->number;
                             if ($sigle_conv) {
                                 break;

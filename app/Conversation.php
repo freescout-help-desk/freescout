@@ -1582,6 +1582,12 @@ class Conversation extends Model
             return false;
         }
 
+        // Do not allow to merge drafts: threads moved into a draft
+        // are destroyed when the draft is discarded.
+        if ($this->isDraft() || $second_conversation->isDraft()) {
+            return false;
+        }
+
         // Move all threads from old to new conversation.
         foreach ($second_conversation->threads as $thread) {
             $thread->conversation_id = $this->id;
