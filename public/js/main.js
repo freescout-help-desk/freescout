@@ -392,6 +392,9 @@ $(document).ready(function(){
 	// Floating alerts
 	fsFloatingAlertsInit();
 
+	// Time zone select with search and offset badges
+	initTimezoneSelect();
+
 	// Editor
 	(function($) {
 		if (typeof($.summernote) != "undefined") {
@@ -456,6 +459,45 @@ $(document).ready(function(){
 		e.preventDefault();
 	});
 }*/
+
+// Searchable time zone select: zone name on the left, current UTC offset badge on the right.
+function initTimezoneSelect()
+{
+	var $select = $('select#timezone:not(.select2-hidden-accessible)');
+
+	if (!$select.length || typeof($.fn.select2) == 'undefined') {
+		return;
+	}
+
+	function template(state) {
+		if (!state.id || !state.element) {
+			return state.text;
+		}
+		var $option = $(state.element);
+		var $result = $('<span class="tz-option"></span>');
+
+		$result.append($('<span class="tz-name"></span>').text($option.data('name')));
+		$result.append($('<span class="tz-offset"></span>').text($option.data('offset')));
+
+		return $result;
+	}
+
+	$select.select2({
+		templateResult: template,
+		templateSelection: template,
+		matcher: function(params, data) {
+			var term = $.trim(params.term || '').toLowerCase().replace(/_/g, ' ');
+
+			if (term === '') {
+				return data;
+			}
+			if (typeof(data.text) === 'undefined') {
+				return null;
+			}
+			return data.text.toLowerCase().indexOf(term) > -1 ? data : null;
+		}
+	});
+}
 
 function initMuteMailbox()
 {
