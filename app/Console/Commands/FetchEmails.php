@@ -1704,11 +1704,11 @@ class FetchEmails extends Command
             foreach ($existing->where('size', strlen($content)) as $existing_attachment) {
                 if (!isset($existing_hashes[$existing_attachment->id])) {
                     $existing_hashes[$existing_attachment->id] = $existing_attachment->fileExists()
-                        ? hash('sha256', (string)$existing_attachment->getFileContents())
+                        ? md5((string)$existing_attachment->getFileContents())
                         : '';
                 }
                 if ($hash === null) {
-                    $hash = hash('sha256', $content);
+                    $hash = md5($content);
                 }
                 if ($existing_hashes[$existing_attachment->id] !== ''
                     && hash_equals($existing_hashes[$existing_attachment->id], $hash)
