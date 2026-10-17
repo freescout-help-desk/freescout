@@ -662,6 +662,25 @@ class Mail
     }
 
     /**
+     * Hash for the Message-ID of the email notification sent to a user.
+     * Unlike getMessageIdHash() it authenticates both thread and user IDs and
+     * is derived with a distinct prefix, so a token received by a customer in
+     * FS_reply / FS_autoreply Message-ID can never be valid for a notification.
+     */
+    public static function getNotificationMessageIdHash($thread_id, $user_id)
+    {
+        return substr(hash_hmac('sha256', 'notify|'.(int)$thread_id.'|'.(int)$user_id, (string)config('app.key')), 0, 16);
+    }
+
+    /**
+     * Constant-time check of the Message-ID hash.
+     */
+    public static function checkMessageIdHash($hash, $expected)
+    {
+        return is_string($hash) && is_string($expected) && hash_equals($expected, $hash);
+    }
+
+    /**
      * Detect autoresponder by headers.
      * https://github.com/jpmckinney/multi_mail/wiki/Detecting-autoresponders
      * https://www.jitbit.com/maxblog/18-detecting-outlook-autoreplyout-of-office-emails-and-x-auto-response-suppress-header/.

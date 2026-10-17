@@ -447,6 +447,16 @@ class FetchEmails extends Command
                 $from = $from[0];
             }
 
+            // Sender of an agent's reply must be verified by the From header.
+            $user_from = '';
+            $from_header = $message->getFrom();
+            if ($from_header) {
+                $from_header = $this->formatEmailList($from_header);
+                if (!empty($from_header[0])) {
+                    $user_from = $from_header[0];
+                }
+            }
+
             // Message-ID can be empty.
             // https://stackoverflow.com/questions/8513165/php-imap-do-emails-have-to-have-a-messageid
             if (!$message_id) {
@@ -683,10 +693,11 @@ class FetchEmails extends Command
                     $prev_thread_id = '';
                     // Check hash.
                     // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-6r38-6mcf-2ww3
-                    if (!empty($m[1]) && !empty($m[3])) {
+                    // The hash authenticates both thread ID and user ID.
+                    if (!empty($m[1]) && !empty($m[2]) && !empty($m[3])) {
                         $message_id_hash = $m[3];
                         if (strlen($message_id_hash) == 16) {
-                            if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
+                            if (\MailHelper::checkMessageIdHash($message_id_hash, \MailHelper::getNotificationMessageIdHash($m[1], $m[2]))) {
                                 $prev_thread_id = $m[1];
                             }
                         } else {
@@ -736,7 +747,7 @@ class FetchEmails extends Command
                         if (!empty($m[1]) && !empty($m[2])) {
                             $message_id_hash = $m[2];
                             if (strlen($message_id_hash) == 16) {
-                                if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
+                                if (\MailHelper::checkMessageIdHash($message_id_hash, \MailHelper::getMessageIdHash($m[1]))) {
                                     $prev_thread_id = $m[1];
                                 }
                             } else {
@@ -751,7 +762,7 @@ class FetchEmails extends Command
                             if (!empty($m[1]) && !empty($m[2])) {
                                 $message_id_hash = $m[2];
                                 if (strlen($message_id_hash) == 16) {
-                                    if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
+                                    if (\MailHelper::checkMessageIdHash($message_id_hash, \MailHelper::getMessageIdHash($m[1]))) {
                                         $prev_thread_id = $m[1];
                                     }
                                 } else {
@@ -772,8 +783,10 @@ class FetchEmails extends Command
                         if (!$prev_thread
                             && ($prev_thread = Thread::where('message_id', $prev_message_id)->first())
                             && $prev_thread->created_by_user_id
-                            && $prev_thread->created_by_user->hasEmail($from)
+                            && $user_from
+                            && $prev_thread->created_by_user->hasEmail($user_from)
                         ) {
+                            $user = $prev_thread->created_by_user;
                             $user_id = $user->id;
                             $message_from_customer = false;
                             $is_reply = true;
@@ -1095,12 +1108,12 @@ class FetchEmails extends Command
 
                 // Check if From is the same as user's email.
                 // If not we send an email with information to the sender.
-                if (!$user->hasEmail($from)) {
-                    $this->logError("Sender address {$from} does not match ".$user->getFullName()." user email: ".$user->email.". Add ".$user->email." to user's Alternate Emails in the users's profile to allow the user reply from this address.");
+                if (!$user_from || !$user->hasEmail($user_from)) {
+                    $this->logError("Sender address {$user_from} does not match ".$user->getFullName()." user email: ".$user->email.". Add {$user_from} to user's Alternate Emails in the users's profile to allow the user reply from this address.");
                     $this->setSeen($message, $mailbox);
 
                     // Send "Unable to process your update email" to user
-                    SendEmailReplyError::dispatch($from, $user, $mailbox)->onQueue('emails');
+                    SendEmailReplyError::dispatch($user_from ?: $from, $user, $mailbox)->onQueue('emails');
 
                     return;
                 }

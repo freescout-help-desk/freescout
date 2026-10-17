@@ -130,7 +130,7 @@ class SendNotificationToUsers implements ShouldQueue
                 }
             }
 
-            $message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_NOTIFICATION.'-'.$last_thread->id.'-'.$user->id.'-'.\MailHelper::getMessageIdHash($last_thread->id).'@'.$mailbox->getEmailDomain();
+            $message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_NOTIFICATION.'-'.$last_thread->id.'-'.$user->id.'-'.\MailHelper::getNotificationMessageIdHash($last_thread->id, $user->id).'@'.$mailbox->getEmailDomain();
             $headers['Message-ID'] = $message_id;
 
             // If this is notification on message from customer, set customer as sender name
