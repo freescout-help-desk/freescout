@@ -5541,7 +5541,7 @@ function converstationBulkActionsInit()
 					on_show: function(modal) {
 						modal.children().find('.merge-conversation-target:first').html(
 							'<strong>'+htmlEscape(target_row.find('.conv-number:first').text().trim())+'</strong> '
-							+htmlEscape(target_row.find('.conv-subject p:first').text().trim())
+							+htmlEscape(stripTags(target_row.find('.conv-subject p:first').html(), true).trim())
 						);
 						modal.children().find('.merge-conversation-ok:first').click(function(e) {
 							var button = $(this);
@@ -5795,10 +5795,19 @@ function localStorageRemove(key)
 	}
 }
 
-function stripTags(html)
+function stripTags(html, strip_content)
 {
 	var div = document.createElement("div");
 	div.innerHTML = html;
+
+	// Remove all elements together with their content,
+	// leaving only the text that is outside of any tag.
+	if (strip_content) {
+		while (div.firstElementChild) {
+			div.removeChild(div.firstElementChild);
+		}
+	}
+
 	var text = div.textContent || div.innerText || "";
 	return text;
 }
