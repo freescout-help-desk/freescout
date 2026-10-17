@@ -1781,7 +1781,7 @@ class ConversationsController extends Controller
                 }
                 break;
 
-            // Save draft (automatically or by click)
+            // Load thread draft.
             case 'load_draft':
                 $thread = Thread::find($request->thread_id);
                 if (!$thread) {
@@ -1813,7 +1813,7 @@ class ConversationsController extends Controller
                         'to'          => $thread->getToFirst(),
                         'cc'          => $thread->getCcArray(),
                         'bcc'         => $thread->getBccArray(),
-                        'body'        => $thread->body,
+                        'body'        => \Helper::stripDangerousTags($thread->body),
                         'is_forward'  => (int)$thread->isForward(),
                         'attachments' => $attachments,
                     ];
