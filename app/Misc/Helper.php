@@ -700,30 +700,44 @@ class Helper
 
         $tags = array_diff($unsafe_tags, $allowed_tags);
 
-        foreach ($tags as $tag) {
-            // https://github.com/freescout-help-desk/freescout/issues/5424
-            //$html = preg_replace('#<'.$tag.'(.*?)>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
-            $new = preg_replace('#<'.$tag.'\b[^>]*>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
-            if ($new !== null) {
-                $html = $new;
-            }
+        // Any complete tag may be inserted between the letters of a tag name,
+        // e.g. "<scr<script>ipt>" or "</scr</script>ipt>": when the inner tag is removed
+        // the pieces of the outer one join into a new dangerous tag. So the outer tag
+        // has to be matched (and removed) together with the tags nested into its name.
+        $nested = '(?:<[^>]*>)*';
 
-            // Remove unclosed restricted tags.
-            // And keep removing the tag until it's not found anymore.
-            // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-jpq8-j69f-mj98
-            //$html = preg_replace('#<'.$tag.'(.*?)>#is', '', $html ?? '');
-            do {
-                $found = false;
-                $new = preg_replace('#<'.$tag.'\b[^>]*>#is', '', $html ?? '');
+        // Repeat the whole pass until nothing changes: removing one tag can join the pieces
+        // of another tag that was already processed, e.g. "<sty<input>le>" or "<inp<button>ut>".
+        do {
+            $html_before_pass = $html;
+            foreach ($tags as $tag) {
+                // Tag name with optional tags nested between its letters.
+                $tag_name = implode($nested, str_split($tag));
+
+                // https://github.com/freescout-help-desk/freescout/issues/5424
+                //$html = preg_replace('#<'.$tag.'(.*?)>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
+                $new = preg_replace('#<'.$tag_name.'\b[^>]*>(.*?)<\s*/\s*'.$tag_name.'\s*>#is', '', $html ?? '');
                 if ($new !== null) {
-                    if ($new != $html) {
-                        $found = true;
-                    }
                     $html = $new;
                 }
-            } while ($found);
 
-        }
+                // Remove unclosed restricted tags.
+                // And keep removing the tag until it's not found anymore.
+                // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-jpq8-j69f-mj98
+                //$html = preg_replace('#<'.$tag.'(.*?)>#is', '', $html ?? '');
+                do {
+                    $found = false;
+                    $new = preg_replace('#<'.$tag_name.'\b[^>]*>#is', '', $html ?? '');
+                    if ($new !== null) {
+                        if ($new != $html) {
+                            $found = true;
+                        }
+                        $html = $new;
+                    }
+                } while ($found);
+
+            }
+        } while ($html !== $html_before_pass);
 
         // Make sure that attributes do not point to the file on the current server.
         foreach ($unsafe_tags as $tag) {
