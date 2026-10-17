@@ -768,6 +768,21 @@ class Client {
     }
 
     /**
+     * Returns all of the IMAP errors that have occurred
+     *
+     * @return array
+     */
+    public function getErrors() {
+        $last_error = $this->getLastError();
+
+        if ($last_error) {
+            return [$last_error];
+        } else {
+            return [];
+        }
+    }
+
+    /**
      * Gets the last IMAP error that occurred during this page request
      */
     public function getLastError() {
