@@ -689,6 +689,12 @@ class Helper
             'applet',
             // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-fh99-wr77-pxq3
             'style',
+            // Form controls: when the HTML is loaded into an editor placed inside a form
+            // they become part of the form submission (e.g. hidden bcc[] injection).
+            'input',
+            'select',
+            'textarea',
+            'button',
         ];
         $attrs = 'src|data';
 

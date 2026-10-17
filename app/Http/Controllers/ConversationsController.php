@@ -423,7 +423,10 @@ class ConversationsController extends Controller
                 $subject = preg_replace('/^Fwd:/i', 'Re: ', $subject);
 
                 $thread = new Thread();
-                $thread->body = $orig_thread->body;
+                // Body of the original thread is untrusted (it may come from an incoming email)
+                // and gets materialized as live DOM by the editor inside the form,
+                // so dangerous tags and form controls must be removed.
+                $thread->body = \Helper::stripDangerousTags($orig_thread->body);
                 // If this is a forwarded message, try to fetch From
                 preg_match_all("/From:[^<\n]+<([^<\n]+)>/m", html_entity_decode(strip_tags($thread->body)), $m);
 
