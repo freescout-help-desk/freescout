@@ -187,7 +187,7 @@ class Attachment extends Model
         // $content may be a stream resource rather than a string; the SVG sanitizer needs
         // actual string content, so let it re-read the just-written file in that case instead
         // of treating the resource as file content.
-        \Helper::sanitizeUploadedFileData($file_path, is_resource($content) ? null : $content);
+        \Helper::sanitizeUploadedFileData($file_path, is_resource($content) ? null : $content, self::getDiskName());
 
         return [
             'file_dir'  => $file_dir,

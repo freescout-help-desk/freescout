@@ -1919,17 +1919,27 @@ class Helper
         return self::uploadedFilePath($file_name);
     }
 
-    public static function sanitizeUploadedFileData($file_path, $content = null)
+    /**
+     * @param string      $file_path Path to the file on the disk.
+     * @param string|null $content   File content (if already known).
+     * @param string|null $disk      Name of the disk the file is stored on.
+     *                               Default disk is used if not specified.
+     *                               Attachments are stored on a different disk
+     *                               than the default one (see Attachment::getDiskName()).
+     */
+    public static function sanitizeUploadedFileData($file_path, $content = null, $disk = null)
     {
+        $storage = $disk ? Storage::disk($disk) : Storage::disk();
+
         // Remove <script>, href="", iframe, etc from SVG files.
         // Any image can be interpreted as SVG by browser,
         // so checking extension is not enough.
-        if (Storage::exists($file_path)
-            && (Storage::mimeType($file_path) == 'image/svg+xml'
+        if ($storage->exists($file_path)
+            && ($storage->mimeType($file_path) == 'image/svg+xml'
                 || strtolower(pathinfo($file_path, PATHINFO_EXTENSION)) == 'svg')
         ) {
             if (!$content) {
-                $content = Storage::get($file_path);
+                $content = $storage->get($file_path);
             }
             if ($content) {
                 // Remove comments from SVG content.
@@ -1942,7 +1952,7 @@ class Helper
                 if (!$clean_content)  {
                     $clean_content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
                 }
-                Storage::put($file_path, $clean_content);
+                $storage->put($file_path, $clean_content);
             }
         }
     }
