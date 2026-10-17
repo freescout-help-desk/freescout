@@ -5426,6 +5426,8 @@ function converstationBulkActionsInit()
 			else {
 				$(bulk_buttons).fadeOut();
 			}
+			// Merging needs at least two conversations.
+			$('.conv-merge', bulk_buttons).toggleClass('hidden', checkboxes.filter(':checked').length < 2);
 		});
 
 		if (!bulk_buttons.attr('data-initialized')) {
@@ -5510,6 +5512,53 @@ function converstationBulkActionsInit()
 									if (isAjaxSuccess(response)) {
 										location.reload();
 									} else {
+										showAjaxError(response);
+									}
+								}, true
+							);
+							e.preventDefault();
+						});
+					}
+				});
+				e.preventDefault();
+			});
+
+			// Merge conversations: all the selected ones into the oldest of them.
+			$(".conv-merge", bulk_buttons).click(function(e) {
+				var conv_ids = getSelectedConversations().map(function(id) {
+					return parseInt(id);
+				}).sort(function(a, b) {
+					return a - b;
+				});
+				if (conv_ids.length < 2) {
+					e.preventDefault();
+					return;
+				}
+				var target_id = conv_ids.shift();
+				var target_row = $('.conv-row[data-conversation_id="'+target_id+'"]:first');
+
+				showModalDialog('#conversations-bulk-actions-merge-modal', {
+					on_show: function(modal) {
+						modal.children().find('.merge-conversation-target:first').html(
+							'<strong>'+htmlEscape(target_row.find('.conv-number:first').text().trim())+'</strong> '
+							+htmlEscape(target_row.find('.conv-subject p:first').text().trim())
+						);
+						modal.children().find('.merge-conversation-ok:first').click(function(e) {
+							var button = $(this);
+							button.button('loading');
+
+							fsAjax(
+								{
+									action: 'conversation_merge',
+									conversation_id: target_id,
+									merge_conversation_id: conv_ids
+								},
+								laroute.route('conversations.ajax'),
+								function(response) {
+									if (isAjaxSuccess(response)) {
+										location.reload();
+									} else {
+										button.button('reset');
 										showAjaxError(response);
 									}
 								}, true
