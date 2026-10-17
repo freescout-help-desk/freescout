@@ -261,6 +261,111 @@ body.user-is-guest {
     /*margin-left: 0!important;*/
     border-radius: 0 14px 14px 0;
 }
+#conv-list-2col {
+    border-bottom: 1px solid #e3e8eb;
+    display: block;
+    flex: 0 0 300px;
+    width: 300px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-left: 1px solid #d6dde3;
+    position: relative;
+}
+@media (min-width:992px) {
+    #conv-list-2col {
+        min-height: 100vh;
+    }
+}
+/* The list column does not take part in the row height: it fills the
+   column (down to the footer) and the list scrolls inside it, so "Load more"
+   never pushes the footer down. */
+#conv-list-col {
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 54px);
+    display: flex;
+    flex-direction: column;
+    background:
+        linear-gradient(100deg,
+            rgba(255, 255, 255, 0) 30%,
+            rgba(255, 255, 255, .85) 50%,
+            rgba(255, 255, 255, 0) 70%) 120% 0 / 200% 100% no-repeat,
+        url('../../img/conv-list.png') 0 54px repeat-y #fff;
+    animation: bg-shimmer 2s linear infinite;
+}
+@keyframes bg-shimmer {
+    from { background-position: 120% 0, 0 54px; }
+    to   { background-position: -20% 0, 0 54px; }
+}
+#conv-list-col.loaded {
+    position: absolute;
+    height: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: none;
+    animation: none;
+}
+#conv-list-col-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 22px;
+    color: #2a3b47;
+    font-size: 16px;
+    height: 53px;
+    background-color: #deecf9;
+    flex: 0 0 auto;
+}
+#conv-list-col-toggle {
+    color: #93a1af;
+    width: 37px;
+    text-align: center;
+    line-height: 53px;
+    height: 53px;
+    border-left: 1px solid #d6dde3;
+    background-color: #ebf1f6;
+    border-bottom: 1px solid #e3e8eb;
+}
+#conv-list-col-toggle:hover {
+    background-color: #f1f3f5
+}
+#conv-list-col-toggle:hover,
+#conv-list-col-toggle:focus {
+    color: #2a3641;
+    text-decoration: none;
+}
+#conv-list-2col .chat-preview {
+    max-width: 250px;
+}
+#conv-list-col-items {
+    height: 100vh;
+    height: auto;
+    min-height: 0;
+    margin-right: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 0;
+    position: static;
+    box-shadow: none;
+    max-width: none;
+    min-width: 0;
+    margin-bottom: 0;
+}
+#conv-list-col-items > li > a {
+    padding-left: 22px;
+}
+.conv-list-text {
+    margin-top: 2px;
+}
+.conv-list-preview {
+    max-width: 258px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+}
 @media (max-width:991px) {
     .layout-2col {
         display: block;
@@ -1970,6 +2075,21 @@ button.conv-checkbox-clear {
     /*border-bottom: 1px solid #e3e8eb;*/
     padding-left: 9px;
 }
+#conv-list-open {
+    width: 37px;
+    height: 53px;
+    line-height: 53px;
+    float: left;
+    margin-left: -9px;
+    text-align: center;
+    font-size: 16px;
+    background-color: #ebf1f6;
+    border-right: 1px solid #d6dde3;
+    border-bottom: 1px solid #e3e8eb;
+}
+#conv-list-open:hover {
+    background-color: #f1f3f5
+}
 .conv-actions .conv-action {
     display: inline-block;
     padding: 16px 16px 9px;
@@ -3004,6 +3124,9 @@ ul.sidebar-block-list {
     .customer-name {
         float: left;
         margin-right: 7px;
+        /* Same height as the email line next to the name: keeps them on one line
+           and makes company, job title, etc. start below the name */
+        line-height: 21px;
         /*font-weight: bold;
         font-size: 18px;*/
     }
@@ -4784,6 +4907,7 @@ a.disabled:focus {
 .fs-tag-btn {
     margin-top: 8px;
     margin-right: 8px;
+    height: 24px;
     line-height: 14px;
     font-size: 15px;
     padding: 4px 6px 4px 6px;
@@ -4874,6 +4998,7 @@ a.disabled:focus {
     text-align: center;
     height: 45px !important;
     line-height: 35px !important;
+    background-color: #fff;
 }
 .chats-load-more i {
     font-size: 18px !important;
@@ -4904,6 +5029,10 @@ a.disabled:focus {
  */
 @media (max-width:991px) {
     .col1-hidden {
+        display: none;
+    }
+    #conv-list-open,
+    #conv-list-col {
         display: none;
     }
 }

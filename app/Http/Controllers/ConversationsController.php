@@ -231,6 +231,9 @@ class ConversationsController extends Controller
         $prev_conversations = [];
         if ($customer) {
             $prev_conversations = $mailbox->conversations()
+                                    ->when($user->canSeeOnlyAssignedConversations(), function ($query) use ($user) {
+                                        return $query->where('conversations.user_id', $user->id);
+                                    })
                                     ->where('customer_id', $customer->id)
                                     ->where('id', '<>', $conversation->id)
                                     ->where('status', '!=', Conversation::STATUS_SPAM)
@@ -2208,19 +2211,26 @@ class ConversationsController extends Controller
                 }
 
                 // Check access to the mailbox.
-                $folder = Folder::find($request->folder_id ?? '');
+                $mailbox = Mailbox::find($request->mailbox_id ?? '');
+                $folder = null;
 
-                if (!$folder) {
-                    $response['msg'] = __('Folder not found');
-                    return \Response::json($response);
-                }
-                if (!in_array($folder->type, [Folder::TYPE_SPAM, Folder::TYPE_DELETED])) {
-                    $response['msg'] = __('Folder not found');
-                    return \Response::json($response);
-                }
-                if (!$folder->mailbox->userHasAccess($user->id)) {
-                    $response['msg'] = __('Not enough permissions');
-                    return \Response::json($response);
+                if ($mailbox) {
+                    $folder = Folder::find($request->folder_id ?? '');
+
+                    if (!$folder || $folder->mailbox_id != $mailbox->id
+                        || !in_array($folder->type, [Folder::TYPE_SPAM, Folder::TYPE_DELETED])
+                    ) {
+                        $response['msg'] = __('Folder not found');
+                        return \Response::json($response);
+                    }
+                    if (!$mailbox->userHasAccess($user->id)) {
+                        $response['msg'] = __('Not enough permissions');
+                        return \Response::json($response);
+                    }
+                } else {
+                    // Virtual mailbox:
+                    // folder_id contains folder type and folders of this type
+                    // are emptied by the module in all mailboxes via the hook below.
                 }
 
                 $response = \Eventy::filter('conversations.empty_folder', $response, 
@@ -2454,6 +2464,35 @@ class ConversationsController extends Controller
                 }
                 break;
 
+            case 'conv_list':
+                $mailbox = Mailbox::find($request->mailbox_id);
+                $folder = null;
+
+                if (!$mailbox) {
+                    $response['msg'] = __('Mailbox not found');
+                } elseif (!$mailbox->userHasAccess($user->id)) {
+                    $response['msg'] = __('Action not authorized');
+                }
+
+                if (!$response['msg']) {
+                    $folder = $mailbox->getAssesibleFolders()->where('id', (int)$request->folder_id)->first();
+                    if (!$folder || !$user->can('view', $folder)) {
+                        $response['msg'] = __('Not enough permissions');
+                    }
+                }
+
+                if (!$response['msg']) {
+                    $conversations = Conversation::getConvList($user, $folder, (int)$request->offset);
+
+                    $response['html'] = \View::make('conversations/partials/conv_list')->with([
+                            //'folder'                  => $folder,
+                            'conversations'           => $conversations,
+                            'current_conversation_id' => (int)$request->conversation_id,
+                        ])->render();
+                    $response['status'] = 'success';
+                }
+                break;
+
             case 'retry_send':
                 $thread = Thread::find($request->thread_id);
 
@@ -2502,6 +2541,9 @@ class ConversationsController extends Controller
                         $conversation_id = (int)$request->conversation_id ?? 0;
 
                         $prev_conversations = $mailbox->conversations()
+                            ->when($user->canSeeOnlyAssignedConversations(), function ($query) use ($user) {
+                                return $query->where('conversations.user_id', $user->id);
+                            })
                             ->where('customer_id', $customer->id)
                             ->where('id', '<>', $conversation_id)
                             ->where('status', '!=', Conversation::STATUS_SPAM)
@@ -2722,6 +2764,9 @@ class ConversationsController extends Controller
 
         if ($conversation->customer_id) {
             $prev_conversations = $conversation->mailbox->conversations()
+                                    ->when($user->canSeeOnlyAssignedConversations(), function ($query) use ($user) {
+                                        return $query->where('conversations.user_id', $user->id);
+                                    })
                                     ->where('customer_id', $conversation->customer_id)
                                     ->where('id', '<>', $conversation->id)
                                     ->where('status', '!=', Conversation::STATUS_SPAM)
@@ -2937,10 +2982,11 @@ class ConversationsController extends Controller
             $response['msg'] = __('Not enough permissions');
         }
 
+        // Check access to the folder already includes checking access to mailbox.
         // We should not use mailbox_id from the request, as it can be changed.
-        if (!$response['msg'] && !$user->can('view', $folder->mailbox)) {
-            $response['msg'] = __('Not enough permissions');
-        }
+        // if (!$response['msg'] && !$user->can('view', $folder->mailbox)) {
+        //     $response['msg'] = __('Not enough permissions');
+        // }
 
         if (!$response['msg']) {
             $query_conversations = Conversation::getQueryByFolder($folder, $user->id);

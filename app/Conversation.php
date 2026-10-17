@@ -204,6 +204,11 @@ class Conversation extends Model
     const DEFAULT_LIST_SIZE = 50;
 
     /**
+     * Default size of the conversations list.
+     */
+    const CONV_LIST_SIZE = 15;
+
+    /**
      * Default size of the chats list.
      */
     const CHATS_LIST_SIZE = 50;
@@ -883,7 +888,7 @@ class Conversation extends Model
         }
         //$query = self::where('folder_id', $folder->id)->where('id', '<>', $this->id);
         $query = self::getQueryByFolder($folder, \Auth::id())
-            ->where('id', '<>', $this->id);
+            ->where('conversations.id', '<>', $this->id);
 
         $query = \Eventy::filter('conversation.get_nearby_query', $query, $this, $mode, $folder);
 
@@ -2510,8 +2515,11 @@ class Conversation extends Model
     public static function refreshConversations($conversation, $thread)
     {
         \App\Events\RealtimeConvNewThread::dispatchSelf($thread);
-        \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id, $thread->id, (int)$conversation->isChat());
+        \App\Events\RealtimeMailboxNewThread::dispatchSelf($conversation->mailbox_id, $thread->id, (int)$conversation->isChat(), $thread->state);
+        // Alerts about new conversations in a mailbox.
         \App\Events\RealtimeChat::dispatchSelf($conversation->mailbox_id, $thread->id, (int)$conversation->isChat());
+        // Alerts about new conversations in a folder.
+        \App\Events\RealtimeConvList::dispatchSelf($conversation->folder_id, $thread->id);
     }
 
     public static function getConvTableSorting($request = null)
@@ -2777,6 +2785,29 @@ class Conversation extends Model
         }
 
         return $chats;
+    }
+
+    // Get conversation list for Conversations column.
+    public static function getConvList($user, $folder, $offset = 0)
+    {
+        $query_conversations = Conversation::getQueryByFolder($folder, $user->id);
+        $folder->queryAddOrderBy($query_conversations);
+
+        // Check access.
+        if ($user->canSeeOnlyAssignedConversations()) {
+            $query_conversations->where('conversations.user_id', $user->id);
+        }
+        // Not using standard pagination allow to avoid extra count() SQL query.
+        $conversations = $query_conversations
+            ->offset($offset)
+            ->limit(Conversation::CONV_LIST_SIZE+1)
+            ->get();
+
+        if (count($conversations)) {
+            Conversation::loadCustomers($conversations);
+        }
+
+        return $conversations;
     }
 
     public static function queryContainsStr($query_str, $substr)

@@ -1988,6 +1988,7 @@ class Helper
         return \DB::connection()->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) == 'pgsql';
     }
 
+    // Case insensitive LIKE for MySQL/MariaDB and PostgreSQL.
     public static function sqlLikeOperator()
     {
         return self::isPgSql() ? 'ilike' : 'like';
@@ -2028,6 +2029,11 @@ class Helper
     public static function isPrint()
     {
         return (bool)app('request')->input('print');
+    }
+
+    public static function isConvListVisible()
+    {
+        return (int)request()->cookie('conv_col');
     }
 
     public static function isDev()
@@ -2373,6 +2379,11 @@ class Helper
     {
         // Skip if already has brackets
         if (preg_match('/\[[a-fA-F0-9:\.]+\]/', $url)) {
+            return $url;
+        }
+
+        // Skip host with port (http://127.0.0.1:7700)
+        if (preg_match('/^https?:\/\/[^\/?#:]+:\d+([\/?#]|$)/', $url)) {
             return $url;
         }
 

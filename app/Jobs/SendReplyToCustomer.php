@@ -163,13 +163,35 @@ class SendReplyToCustomer implements ShouldQueue
             }
         }
 
+        // The thread which the reply is sent in reply to.
+        // This is the last customer thread, and if there are no customer threads yet
+        // (conversation has been started by an agent and the customer has not replied),
+        // this is the previous reply sent by an agent. Without it follow-up emails have
+        // no In-Reply-To and References headers and are not threaded by the recipients.
+        // https://github.com/freescout-help-desk/freescout/issues/5726
+        $prev_reply_to_thread = $last_customer_thread;
+        if (!$new && !$prev_reply_to_thread) {
+            $i = 0;
+            foreach ($this->threads as $thread) {
+                if ($i > 0 && $thread->type == Thread::TYPE_MESSAGE) {
+                    $prev_reply_to_thread = $thread;
+                    break;
+                }
+                $i++;
+            }
+        }
+
         // In-Reply-To and References headers.
         $references = '';
-        if (!$new && !empty($last_customer_thread) && $last_customer_thread->message_id) {
+        if (!$new
+            && !empty($prev_reply_to_thread)
+            // Message-ID of a user thread is always generated.
+            && ($prev_reply_to_thread->isUserMessage() || $prev_reply_to_thread->message_id)
+        ) {
 
             // Always put real Message-ID into In-Reply-To field.
             // https://github.com/freescout-help-desk/freescout/issues/5620
-            $headers['In-Reply-To'] = '<'.$last_customer_thread->getMessageId().'>';
+            $headers['In-Reply-To'] = '<'.$prev_reply_to_thread->getMessageId().'>';
             //$headers['References'] = '<'.$last_customer_thread->message_id.'>';
             // https://github.com/freescout-helpdesk/freescout/issues/3175
             $i = 0;

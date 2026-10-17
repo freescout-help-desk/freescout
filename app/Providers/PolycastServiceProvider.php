@@ -127,83 +127,130 @@ class PolycastServiceProvider extends ServiceProvider
     }
 
     /**
+     * Sanitize conversation ID received from the browser.
+     * Only a positive integer is accepted, everything else is ignored.
+     *
+     * @return int|null
+     */
+    public static function sanitizeConversationId($value)
+    {
+        if (!is_scalar($value) || is_bool($value)) {
+            return null;
+        }
+        $value = (string)$value;
+
+        // MySQL INT UNSIGNED fits into 10 digits.
+        if (!ctype_digit($value) || strlen($value) > 10) {
+            return null;
+        }
+        $value = (int)$value;
+
+        return $value > 0 ? $value : null;
+    }
+
+    /**
+     * Check if the user is allowed to view the conversation.
+     *
+     * @param Conversation|null $conversation
+     * @param \App\User|null    $user
+     *
+     * @return bool
+     */
+    public static function canView($conversation, $user)
+    {
+        return $conversation && $user && $user->can('view', $conversation);
+    }
+
+    /**
      * Process conversation viewers.
      */
     public function processConvView($request)
     {
-        // Periodically save info indicating that user is still viewing the conversation.
-        $viewing_conversation_id = null;
-        if (!empty($request->data) && !empty($request->data['conversation_id'])) {
-            $viewing_conversation_id = $request->data['conversation_id'];
-
-            if (!empty($request->data['conversation_view_focus'])) {
-                $conversation = Conversation::find($request->data['conversation_id']);
-                if ($conversation) {
-                    \Eventy::action('conversation.view.focus', $conversation);
-                }
-            }
+        $data = $request->data;
+        if (empty($data) || !is_array($data) || empty($data['conversation_id'])) {
+            return;
         }
-        if ($viewing_conversation_id) {
 
-            $user = auth()->user();
-            $now = Carbon::now();
-            
-            $cache_key = 'conv_view_'.$user->id.'_'.$viewing_conversation_id;
-            $cache_data = \Cache::get($cache_key);
-            $view_date = null;
-            $replying_changed = false;
+        // Conversation ID is untrusted: it must be a positive integer.
+        $viewing_conversation_id = self::sanitizeConversationId($data['conversation_id']);
+        if (!$viewing_conversation_id) {
+            return;
+        }
 
-            // t - date.
-            // r - replying.
-            if ($cache_data) {
-                if (isset($cache_data['t']) && isset($cache_data['r'])) {
-                    $view_date = Carbon::createFromFormat('Y-m-d H:i:s', $cache_data['t']);
+        $user = auth()->user();
+        if (!$user) {
+            return;
+        }
 
-                    // Let other users know that user started to reply.
-                    if (!(int)$cache_data['r'] && (int)$request->data['replying']) {
-                        // Started to reply.
-                        \App\Events\RealtimeConvView::dispatchSelf($viewing_conversation_id, $user, true);
-                        $replying_changed = true;
-                    } elseif ((int)$cache_data['r'] && !(int)$request->data['replying']) {
-                        // Finished to reply.
-                        \App\Events\RealtimeConvView::dispatchSelf($viewing_conversation_id, $user, false);
-                        $replying_changed = true;
-                    }
-                } else {
+        $replying = !empty($data['replying']) ? 1 : 0;
+        $focus = !empty($data['conversation_view_focus']);
+        $now = Carbon::now();
+
+        // Periodically save info indicating that user is still viewing the conversation.
+        $cache_key = 'conv_view_'.$user->id.'_'.$viewing_conversation_id;
+        $cache_data = \Cache::get($cache_key);
+        $view_date = null;
+        $replying_changed = false;
+
+        // t - date.
+        // r - replying.
+        if ($cache_data) {
+            if (isset($cache_data['t']) && isset($cache_data['r'])) {
+                $view_date = Carbon::createFromFormat('Y-m-d H:i:s', $cache_data['t']);
+
+                // Let other users know that user started to reply.
+                if (!(int)$cache_data['r'] && $replying) {
+                    // Started to reply.
+                    \App\Events\RealtimeConvView::dispatchSelf($viewing_conversation_id, $user, true);
+                    $replying_changed = true;
+                } elseif ((int)$cache_data['r'] && !$replying) {
+                    // Finished to reply.
+                    \App\Events\RealtimeConvView::dispatchSelf($viewing_conversation_id, $user, false);
                     $replying_changed = true;
                 }
+            } else {
+                $replying_changed = true;
             }
-            
-            if (!$cache_data || $replying_changed || ($view_date && $now->diffInSeconds($view_date) > 15)) {
-                // Remember date of the last view in the cache.
-                // Store for 2 minutes.
-                $cache_data = [
-                    't' => $now->toDateTimeString(),
-                    'r' => (int)$request->data['replying']
-                ];
-                \Cache::put($cache_key, $cache_data, 1);
+        }
 
-                // Job could not detect when user finishes to view converrsation.
-                // We are using cron.
-                // \App\Jobs\CheckConvView::dispatch($viewing_conversation_id, $user->id)
-                //     ->delay(now()->addSeconds(25))
-                //     ->onQueue(\Helper::QUEUE_DEFAULT);
+        $need_save = !$cache_data || $replying_changed || ($view_date && $now->diffInSeconds($view_date) > 15);
 
-                $conv_key = 'conv_view';
-                $conv_data = \Cache::get($conv_key) ?? [];
-                $conv_data[$viewing_conversation_id][$user->id] = $cache_data;
-                \Cache::put($conv_key, $conv_data, 20 /*minutes*/);
-                
-                // \DB::table('polycast_events')->insert([
-                //     'channels'   => json_encode([['name' => 'conv.view']]),
-                //     'event'      => 'App\Events\RealtimeConvView',
-                //     'payload'    => json_encode([
-                //         'conversation_id' => $viewing_conversation_id,
-                //         'reiterating' => true
-                //     ]),
-                //     'created_at' => Carbon::now()->toDateTimeString(),
-                // ]);
+        // The conversation is loaded and access is checked only if needed.
+        $conversation = null;
+        $can_view = false;
+        if ($focus || $need_save) {
+            $conversation = Conversation::find($viewing_conversation_id);
+            $can_view = self::canView($conversation, $user);
+        }
+
+        if ($focus && $can_view) {
+            \Eventy::action('conversation.view.focus', $conversation);
+        }
+
+        if ($need_save) {
+            // Nothing is stored for conversations which do not exist
+            // or which the user is not allowed to view.
+            if (!$can_view) {
+                return;
             }
+
+            // Remember date of the last view in the cache.
+            // Store for 2 minutes.
+            $cache_data = [
+                't' => $now->toDateTimeString(),
+                'r' => $replying,
+            ];
+            \Cache::put($cache_key, $cache_data, 1);
+
+            // Job could not detect when user finishes to view converrsation.
+            // We are using cron.
+            $conv_key = 'conv_view';
+            $conv_data = \Cache::get($conv_key);
+            if (!is_array($conv_data)) {
+                $conv_data = [];
+            }
+            $conv_data[$viewing_conversation_id][$user->id] = $cache_data;
+            \Cache::put($conv_key, $conv_data, 20 /*minutes*/);
         }
     }
 

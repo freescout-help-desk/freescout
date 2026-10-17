@@ -7,6 +7,7 @@ namespace App\Events;
 use App\Conversation;
 use App\Mailbox;
 use App\Folder;
+use App\Thread;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -70,12 +71,13 @@ class RealtimeMailboxNewThread implements ShouldBroadcastNow
     /**
      * Helper funciton.
      */
-    public static function dispatchSelf($mailbox_id, $thread_id, $is_chat)
+    public static function dispatchSelf($mailbox_id, $thread_id, $is_chat, $state)
     {
         $notification_data = [
             'mailbox_id' => $mailbox_id,
             'thread_id'  => $thread_id,
             'is_chat'    => (int)$is_chat,
+            'state'      => (int)$state,
         ];
         event(new \App\Events\RealtimeMailboxNewThread($notification_data));
     }
@@ -108,7 +110,7 @@ class RealtimeMailboxNewThread implements ShouldBroadcastNow
         $payload->folders_html = \View::make('mailboxes/partials/folders')->with($template_data)->render();
 
         // Audio notification for chats.
-        if ((int)$payload->is_chat && $payload->thread_id) {
+        if ((int)$payload->is_chat && $payload->thread_id && $payload->state != Thread::STATE_DRAFT) {
             $payload->audio = [
                 'thread_id' => $payload->thread_id,
             ];

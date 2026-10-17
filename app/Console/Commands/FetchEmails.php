@@ -258,6 +258,13 @@ class FetchEmails extends Command
             try {
                 $folder = \MailHelper::getImapFolder($client, $folder_name);
             } catch (\Exception $e) {
+                // If the stream has timed out there is no point in asking about other folders.
+                // https://github.com/freescout-help-desk/freescout/issues/5724
+                if ($this->isStreamTimeout($e->getMessage())) {
+                    $this->logError('Folder: '.$folder_name.'; Error: '.$e->getMessage());
+                    $folders = [];
+                    break;
+                }
                 // Just log error and continue.
                 $this->error('['.date('Y-m-d H:i:s').'] IMAP folder ('.$folder_name.') not found on the mail server: '.$e->getMessage());
             }
@@ -316,8 +323,17 @@ class FetchEmails extends Command
                 // If the SEARCH count fails (e.g. charset issues on some servers), fall
                 // back to a single bunch so we never silently fetch nothing. The
                 // per-bunch charset retry below still recovers the rest on such servers.
-                $total_messages = $page_size;
                 $this->logError('Folder: '.$folder->name.'; Count error: '.$e->getMessage());
+
+                // The stream has timed out: do not reuse the dead socket for fetching messages,
+                // it would just wait for another full timeout. Give up on this mailbox,
+                // the next fetch run will retry.
+                // https://github.com/freescout-help-desk/freescout/issues/5724
+                if ($this->isStreamTimeout($e->getMessage())) {
+                    break;
+                }
+
+                $total_messages = $page_size;
             }
             $total_pages = ($page_size > 0) ? (int) ceil($total_messages / $page_size) : 1;
 
@@ -343,6 +359,13 @@ class FetchEmails extends Command
                     $last_error = $e->getMessage().'; File: '.$e->getFile().' ('.$e->getLine().')'.')';
                 }
 
+                // The stream has timed out: stop working with this mailbox.
+                // https://github.com/freescout-help-desk/freescout/issues/5724
+                if ($last_error && $this->isStreamTimeout($last_error)) {
+                    $this->logError('Folder: '.$folder->name.'; Error: '.$last_error);
+                    break 2;
+                }
+
                 if ($last_error && stristr($last_error, 'The specified charset is not supported')) {
                     $errors_count = count($client->getErrors());
                     // Solution for MS mailboxes.
@@ -359,7 +382,7 @@ class FetchEmails extends Command
 
                 if ($last_error && !\Str::startsWith($last_error, 'Mailbox is empty')) {
                     // Throw exception for INBOX only
-                    if ($folder->name == 'INBOX' && !$messages) {
+                    if ($folder->name == 'INBOX' && $messages->isEmpty()) {
                         throw new \Exception($last_error, 1);
                     } else {
                         $this->error('['.date('Y-m-d H:i:s').'] '.$last_error);
@@ -480,8 +503,10 @@ class FetchEmails extends Command
             // https://github.com/freescout-help-desk/freescout/issues/5591
             $new_email_with_same_message_id = false;
             if (!$extra && $duplicate_message_id) {
-                // Compare headers
-                if ($duplicate_message_id->headers != $this->headerToStr($message->getHeader())) {
+                if (self::isNewEmailWithSameMessageId(
+                    $duplicate_message_id->headers,
+                    $this->headerToStr($message->getHeader())
+                )) {
                     $new_email_with_same_message_id = true;
                 }
             }
@@ -1118,7 +1143,15 @@ class FetchEmails extends Command
                 $this->logError('Error occurred processing message');
             }
         } catch (\Exception $e) {
-            $this->setSeen($message, $mailbox);
+            // The connection may be already closed or timed out (for example when
+            // the message is processed in the extra_import loop after disconnect),
+            // setSeen() must not break the whole fetching run.
+            // https://github.com/freescout-help-desk/freescout/issues/5724
+            try {
+                $this->setSeen($message, $mailbox);
+            } catch (\Exception $e_seen) {
+                $this->logError('Could not mark message as seen: '.$e_seen->getMessage());
+            }
             $this->logError(\Helper::formatException($e));
         }
     }
@@ -1908,6 +1941,18 @@ class FetchEmails extends Command
         return $attr;
     }
 
+    /**
+     * The same email may be fetched with different header sets (a copy from the Sent folder has only
+     * the minimal headers), so a different headers string alone does not make it a new email.
+     * It is new only if the Date differs too.
+     */
+    public static function isNewEmailWithSameMessageId($existing_headers, $new_headers)
+    {
+        return $existing_headers != $new_headers
+            && trim(\MailHelper::getHeader($existing_headers, 'Date'))
+                != trim(\MailHelper::getHeader($new_headers, 'Date'));
+    }
+
     public function headerToStr($header)
     {
         if (!is_string($header)) {
@@ -1965,6 +2010,14 @@ class FetchEmails extends Command
             }
             Customer::create($item->mail, $data);
         }
+    }
+
+    /**
+     * Check if the error means that the IMAP stream has timed out or was closed.
+     */
+    public function isStreamTimeout($error)
+    {
+        return is_string($error) && stripos($error, 'no response') !== false;
     }
 
     public function setSeen($message, $mailbox)

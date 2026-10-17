@@ -241,6 +241,11 @@
                 <div class="sidebar-2col">
                     @yield('sidebar')
                 </div>
+                @if ($__env->yieldContent('conv_list_col'))
+                    <div id="conv-list-2col" @if (!Helper::isConvListVisible())class="hidden"@endif>
+                        @yield('conv_list_col')
+                    </div>
+                @endif
                 <div class="content-2col">
                     @yield('content')
                 </div>

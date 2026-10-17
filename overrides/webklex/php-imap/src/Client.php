@@ -201,13 +201,15 @@ class Client {
             $this->setAccountConfig($key, $config, $default_config);
         }
 
-        // Timeout can be set globally via IMAP_TIMEOUT (imap.options.timeout)
-        // unless it has been specified for the account.
-        if (!isset($config['timeout']) && !isset($default_config['timeout'])) {
-            $timeout = (int)ClientManager::get('options.timeout');
-            if ($timeout > 0) {
-                $this->timeout = $timeout;
-            }
+        // Timeout is set globally via IMAP_TIMEOUT (imap.options.timeout).
+        // It has to be applied unconditionally after the account config has been
+        // loaded: the account config always contains a default "timeout" value
+        // (from the library config), so checking whether it is set would make
+        // IMAP_TIMEOUT ignored.
+        // https://github.com/freescout-help-desk/freescout/issues/5731
+        $timeout = (int)ClientManager::get('options.timeout');
+        if ($timeout > 0) {
+            $this->timeout = $timeout;
         }
 
         return $this;
@@ -411,8 +413,16 @@ class Client {
      * @return $this
      */
     public function disconnect(): Client {
-        if ($this->isConnected() && $this->connection !== false) {
-            $this->connection->logout();
+        // Do not use isConnected() here: it sends NOOP over the socket and on
+        // a dead stream throws "no response" after another full timeout.
+        // logout() itself is safe for dead and already closed streams.
+        // https://github.com/freescout-help-desk/freescout/issues/5724
+        if ($this->connection) {
+            try {
+                $this->connection->logout();
+            } catch (\Throwable $e) {
+                // Nothing to do: the connection is gone anyway.
+            }
         }
         $this->active_folder = null;
 

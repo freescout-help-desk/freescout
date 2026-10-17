@@ -1363,7 +1363,7 @@ class User extends Authenticatable
 
     public function canSeeOnlyAssignedConversations()
     {
-        return $this->hasManageMailboxPermission(0, Mailbox::ACCESS_PERM_ASSIGNED);
+        return !$this->isAdmin() && $this->hasManageMailboxPermission(0, Mailbox::ACCESS_PERM_ASSIGNED);
     }
 
     public function deleteUser($auth_user, $assign_user)

@@ -48,6 +48,32 @@ class CheckConvViewers extends Command
 
         $now = Carbon::now();
         $need_update = false;
+
+        // Drop entries which are not valid conversation IDs or which do not exist
+        // without creating any events or doing extra work for them.
+        $valid_ids = [];
+        foreach ($cache_data as $conversation_id => $conv_data) {
+            $id = \App\Providers\PolycastServiceProvider::sanitizeConversationId($conversation_id);
+            if ($id) {
+                $valid_ids[] = $id;
+            } else {
+                unset($cache_data[$conversation_id]);
+                $need_update = true;
+            }
+        }
+        $existing_ids = [];
+        foreach (array_chunk($valid_ids, 500) as $ids_chunk) {
+            foreach (\App\Conversation::whereIn('id', $ids_chunk)->pluck('id') as $existing_id) {
+                $existing_ids[(int)$existing_id] = true;
+            }
+        }
+        foreach ($valid_ids as $id) {
+            if (!isset($existing_ids[$id])) {
+                unset($cache_data[$id]);
+                $need_update = true;
+            }
+        }
+
         foreach ($cache_data as $conversation_id => $conv_data) {
             if (empty($conv_data) || !is_array($conv_data)) {
                 continue;

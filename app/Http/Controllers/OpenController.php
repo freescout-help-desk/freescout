@@ -118,15 +118,36 @@ class OpenController extends Controller
             'time_format' => $request->time_format,
         ];
 
-        $user->fill($request_data);
+        $password = bcrypt($request->password);
+        $photo_url = $user->photo_url;
 
-        $user->password = bcrypt($request->password);
+        $user = \DB::transaction(function () use ($user, $hash, $invite_sent_at, $request, $request_data, $password, $photo_url) {
+            // Lock and revalidate the invitation immediately before consuming it.
+            // This prevents concurrent requests from redeeming the same invitation.
+            $user = User::where('id', $user->id)
+                ->where('invite_hash', $hash)
+                ->lockForUpdate()
+                ->first();
 
-        $user->invite_state = User::INVITE_STATE_ACTIVATED;
-        $user->invite_hash = '';
-        
-        $user = \Eventy::filter('user.setup_save', $user, $request);
-        $user->save();
+            if (!$user) {
+                abort(404);
+            }
+
+            if (!$this->isInviteExpirationValid($invite_sent_at, $user)) {
+                \Helper::denyAccess();
+            }
+
+            $user->fill($request_data);
+            $user->photo_url = $photo_url;
+            $user->password = $password;
+            $user->invite_state = User::INVITE_STATE_ACTIVATED;
+            $user->invite_hash = '';
+
+            $user = \Eventy::filter('user.setup_save', $user, $request);
+            $user->save();
+
+            return $user;
+        });
 
         // Login user
         Auth::guard()->login($user);

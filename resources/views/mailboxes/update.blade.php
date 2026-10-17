@@ -194,8 +194,11 @@
 
                             <div class="col-sm-6">
                                 <div class="controls">
+                                    @php
+                                        $chat_available = \Helper::isChatModeAvailable()
+                                    @endphp
                                     <label for="chat_start_new" class="checkbox inline plain">
-                                        <input type="checkbox" name="chat_start_new" value="1" id="chat_start_new" @if (old('chat_start_new', $mailbox->getMeta('chat_start_new')))checked="checked"@endif> <span>{{ __('Start a new conversation when receiving a reply to the closed / deleted Chat conversation') }}</span>
+                                        <input type="checkbox" name="chat_start_new" value="1" id="chat_start_new" @if (!$chat_available) disabled @endif @if (old('chat_start_new', $mailbox->getMeta('chat_start_new')))checked="checked"@endif> <span @if (!$chat_available)class="text-help"@endif>{{ __('Start a new conversation when receiving a reply to the closed / deleted Chat conversation') }}</span>
                                     </label>
                                 </div>
                             </div>

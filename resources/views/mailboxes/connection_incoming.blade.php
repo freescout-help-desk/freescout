@@ -236,7 +236,7 @@
                             </button>
                             &nbsp;
                             <button type="button" class="btn btn-default" id="check-connection" data-loading-text="{{ __('Connecting') }}…" @if (!$mailbox->isOutActive()) disabled="disabled" @endif>
-                                {{ __('Check Connection') }}
+                                <small>{{ __('Check Connection') }}</small>
                             </button>
                         </div>
                     </div>

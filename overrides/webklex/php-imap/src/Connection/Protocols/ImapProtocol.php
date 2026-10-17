@@ -56,6 +56,15 @@ class ImapProtocol extends Protocol {
     public static $last_error = '';
 
     /**
+     * Set when a read from the stream failed (timeout / connection dropped).
+     * Once the stream is in this state any further request would just wait for
+     * another full socket timeout, so connected() and logout() do not talk to it.
+     * https://github.com/freescout-help-desk/freescout/issues/5724
+     * @var bool
+     */
+    protected $stream_dead = false;
+
+    /**
      * Imap constructor.
      * @param bool $cert_validation set to false to skip SSL certificate validation
      * @param mixed $encryption Connection encryption method
@@ -106,6 +115,7 @@ class ImapProtocol extends Protocol {
             // the greeting are considered transient.
             $transient = true;
             try {
+                $this->stream_dead = false;
                 $this->stream = $this->createStream($transport, $host, $port, $this->connection_timeout);
                 $this->greeting = $this->nextLine();
                 $transient = false;
@@ -158,6 +168,7 @@ class ImapProtocol extends Protocol {
         // https://github.com/stevebauman/php-imap/commit/9f661abf7a284871f53ec93984ca48851be7728d#diff-fa4f22d9f79d3e4dd1e5352f5e967291c02a7b3a39e32a0282d9b7d85c707c5aL123
         $line = fgets($this->stream);
         if ($line === false) {
+            $this->stream_dead = true;
             throw new RuntimeException('no response');
         }
 
@@ -565,13 +576,18 @@ class ImapProtocol extends Protocol {
     public function logout(): bool {
         $result = false;
         if ($this->stream) {
-            try {
-                $result = $this->requestAndResponse('LOGOUT', [], true);
-            } catch (Exception $e) {}
-            fclose($this->stream);
+            // Do not send LOGOUT over a stream which has already timed out:
+            // it would only wait for another full socket timeout.
+            if (!$this->stream_dead) {
+                try {
+                    $result = $this->requestAndResponse('LOGOUT', [], true);
+                } catch (Exception $e) {}
+            }
+            @fclose($this->stream);
             $this->stream = null;
             $this->uid_cache = null;
         }
+        $this->stream_dead = false;
 
         return $result !== false;
     }
@@ -582,6 +598,10 @@ class ImapProtocol extends Protocol {
      * @return bool
      */
     public function connected(): bool {
+        // Stream has already timed out - no need to send NOOP to find that out.
+        if ($this->stream_dead) {
+            return false;
+        }
         if ((bool)$this->stream) {
             $time = time();
             if (self::$last_connected_check+1 < $time) {
@@ -589,7 +609,15 @@ class ImapProtocol extends Protocol {
                     self::$last_connected_check = $time;
                     return true;
                 }
-                $response = $this->requestAndResponse('NOOP');
+                try {
+                    $response = $this->requestAndResponse('NOOP');
+                } catch (Exception $e) {
+                    // Timed out or closed stream: report "not connected" instead of throwing,
+                    // so that callers (checkConnection() etc.) can reconnect.
+                    // https://github.com/freescout-help-desk/freescout/issues/5724
+                    $this->stream_dead = true;
+                    return false;
+                }
                 // https://github.com/Webklex/php-imap/pull/449
                 if ($response === false) {
                     return false;

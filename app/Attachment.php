@@ -153,8 +153,22 @@ class Attachment extends Model
         $file_dir = self::generatePath($attachment->id);
 
         $i = 0;
+        // After this number of attempts $i is retrieved from DB
+        // instead of checking file existence.
+        // https://github.com/freescout-help-desk/freescout/issues/5730
+        $check_db_from = 4;
         do {
+            // $i starts from 1.
             $i++;
+            // Try to get the latest $i for this file name from DB.
+            if ($i == $check_db_from) {
+                $db_i = (int)self::where('file_name', $file_name)
+                    ->where('file_dir', 'like', addcslashes($file_dir, '%_\\').'%')
+                    ->count();
+                if ($db_i && $db_i >= $check_db_from-1) {
+                    $i = $db_i + 1;
+                }
+            }
             $file_path = self::DIRECTORY.DIRECTORY_SEPARATOR.$file_dir.$i.DIRECTORY_SEPARATOR.$file_name;
         } while (self::getDisk()->exists($file_path));
 

@@ -402,7 +402,7 @@ class Arr
                     $itemKey = (string) $itemKey;
                 }
 
-                $results[$itemKey] = $itemValue;
+                $results[$itemKey ?? ''] = $itemValue;
             }
         }
 

@@ -37,10 +37,14 @@ class SsrfProtectionsTest extends TestCase
             '[::ffff:127.0.0.1]' => '', // Special IPv6 address
             '::ffff:127.0.0.1' => '', // Special IPv6 address
             '0x00000000000000000000ffff7f000001' => '', // Special IPv6 address
+            '127.0.0.1:7700' => '', // Host with port
+            'localhost:7700' => '', // Host with port
+            '[::1]:7700' => '', // IPv6 with port
 
             // Allowed.
             '2001:0db8:85a3:0000:0000:8a2e:0370:7334' => 'https://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
             'example.org' => 'https://example.org',
+            'example.org:8443' => 'https://example.org:8443',
         ];
         foreach ($test_hosts as $host => $result) {
             $this->assertEquals($result, \Helper::checkUrlHost('https://'.$host), $host);
