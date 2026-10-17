@@ -297,6 +297,7 @@
             "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/QueriesRelationships.php",
             "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Relations/Relation.php",
             "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Relations/BelongsTo.php",
+            "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Relations/HasOneOrMany.php",
             "vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php",
             "vendor/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php",
             "vendor/laravel/framework/src/Illuminate/Pagination/AbstractPaginator.php",

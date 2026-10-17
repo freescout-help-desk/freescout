@@ -1920,6 +1920,8 @@ class Helper
     }
 
     /**
+     * Sanitize SVG images.
+     * 
      * @param string      $file_path Path to the file on the disk.
      * @param string|null $content   File content (if already known).
      * @param string|null $disk      Name of the disk the file is stored on.
