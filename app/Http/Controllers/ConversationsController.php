@@ -3442,12 +3442,15 @@ class ConversationsController extends Controller
             abort(404);
         }
 
-        if ($thread->created_by_user_id != \Auth::id()) {
+        $conversation = $thread->conversation;
+
+        // Only messages sent by this user can be undone. Line items (merge, move, status
+        // change records) are created by the user too but are not messages.
+        if ($thread->created_by_user_id != \Auth::id() || $thread->type == Thread::TYPE_LINEITEM) {
             \Session::flash('flash_error_floating', __('Sending can not be undone'));
             return redirect()->away($conversation->url($conversation->folder_id));
         }
 
-        $conversation = $thread->conversation;
         $this->authorize('view', $conversation);
 
         if (csrf_token() != $token) {
@@ -3458,6 +3461,20 @@ class ConversationsController extends Controller
 
         // Check undo timeout
         if ($thread->created_at->diffInSeconds(now()) > Conversation::UNDO_TIMOUT) {
+            \Session::flash('flash_error_floating', __('Sending can not be undone'));
+            return redirect()->away($conversation->url($conversation->folder_id));
+        }
+
+        // Undoing the first message turns the conversation back into a draft. Refuse it if other
+        // published messages have been added in the meantime (for example by a merge): they would
+        // end up in a draft and be deleted forever when the draft is discarded.
+        if ($thread->first
+            && $conversation->threads()
+                ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
+                ->where('state', '!=', Thread::STATE_DRAFT)
+                ->where('id', '<>', $thread->id)
+                ->exists()
+        ) {
             \Session::flash('flash_error_floating', __('Sending can not be undone'));
             return redirect()->away($conversation->url($conversation->folder_id));
         }
@@ -3513,6 +3530,15 @@ class ConversationsController extends Controller
         // No need to remove notifications, as they won't work if conversation does not exist.
         if ($thread->isForward()) {
             $forwarded_conversation = $thread->getForwardChildConversation();
+            // Do not allow to undo (remove) forwarded conversation is someone
+            // merged into it some other conversation during the UNDO period.
+            if ($forwarded_conversation
+                && $forwarded_conversation->threads()
+                    ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
+                    ->count() > 1
+            ) {
+                $forwarded_conversation = null;
+            }
             if ($forwarded_conversation) {
                 $forwarded_conversation->threads()->delete();
                 // todo: maybe perform soft delete of the conversation.
