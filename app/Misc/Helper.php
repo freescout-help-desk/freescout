@@ -704,7 +704,17 @@ class Helper
         // e.g. "<scr<script>ipt>" or "</scr</script>ipt>": when the inner tag is removed
         // the pieces of the outer one join into a new dangerous tag. So the outer tag
         // has to be matched (and removed) together with the tags nested into its name.
-        $nested = '(?:<[^>]*>)*';
+        // Possessive quantifiers: a backtracking group here needs one PCRE stack frame per
+        // repetition, and a long run of tags made preg_replace() fail (return null).
+        // A nested tag may hold at most one more level of complete tags: with any "<" allowed,
+        // "<s<a>" counted as one tag and every "<s" rescanned the rest of the text (quadratic
+        // time on large bodies). One level covers "<scr<scr<script>ipt>ipt>".
+        $nested = '(?:<(?:[^<>]++|<[^<>]*+>)*+>)*+';
+
+        // If any regex fails (backtrack or JIT stack limit on very large input) the HTML
+        // has not been sanitized, so it is returned escaped instead of as it is.
+        $original_html = (string)$html;
+        $failed = false;
 
         // Repeat the whole pass until nothing changes: removing one tag can join the pieces
         // of another tag that was already processed, e.g. "<sty<input>le>" or "<inp<button>ut>".
@@ -716,10 +726,12 @@ class Helper
 
                 // https://github.com/freescout-help-desk/freescout/issues/5424
                 //$html = preg_replace('#<'.$tag.'(.*?)>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
-                $new = preg_replace('#<'.$tag_name.'\b[^>]*>(.*?)<\s*/\s*'.$tag_name.'\s*>#is', '', $html ?? '');
-                if ($new !== null) {
-                    $html = $new;
+                $new = preg_replace('#<'.$tag_name.'\b[^>]*+>(.*?)<\s*/\s*'.$tag_name.'\s*>#is', '', $html ?? '');
+                if ($new === null) {
+                    $failed = true;
+                    break 2;
                 }
+                $html = $new;
 
                 // Remove unclosed restricted tags.
                 // And keep removing the tag until it's not found anymore.
@@ -727,17 +739,31 @@ class Helper
                 //$html = preg_replace('#<'.$tag.'(.*?)>#is', '', $html ?? '');
                 do {
                     $found = false;
-                    $new = preg_replace('#<'.$tag_name.'\b[^>]*>#is', '', $html ?? '');
-                    if ($new !== null) {
-                        if ($new != $html) {
-                            $found = true;
-                        }
-                        $html = $new;
+                    $new = preg_replace('#<'.$tag_name.'\b[^>]*+>#is', '', $html ?? '');
+                    if ($new === null) {
+                        $failed = true;
+                        break 3;
                     }
+                    if ($new != $html) {
+                        $found = true;
+                    }
+                    $html = $new;
                 } while ($found);
 
+                // A restricted tag left open at the very end, e.g. '<iframe src="..."'. Once the
+                // text is printed in a template the tag would be closed by the markup that follows.
+                $new = preg_replace('#<'.$tag_name.'\b[^>]*+$#is', '', $html ?? '');
+                if ($new === null) {
+                    $failed = true;
+                    break 2;
+                }
+                $html = $new;
             }
         } while ($html !== $html_before_pass);
+
+        if ($failed) {
+            return htmlspecialchars($original_html);
+        }
 
         // Make sure that attributes do not point to the file on the current server.
         foreach ($unsafe_tags as $tag) {
@@ -767,6 +793,9 @@ class Helper
                 },
                 $html
             );
+            if ($html === null) {
+                return htmlspecialchars($original_html);
+            }
         }
 
         return $html;
