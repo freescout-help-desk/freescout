@@ -1181,7 +1181,7 @@ class User extends Authenticatable
 
     public function isActive()
     {
-        return $this->status == self::STATUS_ACTIVE;
+        return ($this->status == self::STATUS_ACTIVE) && !$this->isDeleted();
     }
 
     public function isDisabled()

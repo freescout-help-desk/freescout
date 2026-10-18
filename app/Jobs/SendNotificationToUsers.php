@@ -109,7 +109,8 @@ class SendNotificationToUsers implements ShouldQueue
                 continue;
             }
 
-            if ($user->isDeleted()) {
+            // Disabled or deleted users must not keep receiving conversation content by email.
+            if (!$user->isActive()) {
                 continue;
             }
 

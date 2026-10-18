@@ -723,6 +723,12 @@ class FetchEmails extends Command
                         $this->setSeen($message, $mailbox);
                         return;
                     }
+                    // Disabled and deleted users can not reply by email.
+                    if (!$user->isActive()) {
+                        $this->logError('User is not active and can not reply by email (ID: '.$user_id.')');
+                        $this->setSeen($message, $mailbox);
+                        return;
+                    }
                     // Skip auto-replies sent to the email notification on behalf of a user.
                     // https://github.com/freescout-helpdesk/freescout/issues/4035
                     if (\MailHelper::isAutoResponder($message_header)) {
