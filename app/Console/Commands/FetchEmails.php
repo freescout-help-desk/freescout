@@ -737,6 +737,14 @@ class FetchEmails extends Command
                         return;
                     }
                     $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
+
+                    // The notified thread no longer exists. Stop here: going on to the next
+                    // Message-ID would keep $user and post the message as this user into
+                    // whatever conversation a later reference points to. The "previous thread
+                    // could not be determined" handling below informs the user.
+                    if (!$prev_thread) {
+                        break;
+                    }
                 } else {
                     // Message from Customer or User replied to his reply to notification
                     $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
@@ -984,12 +992,14 @@ class FetchEmails extends Command
                 $original_sender = $this->getOriginalSenderFromFwd($body);
                 
                 if ($original_sender) {
-                    // Check if sender is the existing user.
-                    $sender_is_user = User::nonDeleted()->where('email', $from)->exists();
+                    // Check if sender is the existing active user.
+                    // The From header is used, not Reply-To, which anyone can set to a user's address.
+                    $sender_is_user = $user_from && User::where('status', User::STATUS_ACTIVE)->where('email', $user_from)->exists();
                     // Check Alternate emails.
                     // https://github.com/freescout-help-desk/freescout/issues/5047
-                    if (!$sender_is_user) {
-                        $sender_is_user = User::findByAlternateEmail($from);
+                    if (!$sender_is_user && $user_from) {
+                        $alternate_user = User::findByAlternateEmail($user_from);
+                        $sender_is_user = $alternate_user && $alternate_user->isActive();
                     }
                     
                     if ($sender_is_user) {
