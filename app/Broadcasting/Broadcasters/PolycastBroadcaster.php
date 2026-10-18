@@ -61,12 +61,30 @@ class PolycastBroadcaster extends Broadcaster
         }
 
         // For connect request
-        if (empty($request->channels)) {
+        if (empty($request->input('channels'))) {
             return true;
+        }
+        if (!is_array($request->input('channels'))) {
+            throw new AccessDeniedHttpException();
         }
 
         // Check all channels
-        foreach ($request->channels as $channel_name => $channel_info) {
+        // Read the same way as in the polycast/receive route.
+        foreach ($request->input('channels') as $channel_name => $channel_info) {
+
+            // Channels are looked up with LIKE on the JSON stored in polycast_events,
+            // so names with quotes or other special characters could match a private
+            // channel without being authorized.
+            if (!is_string($channel_name) || !preg_match('/^[A-Za-z0-9_.:\-]+$/', $channel_name)) {
+                throw new AccessDeniedHttpException();
+            }
+            // LIKE is case-insensitive on MySQL, so "PRIVATE-App.User.1" would match
+            // the stored "private-App.User.1" while skipping the check below.
+            if (preg_match('/^(private|presence)-/i', $channel_name)
+                && !Str::startsWith($channel_name, ['private-', 'presence-'])
+            ) {
+                throw new AccessDeniedHttpException();
+            }
 
             // Copied from Illuminate\Broadcasting\Broadcasters\PusherBroadcaster
             //if (Str::startsWith($channel_name, ['private-', 'presence-']) &&
