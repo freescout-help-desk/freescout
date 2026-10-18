@@ -1372,6 +1372,8 @@ class Helper
      */
     public static function htmlToText($text, $embed_images = false, $options = ['width' => 0])
     {
+        $text = (string)$text;
+
         // Process blockquotes.
         $text = str_ireplace('<blockquote>', '<div>', $text);
         $text = str_ireplace('</blockquote>', '</div>', $text);

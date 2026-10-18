@@ -959,7 +959,7 @@ class Thread extends Model
         $thread = new Thread();
         $thread->conversation_id = $conversation->id;
         $thread->type = $type;
-        $thread->body = $body;
+        $thread->body = (string)$body;
         $thread->status = $conversation->status;
         $thread->state = Thread::STATE_PUBLISHED;
 
@@ -1070,7 +1070,7 @@ class Thread extends Model
         $thread->source_type = Thread::SOURCE_TYPE_API;
         $thread->state = $data['state'] ?? Thread::STATE_PUBLISHED;
         $thread->customer_id = $customer->id ?? $conversation->customer_id ?? null;
-        $thread->body = $data['body'];
+        $thread->body = (string)$data['body'];
         if (!$is_customer) {
             $thread->setTo([$customer->getMainEmail()]);
         }
