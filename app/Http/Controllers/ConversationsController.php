@@ -423,10 +423,8 @@ class ConversationsController extends Controller
                 $subject = preg_replace('/^Fwd:/i', 'Re: ', $subject);
 
                 $thread = new Thread();
-                // Body of the original thread is untrusted (it may come from an incoming email)
-                // and gets materialized as live DOM by the editor inside the form,
-                // so dangerous tags and form controls must be removed.
-                $thread->body = \Helper::stripDangerousTags($orig_thread->body);
+                // Body is sanitized on output.
+                $thread->body = $orig_thread->body;
                 // If this is a forwarded message, try to fetch From
                 preg_match_all("/From:[^<\n]+<([^<\n]+)>/m", html_entity_decode(strip_tags($thread->body)), $m);
 
@@ -467,7 +465,8 @@ class ConversationsController extends Controller
 
         if ($request->get('body') && !$thread) {
             $thread = new Thread();
-            $thread->body = \Helper::stripDangerousTags($request->get('body'));
+            // Body is sanitized on output.
+            $thread->body = $request->get('body');
         }
 
         $conversation->subject = $subject;
@@ -1813,7 +1812,7 @@ class ConversationsController extends Controller
                         'to'          => $thread->getToFirst(),
                         'cc'          => $thread->getCcArray(),
                         'bcc'         => $thread->getBccArray(),
-                        'body'        => \Helper::stripDangerousTags($thread->body),
+                        'body'        => $thread->getCleanBody(),
                         'is_forward'  => (int)$thread->isForward(),
                         'attachments' => $attachments,
                     ];
@@ -2069,7 +2068,7 @@ class ConversationsController extends Controller
                 }
 
                 if (!$response['msg']) {
-                    $thread->body = \Helper::stripDangerousTags($thread->body);
+                    $thread->body = $thread->getCleanBody();
 
                     $data = [
                         'thread' => $thread,
