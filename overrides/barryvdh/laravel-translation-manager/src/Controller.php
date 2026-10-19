@@ -103,6 +103,10 @@ class Controller extends BaseController
 
     public function postAdd($group = null)
     {
+        if (!$this->manager->isValidGroup($group)) {
+            return redirect()->back();
+        }
+
         $keys = explode("\n", request()->get('keys'));
 
         foreach($keys as $key){
@@ -120,7 +124,16 @@ class Controller extends BaseController
             $name = request()->get('name');
             $value = request()->get('value');
 
+            if (!is_string($name) || strpos($name, '|') === false) {
+                abort(400);
+            }
+
             list($locale, $key) = explode('|', $name, 2);
+
+            // Locale and group are used to build file paths when translations are published.
+            if (!$this->manager->isValidGroup($group) || !$this->isKnownLocale($locale)) {
+                abort(400);
+            }
             // $translation = Translation::firstOrNew([
             //     'locale' => $locale,
             //     'group' => $group,
@@ -154,6 +167,10 @@ class Controller extends BaseController
 
     public function postDelete($group, $key)
     {
+        if (!$this->manager->isValidGroup($group)) {
+            abort(400);
+        }
+
         if(!in_array($group, $this->manager->getConfig('exclude_groups')) && $this->manager->getConfig('delete_enabled')) {
             Translation::where('group', $group)->where('key', $key)->delete();
             return ['status' => 'ok'];
@@ -189,6 +206,10 @@ class Controller extends BaseController
 
         if($group === '_json'){
             $json = true;
+        }
+
+        if ($group !== null && $group !== '*' && !$this->manager->isValidGroup($group)) {
+            abort(400);
         }
 
         $this->manager->exportTranslations($group, $json);
@@ -231,6 +252,13 @@ class Controller extends BaseController
             $this->manager->removeLocale($locale);
         }
         return redirect()->back();
+    }
+
+    protected function isKnownLocale($locale)
+    {
+        return is_string($locale)
+            && $this->manager->isValidLocale($locale)
+            && array_key_exists($locale, \Helper::$locales);
     }
 
     protected function sanitizeFilename($input)

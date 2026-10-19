@@ -495,6 +495,40 @@ class Manager
         }
     }
 
+    /**
+     * Locale is used as a part of a file name, so allow safe characters only.
+     */
+    public function isValidLocale($locale)
+    {
+        return is_string($locale) && preg_match('/^[A-Za-z0-9_\-]+$/D', $locale);
+    }
+
+    /**
+     * Group is used as a part of a file path (sub-folders are allowed),
+     * so each segment must contain safe characters only (no dots).
+     */
+    public function isValidGroup($group)
+    {
+        return is_string($group) && preg_match('#^[A-Za-z0-9_\-]+(?:/[A-Za-z0-9_\-]+)*$#D', $group);
+    }
+
+    /**
+     * Check that the directory of the file is located inside the base directory.
+     */
+    protected function isPathInside($path, $base)
+    {
+        $dir = realpath(dirname($path));
+        $base = realpath($base);
+
+        if ($dir === false || $base === false) {
+            return false;
+        }
+
+        $base = rtrim($base, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+
+        return strpos(rtrim($dir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR, $base) === 0;
+    }
+
     public function exportTranslations($group = null /*, $json = false*/)
     {
         $basePath = $this->app['path.lang'];
@@ -503,6 +537,10 @@ class Manager
         // Detect json groups automatically.
         if ($group && $group[0] == '_') {
             $json = true;
+        }
+
+        if ($group !== null && $group !== '*' && !$this->isValidGroup($group)) {
+            return;
         }
 
         $moduleAlias = '';
@@ -526,6 +564,9 @@ class Manager
                                                     ->get());
 
                 foreach ($tree as $locale => $groups) {
+                    if (!$this->isValidLocale($locale)) {
+                        continue;
+                    }
                     if (isset($groups[$group])) {
                         $translations = $groups[$group];
                         $path = $this->app['path.lang'];
@@ -550,6 +591,11 @@ class Manager
 
                         $path = $path.DIRECTORY_SEPARATOR.$locale.DIRECTORY_SEPARATOR.$group.'.php';
 
+                        // Never write outside of the lang directory.
+                        if (!$this->isPathInside($path, $basePath)) {
+                            continue;
+                        }
+
                         $output = "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL;
                         $this->files->put($path, $output);
                     }
@@ -564,6 +610,9 @@ class Manager
                                                 ->get(), true);
 
             foreach ($tree as $locale => $groups) {
+                if (!$this->isValidLocale($locale)) {
+                    continue;
+                }
                 if (!$moduleAlias) {
                     // _json
                     $path = $this->app['path.lang'].'/'.$locale.'.json';
@@ -578,6 +627,11 @@ class Manager
                     if (!$this->files->exists($modulePath.'Resources/lang')) {
                         $this->files->makeDirectory($modulePath.'Resources/lang', 0755, true);
                     }
+                }
+
+                // Never write outside of the lang directory.
+                if (!$this->isPathInside($path, $moduleAlias ? $modulePath.'Resources/lang' : $this->app['path.lang'])) {
+                    continue;
                 }
 
                 $translations = $groups[$group];
