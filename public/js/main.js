@@ -5399,15 +5399,26 @@ function conversationsTableInit()
 		});
 
 		$('.conv-row').on('contextmenu', function(event) {
+			// Detect a touch long press. Chrome reports it via sourceCapabilities,
+			// other browsers via the preceding touchstart.
+			var is_touch = $(this).data('conv_touch')
+				|| (event.originalEvent
+					&& event.originalEvent.sourceCapabilities
+					&& event.originalEvent.sourceCapabilities.firesTouchEvents);
+
+			// Mouse right click (or the keyboard context menu key):
+			// keep the native browser menu ("Open link in new tab", etc).
+			if (!is_touch) {
+				return;
+			}
+
 			event.preventDefault();
 			event.stopPropagation();
 
 			// The browser fires contextmenu after its native long press
 			// (with haptic feedback on Android), on press or on release,
 			// which may happen before taphold.
-			if ($(this).data('conv_touch')) {
-				toggleRow(this);
-			}
+			toggleRow(this);
 		});
 
 		$('.conv-row').on('taphold', {duration: 700}, function(event) {

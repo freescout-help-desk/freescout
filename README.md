@@ -132,7 +132,7 @@ Conversation:
 
 ![Conversation](https://freescout-helpdesk.github.io/img/screenshots/conversation.png)
 
-Drafting reply with AI:
+Drafting replies with AI:
 
 ![Mailbox connection settings page](https://freescout-helpdesk.github.io/img/screenshots/draft-reply-with-ai.png)
 
