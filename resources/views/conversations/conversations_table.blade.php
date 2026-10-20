@@ -33,8 +33,7 @@
             $params = [];
         }
 
-        // Open conversations in a new tab (APP_OPEN_LINKS_IN_NEW_TAB).
-        $target_blank = !empty($params['target_blank']) || config('app.open_links_in_new_tab');
+        $target_blank = !empty($params['target_blank']);
 
         // For customer profile.
         if (!empty($params['no_customer'])) {

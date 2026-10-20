@@ -369,7 +369,7 @@ return [
     | Open links in a new browser tab.
     |
     | If enabled, the following links get target="_blank":
-    | - conversations in search results and in conversation lists,
+    | - conversations in Search results,
     | - all links inside conversations (not only external ones).
     |-------------------------------------------------------------------------
     */
