@@ -369,10 +369,13 @@ class Thread extends Model
 
         $body = \Helper::linkify($this->getCleanBody($body));
 
-        // Add target="_blank" to external links.
+        // Add target="_blank" to external links
+        // (or to all links if APP_OPEN_LINKS_IN_NEW_TAB is enabled).
         $pattern = '/<a(.*?)?href=[\'"]?[\'"]?(.*?)?>/i';
 
-        $body = preg_replace_callback($pattern, function ($m) {
+        $all_links_new_tab = (bool)config('app.open_links_in_new_tab');
+
+        $body = preg_replace_callback($pattern, function ($m) use ($all_links_new_tab) {
             $tpl = array_shift($m);
             $href = trim(isset($m[1]) ? $m[1] : '');
 
@@ -386,7 +389,7 @@ class Thread extends Model
             }
 
             // Skip non-external links.
-            if (parse_url($href, PHP_URL_HOST) == \Helper::getDomain()) {
+            if (!$all_links_new_tab && parse_url($href, PHP_URL_HOST) == \Helper::getDomain()) {
                 return $tpl;
             }
 

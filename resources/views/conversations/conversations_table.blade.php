@@ -33,6 +33,9 @@
             $params = [];
         }
 
+        // Open conversations in a new tab (APP_OPEN_LINKS_IN_NEW_TAB).
+        $target_blank = !empty($params['target_blank']) || config('app.open_links_in_new_tab');
+
         // For customer profile.
         if (!empty($params['no_customer'])) {
             $no_customer = true;
@@ -145,7 +148,7 @@
                     @endif
                     @if (empty($no_customer))
                         <td class="conv-customer">
-                            <a href="{{ $conversation->url() }}" @if (!empty($params['target_blank'])) target="_blank" @endif title="{{ $conversation->customer_email }}">
+                            <a href="{{ $conversation->url() }}" @if ($target_blank) target="_blank" @endif title="{{ $conversation->customer_email }}">
                                 <span class="conv-customer-line"><span class="conv-customer-name">@if ($conversation->customer_id && $conversation->customer){{ $conversation->customer->getFullName(true)}}@endif&nbsp;</span>@if ($conversation->threads_count > 1)<span class="conv-counter">{{ $conversation->threads_count }}</span>@endif</span>
                                 @if ($conversation->user_id)
                                     <small class="conv-owner-mobile text-help">
@@ -158,7 +161,7 @@
                     @else
                         {{-- Displayed in customer conversation history --}}
                         <td class="conv-customer conv-owner-mobile">
-                            <a href="{{ $conversation->url() }}" class="help-link" @if (!empty($params['target_blank'])) target="_blank" @endif>
+                            <a href="{{ $conversation->url() }}" class="help-link" @if ($target_blank) target="_blank" @endif>
                                 <small class="glyphicon glyphicon-envelope"></small> 
                                 @if ($conversation->user_id)
                                      <small>&nbsp;<i class="glyphicon glyphicon-user"></i> {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }}</small> 
@@ -176,7 +179,7 @@
                         @endif
                     </td>
                     <td class="conv-subject">
-                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty(request()->x_embed) || !empty($params['target_blank'])) target="_blank"@endif>
+                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty(request()->x_embed) || $target_blank) target="_blank"@endif>
                             <span class="conv-fader"></span>
                             <p>
                                 @if ($conversation->has_attachments)
@@ -200,15 +203,15 @@
                     </td>
                     @if ($show_assigned)
                         <td class="conv-owner">
-                            @if ($conversation->user_id)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty($params['target_blank'])) target="_blank" @endif> {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }} </a>@else &nbsp;@endif
+                            @if ($conversation->user_id)<a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if ($target_blank) target="_blank" @endif> {{ ($assignee = $conversation->user) ? $assignee->getFullName() : '' }} </a>@else &nbsp;@endif
                         </td>
                     @endif
                     @action('conversations_table.td_before_conv_number', $conversation)
                     <td class="conv-number">
-                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if (!empty($params['target_blank'])) target="_blank" @endif><i>#</i>{{ $conversation->number }}</a>
+                        <a href="{{ $conversation->url() }}" title="{{ __('View conversation') }}" @if ($target_blank) target="_blank" @endif><i>#</i>{{ $conversation->number }}</a>
                     </td>
                     <td class="conv-date">
-                        @php $conv_waiting_since = $conversation->getWaitingSince($folder); @endphp<a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED]))@php $conv_date_title = $conversation->getDateTitle(); @endphp aria-label="{{ $conv_waiting_since }}" aria-description="{{ $conv_date_title }}" data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conv_date_title }}"@else title="{{ __('View conversation') }}" @endif @if (!empty($params['target_blank'])) target="_blank" @endif>{{ $conv_waiting_since }}</a>
+                        @php $conv_waiting_since = $conversation->getWaitingSince($folder); @endphp<a href="{{ $conversation->url() }}" @if (!in_array($folder->type, [App\Folder::TYPE_CLOSED, App\Folder::TYPE_DRAFTS, App\Folder::TYPE_DELETED]))@php $conv_date_title = $conversation->getDateTitle(); @endphp aria-label="{{ $conv_waiting_since }}" aria-description="{{ $conv_date_title }}" data-toggle="tooltip" data-html="true" data-placement="left" title="{{ $conv_date_title }}"@else title="{{ __('View conversation') }}" @endif @if ($target_blank) target="_blank" @endif>{{ $conv_waiting_since }}</a>
                     </td>
                 </tr>
                 @action('conversations_table.after_row', $conversation, $columns, $col_counter)

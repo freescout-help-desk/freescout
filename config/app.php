@@ -366,6 +366,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Open links in a new browser tab.
+    |
+    | If enabled, the following links get target="_blank":
+    | - conversations in search results and in conversation lists,
+    | - all links inside conversations (not only external ones).
+    |-------------------------------------------------------------------------
+    */
+    'open_links_in_new_tab'    => env('APP_OPEN_LINKS_IN_NEW_TAB', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Use date from mail header on fetching.
     |
     |-------------------------------------------------------------------------
