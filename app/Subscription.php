@@ -288,8 +288,11 @@ class Subscription extends Model
             //}
             
             // https://github.com/freescout-helpdesk/freescout/issues/3843#issuecomment-1974811457
+            // Users who can see only assigned conversations are notified
+            // only if they are assignees (unless hook allows it).
             if ($conversation->user_id != $subscription->user_id
                 && $subscription->user->canSeeOnlyAssignedConversations()
+                && !\Eventy::filter('subscription.is_only_assigned_user_allowed', false, $subscription, $conversation)
             ) {
                 continue;
             }
