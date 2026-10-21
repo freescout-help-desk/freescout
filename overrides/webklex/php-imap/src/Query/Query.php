@@ -160,7 +160,10 @@ class Query {
                 if ($statement[1] === null) {
                     $query .= $statement[0];
                 } else {
-                    if (is_numeric($statement[1])) {
+                    if (is_numeric($statement[1])
+                        // UID sequence set (whereUidIn) must not be quoted.
+                        || ($statement[0] == 'UID' && preg_match('#^[0-9:,*]+$#', $statement[1]))
+                    ) {
                         $query .= $statement[0] . ' ' . $statement[1];
                     } else if ($statement[0] == 'SINCE' 
                         //&& preg_match("#^[0-9]\-[a-zA-Z]\-[0-9]$#", $statement[1])
