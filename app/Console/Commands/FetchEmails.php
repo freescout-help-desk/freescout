@@ -1120,7 +1120,9 @@ class FetchEmails extends Command
 
                 if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
                     // SendAutoReply listener will check bounce flag and will not send an auto reply if this is an auto responder.
-                    $new_thread = $this->saveCustomerThread($mailbox, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data['attachments'], $data['message']->getHeader(), $data['date']);
+                    // The bounce flag has to be set before the thread events are fired,
+                    // so it is passed to saveCustomerThread().
+                    $new_thread = $this->saveCustomerThread($mailbox, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data['attachments'], $data['message']->getHeader(), $data['date'], !empty($data['is_bounce']));
                 } else {
                     $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
                     $this->setSeen($message, $mailbox);
@@ -1299,7 +1301,7 @@ class FetchEmails extends Command
     /**
      * Save email from customer as thread.
      */
-    public function saveCustomerThread($mailbox, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers, $date)
+    public function saveCustomerThread($mailbox, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers, $date, $is_bounce = false)
     {
         // Fetch date & time setting.
         $use_mail_date_on_fetching = config('app.use_mail_date_on_fetching');
@@ -1407,6 +1409,13 @@ class FetchEmails extends Command
         $thread->updated_at = $now;
         if ($new) {
             $thread->first = true;
+        }
+        if ($is_bounce) {
+            // Mark the thread as a bounce before CustomerCreatedConversation / CustomerReplied
+            // events are fired, otherwise listeners (SendAutoReply) do not see the flag
+            // and send an auto reply to a bounce.
+            // The rest of the bounce data is saved later in saveBounceData().
+            $thread->updateSendStatusData(['is_bounce' => true]);
         }
         try {
             $thread->save();
