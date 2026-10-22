@@ -1572,25 +1572,42 @@ class Mail
      * In `From: "Tatiana Ivanova" <ti@example.org>` the quotes are just
      * a delimiter of the quoted-string, they are not a part of the name itself:
      * https://datatracker.ietf.org/doc/html/rfc5322#section-3.2.4
+     *
+     * A display name is a sequence of words, each of them is an atom or a quoted-string
+     * (https://datatracker.ietf.org/doc/html/rfc5322#section-3.2.5), so names like
+     * `"Company "Test""` or `"Foo" bar "Baz"` are unquoted word by word:
+     * "Company Test" and "Foo bar Baz". This is what imap_rfc822_parse_adrlist() returns,
+     * so the result is the same with and without the IMAP PHP extension.
      */
     public static function unquotePersonalName($name)
     {
         $name = trim((string)$name);
 
-        if (strlen($name) < 2 || !\Str::startsWith($name, '"') || !\Str::endsWith($name, '"')) {
+        if (strpos($name, '"') === false) {
             return $name;
         }
 
-        $unquoted = substr($name, 1, -1);
-
-        // Make sure that it's a single quoted-string and not something like
-        // `"Foo" bar "Baz"` - all quotes inside have to be escaped.
-        if (!preg_match('/^(?:[^"\\\\]|\\\\.)*$/s', $unquoted)) {
+        // Quoted-strings (with their quoted-pairs) and the text between them.
+        if (!preg_match_all('/"((?:[^"\\\\]|\\\\.)*)"|[^"]+/s', $name, $words, PREG_SET_ORDER)) {
             return $name;
         }
 
-        // Unescape quoted-pairs: \" => " and \\ => \
-        return trim(preg_replace('/\\\\(.)/s', '$1', $unquoted));
+        // An unbalanced quote: leave the name as it is.
+        if (strlen(implode('', array_column($words, 0))) != strlen($name)) {
+            return $name;
+        }
+
+        $result = '';
+        foreach ($words as $word) {
+            if (isset($word[1])) {
+                // Unescape quoted-pairs: \" => " and \\ => \
+                $result .= preg_replace('/\\\\(.)/s', '$1', $word[1]);
+            } else {
+                $result .= $word[0];
+            }
+        }
+
+        return trim($result);
     }
 
     public static function isFsMessageId($message_id)

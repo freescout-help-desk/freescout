@@ -40,4 +40,20 @@ class MailTest extends TestCase
         self::assertSame('<p>text</p>', \MailHelper::fitImages('<p>text</p>', 580));
         self::assertSame('', \MailHelper::fitImages('', 580));
     }
+
+    // The expected values are what imap_rfc822_parse_adrlist() returns.
+    public function testUnquotePersonalName(): void
+    {
+        self::assertSame('Tatiana Ivanova', \MailHelper::unquotePersonalName('"Tatiana Ivanova"'));
+        self::assertSame('Smith, John', \MailHelper::unquotePersonalName('"Smith, John"'));
+        self::assertSame('Company Test', \MailHelper::unquotePersonalName('"Company "Test""'));
+        self::assertSame('Foo bar Baz', \MailHelper::unquotePersonalName('"Foo" bar "Baz"'));
+        self::assertSame('Spaced    Out', \MailHelper::unquotePersonalName('"  Spaced  "  Out'));
+        self::assertSame('He said "hi"', \MailHelper::unquotePersonalName('"He said \"hi\""'));
+        self::assertSame('Back\\slash', \MailHelper::unquotePersonalName('"Back\\\\slash"'));
+        self::assertSame('', \MailHelper::unquotePersonalName('""'));
+        self::assertSame('Plain Name', \MailHelper::unquotePersonalName('Plain Name'));
+        // An unbalanced quote is kept.
+        self::assertSame('Foo "Bar', \MailHelper::unquotePersonalName('Foo "Bar'));
+    }
 }

@@ -311,6 +311,9 @@ class Header {
                 }
             }
         }
+        // Headers can have bare LF line endings, for example in .eml files.
+        // imap_rfc822_parse_headers() accepts them, so convert them to CRLF.
+        $raw_headers = preg_replace("/\r?\n/", "\r\n", $raw_headers);
         $lines = explode("\r\n", preg_replace("/\r\n\s/", ' ', $raw_headers));
         $prev_header = null;
         foreach ($lines as $line) {
@@ -395,6 +398,12 @@ class Header {
             } elseif (is_array($value) && !count($value) && isset($headers[$key])) {
                 unset($headers[$key]);
             }
+        }
+
+        // Like imap_rfc822_parse_headers(), use From as Sender when there is no Sender header.
+        if (!isset($headers['sender']) && isset($headers['from'])) {
+            $headers['sender'] = $headers['from'];
+            $headers['senderaddress'] = $headers['fromaddress'] ?? '';
         }
 
         return (object)array_merge($headers, $imap_headers);
