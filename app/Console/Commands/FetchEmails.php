@@ -352,7 +352,7 @@ class FetchEmails extends Command
                     }
                     $messages_query->limit($page_size, $page);
 
-                    $messages = $messages_query->get();
+                    $messages = $this->getMessages($messages_query, $folder, $mailbox, $unseen, $no_charset);
 
                     $last_error = $client->getLastError();
                 } catch (\Exception $e) {
@@ -374,9 +374,10 @@ class FetchEmails extends Command
                     if ($unseen) {
                         $messages_query->unseen();
                     }
-                    $messages = $messages_query->get();
-
                     $no_charset = true;
+
+                    $messages = $this->getMessages($messages_query, $folder, $mailbox, $unseen, $no_charset);
+
                     $last_error = $client->getLastError();
                 }
 
@@ -407,6 +408,101 @@ class FetchEmails extends Command
         }
 
         $client->disconnect();
+    }
+
+    /**
+     * When fetching all messages (not only unseen) fetch headers first
+     * and download bodies only for messages which have not been fetched before.
+     * Otherwise each fetch downloads all the bodies and attachments for the fetching period
+     * which may exceed mail server bandwidth limits (Gmail: "BYE [OVERQUOTA]").
+     * POP3 always fetches whole messages, so headers are prefetched for IMAP only.
+     */
+    public function getMessages($messages_query, $folder, $mailbox, $unseen, $no_charset)
+    {
+        if ($unseen || $mailbox->in_protocol != Mailbox::IN_PROTOCOL_IMAP) {
+            return $messages_query->get();
+        }
+
+        $headers = $messages_query->setFetchBody(false)->get();
+
+        $dest_mailbox = \Eventy::filter('fetch_emails.mailbox_to_save_message', $mailbox, $folder);
+
+        $uids = [];
+        foreach ($headers as $header) {
+            if ($this->isFetchedBefore($header, $dest_mailbox)) {
+                // Same as processMessage() does for messages fetched before.
+                $this->setSeen($header, $dest_mailbox);
+            } else {
+                $uids[] = $header->getUid();
+            }
+        }
+
+        $skipped = count($headers) - count($uids);
+        if ($skipped) {
+            $this->line('['.date('Y-m-d H:i:s').'] Skipped messages fetched before: '.$skipped);
+        }
+
+        if (!$uids) {
+            return collect([]);
+        }
+
+        // Fetch bodies the same way as above, so that messages
+        // are keyed by Message-ID exactly as without headers prefetching.
+        $bodies_query = $folder->query()->whereUidIn($uids)->leaveUnread();
+        if ($no_charset) {
+            $bodies_query->setCharset(null);
+        }
+
+        return $bodies_query->get();
+    }
+
+    /**
+     * Check by headers only if processMessage() would skip the message as fetched before.
+     * When in doubt return false, so that the message is fully fetched and processed.
+     */
+    public function isFetchedBefore($message, $mailbox)
+    {
+        // Artificial Message-ID is generated from the message body.
+        $message_id = (string)$message->getMessageId();
+        if (!$message_id) {
+            return false;
+        }
+
+        // Message-ID of Jira messages may be changed in processMessage().
+        if (preg_replace('/^(JIRA\.\d+\.\d+)\..*(@Atlassian.JIRA)/', '\1\2', $message_id) != $message_id) {
+            return false;
+        }
+
+        $thread = Thread::where('message_id', $message_id)->first();
+        if (!$thread) {
+            return false;
+        }
+
+        if (self::isNewEmailWithSameMessageId($thread->headers, $this->headerToStr($message->getHeader()))) {
+            return false;
+        }
+
+        if (!$thread->conversation || $thread->conversation->mailbox_id == $mailbox->id) {
+            return true;
+        }
+
+        // The message has been fetched into another mailbox.
+        $recipients = array_merge(
+            $this->formatEmailList($message->getTo()),
+            $this->formatEmailList($message->getCc())
+        );
+        if (in_array(Email::sanitizeEmail($mailbox->email), $recipients)
+            && !\MailHelper::isFsMessageId($thread->message_id)
+        ) {
+            return true;
+        }
+
+        // processMessage() imports a copy of the message having an artificial Message-ID.
+        if (!strstr($message_id, '@')) {
+            return false;
+        }
+
+        return Thread::where('message_id', \MailHelper::generateMessageId($message_id, $mailbox->id.$message_id))->exists();
     }
 
     public function processMessage($message, $message_id, $mailbox, $mailboxes, $extra = false)
@@ -2129,7 +2225,16 @@ class FetchEmails extends Command
     public function setSeen($message, $mailbox)
     {
         $flag = \Eventy::filter('fetch_emails.set_seen_flag', ['Seen'], $message, $mailbox);
-        $message->setFlag($flag);
+
+        // Avoid unnecessary IMAP STORE and FETCH commands
+        // if the message already has all the flags.
+        $flags = $message->getFlags();
+        foreach ((array)$flag as $flag_name) {
+            if (!$flags->has(strtolower($flag_name))) {
+                $message->setFlag($flag);
+                break;
+            }
+        }
         \Eventy::action('fetch_emails.after_set_seen', $message, $mailbox, $this);
     }
 }
