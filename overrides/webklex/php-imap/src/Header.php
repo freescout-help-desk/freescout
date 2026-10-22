@@ -410,8 +410,6 @@ class Header {
                     && ($v->mailbox == '>' || $v->mailbox == 'INVALID_ADDRESS') 
                     && ((isset($v->host) && ($v->host == '.SYNTAX-ERROR.' || $v->host === null)) || !isset($v->host))
                 ) {
-                    echo 'unset: '.$v->mailbox;
-
                     unset($value[$i]);
                 }
             }

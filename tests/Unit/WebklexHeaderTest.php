@@ -190,4 +190,18 @@ class WebklexHeaderTest extends TestCase {
         $this->assertArrayHasKey('attribute_test', $mock->getAttributes());
         $this->assertEquals('attribute_test_value', $mock->get('attribute_test'));
     }
+
+    // An invalid address (like the one parsed from "To: <>") is removed without printing
+    // anything: the output would end up in console commands and web responses.
+    // https://github.com/freescout-help-desk/freescout/issues/4158
+    public function testInvalidAddressIsRemovedSilently(): void {
+        $this->expectOutputString('');
+
+        $value = Header::sanitizeHeaderValue([
+            (object)['mailbox' => '>', 'host' => '.SYNTAX-ERROR.'],
+            (object)['mailbox' => 'test', 'host' => 'example.org'],
+        ]);
+
+        $this->assertSame(['test'], array_column(array_values($value), 'mailbox'));
+    }
 }
