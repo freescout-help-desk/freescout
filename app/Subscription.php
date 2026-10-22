@@ -407,15 +407,20 @@ class Subscription extends Model
             if (!empty($notify[self::MEDIUM_EMAIL])) {
                 $notify_menu = $notify[self::MEDIUM_EMAIL] ?? [];
             }
-            foreach ($notify[self::MEDIUM_BROWSER] ?? [] as $conversation_id => $notify_info) {
-                if (empty($notify_menu[$conversation_id])) {
-                    $notify_menu[$conversation_id] = $notify_info;
-                } else {
-                    $notify_menu[$conversation_id]['users'] = collect($notify_menu[$conversation_id]['users'])
-                        ->merge($notify_info['users'])->unique('id')->values()->all();
+            // Merge users per conversation, otherwise menu-only recipients
+            // are dropped when someone else gets an email or browser notification.
+            // https://github.com/freescout-help-desk/freescout/issues/5758
+            foreach ([self::MEDIUM_BROWSER, self::MEDIUM_MENU] as $medium) {
+                foreach ($notify[$medium] ?? [] as $conversation_id => $notify_info) {
+                    if (empty($notify_menu[$conversation_id])) {
+                        $notify_menu[$conversation_id] = $notify_info;
+                    } else {
+                        $notify_menu[$conversation_id]['users'] = collect($notify_menu[$conversation_id]['users'])
+                            ->merge($notify_info['users'])->unique('id')->values()->all();
+                    }
                 }
             }
-            $notify_menu = $notify_menu + ($notify[self::MEDIUM_MENU] ?? []);
+            //$notify_menu = $notify_menu + ($notify[self::MEDIUM_MENU] ?? []);
 
             foreach ($notify_menu as $notify_info) {
                 $website_notification = new WebsiteNotification($notify_info['conversation'], self::chooseThread($notify_info['threads']));
