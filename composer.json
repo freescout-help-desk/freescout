@@ -53,8 +53,8 @@
         "barryvdh/laravel-debugbar": "v3.2.0",
         "filp/whoops": "2.14.5",
         "fzaninotto/faker": "v1.9.2",
-        "mockery/mockery": "1.1.0",
-        "phpunit/phpunit": "9.5.28",
+        "mockery/mockery": "1.6.15",
+        "phpunit/phpunit": "9.6.19",
 
         "symfony/polyfill-ctype": "v1.10.*",
         "vlucas/phpdotenv": "v2.5.1",
@@ -253,6 +253,7 @@
             "vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php",
             "vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php",
             "vendor/laravel/framework/src/Illuminate/Foundation/Testing/TestCase.php",
+            "vendor/laravel/framework/src/Illuminate/Foundation/Testing/TestResponse.php",
             "vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php",
             "vendor/laravel/framework/src/Illuminate/Routing/UrlGenerator.php",
             "vendor/laravel/framework/src/Illuminate/Routing/RouteSignatureParameters.php",
@@ -503,7 +504,7 @@
             "vendor/tijsverkoyen/css-to-inline-styles/src/CssToInlineStyles.php",
             "vendor/tijsverkoyen/css-to-inline-styles/src/Css/Property/Processor.php",
             "vendor/html2text/html2text/src/Html2Text.php",
-            "vendor/phpunit/phpunit/src/Runner/PhpTestCase.php",
+            "vendor/phpunit/phpunit/src/Runner/PhptTestCase.php",
             "vendor/phpunit/phpunit/src/Util/PHP/AbstractPhpProcess.php",
             "vendor/phpunit/phpunit/src/Util/Xml/Loader.php",
             "vendor/laravel/framework/src/Illuminate/Http/Exceptions/PostTooLargeException.php"
