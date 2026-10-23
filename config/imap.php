@@ -109,6 +109,8 @@ return [
         'fetch_flags' => true,
         'message_key' => 'id',
         'fetch_order' => 'asc',
+        // Only 'attachment' disposition is treated as attachment (replaces the vendor default).
+        'dispositions' => ['attachment'/*, 'inline'*/],
         'open' => [
             // 'DISABLE_AUTHENTICATOR' => 'GSSAPI'
         ],
