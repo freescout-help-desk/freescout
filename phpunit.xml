@@ -10,11 +10,14 @@
   </testsuites>
   <php>
     <env name="APP_ENV" value="testing"/>
+    <!-- Not localhost: for localhost FreeScout guesses a subdirectory from the script path (vendor/bin) and prefixes every route with it. -->
+    <env name="APP_URL" value="http://freescout.test"/>
     <env name="DB_CONNECTION" value="testing"/>
     <env name="CACHE_DRIVER" value="array"/>
     <env name="SESSION_DRIVER" value="array"/>
     <env name="QUEUE_DRIVER" value="sync"/>
-    <env name="APP_KEY" value="value_from_phpunit"/>
+    <!-- A valid AES-256 key (32 bytes), so that sessions and CSRF tokens work in HTTP tests. -->
+    <env name="APP_KEY" value="base64:ZnJlZXNjb3V0LXBocHVuaXQtdGVzdC1rZXktMDAwMDE="/>
   </php>
   <coverage>
     <include>
