@@ -3,7 +3,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 
-class SsrfProtectionsTest extends TestCase
+class SsrfProtectionTest extends TestCase
 {
     public function testCheckUrlIpAndHost(): void
     {
