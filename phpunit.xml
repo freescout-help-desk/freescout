@@ -10,7 +10,7 @@
   </testsuites>
   <php>
     <!-- Not localhost: for localhost FreeScout guesses a subdirectory from the script path (vendor/bin) and prefixes every route with it. -->
-    <env name="APP_URL" value="http://example.org"/>
+    <env name="APP_URL" value="http://dummy.example.org"/>
     <env name="DB_CONNECTION" value="testing"/>
     <env name="CACHE_DRIVER" value="array"/>
     <env name="SESSION_DRIVER" value="array"/>
