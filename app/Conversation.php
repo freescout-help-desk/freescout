@@ -2187,7 +2187,7 @@ class Conversation extends Model
             // Collect folders IDs.
             $folder_ids = array_merge($folder_ids, ConversationFolder::whereIn('conversation_id', $ids)
                 ->distinct()
-                ->pluck('id')
+                ->pluck('folder_id')
                 ->toArray()
             );
             $folder_ids = array_unique($folder_ids);
@@ -2221,6 +2221,9 @@ class Conversation extends Model
             // Update counters.
             $folders = Folder::whereIn('id', $ids)->get();
             foreach ($folders as $folder) {
+                if ($folder->type == Folder::TYPE_STARRED) {
+                    self::clearStarredByUserCache($folder->user_id, $folder->mailbox_id);
+                }
                 $folder->updateCounters();
             }
         }
