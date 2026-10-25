@@ -3388,13 +3388,17 @@ class Helper
         }
     }
 
-    public static function carbonDateParse($string)
+    public static function carbonDateParse($string, $timezone = null)
     {
         if (empty($string)) {
             return null;
         }
         try {
-            return Carbon::parse($string);
+            if ($timezone) {
+                return Carbon::parse($string, $timezone);
+            } else {
+                return Carbon::parse($string);
+            }
         } catch (\Exception $e) {
             return null;
         }

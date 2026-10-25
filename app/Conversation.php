@@ -2552,6 +2552,39 @@ class Conversation extends Model
         return $result;
     }
 
+    /**
+     * Convert a date picked by the user (a day in the user's time zone)
+     * into the start or the end of that day in the app time zone,
+     * as created_at is stored in the app time zone.
+     *
+     * @param string    $date
+     * @param User|null $user
+     * @param bool      $end_of_day
+     *
+     * @return string|null
+     */
+    public static function getSearchDateBound($date, $user = null, $end_of_day = false)
+    {
+        if (!$user) {
+            $user = auth()->user();
+        }
+        $app_timezone = config('app.timezone') ?: User::DEFAULT_TIMEZONE;
+        $user_timezone = ($user && $user->timezone) ? $user->timezone : $app_timezone;
+
+        $carbon = \Helper::carbonDateParse($date, $user_timezone);
+        if (!$carbon) {
+            return null;
+        }
+        if ($end_of_day) {
+            $carbon->endOfDay();
+        } else {
+            $carbon->startOfDay();
+        }
+        $carbon->setTimezone($app_timezone);
+
+        return $carbon->format('Y-m-d H:i:s');
+    }
+
     public static function search($q, $filters, $user = null, $query_conversations = null, $group_by = [])
     {
         $mailbox_ids = [];
@@ -2664,11 +2697,19 @@ class Conversation extends Model
         if (!empty($filters['id'])) {
             $query_conversations->where('conversations.id', '=', $filters['id']);
         }
+        // The day picked by the user is a day in the user's time zone,
+        // while created_at is stored in the app time zone.
         if (!empty($filters['after'])) {
-            $query_conversations->where('conversations.created_at', '>=', date('Y-m-d 00:00:00', strtotime($filters['after'])));
+            $after = self::getSearchDateBound($filters['after'], $user, false);
+            if ($after) {
+                $query_conversations->where('conversations.created_at', '>=', $after);
+            }
         }
         if (!empty($filters['before'])) {
-            $query_conversations->where('conversations.created_at', '<=', date('Y-m-d 23:59:59', strtotime($filters['before'])));
+            $before = self::getSearchDateBound($filters['before'], $user, true);
+            if ($before) {
+                $query_conversations->where('conversations.created_at', '<=', $before);
+            }
         }
 
         // Join tables if needed.
