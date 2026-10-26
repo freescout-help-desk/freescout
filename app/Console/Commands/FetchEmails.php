@@ -182,7 +182,9 @@ class FetchEmails extends Command
         }
 
         if ($successfully && count($this->mailboxes)) {
-            Option::set('fetch_emails_last_successful_run', $now);
+            // Save the finish time, not the start time, as fetching may take long.
+            // https://github.com/freescout-help-desk/freescout/issues/5770
+            Option::set('fetch_emails_last_successful_run', time());
         }
 
         // Middleware Terminate handler is not launched for commands,
