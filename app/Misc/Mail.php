@@ -928,8 +928,13 @@ class Mail
 
     /**
      * Fetch IMAP message by Message-ID.
+     *
+     * An already created IMAP client can be passed in $client to reuse its
+     * connection when fetching multiple messages from the same mailbox
+     * (servers like Gmail limit the number of simultaneous connections).
+     * The connection is not closed in this case, the caller has to close it.
      */
-    public static function fetchMessage($mailbox, $message_id, $message_date = null)
+    public static function fetchMessage($mailbox, $message_id, $message_date = null, $client = null)
     {
         $no_charset = false;
 
@@ -938,8 +943,13 @@ class Mail
         }
 
         try {
-            $client = \MailHelper::getMailboxClient($mailbox);
-            $client->connect();
+            if (!$client) {
+                $client = \MailHelper::getMailboxClient($mailbox);
+                $client->connect();
+            } else {
+                // Reconnects if the connection has been lost.
+                $client->checkConnection();
+            }
         } catch (\Exception $e) {
             \Helper::logException($e, '('.$mailbox->name.') Could not fetch specific message by Message-ID:');
             return null;
