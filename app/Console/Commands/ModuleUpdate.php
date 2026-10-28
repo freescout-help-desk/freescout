@@ -117,7 +117,7 @@ class ModuleUpdate extends Command
                 $response = $client->request('GET', $latest_version_number_url, \Helper::setGuzzleDefaultOptions());
 
                 // Get the latest version number from the response body
-                $latest_version = trim((string) $response->getBody());
+                $latest_version = \App\Module::parseLatestVersion((string) $response->getBody());
 
                 if (empty($latest_version)) {
                     continue;
