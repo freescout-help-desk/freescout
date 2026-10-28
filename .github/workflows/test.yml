@@ -29,7 +29,7 @@ jobs:
       - name: Setup database
         run: |
           mysql -uroot -proot -e 'CREATE DATABASE IF NOT EXISTS `freescout-test`;'
-          mysql -uroot -proot -e "CREATE USER 'freescout-test'@'localhost' IDENTIFIED WITH mysql_native_password BY 'freescout-test';"
+          mysql -uroot -proot -e "CREATE USER 'freescout-test'@'localhost' IDENTIFIED BY 'freescout-test';"
           mysql -uroot -proot -e "GRANT ALL ON \`freescout-test\`.* TO 'freescout-test'@'localhost';"
           mysql -uroot -proot -e 'FLUSH PRIVILEGES;'
 
