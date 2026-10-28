@@ -1217,7 +1217,7 @@ class Application
             return str_split($string, $width);
         }
 
-        $utf8String = mb_convert_encoding($string, 'utf8', $encoding);
+        $utf8String = \Helper::mbConvertEncoding($string, 'utf8', $encoding);
         $lines = [];
         $line = '';
         foreach (preg_split('//u', $utf8String) as $char) {

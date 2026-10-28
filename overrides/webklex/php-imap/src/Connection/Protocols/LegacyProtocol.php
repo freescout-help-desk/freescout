@@ -605,7 +605,7 @@ class LegacyProtocol extends Protocol {
      */
     protected function decodeFolderName($name) {
         preg_match('#\{(.*)\}(.*)#', $name, $preg);
-        return mb_convert_encoding($preg[2], "UTF-8", "UTF7-IMAP");
+        return \Helper::mbConvertEncoding($preg[2], "UTF-8", "UTF7-IMAP");
     }
 
     /**

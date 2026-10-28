@@ -230,7 +230,7 @@ class Header {
                 // Convert charset if necessary.
                 if (function_exists('mb_convert_encoding') && strtolower($charset) !== 'utf-8') {
                     try {
-                        $boundary = mb_convert_encoding($new_boundary, 'UTF-8', $charset);
+                        $boundary = \Helper::mbConvertEncoding($new_boundary, 'UTF-8', $charset);
                     } catch (\Exception $e) {
                         // Do nothing.
                     }
@@ -513,7 +513,7 @@ class Header {
                 }
                 return mb_convert_encoding($str, $to, $from);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             if (strstr($from, '-')) {
                 $from = str_replace('-', '', $from);
                 return $this->convertEncoding($str, $from, $to);

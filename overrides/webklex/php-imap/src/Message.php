@@ -854,9 +854,9 @@ class Message {
         try {
             if (!$result) {
                 if (!$from) {
-                    return mb_convert_encoding($str, $to);
+                    return \Helper::mbConvertEncoding($str, $to);
                 }
-                return mb_convert_encoding($str, $to, $from);
+                return \Helper::mbConvertEncoding($str, $to, $from);
             } else {
                 return $result;
             }

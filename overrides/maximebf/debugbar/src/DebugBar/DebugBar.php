@@ -241,7 +241,7 @@ class DebugBar implements ArrayAccess
         // Remove all invalid (non UTF-8) characters
         array_walk_recursive($this->data, function (&$item) {
                 if (is_string($item) && !mb_check_encoding($item, 'UTF-8')) {
-                    $item = mb_convert_encoding($item, 'UTF-8', 'UTF-8');
+                    $item = \Helper::mbConvertEncoding($item, 'UTF-8', 'UTF-8');
                 }
             });
 

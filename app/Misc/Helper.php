@@ -1613,7 +1613,7 @@ class Helper
     public static function decodeUnicode($str)
     {
         $str = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
-            return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+            return \Helper::mbConvertEncoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
         }, $str);
 
         return $str;
@@ -1683,7 +1683,27 @@ class Helper
      */
     public static function utf8Encode($string)
     {
-        return mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+        return \Helper::mbConvertEncoding($string, 'UTF-8', 'UTF-8');
+    }
+
+    /**
+     * Safe wrapper for mb_convert_encoding(). The native mb_convert_encoding() function
+     * throws ValueError on invalid encoding names (PHP 8+).
+     * This wrapper catches any \Throwable and returns the original string instead.
+     * https://github.com/freescout-help-desk/freescout/issues/5775
+     */
+    public static function mbConvertEncoding($string, $to_encoding, $from_encoding = null)
+    {
+        // We don't check if mb_convert_encoding() function exists
+        // as php-mbstring excension is required in FreeScout.
+        try {
+            if ($from_encoding === null) {
+                return mb_convert_encoding($string, $to_encoding);
+            }
+            return mb_convert_encoding($string, $to_encoding, $from_encoding);
+        } catch (\Throwable $e) {
+            return $string;
+        }
     }
 
     /**
@@ -2730,7 +2750,7 @@ class Helper
         $escaped_regex = preg_quote(implode('', $illegal_chars), '/');
 
         // https://github.com/freescout-helpdesk/freescout/issues/3377
-        $file_name = mb_convert_encoding($file_name, 'UTF-8', 'UTF-8');
+        $file_name = \Helper::mbConvertEncoding($file_name, 'UTF-8', 'UTF-8');
         $file_name = preg_replace('/[' . $escaped_regex . ']/', '_', $file_name);
         $file_name = preg_replace("/[\t\r\n]/", '', $file_name);
         // Remove unprintable characters and invalid unicode characters.
