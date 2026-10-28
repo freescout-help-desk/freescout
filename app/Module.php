@@ -586,6 +586,24 @@ class Module extends Model
         return $result;
     }
 
+    /**
+     * Get the version number from the contents of the module's latestVersionUrl.
+     * It can be a plain version number or the module.json file.
+     * https://github.com/freescout-help-desk/freescout/issues/4611
+     */
+    public static function parseLatestVersion($contents)
+    {
+        $latest_version = trim((string) $contents);
+
+        // If it is the module.json file - try to parse the body.
+        preg_match('#"version":[^"]*"([\d\.]+)"#', $latest_version, $m);
+        if (!empty($m[1])) {
+            $latest_version = $m[1];
+        }
+
+        return $latest_version;
+    }
+
     public static function getErrorMessage($code, $result = null)
     {
         $msg = '';
