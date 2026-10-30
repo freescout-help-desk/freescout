@@ -62,6 +62,7 @@ class SendAutoReply implements ShouldQueue
         // Auto reply appears as reply in customer's mailbox
         $headers['In-Reply-To'] = '<'.$this->thread->message_id.'>';
         $headers['References'] = '<'.$this->thread->message_id.'>';
+        $headers['Auto-Submitted'] = 'auto-replied';
 
         // Create Message-ID for the auto reply
         $message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_AUTO_REPLY.'-'.$this->thread->id.'-'.\MailHelper::getMessageIdHash($this->thread->id).'@'.$this->mailbox->getEmailDomain();
