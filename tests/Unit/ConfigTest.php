@@ -23,6 +23,19 @@ class ConfigTest extends TestCase
         self::assertTrue(true);
     }
 
+    public function test_curl_timeouts_from_environment_are_integers()
+    {
+      putenv("APP_CURL_TIMEOUT=10");
+      putenv("APP_CURL_CONNECTION_TIMEOUT=5");
+      $config = require __DIR__.'/../../config/app.php';
+      putenv("APP_CURL_TIMEOUT");
+      putenv("APP_CURL_CONNECTION_TIMEOUT");
+
+      // Guzzle throws an exception for string timeouts.
+      $this->assertSame(10, $config["curl_timeout"]);
+      $this->assertSame(5, $config["curl_connect_timeout"]);
+    }
+
     protected function setUp() : void
     {
       $this->original_app_key = getenv("APP_KEY");

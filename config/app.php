@@ -476,10 +476,11 @@ return [
     | Timeout for curl and GuzzleHttp.
     |-------------------------------------------------------------------------
     */
+    // Values from .env are strings and Guzzle accepts only int|float.
     // Should be set for curl and Guzzle.
-    'curl_timeout'         => env('APP_CURL_TIMEOUT', 40),
+    'curl_timeout'         => (int)env('APP_CURL_TIMEOUT', 40),
     // Should be set for Guzzle. Curl has default CURLOPT_CONNECTTIMEOUT=30 sec.
-    'curl_connect_timeout' => env('APP_CURL_CONNECTION_TIMEOUT', 30),
+    'curl_connect_timeout' => (int)env('APP_CURL_CONNECTION_TIMEOUT', 30),
     // CloudFlare may block requests without user agent.
     // Need to be set for curl. Guzzle sends it's own user agent: GuzzleHttp/6.3.3 curl/7.58.0 PHP/8.2.5
     'curl_user_agent'      => env('APP_CURL_USER_AGENT', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 7_1_4) AppleWebKit/603.26 (KHTML, like Gecko) Chrome/55.0.3544.220 Safari/534'),

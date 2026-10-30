@@ -1712,7 +1712,8 @@ class Helper
     public static function checkPort($host, $port)
     {
         // Sanitize URL and get host IP.
-        self::sanitizeRemoteUrl('https://'.$host, $throw_exception = true);
+        // The host is not requested over HTTP, so there are no redirects to follow.
+        self::sanitizeRemoteUrl('https://'.$host, $throw_exception = true, $follow_redirects = false);
 
         // Connect to the address that was actually validated above, not to
         // the original hostname (which fsockopen() would otherwise resolve

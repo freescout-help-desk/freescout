@@ -41,7 +41,8 @@ class AppServiceProvider extends ServiceProvider
                 if (!preg_match("#^https?://#", $value)) {
                     $url = 'https://'.$url;
                 }
-                \Helper::sanitizeRemoteUrl($url, true);
+                // Mail hosts are not requested over HTTP, so there are no redirects to follow.
+                \Helper::sanitizeRemoteUrl($url, true, false);
             } catch (\Exception $e) {
                 $msg = $e->getMessage();
             }
