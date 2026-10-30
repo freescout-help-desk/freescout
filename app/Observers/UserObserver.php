@@ -34,6 +34,34 @@ class UserObserver
     }
 
     /**
+     * Revoke non-used password reset tokens when the email address changes.
+     * Reset tokens are stored by email address, so without this a token issued
+     * for an address would stay valid for whichever account takes it over
+     * (admin email change, invitation setup, user deletion).
+     * Runs on the same connection as the save, so it is part of the
+     * surrounding transaction if there is one.
+     *
+     * @param User $user
+     */
+    public function updating(User $user)
+    {
+        if (!$user->isDirty('email')) {
+            return;
+        }
+
+        $emails = array_filter(array_unique([
+            (string) $user->getOriginal('email'),
+            (string) $user->email,
+        ]), 'strlen');
+
+        if ($emails) {
+            \DB::table(config('auth.passwords.users.table', 'password_resets'))
+                ->whereIn('email', $emails)
+                ->delete();
+        }
+    }
+
+    /**
      * On user delete.
      *
      * @param User $user
