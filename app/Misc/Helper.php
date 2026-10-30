@@ -1711,8 +1711,11 @@ class Helper
      */
     public static function checkPort($host, $port)
     {
-        // Sanitize URL and get host IP.
-        self::sanitizeRemoteUrl('https://'.$host, $throw_exception = true);
+        // Sanitize host and get its IP.
+        // The host is not going to be requested via HTTP, so there is no need
+        // to follow redirects (port 443 is often closed on SMTP/IMAP hosts and
+        // the check would hang until the connection timeout).
+        self::sanitizeRemoteHost($host, $throw_exception = true);
 
         // Connect to the address that was actually validated above, not to
         // the original hostname (which fsockopen() would otherwise resolve
@@ -1730,13 +1733,33 @@ class Helper
             $host = '['.$host.']';
         }
 
-        $connection = @fsockopen($host, $port);
+        $connection = @fsockopen($host, $port, $errno, $errstr, (int)config('app.curl_connect_timeout'));
         if (is_resource($connection)) {
             fclose($connection);
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Check a host which is not going to be requested via HTTP (SMTP/IMAP server, etc.).
+     * Resolves the host and checks all its IPs against SSRF restrictions.
+     * Redirects are not followed by default: they make sense only for hosts
+     * which are going to be requested via HTTP, and requests to port 443 of
+     * a mail server may hang until the connection timeout.
+     *
+     * The protocol is added if the host has none. Other callers of
+     * sanitizeRemoteUrl() must still pass a full URL, as the protocol check
+     * there is used to reject non-HTTP URLs.
+     */
+    public static function sanitizeRemoteHost($host, $throw_exception = false, $follow_redirects = false)
+    {
+        if (!preg_match("#^https?://#", $host)) {
+            $host = 'https://'.$host;
+        }
+
+        return self::sanitizeRemoteUrl($host, $throw_exception, $follow_redirects);
     }
 
     public static function purifyHtml($html)
