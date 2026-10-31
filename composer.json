@@ -373,6 +373,7 @@
             "vendor/symfony/http-kernel/Exception/NotFoundHttpException.php",
             "vendor/symfony/http-kernel/Exception/ServiceUnavailableHttpException.php",
             "vendor/symfony/http-kernel/Exception/UnauthorizedHttpException.php",
+            "vendor/symfony/http-kernel/Exception/BadRequestHttpException.php",
             "vendor/symfony/http-kernel/HttpCache/Store.php",
             "vendor/barryvdh/laravel-debugbar/src/JavascriptRenderer.php",
             "vendor/spatie/string/src/Str.php",
