@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Exception\RequestExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -15,7 +17,9 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        // Malformed requests (invalid Host header, invalid method override, etc.),
+        // usually sent by vulnerability scanners. Same as in newer Laravel versions.
+        RequestExceptionInterface::class,
     ];
 
     /**
@@ -188,6 +192,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        // Malformed request: return "400 Bad Request" instead of "500 Server Error".
+        // Same as in newer Laravel versions.
+        if ($exception instanceof RequestExceptionInterface) {
+            $exception = new BadRequestHttpException('Bad request.', $exception);
+        }
+
         return parent::render($request, $exception);
     }
 }
