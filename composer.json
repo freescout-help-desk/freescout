@@ -260,6 +260,7 @@
             "vendor/laravel/framework/src/Illuminate/Mail/TransportManager.php",
             "vendor/laravel/framework/src/Illuminate/Mail/Message.php",
             "vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php",
+            "vendor/laravel/framework/src/Illuminate/Auth/TokenGuard.php",
             "vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php",
             "vendor/laravel/framework/src/Illuminate/Container/Container.php",
             "vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php",
