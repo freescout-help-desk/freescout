@@ -96,10 +96,15 @@ class Resolver
      */
     protected function processReferences()
     {
+        // Note: the href attribute is deliberately not filtered in the XPath predicate.
+        // XPath attribute matching is case sensitive, so `[@href or @xlink:href]` would
+        // skip `<use HrEf="#id">`/`<use xlink:HrEf="#id">` - names that
+        // `Sanitizer::cleanHrefAttributes()` normalizes back to `href`/`xlink:href`
+        // afterwards, which would hand back a live reference the graph never saw.
         $useNodeName = $this->xPath->createNodeName('use');
         foreach ($this->subjects as $subject) {
             $useElements = $this->xPath->query(
-                $useNodeName . '[@href or @xlink:href]',
+                $useNodeName,
                 $subject->getElement()
             );
 

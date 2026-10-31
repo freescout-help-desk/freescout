@@ -10,7 +10,7 @@ namespace GuzzleHttp\Promise;
  * Thenning off of this promise will invoke the onRejected callback
  * immediately and ignore other callbacks.
  *
- * @template TValue = mixed
+ * @template TValue = never
  * @template TReason = mixed
  *
  * @implements PromiseInterface<TValue, TReason>
@@ -60,7 +60,7 @@ class RejectedPromise implements PromiseInterface
         $reason = $this->reason;
         $p = new Promise([$queue, 'run']);
         $queue->add(static function () use ($p, $reason, $onRejected): void {
-            if (Is::pending($p)) {
+            if (State::isPending($p)) {
                 try {
                     // Return a resolved promise if onRejected does not throw.
                     $p->resolve($onRejected($reason));

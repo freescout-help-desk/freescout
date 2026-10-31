@@ -295,10 +295,11 @@ class HTMLPurifier_Lexer
      */
     public function normalize($html, $config, $context)
     {
+        $html = (string) $html;
         // normalize newlines to \n
         if ($config->get('Core.NormalizeNewlines')) {
-            $html = str_replace("\r\n", "\n", (string)$html);
-            $html = str_replace("\r", "\n", (string)$html);
+            $html = str_replace("\r\n", "\n", $html);
+            $html = str_replace("\r", "\n", $html);
         }
 
         if ($config->get('HTML.Trusted')) {

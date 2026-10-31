@@ -111,6 +111,9 @@ final class Utils
      * Throws `TimeoutException` when PHP-style timeout metadata can be detected
      * after a source read or destination write cannot make progress.
      *
+     * When a source read times out, the bytes copied before it remain in the
+     * destination.
+     *
      * @param StreamInterface $source Stream to read from
      * @param StreamInterface $dest   Stream to write to
      * @param int             $maxLen Maximum number of bytes to read. Pass -1
@@ -182,6 +185,9 @@ final class Utils
      *
      * Throws `TimeoutException` when PHP-style timeout metadata can be detected
      * after a stream read cannot make progress.
+     *
+     * The bytes read before a timeout are discarded, so calling this method
+     * again does not return them.
      *
      * @param StreamInterface $stream Stream to read
      * @param int             $maxLen Maximum number of bytes to read. Pass -1
@@ -494,6 +500,9 @@ final class Utils
      * Throws `TimeoutException` when PHP-style timeout metadata can be detected
      * after a stream read cannot make progress.
      *
+     * The bytes read before a timeout are discarded, so calling this method
+     * again does not return them.
+     *
      * @param StreamInterface $stream    Stream to read from
      * @param int|null        $maxLength Maximum buffer length
      */
@@ -581,6 +590,56 @@ final class Utils
         }
 
         return \str_replace(\substr($authority, 0, $atPosition).'@', '***@', $subject);
+    }
+
+    /**
+     * Formats a URI for automatic diagnostics.
+     *
+     * The whole userinfo component is replaced by "***", and the query and
+     * fragment are removed. The scheme, host, port, and path are preserved.
+     * The returned string is diagnostic-escaped and the formatter never
+     * throws.
+     */
+    public static function redactUriForMessage(
+        #[\SensitiveParameter]
+        UriInterface $uri
+    ): string {
+        try {
+            $raw = (string) $uri;
+        } catch (\Throwable $e) {
+            return '[unavailable URI]';
+        }
+
+        try {
+            if ($uri->getUserInfo() !== '') {
+                $uri = $uri->withUserInfo('***');
+            }
+
+            return DiagnosticValue::escape((string) $uri->withQuery('')->withFragment(''));
+        } catch (\Throwable $e) {
+            return self::redactUriStringForMessage($raw);
+        }
+    }
+
+    /**
+     * Formats a raw URI for automatic diagnostics, including malformed input.
+     *
+     * The whole userinfo component is replaced by "***", and the query and
+     * fragment are removed. The scheme, host, port, and path are preserved
+     * where their boundaries can be determined safely. The returned string is
+     * diagnostic-escaped and the formatter never throws.
+     */
+    public static function redactUriStringForMessage(
+        #[\SensitiveParameter]
+        string $uri
+    ): string {
+        try {
+            $uri = self::redactUserInfoInString($uri, $uri);
+
+            return DiagnosticValue::escape(\substr($uri, 0, \strcspn($uri, '?#')));
+        } catch (\Throwable $e) {
+            return '[unavailable URI]';
+        }
     }
 
     /**
@@ -754,6 +813,9 @@ final class Utils
      *
      * Throws `TimeoutException` when PHP-style timeout metadata can be detected
      * after a stream read cannot make progress.
+     *
+     * The bytes read before a timeout are discarded, so calling this method
+     * again does not return them.
      *
      * @param resource $stream
      *

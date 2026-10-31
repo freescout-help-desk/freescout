@@ -86,7 +86,11 @@ final class UriNormalizer
      * second format in the Uri class. See
      * `GuzzleHttp\Psr7\Uri::composeComponents`.
      *
+     * When removing the host leaves a URI without an authority whose path
+     * begins with `//`, the path is serialized with a `/.` prefix.
+     *
      * Example: file://localhost/myfile → file:///myfile
+     * Example: file://localhost//x → file:///.//x
      */
     public const REMOVE_DEFAULT_HOST = 8;
 
@@ -166,6 +170,13 @@ final class UriNormalizer
      * uncommon in reality. So this potential normalization is implied in PSR-7
      * as well.
      *
+     * A path the URI cannot hold, such as a `//`-leading path without an
+     * authority or a relative-path reference whose first segment contains a
+     * colon, is prefixed with `/.` or `./` respectively instead of throwing, as
+     * `UriResolver::resolve()` does. The percent-encoding normalizations only
+     * do so where they rewrote the path. For example, decoding `a%41:` yields
+     * `./aA:`, since `aA:` would be an absolute URI with the scheme `aa`.
+     *
      * @param UriInterface $uri   The URI to normalize
      * @param int          $flags A bitmask of normalizations to apply, see constants
      *
@@ -188,6 +199,14 @@ final class UriNormalizer
         }
 
         if ($flags & self::REMOVE_DEFAULT_HOST && $uri->getScheme() === 'file' && $uri->getHost() === 'localhost') {
+            if ($uri->getUserInfo() === '' && $uri->getPort() === null) {
+                $path = Uri::rawPath($uri);
+                if (str_starts_with($path, '//')) {
+                    // "/." keeps a "//" path unambiguous once the authority is gone
+                    $uri = $uri->withPath('/.'.$path);
+                }
+            }
+
             $uri = $uri->withHost('');
         }
 
@@ -260,8 +279,7 @@ final class UriNormalizer
         $uri = self::withNormalizedUserInfo($uri, $regex, $callback);
         $uri = self::withNormalizedHost($uri, $regex, $callback);
 
-        return $uri
-            ->withPath(self::normalizePercentEncodingInComponent(Uri::rawPath($uri), $regex, $callback))
+        return self::withGuardedPath($uri, self::normalizePercentEncodingInComponent(Uri::rawPath($uri), $regex, $callback))
             ->withQuery(self::normalizePercentEncodingInComponent($uri->getQuery(), $regex, $callback))
             ->withFragment(self::normalizePercentEncodingInComponent($uri->getFragment(), $regex, $callback));
     }
@@ -284,10 +302,22 @@ final class UriNormalizer
         $uri = self::withNormalizedUserInfo($uri, $regex, $callback);
         $uri = self::withNormalizedHost($uri, $regex, $hostCallback);
 
-        return $uri
-            ->withPath(self::normalizePercentEncodingInComponent(Uri::rawPath($uri), $regex, $callback))
+        return self::withGuardedPath($uri, self::normalizePercentEncodingInComponent(Uri::rawPath($uri), $regex, $callback))
             ->withQuery(self::normalizePercentEncodingInComponent($uri->getQuery(), $regex, $callback))
             ->withFragment(self::normalizePercentEncodingInComponent($uri->getFragment(), $regex, $callback));
+    }
+
+    /**
+     * Writes the given path only when it differs from the current one, guarded
+     * so the write cannot throw.
+     */
+    private static function withGuardedPath(UriInterface $uri, string $path): UriInterface
+    {
+        if ($path === Uri::rawPath($uri)) {
+            return $uri;
+        }
+
+        return $uri->withPath(UriResolver::guardedPath($uri, $path));
     }
 
     /**
