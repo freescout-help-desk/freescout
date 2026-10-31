@@ -369,10 +369,13 @@ class Thread extends Model
 
         $body = \Helper::linkify($this->getCleanBody($body));
 
-        // Add target="_blank" to external links.
+        // Add target="_blank" to external links
+        // (or to all links if APP_OPEN_LINKS_IN_NEW_TAB is enabled).
         $pattern = '/<a(.*?)?href=[\'"]?[\'"]?(.*?)?>/i';
 
-        $body = preg_replace_callback($pattern, function ($m) {
+        $all_links_new_tab = (bool)config('app.open_links_in_new_tab');
+
+        $body = preg_replace_callback($pattern, function ($m) use ($all_links_new_tab) {
             $tpl = array_shift($m);
             $href = trim(isset($m[1]) ? $m[1] : '');
 
@@ -386,7 +389,7 @@ class Thread extends Model
             }
 
             // Skip non-external links.
-            if (parse_url($href, PHP_URL_HOST) == \Helper::getDomain()) {
+            if (!$all_links_new_tab && parse_url($href, PHP_URL_HOST) == \Helper::getDomain()) {
                 return $tpl;
             }
 
@@ -959,7 +962,7 @@ class Thread extends Model
         $thread = new Thread();
         $thread->conversation_id = $conversation->id;
         $thread->type = $type;
-        $thread->body = $body;
+        $thread->body = (string)$body;
         $thread->status = $conversation->status;
         $thread->state = Thread::STATE_PUBLISHED;
 
@@ -1070,7 +1073,7 @@ class Thread extends Model
         $thread->source_type = Thread::SOURCE_TYPE_API;
         $thread->state = $data['state'] ?? Thread::STATE_PUBLISHED;
         $thread->customer_id = $customer->id ?? $conversation->customer_id ?? null;
-        $thread->body = $data['body'];
+        $thread->body = (string)$data['body'];
         if (!$is_customer) {
             $thread->setTo([$customer->getMainEmail()]);
         }

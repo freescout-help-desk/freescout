@@ -62,15 +62,20 @@ class PolycastServiceProvider extends ServiceProvider
                 $query = \DB::table('polycast_events')
                     ->select('*');
 
-                $channels = $request->get('channels', []);
+                // Must be read exactly as in PolycastBroadcaster::auth() ($request->channels),
+                // otherwise channels passed in the query string were queried but never authorized.
+                $channels = $request->input('channels', []);
 
                 // $request->channels must contain a list of channels.
                 // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-7x4c-p73f-67x5
-                if (empty($channels)) {
+                if (empty($channels) || !is_array($channels)) {
                     \Helper::denyAccess();
                 }
 
                 foreach ($channels as $channel => $events) {
+                    if (!is_array($events)) {
+                        \Helper::denyAccess();
+                    }
 
                     // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-gh3r-jh6q-wrvj
                     $channel = \Helper::sqlEscapeLike($channel);
@@ -86,7 +91,24 @@ class PolycastServiceProvider extends ServiceProvider
                     }
                 }
 
-                $collection = collect($query->get());
+                // Filter selected polycast event: a requested channel name can also match other parts of the
+                // stored JSON. Keep only events whose stored channel names exactly match
+                // a requested (and authorized) channel and event.
+                $collection = collect($query->get())->filter(function ($item) use ($channels) {
+                    $item_channels = json_decode($item->channels, true);
+                    if (!is_array($item_channels)) {
+                        return false;
+                    }
+                    foreach ($item_channels as $item_channel) {
+                        $name = is_array($item_channel) ? ($item_channel['name'] ?? null) : $item_channel;
+                        if (is_string($name) && isset($channels[$name]) && is_array($channels[$name])
+                            && in_array($item->event, $channels[$name], true)
+                        ) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })->values();
 
                 $payload = $collection->map(function ($item, $key) use ($request) {
                     $created = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $item->created_at);

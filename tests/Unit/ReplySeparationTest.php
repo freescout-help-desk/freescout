@@ -15,13 +15,20 @@ class ReplySeparationTest extends TestCase
 </p>',
     ];
 
+    // libxml2 < 2.14 wraps top-level text in an implied <p>, newer versions do not.
+    // Strip the wrapper so that the tests do not depend on the libxml2 version.
+    protected function normalizeHtml($html)
+    {
+        return preg_replace('#^<p>(.*)</p>$#s', '$1', $html);
+    }
+
     public function testIncomingMailReplySeparation()
     {
         $fetch_emails = new \App\Console\Commands\FetchEmails();
         
         foreach ($this->test_bodies as $body_original => $body_separated) {
             $separated_reply = $fetch_emails->separateReply($body_original, $is_html = true, $is_reply = true);
-            $this->assertEquals($body_separated, $separated_reply);
+            $this->assertEquals($this->normalizeHtml($body_separated), $this->normalizeHtml($separated_reply));
         }
     }
 
@@ -48,7 +55,7 @@ class ReplySeparationTest extends TestCase
 
         foreach ($this->test_notification_bodies as $body_original => $body_separated) {
             $separated_reply = $fetch_emails->separateReply($body_original, $is_html = true, $is_reply = true, $user_reply_to_notification = true);
-            $this->assertEquals($body_separated, $separated_reply);
+            $this->assertEquals($this->normalizeHtml($body_separated), $this->normalizeHtml($separated_reply));
         }
     }
 }

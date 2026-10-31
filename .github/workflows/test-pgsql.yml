@@ -32,7 +32,7 @@ jobs:
 
     strategy:
       matrix:
-        php: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
+        php: ['8.1', '8.2', '8.3', '8.4', '8.5']
 
     steps:
       - uses: actions/checkout@v3
@@ -54,7 +54,6 @@ jobs:
           DB_PORT: ${{ job.services.postgres.ports[5432] }}
 
       - name: Run PHP tests
-        if: ${{ matrix.php < 8.4 }}
         run: php${{ matrix.php }} ./vendor/bin/phpunit
         env:
           DB_PORT: ${{ job.services.postgres.ports[5432] }}

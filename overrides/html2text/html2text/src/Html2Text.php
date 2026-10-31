@@ -236,7 +236,7 @@ class Html2Text
             return call_user_func_array(array($this, 'legacyConstruct'), func_get_args());
         }
 
-        $this->html = $html;
+        $this->html = (string)$html;
         $this->options = array_merge($this->options, $options);
         $this->htmlFuncFlags = (PHP_VERSION_ID < 50400)
             ? ENT_COMPAT
@@ -260,7 +260,7 @@ class Html2Text
      */
     public function setHtml($html)
     {
-        $this->html = $html;
+        $this->html = (string)$html;
         $this->converted = false;
     }
 

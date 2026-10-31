@@ -31,27 +31,36 @@ class AppServiceProvider extends ServiceProvider
         \App\Follower::observe(\App\Observers\FollowerObserver::class);
         \Illuminate\Notifications\DatabaseNotification::observe(\App\Observers\DatabaseNotificationObserver::class);
 
+        // Checks the host without following redirects.
+        // To be used for hosts which are not requested via HTTP (SMTP/IMAP servers).
         \Validator::extend('safehost', function ($attribute, $value, $parameters, $validator) {
-            if (!$value) {
-                return true;
-            }
-            $msg = '';
-            try {
-                $url = $value;
-                if (!preg_match("#^https?://#", $value)) {
-                    $url = 'https://'.$url;
-                }
-                \Helper::sanitizeRemoteUrl($url, true);
-            } catch (\Exception $e) {
-                $msg = $e->getMessage();
-            }
-            if ($msg) {
-                $validator->errors()->add($attribute, $msg);
-                return false;
-            }
-
-            return true;
+            return $this->validateSafeHost($attribute, $value, $validator, false);
         });
+
+        // Checks the host and follows redirects.
+        // To be used for hosts and URLs which are going to be requested via HTTP.
+        \Validator::extend('safeurl', function ($attribute, $value, $parameters, $validator) {
+            return $this->validateSafeHost($attribute, $value, $validator, true);
+        });
+    }
+
+    protected function validateSafeHost($attribute, $value, $validator, $follow_redirects)
+    {
+        if (!$value) {
+            return true;
+        }
+        $msg = '';
+        try {
+            \Helper::sanitizeRemoteHost($value, true, $follow_redirects);
+        } catch (\Exception $e) {
+            $msg = $e->getMessage();
+        }
+        if ($msg) {
+            $validator->errors()->add($attribute, $msg);
+            return false;
+        }
+
+        return true;
     }
 
     /**

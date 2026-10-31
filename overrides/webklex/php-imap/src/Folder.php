@@ -202,7 +202,7 @@ class Folder {
      * @return array|false|string|string[]|null
      */
     protected function decodeName($name) {
-        return mb_convert_encoding($name, "UTF-8", "UTF7-IMAP");
+        return \Helper::mbConvertEncoding($name, "UTF-8", "UTF7-IMAP");
     }
 
     /**

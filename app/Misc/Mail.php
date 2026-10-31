@@ -662,6 +662,25 @@ class Mail
     }
 
     /**
+     * Hash for the Message-ID of the email notification sent to a user.
+     * Unlike getMessageIdHash() it authenticates both thread and user IDs and
+     * is derived with a distinct prefix, so a token received by a customer in
+     * FS_reply / FS_autoreply Message-ID can never be valid for a notification.
+     */
+    public static function getNotificationMessageIdHash($thread_id, $user_id)
+    {
+        return substr(hash_hmac('sha256', 'notify|'.(int)$thread_id.'|'.(int)$user_id, (string)config('app.key')), 0, 16);
+    }
+
+    /**
+     * Constant-time check of the Message-ID hash.
+     */
+    public static function checkMessageIdHash($hash, $expected)
+    {
+        return is_string($hash) && is_string($expected) && hash_equals($expected, $hash);
+    }
+
+    /**
      * Detect autoresponder by headers.
      * https://github.com/jpmckinney/multi_mail/wiki/Detecting-autoresponders
      * https://www.jitbit.com/maxblog/18-detecting-outlook-autoreplyout-of-office-emails-and-x-auto-response-suppress-header/.
@@ -909,8 +928,13 @@ class Mail
 
     /**
      * Fetch IMAP message by Message-ID.
+     *
+     * An already created IMAP client can be passed in $client to reuse its
+     * connection when fetching multiple messages from the same mailbox
+     * (servers like Gmail limit the number of simultaneous connections).
+     * The connection is not closed in this case, the caller has to close it.
      */
-    public static function fetchMessage($mailbox, $message_id, $message_date = null)
+    public static function fetchMessage($mailbox, $message_id, $message_date = null, $client = null)
     {
         $no_charset = false;
 
@@ -919,8 +943,13 @@ class Mail
         }
 
         try {
-            $client = \MailHelper::getMailboxClient($mailbox);
-            $client->connect();
+            if (!$client) {
+                $client = \MailHelper::getMailboxClient($mailbox);
+                $client->connect();
+            } else {
+                // Reconnects if the connection has been lost.
+                $client->checkConnection();
+            }
         } catch (\Exception $e) {
             \Helper::logException($e, '('.$mailbox->name.') Could not fetch specific message by Message-ID:');
             return null;
@@ -1314,7 +1343,7 @@ class Mail
     public static function getImapFolder($client, $folder_name)
     {
         // https://github.com/freescout-helpdesk/freescout/issues/3502
-        $folder_name = mb_convert_encoding($folder_name, "UTF7-IMAP", "UTF-8");
+        $folder_name = \Helper::mbConvertEncoding($folder_name, "UTF7-IMAP", "UTF-8");
 
         if (method_exists($client, 'getFolderByPath')) {
             return $client->getFolderByPath($folder_name);
@@ -1553,25 +1582,42 @@ class Mail
      * In `From: "Tatiana Ivanova" <ti@example.org>` the quotes are just
      * a delimiter of the quoted-string, they are not a part of the name itself:
      * https://datatracker.ietf.org/doc/html/rfc5322#section-3.2.4
+     *
+     * A display name is a sequence of words, each of them is an atom or a quoted-string
+     * (https://datatracker.ietf.org/doc/html/rfc5322#section-3.2.5), so names like
+     * `"Company "Test""` or `"Foo" bar "Baz"` are unquoted word by word:
+     * "Company Test" and "Foo bar Baz". This is what imap_rfc822_parse_adrlist() returns,
+     * so the result is the same with and without the IMAP PHP extension.
      */
     public static function unquotePersonalName($name)
     {
         $name = trim((string)$name);
 
-        if (strlen($name) < 2 || !\Str::startsWith($name, '"') || !\Str::endsWith($name, '"')) {
+        if (strpos($name, '"') === false) {
             return $name;
         }
 
-        $unquoted = substr($name, 1, -1);
-
-        // Make sure that it's a single quoted-string and not something like
-        // `"Foo" bar "Baz"` - all quotes inside have to be escaped.
-        if (!preg_match('/^(?:[^"\\\\]|\\\\.)*$/s', $unquoted)) {
+        // Quoted-strings (with their quoted-pairs) and the text between them.
+        if (!preg_match_all('/"((?:[^"\\\\]|\\\\.)*)"|[^"]+/s', $name, $words, PREG_SET_ORDER)) {
             return $name;
         }
 
-        // Unescape quoted-pairs: \" => " and \\ => \
-        return trim(preg_replace('/\\\\(.)/s', '$1', $unquoted));
+        // An unbalanced quote: leave the name as it is.
+        if (strlen(implode('', array_column($words, 0))) != strlen($name)) {
+            return $name;
+        }
+
+        $result = '';
+        foreach ($words as $word) {
+            if (isset($word[1])) {
+                // Unescape quoted-pairs: \" => " and \\ => \
+                $result .= preg_replace('/\\\\(.)/s', '$1', $word[1]);
+            } else {
+                $result .= $word[0];
+            }
+        }
+
+        return trim($result);
     }
 
     public static function isFsMessageId($message_id)

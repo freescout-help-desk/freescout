@@ -3029,7 +3029,7 @@ select[multiple].input-lg {
   margin-bottom: 0;
   font-size: 14px;
   font-weight: normal;
-  height: 36px;
+  height: auto;
   line-height: 34px;
   text-align: center;
   white-space: nowrap;
@@ -3044,6 +3044,12 @@ select[multiple].input-lg {
   background-image: none;
   border: 1px solid transparent;
   border-radius: 2px;
+}
+/* Inline content with a different font size or fallback font (e.g. a symbol
+   glyph) must not make the button taller than its line-height. */
+.btn > span,
+.btn > i {
+  line-height: 1;
 }
 .btn:focus,
 .btn:active:focus,

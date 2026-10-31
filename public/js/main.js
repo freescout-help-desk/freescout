@@ -392,6 +392,9 @@ $(document).ready(function(){
 	// Floating alerts
 	fsFloatingAlertsInit();
 
+	// Time zone select with search and offset badges
+	initTimezoneSelect();
+
 	// Editor
 	(function($) {
 		if (typeof($.summernote) != "undefined") {
@@ -456,6 +459,45 @@ $(document).ready(function(){
 		e.preventDefault();
 	});
 }*/
+
+// Searchable time zone select: zone name on the left, current UTC offset badge on the right.
+function initTimezoneSelect()
+{
+	var $select = $('select#timezone:not(.select2-hidden-accessible)');
+
+	if (!$select.length || typeof($.fn.select2) == 'undefined') {
+		return;
+	}
+
+	function template(state) {
+		if (!state.id || !state.element) {
+			return state.text;
+		}
+		var $option = $(state.element);
+		var $result = $('<span class="tz-option"></span>');
+
+		$result.append($('<span class="tz-name"></span>').text($option.data('name')));
+		$result.append($('<span class="tz-offset"></span>').text($option.data('offset')));
+
+		return $result;
+	}
+
+	$select.select2({
+		templateResult: template,
+		templateSelection: template,
+		matcher: function(params, data) {
+			var term = $.trim(params.term || '').toLowerCase().replace(/_/g, ' ');
+
+			if (term === '') {
+				return data;
+			}
+			if (typeof(data.text) === 'undefined') {
+				return null;
+			}
+			return data.text.toLowerCase().indexOf(term) > -1 ? data : null;
+		}
+	});
+}
 
 function initMuteMailbox()
 {
@@ -5357,15 +5399,26 @@ function conversationsTableInit()
 		});
 
 		$('.conv-row').on('contextmenu', function(event) {
+			// Detect a touch long press. Chrome reports it via sourceCapabilities,
+			// other browsers via the preceding touchstart.
+			var is_touch = $(this).data('conv_touch')
+				|| (event.originalEvent
+					&& event.originalEvent.sourceCapabilities
+					&& event.originalEvent.sourceCapabilities.firesTouchEvents);
+
+			// Mouse right click (or the keyboard context menu key):
+			// keep the native browser menu ("Open link in new tab", etc).
+			if (!is_touch) {
+				return;
+			}
+
 			event.preventDefault();
 			event.stopPropagation();
 
 			// The browser fires contextmenu after its native long press
 			// (with haptic feedback on Android), on press or on release,
 			// which may happen before taphold.
-			if ($(this).data('conv_touch')) {
-				toggleRow(this);
-			}
+			toggleRow(this);
 		});
 
 		$('.conv-row').on('taphold', {duration: 700}, function(event) {
@@ -5426,6 +5479,8 @@ function converstationBulkActionsInit()
 			else {
 				$(bulk_buttons).fadeOut();
 			}
+			// Merging needs at least two conversations.
+			$('.conv-merge', bulk_buttons).toggleClass('hidden', checkboxes.filter(':checked').length < 2);
 		});
 
 		if (!bulk_buttons.attr('data-initialized')) {
@@ -5510,6 +5565,53 @@ function converstationBulkActionsInit()
 									if (isAjaxSuccess(response)) {
 										location.reload();
 									} else {
+										showAjaxError(response);
+									}
+								}, true
+							);
+							e.preventDefault();
+						});
+					}
+				});
+				e.preventDefault();
+			});
+
+			// Merge conversations: all the selected ones into the oldest of them.
+			$(".conv-merge", bulk_buttons).click(function(e) {
+				var conv_ids = getSelectedConversations().map(function(id) {
+					return parseInt(id);
+				}).sort(function(a, b) {
+					return a - b;
+				});
+				if (conv_ids.length < 2) {
+					e.preventDefault();
+					return;
+				}
+				var target_id = conv_ids.shift();
+				var target_row = $('.conv-row[data-conversation_id="'+target_id+'"]:first');
+
+				showModalDialog('#conversations-bulk-actions-merge-modal', {
+					on_show: function(modal) {
+						modal.children().find('.merge-conversation-target:first').html(
+							'<strong>'+htmlEscape(target_row.find('.conv-number:first').text().trim())+'</strong> '
+							+htmlEscape(stripTags(target_row.find('.conv-subject p:first').html(), true).trim())
+						);
+						modal.children().find('.merge-conversation-ok:first').click(function(e) {
+							var button = $(this);
+							button.button('loading');
+
+							fsAjax(
+								{
+									action: 'conversation_merge',
+									conversation_id: target_id,
+									merge_conversation_id: conv_ids
+								},
+								laroute.route('conversations.ajax'),
+								function(response) {
+									if (isAjaxSuccess(response)) {
+										location.reload();
+									} else {
+										button.button('reset');
 										showAjaxError(response);
 									}
 								}, true
@@ -5746,10 +5848,19 @@ function localStorageRemove(key)
 	}
 }
 
-function stripTags(html)
+function stripTags(html, strip_content)
 {
 	var div = document.createElement("div");
 	div.innerHTML = html;
+
+	// Remove all elements together with their content,
+	// leaving only the text that is outside of any tag.
+	if (strip_content) {
+		while (div.firstElementChild) {
+			div.removeChild(div.firstElementChild);
+		}
+	}
+
 	var text = div.textContent || div.innerText || "";
 	return text;
 }

@@ -164,7 +164,7 @@
 		    <li @if ($mode == App\Conversation::SEARCH_MODE_CUSTOMERS)class="active"@endif><a href="@if ($mode == App\Conversation::SEARCH_MODE_CUSTOMERS)#@else{{ \Helper::fixProtocol(request()->fullUrlWithQuery(['mode' => App\Conversation::SEARCH_MODE_CUSTOMERS])) }}@endif">{{ __('Customers') }} <b>({{ $customers->total() }})</b>@if ($mode == App\Conversation::SEARCH_MODE_CUSTOMERS && count($customers)) <i class="text-link glyphicon @if (\Helper::getCustomersView() == 'table') glyphicon-th-large @else glyphicon-th-list @endif customers-view-switch" role="button" data-title-table="{{ __('Table View') }}" data-title-cards="{{ __('Cards View') }}" title="@if (\Helper::getCustomersView() == 'table'){{ __('Cards View') }}@else{{ __('Table View') }}@endif" data-toggle="tooltip"></i>@endif</a></li>
 		</ul>
 		@if ($mode == App\Conversation::SEARCH_MODE_CONV)
-	    	@include('conversations/conversations_table', ['mailbox' => $search_mailbox, 'params' => ['target_blank' => false, 'show_mailbox' => (count(Auth::user()->mailboxesCanView(true)) > 1)]])
+	    	@include('conversations/conversations_table', ['mailbox' => $search_mailbox, 'params' => ['target_blank' => (bool)config('app.open_links_in_new_tab'), 'show_mailbox' => (count(Auth::user()->mailboxesCanView(true)) > 1)]])
 	    @else
 	    	@include('customers/partials/customers_table')
 	    @endif

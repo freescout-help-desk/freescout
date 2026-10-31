@@ -95,7 +95,7 @@
                             <label for="in_username" class="col-sm-2 control-label">{{ __('Username') }}</label>
 
                             <div class="col-sm-6">
-                                <input id="in_username" type="text" class="form-control input-sized @if ($in_oauth_enabled) disabled @endif" name="in_username" value="{{ old('in_username', $mailbox->in_username) }}" maxlength="100" {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password" @if ($in_oauth_enabled) readonly @endif >
+                                <input id="in_username" type="text" class="form-control input-sized @if ($in_oauth_enabled) disabled @endif" name="in_username" value="{{ old('in_username', $mailbox->in_username) }}" maxlength="255" {{-- This added to prevent autocomplete in Chrome --}}autocomplete="new-password" @if ($in_oauth_enabled) readonly @endif >
 
                                 {{--@include('partials/field_error', ['field'=>'in_username'])--}}
                             </div>

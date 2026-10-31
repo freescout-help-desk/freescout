@@ -854,9 +854,9 @@ class Message {
         try {
             if (!$result) {
                 if (!$from) {
-                    return mb_convert_encoding($str, $to);
+                    return \Helper::mbConvertEncoding($str, $to);
                 }
-                return mb_convert_encoding($str, $to, $from);
+                return \Helper::mbConvertEncoding($str, $to, $from);
             } else {
                 return $result;
             }
@@ -1495,6 +1495,14 @@ class Message {
      */
     public function setClient($client): Message {
         $this->client = $client;
+        // Folder path may be null if the connection was dropped and re-established
+        // while iterating over messages (Client::disconnect() resets the active folder).
+        // openFolder() has a strict string typehint, so throw an Exception
+        // which is caught by the callers instead of an uncaught TypeError.
+        // https://github.com/freescout-help-desk/freescout/issues/5770
+        if ($this->folder_path === null || $this->folder_path === '') {
+            throw new Exceptions\RuntimeException('Folder path is not set');
+        }
         $this->client->openFolder($this->folder_path);
 
         return $this;

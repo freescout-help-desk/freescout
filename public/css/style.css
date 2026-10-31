@@ -2677,6 +2677,11 @@ button.conv-checkbox-clear {
 .thread-content table {
     max-width: 100%;
 }
+/* Wrap long lines in code blocks instead of making the thread scroll horizontally. */
+.thread-content pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
 .thread-content td,
 .thread-content th {
     width: auto !important;
@@ -3564,6 +3569,31 @@ ul.sidebar-block-list {
 }
 .select2-container .select2-selection--single {
     height: 30px;
+}
+/* Time zone select */
+.tz-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.tz-option .tz-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.tz-option .tz-offset {
+    flex-shrink: 0;
+    margin-left: 10px;
+    padding: 0 6px;
+    line-height: 18px;
+    font-size: 12px;
+    color: #0c66e4;
+    background-color: #e9f2ff;
+    border: 1px solid #b3d4ff;
+    border-radius: 4px;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered .tz-option {
+    padding-right: 4px;
 }
 .select2-container--default .select2-selection--single .select2-selection__rendered {
     line-height: 28px;

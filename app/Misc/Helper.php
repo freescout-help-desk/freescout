@@ -689,34 +689,80 @@ class Helper
             'applet',
             // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-fh99-wr77-pxq3
             'style',
+            // Form controls: when the HTML is loaded into an editor placed inside a form
+            // they become part of the form submission (e.g. hidden bcc[] injection).
+            'input',
+            'select',
+            'textarea',
+            'button',
         ];
         $attrs = 'src|data';
 
         $tags = array_diff($unsafe_tags, $allowed_tags);
 
-        foreach ($tags as $tag) {
-            // https://github.com/freescout-help-desk/freescout/issues/5424
-            //$html = preg_replace('#<'.$tag.'(.*?)>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
-            $new = preg_replace('#<'.$tag.'\b[^>]*>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
-            if ($new !== null) {
-                $html = $new;
-            }
+        // Any complete tag may be inserted between the letters of a tag name,
+        // e.g. "<scr<script>ipt>" or "</scr</script>ipt>": when the inner tag is removed
+        // the pieces of the outer one join into a new dangerous tag. So the outer tag
+        // has to be matched (and removed) together with the tags nested into its name.
+        // Possessive quantifiers: a backtracking group here needs one PCRE stack frame per
+        // repetition, and a long run of tags made preg_replace() fail (return null).
+        // A nested tag may hold at most one more level of complete tags: with any "<" allowed,
+        // "<s<a>" counted as one tag and every "<s" rescanned the rest of the text (quadratic
+        // time on large bodies). One level covers "<scr<scr<script>ipt>ipt>".
+        $nested = '(?:<(?:[^<>]++|<[^<>]*+>)*+>)*+';
 
-            // Remove unclosed restricted tags.
-            // And keep removing the tag until it's not found anymore.
-            // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-jpq8-j69f-mj98
-            //$html = preg_replace('#<'.$tag.'(.*?)>#is', '', $html ?? '');
-            do {
-                $found = false;
-                $new = preg_replace('#<'.$tag.'\b[^>]*>#is', '', $html ?? '');
-                if ($new !== null) {
+        // If any regex fails (backtrack or JIT stack limit on very large input) the HTML
+        // has not been sanitized, so it is returned escaped instead of as it is.
+        $original_html = (string)$html;
+        $failed = false;
+
+        // Repeat the whole pass until nothing changes: removing one tag can join the pieces
+        // of another tag that was already processed, e.g. "<sty<input>le>" or "<inp<button>ut>".
+        do {
+            $html_before_pass = $html;
+            foreach ($tags as $tag) {
+                // Tag name with optional tags nested between its letters.
+                $tag_name = implode($nested, str_split($tag));
+
+                // https://github.com/freescout-help-desk/freescout/issues/5424
+                //$html = preg_replace('#<'.$tag.'(.*?)>(.*?)<\s*/\s*'.$tag.'\s*>#is', '', $html ?? '');
+                $new = preg_replace('#<'.$tag_name.'\b[^>]*+>(.*?)<\s*/\s*'.$tag_name.'\s*>#is', '', $html ?? '');
+                if ($new === null) {
+                    $failed = true;
+                    break 2;
+                }
+                $html = $new;
+
+                // Remove unclosed restricted tags.
+                // And keep removing the tag until it's not found anymore.
+                // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-jpq8-j69f-mj98
+                //$html = preg_replace('#<'.$tag.'(.*?)>#is', '', $html ?? '');
+                do {
+                    $found = false;
+                    $new = preg_replace('#<'.$tag_name.'\b[^>]*+>#is', '', $html ?? '');
+                    if ($new === null) {
+                        $failed = true;
+                        break 3;
+                    }
                     if ($new != $html) {
                         $found = true;
                     }
                     $html = $new;
-                }
-            } while ($found);
+                } while ($found);
 
+                // A restricted tag left open at the very end, e.g. '<iframe src="..."'. Once the
+                // text is printed in a template the tag would be closed by the markup that follows.
+                $new = preg_replace('#<'.$tag_name.'\b[^>]*+$#is', '', $html ?? '');
+                if ($new === null) {
+                    $failed = true;
+                    break 2;
+                }
+                $html = $new;
+            }
+        } while ($html !== $html_before_pass);
+
+        if ($failed) {
+            return htmlspecialchars($original_html);
         }
 
         // Make sure that attributes do not point to the file on the current server.
@@ -747,6 +793,9 @@ class Helper
                 },
                 $html
             );
+            if ($html === null) {
+                return htmlspecialchars($original_html);
+            }
         }
 
         return $html;
@@ -1352,6 +1401,8 @@ class Helper
      */
     public static function htmlToText($text, $embed_images = false, $options = ['width' => 0])
     {
+        $text = (string)$text;
+
         // Process blockquotes.
         $text = str_ireplace('<blockquote>', '<div>', $text);
         $text = str_ireplace('</blockquote>', '</div>', $text);
@@ -1562,7 +1613,7 @@ class Helper
     public static function decodeUnicode($str)
     {
         $str = preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
-            return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+            return \Helper::mbConvertEncoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
         }, $str);
 
         return $str;
@@ -1632,7 +1683,27 @@ class Helper
      */
     public static function utf8Encode($string)
     {
-        return mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+        return \Helper::mbConvertEncoding($string, 'UTF-8', 'UTF-8');
+    }
+
+    /**
+     * Safe wrapper for mb_convert_encoding(). The native mb_convert_encoding() function
+     * throws ValueError on invalid encoding names (PHP 8+).
+     * This wrapper catches any \Throwable and returns the original string instead.
+     * https://github.com/freescout-help-desk/freescout/issues/5775
+     */
+    public static function mbConvertEncoding($string, $to_encoding, $from_encoding = null)
+    {
+        // We don't check if mb_convert_encoding() function exists
+        // as php-mbstring excension is required in FreeScout.
+        try {
+            if ($from_encoding === null) {
+                return mb_convert_encoding($string, $to_encoding);
+            }
+            return mb_convert_encoding($string, $to_encoding, $from_encoding);
+        } catch (\Throwable $e) {
+            return $string;
+        }
     }
 
     /**
@@ -1640,8 +1711,11 @@ class Helper
      */
     public static function checkPort($host, $port)
     {
-        // Sanitize URL and get host IP.
-        self::sanitizeRemoteUrl('https://'.$host, $throw_exception = true);
+        // Sanitize host and get its IP.
+        // The host is not going to be requested via HTTP, so there is no need
+        // to follow redirects (port 443 is often closed on SMTP/IMAP hosts and
+        // the check would hang until the connection timeout).
+        self::sanitizeRemoteHost($host, $throw_exception = true);
 
         // Connect to the address that was actually validated above, not to
         // the original hostname (which fsockopen() would otherwise resolve
@@ -1659,13 +1733,33 @@ class Helper
             $host = '['.$host.']';
         }
 
-        $connection = @fsockopen($host, $port);
+        $connection = @fsockopen($host, $port, $errno, $errstr, (int)config('app.curl_connect_timeout'));
         if (is_resource($connection)) {
             fclose($connection);
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Check a host which is not going to be requested via HTTP (SMTP/IMAP server, etc.).
+     * Resolves the host and checks all its IPs against SSRF restrictions.
+     * Redirects are not followed by default: they make sense only for hosts
+     * which are going to be requested via HTTP, and requests to port 443 of
+     * a mail server may hang until the connection timeout.
+     *
+     * The protocol is added if the host has none. Other callers of
+     * sanitizeRemoteUrl() must still pass a full URL, as the protocol check
+     * there is used to reject non-HTTP URLs.
+     */
+    public static function sanitizeRemoteHost($host, $throw_exception = false, $follow_redirects = false)
+    {
+        if (!preg_match("#^https?://#", $host)) {
+            $host = 'https://'.$host;
+        }
+
+        return self::sanitizeRemoteUrl($host, $throw_exception, $follow_redirects);
     }
 
     public static function purifyHtml($html)
@@ -1899,17 +1993,29 @@ class Helper
         return self::uploadedFilePath($file_name);
     }
 
-    public static function sanitizeUploadedFileData($file_path, $content = null)
+    /**
+     * Sanitize SVG images.
+     * 
+     * @param string      $file_path Path to the file on the disk.
+     * @param string|null $content   File content (if already known).
+     * @param string|null $disk      Name of the disk the file is stored on.
+     *                               Default disk is used if not specified.
+     *                               Attachments are stored on a different disk
+     *                               than the default one (see Attachment::getDiskName()).
+     */
+    public static function sanitizeUploadedFileData($file_path, $content = null, $disk = null)
     {
+        $storage = $disk ? Storage::disk($disk) : Storage::disk();
+
         // Remove <script>, href="", iframe, etc from SVG files.
         // Any image can be interpreted as SVG by browser,
         // so checking extension is not enough.
-        if (Storage::exists($file_path)
-            && (Storage::mimeType($file_path) == 'image/svg+xml'
+        if ($storage->exists($file_path)
+            && ($storage->mimeType($file_path) == 'image/svg+xml'
                 || strtolower(pathinfo($file_path, PATHINFO_EXTENSION)) == 'svg')
         ) {
             if (!$content) {
-                $content = Storage::get($file_path);
+                $content = $storage->get($file_path);
             }
             if ($content) {
                 // Remove comments from SVG content.
@@ -1922,7 +2028,7 @@ class Helper
                 if (!$clean_content)  {
                     $clean_content = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
                 }
-                Storage::put($file_path, $clean_content);
+                $storage->put($file_path, $clean_content);
             }
         }
     }
@@ -2667,7 +2773,7 @@ class Helper
         $escaped_regex = preg_quote(implode('', $illegal_chars), '/');
 
         // https://github.com/freescout-helpdesk/freescout/issues/3377
-        $file_name = mb_convert_encoding($file_name, 'UTF-8', 'UTF-8');
+        $file_name = \Helper::mbConvertEncoding($file_name, 'UTF-8', 'UTF-8');
         $file_name = preg_replace('/[' . $escaped_regex . ']/', '_', $file_name);
         $file_name = preg_replace("/[\t\r\n]/", '', $file_name);
         // Remove unprintable characters and invalid unicode characters.
@@ -3325,13 +3431,17 @@ class Helper
         }
     }
 
-    public static function carbonDateParse($string)
+    public static function carbonDateParse($string, $timezone = null)
     {
         if (empty($string)) {
             return null;
         }
         try {
-            return Carbon::parse($string);
+            if ($timezone) {
+                return Carbon::parse($string, $timezone);
+            } else {
+                return Carbon::parse($string);
+            }
         } catch (\Exception $e) {
             return null;
         }

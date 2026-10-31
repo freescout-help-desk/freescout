@@ -29,6 +29,7 @@ class ThreadPolicy
                         && $thread->created_by_user_id == $user->id
                         && $thread->conversation
                         && $thread->conversation->userHasAccessToMailbox($user->id)
+                        && $this->checkMailboxNotArchived($thread->conversation, $user)
                         && $this->checkIsOnlyAssigned($thread->conversation, $user)
                     )
                 )) || (
@@ -36,7 +37,7 @@ class ThreadPolicy
                 $thread->created_by_customer_id
                 && in_array($thread->type, [Thread::TYPE_CUSTOMER])
                 && $thread->conversation
-                && ($user->isAdmin() || ($thread->conversation->userHasAccessToMailbox($user->id) && $this->checkIsOnlyAssigned($thread->conversation, $user)))
+                && ($user->isAdmin() || ($thread->conversation->userHasAccessToMailbox($user->id) && $this->checkMailboxNotArchived($thread->conversation, $user) && $this->checkIsOnlyAssigned($thread->conversation, $user)))
             )
         ) {
             return true;
@@ -50,7 +51,10 @@ class ThreadPolicy
         // Admin also can delete only own notes.
         if ($thread->created_by_user_id == $user->id) {
             if ($thread->conversation 
-                && (!$thread->conversation->userHasAccessToMailbox($user->id) || !$this->checkIsOnlyAssigned($thread->conversation, $user))
+                && (!$thread->conversation->userHasAccessToMailbox($user->id)
+                    || !$this->checkMailboxNotArchived($thread->conversation, $user)
+                    || !$this->checkIsOnlyAssigned($thread->conversation, $user)
+                )
             ) {
                 return false;
             } else {
@@ -59,6 +63,12 @@ class ThreadPolicy
         } else {
             return false;
         }
+    }
+
+    // Regular users can not see Archived mailboxes (same as ConversationPolicy::view()).
+    public function checkMailboxNotArchived($conversation, $user)
+    {
+        return $user->isAdmin() || !$conversation->isMailboxArchived();
     }
 
     // If user can see only assigned conversations,

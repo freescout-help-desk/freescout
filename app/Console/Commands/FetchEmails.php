@@ -182,7 +182,9 @@ class FetchEmails extends Command
         }
 
         if ($successfully && count($this->mailboxes)) {
-            Option::set('fetch_emails_last_successful_run', $now);
+            // Save the finish time, not the start time, as fetching may take long.
+            // https://github.com/freescout-help-desk/freescout/issues/5770
+            Option::set('fetch_emails_last_successful_run', time());
         }
 
         // Middleware Terminate handler is not launched for commands,
@@ -352,7 +354,7 @@ class FetchEmails extends Command
                     }
                     $messages_query->limit($page_size, $page);
 
-                    $messages = $messages_query->get();
+                    $messages = $this->getMessages($messages_query, $folder, $mailbox, $unseen, $no_charset);
 
                     $last_error = $client->getLastError();
                 } catch (\Exception $e) {
@@ -374,9 +376,10 @@ class FetchEmails extends Command
                     if ($unseen) {
                         $messages_query->unseen();
                     }
-                    $messages = $messages_query->get();
-
                     $no_charset = true;
+
+                    $messages = $this->getMessages($messages_query, $folder, $mailbox, $unseen, $no_charset);
+
                     $last_error = $client->getLastError();
                 }
 
@@ -407,6 +410,101 @@ class FetchEmails extends Command
         }
 
         $client->disconnect();
+    }
+
+    /**
+     * When fetching all messages (not only unseen) fetch headers first
+     * and download bodies only for messages which have not been fetched before.
+     * Otherwise each fetch downloads all the bodies and attachments for the fetching period
+     * which may exceed mail server bandwidth limits (Gmail: "BYE [OVERQUOTA]").
+     * POP3 always fetches whole messages, so headers are prefetched for IMAP only.
+     */
+    public function getMessages($messages_query, $folder, $mailbox, $unseen, $no_charset)
+    {
+        if ($unseen || $mailbox->in_protocol != Mailbox::IN_PROTOCOL_IMAP) {
+            return $messages_query->get();
+        }
+
+        $headers = $messages_query->setFetchBody(false)->get();
+
+        $dest_mailbox = \Eventy::filter('fetch_emails.mailbox_to_save_message', $mailbox, $folder);
+
+        $uids = [];
+        foreach ($headers as $header) {
+            if ($this->isFetchedBefore($header, $dest_mailbox)) {
+                // Same as processMessage() does for messages fetched before.
+                $this->setSeen($header, $dest_mailbox);
+            } else {
+                $uids[] = $header->getUid();
+            }
+        }
+
+        $skipped = count($headers) - count($uids);
+        if ($skipped) {
+            $this->line('['.date('Y-m-d H:i:s').'] Skipped messages fetched before: '.$skipped);
+        }
+
+        if (!$uids) {
+            return collect([]);
+        }
+
+        // Fetch bodies the same way as above, so that messages
+        // are keyed by Message-ID exactly as without headers prefetching.
+        $bodies_query = $folder->query()->whereUidIn($uids)->leaveUnread();
+        if ($no_charset) {
+            $bodies_query->setCharset(null);
+        }
+
+        return $bodies_query->get();
+    }
+
+    /**
+     * Check by headers only if processMessage() would skip the message as fetched before.
+     * When in doubt return false, so that the message is fully fetched and processed.
+     */
+    public function isFetchedBefore($message, $mailbox)
+    {
+        // Artificial Message-ID is generated from the message body.
+        $message_id = (string)$message->getMessageId();
+        if (!$message_id) {
+            return false;
+        }
+
+        // Message-ID of Jira messages may be changed in processMessage().
+        if (preg_replace('/^(JIRA\.\d+\.\d+)\..*(@Atlassian.JIRA)/', '\1\2', $message_id) != $message_id) {
+            return false;
+        }
+
+        $thread = Thread::where('message_id', $message_id)->first();
+        if (!$thread) {
+            return false;
+        }
+
+        if (self::isNewEmailWithSameMessageId($thread->headers, $this->headerToStr($message->getHeader()))) {
+            return false;
+        }
+
+        if (!$thread->conversation || $thread->conversation->mailbox_id == $mailbox->id) {
+            return true;
+        }
+
+        // The message has been fetched into another mailbox.
+        $recipients = array_merge(
+            $this->formatEmailList($message->getTo()),
+            $this->formatEmailList($message->getCc())
+        );
+        if (in_array(Email::sanitizeEmail($mailbox->email), $recipients)
+            && !\MailHelper::isFsMessageId($thread->message_id)
+        ) {
+            return true;
+        }
+
+        // processMessage() imports a copy of the message having an artificial Message-ID.
+        if (!strstr($message_id, '@')) {
+            return false;
+        }
+
+        return Thread::where('message_id', \MailHelper::generateMessageId($message_id, $mailbox->id.$message_id))->exists();
     }
 
     public function processMessage($message, $message_id, $mailbox, $mailboxes, $extra = false)
@@ -445,6 +543,16 @@ class FetchEmails extends Command
                 return;
             } else {
                 $from = $from[0];
+            }
+
+            // Sender of an agent's reply must be verified by the From header.
+            $user_from = '';
+            $from_header = $message->getFrom();
+            if ($from_header) {
+                $from_header = $this->formatEmailList($from_header);
+                if (!empty($from_header[0])) {
+                    $user_from = $from_header[0];
+                }
             }
 
             // Message-ID can be empty.
@@ -683,10 +791,11 @@ class FetchEmails extends Command
                     $prev_thread_id = '';
                     // Check hash.
                     // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-6r38-6mcf-2ww3
-                    if (!empty($m[1]) && !empty($m[3])) {
+                    // The hash authenticates both thread ID and user ID.
+                    if (!empty($m[1]) && !empty($m[2]) && !empty($m[3])) {
                         $message_id_hash = $m[3];
                         if (strlen($message_id_hash) == 16) {
-                            if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
+                            if (\MailHelper::checkMessageIdHash($message_id_hash, \MailHelper::getNotificationMessageIdHash($m[1], $m[2]))) {
                                 $prev_thread_id = $m[1];
                             }
                         } else {
@@ -712,6 +821,12 @@ class FetchEmails extends Command
                         $this->setSeen($message, $mailbox);
                         return;
                     }
+                    // Disabled and deleted users can not reply by email.
+                    if (!$user->isActive()) {
+                        $this->logError('User is not active and can not reply by email (ID: '.$user_id.')');
+                        $this->setSeen($message, $mailbox);
+                        return;
+                    }
                     // Skip auto-replies sent to the email notification on behalf of a user.
                     // https://github.com/freescout-helpdesk/freescout/issues/4035
                     if (\MailHelper::isAutoResponder($message_header)) {
@@ -720,6 +835,14 @@ class FetchEmails extends Command
                         return;
                     }
                     $this->line('['.date('Y-m-d H:i:s').'] Message from: User');
+
+                    // The notified thread no longer exists. Stop here: going on to the next
+                    // Message-ID would keep $user and post the message as this user into
+                    // whatever conversation a later reference points to. The "previous thread
+                    // could not be determined" handling below informs the user.
+                    if (!$prev_thread) {
+                        break;
+                    }
                 } else {
                     // Message from Customer or User replied to his reply to notification
                     $this->line('['.date('Y-m-d H:i:s').'] Message from: Customer');
@@ -736,7 +859,7 @@ class FetchEmails extends Command
                         if (!empty($m[1]) && !empty($m[2])) {
                             $message_id_hash = $m[2];
                             if (strlen($message_id_hash) == 16) {
-                                if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
+                                if (\MailHelper::checkMessageIdHash($message_id_hash, \MailHelper::getMessageIdHash($m[1]))) {
                                     $prev_thread_id = $m[1];
                                 }
                             } else {
@@ -751,7 +874,7 @@ class FetchEmails extends Command
                             if (!empty($m[1]) && !empty($m[2])) {
                                 $message_id_hash = $m[2];
                                 if (strlen($message_id_hash) == 16) {
-                                    if ($message_id_hash == \MailHelper::getMessageIdHash($m[1])) {
+                                    if (\MailHelper::checkMessageIdHash($message_id_hash, \MailHelper::getMessageIdHash($m[1]))) {
                                         $prev_thread_id = $m[1];
                                     }
                                 } else {
@@ -772,8 +895,10 @@ class FetchEmails extends Command
                         if (!$prev_thread
                             && ($prev_thread = Thread::where('message_id', $prev_message_id)->first())
                             && $prev_thread->created_by_user_id
-                            && $prev_thread->created_by_user->hasEmail($from)
+                            && $user_from
+                            && $prev_thread->created_by_user->hasEmail($user_from)
                         ) {
+                            $user = $prev_thread->created_by_user;
                             $user_id = $user->id;
                             $message_from_customer = false;
                             $is_reply = true;
@@ -965,12 +1090,14 @@ class FetchEmails extends Command
                 $original_sender = $this->getOriginalSenderFromFwd($body);
                 
                 if ($original_sender) {
-                    // Check if sender is the existing user.
-                    $sender_is_user = User::nonDeleted()->where('email', $from)->exists();
+                    // Check if sender is the existing active user.
+                    // The From header is used, not Reply-To, which anyone can set to a user's address.
+                    $sender_is_user = $user_from && User::where('status', User::STATUS_ACTIVE)->where('email', $user_from)->exists();
                     // Check Alternate emails.
                     // https://github.com/freescout-help-desk/freescout/issues/5047
-                    if (!$sender_is_user) {
-                        $sender_is_user = User::findByAlternateEmail($from);
+                    if (!$sender_is_user && $user_from) {
+                        $alternate_user = User::findByAlternateEmail($user_from);
+                        $sender_is_user = $alternate_user && $alternate_user->isActive();
                     }
                     
                     if ($sender_is_user) {
@@ -999,6 +1126,13 @@ class FetchEmails extends Command
                 $attachments = $this->removeQuotedInlineAttachments($attachments, $full_body, $body);
             }
             $full_body = null;
+
+            // Files which the sender's mail client attached again
+            // (already received in this conversation) are not saved again.
+            // https://github.com/freescout-help-desk/freescout/issues/5311
+            if (config('app.fetch_skip_duplicate_attachments') && $prev_thread && count($attachments)) {
+                $attachments = $this->removeDuplicateAttachments($attachments, $prev_thread->conversation_id, $body);
+            }
 
             // Create customers
             $emails = array_merge(
@@ -1084,7 +1218,9 @@ class FetchEmails extends Command
 
                 if (\Eventy::filter('fetch_emails.should_save_thread', true, $data) !== false) {
                     // SendAutoReply listener will check bounce flag and will not send an auto reply if this is an auto responder.
-                    $new_thread = $this->saveCustomerThread($mailbox, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data['attachments'], $data['message']->getHeader(), $data['date']);
+                    // The bounce flag has to be set before the thread events are fired,
+                    // so it is passed to saveCustomerThread().
+                    $new_thread = $this->saveCustomerThread($mailbox, $data['message_id'], $data['prev_thread'], $data['from'], $data['to'], $data['cc'], $data['bcc'], $data['subject'], $data['body'], $data['attachments'], $data['message']->getHeader(), $data['date'], !empty($data['is_bounce']));
                 } else {
                     $this->line('['.date('Y-m-d H:i:s').'] Hook fetch_emails.should_save_thread returned false. Skipping message.');
                     $this->setSeen($message, $mailbox);
@@ -1095,12 +1231,12 @@ class FetchEmails extends Command
 
                 // Check if From is the same as user's email.
                 // If not we send an email with information to the sender.
-                if (!$user->hasEmail($from)) {
-                    $this->logError("Sender address {$from} does not match ".$user->getFullName()." user email: ".$user->email.". Add ".$user->email." to user's Alternate Emails in the users's profile to allow the user reply from this address.");
+                if (!$user_from || !$user->hasEmail($user_from)) {
+                    $this->logError("Sender address {$user_from} does not match ".$user->getFullName()." user email: ".$user->email.". Add {$user_from} to user's Alternate Emails in the users's profile to allow the user reply from this address.");
                     $this->setSeen($message, $mailbox);
 
                     // Send "Unable to process your update email" to user
-                    SendEmailReplyError::dispatch($from, $user, $mailbox)->onQueue('emails');
+                    SendEmailReplyError::dispatch($user_from ?: $from, $user, $mailbox)->onQueue('emails');
 
                     return;
                 }
@@ -1263,7 +1399,7 @@ class FetchEmails extends Command
     /**
      * Save email from customer as thread.
      */
-    public function saveCustomerThread($mailbox, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers, $date)
+    public function saveCustomerThread($mailbox, $message_id, $prev_thread, $from, $to, $cc, $bcc, $subject, $body, $attachments, $headers, $date, $is_bounce = false)
     {
         // Fetch date & time setting.
         $use_mail_date_on_fetching = config('app.use_mail_date_on_fetching');
@@ -1371,6 +1507,13 @@ class FetchEmails extends Command
         $thread->updated_at = $now;
         if ($new) {
             $thread->first = true;
+        }
+        if ($is_bounce) {
+            // Mark the thread as a bounce before CustomerCreatedConversation / CustomerReplied
+            // events are fired, otherwise listeners (SendAutoReply) do not see the flag
+            // and send an auto reply to a bounce.
+            // The rest of the bounce data is saved later in saveBounceData().
+            $thread->updateSendStatusData(['is_bounce' => true]);
         }
         try {
             $thread->save();
@@ -1655,6 +1798,67 @@ class FetchEmails extends Command
             }
 
             $result[] = $attachment;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Remove attachments which are byte-identical to an attachment already
+     * received in the conversation. Inline images referenced in the body of
+     * the new message are kept: the message shows them.
+     *
+     * @param mixed  $attachments
+     * @param int    $conversation_id
+     * @param string $body Body of the new message (after separateReply()).
+     *
+     * @return array
+     */
+    public function removeDuplicateAttachments($attachments, $conversation_id, $body)
+    {
+        $existing = Attachment::whereIn('thread_id', Thread::where('conversation_id', $conversation_id)->pluck('id'))
+            ->get();
+
+        if (!count($existing)) {
+            return $attachments;
+        }
+
+        $existing_hashes = [];
+        $result = [];
+
+        foreach ($attachments as $attachment) {
+            $cid = trim((string)($attachment->id ?? ''), '<> ');
+
+            if ($cid !== '' && stripos((string)$body, 'cid:'.$cid) !== false) {
+                // Shown in the new message.
+                $result[] = $attachment;
+                continue;
+            }
+
+            $content = (string)$attachment->getContent();
+            $hash = null;
+            $duplicate = false;
+            // Only files of the same size are read and compared.
+            foreach ($existing->where('size', strlen($content)) as $existing_attachment) {
+                if (!isset($existing_hashes[$existing_attachment->id])) {
+                    $existing_hashes[$existing_attachment->id] = $existing_attachment->fileExists()
+                        ? md5((string)$existing_attachment->getFileContents())
+                        : '';
+                }
+                if ($hash === null) {
+                    $hash = md5($content);
+                }
+                if ($existing_hashes[$existing_attachment->id] !== ''
+                    && hash_equals($existing_hashes[$existing_attachment->id], $hash)
+                ) {
+                    $duplicate = true;
+                    break;
+                }
+            }
+
+            if (!$duplicate) {
+                $result[] = $attachment;
+            }
         }
 
         return $result;
@@ -2023,7 +2227,16 @@ class FetchEmails extends Command
     public function setSeen($message, $mailbox)
     {
         $flag = \Eventy::filter('fetch_emails.set_seen_flag', ['Seen'], $message, $mailbox);
-        $message->setFlag($flag);
+
+        // Avoid unnecessary IMAP STORE and FETCH commands
+        // if the message already has all the flags.
+        $flags = $message->getFlags();
+        foreach ((array)$flag as $flag_name) {
+            if (!$flags->has(strtolower($flag_name))) {
+                $message->setFlag($flag);
+                break;
+            }
+        }
         \Eventy::action('fetch_emails.after_set_seen', $message, $mailbox, $this);
     }
 }

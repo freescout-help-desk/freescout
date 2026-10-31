@@ -26,7 +26,7 @@
         "devfactory/minify": "1.0.7",
         "fideloper/proxy": "3.3.4",
         "laravel/framework": "v5.5.40",
-        "laravel/tinker": "v1.0.7",
+        "laravel/tinker": "*",
         "mews/purifier": "dev-customized",
         "spatie/laravel-activitylog": "2.7.0",
         "lord/laroute": "2.4.7",
@@ -47,14 +47,14 @@
         "ramsey/uuid": "3.9.6",
         "symfony/polyfill-mbstring": "v1.24.0",
         "webklex/php-imap": "4.1.1",
-        "enshrined/svg-sanitize": "0.22.0"
+        "enshrined/svg-sanitize": "1.0.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "v3.2.0",
         "filp/whoops": "2.14.5",
         "fzaninotto/faker": "v1.9.2",
-        "mockery/mockery": "1.1.0",
-        "phpunit/phpunit": "9.5.28",
+        "mockery/mockery": "*",
+        "phpunit/phpunit": "10.5.26",
 
         "symfony/polyfill-ctype": "v1.10.*",
         "vlucas/phpdotenv": "v2.5.1",
@@ -78,7 +78,6 @@
         "doctrine/inflector": "v1.2.*",
         "guzzlehttp/guzzle": "8.0.1",
         "tedivm/jshrink": "1.4.0",
-        "nikic/php-parser": "^4.1",
         "doctrine/annotations": "v1.4.*",
         "doctrine/cache": "v1.6.*",
         "doctrine/collections": "v1.4.*",
@@ -225,9 +224,6 @@
             "TijsVerkoyen\\CssToInlineStyles\\": "overrides/tijsverkoyen/css-to-inline-styles/src/",
             "TijsVerkoyen\\CssToInlineStyles\\Css\\Property\\": "overrides/tijsverkoyen/css-to-inline-styles/src/Css/Property/",
             "Html2Text\\": "overrides/html2text/html2text/src/",
-            "PHPUnit\\Runner\\": "overrides/phpunit/phpunit/src/Runner/",
-            "PHPUnit\\Util\\PHP\\": "overrides/phpunit/phpunit/src/Util/PHP/",
-            "PHPUnit\\Util\\Xml\\": "overrides/phpunit/phpunit/src/Util/Xml/",
             "Illuminate\\Http\\Exceptions\\": "overrides/laravel/framework/src/Illuminate/Http/Exceptions/"
         },
         "exclude-from-classmap": [
@@ -253,6 +249,7 @@
             "vendor/laravel/framework/src/Illuminate/Foundation/ProviderRepository.php",
             "vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php",
             "vendor/laravel/framework/src/Illuminate/Foundation/Testing/TestCase.php",
+            "vendor/laravel/framework/src/Illuminate/Foundation/Testing/TestResponse.php",
             "vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php",
             "vendor/laravel/framework/src/Illuminate/Routing/UrlGenerator.php",
             "vendor/laravel/framework/src/Illuminate/Routing/RouteSignatureParameters.php",
@@ -263,6 +260,7 @@
             "vendor/laravel/framework/src/Illuminate/Mail/TransportManager.php",
             "vendor/laravel/framework/src/Illuminate/Mail/Message.php",
             "vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php",
+            "vendor/laravel/framework/src/Illuminate/Auth/TokenGuard.php",
             "vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php",
             "vendor/laravel/framework/src/Illuminate/Container/Container.php",
             "vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php",
@@ -297,6 +295,7 @@
             "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/QueriesRelationships.php",
             "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Relations/Relation.php",
             "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Relations/BelongsTo.php",
+            "vendor/laravel/framework/src/Illuminate/Database/Eloquent/Relations/HasOneOrMany.php",
             "vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php",
             "vendor/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php",
             "vendor/laravel/framework/src/Illuminate/Pagination/AbstractPaginator.php",
@@ -375,6 +374,7 @@
             "vendor/symfony/http-kernel/Exception/NotFoundHttpException.php",
             "vendor/symfony/http-kernel/Exception/ServiceUnavailableHttpException.php",
             "vendor/symfony/http-kernel/Exception/UnauthorizedHttpException.php",
+            "vendor/symfony/http-kernel/Exception/BadRequestHttpException.php",
             "vendor/symfony/http-kernel/HttpCache/Store.php",
             "vendor/barryvdh/laravel-debugbar/src/JavascriptRenderer.php",
             "vendor/spatie/string/src/Str.php",
@@ -502,9 +502,6 @@
             "vendor/tijsverkoyen/css-to-inline-styles/src/CssToInlineStyles.php",
             "vendor/tijsverkoyen/css-to-inline-styles/src/Css/Property/Processor.php",
             "vendor/html2text/html2text/src/Html2Text.php",
-            "vendor/phpunit/phpunit/src/Runner/PhpTestCase.php",
-            "vendor/phpunit/phpunit/src/Util/PHP/AbstractPhpProcess.php",
-            "vendor/phpunit/phpunit/src/Util/Xml/Loader.php",
             "vendor/laravel/framework/src/Illuminate/Http/Exceptions/PostTooLargeException.php"
         ]
     },
@@ -537,7 +534,6 @@
         "post-autoload-dump": [
             "@php -r \"file_put_contents('vendor/composer/ClassLoader.php', preg_replace('/function includeFile.*/s', base64_decode('DQpmdW5jdGlvbiBpbmNsdWRlRmlsZSgkZmlsZSkNCnsNCiAgICB0cnkgew0KICAgICAgICBpbmNsdWRlICRmaWxlOw0KICAgIH0gY2F0Y2ggKFxFeGNlcHRpb24gJGUpIHsNCiAgICAgICAgJG1zZyA9ICRlLT5nZXRNZXNzYWdlKCk7DQogICAgICAgIGlmIChzdHJzdHIoJG1zZywgJ05vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnknKSkgew0KICAgICAgICAgICAgaWYgKHN0cnN0cigkbXNnLCAnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJykpIHsNCiAgICAgICAgICAgICAgICAkbmV3X2ZpbGUgPSBzdHJfcmVwbGFjZSgnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJywgJy92ZW5kb3IvY29tcG9zZXIvLi4vJywgJGZpbGUpOw0KICAgICAgICAgICAgfSBlbHNlIHsNCiAgICAgICAgICAgICAgICAkbmV3X2ZpbGUgPSBzdHJfcmVwbGFjZSgnL3ZlbmRvci9jb21wb3Nlci8uLi8nLCAnL3ZlbmRvci9jb21wb3Nlci8uLi8uLi9vdmVycmlkZXMvJywgJGZpbGUpOw0KICAgICAgICAgICAgfQ0KICAgICAgICAgICAgaW5jbHVkZSAkbmV3X2ZpbGU7DQogICAgICAgIH0gZWxzZSB7DQogICAgICAgICAgICB0aHJvdyAkZTsNCiAgICAgICAgfQ0KICAgIH0NCn0='), file_get_contents('vendor/composer/ClassLoader.php')));\"",
             "@php -r \"(error_reporting(0) || !error_reporting(0)) && array_map('unlink', json_decode(file_get_contents('composer.json'), true)['autoload']['exclude-from-classmap']);\"",
-            "@php -r \"file_put_contents('vendor/webklex/php-imap/src/config/imap.php', preg_replace('/, \\\\'inline\\\\'],/s', '/*, \\\\'inline\\\\'*/],', file_get_contents('vendor/webklex/php-imap/src/config/imap.php')));\"",
             "@php -r \"copy('vendor/nesbot/carbon/src/Carbon/Lang/pt.php', 'vendor/nesbot/carbon/src/Carbon/Lang/pt_PT.php');\"",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover"

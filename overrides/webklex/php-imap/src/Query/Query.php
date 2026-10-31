@@ -160,7 +160,10 @@ class Query {
                 if ($statement[1] === null) {
                     $query .= $statement[0];
                 } else {
-                    if (is_numeric($statement[1])) {
+                    if (is_numeric($statement[1])
+                        // UID sequence set (whereUidIn) must not be quoted.
+                        || ($statement[0] == 'UID' && preg_match('#^[0-9:,*]+$#', $statement[1]))
+                    ) {
                         $query .= $statement[0] . ' ' . $statement[1];
                     } else if ($statement[0] == 'SINCE' 
                         //&& preg_match("#^[0-9]\-[a-zA-Z]\-[0-9]$#", $statement[1])
@@ -365,6 +368,10 @@ class Query {
 
         $msglist = 0;
         $last_exception = null;
+        // Remember the folder: the connection may be re-established while
+        // iterating, which resets the client's active folder.
+        // https://github.com/freescout-help-desk/freescout/issues/5770
+        $folder_path = $this->getClient()->getFolderPath();
         foreach ($raw_messages["headers"] as $uid => $header) {
             $content = $raw_messages["contents"][$uid] ?? "";
             $flag = $raw_messages["flags"][$uid] ?? [];
@@ -376,6 +383,9 @@ class Query {
             // https://github.com/freescout-help-desk/freescout/issues/4159
             // https://github.com/Webklex/php-imap/issues/507
             try {
+                if ($folder_path !== null && $this->getClient()->getFolderPath() === null) {
+                    $this->getClient()->openFolder($folder_path);
+                }
                 // First create Message instance without parsing the body (to avoid "Allowed memory size" fatal error)
                 // and mark the message as "unread" if leaveUnread() is set.
                 $message = $this->make($uid, $msglist, $header, $content, $flag);

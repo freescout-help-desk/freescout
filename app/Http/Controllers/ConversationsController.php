@@ -423,6 +423,7 @@ class ConversationsController extends Controller
                 $subject = preg_replace('/^Fwd:/i', 'Re: ', $subject);
 
                 $thread = new Thread();
+                // Body is sanitized on output.
                 $thread->body = $orig_thread->body;
                 // If this is a forwarded message, try to fetch From
                 preg_match_all("/From:[^<\n]+<([^<\n]+)>/m", html_entity_decode(strip_tags($thread->body)), $m);
@@ -464,7 +465,8 @@ class ConversationsController extends Controller
 
         if ($request->get('body') && !$thread) {
             $thread = new Thread();
-            $thread->body = \Helper::stripDangerousTags($request->get('body'));
+            // Body is sanitized on output.
+            $thread->body = $request->get('body');
         }
 
         $conversation->subject = $subject;
@@ -1121,7 +1123,7 @@ class ConversationsController extends Controller
                     $thread->created_by_user_id = auth()->user()->id;
                     $thread->edited_by_user_id = null;
                     $thread->edited_at = null;
-                    $thread->body = $body;
+                    $thread->body = (string)$body;
                     if ($is_create && !$is_multiple && count($to_array) > 1) {
                         $thread->setTo($to_array);
                     } else {
@@ -1719,6 +1721,26 @@ class ConversationsController extends Controller
                     $response['msg'] = __('Not enough permissions');
                 }
 
+                // Draft conversation can be discarded only if it contains nothing
+                // but draft threads and is owned by the user (or user can delete conversations).
+                // Otherwise merged published threads could be destroyed along with the draft.
+                if (!$response['msg']
+                    && $thread->conversation->isDraft()
+                    && !$user->can('delete', $thread->conversation)
+                ) {
+                    if ($thread->conversation->created_by_user_id != $user->id
+                        // Conversation has non-draft messages.
+                        || $thread->conversation->threads()
+                            ->where(function ($query) {
+                                $query->where('state', '!=', Thread::STATE_DRAFT)
+                                    ->orWhereNull('state');
+                            })
+                            ->exists()
+                    ) {
+                        $response['msg'] = __('Not enough permissions');
+                    }
+                }
+
                 if (!$response['msg']) {
                     $conversation = $thread->conversation;
 
@@ -1758,7 +1780,7 @@ class ConversationsController extends Controller
                 }
                 break;
 
-            // Save draft (automatically or by click)
+            // Load thread draft.
             case 'load_draft':
                 $thread = Thread::find($request->thread_id);
                 if (!$thread) {
@@ -1790,7 +1812,7 @@ class ConversationsController extends Controller
                         'to'          => $thread->getToFirst(),
                         'cc'          => $thread->getCcArray(),
                         'bcc'         => $thread->getBccArray(),
-                        'body'        => $thread->body,
+                        'body'        => $thread->getCleanBody(),
                         'is_forward'  => (int)$thread->isForward(),
                         'attachments' => $attachments,
                     ];
@@ -2046,7 +2068,7 @@ class ConversationsController extends Controller
                 }
 
                 if (!$response['msg']) {
-                    $thread->body = \Helper::stripDangerousTags($thread->body);
+                    $thread->body = $thread->getCleanBody();
 
                     $data = [
                         'thread' => $thread,
@@ -2334,6 +2356,10 @@ class ConversationsController extends Controller
                 if (!$response['msg'] && !$user->can('view', $conversation)) {
                     $response['msg'] = __('Not enough permissions');
                 }
+                // Only published conversations can be merged.
+                if (!$response['msg'] && !$conversation->isPublished()) {
+                    $response['msg'] = __('Not enough permissions');
+                }
 
                 if (!$response['msg'] && !empty($request->merge_conversation_id) && is_array($request->merge_conversation_id)) {
                     
@@ -2350,7 +2376,11 @@ class ConversationsController extends Controller
                                 break;
                             }
                         }
-                        if (!$response['msg'] && !$user->can('view', $merge_conversation)) {
+                        // The user has to be allowed to view merged conversation, and it must be published.
+                        if (!$response['msg']
+                            && (!$user->can('view', $merge_conversation)
+                                || !$merge_conversation->isPublished())
+                        ) {
                             $response['msg'] = __('Not enough permissions').': #'.$merge_conversation->number;
                             if ($sigle_conv) {
                                 break;
@@ -3412,12 +3442,15 @@ class ConversationsController extends Controller
             abort(404);
         }
 
-        if ($thread->created_by_user_id != \Auth::id()) {
+        $conversation = $thread->conversation;
+
+        // Only messages sent by this user can be undone. Line items (merge, move, status
+        // change records) are created by the user too but are not messages.
+        if ($thread->created_by_user_id != \Auth::id() || $thread->type == Thread::TYPE_LINEITEM) {
             \Session::flash('flash_error_floating', __('Sending can not be undone'));
             return redirect()->away($conversation->url($conversation->folder_id));
         }
 
-        $conversation = $thread->conversation;
         $this->authorize('view', $conversation);
 
         if (csrf_token() != $token) {
@@ -3428,6 +3461,20 @@ class ConversationsController extends Controller
 
         // Check undo timeout
         if ($thread->created_at->diffInSeconds(now()) > Conversation::UNDO_TIMOUT) {
+            \Session::flash('flash_error_floating', __('Sending can not be undone'));
+            return redirect()->away($conversation->url($conversation->folder_id));
+        }
+
+        // Undoing the first message turns the conversation back into a draft. Refuse it if other
+        // published messages have been added in the meantime (for example by a merge): they would
+        // end up in a draft and be deleted forever when the draft is discarded.
+        if ($thread->first
+            && $conversation->threads()
+                ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
+                ->where('state', '!=', Thread::STATE_DRAFT)
+                ->where('id', '<>', $thread->id)
+                ->exists()
+        ) {
             \Session::flash('flash_error_floating', __('Sending can not be undone'));
             return redirect()->away($conversation->url($conversation->folder_id));
         }
@@ -3483,6 +3530,15 @@ class ConversationsController extends Controller
         // No need to remove notifications, as they won't work if conversation does not exist.
         if ($thread->isForward()) {
             $forwarded_conversation = $thread->getForwardChildConversation();
+            // Do not allow to undo (remove) forwarded conversation is someone
+            // merged into it some other conversation during the UNDO period.
+            if ($forwarded_conversation
+                && $forwarded_conversation->threads()
+                    ->whereIn('type', [Thread::TYPE_CUSTOMER, Thread::TYPE_MESSAGE, Thread::TYPE_NOTE])
+                    ->count() > 1
+            ) {
+                $forwarded_conversation = null;
+            }
             if ($forwarded_conversation) {
                 $forwarded_conversation->threads()->delete();
                 // todo: maybe perform soft delete of the conversation.

@@ -40,6 +40,13 @@ class ResponseHeaders
 
     private function removeUnwantedHeaders($headerList)
     {
+        // Once output has started (for example a PHP notice was printed), header_remove()
+        // can no longer change anything and only raises a warning, which would turn the
+        // whole request into an error.
+        if (headers_sent()) {
+            return;
+        }
+
         foreach ($headerList as $header) {
             header_remove($header);
         }

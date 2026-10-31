@@ -230,7 +230,7 @@ class Header {
                 // Convert charset if necessary.
                 if (function_exists('mb_convert_encoding') && strtolower($charset) !== 'utf-8') {
                     try {
-                        $boundary = mb_convert_encoding($new_boundary, 'UTF-8', $charset);
+                        $boundary = \Helper::mbConvertEncoding($new_boundary, 'UTF-8', $charset);
                     } catch (\Exception $e) {
                         // Do nothing.
                     }
@@ -311,6 +311,9 @@ class Header {
                 }
             }
         }
+        // Headers can have bare LF line endings, for example in .eml files.
+        // imap_rfc822_parse_headers() accepts them, so convert them to CRLF.
+        $raw_headers = preg_replace("/\r?\n/", "\r\n", $raw_headers);
         $lines = explode("\r\n", preg_replace("/\r\n\s/", ' ', $raw_headers));
         $prev_header = null;
         foreach ($lines as $line) {
@@ -397,6 +400,12 @@ class Header {
             }
         }
 
+        // Like imap_rfc822_parse_headers(), use From as Sender when there is no Sender header.
+        if (!isset($headers['sender']) && isset($headers['from'])) {
+            $headers['sender'] = $headers['from'];
+            $headers['senderaddress'] = $headers['fromaddress'] ?? '';
+        }
+
         return (object)array_merge($headers, $imap_headers);
     }
 
@@ -410,8 +419,6 @@ class Header {
                     && ($v->mailbox == '>' || $v->mailbox == 'INVALID_ADDRESS') 
                     && ((isset($v->host) && ($v->host == '.SYNTAX-ERROR.' || $v->host === null)) || !isset($v->host))
                 ) {
-                    echo 'unset: '.$v->mailbox;
-
                     unset($value[$i]);
                 }
             }
@@ -506,7 +513,7 @@ class Header {
                 }
                 return mb_convert_encoding($str, $to, $from);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             if (strstr($from, '-')) {
                 $from = str_replace('-', '', $from);
                 return $this->convertEncoding($str, $from, $to);
