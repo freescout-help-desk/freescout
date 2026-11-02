@@ -4414,6 +4414,7 @@ function initConvCol()
 
 	// Load conversations
 	if (!wrapper.hasClass('hidden')) {
+		$('#conv-list-open').addClass('loaded');
 		convListLoad();
 	}
 }
@@ -4434,7 +4435,7 @@ function convListLoad()
 			mailbox_id: col.attr('data-mailbox_id'),
 			folder_id: col.attr('data-folder_id'),
 			conversation_id: col.attr('data-conversation_id'),
-			offset: $('#conv-list-col-items .chat-item').length - 1
+			offset: $('#conv-list-col-items .chat-item').length
 		},
 		laroute.route('conversations.ajax'),
 		function(response) {
