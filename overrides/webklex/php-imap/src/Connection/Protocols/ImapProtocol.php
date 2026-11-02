@@ -662,6 +662,8 @@ class ImapProtocol extends Protocol {
     public function examineOrSelect(string $command = 'EXAMINE', string $folder = 'INBOX') {
         $this->sendRequest($command, [$this->escapeString($folder)], $tag);
 
+        self::$last_error = '';
+
         $result = [];
         $tokens = null; // define $tokens variable before first use
         while (!$this->readLine($tokens, $tag)) {
@@ -693,6 +695,11 @@ class ImapProtocol extends Protocol {
         }
 
         if ($tokens[0] != 'OK') {
+            // Remember the response, the same as readResponse() does.
+            self::$last_error = trim(implode(' ', array_filter($tokens, function ($token) {
+                return is_scalar($token);
+            })));
+
             return false;
         }
         return $result;

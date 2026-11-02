@@ -131,6 +131,13 @@ class Client {
     protected $active_folder = null;
 
     /**
+     * Whether the active folder has actually been selected on the server.
+     *
+     * @var bool
+     */
+    protected $active_folder_selected = false;
+
+    /**
      * Default message mask
      *
      * @var string $default_message_mask
@@ -425,6 +432,7 @@ class Client {
             }
         }
         $this->active_folder = null;
+        $this->active_folder_selected = false;
 
         return $this;
     }
@@ -568,12 +576,27 @@ class Client {
      * @throws Exceptions\RuntimeException
      */
     public function openFolder(string $folder_path, bool $force_select = false) {
-        if ($this->active_folder == $folder_path && $this->isConnected() && $force_select === false) {
+        if ($this->active_folder == $folder_path && $this->active_folder_selected && $this->isConnected() && $force_select === false) {
             return true;
         }
         $this->checkConnection();
         $this->active_folder = $folder_path;
-        return $this->connection->selectFolder($folder_path);
+        $this->active_folder_selected = false;
+
+        $result = $this->connection->selectFolder($folder_path);
+
+        // When the server rejects SELECT no folder is selected anymore (RFC 3501, 6.3.1),
+        // so the folder has to be selected again next time. Otherwise all the following
+        // commands are rejected with "No mailbox selected" or "... not allowed now".
+        // https://github.com/freescout-help-desk/freescout/issues/5786
+        if ($result === false) {
+            \Log::error('IMAP folder could not be selected. Folder: '.$folder_path
+                .'; server response: '.$this->getLastError());
+        } else {
+            $this->active_folder_selected = true;
+        }
+
+        return $result;
     }
 
     /**
