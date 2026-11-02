@@ -40,7 +40,7 @@
         <div id="conv-layout-header">
             <div id="conv-toolbar">
                 @if ($conv_col_allowed)
-                    <div id="conv-list-open" class="link-grey @if (Helper::isConvListVisible()) hidden @endif" role="button" data-toggle="tooltip" title="{{ __('Conversations') }}">
+                    <div id="conv-list-open" class="link-grey @if (Helper::isConvListVisible()) hidden @endif" role="button" data-toggle="tooltip" data-placement="right" title="{{ __('Conversations') }}">
                         <i class="glyphicon glyphicon-chevron-right"></i>
                     </div>
                 @endif

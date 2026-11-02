@@ -152,6 +152,17 @@ ul.sidebar-block-list {
     margin: 0px 0px 0 20px;
 }
 
+#conv-list-open {
+    left: auto;
+    right: 260px;
+    border-left: 1px solid #d6dde3;
+    border-right: 0;
+    border-radius: 6px 0 0 6px;
+}
+#conv-list-open .glyphicon {
+    transform: scaleX(-1);
+}
+
 .conv-new #conv-toolbar h2 {
     padding: 0 20px 0 20px;
     float: right;

@@ -2075,17 +2075,22 @@ button.conv-checkbox-clear {
     /*border-bottom: 1px solid #e3e8eb;*/
     padding-left: 9px;
 }
+/* Tab on the left edge of the conversation, away from the toolbar buttons */
 #conv-list-open {
-    width: 37px;
-    height: 53px;
-    line-height: 53px;
-    float: left;
-    margin-left: -9px;
+    position: fixed;
+    top: 50%;
+    left: 260px;
+    z-index: 100;
+    width: 16px;
+    height: 56px;
+    margin-top: -28px;
+    line-height: 56px;
     text-align: center;
-    font-size: 16px;
+    font-size: 10px;
     background-color: #ebf1f6;
-    border-right: 1px solid #d6dde3;
-    border-bottom: 1px solid #e3e8eb;
+    border: 1px solid #d6dde3;
+    border-left: 0;
+    border-radius: 0 6px 6px 0;
 }
 #conv-list-open:hover {
     background-color: #f1f3f5
