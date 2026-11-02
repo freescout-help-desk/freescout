@@ -52,6 +52,20 @@ class ResetPasswordController extends Controller
     }
 
     /**
+     * Get the password reset validation rules.
+     *
+     * @return array
+     */
+    protected function rules()
+    {
+        return [
+            'token'    => 'required',
+            'email'    => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ];
+    }
+
+    /**
      * Reset the given user's password.
      *
      * @param  \Illuminate\Http\Request  $request
