@@ -714,6 +714,18 @@ function summernoteInit(selector, new_options)
 	if (typeof(new_options) == "undefined") {
 		new_options = {};
 	}
+
+	// Initialize editors one by one if selector matches multiple elements.
+	// Otherwise jQuery getters like $el.summernote('code') return data
+	// of the first element only and setters like $el.val() affect all elements.
+	var $els = $(selector);
+	if ($els.length > 1) {
+		$els.each(function() {
+			summernoteInit(this, new_options);
+		});
+		return;
+	}
+
 	var buttons = {
 		removeformat: EditorRemoveFormatButton,
 		lists: EditorListsButton
@@ -792,10 +804,15 @@ function summernoteInit(selector, new_options)
 // To save data when editing the code directly
 function fsFixEditorCodeSaving($el)
 {
-	$el.next().children().find('.note-codable').on('blur', function() {
-		if ($el.summernote('codeview.isActivated')) {
-			$el.val($el.summernote('code'));
-		}
+	// Process each editor separately.
+	$el.each(function() {
+		var $editor = $(this);
+
+		$editor.next().children().find('.note-codable').on('blur', function() {
+			if ($editor.summernote('codeview.isActivated')) {
+				$editor.val($editor.summernote('code'));
+			}
+		});
 	});
 }
 

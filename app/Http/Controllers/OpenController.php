@@ -286,7 +286,7 @@ class OpenController extends Controller
         // document, and the sandbox directive blocks them, so PDFs are shown
         // blank. The 'nosniff' (see ResponseHeaders middleware) still prevents the
         // browser from reinterpreting an application/pdf response as HTML,
-        // so CSP is not sent for PDFs.
+        // so sandbox is not added for PDFs.
         // https://github.com/freescout-help-desk/freescout/issues/5788
         if ($attachment->mime_type != 'application/pdf') {
             $csp_header_value .= ' sandbox';
