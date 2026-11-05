@@ -1478,6 +1478,37 @@ function initConversation()
 			e.preventDefault();
 		});
 
+		// Open thread menu upwards if it does not fit below.
+		// #app has overflow: hidden, so the menu of the last thread
+		// is cut off at the bottom of the page and can't be scrolled to.
+		$(document).on('shown.bs.dropdown', '.thread-options', function() {
+			var dropdown = $(this);
+			var menu = dropdown.children('.dropdown-menu:first')[0];
+			if (!menu) {
+				return;
+			}
+			// The menu is hidden below the window and cut off below #app,
+			// which can be shorter than the window (x_embed).
+			var page = document.getElementById('app').getBoundingClientRect();
+			var down = menu.getBoundingClientRect();
+			if (down.bottom <= Math.min(document.documentElement.clientHeight, page.bottom)) {
+				return;
+			}
+			// Bootstrap triggers this event right after showing the menu,
+			// so it is moved before it is painted.
+			dropdown.addClass('thread-options-up');
+			var up = menu.getBoundingClientRect();
+			// The navbar is drawn over the content.
+			var top = dropdown.closest('.content-2col')[0].getBoundingClientRect().top;
+			// Keep the menu upwards if it fits in the window there, or if the window is too low
+			// for both sides, but below #app cuts it off while above it can be scrolled to.
+			if (up.top < Math.max(0, top) && (down.bottom <= page.bottom || up.top < top)) {
+				dropdown.removeClass('thread-options-up');
+			}
+		}).on('hidden.bs.dropdown', '.thread-options', function() {
+			$(this).removeClass('thread-options-up');
+		});
+
 		// Edit subject
 		jQuery(".conv-subjtext").click(function(e){
 	    	$(this).addClass('conv-subj-editing');
