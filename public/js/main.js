@@ -1074,7 +1074,7 @@ function multiInputInit()
 	    	if ($(this).parents('.multi-container:first').children('.multi-item').length > 1) {
 	    		$(this).parents('.multi-item:first').remove();
 	    	} else {
-	    		$(this).parents('.multi-item:first').children(':input').val('');
+	    		$(this).parents('.multi-item:first').find('input').val('');
 	    	}
 	    	e.preventDefault();
 		});
