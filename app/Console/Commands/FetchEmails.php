@@ -271,7 +271,11 @@ class FetchEmails extends Command
                 $this->error('['.date('Y-m-d H:i:s').'] IMAP folder ('.$folder_name.') not found on the mail server: '.$e->getMessage());
             }
 
-            if ($folder) {
+            if ($folder && !empty($folder->no_select)) {
+                // Container folders like "[Gmail]" can not be selected, so there is nothing to fetch.
+                // https://github.com/freescout-help-desk/freescout/issues/5786
+                $this->line('['.date('Y-m-d H:i:s').'] IMAP folder can not be selected on the mail server (\\Noselect), skipping: '.$folder_name);
+            } elseif ($folder) {
                 $folders[] = $folder;
             } else {
                 $this->line('['.date('Y-m-d H:i:s').'] IMAP folder not found on the mail server: '.$folder_name);
