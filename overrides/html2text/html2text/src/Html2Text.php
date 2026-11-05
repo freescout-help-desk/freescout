@@ -240,7 +240,7 @@ class Html2Text
         $this->options = array_merge($this->options, $options);
         $this->htmlFuncFlags = (PHP_VERSION_ID < 50400)
             ? ENT_COMPAT
-            : ENT_COMPAT | ENT_HTML5;
+            : ENT_QUOTES | ENT_HTML5;
     }
 
     /**
