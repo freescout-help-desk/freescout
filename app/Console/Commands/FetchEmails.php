@@ -1932,7 +1932,7 @@ class FetchEmails extends Command
             // reply-separator logic can extract it correctly.
             // https://github.com/freescout-help-desk/freescout/issues/5409
             if (!empty($htmls[0])) {
-                $first_html_pos = mb_strpos($body, '<html');
+                $first_html_pos = mb_stripos($body, '<html');
                 if ($first_html_pos > 0) {
                     $pre_html = mb_substr($body, 0, $first_html_pos);
                     if (trim(strip_tags($pre_html))) {
