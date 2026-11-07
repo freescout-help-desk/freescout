@@ -423,6 +423,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Conversation priority levels.
+    |
+    | Comma-separated list of "key:Name" or "key:Name:color" items.
+    | Key is a number from 1 to 255 (it is stored in the conversations table,
+    | so do not change the key of a level which is already in use),
+    | color is an optional hex color without "#".
+    | Example: "1:Low,2:Normal,3:High:f0ad4e,4:Urgent:d9534f"
+    |-------------------------------------------------------------------------
+    */
+    'priorities'        => env('APP_PRIORITIES', '1:Low,2:Normal,3:High,4:Urgent'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Key of the priority level which is used for the conversations
+    | without the priority set. If the level does not exist,
+    | the first level from the list is used.
+    |-------------------------------------------------------------------------
+    */
+    'priority_default'  => env('APP_PRIORITY_DEFAULT', 2),
+
+    /*
+    |--------------------------------------------------------------------------
     | Dashboard path.
     |
     |-------------------------------------------------------------------------
