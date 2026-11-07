@@ -432,7 +432,7 @@ return [
     | Example: "1:Low,2:Normal,3:High:f0ad4e,4:Urgent:d9534f"
     |-------------------------------------------------------------------------
     */
-    'priorities'        => env('APP_PRIORITIES', '1:Low,2:Normal,3:High,4:Urgent'),
+    'priorities'        => env('APP_PRIORITIES', '1:Low:9eaab5,2:Normal,3:High:d9770a,4:Urgent:d9534f'),
 
     /*
     |--------------------------------------------------------------------------
