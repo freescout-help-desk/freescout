@@ -2799,8 +2799,17 @@ button.conv-checkbox-clear {
 .conv-forward-block .btn-send-text,
 .conv-note-block .btn-send-text,
 .conv-note-block .conv-recipient,
-.conv-note-block .conv-from-alias {
+.conv-note-block .conv-from-alias,
+.conv-note-block .conv-chat-email,
+.conv-forward-block .conv-chat-email {
     display: none;
+}
+.conv-reply-block .conv-chat-email label.checkbox {
+    width: auto;
+    font-weight: normal;
+}
+.conv-reply-block .conv-chat-email input[type="checkbox"] {
+    min-width: 0;
 }
 .conv-note-block .btn-add-note-text {
     display: block;

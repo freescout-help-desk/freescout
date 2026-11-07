@@ -87,7 +87,10 @@ class SendReplyToCustomer
         // Chat conversation.
         if ($conversation->isChat()) {
             \Helper::backgroundAction('chat_conversation.send_reply', [$conversation, $replies, $conversation->customer], now()->addSeconds(Conversation::UNDO_TIMOUT));
-            return;
+            // If the agent has chosen so, the reply is also sent to the customer by email.
+            if (!$main_customer_email || !$thread->getMeta(Thread::META_CHAT_SEND_EMAIL)) {
+                return;
+            }
         }
 
         // We can not check imported here, as after conversation has been imported via API

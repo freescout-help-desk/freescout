@@ -341,6 +341,17 @@
                                     </div>
                                 </div>
 
+                                @if ($conversation->isChat() && !$is_in_chat_mode && optional($conversation->customer)->getMainEmail())
+                                    <div class="form-group conv-chat-email">
+                                        <label class="control-label"></label>
+                                        <div class="conv-reply-field">
+                                            <label class="checkbox" for="chat_send_email">
+                                                <input type="checkbox" name="chat_send_email" id="chat_send_email" value="1" checked="checked"> {{ __('Also send reply to customer by email') }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                @endif
+
                                 @if (!empty($threads[0]) && $threads[0]->type == App\Thread::TYPE_NOTE && $threads[0]->created_by_user_id != Auth::user()->id && $threads[0]->created_by_user)
                                     <div class="alert alert-warning alert-switch-to-note">
                                         <i class="glyphicon glyphicon-exclamation-sign"></i>
