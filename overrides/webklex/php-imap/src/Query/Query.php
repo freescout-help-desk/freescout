@@ -58,6 +58,9 @@ class Query {
     /** @var int $page */
     protected $page = 1;
 
+    /** @var string|null $folder_path Folder which was selected when the query was created */
+    protected $folder_path = null;
+
     /** @var int $fetch_options */
     protected $fetch_options = null;
 
@@ -89,6 +92,11 @@ class Query {
      */
     public function __construct(Client $client, array $extensions = []) {
         $this->setClient($client);
+
+        // Remember the folder the query is created for: the search is executed later
+        // and the session may be not in the "selected" state by then.
+        // https://github.com/freescout-help-desk/freescout/issues/5786
+        $this->folder_path = $client->getFolderPath();
 
         $this->sequence = ClientManager::get('options.sequence', IMAP::ST_MSGN);
         if (ClientManager::get('options.fetch') === IMAP::FT_PEEK) $this->leaveUnread();
@@ -195,9 +203,31 @@ class Query {
         $this->generate_query();
 
         try {
+            // The connection may have been re-established since the query was created
+            // (the active folder is reset on reconnect), so SEARCH would be sent
+            // in the "authenticated" state: "BAD UID SEARCH not allowed now".
+            // https://github.com/freescout-help-desk/freescout/issues/5786
+            if ($this->folder_path !== null
+                && $this->client->getFolderPath() !== $this->folder_path
+            ) {
+                $this->client->openFolder($this->folder_path);
+            }
+
             $connection = $this->client->getConnection();
 
             $available_messages = $connection->search([$this->getRawQuery()], $this->sequence);
+
+            // The server may have silently dropped the "selected" state while the client
+            // still thinks that the folder is selected. Select the folder again and retry once.
+            if (!count($available_messages)
+                && $this->folder_path !== null
+                && method_exists($connection, 'getLastError')
+                && $this->isInvalidStateError($connection->getLastError())
+            ) {
+                $this->client->openFolder($this->folder_path, true);
+
+                $available_messages = $connection->search([$this->getRawQuery()], $this->sequence);
+            }
 
             // A NO/BAD/BYE response is turned into an empty result by the protocol,
             // so without this a rejected or unsupported search command looks exactly
@@ -221,6 +251,22 @@ class Query {
         } catch (ConnectionFailedException $e) {
             throw new GetMessagesFailedException("failed to fetch messages", 0, $e);
         }
+    }
+
+    /**
+     * Check if the IMAP server response means that the command has been sent
+     * when no mailbox was selected ("BAD UID SEARCH not allowed now", etc).
+     *
+     * @param string|null $error
+     *
+     * @return bool
+     */
+    protected function isInvalidStateError($error): bool {
+        if (!$error || !is_string($error)) {
+            return false;
+        }
+
+        return (bool)preg_match('/not allowed now|invalid state|no mailbox selected|mailbox not selected|not in selected state|bad state/i', $error);
     }
 
     /**

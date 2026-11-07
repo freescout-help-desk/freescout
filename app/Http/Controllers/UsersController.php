@@ -645,7 +645,14 @@ class UsersController extends Controller
         }
 
         $user->password = bcrypt($request->password);
+        // Invalidate remember me cookies issued before the password change.
+        $user->setRememberToken(\Illuminate\Support\Str::random(60));
         $user->save();
+
+        // Other sessions of this user are logged out by the AuthenticateSession
+        // middleware as their stored password hash no longer matches.
+        // Keep the current session alive.
+        $request->session()->put('password_hash', $user->getAuthPassword());
 
         $user->sendPasswordChanged();
 

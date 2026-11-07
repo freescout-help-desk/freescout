@@ -14,7 +14,7 @@
 		}
 	}
 @endphp
-{{ \Helper::htmlToText($conversation->getSignatureProcessed(['thread' => $thread], false, $signature_mailbox)) }}
+{!! \Helper::htmlToText($conversation->getSignatureProcessed(['thread' => $thread], false, $signature_mailbox)) !!}
 @endif
 @endforeach
 @if (\App\Option::get('email_branding'))

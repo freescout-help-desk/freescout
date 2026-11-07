@@ -965,6 +965,10 @@ class Mail
                     \Log::error('('.$mailbox->name.') Show Original - folder not found: '.$folder_name);
                     continue;
                 }
+                // https://github.com/freescout-help-desk/freescout/issues/5786
+                if (!empty($folder->no_select)) {
+                    continue;
+                }
                 // Message-ID: <123@123.com>
                 $search_message_id = addcslashes($message_id, '\"');
                 $query = $folder->query()
@@ -1052,14 +1056,18 @@ class Mail
             try {
                 $folder = self::getImapFolder($client, $folder_name);
 
-                if (!$folder) {
+                // https://github.com/freescout-help-desk/freescout/issues/5786
+                if (!$folder || !empty($folder->no_select)) {
                     continue;
                 }
 
                 $limit_reached = false;
 
                 foreach ($date_ranges as $date_range) {
-                    $client->openFolder($folder->path);
+                    if ($client->openFolder($folder->path) === false) {
+                        \Log::error('('.$mailbox->name.') Show Original - IMAP folder can not be selected: "'.$folder_name.'"');
+                        break;
+                    }
 
                     $uids = array_values($connection->search([
                         'SINCE "'.$date_range[0]->format('d-M-Y').'"'
@@ -1072,7 +1080,7 @@ class Mail
                         && method_exists($connection, 'getLastError')
                         && $connection->getLastError()
                     ) {
-                        \Log::error('('.$mailbox->name.') Show Original - IMAP search rejected by the server'
+                        \Log::error('('.$mailbox->name.') MailHelper::findMessageByHeaders() - IMAP search rejected by the server'
                             .' in "'.$folder_name.'"; server response: '.$connection->getLastError());
                     }
 

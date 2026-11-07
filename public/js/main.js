@@ -714,6 +714,18 @@ function summernoteInit(selector, new_options)
 	if (typeof(new_options) == "undefined") {
 		new_options = {};
 	}
+
+	// Initialize editors one by one if selector matches multiple elements.
+	// Otherwise jQuery getters like $el.summernote('code') return data
+	// of the first element only and setters like $el.val() affect all elements.
+	var $els = $(selector);
+	if ($els.length > 1) {
+		$els.each(function() {
+			summernoteInit(this, new_options);
+		});
+		return;
+	}
+
 	var buttons = {
 		removeformat: EditorRemoveFormatButton,
 		lists: EditorListsButton
@@ -792,10 +804,15 @@ function summernoteInit(selector, new_options)
 // To save data when editing the code directly
 function fsFixEditorCodeSaving($el)
 {
-	$el.next().children().find('.note-codable').on('blur', function() {
-		if ($el.summernote('codeview.isActivated')) {
-			$el.val($el.summernote('code'));
-		}
+	// Process each editor separately.
+	$el.each(function() {
+		var $editor = $(this);
+
+		$editor.next().children().find('.note-codable').on('blur', function() {
+			if ($editor.summernote('codeview.isActivated')) {
+				$editor.val($editor.summernote('code'));
+			}
+		});
 	});
 }
 
@@ -1057,7 +1074,7 @@ function multiInputInit()
 	    	if ($(this).parents('.multi-container:first').children('.multi-item').length > 1) {
 	    		$(this).parents('.multi-item:first').remove();
 	    	} else {
-	    		$(this).parents('.multi-item:first').children(':input').val('');
+	    		$(this).parents('.multi-item:first').find('input').val('');
 	    	}
 	    	e.preventDefault();
 		});
@@ -1459,6 +1476,37 @@ function initConversation()
 		jQuery(".thread-original-hide").click(function(e){
 			threadHideOriginal($(this));
 			e.preventDefault();
+		});
+
+		// Open thread menu upwards if it does not fit below.
+		// #app has overflow: hidden, so the menu of the last thread
+		// is cut off at the bottom of the page and can't be scrolled to.
+		$(document).on('shown.bs.dropdown', '.thread-options', function() {
+			var dropdown = $(this);
+			var menu = dropdown.children('.dropdown-menu:first')[0];
+			if (!menu) {
+				return;
+			}
+			// The menu is hidden below the window and cut off below #app,
+			// which can be shorter than the window (x_embed).
+			var page = document.getElementById('app').getBoundingClientRect();
+			var down = menu.getBoundingClientRect();
+			if (down.bottom <= Math.min(document.documentElement.clientHeight, page.bottom)) {
+				return;
+			}
+			// Bootstrap triggers this event right after showing the menu,
+			// so it is moved before it is painted.
+			dropdown.addClass('thread-options-up');
+			var up = menu.getBoundingClientRect();
+			// The navbar is drawn over the content.
+			var top = dropdown.closest('.content-2col')[0].getBoundingClientRect().top;
+			// Keep the menu upwards if it fits in the window there, or if the window is too low
+			// for both sides, but below #app cuts it off while above it can be scrolled to.
+			if (up.top < Math.max(0, top) && (down.bottom <= page.bottom || up.top < top)) {
+				dropdown.removeClass('thread-options-up');
+			}
+		}).on('hidden.bs.dropdown', '.thread-options', function() {
+			$(this).removeClass('thread-options-up');
 		});
 
 		// Edit subject
@@ -4414,6 +4462,7 @@ function initConvCol()
 
 	// Load conversations
 	if (!wrapper.hasClass('hidden')) {
+		$('#conv-list-open').addClass('loaded');
 		convListLoad();
 	}
 }
@@ -4434,7 +4483,7 @@ function convListLoad()
 			mailbox_id: col.attr('data-mailbox_id'),
 			folder_id: col.attr('data-folder_id'),
 			conversation_id: col.attr('data-conversation_id'),
-			offset: $('#conv-list-col-items .chat-item').length - 1
+			offset: $('#conv-list-col-items .chat-item').length
 		},
 		laroute.route('conversations.ajax'),
 		function(response) {

@@ -280,7 +280,17 @@ class OpenController extends Controller
         }
 
         // CSP header for extra security.
-        $csp_header_value = "script-src 'none'; frame-src 'none'; object-src 'none'; font-src 'none'; connect-src 'none'; media-src 'self'; form-action 'none'; base-uri 'none'; sandbox";
+        $csp_header_value = "script-src 'none'; frame-src 'none'; object-src 'none'; font-src 'none'; connect-src 'none'; media-src 'self'; form-action 'none'; base-uri 'none';";
+
+        // Safari's built-in PDF viewer needs to run scripts inside the PDF
+        // document, and the sandbox directive blocks them, so PDFs are shown
+        // blank. The 'nosniff' (see ResponseHeaders middleware) still prevents the
+        // browser from reinterpreting an application/pdf response as HTML,
+        // so sandbox is not added for PDFs.
+        // https://github.com/freescout-help-desk/freescout/issues/5788
+        if ($attachment->mime_type != 'application/pdf') {
+            $csp_header_value .= ' sandbox';
+        }
 
         // https://github.com/freescout-help-desk/freescout/issues/5281
         //

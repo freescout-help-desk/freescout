@@ -34,7 +34,7 @@
                             <label for="password" class="col-md-4 control-label">{{ __('Password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control" name="password" autocomplete="new-password" required>
+                                <input id="password" type="password" class="form-control" name="password" minlength="8" autocomplete="new-password" required>
 
                                 @if ($errors->has('password'))
                                     <span class="help-block">
@@ -47,7 +47,7 @@
                         <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
                             <label for="password-confirm" class="col-md-4 control-label">{{ __('Confirm Password') }}</label>
                             <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" autocomplete="new-password" required>
+                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" minlength="8" autocomplete="new-password" required>
 
                                 @if ($errors->has('password_confirmation'))
                                     <span class="help-block">

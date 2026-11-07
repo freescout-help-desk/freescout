@@ -572,8 +572,26 @@ class Client {
             return true;
         }
         $this->checkConnection();
-        $this->active_folder = $folder_path;
-        return $this->connection->selectFolder($folder_path);
+
+        // Remember the folder only after it has actually been selected.
+        // Otherwise a rejected SELECT (NO/BAD, which the protocol reports as
+        // "false", not as an exception) leaves the session without a selected
+        // folder while later openFolder() calls return early as the folder
+        // "is already open", and the following commands are rejected with
+        // "BAD UID SEARCH not allowed now".
+        // https://github.com/freescout-help-desk/freescout/issues/5786
+        $this->active_folder = null;
+
+        $result = $this->connection->selectFolder($folder_path);
+        if ($result === false) {
+            // The rejection may be temporary, try once more.
+            $result = $this->connection->selectFolder($folder_path);
+        }
+        if ($result !== false) {
+            $this->active_folder = $folder_path;
+        }
+
+        return $result;
     }
 
     /**

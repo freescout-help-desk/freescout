@@ -486,6 +486,10 @@ class Attachment extends Model
             if (!empty($file_info['file_dir'])) {
                 $new_attachment->file_dir = $file_info['file_dir'];
                 $new_attachment->save();
+            } else {
+                // If the file could not be copied - delete attachment.
+                Attachment::where('id', $new_attachment->id)->delete();
+                return null;
             }
         } catch (\Exception $e) {
             \Helper::logException($e);

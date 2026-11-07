@@ -271,7 +271,11 @@ class FetchEmails extends Command
                 $this->error('['.date('Y-m-d H:i:s').'] IMAP folder ('.$folder_name.') not found on the mail server: '.$e->getMessage());
             }
 
-            if ($folder) {
+            if ($folder && !empty($folder->no_select)) {
+                // Container folders like "[Gmail]" can not be selected, so there is nothing to fetch.
+                // https://github.com/freescout-help-desk/freescout/issues/5786
+                $this->line('['.date('Y-m-d H:i:s').'] IMAP folder can not be selected on the mail server (\\Noselect), skipping: '.$folder_name);
+            } elseif ($folder) {
                 $folders[] = $folder;
             } else {
                 $this->line('['.date('Y-m-d H:i:s').'] IMAP folder not found on the mail server: '.$folder_name);
@@ -1928,7 +1932,7 @@ class FetchEmails extends Command
             // reply-separator logic can extract it correctly.
             // https://github.com/freescout-help-desk/freescout/issues/5409
             if (!empty($htmls[0])) {
-                $first_html_pos = mb_strpos($body, '<html');
+                $first_html_pos = mb_stripos($body, '<html');
                 if ($first_html_pos > 0) {
                     $pre_html = mb_substr($body, 0, $first_html_pos);
                     if (trim(strip_tags($pre_html))) {

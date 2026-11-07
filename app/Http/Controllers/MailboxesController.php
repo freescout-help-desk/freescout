@@ -962,13 +962,22 @@ class MailboxesController extends Controller
     public function interateFolders($response, $imap_folders, $subfolder = false)
     {
         foreach ($imap_folders as $imap_folder) {
-            if (!empty($imap_folder->name) && !$subfolder) {
+            // Container folders like "[Gmail]" can not be selected, so they can not
+            // be used as IMAP folders to fetch emails from, but their children can.
+            // https://github.com/freescout-help-desk/freescout/issues/5786
+            $selectable = empty($imap_folder->no_select);
+
+            if ($selectable && !empty($imap_folder->name) && !$subfolder) {
                 $response['folders'][] = $imap_folder->name;
             }
 
             // Check for children and recurse.
             if (!empty($imap_folder->children)) {
                 $response = $this->interateFolders($response, $imap_folder->children, true);
+            }
+
+            if (!$selectable) {
+                continue;
             }
 
             // Old library.

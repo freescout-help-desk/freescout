@@ -143,7 +143,20 @@ class Folder {
      */
     public function query(array $extensions = []): WhereQuery {
         $this->getClient()->checkConnection();
-        $this->getClient()->openFolder($this->path);
+
+        // A folder which can not be selected (a non-existing one or a container
+        // like "[Gmail]" with the \Noselect attribute) must not be queried: no folder
+        // is selected in this case and any search is rejected by the server with
+        // "BAD UID SEARCH not allowed now".
+        // https://github.com/freescout-help-desk/freescout/issues/5786
+        if ($this->no_select) {
+            throw new RuntimeException("folder '".$this->path."' can't be selected (\\Noselect)");
+        }
+
+        if ($this->getClient()->openFolder($this->path) === false) {
+            throw new RuntimeException("folder '".$this->path."' can't be selected: ".$this->getClient()->getLastError());
+        }
+
         $extensions = count($extensions) > 0 ? $extensions : $this->getClient()->extensions;
 
         return new WhereQuery($this->getClient(), $extensions);

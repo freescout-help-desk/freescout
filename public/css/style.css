@@ -2477,6 +2477,12 @@ button.conv-checkbox-clear {
     padding: 0px 11px 4px 8px;
     display: block;
 }
+/* Set in main.js when the menu does not fit below. Not .dropup, which also flips the caret. */
+.thread-options.thread-options-up .dropdown-menu {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: 2px;
+}
 .thread-type-new {
     background-color: #d1ecff;
     height: 40px;

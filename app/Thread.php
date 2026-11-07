@@ -318,16 +318,24 @@ class Thread extends Model
 
         // Take care of MSO-comments.
         // https://github.com/freescout-help-desk/freescout/issues/5068
+        // With large texts preg_replace() may return null (PCRE limits are hit),
+        // in this case the previous value of the body has to be kept.
+        // https://github.com/freescout-help-desk/freescout/issues/5797
         // Step 1: Completely remove the MSO-specific blocks.
         // The 's' flag allows '.' to match newlines, and 'i' makes it case-insensitive.
-        $body = preg_replace('/<!--\[if mso\]>.*?<!\[endif\]-->/is', '', $body);
+        $new_body = preg_replace('/<!--\[if mso\]>.*?<!\[endif\]-->/is', '', $body);
+        if ($new_body !== null) {
+            $body = $new_body;
+        } else {
+            unset($new_body);
+        }
         // Step 2: Unwrap the standard HTML from the "not mso" comments.
         // This reveals the standard <a> tag for the purifier.
-        $body = preg_replace('/<!--\[if !mso\]><!--\s*-->(.*?)<!--\s*<!\[endif\]-->/is', '$1', $body);
+        $body = preg_replace('/<!--\[if !mso\]><!--\s*-->(.*?)<!--\s*<!\[endif\]-->/is', '$1', $body) ?: $body;
 
         // Remove only the <!--[if !mso]><!--> and <!--<![endif]--> around the elements.
         // https://github.com/freescout-helpdesk/freescout/pull/3865#issuecomment-1990758149
-        $body = preg_replace('/<!\-\-\[if [^>]+\]><!\-\->(.*?)<![ ]+\-\-<!\[endif\]\-\->/s', '$1', $body);
+        $body = preg_replace('/<!\-\-\[if [^>]+\]><!\-\->(.*?)<![ ]+\-\-<!\[endif\]\-\->/s', '$1', $body) ?: $body;
 
         // Remove Outlook "downlevel-revealed" conditional comments (<![if !vml]>...<![endif]>),
         // preserving the data inside. Browsers ignore them, but the purifier escapes them as text.
