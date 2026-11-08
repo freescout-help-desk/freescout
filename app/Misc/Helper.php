@@ -2204,12 +2204,22 @@ class Helper
                 throw new \Exception('[Helper::getRemoteFileContents()] URL points to the local host', 1);
             }
 
-            // Quick check for response code 200 or redierct.
-            $headers = get_headers($url);
-            // 307 - Temporary Redirect.
-            if (!preg_match("/(200|301|302|307)/", $headers[0])) {
-                throw new \Exception('HTTP Status Code: '.$headers[0], 1);
+            // Quick check for response code 200 or redirect.
+            // 
+            // This check has been disabled as it may cause extra issues as it does not use Helper::setCurlDefaultOptions().
+            // And get_headers() uses GET, so it may also retrieve the whole remote content and return only headers. 
+            // And we can't make it use HEAD as remote server may not support this method.
+            /*
+            $headers = [];
+            try {
+                $headers = get_headers($url);
+            } catch (\Exception $e) {
+                // Do nothing.
             }
+            // 307 - Temporary Redirect.
+            if ($headers && !empty($headers[0]) && !preg_match("/(200|301|302|307)/", $headers[0])) {
+                throw new \Exception('HTTP Status Code: '.$headers[0], 1);
+            }*/
 
             // Get contents.
 
