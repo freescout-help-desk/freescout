@@ -224,6 +224,7 @@
             "TijsVerkoyen\\CssToInlineStyles\\": "overrides/tijsverkoyen/css-to-inline-styles/src/",
             "TijsVerkoyen\\CssToInlineStyles\\Css\\Property\\": "overrides/tijsverkoyen/css-to-inline-styles/src/Css/Property/",
             "Html2Text\\": "overrides/html2text/html2text/src/",
+            "Illuminate\\Redis\\Connections\\": "overrides/laravel/framework/src/Illuminate/Redis/Connections/",
             "Illuminate\\Http\\Exceptions\\": "overrides/laravel/framework/src/Illuminate/Http/Exceptions/"
         },
         "exclude-from-classmap": [
@@ -502,6 +503,7 @@
             "vendor/tijsverkoyen/css-to-inline-styles/src/CssToInlineStyles.php",
             "vendor/tijsverkoyen/css-to-inline-styles/src/Css/Property/Processor.php",
             "vendor/html2text/html2text/src/Html2Text.php",
+            "vendor/laravel/framework/src/Illuminate/Redis/Connections/PhpRedisConnection.php",
             "vendor/laravel/framework/src/Illuminate/Http/Exceptions/PostTooLargeException.php"
         ]
     },
