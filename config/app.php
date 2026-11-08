@@ -537,6 +537,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Real-time updates (Polycast)
+    |--------------------------------------------------------------------------
+    | Every open browser tab sends a polling request to /polycast/receive.
+    |
+    | polycast_enabled: set to false to completely disable real-time updates
+    | (no /polycast/connect and /polycast/receive requests are sent).
+    | polycast_polling: polling interval in seconds (minimum 1).
+    | polycast_pause_hidden: do not poll while the browser tab is hidden.
+    | Browser notifications for hidden tabs are delayed until the tab is shown again.
+    |-------------------------------------------------------------------------
+    */
+    'polycast_enabled'      => env('APP_POLYCAST_ENABLED', true),
+    'polycast_polling'      => env('APP_POLYCAST_POLLING', 5),
+    'polycast_pause_hidden' => env('APP_POLYCAST_PAUSE_HIDDEN', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Limit non-admin users to only see customers with conversations
     | in mailboxes they are assigned to. This option does not affect admin users.
     | 

@@ -3948,6 +3948,28 @@ function polycastInit()
 		return;
 	}
 
+	// Real-time updates can be disabled via APP_POLYCAST_ENABLED=false.
+	// Use a stub not to break the code which uses the global poly object.
+	if (getGlobalAttr('polycast_enabled') === '0') {
+		var poly_stub_channel = {
+			on: function() { return poly_stub_channel; }
+		};
+		poly = {
+			connected: false,
+			on: function() { return poly; },
+			subscribe: function() { return poly_stub_channel; },
+			disconnect: function() { return poly; },
+			reconnect: function() { return poly; },
+			fetch: function() {}
+		};
+		return;
+	}
+
+	var poly_polling = parseInt(getGlobalAttr('polycast_polling'));
+	if (!poly_polling || poly_polling < 1) {
+		poly_polling = 5;
+	}
+
 	if (getGlobalAttr('conversation_id')) {
 		poly_data_closures.push(function(data) {
 			if (getReplyFormMode() == 'reply') {
@@ -3975,6 +3997,8 @@ function polycastInit()
 	// create the connection
     poly = new Polycast(Vars.public_url+'/polycast', {
         token: getCsrfToken(),
+        polling: poly_polling,
+        pause_hidden: getGlobalAttr('polycast_pause_hidden') === '1',
         data: poly_data_closures
     });
 
