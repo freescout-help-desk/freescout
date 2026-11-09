@@ -4914,7 +4914,7 @@ a.disabled:focus {
 }
 .fs-tag {
     background: #9eaab5;
-    border-radius: 2px;
+    border-radius: 6px;
     color: #fff;
     display: inline-block;
     font-size: 13px;
@@ -4948,6 +4948,7 @@ a.disabled:focus {
     margin-right: 6px;
     position: relative;
     top: 1px;
+    border-radius: 2px;
 }
 .fs-tag-btn {
     margin-top: 8px;
