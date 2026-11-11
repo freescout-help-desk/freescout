@@ -307,6 +307,7 @@
     "Fetching Emails": "Отримання листів",
     "Fetching Interval": "Інтервал отримання",
     "Fetching Problems": "Проблеми отримання",
+    "File :name is too large. Maximum file size: :max_size.": "Файл :name занадто великий. Максимальний розмір файлу: :max_size.",
     "Filters": "Фільтри",
     "First Name": "Ім'я",
     "First Page": "Перша сторінка",

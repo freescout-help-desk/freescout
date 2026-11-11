@@ -308,6 +308,7 @@
     "Fetching Emails": "Dohvaćanje e-mailova",
     "Fetching Interval": "Interval dohvaćanja",
     "Fetching Problems": "Problemi pri dohvaćanju",
+    "File :name is too large. Maximum file size: :max_size.": "Datoteka :name je prevelika. Maksimalna veličina datoteke: :max_size.",
     "Filters": "Filter",
     "First Name": "Ime",
     "First Page": "Prva stranica",

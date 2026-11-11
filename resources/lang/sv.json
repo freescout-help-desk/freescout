@@ -308,6 +308,7 @@
     "Fetching Emails": "Hämtar e-post",
     "Fetching Interval": "Hämtar intervall",
     "Fetching Problems": "Hämtar problem",
+    "File :name is too large. Maximum file size: :max_size.": "Filen :name är för stor. Maximal filstorlek: :max_size.",
     "Filters": "Filter",
     "First Name": "Förnamn",
     "First Page": "Första sidan",

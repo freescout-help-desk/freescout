@@ -305,6 +305,7 @@
     "Fetching Emails": "A procurar emails",
     "Fetching Interval": "Agenda de obter e-mails",
     "Fetching Problems": "A procurar Problemas",
+    "File :name is too large. Maximum file size: :max_size.": "O ficheiro :name é demasiado grande. Tamanho máximo do ficheiro: :max_size.",
     "Filters": "Filtros",
     "First Name": "Primeiro nome",
     "First Page": "Primeira página",

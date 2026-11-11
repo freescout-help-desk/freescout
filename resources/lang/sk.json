@@ -312,6 +312,7 @@
     "Fetching Emails": "Sťahovanie Emailov",
     "Fetching Interval": "Interval načítavania",
     "Fetching Problems": "Problém so sťahovaním mailov",
+    "File :name is too large. Maximum file size: :max_size.": "Súbor :name je príliš veľký. Maximálna veľkosť súboru: :max_size.",
     "Filters": "Filtre",
     "First Name": "Meno",
     "First Page": "Prvá stránka",

@@ -305,6 +305,7 @@
     "Fetching Emails": "E-poçtlar əldə edilir",
     "Fetching Interval": "Əldə etmə intervalı",
     "Fetching Problems": "Əldə etmə problemləri",
+    "File :name is too large. Maximum file size: :max_size.": "Fayl :name çox böyükdür. Maksimum fayl ölçüsü: :max_size.",
     "Filters": "Süzgəclər",
     "First Name": "Ad",
     "First Page": "İlk səhifə",

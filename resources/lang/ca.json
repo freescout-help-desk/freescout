@@ -469,6 +469,7 @@
     "Fetching Interval": "Interval d'obtenció",
     "Fetching Problems": "Problemes d'obtenció",
     "File": "Fitxer",
+    "File :name is too large. Maximum file size: :max_size.": "El fitxer :name és massa gran. Mida màxima del fitxer: :max_size.",
     "Files": "Fitxers",
     "Filter": "Filtra",
     "Filters": "Filtres",
