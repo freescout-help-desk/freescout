@@ -308,6 +308,7 @@
     "Fetching Emails": "メール取得",
     "Fetching Interval": "メール取得のスケジュール",
     "Fetching Problems": "メール取得の問題",
+    "File :name is too large. Maximum file size: :max_size.": "ファイル :name が大きすぎます。最大ファイルサイズ: :max_size。",
     "Filters": "フィルター",
     "First Name": "姓",
     "First Page": "最初のページ",

@@ -310,6 +310,7 @@
     "Fetching Emails": "E-mailek lekérése folyamatban",
     "Fetching Interval": "Lekérési időköz",
     "Fetching Problems": "Lekérési problémák",
+    "File :name is too large. Maximum file size: :max_size.": "A(z) :name fájl túl nagy. Maximális fájlméret: :max_size.",
     "Filters": "Szűrők",
     "First Name": "Keresztnév",
     "First Page": "Első oldal",

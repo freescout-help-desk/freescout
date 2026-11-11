@@ -296,6 +296,7 @@
     "Fetching Emails": "Хаттарды алу процесі",
     "Fetching Interval": "Хаттарды алу кестесі",
     "Fetching Problems": "Хаттарды алу мәселелері",
+    "File :name is too large. Maximum file size: :max_size.": "Файл :name тым үлкен. Файлдың максималды көлемі: :max_size.",
     "Filters": "Сүзгілер",
     "First Name": "Аты",
     "First Page": "Бірінші бет",

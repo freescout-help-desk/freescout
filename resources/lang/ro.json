@@ -310,6 +310,7 @@
     "Fetching Emails": "Preluarea email-urilor",
     "Fetching Interval": "Interval de preluare",
     "Fetching Problems": "Probleme de preluare",
+    "File :name is too large. Maximum file size: :max_size.": "Fișierul :name este prea mare. Dimensiunea maximă a fișierului: :max_size.",
     "Filters": "Filtre",
     "First Name": "Prenume",
     "First Page": "Prima pagină",
