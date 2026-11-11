@@ -41,7 +41,7 @@
 
     @yield('stylesheets')
 </head>
-<body class="locale-{{ app()->getLocale() }} @if (Helper::isLocaleRtl()) rtl @endif @if (!Auth::user()) user-is-guest @endif @if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class') @action('body.class')" @yield('body_attrs') @if (Auth::user()) data-auth_user_id="{{ Auth::user()->id }}" @endif @if (!config('app.polycast_enabled')) data-polycast_enabled="0" @endif @if ((int)config('app.polycast_polling') >= 1 && (int)config('app.polycast_polling') != 5) data-polycast_polling="{{ (int)config('app.polycast_polling') }}" @endif @if (config('app.polycast_pause_hidden')) data-polycast_pause_hidden="1" @endif>
+<body class="locale-{{ app()->getLocale() }} @if (Helper::isLocaleRtl()) rtl @endif @if (!Auth::user()) user-is-guest @endif @if (Auth::user() && Auth::user()->isAdmin()) user-is-admin @endif @yield('body_class') @action('body.class')" @yield('body_attrs') @if (Auth::user()) data-auth_user_id="{{ Auth::user()->id }}" data-max_upload_size="{{ \Helper::getMaxUploadSize() }}" @endif @if (!config('app.polycast_enabled')) data-polycast_enabled="0" @endif @if ((int)config('app.polycast_polling') >= 1 && (int)config('app.polycast_polling') != 5) data-polycast_polling="{{ (int)config('app.polycast_polling') }}" @endif @if (config('app.polycast_pause_hidden')) data-polycast_pause_hidden="1" @endif>
 <div id="app">
 
         @if (Auth::user() && empty(app('request')->x_embed) && empty($__env->yieldContent('guest_mode')))

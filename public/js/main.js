@@ -2190,6 +2190,14 @@ function editorSendFile(file, attach, is_conv, editor_id, container)
 	if (!file || typeof(file.type) == "undefined") {
 		return false;
 	}
+	var max_upload_size = parseInt(getGlobalAttr('max_upload_size'));
+	if (max_upload_size && file.size > max_upload_size) {
+		showFloatingAlert('error', Lang.get("messages.file_too_large", {
+			name: file.name,
+			max_size: formatBytes(max_upload_size)
+		}));
+		return false;
+	}
 	if (typeof(container) == "undefined") {
 		container = $(".attachments-upload:first");
 	}
