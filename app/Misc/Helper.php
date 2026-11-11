@@ -2143,6 +2143,38 @@ class Helper
         // return number_format($size)." bytes";
     }
 
+    /**
+     * Max size of an uploaded file in bytes: the smaller of upload_max_filesize
+     * and post_max_size. Zero or negative values mean no limit, 0 is returned
+     * if there is no limit.
+     */
+    public static function getMaxUploadSize()
+    {
+        $result = 0;
+
+        foreach (['upload_max_filesize', 'post_max_size'] as $option) {
+            $value = trim((string)ini_get($option));
+            $size = (int)$value;
+
+            switch (strtolower(substr($value, -1))) {
+                case 'g':
+                    $size *= 1024;
+                    // no break
+                case 'm':
+                    $size *= 1024;
+                    // no break
+                case 'k':
+                    $size *= 1024;
+            }
+
+            if ($size > 0 && (!$result || $size < $result)) {
+                $result = $size;
+            }
+        }
+
+        return $result;
+    }
+
     public static function isPrint()
     {
         return (bool)app('request')->input('print');
