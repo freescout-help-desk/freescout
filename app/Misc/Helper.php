@@ -905,6 +905,17 @@ class Helper
             imagefill($src, 0, 0, $kek);
         } elseif (preg_match('/bmp/i', $mime_type)) {
             $src = imagecreatefrombmp($file);
+        } elseif (preg_match('/avif/i', $mime_type)) {
+            // AVIF decoding requires GD support (PHP 8.1+).
+            if (!function_exists('imagecreatefromavif')) {
+                return false;
+            }
+            $src = imagecreatefromavif($file);
+        } elseif (preg_match('/webp/i', $mime_type)) {
+            if (!function_exists('imagecreatefromwebp')) {
+                return false;
+            }
+            $src = imagecreatefromwebp($file);
         } else {
             $src = imagecreatefromjpeg($file);
         }
