@@ -1308,12 +1308,10 @@ class Helper
 
         $value = preg_replace("#[\r\n\t]#", '', $value);
 
-        if (strstr($value, '"')) {
-            // Escape quotes.
-            $value = '"'.str_replace('"', '\"', $value).'"';
-        } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $value) && $value !== '') {
-            // Add quotes.
-            $value = '"'.$value.'"';
+        if ($value !== '' && !preg_match('/^[a-zA-Z0-9_]+$/', $value)) {
+            // Add quotes and escape backslashes, quotes and "${" (so that the value
+            // is not treated as a nested variable when .env file is loaded).
+            $value = '"'.str_replace(['\\', '"', '${'], ['\\\\', '\\"', '\\${'], $value).'"';
         }
 
         $old_value = '';
