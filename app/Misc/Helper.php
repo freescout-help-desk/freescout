@@ -1776,7 +1776,7 @@ class Helper
     public static function purifyHtml($html)
     {
         if (!$html) {
-            return $html;
+            return $html ?? '';
         }
 
         $html = \Purifier::clean($html);
@@ -1787,7 +1787,7 @@ class Helper
         // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
         //$html = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $html);
 
-        return $html;
+        return $html ?? '';
     }
 
     /**
