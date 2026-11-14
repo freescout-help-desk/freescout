@@ -1201,6 +1201,29 @@ class ConversationsController extends Controller
                         $thread->from = $request->from_alias;
                     }
 
+                    // Chat conversation: the agent may choose to also send the reply
+                    // to the customer by email (if the customer has an email).
+                    if ($conversation->isChat()) {
+                        $chat_email = '';
+                        if (!$is_note && !$is_forward && !$new
+                            && !empty($request->chat_send_email)
+                            && $conversation->customer
+                        ) {
+                            // Use the email selected in the form if it belongs to the customer.
+                            if ($to && $conversation->customer->hasEmail($to)) {
+                                $chat_email = \App\Email::sanitizeEmail($to);
+                            } else {
+                                $chat_email = $conversation->customer->getMainEmail();
+                            }
+                        }
+                        if ($chat_email) {
+                            $thread->setTo($chat_email);
+                            $thread->setMeta(Thread::META_CHAT_SEND_EMAIL, 1);
+                        } else {
+                            $thread->unsetMeta(Thread::META_CHAT_SEND_EMAIL);
+                        }
+                    }
+
                     \Eventy::action('thread.before_save_from_request', $thread, $request);
                     $thread->save();
 

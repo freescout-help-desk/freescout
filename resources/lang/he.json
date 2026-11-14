@@ -306,6 +306,7 @@
     "Fetching Emails": "מאחזר אימיילים",
     "Fetching Interval": "מרווח אחזור",
     "Fetching Problems": "בעיות אחזור",
+    "File :name is too large. Maximum file size: :max_size.": "הקובץ :name גדול מדי. גודל קובץ מקסימלי: :max_size.",
     "Filters": "מסננים",
     "First Name": "שם פרטי",
     "First Page": "עמוד ראשון",

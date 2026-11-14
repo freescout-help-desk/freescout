@@ -225,6 +225,7 @@
                                 </span>
                             </div>
                         </div>
+                        @action('conversation.before_chat_mode', $conversation, $mailbox)
                         @if ($conversation->isChat() && $conversation->getChannelName())
                             <span class="conv-tags">
                                 @if (\Helper::isChatMode())<a class="btn btn-default fs-tag-btn" href="{{ request()->fullUrlWithQuery(['chat_mode' => '0']) }}" title="{{ __('Exit') }}" data-toggle="tooltip"><small class="glyphicon glyphicon-remove"></small> {{ __('Chat Mode') }}</a>@else<a class="btn btn-primary fs-tag-btn" href="{{ request()->fullUrlWithQuery(['chat_mode' => '1']) }}"><small class="glyphicon glyphicon-comment"></small> {{ __('Chat Mode') }}</a>@endif<span class="fs-tag fs-tag-md"><a class="fs-tag-name" href="#"><small class="glyphicon glyphicon-phone"></small> {{ $conversation->getChannelName() }}</a></span>
@@ -339,6 +340,17 @@
                                         <a href="#" class="help-link" id="toggle-cc">Cc/Bcc</a>
                                     </div>
                                 </div>
+
+                                @if ($conversation->isChat() && !$is_in_chat_mode && optional($conversation->customer)->getMainEmail())
+                                    <div class="form-group conv-chat-email">
+                                        <label class="control-label"></label>
+                                        <div class="conv-reply-field">
+                                            <label class="checkbox" for="chat_send_email">
+                                                <input type="checkbox" name="chat_send_email" id="chat_send_email" value="1" checked="checked"> {{ __('Also send reply to customer by email') }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                @endif
 
                                 @if (!empty($threads[0]) && $threads[0]->type == App\Thread::TYPE_NOTE && $threads[0]->created_by_user_id != Auth::user()->id && $threads[0]->created_by_user)
                                     <div class="alert alert-warning alert-switch-to-note">

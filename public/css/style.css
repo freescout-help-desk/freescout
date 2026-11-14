@@ -1325,7 +1325,8 @@ https://github.com/freescout-help-desk/freescout/issues/4354
         font-size: 13px;
     }
     .btn-sm, .btn-group-sm > .btn {
-        padding: 5px 9px!important;
+        padding-left: 9px!important;
+        padding-right: 9px!important;
     }
     .panel-heading.note-toolbar>.btn-group {
         margin-right: 1px!important;
@@ -2799,8 +2800,17 @@ button.conv-checkbox-clear {
 .conv-forward-block .btn-send-text,
 .conv-note-block .btn-send-text,
 .conv-note-block .conv-recipient,
-.conv-note-block .conv-from-alias {
+.conv-note-block .conv-from-alias,
+.conv-note-block .conv-chat-email,
+.conv-forward-block .conv-chat-email {
     display: none;
+}
+.conv-reply-block .conv-chat-email label.checkbox {
+    width: auto;
+    font-weight: normal;
+}
+.conv-reply-block .conv-chat-email input[type="checkbox"] {
+    min-width: 0;
 }
 .conv-note-block .btn-add-note-text {
     display: block;
@@ -4905,7 +4915,7 @@ a.disabled:focus {
 }
 .fs-tag {
     background: #9eaab5;
-    border-radius: 2px;
+    border-radius: 6px;
     color: #fff;
     display: inline-block;
     font-size: 13px;
@@ -4939,6 +4949,7 @@ a.disabled:focus {
     margin-right: 6px;
     position: relative;
     top: 1px;
+    border-radius: 2px;
 }
 .fs-tag-btn {
     margin-top: 8px;

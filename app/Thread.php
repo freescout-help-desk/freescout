@@ -158,6 +158,8 @@ class Thread extends Model
 
     // Metas.
     const META_CONVERSATION_HISTORY = 'ch';
+    // Chat conversations: the reply has to be also sent to the customer by email.
+    const META_CHAT_SEND_EMAIL = 'chat_email';
     const META_PREV_CONVERSATION = 'pc';
     const META_MERGED_WITH_CONV = 'mwc';
     const META_MERGED_INTO_CONV = 'mic';

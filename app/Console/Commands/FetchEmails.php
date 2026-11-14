@@ -784,6 +784,9 @@ class FetchEmails extends Command
             foreach ($prev_message_ids as $i => $prev_message_id) {
 
                 $is_reply = false;
+                // Becomes true only if previous thread has been found by a Message-ID
+                // signed by FreeScout (hash is verified).
+                $prev_thread_verified = false;
                 if (!$prev_message_id) {
                     continue;
                 }
@@ -890,18 +893,30 @@ class FetchEmails extends Command
 
                         if ($prev_thread_id) {
                             $prev_thread = Thread::find($prev_thread_id);
+                            $prev_thread_verified = (bool)$prev_thread;
                         } else {
-                            // Customer replied to his own message
+                            // Customer replied to his own message.
+                            // Message-ID is not signed and is not a secret (it is delivered to all
+                            // recipients of the email), so the sender must be a participant
+                            // of the conversation. Otherwise anyone knowing a Message-ID
+                            // could hijack the conversation and replace its customer.
                             $prev_thread = Thread::where('message_id', $prev_message_id)->first();
+
+                            if ($prev_thread && !$this->isConversationParticipant($prev_thread->conversation, $from)) {
+                                $this->line('['.date('Y-m-d H:i:s').'] Sender '.$from.' is not a participant of the conversation found by unhashed Message-ID: '.$prev_message_id);
+                                $prev_thread = null;
+                            }
                         }
 
                         // Reply from user to his reply to the notification
                         if (!$prev_thread
-                            && ($prev_thread = Thread::where('message_id', $prev_message_id)->first())
-                            && $prev_thread->created_by_user_id
+                            && ($prev_thread_user = Thread::where('message_id', $prev_message_id)->first())
+                            && $prev_thread_user->created_by_user_id
                             && $user_from
-                            && $prev_thread->created_by_user->hasEmail($user_from)
+                            && $prev_thread_user->created_by_user
+                            && $prev_thread_user->created_by_user->hasEmail($user_from)
                         ) {
+                            $prev_thread = $prev_thread_user;
                             $user = $prev_thread->created_by_user;
                             $user_id = $user->id;
                             $message_from_customer = false;
@@ -939,6 +954,7 @@ class FetchEmails extends Command
 
                                 if ($prev_thread_tmp) {
                                     $prev_thread = $prev_thread_tmp;
+                                    $prev_thread_verified = false;
                                 } elseif (\MailHelper::isGeneratedMessageId($prev_thread->message_id)) {
                                     // Try to extract the original Message-ID from the mismatched thread's raw headers
                                     // https://github.com/freescout-help-desk/freescout/issues/5308#issuecomment-4218652527
@@ -959,6 +975,7 @@ class FetchEmails extends Command
                                     }
                                     if ($correct_thread) {
                                         $prev_thread = $correct_thread;
+                                        $prev_thread_verified = false;
                                     }
                                     if (!$correct_thread) {
                                         $prev_thread = null;
@@ -1002,6 +1019,16 @@ class FetchEmails extends Command
                                 $prev_thread = null;
                                 $is_reply = false;
                             }
+                        }
+
+                        // A thread found by an unhashed Message-ID must belong to a conversation
+                        // in which the sender participates (see above).
+                        if ($prev_thread && !$prev_thread_verified
+                            && !$this->isConversationParticipant($prev_thread->conversation, $from)
+                        ) {
+                            $this->line('['.date('Y-m-d H:i:s').'] Sender '.$from.' is not a participant of the conversation found by Message-ID. Ignoring the thread.');
+                            $prev_thread = null;
+                            $is_reply = false;
                         }
                     }
 
@@ -1398,6 +1425,68 @@ class FetchEmails extends Command
         } catch (\Exception $e) {
             // Do nothing
         }
+    }
+
+    /**
+     * Check if the email address participates in the conversation: it is
+     * the customer, one of the customer's emails or is mentioned in From, To,
+     * Cc or Bcc of any of the conversation's threads.
+     *
+     * @param Conversation $conversation
+     * @param string       $email
+     *
+     * @return bool
+     */
+    public function isConversationParticipant($conversation, $email)
+    {
+        $email = Email::sanitizeEmail($email);
+
+        if (!$conversation || !$email) {
+            return false;
+        }
+
+        $same = function ($value) use ($email) {
+            return $value && Email::sanitizeEmail($value) === $email;
+        };
+        $any = function ($values) use ($same) {
+            foreach ((array)$values as $value) {
+                if ($same($value)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        if ($same($conversation->customer_email)
+            || $any($conversation->getCcArray())
+            || $any($conversation->getBccArray())
+        ) {
+            return true;
+        }
+
+        if ($conversation->customer_id
+            && Email::where('customer_id', $conversation->customer_id)->where('email', $email)->exists()
+        ) {
+            return true;
+        }
+
+        $threads = Thread::select(['id', 'from', 'to', 'cc', 'bcc'])
+            ->where('conversation_id', $conversation->id)
+            ->whereIn('type', [Thread::TYPE_MESSAGE, Thread::TYPE_CUSTOMER])
+            ->where('state', Thread::STATE_PUBLISHED)
+            ->get();
+
+        foreach ($threads as $thread) {
+            if ($same($thread->from)
+                || $any($thread->getTo())
+                || $any($thread->getCc())
+                || $any($thread->getBcc())
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

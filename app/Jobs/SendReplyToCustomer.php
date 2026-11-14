@@ -337,9 +337,18 @@ class SendReplyToCustomer implements ShouldQueue
             $this->customer_email = $this->last_thread->getToArray()[0] ?: $this->conversation->customer_email;
         }
 
-        // For phone conversations we may need to get customer email.
+        // Chat conversation: the reply is sent to the email address chosen
+        // by the agent (saved in the thread).
+        if ($this->conversation->isChat()) {
+            $chat_to_array = $this->last_thread->getToArray();
+            if (!empty($chat_to_array[0])) {
+                $this->customer_email = $chat_to_array[0];
+            }
+        }
+
+        // For phone and chat conversations we may need to get customer email.
         // https://github.com/freescout-helpdesk/freescout/issues/3270
-        if (!$this->customer_email && $this->conversation->isPhone()) {            
+        if (!$this->customer_email && ($this->conversation->isPhone() || $this->conversation->isChat())) {
             $this->customer_email = $this->conversation->customer->getMainEmail();
             if (!$this->customer_email) {
                 return;

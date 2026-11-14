@@ -905,6 +905,17 @@ class Helper
             imagefill($src, 0, 0, $kek);
         } elseif (preg_match('/bmp/i', $mime_type)) {
             $src = imagecreatefrombmp($file);
+        } elseif (preg_match('/avif/i', $mime_type)) {
+            // AVIF decoding requires GD support (PHP 8.1+).
+            if (!function_exists('imagecreatefromavif')) {
+                return false;
+            }
+            $src = imagecreatefromavif($file);
+        } elseif (preg_match('/webp/i', $mime_type)) {
+            if (!function_exists('imagecreatefromwebp')) {
+                return false;
+            }
+            $src = imagecreatefromwebp($file);
         } else {
             $src = imagecreatefromjpeg($file);
         }
@@ -1297,12 +1308,10 @@ class Helper
 
         $value = preg_replace("#[\r\n\t]#", '', $value);
 
-        if (strstr($value, '"')) {
-            // Escape quotes.
-            $value = '"'.str_replace('"', '\"', $value).'"';
-        } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $value) && $value !== '') {
-            // Add quotes.
-            $value = '"'.$value.'"';
+        if ($value !== '' && !preg_match('/^[a-zA-Z0-9_]+$/', $value)) {
+            // Add quotes and escape backslashes, quotes and "${" (so that the value
+            // is not treated as a nested variable when .env file is loaded).
+            $value = '"'.str_replace(['\\', '"', '${'], ['\\\\', '\\"', '\\${'], $value).'"';
         }
 
         $old_value = '';
@@ -1765,7 +1774,7 @@ class Helper
     public static function purifyHtml($html)
     {
         if (!$html) {
-            return $html;
+            return $html ?? '';
         }
 
         $html = \Purifier::clean($html);
@@ -1776,7 +1785,7 @@ class Helper
         // https://stackoverflow.com/questions/3230623/filter-all-types-of-whitespace-in-php
         //$html = preg_replace("/^(.*)>[\r\n]*\s+/mu", '$1>', $html);
 
-        return $html;
+        return $html ?? '';
     }
 
     /**
@@ -2132,6 +2141,38 @@ class Helper
         // return number_format($size)." bytes";
     }
 
+    /**
+     * Max size of an uploaded file in bytes: the smaller of upload_max_filesize
+     * and post_max_size. Zero or negative values mean no limit, 0 is returned
+     * if there is no limit.
+     */
+    public static function getMaxUploadSize()
+    {
+        $result = 0;
+
+        foreach (['upload_max_filesize', 'post_max_size'] as $option) {
+            $value = trim((string)ini_get($option));
+            $size = (int)$value;
+
+            switch (strtolower(substr($value, -1))) {
+                case 'g':
+                    $size *= 1024;
+                    // no break
+                case 'm':
+                    $size *= 1024;
+                    // no break
+                case 'k':
+                    $size *= 1024;
+            }
+
+            if ($size > 0 && (!$result || $size < $result)) {
+                $result = $size;
+            }
+        }
+
+        return $result;
+    }
+
     public static function isPrint()
     {
         return (bool)app('request')->input('print');
@@ -2204,12 +2245,22 @@ class Helper
                 throw new \Exception('[Helper::getRemoteFileContents()] URL points to the local host', 1);
             }
 
-            // Quick check for response code 200 or redierct.
-            $headers = get_headers($url);
-            // 307 - Temporary Redirect.
-            if (!preg_match("/(200|301|302|307)/", $headers[0])) {
-                throw new \Exception('HTTP Status Code: '.$headers[0], 1);
+            // Quick check for response code 200 or redirect.
+            // 
+            // This check has been disabled as it may cause extra issues as it does not use Helper::setCurlDefaultOptions().
+            // And get_headers() uses GET, so it may also retrieve the whole remote content and return only headers. 
+            // And we can't make it use HEAD as remote server may not support this method.
+            /*
+            $headers = [];
+            try {
+                $headers = get_headers($url);
+            } catch (\Exception $e) {
+                // Do nothing.
             }
+            // 307 - Temporary Redirect.
+            if ($headers && !empty($headers[0]) && !preg_match("/(200|301|302|307)/", $headers[0])) {
+                throw new \Exception('HTTP Status Code: '.$headers[0], 1);
+            }*/
 
             // Get contents.
 

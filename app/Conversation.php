@@ -799,6 +799,143 @@ class Conversation extends Model
         return $statuses;
     }
 
+    /**
+     * Get priority levels configured in APP_PRIORITIES.
+     *
+     * @return array [level key => ['name' => string, 'color' => string|null]]
+     */
+    public static function getPriorityLevels()
+    {
+        static $cache = [];
+
+        $config = trim((string)config('app.priorities'));
+
+        if (isset($cache[$config])) {
+            return $cache[$config];
+        }
+
+        $levels = [];
+        foreach (explode(',', $config) as $item) {
+            $parts = explode(':', trim($item), 3);
+            $key = trim($parts[0]);
+            $name = isset($parts[1]) ? trim($parts[1]) : '';
+
+            if (!ctype_digit($key) || (int)$key < 1 || (int)$key > 255 || $name === '') {
+                continue;
+            }
+            $color = isset($parts[2]) ? ltrim(trim($parts[2]), '#') : '';
+            if (!preg_match('/^[0-9a-fA-F]{6}$/', $color)) {
+                $color = null;
+            }
+            $levels[(int)$key] = ['name' => $name, 'color' => $color];
+        }
+
+        if (!$levels) {
+            $levels = [
+                1 => ['name' => 'Low', 'color' => null],
+                2 => ['name' => 'Normal', 'color' => null],
+                3 => ['name' => 'High', 'color' => null],
+                4 => ['name' => 'Urgent', 'color' => null],
+            ];
+        }
+
+        $cache[$config] = $levels;
+
+        return $levels;
+    }
+
+    /**
+     * Get key of the default priority level.
+     */
+    public static function getPriorityDefault()
+    {
+        $levels = self::getPriorityLevels();
+        $default = (int)config('app.priority_default');
+
+        if (isset($levels[$default])) {
+            return $default;
+        }
+
+        reset($levels);
+
+        return (int)key($levels);
+    }
+
+    /**
+     * Get priority levels with translated names: [level key => name].
+     */
+    public static function getPrioritiesWithNames()
+    {
+        $result = [];
+        foreach (self::getPriorityLevels() as $key => $level) {
+            $result[$key] = __($level['name']);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get key of the conversation priority level.
+     * Conversations without priority (or with a level which does not exist anymore)
+     * have the default level.
+     */
+    public function getPriority()
+    {
+        $levels = self::getPriorityLevels();
+
+        if ($this->priority !== null && isset($levels[(int)$this->priority])) {
+            return (int)$this->priority;
+        }
+
+        return self::getPriorityDefault();
+    }
+
+    public function getPriorityName()
+    {
+        $levels = self::getPriorityLevels();
+
+        return __($levels[$this->getPriority()]['name']);
+    }
+
+    /**
+     * Get color of the priority level (hex without "#") or null.
+     */
+    public function getPriorityColor()
+    {
+        $levels = self::getPriorityLevels();
+
+        return $levels[$this->getPriority()]['color'];
+    }
+
+    /**
+     * Change conversation priority.
+     *
+     * @param int       $new_priority Key of the priority level.
+     * @param User|null $user         User who changes the priority.
+     *
+     * @return bool False if the level does not exist.
+     */
+    public function changePriority($new_priority, $user = null)
+    {
+        $levels = self::getPriorityLevels();
+        $new_priority = (int)$new_priority;
+
+        if (!isset($levels[$new_priority])) {
+            return false;
+        }
+
+        $prev_priority = $this->getPriority();
+
+        $this->priority = $new_priority;
+        $this->save();
+
+        if ($prev_priority != $new_priority) {
+            \Eventy::action('conversation.priority_changed', $this, $user, $prev_priority);
+        }
+
+        return true;
+    }
+
     public static function statusCode($status_id)
     {
         return self::$statuses[$status_id] ?? '';

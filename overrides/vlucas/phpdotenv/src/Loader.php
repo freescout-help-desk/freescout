@@ -126,6 +126,10 @@ class Loader
 
         $value = $this->resolveNestedVariables($value);
 
+        // Restore escaped "${".
+        // "${}" may contain variables, so before it has been escaped by replacing with "\0{".
+        $value = str_replace("\0", '$', $value);
+
         return array($name, $value);
     }
 
@@ -256,8 +260,12 @@ class Loader
             $value = preg_replace($regexPattern, '$1', $value);
             $value = substr($value, 1);
 
-            $value = str_replace("\\$quote", $quote, $value);
-            $value = str_replace('\\\\', '\\', $value);
+            // Unescape: \\, \" and \${ in a single pass, from left to right.
+            // "${}" may contain variables, so we are escaping it by replacing with "\0{".
+            // Escaped "${" is protected from resolveNestedVariables().
+            $value = preg_replace_callback('/\\\\(\\\\|'.preg_quote($quote, '/').'|\$\{)/', function ($m) {
+                return $m[1] === '${' ? "\0{" : $m[1];
+            }, $value);
 
             return array($name, $value);
         } else {

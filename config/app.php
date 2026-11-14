@@ -18,7 +18,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => '1.8.250',
+    'version' => '1.8.251',
 
     /*
     |--------------------------------------------------------------------------
@@ -423,6 +423,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Conversation priority levels.
+    |
+    | Comma-separated list of "key:Name" or "key:Name:color" items.
+    | Key is a number from 1 to 255 (it is stored in the conversations table,
+    | so do not change the key of a level which is already in use),
+    | color is an optional hex color without "#".
+    | Example: "1:Low,2:Normal,3:High:f0ad4e,4:Urgent:d9534f"
+    |-------------------------------------------------------------------------
+    */
+    'priorities'        => env('APP_PRIORITIES', '1:Low:9eaab5,2:Normal,3:High:d9770a,4:Urgent:d9534f'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Key of the priority level which is used for the conversations
+    | without the priority set. If the level does not exist,
+    | the first level from the list is used.
+    |-------------------------------------------------------------------------
+    */
+    'priority_default'  => env('APP_PRIORITY_DEFAULT', 2),
+
+    /*
+    |--------------------------------------------------------------------------
     | Dashboard path.
     |
     |-------------------------------------------------------------------------
@@ -512,6 +534,23 @@ return [
     |-------------------------------------------------------------------------
     */
     'update_folder_counters_in_background'    => env('APP_UPDATE_FOLDER_COUNTERS_IN_BACKGROUND', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Real-time updates (Polycast)
+    |--------------------------------------------------------------------------
+    | Every open browser tab sends a polling request to /polycast/receive.
+    |
+    | polycast_enabled: set to false to completely disable real-time updates
+    | (no /polycast/connect and /polycast/receive requests are sent).
+    | polycast_polling: polling interval in seconds (minimum 1).
+    | polycast_pause_hidden: do not poll while the browser tab is hidden.
+    | Browser notifications for hidden tabs are delayed until the tab is shown again.
+    |-------------------------------------------------------------------------
+    */
+    'polycast_enabled'      => env('APP_POLYCAST_ENABLED', true),
+    'polycast_polling'      => env('APP_POLYCAST_POLLING', 5),
+    'polycast_pause_hidden' => env('APP_POLYCAST_PAUSE_HIDDEN', false),
 
     /*
     |--------------------------------------------------------------------------

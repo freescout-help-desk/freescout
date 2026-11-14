@@ -305,6 +305,7 @@
     "Fetching Emails": "Rescatando correos",
     "Fetching Interval": "Programar rescate de correo",
     "Fetching Problems": "Rescatando problemas",
+    "File :name is too large. Maximum file size: :max_size.": "El archivo :name es demasiado grande. Tamaño máximo del archivo: :max_size.",
     "Filters": "Filtros",
     "First Name": "Primer Nombre",
     "First Page": "Primera Pagina",

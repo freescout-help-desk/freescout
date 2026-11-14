@@ -300,6 +300,7 @@
     "Fetching Emails": "收取電子郵件中",
     "Fetching Interval": "收取間隔",
     "Fetching Problems": "收取問題",
+    "File :name is too large. Maximum file size: :max_size.": "檔案 :name 過大。最大檔案大小：:max_size。",
     "Filters": "篩選條件",
     "First Name": "名字",
     "First Page": "第一頁",

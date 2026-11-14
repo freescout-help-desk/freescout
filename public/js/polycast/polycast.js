@@ -64,6 +64,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this.timeout = null;
 
+	        this.paused = false;
+
 	        this.connected = false;
 
 	        this.events = {};
@@ -71,6 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var defaults = {
 	            url: null,
 	            polling: 5,
+	            pause_hidden: false,
 	            token: null,
 	            data: ''
 	        };
@@ -86,6 +89,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }else{
 	            throw "Polycast url must be defined!";
+	        }
+
+	        // Resume polling when the tab becomes visible again.
+	        if (this.options.pause_hidden && typeof document.addEventListener === 'function') {
+	            var PolycastInstance = this;
+	            document.addEventListener('visibilitychange', function() {
+	                if (!document.hidden && PolycastInstance.paused && PolycastInstance.connected) {
+	                    PolycastInstance.paused = false;
+	                    PolycastInstance.fetch();
+	                }
+	            });
 	        }
 
 	        this.init();
@@ -181,6 +195,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 	        setTimeout: function(){
 	            var PolycastObject = this;
+	            // Do not poll while the tab is hidden.
+	            if (this.options.pause_hidden && document.hidden) {
+	                this.paused = true;
+	                this.timeout = null;
+	                return;
+	            }
+	            this.paused = false;
 	            this.timeout = setTimeout(function(){
 	                PolycastObject.fetch();
 	            }, (this.options.polling * 1000));
