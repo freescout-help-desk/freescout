@@ -17,7 +17,7 @@ class AddPriorityColumnToConversationsTable extends Migration
             // Key of the priority level (see APP_PRIORITIES in .env).
             // NULL means "default priority level" (APP_PRIORITY_DEFAULT).
             // DO NOT use this field for sorting as it intentionally does not have any indexes.
-            $table->unsignedTinyInteger('priority')->nullable();
+            $table->unsignedTinyInteger('priority')->after('state')->nullable();
         });
     }
 
