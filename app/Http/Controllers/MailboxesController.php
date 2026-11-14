@@ -516,7 +516,7 @@ class MailboxesController extends Controller
             'in_server'   => 'required|string|max:255|safehost',
             'in_port'     => 'required|integer',
             'in_username' => 'required|string|max:255',
-            'in_password' => 'required|string|max:255',
+            'in_password' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
