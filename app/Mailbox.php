@@ -1144,8 +1144,10 @@ class Mailbox extends Model
         // $this->conversations()->delete();
         Conversation::deleteConversationsForever($conversation_ids);
 
+        $user_ids = $this->users()->pluck('users.id')->all();
         $this->users()->sync([]);
         $this->folders()->delete();
+        User::clearWebsiteNotificationsCacheForUsers($user_ids);
         // Maybe remove notifications on events in this mailbox?
 
         $this->delete();

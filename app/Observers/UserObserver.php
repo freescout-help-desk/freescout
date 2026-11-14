@@ -62,6 +62,21 @@ class UserObserver
     }
 
     /**
+     * Role or permissions (e.g. "only assigned conversations") changed:
+     * access to conversations may have changed, so website notifications
+     * cache must not be used anymore.
+     * Note: in Laravel 5.5 dirty attributes are still available in "updated".
+     *
+     * @param User $user
+     */
+    public function updated(User $user)
+    {
+        if ($user->isDirty('role') || $user->isDirty('permissions')) {
+            $user->clearWebsiteNotificationsCache();
+        }
+    }
+
+    /**
      * On user delete.
      *
      * @param User $user

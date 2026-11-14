@@ -342,7 +342,7 @@ class MailboxesController extends Controller
 
         // Settings for admins are being reset here.
         // So we restore them below.
-        $mailbox->users()->sync($users_with_settings);
+        $sync_result = $mailbox->users()->sync($users_with_settings);
 
         $mailbox->syncPersonalFolders($request->users);
 
@@ -388,6 +388,14 @@ class MailboxesController extends Controller
             $mailbox_with_settings->settings->hide = (isset($request->managers[$mailbox_user->id]['hide']) ? (int)$request->managers[$mailbox_user->id]['hide'] : false);
             $mailbox_with_settings->settings->save();
         }
+
+        // Access to conversations may have been revoked or limited:
+        // clear website notifications cache of removed users and of the current ones
+        // (access level, i.e. "only assigned", may have been changed).
+        \App\User::clearWebsiteNotificationsCacheForUsers(array_merge(
+            $sync_result['detached'] ?? [],
+            $mailbox->users()->pluck('users.id')->all()
+        ));
 
         \Session::flash('flash_success_floating', __('Mailbox permissions saved!'));
 
