@@ -102,6 +102,7 @@ return array(
     'Illuminate\\Session\\Middleware\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Session/Middleware'),
     'Illuminate\\Session\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Session'),
     'Illuminate\\Routing\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Routing'),
+    'Illuminate\\Redis\\Connections\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Redis/Connections'),
     'Illuminate\\Queue\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Queue'),
     'Illuminate\\Pipeline\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Pipeline'),
     'Illuminate\\Pagination\\' => array($baseDir . '/overrides/laravel/framework/src/Illuminate/Pagination'),

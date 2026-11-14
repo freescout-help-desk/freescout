@@ -1664,7 +1664,7 @@ return array(
     'Illuminate\\Queue\\WorkerOptions' => $vendorDir . '/laravel/framework/src/Illuminate/Queue/WorkerOptions.php',
     'Illuminate\\Redis\\Connections\\Connection' => $vendorDir . '/laravel/framework/src/Illuminate/Redis/Connections/Connection.php',
     'Illuminate\\Redis\\Connections\\PhpRedisClusterConnection' => $vendorDir . '/laravel/framework/src/Illuminate/Redis/Connections/PhpRedisClusterConnection.php',
-    'Illuminate\\Redis\\Connections\\PhpRedisConnection' => $vendorDir . '/laravel/framework/src/Illuminate/Redis/Connections/PhpRedisConnection.php',
+    'Illuminate\\Redis\\Connections\\PhpRedisConnection' => $baseDir . '/overrides/laravel/framework/src/Illuminate/Redis/Connections/PhpRedisConnection.php',
     'Illuminate\\Redis\\Connections\\PredisClusterConnection' => $vendorDir . '/laravel/framework/src/Illuminate/Redis/Connections/PredisClusterConnection.php',
     'Illuminate\\Redis\\Connections\\PredisConnection' => $vendorDir . '/laravel/framework/src/Illuminate/Redis/Connections/PredisConnection.php',
     'Illuminate\\Redis\\Connectors\\PhpRedisConnector' => $vendorDir . '/laravel/framework/src/Illuminate/Redis/Connectors/PhpRedisConnector.php',
