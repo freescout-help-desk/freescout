@@ -135,6 +135,15 @@ class SendNotificationToUsers implements ShouldQueue
             $message_id = \App\Misc\Mail::MESSAGE_ID_PREFIX_NOTIFICATION.'-'.$last_thread->id.'-'.$user->id.'-'.\MailHelper::getNotificationMessageIdHash($last_thread->id, $user->id).'@'.$mailbox->getEmailDomain();
             $headers['Message-ID'] = $message_id;
 
+            // Respect "From Name" = "Custom Name" mailbox setting.
+            $mailbox_from_name = $mailbox->name;
+            if ($mailbox->from_name == \App\Mailbox::FROM_NAME_CUSTOM && $mailbox->from_name_custom) {
+                $custom_from_name = $mailbox->getMailFrom(null, $this->conversation, $last_thread)['name'] ?? '';
+                if (trim($custom_from_name) !== '') {
+                    $mailbox_from_name = $custom_from_name;
+                }
+            }
+
             // If this is notification on message from customer, set customer as sender name
             $from_name = '';
             if ($last_thread->type == Thread::TYPE_CUSTOMER) {
@@ -143,11 +152,11 @@ class SendNotificationToUsers implements ShouldQueue
                     $from_name = $last_thread->customer->getFullName(true, true);
                 }
                 if ($from_name) {
-                    $from_name = $from_name.' '.__('via').' '.$mailbox->name;
+                    $from_name = $from_name.' '.__('via').' '.$mailbox_from_name;
                 }
             }
             if (!$from_name) {
-                $from_name = $mailbox->name;
+                $from_name = $mailbox_from_name;
             }
             $from = ['address' => $mailbox->email, 'name' => $from_name];
 
