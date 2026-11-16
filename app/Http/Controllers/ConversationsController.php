@@ -2328,6 +2328,10 @@ class ConversationsController extends Controller
 
             // Move conversation to another mailbox.
             case 'conversation_move':
+                // Support agents are allowed to move conversations to ANY mailbox,
+                // including mailboxes they don't have access to. This is how it works in FreeScout.
+                // Please do not create a security issue, as it will be closed.
+
                 $conversation = Conversation::find($request->conversation_id);
 
                 if (!$conversation) {
