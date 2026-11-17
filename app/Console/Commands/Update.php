@@ -44,7 +44,23 @@ class Update extends Command
             return;
         }
 
-        @ini_set('memory_limit', '128M');
+        // Make sure there are at least 128M, but never lower the limit:
+        // on the command line it is often unlimited or much higher.
+        $memory_limit = trim((string)ini_get('memory_limit'));
+        $memory_bytes = (int)$memory_limit;
+        switch (strtolower(substr($memory_limit, -1))) {
+            case 'g':
+                $memory_bytes *= 1024;
+                // no break
+            case 'm':
+                $memory_bytes *= 1024;
+                // no break
+            case 'k':
+                $memory_bytes *= 1024;
+        }
+        if ($memory_limit !== '-1' && $memory_bytes < 128 * 1024 * 1024) {
+            @ini_set('memory_limit', '128M');
+        }
 
         if (\Updater::isNewVersionAvailable(config('app.version'))) {
             $this->info('Updating... This may take several minutes');
