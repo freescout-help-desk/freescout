@@ -1546,8 +1546,12 @@ class Conversation extends Model
                         $assignee_condition_applied = true;
                     }
                 } else {
-                    $query_conversations->where('user_id', '=', $user_id)
-                        ->orWhere('created_by_user_id', '=', $user_id);
+                    // Group the OR condition, otherwise it breaks folder scoping:
+                    // (folder AND user_id) OR created_by_user_id.
+                    $query_conversations->where(function ($q) use ($user_id) {
+                        $q->where('user_id', '=', $user_id)
+                            ->orWhere('created_by_user_id', '=', $user_id);
+                    });
                 }
             }
         }
