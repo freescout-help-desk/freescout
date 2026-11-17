@@ -444,6 +444,8 @@ class MailboxesController extends Controller
             $params = $request->all();
         }
 
+        \Eventy::action('mailbox.outgoing_settings_before_save', $mailbox, $request);
+
         // Leave only allowed fields.
         $params = \Helper::filterArrayByKeys($params, [
             'out_method',
@@ -747,8 +749,12 @@ class MailboxesController extends Controller
                     $response['msg'] = __('Please specify recipient of the test email');
                 }
 
+                $response = \Eventy::filter('mailbox.send_test', $response, $mailbox, $request->to);
+
+                $tested = (isset($response['tested']) && $response['tested'] === true);
+
                 // Check if outgoing port is open.
-                if (!$response['msg'] && $mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
+                if (!$response['msg'] && !$tested && $mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
                     $test_result = false;
                     try {
                         $test_result = \Helper::checkPort($mailbox->out_server, $mailbox->out_port);
@@ -763,7 +769,7 @@ class MailboxesController extends Controller
                     }
                 }
 
-                if (!$response['msg']) {
+                if (!$response['msg'] && !$tested) {
                     $test_result = [
                         'status' => 'error',
                     ];
@@ -782,7 +788,7 @@ class MailboxesController extends Controller
                     $response['log'] = $test_result['log'] ?? '';
                 }
 
-                if (!$response['msg']) {
+                if (!$response['msg'] && !$tested) {
                     $response['status'] = 'success';
                 }
 
