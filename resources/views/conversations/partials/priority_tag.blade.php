@@ -1,0 +1,1 @@
+@if ($conversation->getPriority() != \App\Conversation::getPriorityDefault())<span class="fs-tag pull-left" @if ($conversation->getPriorityColor()) style="background-color: #{{ $conversation->getPriorityColor() }};" @endif><span class="fs-tag-name">{{ $conversation->getPriorityName() }}</span></span>@endif

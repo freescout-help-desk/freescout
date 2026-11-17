@@ -463,6 +463,12 @@ body.user-is-guest {
     .sidebar-buttons .dropdown-menu {
         right: 0;
     }
+    .sidebar-buttons a.btn {
+        line-height: 28px;
+    }
+    .sidebar-buttons.has-settings .btn-group:first-child a.btn {
+        padding-left: 9px;
+    }
 }
 
 /**
@@ -2248,6 +2254,35 @@ button.conv-checkbox-clear {
 .conv-info .btn-group button .caret {
     margin-left: 3px;
 }
+/* Priority switcher: an icon button, painted with the color of the priority. */
+.conv-info .btn-group button.conv-priority-btn {
+    padding: 0 7px;
+}
+/* The icon buttons of Assignee and Status are displayed on mobile devices only. */
+.conv-info .btn-group:not(.conv-priority) button.conv-info-icon {
+    display: none;
+}
+.conv-info .btn-group:not(.conv-priority) button.conv-info-val {
+    border-radius: 6px !important;
+}
+/* Buttons painted with the color of the priority level (colors are set inline). */
+.conv-priority-colored:hover,
+.conv-priority-colored:focus,
+.conv-priority-colored:active,
+.open > .conv-priority-colored {
+    filter: brightness(0.92);
+}
+.conv-priority-list li.active > a {
+    font-weight: bold;
+}
+.conv-priority-dot {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 50%;
+    display: inline-block;
+    height: 10px;
+    margin-right: 7px;
+    width: 10px;
+}
 .conv-actions {
     display: inline-block;
 }
@@ -2957,6 +2992,17 @@ ul.sidebar-block-list {
     }
     .conv-info .btn-group button.conv-info-val span:first-child {
         display: none!important;
+    }
+    /* Only the icon buttons of Assignee and Status are left: there is no room for the priority otherwise. */
+    .conv-info .btn-group:not(.conv-priority) button.dropdown-toggle {
+        display: none;
+    }
+    .conv-info .btn-group:not(.conv-priority) button.conv-info-icon {
+        border-radius: 6px !important;
+        display: inline-block;
+    }
+    .conv-info .conv-priority .caret {
+        display: none;
     }
     .conv-info .dropdown-menu {
         right: 0!important;

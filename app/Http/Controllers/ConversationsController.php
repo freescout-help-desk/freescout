@@ -705,6 +705,30 @@ class ConversationsController extends Controller
                 }
                 break;
 
+            // Change conversation priority
+            case 'conversation_change_priority':
+                $conversation = Conversation::find($request->conversation_id);
+
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                } elseif (!$user->can('update', $conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                } elseif (!array_key_exists((int)$request->priority, Conversation::getPriorityLevels())) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    $conversation->changePriority((int)$request->priority, $user);
+
+                    $response['status'] = 'success';
+                    $response['priority'] = $conversation->getPriority();
+                    // Tooltip of the switcher.
+                    $response['title'] = __('Priority').': '.$conversation->getPriorityName();
+                    // Inline style of the buttons (empty if the level has no color).
+                    $response['style'] = Conversation::getPriorityButtonStyle($conversation->getPriorityColor());
+                }
+                break;
+
             // Send reply, new conversation, add note or forward
             case 'send_reply':
 

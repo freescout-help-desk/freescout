@@ -1309,6 +1309,43 @@ function initConversation()
 			// e.preventDefault();
 		});
 
+		// Change conversation priority
+		jQuery(".conv-priority-list li > a").click(function(e) {
+			e.preventDefault();
+
+			var link = $(this);
+
+			if (link.parent().hasClass('active')) {
+				return;
+			}
+
+			fsAjax({
+				action: 'conversation_change_priority',
+				priority: link.attr('data-priority'),
+				conversation_id: getGlobalAttr('conversation_id')
+			},
+			laroute.route('conversations.ajax'),
+			function(response) {
+				if (isAjaxSuccess(response)) {
+					var switcher = $('.conv-priority:first');
+					var button = switcher.children('.conv-priority-btn');
+
+					switcher.attr('title', response.title).attr('data-original-title', response.title);
+					button.attr('aria-label', response.title);
+					if (response.style) {
+						button.attr('style', response.style).addClass('conv-priority-colored');
+					} else {
+						button.removeAttr('style').removeClass('conv-priority-colored');
+					}
+					switcher.find('.conv-priority-list li').removeClass('active');
+					switcher.find('.conv-priority-list li > a[data-priority="' + response.priority + '"]').parent().addClass('active');
+				} else {
+					showAjaxError(response);
+				}
+				loaderHide();
+			});
+		});
+
 		// Restore conversation
 		jQuery(".conv-status li > a.conv-restore-trigger").click(function(e) {
 			if (!$(this).hasClass('active')) {

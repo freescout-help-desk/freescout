@@ -936,6 +936,45 @@ class Conversation extends Model
         return true;
     }
 
+    /**
+     * Inline style of a priority button: the color of the level as the background,
+     * a darker border and white text. Empty string if the level has no color.
+     *
+     * @param string|null $color Hex color without "#".
+     */
+    public static function getPriorityButtonStyle($color)
+    {
+        if (!preg_match('/^[0-9a-fA-F]{6}$/', (string)$color)) {
+            return '';
+        }
+
+        $border = sprintf(
+            '%02x%02x%02x',
+            (int)round(hexdec(substr($color, 0, 2)) * 0.9),
+            (int)round(hexdec(substr($color, 2, 2)) * 0.9),
+            (int)round(hexdec(substr($color, 4, 2)) * 0.9)
+        );
+
+        return 'background-color: #'.strtolower($color).'; border-color: #'.$border.'; color: #fff;';
+    }
+
+    /**
+     * Color of the date link in the conversations list: the color of the priority level.
+     * Empty if the priority is the default one or the level has no color.
+     *
+     * @return string CSS color (#rrggbb) or an empty string.
+     */
+    public function getPriorityListColor()
+    {
+        if ($this->getPriority() == self::getPriorityDefault()) {
+            return '';
+        }
+
+        $color = $this->getPriorityColor();
+
+        return $color ? '#'.$color : '';
+    }
+
     public static function statusCode($status_id)
     {
         return self::$statuses[$status_id] ?? '';
