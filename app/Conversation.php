@@ -2384,6 +2384,17 @@ class Conversation extends Model
         $thread->edited_at = null;
         $thread->body = $body;
         $thread->setTo($this->customer_email);
+
+        if ($thread->type != Thread::TYPE_NOTE) {
+            // Like a reply from the editor, copy the conversation's CC and BCC
+            // unless the caller passed its own.
+            if (!array_key_exists('cc', $data)) {
+                $thread->setCc($this->getCcArray());
+            }
+            if (!array_key_exists('bcc', $data)) {
+                $thread->setBcc($this->getBccArray());
+            }
+        }
         $thread->save();
 
         // Update folders counters
