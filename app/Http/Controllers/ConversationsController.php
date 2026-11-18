@@ -3560,6 +3560,28 @@ class ConversationsController extends Controller
             }
         }
 
+        // Cancel the delayed conversation.user_replied / conversation.created_by_user
+        // action of this thread (see Helper::backgroundAction()), otherwise listeners
+        // of the action will be triggered for the reply which has not been sent.
+        $trigger_jobs_to_cancel = \App\Job::where('queue', 'default')
+            ->whereNull('reserved_at')
+            ->where('payload', 'like', '{"displayName":"App%Jobs%TriggerAction"%')
+            ->where(function ($query) {
+                $query->where('payload', 'like', '%conversation.user_replied%')
+                    ->orWhere('payload', 'like', '%conversation.created_by_user%');
+            })
+            ->get();
+
+        foreach ($trigger_jobs_to_cancel as $job) {
+            if (!in_array(\App\Job::getTriggerActionName($job->getPayloadDecoded()), ['conversation.user_replied', 'conversation.created_by_user'])) {
+                continue;
+            }
+            $job_thread = $job->getTriggerActionThread();
+            if ($job_thread && $job_thread->id == $thread->id) {
+                $job->delete();
+            }
+        }
+
         // Get penultimate reply
         $last_thread = $conversation->threads()
             ->where('id', '<>', $thread->id)

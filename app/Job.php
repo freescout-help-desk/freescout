@@ -42,6 +42,24 @@ class Job extends Model
         return null;
     }
 
+    /**
+     * Get the thread (the second parameter) of a TriggerAction job.
+     */
+    public function getTriggerActionThread()
+    {
+        $command = $this->getCommand([
+            'App\Jobs\TriggerAction',
+            'Illuminate\Contracts\Database\ModelIdentifier',
+            'App\Conversation',
+            'App\Thread',
+        ]);
+        if ($command && !empty($command->params[1]) && $command->params[1] instanceof Thread) {
+            return $command->params[1];
+        }
+
+        return null;
+    }
+
     public static function getPayloadCommand($payload, $allowed_classes = [])
     {
     	if (empty($payload['data']) || empty($payload['data']['command'])) {
