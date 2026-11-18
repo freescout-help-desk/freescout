@@ -1525,16 +1525,22 @@ class ConversationsController extends Controller
                 }
 
                 // To prevent creating draft after reply has been created.
+                // https://github.com/freescout-help-desk/freescout/issues/234
                 if (!$response['msg'] && $conversation) {
                     // Check if the last thread has same content as the new one.
                     $last_thread = $conversation->getLastThread([Thread::TYPE_MESSAGE, Thread::TYPE_NOTE]);
 
                     if ($last_thread
+                        && !$last_thread->isDraft()
                         && $last_thread->created_by_user_id == $user->id
                         && $last_thread->body == $request->body
                     ) {
                         //\Log::error("You've already sent this message just recently.");
-                        $response['msg'] = __("You've already sent this message just recently.");
+                        //$response['msg'] = __("You've already sent this message just recently.");
+
+                        // Reflash session data - otherwise on reply flash alert is not displayed
+                        \Session::reflash();
+                        break;
                     }
                 }
 
