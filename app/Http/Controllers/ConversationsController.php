@@ -1539,6 +1539,7 @@ class ConversationsController extends Controller
                         //$response['msg'] = __("You've already sent this message just recently.");
 
                         // Reflash session data - otherwise on reply flash alert is not displayed
+                        $response['status'] = 'success';
                         \Session::reflash();
                         break;
                     }
