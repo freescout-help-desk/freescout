@@ -102,7 +102,7 @@ class Conversation extends Model
      * https://glyphicons.bootstrapcheatsheets.com/.
      */
     public static $status_icons = [
-        self::STATUS_ACTIVE  => 'flag',
+        self::STATUS_ACTIVE  => 'fire',
         self::STATUS_PENDING => 'ok',
         self::STATUS_CLOSED  => 'lock',
         self::STATUS_SPAM    => 'ban-circle',
@@ -179,6 +179,7 @@ class Conversation extends Model
         'mailbox',
         'status',
         'state',
+        'priority',
         'subject',
         'attachments',
         'type',
@@ -934,6 +935,35 @@ class Conversation extends Model
         }
 
         return true;
+    }
+
+    /**
+     * Add the priority condition to a query of conversations.
+     * Conversations without priority (and with a level which does not exist anymore) have the default level.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param array $priorities Keys of the priority levels.
+     */
+    public static function addPriorityCondition($query, $priorities)
+    {
+        $levels = array_keys(self::getPriorityLevels());
+        $priorities = array_values(array_intersect(array_map('intval', $priorities), $levels));
+
+        // Unknown levels are ignored.
+        if (!$priorities) {
+            return;
+        }
+
+        $include_default = in_array(self::getPriorityDefault(), $priorities);
+
+        $query->where(function ($query) use ($priorities, $levels, $include_default) {
+            $query->whereIn('conversations.priority', $priorities);
+
+            if ($include_default) {
+                $query->orWhereNull('conversations.priority')
+                    ->orWhereNotIn('conversations.priority', $levels);
+            }
+        });
     }
 
     /**
@@ -2863,6 +2893,9 @@ class Conversation extends Model
             } else {
                 $query_conversations->whereIn('conversations.state', $filters['state']);
             }
+        }
+        if (!empty($filters['priority']) && is_array($filters['priority'])) {
+            self::addPriorityCondition($query_conversations, $filters['priority']);
         }
         if (!empty($filters['subject'])) {
             $query_conversations->where('conversations.subject', $like_op, '%'.mb_strtolower($filters['subject']).'%');

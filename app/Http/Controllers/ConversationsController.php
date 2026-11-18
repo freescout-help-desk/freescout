@@ -3277,6 +3277,7 @@ class ConversationsController extends Controller
                     break;
                 case 'status':
                 case 'state':
+                case 'priority':
                     if (!is_array($value)) {
                         unset($filters[$filter]);
                     }
