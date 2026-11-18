@@ -2258,11 +2258,11 @@ button.conv-checkbox-clear {
 .conv-info .btn-group button.conv-priority-btn {
     padding: 0 7px;
 }
-/* The icon buttons of Assignee and Status are displayed on mobile devices only. */
-.conv-info .btn-group:not(.conv-priority) button.conv-info-icon {
+/* The icon button of Status is displayed on mobile devices only (Assignee has it everywhere). */
+#conv-status button.conv-info-icon {
     display: none;
 }
-.conv-info .btn-group:not(.conv-priority) button.conv-info-val {
+#conv-status button.conv-info-val {
     border-radius: 6px !important;
 }
 /* Buttons painted with the color of the priority level (colors are set inline). */
@@ -2994,14 +2994,16 @@ ul.sidebar-block-list {
         display: none!important;
     }
     /* Only the icon buttons of Assignee and Status are left: there is no room for the priority otherwise. */
-    .conv-info .btn-group:not(.conv-priority) button.dropdown-toggle {
+    #conv-assignee button.dropdown-toggle,
+    #conv-status button.dropdown-toggle {
         display: none;
     }
-    .conv-info .btn-group:not(.conv-priority) button.conv-info-icon {
+    #conv-assignee button.conv-info-icon,
+    #conv-status button.conv-info-icon {
         border-radius: 6px !important;
         display: inline-block;
     }
-    .conv-info .conv-priority .caret {
+    #conv-priority .caret {
         display: none;
     }
     .conv-info .dropdown-menu {

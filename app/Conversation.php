@@ -102,7 +102,7 @@ class Conversation extends Model
      * https://glyphicons.bootstrapcheatsheets.com/.
      */
     public static $status_icons = [
-        self::STATUS_ACTIVE  => 'fire',
+        self::STATUS_ACTIVE  => 'flash',
         self::STATUS_PENDING => 'ok',
         self::STATUS_CLOSED  => 'lock',
         self::STATUS_SPAM    => 'ban-circle',

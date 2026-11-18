@@ -1327,7 +1327,7 @@ function initConversation()
 			laroute.route('conversations.ajax'),
 			function(response) {
 				if (isAjaxSuccess(response)) {
-					var switcher = $('.conv-priority:first');
+					var switcher = $('#conv-priority');
 					var button = switcher.children('.conv-priority-btn');
 
 					switcher.attr('title', response.title).attr('data-original-title', response.title);
