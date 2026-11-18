@@ -2640,6 +2640,9 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 
 			fsAjax(data, laroute.route('conversations.ajax'), function(response) {
 					if (typeof(response.status) != "undefined" && response.status == 'success') {
+						// Nothing left to autosave.
+						// https://github.com/freescout-help-desk/freescout/issues/5824
+						fs_reply_changed = false;
 						// Forget note
 						if (is_note) {
 							fs_autosave_note = false;
@@ -2650,6 +2653,10 @@ function initReplyForm(load_attachments, init_customer_selector, is_new_conv)
 						} else {
 							window.location.href = '';
 						}
+						loaderHide();
+						// Keep fs_processing_send_reply = true while the page is changing
+						// so that no draft is autosaved after the reply has been sent.
+						return;
 					} else {
 						showAjaxError(response);
 						button.button('reset');
