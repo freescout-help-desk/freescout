@@ -1168,7 +1168,9 @@ class Helper
             if (preg_match("#^[idsa]:#", $decrypted_value) || $force_unserialize) {
                 $decrypted_value = unserialize($decrypted_value, ['allowed_classes' => false]);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            // Throwable is needed as on PHP 8 a non-string value (for example, an array
+            // from a request parameter) causes TypeError, which is not an Exception.
             //self::logException($e);
             if ($return_value_on_error) {
                 return $value;
