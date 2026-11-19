@@ -196,6 +196,7 @@ class Helper
         ],
         // No menu item selected
         'customers' => [],
+        'more' => [],
     ];
 
     /**
