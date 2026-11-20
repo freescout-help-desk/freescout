@@ -3682,6 +3682,12 @@ class ConversationsController extends Controller
             // Try to get customer by email.
             $customer = Customer::getByEmail($request->to_email);
             if ($customer) {
+                if (!$user->can('view', $customer)) {
+                    return [
+                        'status' => 'error',
+                        'msg' => __('Inaccessible customer'),
+                    ];
+                }
                 $customer_email = $request->to_email;
             }
         }
@@ -3690,6 +3696,12 @@ class ConversationsController extends Controller
         if (!$customer && $request_phone) {
             $customer = Customer::findByPhone($request_phone);
             if ($customer) {
+                if (!$user->can('view', $customer)) {
+                    return [
+                        'status' => 'error',
+                        'msg' => __('Inaccessible customer'),
+                    ];
+                }
                 $customer_email = $customer->getMainEmail();
             }
         }
