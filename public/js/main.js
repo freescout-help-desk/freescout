@@ -510,7 +510,7 @@ function initDashboardMailboxMenu()
 			return;
 		}
 
-		// Store original position info.
+		// Store original position for subsequent reset
 		var originalPosition = $menu.css('position');
 
 		$toggle.on('shown.bs.dropdown', function () {
@@ -521,51 +521,73 @@ function initDashboardMailboxMenu()
 			var viewport_bottom = Math.min(document.documentElement.clientHeight, appRect.bottom);
 			var viewport_top = Math.max(0, appRect.top);
 
-			// Calculate space above and below.
+			// Calculate available space above and below the toggle
 			var spaceAbove = toggleRect.top - viewport_top;
 			var spaceBelow = viewport_bottom - toggleRect.bottom;
 
-			// Decide direction: prefer up if spaceAbove >= menuHeight, else down.
+			// Decide direction: prefer up if there is enough space, otherwise down
 			if (spaceAbove >= menuHeight) {
-				// Opens up: position below the toggle.
+				// Opens upwards (enough space, no scrollbar needed)
 				$menu.css({
 					position: 'fixed',
 					left: toggleRect.left + 'px',
 					top: (toggleRect.top) + 'px',
 					bottom: 'auto',
 					transform: 'translateY(-100%)',
-					margin: '0'
+					margin: '0',
+					'max-height': '',
+					'overflow-y': ''
 				});
 			} else if (spaceBelow >= menuHeight) {
-				// Opens down: position below the toggle.
+				// Opens downwards (enough space, no scrollbar needed)
 				$menu.css({
 					position: 'fixed',
 					left: toggleRect.left + 'px',
 					top: (toggleRect.bottom) + 'px',
 					bottom: 'auto',
 					transform: 'none',
-					margin: '0'
+					margin: '0',
+					'max-height': '',
+					'overflow-y': ''
 				});
 			} else {
-				// Neither fits well: open down (scrollable page).
+				// Not enough space either above or below: 
+				// open in the direction with more space and add a scrollbar
+				var maxH, topPos, transformVal;
+				if (spaceAbove > spaceBelow) {
+					// Open upwards with scrollbar
+					maxH = spaceAbove - 10; // 10px safety margin
+					topPos = toggleRect.top;
+					transformVal = 'translateY(-100%)';
+				} else {
+					// Open downwards with scrollbar
+					maxH = spaceBelow - 10; // 10px safety margin
+					topPos = toggleRect.bottom;
+					transformVal = 'none';
+				}
+				
 				$menu.css({
 					position: 'fixed',
 					left: toggleRect.left + 'px',
-					top: (toggleRect.bottom) + 'px',
+					top: topPos + 'px',
 					bottom: 'auto',
-					transform: 'none',
-					margin: '0'
+					transform: transformVal,
+					margin: '0',
+					'max-height': maxH + 'px',
+					'overflow-y': 'auto'
 				});
 			}
 		}).on('hidden.bs.dropdown', function () {
-			// Reset position so Bootstrap dropup works again next time.
+			// Reset position and scroll properties so Bootstrap dropup works again next time
 			$menu.css({
 				position: originalPosition,
 				left: '',
 				top: '',
 				bottom: '',
 				transform: '',
-				margin: ''
+				margin: '',
+				'max-height': '',
+				'overflow-y': ''
 			});
 		});
 	});
