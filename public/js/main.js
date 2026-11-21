@@ -413,6 +413,7 @@ $(document).ready(function(){
 	webNotificationsInit();
 	initAccordionHeading();
 	initMuteMailbox();
+	initDashboardMailboxMenu();
 
 	// Search button
 	$('#search-dt').click(function() {
@@ -499,6 +500,76 @@ function initTimezoneSelect()
 	});
 }
 
+function initDashboardMailboxMenu()
+{
+	$('.dash-card .dropdown').each(function () {
+		var $toggle = $(this);
+		var $menu = $toggle.children('.dropdown-menu:first');
+
+		if (!$menu.length) {
+			return;
+		}
+
+		// Store original position info.
+		var originalPosition = $menu.css('position');
+
+		$toggle.on('shown.bs.dropdown', function () {
+			var toggleRect = $toggle[0].getBoundingClientRect();
+			var menuHeight = $menu.outerHeight();
+			var app = document.getElementById('app');
+			var appRect = app.getBoundingClientRect();
+			var viewport_bottom = Math.min(document.documentElement.clientHeight, appRect.bottom);
+			var viewport_top = Math.max(0, appRect.top);
+
+			// Calculate space above and below.
+			var spaceAbove = toggleRect.top - viewport_top;
+			var spaceBelow = viewport_bottom - toggleRect.bottom;
+
+			// Decide direction: prefer up if spaceAbove >= menuHeight, else down.
+			if (spaceAbove >= menuHeight) {
+				// Opens up: position below the toggle.
+				$menu.css({
+					position: 'fixed',
+					left: toggleRect.left + 'px',
+					top: (toggleRect.top) + 'px',
+					bottom: 'auto',
+					transform: 'translateY(-100%)',
+					margin: '0'
+				});
+			} else if (spaceBelow >= menuHeight) {
+				// Opens down: position below the toggle.
+				$menu.css({
+					position: 'fixed',
+					left: toggleRect.left + 'px',
+					top: (toggleRect.bottom) + 'px',
+					bottom: 'auto',
+					transform: 'none',
+					margin: '0'
+				});
+			} else {
+				// Neither fits well: open down (scrollable page).
+				$menu.css({
+					position: 'fixed',
+					left: toggleRect.left + 'px',
+					top: (toggleRect.bottom) + 'px',
+					bottom: 'auto',
+					transform: 'none',
+					margin: '0'
+				});
+			}
+		}).on('hidden.bs.dropdown', function () {
+			// Reset position so Bootstrap dropup works again next time.
+			$menu.css({
+				position: originalPosition,
+				left: '',
+				top: '',
+				bottom: '',
+				transform: '',
+				margin: ''
+			});
+		});
+	});
+}
 function initMuteMailbox()
 {
 	$('.mailbox-mute-trigger, .mailbox-mute-trigger span').click(function(e) {
