@@ -6536,6 +6536,54 @@ function copyToClipboard(text) {
     $temp.remove();
 }
 
+// Dashboard: open the mailbox settings menu downwards by default and flip it
+// upwards only when it does not fit below (mailboxes in the last row).
+// #app has overflow: hidden, so a menu extending below the page is cut off
+// and can't be scrolled to. In the mailbox and conversation views the menu is
+// not affected, as it is not initialized there.
+function initDashboard()
+{
+	var selector = '.dash-card-footer .dropdown';
+
+	$(document).on('shown.bs.dropdown', selector, function() {
+		var dropdown = $(this);
+		var menu = dropdown.children('.dropdown-menu:first')[0];
+		var app = document.getElementById('app');
+
+		if (!menu || !app) {
+			return;
+		}
+
+		// Always start from the downward position, as the menu may have been flipped before.
+		dropdown.removeClass('dropup');
+
+		var page_bottom = app.getBoundingClientRect().bottom;
+		var down = menu.getBoundingClientRect();
+
+		// Fits below.
+		if (down.bottom <= page_bottom) {
+			return;
+		}
+
+		// Bootstrap triggers this event right after showing the menu,
+		// so the menu is flipped before it is painted.
+		dropdown.addClass('dropup');
+
+		// Keep the menu upwards unless it goes above the top of the page
+		// (the navbar is static, so the page top is not reachable by scrolling)
+		// and cutting off below is smaller than cutting off above.
+		var up = menu.getBoundingClientRect();
+		var cut_above = -(up.top - app.getBoundingClientRect().top);
+		var cut_below = down.bottom - page_bottom;
+
+		if (cut_above > 0 && cut_above > cut_below) {
+			dropdown.removeClass('dropup');
+		}
+	}).on('hidden.bs.dropdown', selector, function() {
+		$(this).removeClass('dropup');
+	});
+}
+
 function adjustCustomerSidebarHeight()
 {
 	var sidebar_h = $('#conv-layout-customer')[0].scrollHeight;
