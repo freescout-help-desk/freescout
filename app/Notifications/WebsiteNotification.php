@@ -145,11 +145,12 @@ class WebsiteNotification extends Notification implements ShouldQueue
                 continue;
             }
 
-            // Check access to the conversation
-            // and reset $last_thread_body if there is no access anymore.
+            // Check access to the conversation and skip the notification entirely
+            // if there is no access anymore (no conversation, thread, body,
+            // participant, url or action metadata must be exposed).
             // https://github.com/freescout-help-desk/freescout/security/advisories/GHSA-6545-8c3f-pp6w
-            if (!$auth_user->can('view', $conversation)) {
-                $last_thread_body = '…';
+            if (!$auth_user || !$auth_user->can('view', $conversation)) {
+                continue;
             }
 
             $data[] = [

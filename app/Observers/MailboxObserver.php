@@ -22,6 +22,32 @@ class MailboxObserver
     }
 
     /**
+     * Mailbox state (stored in meta) may have changed (archived/active):
+     * non-admin users can not access archived mailboxes, so website
+     * notifications cache of the mailbox users must not be used anymore.
+     * Note: in Laravel 5.5 dirty attributes are still available in "updated".
+     *
+     * @param \App\Mailbox $mailbox
+     */
+    public function updated(Mailbox $mailbox)
+    {
+        if ($mailbox->isDirty('meta')) {
+            // Meta contains other params as well, so compare the state only.
+            $original_meta = $mailbox->getOriginal('meta');
+            if (is_string($original_meta)) {
+                $original_meta = json_decode($original_meta, true);
+            }
+            $original_state = $original_meta[Mailbox::META_STATE] ?? Mailbox::STATE_ACTIVE;
+
+            if ($original_state != $mailbox->state) {
+                \App\User::clearWebsiteNotificationsCacheForUsers(
+                    $mailbox->users()->pluck('users.id')->all()
+                );
+            }
+        }
+    }
+
+    /**
      * Delete the following on mailbox delete:
      * - folders
      * - conversations

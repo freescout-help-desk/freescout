@@ -164,6 +164,8 @@
                         <hr/>
                     </div>
 
+                    @action('mailbox.connection.after_default_settings', $mailbox)
+
                     <div>
                         <div class="form-group">
                             <label for="send_test" class="col-sm-2 control-label">{{ __('Send Test To') }}</label>

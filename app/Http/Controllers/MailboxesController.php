@@ -342,7 +342,7 @@ class MailboxesController extends Controller
 
         // Settings for admins are being reset here.
         // So we restore them below.
-        $mailbox->users()->sync($users_with_settings);
+        $sync_result = $mailbox->users()->sync($users_with_settings);
 
         $mailbox->syncPersonalFolders($request->users);
 
@@ -388,6 +388,14 @@ class MailboxesController extends Controller
             $mailbox_with_settings->settings->hide = (isset($request->managers[$mailbox_user->id]['hide']) ? (int)$request->managers[$mailbox_user->id]['hide'] : false);
             $mailbox_with_settings->settings->save();
         }
+
+        // Access to conversations may have been revoked or limited:
+        // clear website notifications cache of removed users and of the current ones
+        // (access level, i.e. "only assigned", may have been changed).
+        \App\User::clearWebsiteNotificationsCacheForUsers(array_merge(
+            $sync_result['detached'] ?? [],
+            $mailbox->users()->pluck('users.id')->all()
+        ));
 
         \Session::flash('flash_success_floating', __('Mailbox permissions saved!'));
 
@@ -435,6 +443,8 @@ class MailboxesController extends Controller
         } else {
             $params = $request->all();
         }
+
+        \Eventy::action('mailbox.outgoing_settings_before_save', $mailbox, $request);
 
         // Leave only allowed fields.
         $params = \Helper::filterArrayByKeys($params, [
@@ -508,7 +518,7 @@ class MailboxesController extends Controller
             'in_server'   => 'required|string|max:255|safehost',
             'in_port'     => 'required|integer',
             'in_username' => 'required|string|max:255',
-            'in_password' => 'required|string|max:255',
+            'in_password' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -739,8 +749,12 @@ class MailboxesController extends Controller
                     $response['msg'] = __('Please specify recipient of the test email');
                 }
 
+                $response = \Eventy::filter('mailbox.send_test', $response, $mailbox, $request->to);
+
+                $tested = (isset($response['tested']) && $response['tested'] === true);
+
                 // Check if outgoing port is open.
-                if (!$response['msg'] && $mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
+                if (!$response['msg'] && !$tested && $mailbox->out_method == Mailbox::OUT_METHOD_SMTP) {
                     $test_result = false;
                     try {
                         $test_result = \Helper::checkPort($mailbox->out_server, $mailbox->out_port);
@@ -755,7 +769,7 @@ class MailboxesController extends Controller
                     }
                 }
 
-                if (!$response['msg']) {
+                if (!$response['msg'] && !$tested) {
                     $test_result = [
                         'status' => 'error',
                     ];
@@ -774,7 +788,7 @@ class MailboxesController extends Controller
                     $response['log'] = $test_result['log'] ?? '';
                 }
 
-                if (!$response['msg']) {
+                if (!$response['msg'] && !$tested) {
                     $response['status'] = 'success';
                 }
 

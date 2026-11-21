@@ -1095,7 +1095,10 @@ class Thread extends Model
         $thread->setBcc($bcc);
         $thread->imported = (int)($data['imported'] ?? false);
         if ($thread->imported && !empty($data['created_at'])) {
-            $thread->created_at = self::utcStringToServerDate($data['created_at']);
+            $created_at = \Helper::carbonDateParse($data['created_at'], 'UTC');
+            if ($created_at) {
+                $thread->created_at = $created_at->setTimezone(config('app.timezone'));
+            }
         }
         if ($new) {
             $thread->first = true;

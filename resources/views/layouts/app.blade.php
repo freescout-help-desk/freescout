@@ -73,6 +73,8 @@
                             @php
                                 $mailboxes = Auth::user()->mailboxesCanView(true);
                                 $mailboxes = \Eventy::filter('menu.mailboxes', $mailboxes);
+
+                                $more_html = \Eventy::filter('menu.more', '');
                             @endphp
                             @if (count($mailboxes) == 1)
                                 <li class="{{ \App\Misc\Helper::menuSelectedHtml('mailbox') }}"><a href="{{ \Eventy::filter('mailbox.url', route('mailboxes.view', ['id'=>$mailboxes[0]->id]), $mailboxes[0]) }}">@action('menu.mailbox_single.before_name', $mailboxes[0]){{ __('Mailbox') }}@action('menu.mailbox_single.after_name', $mailboxes[0])</a></li>
@@ -120,6 +122,18 @@
                                 </li>
                             @endif
                             @action('menu.append')
+                            @if ($more_html)
+                                <li class="dropdown {{ \App\Misc\Helper::menuSelectedHtml('more') }}">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" v-pre>
+                                        {{ __('More') }} <span class="caret"></span>
+                                    </a>
+
+                                    <ul class="dropdown-menu">
+                                        {!! __safe_raw_html($more_html) !!}
+                                    </ul>
+                                </li>
+                            @endif
+                            @action('menu.after_more')
                         </ul>
 
                         <!-- Right Side Of Navbar -->

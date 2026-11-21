@@ -479,6 +479,12 @@ class Mailbox extends Model
      */
     public function isOutActive()
     {
+        $out_active = \Eventy::filter('mailbox.out_active', null, $this);
+
+        if (is_bool($out_active)) {
+            return $out_active;
+        }
+
         if ($this->out_method != self::OUT_METHOD_PHP_MAIL && $this->out_method != self::OUT_METHOD_SENDMAIL
             && (!$this->out_server /*|| !$this->out_username || !$this->out_password*/)
         ) {
@@ -1144,8 +1150,10 @@ class Mailbox extends Model
         // $this->conversations()->delete();
         Conversation::deleteConversationsForever($conversation_ids);
 
+        $user_ids = $this->users()->pluck('users.id')->all();
         $this->users()->sync([]);
         $this->folders()->delete();
+        User::clearWebsiteNotificationsCacheForUsers($user_ids);
         // Maybe remove notifications on events in this mailbox?
 
         $this->delete();

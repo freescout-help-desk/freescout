@@ -96,6 +96,14 @@
                         @endforeach
                     </select>
 		        </div>
+				<div class="col-sm-6 form-group @if (isset($filters['priority'])) active @endif" data-filter="priority">
+		            <label>{{ __('Priority') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
+		            <select name="f[priority][]" class="form-control filter-multiple" multiple @if (empty($filters['priority'])) disabled @endif>
+                        @foreach (App\Conversation::getPrioritiesWithNames() as $priority_id => $priority_name)
+                            <option value="{{ $priority_id }}" @if (!empty($filters['priority']) && in_array($priority_id, $filters['priority']))selected="selected"@endif>{{ $priority_name }}</option>
+                        @endforeach
+                    </select>
+		        </div>
 				<div class="col-sm-6 form-group @if (isset($filters['subject'])) active @endif" data-filter="subject">
 		            <label>{{ __('Subject') }} <b class="remove" data-toggle="tooltip" title="{{ __('Remove filter') }}">×</b></label>
 		            <input type="text" name="f[subject]" value="{{ $filters['subject'] ?? ''}}" class="form-control" @if (empty($filters['subject'])) disabled @endif>

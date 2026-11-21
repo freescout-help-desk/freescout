@@ -705,6 +705,30 @@ class ConversationsController extends Controller
                 }
                 break;
 
+            // Change conversation priority
+            case 'conversation_change_priority':
+                $conversation = Conversation::find($request->conversation_id);
+
+                if (!$conversation) {
+                    $response['msg'] = __('Conversation not found');
+                } elseif (!$user->can('update', $conversation)) {
+                    $response['msg'] = __('Not enough permissions');
+                } elseif (!array_key_exists((int)$request->priority, Conversation::getPriorityLevels())) {
+                    $response['msg'] = __('Not enough permissions');
+                }
+
+                if (!$response['msg']) {
+                    $conversation->changePriority((int)$request->priority, $user);
+
+                    $response['status'] = 'success';
+                    $response['priority'] = $conversation->getPriority();
+                    // Tooltip of the switcher.
+                    $response['title'] = __('Priority').': '.$conversation->getPriorityName();
+                    // Inline style of the buttons (empty if the level has no color).
+                    $response['style'] = Conversation::getPriorityButtonStyle($conversation->getPriorityColor());
+                }
+                break;
+
             // Send reply, new conversation, add note or forward
             case 'send_reply':
 
@@ -1501,16 +1525,23 @@ class ConversationsController extends Controller
                 }
 
                 // To prevent creating draft after reply has been created.
+                // https://github.com/freescout-help-desk/freescout/issues/234
                 if (!$response['msg'] && $conversation) {
                     // Check if the last thread has same content as the new one.
                     $last_thread = $conversation->getLastThread([Thread::TYPE_MESSAGE, Thread::TYPE_NOTE]);
 
                     if ($last_thread
+                        && !$last_thread->isDraft()
                         && $last_thread->created_by_user_id == $user->id
                         && $last_thread->body == $request->body
                     ) {
                         //\Log::error("You've already sent this message just recently.");
-                        $response['msg'] = __("You've already sent this message just recently.");
+                        //$response['msg'] = __("You've already sent this message just recently.");
+
+                        // Reflash session data - otherwise on reply flash alert is not displayed
+                        $response['status'] = 'success';
+                        \Session::reflash();
+                        break;
                     }
                 }
 
@@ -1726,13 +1757,19 @@ class ConversationsController extends Controller
                 $thread = Thread::find($request->thread_id);
 
                 if (!$thread) {
-                    // Discarding nont saved yet draft
+                    // Discarding non saved yet draft.
                     $response['status'] = 'success';
 
                     // Discarding a new conversation being created from thread
                     if (!empty($request->from_thread_id)) {
                         $original_thread = Thread::find($request->from_thread_id);
-                        if ($original_thread && $original_thread->conversation_id) {
+                        // Redirect only if the user can view the original conversation,
+                        // otherwise existence and ID of the conversation would be disclosed.
+                        if ($original_thread
+                            && $original_thread->conversation_id
+                            && $original_thread->conversation
+                            && $user->can('view', $original_thread->conversation)
+                        ) {
                             // Open original conversation
                             $response['redirect_url'] = route('conversations.view', ['id' => $original_thread->conversation_id]);
                         }
@@ -2322,6 +2359,10 @@ class ConversationsController extends Controller
 
             // Move conversation to another mailbox.
             case 'conversation_move':
+                // Support agents are allowed to move conversations to ANY mailbox,
+                // including mailboxes they don't have access to. This is how it works in FreeScout.
+                // Please do not create a security issue, as it will be closed.
+
                 $conversation = Conversation::find($request->conversation_id);
 
                 if (!$conversation) {
@@ -3243,6 +3284,7 @@ class ConversationsController extends Controller
                     break;
                 case 'status':
                 case 'state':
+                case 'priority':
                     if (!is_array($value)) {
                         unset($filters[$filter]);
                     }
@@ -3519,6 +3561,28 @@ class ConversationsController extends Controller
             }
         }
 
+        // Cancel the delayed conversation.user_replied / conversation.created_by_user
+        // action of this thread (see Helper::backgroundAction()), otherwise listeners
+        // of the action will be triggered for the reply which has not been sent.
+        $trigger_jobs_to_cancel = \App\Job::where('queue', 'default')
+            ->whereNull('reserved_at')
+            ->where('payload', 'like', '{"displayName":"App%Jobs%TriggerAction"%')
+            ->where(function ($query) {
+                $query->where('payload', 'like', '%conversation.user_replied%')
+                    ->orWhere('payload', 'like', '%conversation.created_by_user%');
+            })
+            ->get();
+
+        foreach ($trigger_jobs_to_cancel as $job) {
+            if (!in_array(\App\Job::getTriggerActionName($job->getPayloadDecoded()), ['conversation.user_replied', 'conversation.created_by_user'])) {
+                continue;
+            }
+            $job_thread = $job->getTriggerActionThread();
+            if ($job_thread && $job_thread->id == $thread->id) {
+                $job->delete();
+            }
+        }
+
         // Get penultimate reply
         $last_thread = $conversation->threads()
             ->where('id', '<>', $thread->id)
@@ -3618,6 +3682,12 @@ class ConversationsController extends Controller
             // Try to get customer by email.
             $customer = Customer::getByEmail($request->to_email);
             if ($customer) {
+                if (!$user->can('view', $customer)) {
+                    return [
+                        'status' => 'error',
+                        'msg' => __('Inaccessible customer'),
+                    ];
+                }
                 $customer_email = $request->to_email;
             }
         }
@@ -3626,6 +3696,12 @@ class ConversationsController extends Controller
         if (!$customer && $request_phone) {
             $customer = Customer::findByPhone($request_phone);
             if ($customer) {
+                if (!$user->can('view', $customer)) {
+                    return [
+                        'status' => 'error',
+                        'msg' => __('Inaccessible customer'),
+                    ];
+                }
                 $customer_email = $customer->getMainEmail();
             }
         }

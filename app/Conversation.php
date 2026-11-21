@@ -102,7 +102,7 @@ class Conversation extends Model
      * https://glyphicons.bootstrapcheatsheets.com/.
      */
     public static $status_icons = [
-        self::STATUS_ACTIVE  => 'flag',
+        self::STATUS_ACTIVE  => 'flash',
         self::STATUS_PENDING => 'ok',
         self::STATUS_CLOSED  => 'lock',
         self::STATUS_SPAM    => 'ban-circle',
@@ -179,6 +179,7 @@ class Conversation extends Model
         'mailbox',
         'status',
         'state',
+        'priority',
         'subject',
         'attachments',
         'type',
@@ -936,6 +937,74 @@ class Conversation extends Model
         return true;
     }
 
+    /**
+     * Add the priority condition to a query of conversations.
+     * Conversations without priority (and with a level which does not exist anymore) have the default level.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param array $priorities Keys of the priority levels.
+     */
+    public static function addPriorityCondition($query, $priorities)
+    {
+        $levels = array_keys(self::getPriorityLevels());
+        $priorities = array_values(array_intersect(array_map('intval', $priorities), $levels));
+
+        // Unknown levels are ignored.
+        if (!$priorities) {
+            return;
+        }
+
+        $include_default = in_array(self::getPriorityDefault(), $priorities);
+
+        $query->where(function ($query) use ($priorities, $levels, $include_default) {
+            $query->whereIn('conversations.priority', $priorities);
+
+            if ($include_default) {
+                $query->orWhereNull('conversations.priority')
+                    ->orWhereNotIn('conversations.priority', $levels);
+            }
+        });
+    }
+
+    /**
+     * Inline style of a priority button: the color of the level as the background,
+     * a darker border and white text. Empty string if the level has no color.
+     *
+     * @param string|null $color Hex color without "#".
+     */
+    public static function getPriorityButtonStyle($color)
+    {
+        if (!preg_match('/^[0-9a-fA-F]{6}$/', (string)$color)) {
+            return '';
+        }
+
+        $border = sprintf(
+            '%02x%02x%02x',
+            (int)round(hexdec(substr($color, 0, 2)) * 0.9),
+            (int)round(hexdec(substr($color, 2, 2)) * 0.9),
+            (int)round(hexdec(substr($color, 4, 2)) * 0.9)
+        );
+
+        return 'background-color: #'.strtolower($color).'; border-color: #'.$border.'; color: #fff;';
+    }
+
+    /**
+     * Color of the date link in the conversations list: the color of the priority level.
+     * Empty if the priority is the default one or the level has no color.
+     *
+     * @return string CSS color (#rrggbb) or an empty string.
+     */
+    public function getPriorityListColor()
+    {
+        if ($this->getPriority() == self::getPriorityDefault()) {
+            return '';
+        }
+
+        $color = $this->getPriorityColor();
+
+        return $color ? '#'.$color : '';
+    }
+
     public static function statusCode($status_id)
     {
         return self::$statuses[$status_id] ?? '';
@@ -1507,8 +1576,12 @@ class Conversation extends Model
                         $assignee_condition_applied = true;
                     }
                 } else {
-                    $query_conversations->where('user_id', '=', $user_id)
-                        ->orWhere('created_by_user_id', '=', $user_id);
+                    // Group the OR condition, otherwise it breaks folder scoping:
+                    // (folder AND user_id) OR created_by_user_id.
+                    $query_conversations->where(function ($q) use ($user_id) {
+                        $q->where('user_id', '=', $user_id)
+                            ->orWhere('created_by_user_id', '=', $user_id);
+                    });
                 }
             }
         }
@@ -2384,6 +2457,17 @@ class Conversation extends Model
         $thread->edited_at = null;
         $thread->body = $body;
         $thread->setTo($this->customer_email);
+
+        if ($thread->type != Thread::TYPE_NOTE) {
+            // Like a reply from the editor, copy the conversation's CC and BCC
+            // unless the caller passed its own.
+            if (!array_key_exists('cc', $data)) {
+                $thread->setCc($this->getCcArray());
+            }
+            if (!array_key_exists('bcc', $data)) {
+                $thread->setBcc($this->getBccArray());
+            }
+        }
         $thread->save();
 
         // Update folders counters
@@ -2809,6 +2893,9 @@ class Conversation extends Model
             } else {
                 $query_conversations->whereIn('conversations.state', $filters['state']);
             }
+        }
+        if (!empty($filters['priority']) && is_array($filters['priority'])) {
+            self::addPriorityCondition($query_conversations, $filters['priority']);
         }
         if (!empty($filters['subject'])) {
             $query_conversations->where('conversations.subject', $like_op, '%'.mb_strtolower($filters['subject']).'%');

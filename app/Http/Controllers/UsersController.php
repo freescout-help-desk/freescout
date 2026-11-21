@@ -361,6 +361,8 @@ class UsersController extends Controller
 
         $user->mailboxes()->sync($request->mailboxes ?: []);
         $user->syncPersonalFolders($request->mailboxes);
+        // Access to conversations may have been revoked.
+        $user->clearWebsiteNotificationsCache();
 
         // Save permissions.
         $user_permissions = $request->user_permissions ?? [];

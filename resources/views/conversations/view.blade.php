@@ -200,7 +200,8 @@
                                 </ul>
                             @endif
                         </div>
-                    </li>@action('conversation.convinfo.before_nav', $conversation, $mailbox)<li class="conv-next-prev">
+                    </li>
+                    <li>@include('conversations/partials/priority_switch', ['conversation' => $conversation])</li>@action('conversation.convinfo.before_nav', $conversation, $mailbox)<li class="conv-next-prev">
                         <a href="{{ $conversation->urlPrev(App\Conversation::getFolderParam()) }}" class="glyphicon glyphicon-menu-left" data-toggle="tooltip" title="{{ __("Newer") }}"></a>
                         <a href="{{ $conversation->urlNext(App\Conversation::getFolderParam()) }}" class="glyphicon glyphicon-menu-right" data-toggle="tooltip" title="{{ __("Older") }}"></a>
                     </li>

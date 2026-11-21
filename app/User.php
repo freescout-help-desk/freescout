@@ -105,6 +105,7 @@ class User extends Authenticatable
 
     const WEBSITE_NOTIFICATIONS_PAGE_SIZE = 25;
     const WEBSITE_NOTIFICATIONS_PAGE_PARAM = 'wp_page';
+    const WEBSITE_NOTIFICATIONS_CACHE_MINUTES = 60;
 
     /**
      * The attributes that are not mass assignable.
@@ -873,7 +874,11 @@ class User extends Authenticatable
             // Get from cache
             $user = $this;
 
-            return \Cache::rememberForever('user_web_notifications_'.$user->id, function () use ($user) {
+            // The cache contains rendered HTML which depends on the access of the user
+            // to the conversations. It is cleared explicitly whenever the access may change
+            // (see clearWebsiteNotificationsCacheForUsers() callers), the TTL is a safety net
+            // for access changes made by third-party code.
+            return \Cache::remember('user_web_notifications_'.$user->id, self::WEBSITE_NOTIFICATIONS_CACHE_MINUTES, function () use ($user) {
                 $notifications = $user->getWebsiteNotifications();
 
                 $info = [
@@ -902,6 +907,25 @@ class User extends Authenticatable
     public function clearWebsiteNotificationsCache()
     {
         \Cache::forget('user_web_notifications_'.$this->id);
+    }
+
+    /**
+     * Clear website notifications cache of several users.
+     * Must be called when access of the users to conversations may change
+     * (mailbox access revoked, role or permissions changed, etc).
+     *
+     * @param array|\Illuminate\Support\Collection $user_ids
+     */
+    public static function clearWebsiteNotificationsCacheForUsers($user_ids)
+    {
+        if ($user_ids instanceof \Illuminate\Support\Collection) {
+            $user_ids = $user_ids->all();
+        }
+        foreach (array_unique((array) $user_ids) as $user_id) {
+            if ($user_id) {
+                \Cache::forget('user_web_notifications_'.$user_id);
+            }
+        }
     }
 
     public function getPhotoUrl($default_if_empty = true)
@@ -1446,6 +1470,7 @@ class User extends Authenticatable
         // Disconnect user from mailboxes.
         $this->mailboxes()->sync([]);
         $this->folders()->delete();
+        $this->clearWebsiteNotificationsCache();
 
         $this->status = \App\User::STATUS_DELETED;
         // Update email.

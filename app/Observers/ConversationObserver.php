@@ -57,6 +57,22 @@ class ConversationObserver
 
     public function updated(Conversation $conversation)
     {
+        // Access of users to the conversation depends on its mailbox and assignee
+        // ("only assigned conversations" permission), so website notifications
+        // cache of the users who could lose access to the conversation must be cleared.
+        // Note: in Laravel 5.5 dirty attributes are still available in "updated".
+        if ($conversation->isDirty('mailbox_id')) {
+            // Conversation moved: users of the previous mailbox may lose access.
+            $original_mailbox = \App\Mailbox::find($conversation->getOriginal('mailbox_id'));
+            if ($original_mailbox) {
+                \App\User::clearWebsiteNotificationsCacheForUsers($original_mailbox->userIdsHavingAccess());
+            }
+        }
+        if ($conversation->isDirty('user_id') && $conversation->getOriginal('user_id')) {
+            // Previous assignee may lose access ("only assigned conversations").
+            \App\User::clearWebsiteNotificationsCacheForUsers([$conversation->getOriginal('user_id')]);
+        }
+
         \Eventy::action('conversation.updated', $conversation);
     }
 }
