@@ -101,7 +101,9 @@ class SystemController extends Controller
                 $running_commands = 0;
 
                 try {
-                    $ps_output = \Helper::shellExec("ps auxww | grep '{$command_identifier}'");
+                    // Avoid memory statistics, which are unavailable with systemd ProcSubset=pid.
+                    // Fall back for ps implementations without support for these options.
+                    $ps_output = \Helper::shellExec("(ps -eww -o user,pid,args 2>/dev/null || ps auxww) | grep '{$command_identifier}'");
 
                     if ($ps_output === false) {
                         $commands[] = [

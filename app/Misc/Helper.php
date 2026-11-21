@@ -1951,7 +1951,9 @@ class Helper
         $pids = [];
 
         try {
-            $processes = preg_split("/[\r\n]/", \Helper::shellExec("ps aux | grep '".$search."'"));
+            // Avoid memory statistics, which are unavailable with systemd ProcSubset=pid.
+            // Fall back for ps implementations without support for these options.
+            $processes = preg_split("/[\r\n]/", \Helper::shellExec("(ps -eww -o user,pid,args 2>/dev/null || ps aux) | grep '".$search."'"));
             foreach ($processes as $process) {
                 $process = trim($process);
                 preg_match("/^[\S]+\s+([\d]+)\s+/", $process, $m);
