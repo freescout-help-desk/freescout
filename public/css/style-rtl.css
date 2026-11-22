@@ -106,9 +106,15 @@ ul.sidebar-block-list {
     border-right: 1px solid #d3dae0;
     border-radius: 0 14px 14px 0 !important;
 }
+.sidebar-buttons .btn-group:last-child a.btn {
+    border-radius: 14px !important;
+}
 
 .sidebar-buttons>a.btn {
     border-radius: 14px 0 0 14px !important;
+}
+.sidebar-buttons>a.btn:first-child {
+    border-radius: 14px !important;
 }
 
 .btn-group-rounded .btn:last-child,

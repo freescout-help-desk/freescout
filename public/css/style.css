@@ -256,10 +256,21 @@ body.user-is-guest {
     /*border-right: 1px solid #dbdbdb;*/
     border-radius: 14px 0 0 14px;
 }
+/* The rule above rounds the left half of a pair. When the New Conversation
+   button is not rendered, the settings button is the whole strip and has to
+   be rounded on both sides. */
+.sidebar-buttons .btn-group:last-child a.btn {
+    border-radius: 14px;
+}
 .sidebar-buttons > a.btn {
     /*width: 154px;*/
     /*margin-left: 0!important;*/
     border-radius: 0 14px 14px 0;
+}
+/* The mirror of the case above: an agent without permission to see the
+   settings button is left with this one alone. */
+.sidebar-buttons > a.btn:first-child {
+    border-radius: 14px;
 }
 #conv-list-2col {
     border-bottom: 1px solid #e3e8eb;
